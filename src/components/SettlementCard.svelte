@@ -62,7 +62,6 @@
     </div>
 
     <div class="space-y-3">
-      <!-- Tariff display -->
       <div class="flex items-center justify-between">
         <span class="text-gray-600">Тариф:</span>
         <span class="text-lg font-semibold text-gray-900">
@@ -70,7 +69,6 @@
         </span>
       </div>
 
-      <!-- Comparison badge -->
       {#if !isBaseline && comparison}
         <ComparisonBadge
           delta={comparison.tariffDelta}
@@ -87,14 +85,12 @@
         />
       {/if}
 
-      <!-- Tariff bar visualization -->
       <TariffBar
         value={settlement.tariff.normalized_per_sotka_month}
         maxValue={maxTariff}
         shelkovoValue={comparison?.tariffDelta ? settlement.tariff.normalized_per_sotka_month + comparison.tariffDelta : settlement.tariff.normalized_per_sotka_month}
       />
 
-      <!-- Location info -->
       <div class="flex items-center justify-between text-sm">
         <span class="text-gray-500">Район:</span>
         <span class="text-gray-700">{settlement.location.district}</span>

@@ -93,10 +93,8 @@
 </script>
 
 <div class="space-y-6">
-  <!-- Filters Panel -->
   <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-      <!-- Sort -->
       <div class="flex items-center gap-3">
         <label for="sort" class="text-sm font-medium text-gray-700 whitespace-nowrap">
           Сортировка:
@@ -113,7 +111,6 @@
         </select>
       </div>
 
-      <!-- Price Filter -->
       <div class="flex flex-wrap items-center gap-3">
         <span class="text-sm font-medium text-gray-700 whitespace-nowrap">Цена:</span>
         <label class="inline-flex items-center">
@@ -148,7 +145,6 @@
         </label>
       </div>
 
-      <!-- Infrastructure Filters -->
       <div class="flex flex-wrap items-center gap-3">
         <span class="text-sm font-medium text-gray-700 whitespace-nowrap">Инфраструктура:</span>
         <label class="inline-flex items-center">
@@ -180,7 +176,6 @@
     </div>
   </div>
 
-  <!-- Counter -->
   <div class="flex items-center justify-between">
     <p class="text-sm text-gray-600">
       Показано <span class="font-medium text-gray-900">{displayedCount}</span> из
@@ -191,7 +186,6 @@
     {/if}
   </div>
 
-  <!-- Settlements Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {#each displayedSettlements as settlement (settlement.slug)}
       <SettlementCard
@@ -203,7 +197,6 @@
     {/each}
   </div>
 
-  <!-- Empty State -->
   {#if displayedCount === 0}
     <div class="text-center py-12 bg-gray-50 rounded-lg">
       <p class="text-gray-500 text-lg">Ничего не найдено</p>

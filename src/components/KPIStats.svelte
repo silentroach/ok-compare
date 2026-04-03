@@ -26,7 +26,6 @@
 
 <section class="mb-12">
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-    <!-- Rank Card -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div class="text-3xl font-bold text-blue-600 mb-2">
         {getOrdinalRank(stats.shelkovoRank)}
@@ -36,7 +35,6 @@
       </div>
     </div>
 
-    <!-- Median Comparison Card -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div class="text-3xl font-bold {stats.shelkovoVsMedianPercent > 0 ? 'text-red-600' : 'text-green-600'} mb-2">
         {formatPercentage(stats.shelkovoVsMedianPercent / 100)}
@@ -52,7 +50,6 @@
       </div>
     </div>
 
-    <!-- Cheaper Count Card -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div class="text-3xl font-bold text-green-600 mb-2">
         {stats.cheaperCount}
@@ -62,7 +59,6 @@
       </div>
     </div>
 
-    <!-- More Expensive Count Card -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div class="text-3xl font-bold text-red-600 mb-2">
         {stats.moreExpensiveCount}
