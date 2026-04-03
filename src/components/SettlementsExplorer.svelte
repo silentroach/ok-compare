@@ -6,9 +6,10 @@
     settlements: Settlement[];
     comparisons: Record<string, ComparisonResult>;
     stats: Stats;
+    baseUrl?: string;
   }
 
-  let { settlements, comparisons, stats }: Props = $props();
+  let { settlements, comparisons, stats, baseUrl = '/' }: Props = $props();
 
   // Filter and sort state
   let sortBy = $state<'tariff_asc' | 'tariff_desc' | 'distance' | 'name'>('tariff_asc');
@@ -213,6 +214,7 @@
         comparison={comparisons[settlement.slug] || null}
         maxTariff={stats.maxTariff}
         isBaseline={settlement.is_baseline}
+        {baseUrl}
       />
     {/each}
   </div>

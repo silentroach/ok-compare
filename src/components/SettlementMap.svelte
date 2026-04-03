@@ -13,9 +13,13 @@
 
   interface Props {
     settlements: SettlementMapData[];
+    baseUrl?: string;
   }
 
-  let { settlements }: Props = $props();
+  let { settlements, baseUrl = '/' }: Props = $props();
+  
+  // Ensure baseUrl ends with trailing slash
+  const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
 
   // State
   let mapContainer: HTMLDivElement | null = $state(null);
@@ -59,7 +63,7 @@
         <div style="color: #374151; margin-bottom: 12px;">
           Тариф: <strong>${tariffFormatted}</strong>
         </div>
-        <a href="/settlements/${settlement.slug}/" 
+        <a href="${normalizedBaseUrl}settlements/${settlement.slug}/" 
            style="color: #2563EB; text-decoration: none; font-size: 14px;"
            target="_parent">
           Подробнее →

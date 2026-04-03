@@ -9,16 +9,20 @@
     comparison: ComparisonResult | null;
     maxTariff: number;
     isBaseline: boolean;
+    baseUrl?: string;
   }
 
-  let { settlement, comparison, maxTariff, isBaseline }: Props = $props();
+  let { settlement, comparison, maxTariff, isBaseline, baseUrl = '/' }: Props = $props();
+  
+  // Ensure baseUrl ends with trailing slash
+  const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
 </script>
 
 <article data-testid="settlement-card" class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
   <div class="p-6">
     <div class="flex items-start justify-between mb-4">
       <h3 class="text-lg font-semibold text-gray-900">
-        <a href={`/settlements/${settlement.slug}/`} class="hover:text-blue-600">
+        <a href={`${normalizedBaseUrl}settlements/${settlement.slug}/`} class="hover:text-blue-600">
           {settlement.short_name}
         </a>
       </h3>
@@ -78,7 +82,7 @@
   
   <div class="px-6 py-3 bg-gray-50 border-t border-gray-200">
     <a 
-      href={`/settlements/${settlement.slug}/`}
+      href={`${normalizedBaseUrl}settlements/${settlement.slug}/`}
       class="text-blue-600 hover:text-blue-800 text-sm font-medium"
     >
       Подробнее →
