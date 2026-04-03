@@ -130,7 +130,7 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
       <h2 class="text-xl font-semibold text-gray-900 mb-6">Инфраструктура</h2>
       <InfrastructureTable 
         infra={settlement.infrastructure} 
-        shelkovoInfra={shelkovo?.infrastructure || null}
+        shelkovoInfra={!settlement.is_baseline ? shelkovo?.infrastructure || null : null}
       />
     </section>
 
@@ -139,7 +139,7 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
       <h2 class="text-xl font-semibold text-gray-900 mb-6">Модель обслуживания</h2>
       <ServiceTable 
         services={settlement.service_model} 
-        shelkovoServices={shelkovo?.service_model || null}
+        shelkovoServices={!settlement.is_baseline ? shelkovo?.service_model || null : null}
       />
     </section>
 
