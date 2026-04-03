@@ -104,7 +104,7 @@ describe('SettlementCard', () => {
       }
     });
 
-    expect(container.textContent).toContain('100 ₽/сотка/мес');
+    expect(container.textContent).toContain('100 ₽/сотка');
   });
 
   it('renders comparison badge for non-baseline', () => {
@@ -132,7 +132,7 @@ describe('SettlementCard', () => {
       }
     });
 
-    expect(container.textContent).toContain('Базовый');
+    expect(container.textContent).toContain('Наш');
   });
 
   it('renders tariff bar', () => {

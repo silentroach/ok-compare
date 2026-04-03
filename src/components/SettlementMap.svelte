@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { formatTariff } from '../lib/format';
+  import { withBase } from '../lib/url';
 
   interface SettlementMapData {
     slug: string;
@@ -13,13 +14,9 @@
 
   interface Props {
     settlements: SettlementMapData[];
-    baseUrl?: string;
   }
 
-  let { settlements, baseUrl = '/' }: Props = $props();
-  
-  // Ensure baseUrl ends with trailing slash
-  const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+  let { settlements }: Props = $props();
 
   // State
   let mapContainer: HTMLDivElement | null = $state(null);
@@ -50,10 +47,10 @@
   // Create popup content
   function createPopupContent(settlement: SettlementMapData): string {
     const tariffFormatted = formatTariff(settlement.normalizedTariff);
-    const baselineBadge = settlement.isBaseline 
-      ? '<span style="background: #3B82F6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px;">Базовый</span>' 
+    const baselineBadge = settlement.isBaseline
+      ? '<span style="background: #3B82F6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px;">Наш</span>'
       : '';
-    
+
     return `
       <div style="font-family: system-ui, -apple-system, sans-serif; padding: 8px; min-width: 180px;">
         <div style="font-weight: 600; font-size: 16px; margin-bottom: 8px; display: flex; align-items: center;">
@@ -63,7 +60,7 @@
         <div style="color: #374151; margin-bottom: 12px;">
           Тариф: <strong>${tariffFormatted}</strong>
         </div>
-        <a href="${normalizedBaseUrl}settlements/${settlement.slug}/" 
+        <a href="${withBase(`settlements/${settlement.slug}/`)}"
            style="color: #2563EB; text-decoration: none; font-size: 14px;"
            target="_parent">
           Подробнее →

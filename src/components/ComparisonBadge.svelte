@@ -16,7 +16,7 @@
   <div data-testid="comparison-badge" class="flex items-center justify-between">
     <span class="text-gray-600">Разница:</span>
     {#if isBaseline}
-      <span class="text-sm font-medium text-gray-600">Базовый</span>
+      <span class="text-sm font-medium text-gray-600">Наш</span>
     {:else if isCheaper}
       <span class="text-sm font-medium text-green">
         −{Math.abs(delta)} ₽

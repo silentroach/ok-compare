@@ -53,7 +53,7 @@ describe('ComparisonBadge', () => {
       }
     });
 
-    expect(container.textContent).toContain('Базовый');
+    expect(container.textContent).toContain('Наш');
     
     // Baseline badge should render (wrapper has data-testid)
     const badge = container.querySelector('[data-testid="comparison-badge"]');

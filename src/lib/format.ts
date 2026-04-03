@@ -54,7 +54,7 @@ export function formatPercentage(value: number): string {
 
 /**
  * Format tariff as currency per sotka per month
- * 4500 → "4 500 ₽/сотка/мес"
+ * 4500 → "4 500 ₽/сотка"
  */
 export function formatTariff(value: number): string {
   const rounded = Math.round(value);
@@ -63,7 +63,7 @@ export function formatTariff(value: number): string {
     style: 'decimal',
     maximumFractionDigits: 0
   });
-  return `${formatted} ₽/сотка/мес`;
+  return `${formatted} ₽/сотка`;
 }
 
 import { DateTime } from 'luxon';

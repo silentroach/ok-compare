@@ -90,15 +90,15 @@ describe('Format Module', () => {
 
   describe('formatTariff', () => {
     it('should format tariff as currency per sotka per month', () => {
-      expect(formatTariff(4500)).toBe('4\u00A0500 ₽/сотка/мес');
+      expect(formatTariff(4500)).toBe('4\u00A0500 ₽/сотка');
     });
 
     it('should format small values', () => {
-      expect(formatTariff(120)).toBe('120 ₽/сотка/мес');
+      expect(formatTariff(120)).toBe('120 ₽/сотка');
     });
 
     it('should format large values', () => {
-      expect(formatTariff(10000)).toBe('10\u00A0000 ₽/сотка/мес');
+      expect(formatTariff(10000)).toBe('10\u00A0000 ₽/сотка');
     });
   });
 
