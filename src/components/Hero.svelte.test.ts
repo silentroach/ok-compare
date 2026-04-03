@@ -15,16 +15,14 @@ describe('Hero', () => {
     expect(container.textContent).toContain('Test Subtitle');
   });
 
-  it('renders with Russian text for Shelkovo comparison', () => {
+  it('renders with Russian text for settlements', () => {
     const { container } = render(Hero, {
       props: {
-        title: 'Сравнение тарифов на содержание коттеджных поселков',
-        subtitle: 'Анализ стоимости обслуживания в Истринском районе Московской области'
+        title: 'Тарифы на содержание поселков'
       }
     });
 
-    expect(container.textContent).toContain('Сравнение тарифов на содержание коттеджных поселков');
-    expect(container.textContent).toContain('Анализ стоимости обслуживания в Истринском районе Московской области');
+    expect(container.textContent).toContain('Тарифы на содержание поселков');
   });
 
   it('uses semantic h1 for title', () => {

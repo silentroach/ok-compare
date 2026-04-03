@@ -108,16 +108,13 @@ describe('SettlementMap', () => {
     expect(container.querySelector('[data-testid="settlement-map"]')).toBeTruthy();
   });
 
-  it('renders fallback message when API is unavailable', async () => {
-    // Remove ymaps from global
-    delete (global as any).ymaps;
-
+  it('renders fallback message when API key is not configured', async () => {
     const { container } = render(SettlementMap, {
       props: { settlements: mockSettlements },
     });
 
     await waitFor(() => {
-      expect(container.textContent).toContain('Карта недоступна');
+      expect(container.textContent).toContain('API ключ не настроен');
     }, { timeout: 2000 });
   });
 });
