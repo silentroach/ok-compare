@@ -17,14 +17,13 @@ export function calculateTariffDelta(
 
 /**
  * Score an availability status for comparison
- * yes = 2, partial = 1, no = 0, unknown = 0
+ * yes = 2, partial = 1, no = 0, unknown/undefined = 0
  */
-function scoreStatus(status: string): number {
+function scoreStatus(status: string | undefined): number {
   switch (status) {
     case 'yes': return 2;
     case 'partial': return 1;
     case 'no':
-    case 'unknown':
     default:
       return 0;
   }
@@ -33,7 +32,7 @@ function scoreStatus(status: string): number {
 /**
  * Compare two infrastructure objects
  * Returns count of items where other is better/worse than baseline
- * Skips comparison when either side is 'unknown'
+ * Skips comparison when either side is undefined (unknown)
  */
 export function compareInfrastructure(
   baseline: Infrastructure,
@@ -49,8 +48,8 @@ export function compareInfrastructure(
     const baselineValue = baseline[key];
     const otherValue = other[key];
 
-    // Skip comparison if either side is unknown
-    if (baselineValue === 'unknown' || otherValue === 'unknown') {
+    // Skip comparison if either side is undefined (unknown)
+    if (baselineValue === undefined || otherValue === undefined) {
       continue;
     }
 
@@ -71,7 +70,7 @@ export function compareInfrastructure(
 
 /**
  * Compare two service model objects
- * Skips comparison when either side is 'unknown'
+ * Skips comparison when either side is undefined (unknown)
  */
 export function compareServices(
   baseline: ServiceModel,
@@ -87,8 +86,8 @@ export function compareServices(
     const baselineValue = baseline[key];
     const otherValue = other[key];
 
-    // Skip comparison if either side is unknown
-    if (baselineValue === 'unknown' || otherValue === 'unknown') {
+    // Skip comparison if either side is undefined (unknown)
+    if (baselineValue === undefined || otherValue === undefined) {
       continue;
     }
 

@@ -11,14 +11,14 @@ describe('InfrastructureTable', () => {
     gas: 'yes',
     water: 'yes',
     sewage: 'yes',
-    drainage: 'unknown',
+    drainage: undefined,
     checkpoints: 'yes',
     security: 'yes',
     fencing: 'no',
     video_surveillance: 'partial',
     playgrounds: 'yes',
     sports: 'no',
-    public_spaces: 'unknown',
+    public_spaces: undefined,
     beach_or_water_access: 'no',
     admin_building: 'yes',
     retail_or_services: 'partial'
@@ -137,25 +137,7 @@ describe('InfrastructureTable', () => {
   });
 
   it('renders with empty/unknown infrastructure', () => {
-    const emptyInfra: Infrastructure = {
-      roads: 'unknown',
-      sidewalks: 'unknown',
-      lighting: 'unknown',
-      gas: 'unknown',
-      water: 'unknown',
-      sewage: 'unknown',
-      drainage: 'unknown',
-      checkpoints: 'unknown',
-      security: 'unknown',
-      fencing: 'unknown',
-      video_surveillance: 'unknown',
-      playgrounds: 'unknown',
-      sports: 'unknown',
-      public_spaces: 'unknown',
-      beach_or_water_access: 'unknown',
-      admin_building: 'unknown',
-      retail_or_services: 'unknown'
-    };
+    const emptyInfra: Infrastructure = {};
 
     const { container } = render(InfrastructureTable, {
       props: {

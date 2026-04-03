@@ -126,7 +126,7 @@ describe('Comparisons Module', () => {
 
     it('should handle unknown values', () => {
       const otherInfra: Infrastructure = {
-        roads: 'unknown',
+        roads: undefined,
         sidewalks: 'yes',
         lighting: 'yes',
         gas: 'yes',
@@ -156,7 +156,7 @@ describe('Comparisons Module', () => {
         roads: 'yes', // 2
         sidewalks: 'partial', // 1
         lighting: 'no', // 0
-        gas: 'unknown', // 0
+        gas: undefined, // 0 (unknown)
         water: 'yes',
         sewage: 'yes',
         drainage: 'yes',

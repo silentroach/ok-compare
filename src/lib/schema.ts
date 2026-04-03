@@ -1,15 +1,14 @@
 import { z } from 'zod';
 
 // Enums
-export const AvailabilityStatusEnum = z.enum(['yes', 'no', 'partial', 'unknown']);
+export const AvailabilityStatusEnum = z.enum(['yes', 'no', 'partial']);
 export type AvailabilityStatus = z.infer<typeof AvailabilityStatusEnum>;
 
 export const SettlementStatusEnum = z.enum([
   'under_construction',
   'partially_complete',
   'mostly_complete',
-  'complete',
-  'unknown'
+  'complete'
 ]);
 export type SettlementStatus = z.infer<typeof SettlementStatusEnum>;
 
@@ -42,36 +41,36 @@ export const TariffSchema = z.object({
 });
 export type Tariff = z.infer<typeof TariffSchema>;
 
-// Infrastructure schema - all fields optional with defaults
+// Infrastructure schema - all fields optional
 export const InfrastructureSchema = z.object({
-  roads: AvailabilityStatusEnum.default('unknown'),
-  sidewalks: AvailabilityStatusEnum.default('unknown'),
-  lighting: AvailabilityStatusEnum.default('unknown'),
-  gas: AvailabilityStatusEnum.default('unknown'),
-  water: AvailabilityStatusEnum.default('unknown'),
-  sewage: AvailabilityStatusEnum.default('unknown'),
-  drainage: AvailabilityStatusEnum.default('unknown'),
-  checkpoints: AvailabilityStatusEnum.default('unknown'),
-  security: AvailabilityStatusEnum.default('unknown'),
-  fencing: AvailabilityStatusEnum.default('unknown'),
-  video_surveillance: AvailabilityStatusEnum.default('unknown'),
-  playgrounds: AvailabilityStatusEnum.default('unknown'),
-  sports: AvailabilityStatusEnum.default('unknown'),
-  public_spaces: AvailabilityStatusEnum.default('unknown'),
-  beach_or_water_access: AvailabilityStatusEnum.default('unknown'),
-  admin_building: AvailabilityStatusEnum.default('unknown'),
-  retail_or_services: AvailabilityStatusEnum.default('unknown')
+  roads: AvailabilityStatusEnum.optional(),
+  sidewalks: AvailabilityStatusEnum.optional(),
+  lighting: AvailabilityStatusEnum.optional(),
+  gas: AvailabilityStatusEnum.optional(),
+  water: AvailabilityStatusEnum.optional(),
+  sewage: AvailabilityStatusEnum.optional(),
+  drainage: AvailabilityStatusEnum.optional(),
+  checkpoints: AvailabilityStatusEnum.optional(),
+  security: AvailabilityStatusEnum.optional(),
+  fencing: AvailabilityStatusEnum.optional(),
+  video_surveillance: AvailabilityStatusEnum.optional(),
+  playgrounds: AvailabilityStatusEnum.optional(),
+  sports: AvailabilityStatusEnum.optional(),
+  public_spaces: AvailabilityStatusEnum.optional(),
+  beach_or_water_access: AvailabilityStatusEnum.optional(),
+  admin_building: AvailabilityStatusEnum.optional(),
+  retail_or_services: AvailabilityStatusEnum.optional()
 });
 export type Infrastructure = z.infer<typeof InfrastructureSchema>;
 
 // Service model schema
 export const ServiceModelSchema = z.object({
-  garbage_collection: AvailabilityStatusEnum.default('unknown'),
-  snow_removal: AvailabilityStatusEnum.default('unknown'),
-  road_cleaning: AvailabilityStatusEnum.default('unknown'),
-  landscaping: AvailabilityStatusEnum.default('unknown'),
-  emergency_service: AvailabilityStatusEnum.default('unknown'),
-  dispatcher: AvailabilityStatusEnum.default('unknown')
+  garbage_collection: AvailabilityStatusEnum.optional(),
+  snow_removal: AvailabilityStatusEnum.optional(),
+  road_cleaning: AvailabilityStatusEnum.optional(),
+  landscaping: AvailabilityStatusEnum.optional(),
+  emergency_service: AvailabilityStatusEnum.optional(),
+  dispatcher: AvailabilityStatusEnum.optional()
 });
 export type ServiceModel = z.infer<typeof ServiceModelSchema>;
 
@@ -114,7 +113,7 @@ export const SettlementSchema = z.object({
   location: LocationSchema,
   distance_from_shelkovo_km: z.number().nonnegative(),
   tariff: TariffSchema,
-  settlement_status: SettlementStatusEnum.default('unknown'),
+  settlement_status: SettlementStatusEnum.optional(),
   infrastructure: InfrastructureSchema.default({}),
   service_model: ServiceModelSchema.default({}),
   promises_vs_fact: PromisesVsFactSchema.default({}),

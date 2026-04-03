@@ -51,9 +51,9 @@ tariff:
   note: "Тариф за сотку в месяц"        # Примечание
 
 # Статус поселка
-settlement_status: "complete"           # under_construction | partially_complete | mostly_complete | complete | unknown
+settlement_status: "complete"           # under_construction | partially_complete | mostly_complete | complete
 
-# Инфраструктура (yes | no | partial | unknown)
+# Инфраструктура (yes | no | partial - не указано = неизвестно)
 infrastructure:
   roads: "yes"
   sidewalks: "yes"
@@ -73,7 +73,7 @@ infrastructure:
   admin_building: "yes"
   retail_or_services: "partial"
 
-# Сервисная модель (yes | no | partial | unknown)
+# Сервисная модель (yes | no | partial - не указано = неизвестно)
 service_model:
   garbage_collection: "yes"
   snow_removal: "yes"
@@ -114,14 +114,14 @@ comparison_notes: ["Наш поселок для сравнения"]
 - `yes` — есть
 - `no` — нет
 - `partial` — частично
-- `unknown` — неизвестно
+- Не указано — неизвестно
 
 **SettlementStatus** (статус поселка):
 - `under_construction` — строится
 - `partially_complete` — частично построен
 - `mostly_complete` — в основном построен
 - `complete` — полностью построен
-- `unknown` — неизвестно
+- Не указано — неизвестно
 
 **TariffUnit** (единица тарифа):
 - `rub_per_sotka` — рубли за сотку

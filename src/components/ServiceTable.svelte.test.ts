@@ -10,7 +10,7 @@ describe('ServiceTable', () => {
     road_cleaning: 'yes',
     landscaping: 'yes',
     emergency_service: 'no',
-    dispatcher: 'unknown'
+    dispatcher: undefined
   };
 
   const mockShelkovoServices: ServiceModel = {
@@ -105,7 +105,7 @@ describe('ServiceTable', () => {
       }
     });
 
-    // Find rows where there's a difference (snow_removal: partial vs yes, emergency_service: no vs yes, dispatcher: unknown vs yes)
+    // Find rows where there's a difference (snow_removal: partial vs yes, emergency_service: no vs yes, dispatcher: undefined vs yes)
     const diffIndicators = container.querySelectorAll('[data-testid="diff-indicator"]');
     
     // There should be some differences highlighted
@@ -113,14 +113,7 @@ describe('ServiceTable', () => {
   });
 
   it('renders with empty/unknown services', () => {
-    const emptyServices: ServiceModel = {
-      garbage_collection: 'unknown',
-      snow_removal: 'unknown',
-      road_cleaning: 'unknown',
-      landscaping: 'unknown',
-      emergency_service: 'unknown',
-      dispatcher: 'unknown'
-    };
+    const emptyServices: ServiceModel = {};
 
     const { container } = render(ServiceTable, {
       props: {

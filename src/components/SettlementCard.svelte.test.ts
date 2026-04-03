@@ -26,33 +26,8 @@ const mockSettlement: Settlement = {
     note: ''
   },
   settlement_status: 'complete',
-  infrastructure: {
-    roads: 'unknown',
-    sidewalks: 'unknown',
-    lighting: 'unknown',
-    gas: 'unknown',
-    water: 'unknown',
-    sewage: 'unknown',
-    drainage: 'unknown',
-    checkpoints: 'unknown',
-    security: 'unknown',
-    fencing: 'unknown',
-    video_surveillance: 'unknown',
-    playgrounds: 'unknown',
-    sports: 'unknown',
-    public_spaces: 'unknown',
-    beach_or_water_access: 'unknown',
-    admin_building: 'unknown',
-    retail_or_services: 'unknown'
-  },
-  service_model: {
-    garbage_collection: 'unknown',
-    snow_removal: 'unknown',
-    road_cleaning: 'unknown',
-    landscaping: 'unknown',
-    emergency_service: 'unknown',
-    dispatcher: 'unknown'
-  },
+  infrastructure: {},
+  service_model: {},
   promises_vs_fact: {
     promised: [],
     actual: [],
