@@ -5,6 +5,10 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   output: 'static',
   base: '/ok-compare',
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: 'hover',
+  },
   outDir: 'dist',
   srcDir: 'src',
   publicDir: 'public',
