@@ -126,7 +126,7 @@ describe('Schema Validation', () => {
       const result = SettlementSchema.safeParse(invalidSettlement);
       expect(result.success).toBe(false);
       if (!result.success) {
-        const error = result.error.errors[0];
+        const error = result.error.issues[0];
         expect(error.path).toContain('tariff');
         expect(error.path).toContain('unit');
         expect(error.message).toContain('rub_per_sotka');
@@ -168,9 +168,9 @@ describe('Schema Validation', () => {
       const result = SettlementSchema.safeParse(incompleteSettlement);
       expect(result.success).toBe(false);
       if (!result.success) {
-        const nameError = result.error.errors.find(e => e.path.includes('name'));
+        const nameError = result.error.issues.find((e) => e.path.includes('name'));
         expect(nameError).toBeDefined();
-        expect(nameError?.message.toLowerCase()).toContain('required');
+        expect(nameError?.message.toLowerCase()).toContain('expected string');
       }
     });
   });
@@ -187,7 +187,7 @@ describe('Schema Validation', () => {
       const result = LocationSchema.safeParse(invalidLocation);
       expect(result.success).toBe(false);
       if (!result.success) {
-        const latError = result.error.errors.find(e => e.path.includes('lat'));
+        const latError = result.error.issues.find((e) => e.path.includes('lat'));
         expect(latError).toBeDefined();
       }
     });
@@ -203,7 +203,7 @@ describe('Schema Validation', () => {
       const result = LocationSchema.safeParse(invalidLocation);
       expect(result.success).toBe(false);
       if (!result.success) {
-        const lngError = result.error.errors.find(e => e.path.includes('lng'));
+        const lngError = result.error.issues.find((e) => e.path.includes('lng'));
         expect(lngError).toBeDefined();
       }
     });

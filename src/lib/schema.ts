@@ -130,8 +130,8 @@ export const SettlementSchema = z.object({
   tariff: TariffSchema,
   infrastructure: InfrastructureSchema.default({}),
   service_model: ServiceModelSchema.default({}),
-  promises_vs_fact: PromisesVsFactSchema.default({}),
-  transparency: TransparencySchema.default({}),
+  promises_vs_fact: PromisesVsFactSchema.prefault({}),
+  transparency: TransparencySchema.prefault({}),
   sources: z.array(SourceSchema).min(1),
   comparison_notes: z.array(z.string()).default([])
 });
