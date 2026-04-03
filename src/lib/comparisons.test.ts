@@ -23,7 +23,6 @@ describe('Comparisons Module', () => {
       district: 'Test',
       area: 'Test'
     },
-    distance_from_shelkovo_km: 0,
     tariff: {
       value: 120,
       unit: 'rub_per_sotka',

@@ -17,7 +17,6 @@ const mockSettlement: Settlement = {
     district: 'Тестовский район',
     area: 'Тестовское направление'
   },
-  distance_from_shelkovo_km: 5,
   tariff: {
     value: 100,
     unit: 'rub_per_sotka',

@@ -98,7 +98,6 @@ describe('Stats Module', () => {
           district: 'Test',
           area: 'Test'
         },
-        distance_from_shelkovo_km: 0,
         tariff: {
           value: 4500,
           unit: 'rub_per_sotka',
@@ -154,7 +153,6 @@ describe('Stats Module', () => {
           district: 'Test',
           area: 'Test'
         },
-        distance_from_shelkovo_km: 5,
         tariff: {
           value: 3500,
           unit: 'rub_per_sotka',
@@ -210,7 +208,6 @@ describe('Stats Module', () => {
           district: 'Test',
           area: 'Test'
         },
-        distance_from_shelkovo_km: 10,
         tariff: {
           value: 5500,
           unit: 'rub_per_sotka',

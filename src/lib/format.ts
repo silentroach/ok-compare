@@ -1,3 +1,32 @@
+import { DateTime } from 'luxon';
+
+/**
+ * Calculate distance between two points on Earth using Haversine formula
+ * Returns distance in kilometers
+ */
+export function calculateDistance(
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number
+): number {
+  const R = 6371; // Earth's radius in kilometers
+  const dLat = toRadians(lat2 - lat1);
+  const dLng = toRadians(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRadians(lat1)) *
+      Math.cos(toRadians(lat2)) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+function toRadians(degrees: number): number {
+  return (degrees * Math.PI) / 180;
+}
+
 /**
  * Format a number as Russian rubles
  * 1234.56 → "1 235 ₽"
@@ -13,13 +42,19 @@ export function formatCurrency(value: number): string {
 }
 
 /**
- * Format distance in kilometers
- * 5.7 → "5.7 км"
+ * Format distance in kilometers with special formatting rules:
+ * - Less than 10 km: show exact integer value (e.g., "5 км")
+ * - 10 km or more: round to tens and add tilde prefix (e.g., "~20 км")
  */
 export function formatDistance(value: number): string {
-  // Use the value as-is, but remove trailing .0 for integers
-  const formatted = Number.isInteger(value) ? value.toString() : value.toFixed(1).replace(/\.0$/, '');
-  return `${formatted} км`;
+  if (value < 10) {
+    // Less than 10 km: show exact integer
+    return `${Math.round(value)} км`;
+  } else {
+    // 10 km or more: round to tens with tilde
+    const roundedToTens = Math.round(value / 10) * 10;
+    return `~${roundedToTens} км`;
+  }
 }
 
 /**
@@ -65,8 +100,6 @@ export function formatTariff(value: number): string {
   });
   return `${formatted} ₽/сотка`;
 }
-
-import { DateTime } from 'luxon';
 
 /**
  * Format ISO date (YYYY-MM-DD) to Russian format using Luxon

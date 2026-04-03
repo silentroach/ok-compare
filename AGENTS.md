@@ -48,14 +48,36 @@ npx vitest run -t "описание теста"
 - Явные типы для параметров и возвращаемых значений
 - `interface` для объектов, `type` для union/utility types
 
+### General Principles
+
+- Keep things in one function unless composable or reusable
+- Avoid `try`/`catch` where possible
+- Avoid using the `any` type
+- Prefer single word variable names where possible
+- Rely on type inference when possible; avoid explicit type annotations or interfaces unless necessary for exports or clarity
+- Prefer functional array methods (flatMap, filter, map) over for loops; use type guards on filter to maintain type inference downstream
+
 ### Именование
 
+- Prefer single word names for variables and functions. Only use multiple words if necessary.
 - **Компоненты**: PascalCase (`SettlementCard.svelte`)
 - **Утилиты**: camelCase (`formatCurrency.ts`)
 - **Типы/Интерфейсы**: PascalCase (`Settlement`, `ComparisonResult`)
 - **Константы**: UPPER_SNAKE_CASE
 - **Поля в YAML**: snake_case (`is_baseline`, `short_name`)
 - **Переменные в коде**: camelCase (`isBaseline`, `shortName`)
+
+### Naming Enforcement (Read This)
+
+THIS RULE IS MANDATORY FOR AGENT WRITTEN CODE.
+
+- Use single word names by default for new locals, params, and helper functions.
+- Multi-word names are allowed only when a single word would be unclear or ambiguous.
+- Write comments only in unclear cases.
+- Do not introduce new camelCase compounds when a short single-word alternative is clear.
+- Before finishing edits, review touched lines and shorten newly introduced identifiers where possible.
+- Good short names to prefer: `pid`, `cfg`, `err`, `opts`, `dir`, `root`, `child`, `state`, `timeout`.
+- Examples to avoid unless truly required: `inputPID`, `existingClient`, `connectTimeout`, `workerPath`.
 
 ### Svelte компоненты
 
@@ -92,6 +114,7 @@ npx vitest run -t "описание теста"
 ### Path Aliases
 
 Доступны в tsconfig.json:
+
 - `@/*` → `src/*`
 - `@components/*` → `src/components/*`
 - `@lib/*` → `src/lib/*`

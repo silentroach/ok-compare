@@ -19,7 +19,6 @@ const mockSettlements: Settlement[] = [
       district: 'Истринский',
       area: 'Новорижское направление'
     },
-    distance_from_shelkovo_km: 0,
     tariff: {
       value: 120,
       unit: 'rub_per_sotka',
@@ -93,7 +92,6 @@ const mockSettlements: Settlement[] = [
       district: 'Истринский',
       area: 'Новорижское направление'
     },
-    distance_from_shelkovo_km: 3.2,
     tariff: {
       value: 95,
       unit: 'rub_per_sotka',

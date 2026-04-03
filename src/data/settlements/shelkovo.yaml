@@ -12,8 +12,6 @@ location:
   district: "Ступинский район"
   area: "Ступинский округ"
 
-distance_from_shelkovo_km: 0
-
 tariff:
   value: 815
   unit: "rub_per_sotka"

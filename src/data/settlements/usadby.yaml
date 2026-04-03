@@ -12,8 +12,6 @@ location:
   district: "Мытищинский район"
   area: "Мытищинский округ"
 
-distance_from_shelkovo_km: 3
-
 tariff:
   value: 6500
   unit: "rub_per_sotka"

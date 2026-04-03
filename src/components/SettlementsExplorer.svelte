@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Settlement, Stats, ComparisonResult } from '../lib/schema';
+  import { calculateDistance } from '../lib/format';
   import SettlementCard from './SettlementCard.svelte';
 
   interface Props {
@@ -9,6 +10,21 @@
   }
 
   let { settlements, comparisons, stats }: Props = $props();
+
+  // Find Shelkovo (baseline) for distance calculations
+  const shelkovo = $derived.by(() => settlements.find((s) => s.is_baseline));
+
+  // Calculate distance from Shelkovo for a settlement
+  function getDistanceFromShelkovo(settlement: Settlement): number {
+    const baseline = shelkovo();
+    if (!baseline || settlement.is_baseline) return 0;
+    return calculateDistance(
+      baseline.location.lat,
+      baseline.location.lng,
+      settlement.location.lat,
+      settlement.location.lng
+    );
+  }
 
   // Filter and sort state
   let sortBy = $state<'tariff_asc' | 'tariff_desc' | 'distance' | 'name'>('tariff_asc');
@@ -30,7 +46,7 @@
   ];
 
   // Derived: filtered and sorted settlements
-  let filteredSettlements = $derived(() => {
+  let filteredSettlements = $derived.by(() => {
     let result = [...settlements];
 
     // Apply price filter
@@ -68,7 +84,7 @@
         case 'tariff_desc':
           return b.tariff.normalized_per_sotka_month - a.tariff.normalized_per_sotka_month;
         case 'distance':
-          return a.distance_from_shelkovo_km - b.distance_from_shelkovo_km;
+          return getDistanceFromShelkovo(a) - getDistanceFromShelkovo(b);
         case 'name':
           return a.short_name.localeCompare(b.short_name, 'ru');
         default:
@@ -186,7 +202,7 @@
           bind:value={statusFilter}
           class="block w-full lg:w-auto rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
         >
-          {#each statusOptions as option}
+          {#each statusOptions as option (option.value)}
             <option value={option.value}>{option.label}</option>
           {/each}
         </select>

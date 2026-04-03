@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Link from '../../components/Link.astro';
 import { getCollection } from 'astro:content';
 import { loadAllData, findBaseline } from '../../lib/data';
-import { formatTariff, formatDistance, formatPercentage } from '../../lib/format';
+import { formatTariff, formatDistance, formatPercentage, calculateDistance } from '../../lib/format';
 import type { Settlement } from '../../lib/schema';
 import InfrastructureTable from '../../components/InfrastructureTable.svelte';
 import ServiceTable from '../../components/ServiceTable.svelte';
@@ -38,6 +38,16 @@ interface Props {
 }
 
 const { settlement, comparison, shelkovo } = Astro.props;
+
+// Calculate distance from Shelkovo
+const distanceFromShelkovo = shelkovo && !settlement.is_baseline
+  ? calculateDistance(
+      shelkovo.location.lat,
+      shelkovo.location.lng,
+      settlement.location.lat,
+      settlement.location.lng
+    )
+  : 0;
 
 // Build page title
 const pageTitle = `${settlement.name} — Тарифы и сравнение`;
@@ -133,9 +143,9 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
         <div>
           <h3 class="text-sm font-medium text-gray-500 mb-2">Расположение</h3>
           <p class="text-gray-900">{settlement.location.address_text}</p>
-          {settlement.distance_from_shelkovo_km > 0 && (
+          {distanceFromShelkovo > 0 && (
             <p class="text-sm text-gray-500 mt-1">
-              {formatDistance(settlement.distance_from_shelkovo_km)} от Шелково
+              {formatDistance(distanceFromShelkovo)} от Шелково
             </p>
           )}
         </div>

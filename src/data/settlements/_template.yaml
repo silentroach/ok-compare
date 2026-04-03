@@ -15,8 +15,6 @@ location:
   district: "Округ"
   area: "Район"
 
-distance_from_shelkovo_km: 0
-
 tariff:
   value: 0
   unit: "rub_per_sotka"  # Options: rub_per_sotka, rub_per_lot, rub_fixed

@@ -33,24 +33,27 @@ describe('Format Module', () => {
   });
 
   describe('formatDistance', () => {
-    it('should format 5.7 as "5.7 км"', () => {
-      expect(formatDistance(5.7)).toBe('5.7 км');
+    it('should format distances less than 10 km as whole numbers', () => {
+      expect(formatDistance(5.7)).toBe('6 км');
+      expect(formatDistance(0.5)).toBe('1 км');
+      expect(formatDistance(9.4)).toBe('9 км');
     });
 
-    it('should format 10 as "10 км"', () => {
-      expect(formatDistance(10)).toBe('10 км');
-    });
-
-    it('should format 0.5 as "0.5 км"', () => {
-      expect(formatDistance(0.5)).toBe('0.5 км');
+    it('should format distances of 10 km or more with tilde and rounded to tens', () => {
+      expect(formatDistance(10)).toBe('~10 км');
+      expect(formatDistance(15)).toBe('~20 км');
+      expect(formatDistance(24)).toBe('~20 км');
+      expect(formatDistance(25)).toBe('~30 км');
+      expect(formatDistance(95)).toBe('~100 км');
     });
 
     it('should format 0 as "0 км"', () => {
       expect(formatDistance(0)).toBe('0 км');
     });
 
-    it('should handle integer values without decimal', () => {
+    it('should handle integer values less than 10 without decimal', () => {
       expect(formatDistance(5)).toBe('5 км');
+      expect(formatDistance(9)).toBe('9 км');
     });
   });
 

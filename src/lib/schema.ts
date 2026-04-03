@@ -136,7 +136,6 @@ export const SettlementSchema = z.object({
   management_company: z.string().min(1),
   is_baseline: z.boolean().default(false),
   location: LocationSchema,
-  distance_from_shelkovo_km: z.number().nonnegative(),
   tariff: TariffSchema,
   settlement_status: SettlementStatusEnum.optional(),
   infrastructure: InfrastructureSchema.default({}),

@@ -28,7 +28,6 @@ describe('Schema Validation', () => {
           district: 'Тестовый район',
           area: 'Тестовый округ'
         },
-        distance_from_shelkovo_km: 10,
         tariff: {
           value: 3000,
           unit: 'rub_per_sotka',
@@ -112,7 +111,6 @@ describe('Schema Validation', () => {
           district: 'Район',
           area: 'Округ'
         },
-        distance_from_shelkovo_km: 5,
         tariff: {
           value: 3000,
           unit: 'per_day', // Invalid unit
@@ -156,7 +154,6 @@ describe('Schema Validation', () => {
           district: 'Район',
           area: 'Округ'
         },
-        distance_from_shelkovo_km: 5,
         tariff: {
           value: 3000,
           unit: 'rub_per_sotka',
@@ -333,7 +330,6 @@ describe('Schema Validation', () => {
           district: 'Район',
           area: 'Округ'
         },
-        distance_from_shelkovo_km: 5,
         tariff: {
           value: 3000,
           unit: 'rub_per_sotka',
@@ -368,7 +364,6 @@ describe('Schema Validation', () => {
           district: 'Район',
           area: 'Округ'
         },
-        distance_from_shelkovo_km: 5,
         tariff: {
           value: 3000,
           unit: 'rub_per_sotka',
