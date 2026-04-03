@@ -155,22 +155,22 @@ comparison_notes: ["Наш поселок для сравнения"]
 
 ```bash
 # Запуск dev-сервера
-npm run dev
+pnpm dev
 
 # Сборка
-npm run build
+pnpm build
 
 # Превью сборки
-npm run preview
+pnpm preview
 
 # Проверка типов
-npm run typecheck
+pnpm typecheck
 
 # Запуск тестов
-npm run test
+pnpm test
 
 # Тесты в watch-режиме
-npm run test:watch
+pnpm test:watch
 ```
 
 ## Добавление нового поселка
@@ -179,11 +179,11 @@ npm run test:watch
 2. Переименуйте файл в `{slug}.yaml`
 3. Заполните все поля
 4. Убедитесь, что `slug` уникален
-5. Запустите `npm run typecheck` для проверки
+5. Запустите `pnpm typecheck` для проверки
 
 ## Деплой
 
-Сборка производится командой `npm run build`. Результат находится в директории `dist/`. Для данного проекта используется base path `/ok-compare`, поэтому файлы нужно разместить в соответствующей директории на хостинге.
+Сборка производится командой `pnpm build`. Результат находится в директории `dist/`. Для данного проекта используется base path `/ok-compare`, поэтому файлы нужно разместить в соответствующей директории на хостинге.
 
 ## Лицензия
 

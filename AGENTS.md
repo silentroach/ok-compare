@@ -6,28 +6,28 @@
 
 ```bash
 # Запуск dev-сервера
-npm run dev
+pnpm dev
 
 # Сборка для продакшена
-npm run build
+pnpm build
 
 # Превью продакшен-сборки
-npm run preview
+pnpm preview
 
 # Проверка типов
-npm run typecheck
+pnpm typecheck
 
 # Запуск всех тестов
-npm run test
+pnpm test
 
 # Тесты в watch-режиме
-npm run test:watch
+pnpm test:watch
 
 # Запуск конкретного теста
-npx vitest run src/components/ComponentName.svelte.test.ts
+pnpm exec vitest run src/components/ComponentName.svelte.test.ts
 
 # Тесты по паттерну
-npx vitest run -t "описание теста"
+pnpm exec vitest run -t "описание теста"
 ```
 
 ## Стек технологий
@@ -146,4 +146,4 @@ src/
 - Тесты используют happy-dom окружение
 - Русская локаль для форматирования валюты и чисел
 - Static site output с base path `/compare`
-- **Не запускать `npm run dev` без явной просьбы** — команда запускает watch-режим и не завершается автоматически
+- **Не запускать `pnpm dev` без явной просьбы** — команда запускает watch-режим и не завершается автоматически
