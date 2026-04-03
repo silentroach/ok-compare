@@ -26,6 +26,7 @@ const mockSettlements = [
   {
     slug: 'shelkovo',
     name: 'КП Шелково',
+    shortName: 'Шелково',
     lat: 55.8234,
     lng: 37.1456,
     normalizedTariff: 120,
@@ -34,6 +35,7 @@ const mockSettlements = [
   {
     slug: 'lesnoe',
     name: 'КП Лесное',
+    shortName: 'Лесное',
     lat: 55.8500,
     lng: 37.2000,
     normalizedTariff: 80,
@@ -42,6 +44,7 @@ const mockSettlements = [
   {
     slug: 'usadby',
     name: 'Усадьбы Истра',
+    shortName: 'Усадьбы Истра',
     lat: 55.7800,
     lng: 37.1000,
     normalizedTariff: 150,
@@ -115,7 +118,7 @@ describe('SettlementMap', () => {
 
     await waitFor(() => {
       expect(container.querySelector('[data-testid="map-popup"]')).toBeTruthy();
-      expect(container.textContent).toContain('КП Лесное');
+      expect(container.textContent).toContain('Лесное');
     });
 
     const link = container.querySelector('[data-testid="map-popup-link"]');

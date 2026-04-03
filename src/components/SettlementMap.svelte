@@ -6,6 +6,7 @@
   interface SettlementMapData {
     slug: string;
     name: string;
+    shortName: string;
     lat: number;
     lng: number;
     normalizedTariff: number;
@@ -38,11 +39,19 @@
   let { settlements }: Props = $props();
 
   let mapContainer: HTMLDivElement | null = $state(null);
+  let popupEl: HTMLDivElement | null = $state(null);
   let map: YMapLike | null = $state(null);
   let isLoading = $state(true);
   let error: string | null = $state(null);
   let ymapsLoaded = $state(false);
-  let active: SettlementMapData | null = $state(null);
+  interface Tip {
+    item: SettlementMapData;
+    x: number;
+    y: number;
+    up: boolean;
+  }
+
+  let tip: Tip | null = $state(null);
 
   const API_KEY = import.meta.env.PUBLIC_YANDEX_MAPS_API_KEY || '';
 
@@ -138,8 +147,9 @@
         `;
         el.setAttribute('title', settlement.name);
         el.setAttribute('aria-label', `Маркер: ${settlement.name}`);
-        el.addEventListener('click', () => {
-          active = settlement;
+        el.addEventListener('click', (evt) => {
+          evt.stopPropagation();
+          open(settlement, el);
         });
         
         const marker = new YMapMarker(
@@ -175,7 +185,38 @@
     return [avgLat, avgLng];
   }
 
+  function open(item: SettlementMapData, el: HTMLElement): void {
+    if (!mapContainer) {
+      tip = { item, x: 24, y: 24, up: false };
+      return;
+    }
+
+    const mapBox = mapContainer.getBoundingClientRect();
+    const dotBox = el.getBoundingClientRect();
+    const w = 256;
+    const p = 12;
+    const cx = dotBox.left - mapBox.left + dotBox.width / 2;
+    const cy = dotBox.top - mapBox.top + dotBox.height / 2;
+    const x = Math.max(p + w / 2, Math.min(mapBox.width - p - w / 2, cx));
+    const up = cy > 120;
+    const y = up ? cy - 16 : cy + 16;
+
+    tip = { item, x, y, up };
+  }
+
   onMount(async () => {
+    const onDown = (evt: PointerEvent): void => {
+      if (!tip) return;
+
+      const node = evt.target;
+      if (!(node instanceof Node)) return;
+      if (popupEl?.contains(node)) return;
+
+      tip = null;
+    };
+
+    document.addEventListener('pointerdown', onDown);
+
     try {
       await loadYandexMaps();
       await initMap();
@@ -184,6 +225,10 @@
       error = 'Карта недоступна';
       isLoading = false;
     }
+
+    return () => {
+      document.removeEventListener('pointerdown', onDown);
+    };
   });
 
   onDestroy(() => {
@@ -214,31 +259,43 @@
     </div>
   {/if}
 
-  {#if active}
-    <div class="absolute left-4 right-4 bottom-4 z-10" data-testid="map-popup">
-      <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-lg">
-        <div class="mb-1 flex items-start justify-between gap-3">
-          <p class="text-base font-semibold text-gray-900">{active.name}</p>
-          <button
-            type="button"
-            class="text-sm text-gray-500 hover:text-gray-700"
-            aria-label="Закрыть попап"
-            onclick={() => {
-              active = null;
-            }}
+  {#if tip}
+    <div
+      class="pointer-events-none absolute z-10"
+      style={`left: ${tip.x}px; top: ${tip.y}px; transform: translate(-50%, ${tip.up ? '-100%' : '0%'});`}
+      data-testid="map-popup"
+    >
+      <div class="relative">
+        <div bind:this={popupEl} class="pointer-events-auto w-64 rounded-lg border border-gray-200 bg-white p-3 shadow-lg">
+          <div class="mb-1 flex items-start justify-between gap-3">
+            <p class="text-base font-semibold text-gray-900">{tip.item.shortName}</p>
+            <button
+              type="button"
+              class="rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+              aria-label="Закрыть попап"
+              onclick={() => {
+                tip = null;
+              }}
+            >
+              <svg viewBox="0 0 20 20" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M5 5l10 10M15 5L5 15"></path>
+              </svg>
+            </button>
+          </div>
+          <p class="mb-2 text-sm text-gray-600"><strong>{formatTariff(tip.item.normalizedTariff)}</strong></p>
+          <a
+            class="text-sm font-medium text-blue-600 hover:text-blue-800"
+            href={withBase(`settlements/${tip.item.slug}/`)}
+            target="_parent"
+            data-testid="map-popup-link"
           >
-            Закрыть
-          </button>
+            Подробнее →
+          </a>
         </div>
-        <p class="mb-3 text-sm text-gray-600">Тариф: <strong>{formatTariff(active.normalizedTariff)}</strong></p>
-        <a
-          class="text-sm font-medium text-blue-600 hover:text-blue-800"
-          href={withBase(`settlements/${active.slug}/`)}
-          target="_parent"
-          data-testid="map-popup-link"
-        >
-          Подробнее →
-        </a>
+        <div
+          class={`absolute left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border border-gray-200 bg-white ${tip.up ? '-bottom-1.5 border-t-0 border-l-0' : '-top-1.5 border-b-0 border-r-0'}`}
+          aria-hidden="true"
+        ></div>
       </div>
     </div>
   {/if}
