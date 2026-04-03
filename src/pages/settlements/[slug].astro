@@ -1,0 +1,153 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { loadAllData, findBaseline } from '../../lib/data';
+import { formatTariff, formatDistance, formatPercentage } from '../../lib/format';
+import type { Settlement } from '../../lib/schema';
+import InfrastructureTable from '../../components/InfrastructureTable.svelte';
+import ServiceTable from '../../components/ServiceTable.svelte';
+import SourcesList from '../../components/SourcesList.svelte';
+
+// Generate static paths for all settlements
+export async function getStaticPaths() {
+  const { settlements, comparisons } = await loadAllData();
+  const shelkovo = findBaseline(settlements);
+  
+  return settlements.map((settlement) => ({
+    params: { slug: settlement.slug },
+    props: { 
+      settlement,
+      comparison: comparisons.get(settlement.slug),
+      shelkovo: shelkovo || null
+    },
+  }));
+}
+
+interface Props {
+  settlement: Settlement;
+  comparison: {
+    tariffDelta: number;
+    tariffDeltaPercent: number;
+    isCheaper: boolean;
+    infrastructureDelta: Record<string, number>;
+    servicesDelta: Record<string, number>;
+    transparencyDelta: Record<string, number>;
+  } | undefined;
+  shelkovo: Settlement | null;
+}
+
+const { settlement, comparison, shelkovo } = Astro.props;
+
+// Build page title
+const pageTitle = `${settlement.name} — Тарифы и сравнение`;
+---
+
+<BaseLayout title={pageTitle}>
+  <main class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Header -->
+    <header class="mb-8">
+      <div class="flex items-center gap-3 mb-4">
+        <a href="/compare/" class="text-blue-600 hover:text-blue-800 text-sm">
+          ← Назад к списку
+        </a>
+      </div>
+      
+      <div class="flex items-start justify-between">
+        <div>
+          <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+            {settlement.name}
+          </h1>
+          <p class="text-gray-600">
+            {settlement.location.district} район • {settlement.location.area}
+          </p>
+        </div>
+        
+        {settlement.is_baseline && (
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+            Базовый посёлок
+          </span>
+        )}
+      </div>
+    </header>
+
+    <!-- Main Info Card -->
+    <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+      <h2 class="text-xl font-semibold text-gray-900 mb-6">Основная информация</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Tariff -->
+        <div>
+          <h3 class="text-sm font-medium text-gray-500 mb-2">Тариф на обслуживание</h3>
+          <div class="text-3xl font-bold text-gray-900">
+            {formatTariff(settlement.tariff.normalized_per_sotka_month)}
+          </div>
+          {settlement.tariff.note && (
+            <p class="text-sm text-gray-500 mt-1">{settlement.tariff.note}</p>
+          )}
+        </div>
+        
+        <!-- Comparison -->
+        {!settlement.is_baseline && comparison && (
+          <div>
+            <h3 class="text-sm font-medium text-gray-500 mb-2">Сравнение с Шелково</h3>
+            <div class={`text-2xl font-bold ${comparison.isCheaper ? 'text-green-600' : 'text-red-600'}`}>
+              {comparison.isCheaper ? '−' : '+'}{Math.abs(comparison.tariffDelta)} ₽
+            </div>
+            <p class="text-sm text-gray-600 mt-1">
+              {comparison.isCheaper ? 'Дешевле' : 'Дороже'} Шелково на {formatPercentage(comparison.tariffDeltaPercent)}
+            </p>
+          </div>
+        )}
+        
+        <!-- Location -->
+        <div>
+          <h3 class="text-sm font-medium text-gray-500 mb-2">Расположение</h3>
+          <p class="text-gray-900">{settlement.location.address_text}</p>
+          {settlement.distance_from_shelkovo_km > 0 && (
+            <p class="text-sm text-gray-500 mt-1">
+              {formatDistance(settlement.distance_from_shelkovo_km)} от Шелково
+            </p>
+          )}
+        </div>
+        
+        <!-- Status -->
+        <div>
+          <h3 class="text-sm font-medium text-gray-500 mb-2">Статус посёлка</h3>
+          <p class="text-gray-900 capitalize">
+            {settlement.settlement_status === 'under_construction' && 'Строится'}
+            {settlement.settlement_status === 'partially_complete' && 'Частично построен'}
+            {settlement.settlement_status === 'mostly_complete' && 'В основном построен'}
+            {settlement.settlement_status === 'complete' && 'Построен'}
+            {settlement.settlement_status === 'unknown' && 'Неизвестно'}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Infrastructure -->
+    <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8" data-testid="infrastructure-section">
+      <h2 class="text-xl font-semibold text-gray-900 mb-6">Инфраструктура</h2>
+      <InfrastructureTable 
+        infra={settlement.infrastructure} 
+        shelkovoInfra={shelkovo?.infrastructure || null}
+      />
+    </section>
+
+    <!-- Service Model -->
+    <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8" data-testid="services-section">
+      <h2 class="text-xl font-semibold text-gray-900 mb-6">Модель обслуживания</h2>
+      <ServiceTable 
+        services={settlement.service_model} 
+        shelkovoServices={shelkovo?.service_model || null}
+      />
+    </section>
+
+    <!-- Sources -->
+    {settlement.sources.length > 0 && (
+      <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8" data-testid="sources-section">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Источники</h2>
+        <SourcesList sources={settlement.sources} />
+      </section>
+    )}
+  </main>
+</BaseLayout>

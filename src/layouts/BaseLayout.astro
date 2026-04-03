@@ -1,0 +1,42 @@
+---
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const { 
+	title = 'Шелково Сравнение — Сравнение тарифов на обслуживание коттеджных поселков',
+	description = 'Сравнение тарифов на обслуживание коттеджных поселков в Истринском районе. Прозрачные данные о стоимости услуг управляющих компаний.'
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content={description} />
+		<meta name="generator" content={Astro.generator} />
+		
+		<!-- Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=PT+Sans+Caption:wght@400;700&family=Fira+Sans:wght@400;450;500;600&display=swap" rel="stylesheet">
+		
+		<!-- Favicon -->
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		
+		<!-- Open Graph -->
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="website" />
+		<meta property="og:locale" content="ru_RU" />
+		
+		<title>{title}</title>
+	</head>
+	<body class="min-h-screen bg-gray-50 text-gray-900">
+		<slot />
+	</body>
+</html>

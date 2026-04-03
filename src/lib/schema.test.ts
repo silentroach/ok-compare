@@ -1,0 +1,391 @@
+import { describe, it, expect } from 'vitest';
+import {
+  SettlementSchema,
+  LocationSchema,
+  InfrastructureSchema,
+  SourceSchema,
+  AvailabilityStatusEnum,
+  TariffUnitEnum,
+  TariffPeriodEnum,
+  SettlementStatusEnum,
+  SourceTypeEnum
+} from '../lib/schema';
+
+describe('Schema Validation', () => {
+  describe('Valid Settlement Parses', () => {
+    it('should parse a complete valid settlement', () => {
+      const validSettlement = {
+        name: 'Коттеджный поселок Тестовый',
+        short_name: 'Тестовый',
+        slug: 'testovyy',
+        website: 'https://test.example.com',
+        management_company: 'УК Тест',
+        is_baseline: false,
+        location: {
+          address_text: 'Московская область, Тестовый район',
+          lat: 55.7558,
+          lng: 37.6173,
+          district: 'Тестовый район',
+          area: 'Тестовый округ'
+        },
+        distance_from_shelkovo_km: 10,
+        tariff: {
+          value: 3000,
+          unit: 'rub_per_sotka',
+          period: 'month',
+          normalized_per_sotka_month: 3000,
+          note: 'Тестовая заметка'
+        },
+        settlement_status: 'complete',
+        infrastructure: {
+          roads: 'yes',
+          sidewalks: 'yes',
+          lighting: 'yes',
+          gas: 'yes',
+          water: 'yes',
+          sewage: 'yes',
+          drainage: 'yes',
+          checkpoints: 'yes',
+          security: 'yes',
+          fencing: 'yes',
+          video_surveillance: 'yes',
+          playgrounds: 'yes',
+          sports: 'yes',
+          public_spaces: 'yes',
+          beach_or_water_access: 'no',
+          admin_building: 'yes',
+          retail_or_services: 'yes'
+        },
+        service_model: {
+          garbage_collection: 'yes',
+          snow_removal: 'yes',
+          road_cleaning: 'yes',
+          landscaping: 'yes',
+          emergency_service: 'yes',
+          dispatcher: 'yes'
+        },
+        promises_vs_fact: {
+          promised: ['Обещание 1'],
+          actual: ['Факт 1'],
+          notes: 'Заметки'
+        },
+        transparency: {
+          has_public_tariff: true,
+          has_website: true,
+          has_phone: true,
+          has_management_info: true,
+          notes: ''
+        },
+        sources: [{
+          title: 'Тестовый источник',
+          url: 'https://example.com/source',
+          type: 'official',
+          date_checked: '2026-04-03',
+          comment: ''
+        }],
+        comparison_notes: ['Тестовая заметка']
+      };
+
+      const result = SettlementSchema.safeParse(validSettlement);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.name).toBe('Коттеджный поселок Тестовый');
+        expect(result.data.slug).toBe('testovyy');
+        expect(result.data.is_baseline).toBe(false);
+      }
+    });
+  });
+
+  describe('Invalid Tariff Unit Fails', () => {
+    it('should fail with invalid unit and include valid enum values', () => {
+      const invalidSettlement = {
+        name: 'Тест',
+        short_name: 'Тест',
+        slug: 'test',
+        website: 'https://test.com',
+        management_company: 'УК Тест',
+        location: {
+          address_text: 'Адрес',
+          lat: 55.7558,
+          lng: 37.6173,
+          district: 'Район',
+          area: 'Округ'
+        },
+        distance_from_shelkovo_km: 5,
+        tariff: {
+          value: 3000,
+          unit: 'per_day', // Invalid unit
+          period: 'month',
+          normalized_per_sotka_month: 3000,
+          note: ''
+        },
+        sources: [{
+          title: 'Источник',
+          url: 'https://example.com',
+          type: 'official',
+          date_checked: '2026-04-03',
+          comment: ''
+        }]
+      };
+
+      const result = SettlementSchema.safeParse(invalidSettlement);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        const error = result.error.errors[0];
+        expect(error.path).toContain('tariff');
+        expect(error.path).toContain('unit');
+        expect(error.message).toContain('rub_per_sotka');
+        expect(error.message).toContain('rub_per_lot');
+        expect(error.message).toContain('rub_fixed');
+      }
+    });
+  });
+
+  describe('Missing Required Field Fails', () => {
+    it('should fail when name field is missing', () => {
+      const incompleteSettlement = {
+        short_name: 'Тест',
+        slug: 'test',
+        website: 'https://test.com',
+        management_company: 'УК Тест',
+        location: {
+          address_text: 'Адрес',
+          lat: 55.7558,
+          lng: 37.6173,
+          district: 'Район',
+          area: 'Округ'
+        },
+        distance_from_shelkovo_km: 5,
+        tariff: {
+          value: 3000,
+          unit: 'rub_per_sotka',
+          period: 'month',
+          normalized_per_sotka_month: 3000,
+          note: ''
+        },
+        sources: [{
+          title: 'Источник',
+          url: 'https://example.com',
+          type: 'official',
+          date_checked: '2026-04-03',
+          comment: ''
+        }]
+      };
+
+      const result = SettlementSchema.safeParse(incompleteSettlement);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        const nameError = result.error.errors.find(e => e.path.includes('name'));
+        expect(nameError).toBeDefined();
+        expect(nameError?.message.toLowerCase()).toContain('required');
+      }
+    });
+  });
+
+  describe('Invalid Coordinates Fails', () => {
+    it('should fail when latitude is out of range', () => {
+      const invalidLocation = {
+        address_text: 'Адрес',
+        lat: 999, // Invalid latitude
+        lng: 37.6173,
+        district: 'Район',
+        area: 'Округ'
+      };
+
+      const result = LocationSchema.safeParse(invalidLocation);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        const latError = result.error.errors.find(e => e.path.includes('lat'));
+        expect(latError).toBeDefined();
+      }
+    });
+
+    it('should fail when longitude is out of range', () => {
+      const invalidLocation = {
+        address_text: 'Адрес',
+        lat: 55.7558,
+        lng: 999, // Invalid longitude
+        district: 'Район',
+        area: 'Округ'
+      };
+
+      const result = LocationSchema.safeParse(invalidLocation);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        const lngError = result.error.errors.find(e => e.path.includes('lng'));
+        expect(lngError).toBeDefined();
+      }
+    });
+  });
+
+  describe('Partial Infrastructure Valid', () => {
+    it('should parse with defaults for missing infrastructure fields', () => {
+      const partialInfrastructure = {
+        roads: 'yes',
+        sidewalks: 'yes',
+        lighting: 'yes',
+        gas: 'yes',
+        water: 'yes'
+        // Missing 11 other fields
+      };
+
+      const result = InfrastructureSchema.safeParse(partialInfrastructure);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.roads).toBe('yes');
+        expect(result.data.sidewalks).toBe('yes');
+        expect(result.data.drainage).toBe('unknown'); // Default value
+        expect(result.data.security).toBe('unknown'); // Default value
+      }
+    });
+
+    it('should parse empty infrastructure object with all defaults', () => {
+      const result = InfrastructureSchema.safeParse({});
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.roads).toBe('unknown');
+        expect(result.data.water).toBe('unknown');
+        expect(result.data.playgrounds).toBe('unknown');
+      }
+    });
+  });
+
+  describe('Enum Validation', () => {
+    it('should validate AvailabilityStatus enum', () => {
+      expect(AvailabilityStatusEnum.safeParse('yes').success).toBe(true);
+      expect(AvailabilityStatusEnum.safeParse('no').success).toBe(true);
+      expect(AvailabilityStatusEnum.safeParse('partial').success).toBe(true);
+      expect(AvailabilityStatusEnum.safeParse('unknown').success).toBe(true);
+      expect(AvailabilityStatusEnum.safeParse('invalid').success).toBe(false);
+    });
+
+    it('should validate TariffUnit enum', () => {
+      expect(TariffUnitEnum.safeParse('rub_per_sotka').success).toBe(true);
+      expect(TariffUnitEnum.safeParse('rub_per_lot').success).toBe(true);
+      expect(TariffUnitEnum.safeParse('rub_fixed').success).toBe(true);
+      expect(TariffUnitEnum.safeParse('per_day').success).toBe(false);
+    });
+
+    it('should validate TariffPeriod enum', () => {
+      expect(TariffPeriodEnum.safeParse('month').success).toBe(true);
+      expect(TariffPeriodEnum.safeParse('quarter').success).toBe(true);
+      expect(TariffPeriodEnum.safeParse('year').success).toBe(true);
+      expect(TariffPeriodEnum.safeParse('week').success).toBe(false);
+    });
+
+    it('should validate SettlementStatus enum', () => {
+      expect(SettlementStatusEnum.safeParse('under_construction').success).toBe(true);
+      expect(SettlementStatusEnum.safeParse('complete').success).toBe(true);
+      expect(SettlementStatusEnum.safeParse('unknown').success).toBe(true);
+      expect(SettlementStatusEnum.safeParse('finished').success).toBe(false);
+    });
+
+    it('should validate SourceType enum', () => {
+      expect(SourceTypeEnum.safeParse('official').success).toBe(true);
+      expect(SourceTypeEnum.safeParse('community').success).toBe(true);
+      expect(SourceTypeEnum.safeParse('media').success).toBe(true);
+      expect(SourceTypeEnum.safeParse('personal').success).toBe(true);
+      expect(SourceTypeEnum.safeParse('government').success).toBe(false);
+    });
+  });
+
+  describe('URL Validation', () => {
+    it('should validate correct URLs', () => {
+      const validSource = {
+        title: 'Test',
+        url: 'https://example.com',
+        type: 'official',
+        date_checked: '2026-04-03',
+        comment: ''
+      };
+
+      const result = SourceSchema.safeParse(validSource);
+      expect(result.success).toBe(true);
+    });
+
+    it('should fail on invalid URLs', () => {
+      const invalidSource = {
+        title: 'Test',
+        url: 'not-a-url',
+        type: 'official',
+        date_checked: '2026-04-03',
+        comment: ''
+      };
+
+      const result = SourceSchema.safeParse(invalidSource);
+      expect(result.success).toBe(false);
+    });
+  });
+
+  describe('Slug Validation', () => {
+    it('should validate valid slugs', () => {
+      const settlementWithValidSlug = {
+        name: 'Тест',
+        short_name: 'Тест',
+        slug: 'valid-slug-123',
+        website: 'https://test.com',
+        management_company: 'УК Тест',
+        location: {
+          address_text: 'Адрес',
+          lat: 55.7558,
+          lng: 37.6173,
+          district: 'Район',
+          area: 'Округ'
+        },
+        distance_from_shelkovo_km: 5,
+        tariff: {
+          value: 3000,
+          unit: 'rub_per_sotka',
+          period: 'month',
+          normalized_per_sotka_month: 3000,
+          note: ''
+        },
+        sources: [{
+          title: 'Источник',
+          url: 'https://example.com',
+          type: 'official',
+          date_checked: '2026-04-03',
+          comment: ''
+        }]
+      };
+
+      const result = SettlementSchema.safeParse(settlementWithValidSlug);
+      expect(result.success).toBe(true);
+    });
+
+    it('should fail on invalid slug format', () => {
+      const settlementWithInvalidSlug = {
+        name: 'Тест',
+        short_name: 'Тест',
+        slug: 'Invalid Slug!', // Invalid characters
+        website: 'https://test.com',
+        management_company: 'УК Тест',
+        location: {
+          address_text: 'Адрес',
+          lat: 55.7558,
+          lng: 37.6173,
+          district: 'Район',
+          area: 'Округ'
+        },
+        distance_from_shelkovo_km: 5,
+        tariff: {
+          value: 3000,
+          unit: 'rub_per_sotka',
+          period: 'month',
+          normalized_per_sotka_month: 3000,
+          note: ''
+        },
+        sources: [{
+          title: 'Источник',
+          url: 'https://example.com',
+          type: 'official',
+          date_checked: '2026-04-03',
+          comment: ''
+        }]
+      };
+
+      const result = SettlementSchema.safeParse(settlementWithInvalidSlug);
+      expect(result.success).toBe(false);
+    });
+  });
+});

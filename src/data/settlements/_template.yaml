@@ -1,0 +1,75 @@
+# Template for settlement data files
+# Copy this file and fill in all required fields
+
+name: "Название поселка"
+short_name: "Поселок"
+slug: "settlement-slug"
+website: "https://example.com"
+management_company: "УК Название"
+is_baseline: false
+
+location:
+  address_text: "Московская область, округ, район"
+  lat: 55.7558
+  lng: 37.6173
+  district: "Округ"
+  area: "Район"
+
+distance_from_shelkovo_km: 0
+
+tariff:
+  value: 0
+  unit: "rub_per_sotka"  # Options: rub_per_sotka, rub_per_lot, rub_fixed
+  period: "month"        # Options: month, quarter, year
+  normalized_per_sotka_month: 0
+  note: ""
+
+settlement_status: "complete"  # Options: under_construction, partially_complete, mostly_complete, complete, unknown
+
+infrastructure:
+  roads: "unknown"           # Options: yes, no, partial, unknown
+  sidewalks: "unknown"
+  lighting: "unknown"
+  gas: "unknown"
+  water: "unknown"
+  sewage: "unknown"
+  drainage: "unknown"
+  checkpoints: "unknown"
+  security: "unknown"
+  fencing: "unknown"
+  video_surveillance: "unknown"
+  playgrounds: "unknown"
+  sports: "unknown"
+  public_spaces: "unknown"
+  beach_or_water_access: "unknown"
+  admin_building: "unknown"
+  retail_or_services: "unknown"
+
+service_model:
+  garbage_collection: "unknown"
+  snow_removal: "unknown"
+  road_cleaning: "unknown"
+  landscaping: "unknown"
+  emergency_service: "unknown"
+  dispatcher: "unknown"
+
+promises_vs_fact:
+  promised: []
+  actual: []
+  notes: ""
+
+transparency:
+  has_public_tariff: false
+  has_website: false
+  has_phone: false
+  has_management_info: false
+  notes: ""
+
+sources:
+  - title: "Источник данных"
+    url: "https://example.com/source"
+    type: "official"  # Options: official, community, media, personal
+    date_checked: "2026-01-01"
+    comment: ""
+
+comparison_notes: []

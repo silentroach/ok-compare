@@ -1,0 +1,77 @@
+name: "Коттеджный поселок Шелково"
+short_name: "Шелково"
+slug: "shelkovo"
+website: "https://shelkovo.ru"
+management_company: "УК Шелково"
+is_baseline: true
+
+location:
+  address_text: "Московская область, Мытищинский район, д. Шелково"
+  lat: 56.0500
+  lng: 37.6000
+  district: "Мытищинский район"
+  area: "Мытищинский округ"
+
+distance_from_shelkovo_km: 0
+
+tariff:
+  value: 4500
+  unit: "rub_per_sotka"
+  period: "month"
+  normalized_per_sotka_month: 4500
+  note: "Тариф за сотку в месяц"
+
+settlement_status: "complete"
+
+infrastructure:
+  roads: "yes"
+  sidewalks: "yes"
+  lighting: "yes"
+  gas: "yes"
+  water: "yes"
+  sewage: "yes"
+  drainage: "partial"
+  checkpoints: "yes"
+  security: "yes"
+  fencing: "yes"
+  video_surveillance: "yes"
+  playgrounds: "yes"
+  sports: "yes"
+  public_spaces: "yes"
+  beach_or_water_access: "no"
+  admin_building: "yes"
+  retail_or_services: "partial"
+
+service_model:
+  garbage_collection: "yes"
+  snow_removal: "yes"
+  road_cleaning: "yes"
+  landscaping: "yes"
+  emergency_service: "yes"
+  dispatcher: "yes"
+
+promises_vs_fact:
+  promised: ["Круглосуточная охрана", "Видеонаблюдение", "Детские площадки"]
+  actual: ["Охрана до 22:00", "Видеонаблюдение частичное", "Площадки есть"]
+  notes: "Часть обещаний не выполнена полностью"
+
+transparency:
+  has_public_tariff: true
+  has_website: true
+  has_phone: true
+  has_management_info: true
+  notes: ""
+
+sources:
+  - title: "Официальный сайт Шелково"
+    url: "https://shelkovo.ru"
+    type: "official"
+    date_checked: "2026-04-03"
+    comment: "Текущий тариф"
+  - title: "Договор управления"
+    url: "https://shelkovo.ru/documents"
+    type: "official"
+    date_checked: "2026-04-03"
+    comment: "Условия обслуживания"
+
+comparison_notes: ["Базовый поселок для сравнения"]

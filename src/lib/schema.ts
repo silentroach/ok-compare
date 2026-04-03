@@ -1,0 +1,150 @@
+import { z } from 'zod';
+
+// Enums
+export const AvailabilityStatusEnum = z.enum(['yes', 'no', 'partial', 'unknown']);
+export type AvailabilityStatus = z.infer<typeof AvailabilityStatusEnum>;
+
+export const SettlementStatusEnum = z.enum([
+  'under_construction',
+  'partially_complete',
+  'mostly_complete',
+  'complete',
+  'unknown'
+]);
+export type SettlementStatus = z.infer<typeof SettlementStatusEnum>;
+
+export const TariffUnitEnum = z.enum(['rub_per_sotka', 'rub_per_lot', 'rub_fixed']);
+export type TariffUnit = z.infer<typeof TariffUnitEnum>;
+
+export const TariffPeriodEnum = z.enum(['month', 'quarter', 'year']);
+export type TariffPeriod = z.infer<typeof TariffPeriodEnum>;
+
+export const SourceTypeEnum = z.enum(['official', 'community', 'media', 'personal']);
+export type SourceType = z.infer<typeof SourceTypeEnum>;
+
+// Location schema with coordinate validation
+export const LocationSchema = z.object({
+  address_text: z.string().min(1),
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+  district: z.string().min(1),
+  area: z.string().min(1)
+});
+export type Location = z.infer<typeof LocationSchema>;
+
+// Tariff schema
+export const TariffSchema = z.object({
+  value: z.number().nonnegative(),
+  unit: TariffUnitEnum,
+  period: TariffPeriodEnum,
+  normalized_per_sotka_month: z.number().nonnegative(),
+  note: z.string().default('')
+});
+export type Tariff = z.infer<typeof TariffSchema>;
+
+// Infrastructure schema - all fields optional with defaults
+export const InfrastructureSchema = z.object({
+  roads: AvailabilityStatusEnum.default('unknown'),
+  sidewalks: AvailabilityStatusEnum.default('unknown'),
+  lighting: AvailabilityStatusEnum.default('unknown'),
+  gas: AvailabilityStatusEnum.default('unknown'),
+  water: AvailabilityStatusEnum.default('unknown'),
+  sewage: AvailabilityStatusEnum.default('unknown'),
+  drainage: AvailabilityStatusEnum.default('unknown'),
+  checkpoints: AvailabilityStatusEnum.default('unknown'),
+  security: AvailabilityStatusEnum.default('unknown'),
+  fencing: AvailabilityStatusEnum.default('unknown'),
+  video_surveillance: AvailabilityStatusEnum.default('unknown'),
+  playgrounds: AvailabilityStatusEnum.default('unknown'),
+  sports: AvailabilityStatusEnum.default('unknown'),
+  public_spaces: AvailabilityStatusEnum.default('unknown'),
+  beach_or_water_access: AvailabilityStatusEnum.default('unknown'),
+  admin_building: AvailabilityStatusEnum.default('unknown'),
+  retail_or_services: AvailabilityStatusEnum.default('unknown')
+});
+export type Infrastructure = z.infer<typeof InfrastructureSchema>;
+
+// Service model schema
+export const ServiceModelSchema = z.object({
+  garbage_collection: AvailabilityStatusEnum.default('unknown'),
+  snow_removal: AvailabilityStatusEnum.default('unknown'),
+  road_cleaning: AvailabilityStatusEnum.default('unknown'),
+  landscaping: AvailabilityStatusEnum.default('unknown'),
+  emergency_service: AvailabilityStatusEnum.default('unknown'),
+  dispatcher: AvailabilityStatusEnum.default('unknown')
+});
+export type ServiceModel = z.infer<typeof ServiceModelSchema>;
+
+// Promises vs Fact schema
+export const PromisesVsFactSchema = z.object({
+  promised: z.array(z.string()).default([]),
+  actual: z.array(z.string()).default([]),
+  notes: z.string().default('')
+});
+export type PromisesVsFact = z.infer<typeof PromisesVsFactSchema>;
+
+// Transparency schema
+export const TransparencySchema = z.object({
+  has_public_tariff: z.boolean().default(false),
+  has_website: z.boolean().default(false),
+  has_phone: z.boolean().default(false),
+  has_management_info: z.boolean().default(false),
+  notes: z.string().default('')
+});
+export type Transparency = z.infer<typeof TransparencySchema>;
+
+// Source schema
+export const SourceSchema = z.object({
+  title: z.string().min(1),
+  url: z.string().url(),
+  type: SourceTypeEnum,
+  date_checked: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  comment: z.string().default('')
+});
+export type Source = z.infer<typeof SourceSchema>;
+
+// Main Settlement schema
+export const SettlementSchema = z.object({
+  name: z.string().min(1),
+  short_name: z.string().min(1),
+  slug: z.string().min(1).regex(/^[a-z0-9-]+$/),
+  website: z.string().url(),
+  management_company: z.string().min(1),
+  is_baseline: z.boolean().default(false),
+  location: LocationSchema,
+  distance_from_shelkovo_km: z.number().nonnegative(),
+  tariff: TariffSchema,
+  settlement_status: SettlementStatusEnum.default('unknown'),
+  infrastructure: InfrastructureSchema.default({}),
+  service_model: ServiceModelSchema.default({}),
+  promises_vs_fact: PromisesVsFactSchema.default({}),
+  transparency: TransparencySchema.default({}),
+  sources: z.array(SourceSchema).min(1),
+  comparison_notes: z.array(z.string()).default([])
+});
+export type Settlement = z.infer<typeof SettlementSchema>;
+
+// Stats type (computed, not from YAML)
+export interface Stats {
+  shelkovoTariff: number;
+  medianTariff: number;
+  meanTariff: number;
+  minTariff: number;
+  maxTariff: number;
+  shelkovoRank: number;
+  totalSettlements: number;
+  cheaperCount: number;
+  moreExpensiveCount: number;
+  shelkovoVsMedianPercent: number;
+  shelkovoVsMeanPercent: number;
+}
+
+// Comparison result type (computed)
+export interface ComparisonResult {
+  tariffDelta: number;
+  tariffDeltaPercent: number;
+  isCheaper: boolean;
+  infrastructureDelta: Record<string, number>;
+  servicesDelta: Record<string, number>;
+  transparencyDelta: Record<string, number>;
+}

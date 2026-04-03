@@ -1,0 +1,33 @@
+{
+  "name": "shelkovo-compare",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@astrojs/svelte": "^7.0.0",
+    "astro": "^5.5.0",
+    "luxon": "^3.6.1",
+    "svelte": "^5.25.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@testing-library/svelte": "^5.2.0",
+    "@types/luxon": "^3.6.2",
+    "happy-dom": "^20.8.9",
+    "jsdom": "^26.0.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.0.0"
+  }
+}

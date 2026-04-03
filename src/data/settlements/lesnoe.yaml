@@ -1,0 +1,72 @@
+name: "Коттеджный поселок Лесное"
+short_name: "Лесное"
+slug: "lesnoe"
+website: "https://lesnoe-park.ru"
+management_company: "УК Лесное"
+is_baseline: false
+
+location:
+  address_text: "Московская область, Мытищинский район, д. Лесное"
+  lat: 56.0800
+  lng: 37.5500
+  district: "Мытищинский район"
+  area: "Мытищинский округ"
+
+distance_from_shelkovo_km: 5
+
+tariff:
+  value: 2800
+  unit: "rub_per_sotka"
+  period: "month"
+  normalized_per_sotka_month: 2800
+  note: "Тариф за сотку в месяц"
+
+settlement_status: "complete"
+
+infrastructure:
+  roads: "yes"
+  sidewalks: "yes"
+  lighting: "yes"
+  gas: "yes"
+  water: "yes"
+  sewage: "yes"
+  drainage: "yes"
+  checkpoints: "yes"
+  security: "yes"
+  fencing: "yes"
+  video_surveillance: "yes"
+  playgrounds: "yes"
+  sports: "yes"
+  public_spaces: "yes"
+  beach_or_water_access: "no"
+  admin_building: "yes"
+  retail_or_services: "yes"
+
+service_model:
+  garbage_collection: "yes"
+  snow_removal: "yes"
+  road_cleaning: "yes"
+  landscaping: "yes"
+  emergency_service: "yes"
+  dispatcher: "yes"
+
+promises_vs_fact:
+  promised: []
+  actual: []
+  notes: ""
+
+transparency:
+  has_public_tariff: true
+  has_website: true
+  has_phone: true
+  has_management_info: true
+  notes: ""
+
+sources:
+  - title: "Сайт поселка Лесное"
+    url: "https://lesnoe-park.ru/tariffs"
+    type: "official"
+    date_checked: "2026-04-03"
+    comment: "Текущий тариф"
+
+comparison_notes: ["Дешевле Шелково на 38%", "Полностью развитая инфраструктура"]
