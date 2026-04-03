@@ -6,6 +6,15 @@ updates:
       interval: weekly
     cooldown:
       default-days: 14
+    groups:
+      pnpm-prod:
+        dependency-type: production
+        patterns:
+          - "*"
+      pnpm-dev:
+        dependency-type: development
+        patterns:
+          - "*"
 
   - package-ecosystem: github-actions
     directory: /
@@ -13,3 +22,7 @@ updates:
       interval: weekly
     cooldown:
       default-days: 14
+    groups:
+      github-actions:
+        patterns:
+          - "*"
