@@ -7,11 +7,11 @@ updates:
     cooldown:
       default-days: 14
     groups:
-      pnpm-prod:
+      production:
         dependency-type: production
         patterns:
           - "*"
-      pnpm-dev:
+      development:
         dependency-type: development
         patterns:
           - "*"
