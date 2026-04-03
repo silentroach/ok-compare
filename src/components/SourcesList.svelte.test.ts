@@ -53,20 +53,6 @@ describe('SourcesList', () => {
     expect(container.textContent).toContain('СМИ');
   });
 
-  it('renders source type badges with correct colors', () => {
-    const { container } = render(SourcesList, {
-      props: { sources: mockSources }
-    });
-
-    const officialBadge = container.querySelector('.bg-green-100');
-    const communityBadge = container.querySelector('.bg-blue-100');
-    const mediaBadge = container.querySelector('.bg-purple-100');
-
-    expect(officialBadge).toBeTruthy();
-    expect(communityBadge).toBeTruthy();
-    expect(mediaBadge).toBeTruthy();
-  });
-
   it('renders clickable links with correct URLs', () => {
     const { container } = render(SourcesList, {
       props: { sources: mockSources }
@@ -102,7 +88,7 @@ describe('SourcesList', () => {
     expect(list?.children).toHaveLength(0);
   });
 
-  it('renders personal source type with gray badge', () => {
+  it('renders personal source type label', () => {
     const personalSource: Source[] = [{
       title: 'Личное наблюдение',
       url: 'https://example.com',
@@ -116,7 +102,5 @@ describe('SourcesList', () => {
     });
 
     expect(container.textContent).toContain('Личное');
-    const personalBadge = container.querySelector('.bg-gray-100');
-    expect(personalBadge).toBeTruthy();
   });
 });

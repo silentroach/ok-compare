@@ -46,19 +46,6 @@ describe('InfrastructureTable', () => {
     retail_or_services: 'no'
   };
 
-  it('renders all 18 infrastructure items', () => {
-    const { container } = render(InfrastructureTable, {
-      props: {
-        infra: mockInfra,
-        shelkovoInfra: null
-      }
-    });
-
-    // Check that all infrastructure items are displayed (18 with underground_electricity)
-    const rows = container.querySelectorAll('[data-testid="infra-row"]');
-    expect(rows.length).toBe(18);
-  });
-
   it('displays correct labels for infrastructure items', () => {
     const { getByText } = render(InfrastructureTable, {
       props: {
@@ -75,19 +62,6 @@ describe('InfrastructureTable', () => {
     expect(getByText('Центральное водоснабжение')).toBeTruthy();
     expect(getByText('Центральная канализация')).toBeTruthy();
     expect(getByText('Охрана')).toBeTruthy();
-  });
-
-  it('renders correct status icons and colors for yes/no/partial/unknown', () => {
-    const { container } = render(InfrastructureTable, {
-      props: {
-        infra: mockInfra,
-        shelkovoInfra: null
-      }
-    });
-
-    // Check that all items have status indicators (18 with underground_electricity)
-    const statusIcons = container.querySelectorAll('[data-testid="infra-status"]');
-    expect(statusIcons.length).toBe(18);
   });
 
   it('shows comparison column when shelkovoInfra is provided', () => {

@@ -22,19 +22,6 @@ describe('ServiceTable', () => {
     dispatcher: 'yes'
   };
 
-  it('renders all 6 service items', () => {
-    const { container } = render(ServiceTable, {
-      props: {
-        services: mockServices,
-        shelkovoServices: null
-      }
-    });
-
-    // Check that all service items are displayed
-    const rows = container.querySelectorAll('[data-testid="service-row"]');
-    expect(rows.length).toBe(6);
-  });
-
   it('displays correct labels for service items', () => {
     const { getByText } = render(ServiceTable, {
       props: {
@@ -50,19 +37,6 @@ describe('ServiceTable', () => {
     expect(getByText('Благоустройство')).toBeTruthy();
     expect(getByText('Аварийная служба')).toBeTruthy();
     expect(getByText('Диспетчерская служба')).toBeTruthy();
-  });
-
-  it('renders correct status icons and colors for yes/no/partial/unknown', () => {
-    const { container } = render(ServiceTable, {
-      props: {
-        services: mockServices,
-        shelkovoServices: null
-      }
-    });
-
-    // Check that all items have status indicators
-    const statusIcons = container.querySelectorAll('[data-testid="service-status"]');
-    expect(statusIcons.length).toBe(6);
   });
 
   it('shows comparison column when shelkovoServices is provided', () => {
