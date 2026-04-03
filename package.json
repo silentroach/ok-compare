@@ -15,8 +15,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@astrojs/svelte": "^7.0.0",
-    "astro": "^5.5.0",
+    "@astrojs/svelte": "^8.0.3",
+    "astro": "^6.0.8",
     "luxon": "^3.6.1",
     "svelte": "^5.25.0",
     "zod": "^4.3.6"
