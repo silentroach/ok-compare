@@ -29,6 +29,7 @@
             href={settlement.website}
             target="_blank"
             rel="noopener noreferrer"
+            aria-label="Открыть сайт поселка"
             class="text-gray-400 hover:text-blue-600 transition-colors"
             title="Перейти на сайт поселка"
             data-testid="website-link"
@@ -42,6 +43,7 @@
           href={`https://yandex.ru/maps/?pt=${settlement.location.lng},${settlement.location.lat}&z=15&l=map`}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Открыть поселок на Яндекс.Картах"
           class="text-gray-400 hover:text-blue-600 transition-colors"
           title="Открыть на Яндекс.Картах"
           data-testid="map-link"

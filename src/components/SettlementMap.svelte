@@ -16,13 +16,33 @@
     settlements: SettlementMapData[];
   }
 
+  interface YMapLike {
+    addChild: (child: unknown) => void;
+    destroy: () => void;
+  }
+
+  interface YMapAPI {
+    ready: Promise<void>;
+    YMap: new (root: HTMLElement, props: { location: { center: [number, number]; zoom: number } }, layers: unknown[]) => YMapLike;
+    YMapDefaultSchemeLayer: new () => unknown;
+    YMapDefaultFeaturesLayer: new () => unknown;
+    YMapMarker: new (props: { coordinates: [number, number] }, el: HTMLElement) => unknown;
+  }
+
+  declare global {
+    interface Window {
+      ymaps3?: YMapAPI;
+    }
+  }
+
   let { settlements }: Props = $props();
 
   let mapContainer: HTMLDivElement | null = $state(null);
-  let map: any = $state(null);
+  let map: YMapLike | null = $state(null);
   let isLoading = $state(true);
   let error: string | null = $state(null);
   let ymapsLoaded = $state(false);
+  let active: SettlementMapData | null = $state(null);
 
   const API_KEY = import.meta.env.PUBLIC_YANDEX_MAPS_API_KEY || '';
 
@@ -38,36 +58,17 @@
     return `rgb(${red}, ${green}, 0)`;
   }
 
-  function createPopupContent(settlement: SettlementMapData): string {
-    const tariffFormatted = formatTariff(settlement.normalizedTariff);
-    return `
-      <div style="font-family: system-ui, sans-serif; padding: 8px; min-width: 200px;">
-        <div style="font-weight: 600; font-size: 16px; margin-bottom: 8px; color: #111827;">
-          ${settlement.name}
-        </div>
-        <div style="color: #374151; margin-bottom: 12px;">
-          Тариф: <strong>${tariffFormatted}</strong>
-        </div>
-        <a href="${withBase(`settlements/${settlement.slug}/`)}"
-           style="color: #2563EB; text-decoration: none; font-size: 14px;"
-           target="_parent">
-          Подробнее →
-        </a>
-      </div>
-    `;
-  }
-
   async function loadYandexMaps(): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 50));
+
+    if (window.ymaps3) {
+      ymapsLoaded = true;
+      return;
+    }
 
     if (!API_KEY) {
       error = 'API ключ не настроен';
       isLoading = false;
-      return;
-    }
-
-    if (typeof (window as any).ymaps3 !== 'undefined') {
-      ymapsLoaded = true;
       return;
     }
 
@@ -95,7 +96,7 @@
     if (!mapContainer || !ymapsLoaded) return;
 
     try {
-      const ymaps3 = (window as any).ymaps3;
+      const ymaps3 = window.ymaps3;
       
       if (!ymaps3) {
         error = 'Yandex Maps API не доступен';
@@ -135,6 +136,11 @@
           box-shadow: 0 2px 4px rgba(0,0,0,0.3);
           cursor: pointer;
         `;
+        el.setAttribute('title', settlement.name);
+        el.setAttribute('aria-label', `Маркер: ${settlement.name}`);
+        el.addEventListener('click', () => {
+          active = settlement;
+        });
         
         const marker = new YMapMarker(
           {
@@ -204,6 +210,35 @@
         <div class="text-4xl mb-3">🗺️</div>
         <p class="text-gray-700 font-medium mb-2">{error}</p>
         <p class="text-gray-500 text-sm">Попробуйте обновить страницу</p>
+      </div>
+    </div>
+  {/if}
+
+  {#if active}
+    <div class="absolute left-4 right-4 bottom-4 z-10" data-testid="map-popup">
+      <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-lg">
+        <div class="mb-1 flex items-start justify-between gap-3">
+          <p class="text-base font-semibold text-gray-900">{active.name}</p>
+          <button
+            type="button"
+            class="text-sm text-gray-500 hover:text-gray-700"
+            aria-label="Закрыть попап"
+            onclick={() => {
+              active = null;
+            }}
+          >
+            Закрыть
+          </button>
+        </div>
+        <p class="mb-3 text-sm text-gray-600">Тариф: <strong>{formatTariff(active.normalizedTariff)}</strong></p>
+        <a
+          class="text-sm font-medium text-blue-600 hover:text-blue-800"
+          href={withBase(`settlements/${active.slug}/`)}
+          target="_parent"
+          data-testid="map-popup-link"
+        >
+          Подробнее →
+        </a>
       </div>
     </div>
   {/if}

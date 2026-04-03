@@ -135,7 +135,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each infraOrder as key}
+      {#each infraOrder as key (key)}
         {@const value = infra[key as keyof Infrastructure]}
         {@const shelkovoValue = shelkovoInfra?.[key as keyof Infrastructure]}
         {@const isDifferent = hasDifference(key)}

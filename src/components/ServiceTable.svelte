@@ -72,7 +72,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each serviceOrder as key}
+      {#each serviceOrder as key (key)}
         {@const value = services[key as keyof ServiceModel]}
         {@const shelkovoValue = shelkovoServices?.[key as keyof ServiceModel]}
         {@const isDifferent = hasDifference(key)}

@@ -2,30 +2,23 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, waitFor } from '@testing-library/svelte';
 import SettlementMap from './SettlementMap.svelte';
 
-// Mock Yandex Maps API
-const mockPlacemark = {
-  geometry: { setCoordinates: vi.fn() },
-  properties: { set: vi.fn() },
-  events: { add: vi.fn() },
-};
-
 const mockMap = {
-  setCenter: vi.fn(),
-  setZoom: vi.fn(),
-  geoObjects: {
-    add: vi.fn(),
-    removeAll: vi.fn(),
-  },
+  addChild: vi.fn(),
   destroy: vi.fn(),
 };
 
+const markers: HTMLElement[] = [];
+
 const mockYandexMaps = {
-  ready: vi.fn((callback) => callback()),
+  ready: Promise.resolve(),
   Map: vi.fn(() => mockMap),
-  Placemark: vi.fn(() => mockPlacemark),
-  modules: {
-    require: vi.fn(() => Promise.resolve()),
-  },
+  YMap: vi.fn(() => mockMap),
+  YMapDefaultSchemeLayer: vi.fn(() => ({})),
+  YMapDefaultFeaturesLayer: vi.fn(() => ({})),
+  YMapMarker: vi.fn((_: unknown, el: HTMLElement) => {
+    markers.push(el);
+    return { el };
+  })
 };
 
 // Mock settlements data
@@ -59,14 +52,18 @@ const mockSettlements = [
 describe('SettlementMap', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
-    // Setup global ymaps
-    (global as any).ymaps = mockYandexMaps;
+    markers.length = 0;
+
+    Object.defineProperty(window, 'ymaps3', {
+      value: mockYandexMaps,
+      writable: true,
+      configurable: true
+    });
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
-    delete (global as any).ymaps;
+    delete (window as { ymaps3?: unknown }).ymaps3;
   });
 
   it('renders map container', () => {
@@ -86,17 +83,14 @@ describe('SettlementMap', () => {
     expect(container.textContent).toContain('Загрузка карты');
   });
 
-  it('creates markers for all settlements when ymaps is available', async () => {
-    const { component } = render(SettlementMap, {
+  it('creates markers for all settlements when ymaps3 is available', async () => {
+    render(SettlementMap, {
       props: { settlements: mockSettlements },
     });
 
-    // Wait for component to process
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    // Since ymaps is mocked globally, it should try to create markers
-    // The actual marker creation is tested via component behavior
-    expect(component).toBeTruthy();
+    await waitFor(() => {
+      expect(markers.length).toBe(mockSettlements.length);
+    });
   });
 
   it('handles empty settlements array gracefully', () => {
@@ -108,7 +102,29 @@ describe('SettlementMap', () => {
     expect(container.querySelector('[data-testid="settlement-map"]')).toBeTruthy();
   });
 
+  it('opens popup on marker click with details link', async () => {
+    const { container } = render(SettlementMap, {
+      props: { settlements: mockSettlements },
+    });
+
+    await waitFor(() => {
+      expect(markers.length).toBe(mockSettlements.length);
+    });
+
+    markers[1]?.click();
+
+    await waitFor(() => {
+      expect(container.querySelector('[data-testid="map-popup"]')).toBeTruthy();
+      expect(container.textContent).toContain('КП Лесное');
+    });
+
+    const link = container.querySelector('[data-testid="map-popup-link"]');
+    expect(link?.getAttribute('href')).toContain('/settlements/lesnoe/');
+  });
+
   it('renders fallback message when API key is not configured', async () => {
+    delete (window as { ymaps3?: unknown }).ymaps3;
+
     const { container } = render(SettlementMap, {
       props: { settlements: mockSettlements },
     });

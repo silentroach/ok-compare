@@ -10,6 +10,8 @@ const {
 	title = 'Шелково Сравнение — Сравнение тарифов на обслуживание коттеджных поселков',
 	description = 'Сравнение тарифов на обслуживание коттеджных поселков в Истринском районе. Прозрачные данные о стоимости услуг управляющих компаний.'
 } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).toString();
 ---
 
 <!doctype html>
@@ -20,6 +22,7 @@ const {
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="description" content={description} />
 		<meta name="generator" content={Astro.generator} />
+		<link rel="canonical" href={canonical} />
 		
 		<!-- Fonts -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,6 +37,7 @@ const {
 		<meta property="og:description" content={description} />
 		<meta property="og:type" content="website" />
 		<meta property="og:locale" content="ru_RU" />
+		<meta property="og:url" content={canonical} />
 		
 		<title>{title}</title>
 	</head>

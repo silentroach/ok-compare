@@ -1,7 +1,7 @@
 <script lang="ts">
   interface Props {
     title: string;
-    subtitle: string;
+    subtitle?: string;
   }
 
   let { title, subtitle }: Props = $props();
@@ -11,7 +11,9 @@
   <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
     {title}
   </h1>
-  <p class="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
-    {subtitle}
-  </p>
+  {#if subtitle}
+    <p class="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
+      {subtitle}
+    </p>
+  {/if}
 </section>

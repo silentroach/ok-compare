@@ -4,7 +4,7 @@ import { SettlementSchema } from './lib/schema';
 
 const settlements = defineCollection({
   loader: glob({
-    pattern: '*.yaml',
+    pattern: '[!_]*.yaml',
     base: './src/data/settlements'
   }),
   schema: SettlementSchema

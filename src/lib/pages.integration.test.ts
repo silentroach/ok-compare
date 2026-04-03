@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { compareSettlements } from './comparisons';
 import { computeStats } from './stats';
+import { formatPercentage } from './format';
 import type { Settlement } from './schema';
 
 // Mock settlements data for integration testing
@@ -199,6 +200,14 @@ describe('Page Generation Integration', () => {
       // Delta is positive when baseline is more expensive
       expect(comparison.tariffDelta).toBe(25);
       expect(comparison.isCheaper).toBe(true);
+    });
+
+    it('should keep tariffDeltaPercent in whole percents for detail page', () => {
+      const lesnoe = mockSettlements.find(s => s.slug === 'lesnoe')!;
+      const comparison = compareSettlements(baseline, lesnoe);
+
+      expect(comparison.tariffDeltaPercent).toBe(26);
+      expect(formatPercentage(comparison.tariffDeltaPercent / 100)).toBe('+26%');
     });
 
     it('should generate comparisons for all settlements', () => {
