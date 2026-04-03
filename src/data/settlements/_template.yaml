@@ -27,23 +27,28 @@ tariff:
 settlement_status: "complete"  # Options: under_construction, partially_complete, mostly_complete, complete, unknown
 
 infrastructure:
-  roads: "unknown"           # Options: yes, no, partial, unknown
-  sidewalks: "unknown"
+  # Road type (ordered from best to worst): asphalt | partial_asphalt | gravel | dirt
+  roads: "unknown"
+  sidewalks: "unknown"           # Options: yes, no, partial, unknown
   lighting: "unknown"
   gas: "unknown"
-  water: "unknown"
-  sewage: "unknown"
+  water: "unknown"               # Central water supply
+  sewage: "unknown"              # Central sewage
+  # Drainage type (ordered from best to worst): closed | open | none
   drainage: "unknown"
   checkpoints: "unknown"
   security: "unknown"
-  fencing: "unknown"
+  fencing: "unknown"             # Closed territory
+  # Video surveillance (ordered from best to worst): full | checkpoint_only | none
   video_surveillance: "unknown"
+  # Underground electricity (ordered from best to worst): full | partial | none
+  underground_electricity: "unknown"
   playgrounds: "unknown"
   sports: "unknown"
   public_spaces: "unknown"
   beach_or_water_access: "unknown"
   admin_building: "unknown"
-  retail_or_services: "unknown"
+  retail_or_services: "unknown"  # Shops
 
 service_model:
   garbage_collection: "unknown"

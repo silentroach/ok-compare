@@ -18,8 +18,48 @@ export function calculateTariffDelta(
 /**
  * Score an availability status for comparison
  * yes = 2, partial = 1, no = 0, unknown/undefined = 0
+ * For ordered enums (road, drainage, video, underground_electricity), higher index = better
  */
-function scoreStatus(status: string | undefined): number {
+function scoreStatus(status: string | undefined, key?: string): number {
+  // Handle new ordered enum types
+  if (key === 'roads') {
+    const roadScores: Record<string, number> = {
+      'asphalt': 3,
+      'partial_asphalt': 2,
+      'gravel': 1,
+      'dirt': 0
+    };
+    return roadScores[status || ''] ?? 0;
+  }
+  
+  if (key === 'drainage') {
+    const drainageScores: Record<string, number> = {
+      'closed': 2,
+      'open': 1,
+      'none': 0
+    };
+    return drainageScores[status || ''] ?? 0;
+  }
+  
+  if (key === 'video_surveillance') {
+    const videoScores: Record<string, number> = {
+      'full': 2,
+      'checkpoint_only': 1,
+      'none': 0
+    };
+    return videoScores[status || ''] ?? 0;
+  }
+  
+  if (key === 'underground_electricity') {
+    const electricityScores: Record<string, number> = {
+      'full': 2,
+      'partial': 1,
+      'none': 0
+    };
+    return electricityScores[status || ''] ?? 0;
+  }
+  
+  // Default AvailabilityStatus scoring
   switch (status) {
     case 'yes': return 2;
     case 'partial': return 1;
@@ -53,8 +93,8 @@ export function compareInfrastructure(
       continue;
     }
 
-    const baselineScore = scoreStatus(baselineValue);
-    const otherScore = scoreStatus(otherValue);
+    const baselineScore = scoreStatus(baselineValue, key);
+    const otherScore = scoreStatus(otherValue, key);
 
     if (otherScore > baselineScore) {
       betterCount++;

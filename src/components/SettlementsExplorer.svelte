@@ -52,7 +52,7 @@
       result = result.filter((s) => s.infrastructure.security === 'yes');
     }
     if (infraFilters.roads) {
-      result = result.filter((s) => s.infrastructure.roads === 'yes');
+      result = result.filter((s) => s.infrastructure.roads === 'asphalt' || s.infrastructure.roads === 'partial_asphalt');
     }
 
     // Apply status filter

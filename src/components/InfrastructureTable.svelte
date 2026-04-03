@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Infrastructure, AvailabilityStatus } from '../lib/schema';
+  import type { Infrastructure, AvailabilityStatus, RoadType, DrainageType, VideoSurveillance, UndergroundElectricity } from '../lib/schema';
 
   interface Props {
     infra: Infrastructure;
@@ -12,24 +12,25 @@
   const labels: Record<string, string> = {
     roads: 'Дороги',
     sidewalks: 'Тротуары',
-    lighting: 'Освещение',
+    lighting: 'Уличное освещение',
     gas: 'Газ',
-    water: 'Вода',
-    sewage: 'Канализация',
-    drainage: 'Ливневая канализация',
+    water: 'Центральное водоснабжение',
+    sewage: 'Центральная канализация',
+    drainage: 'Ливневка',
     checkpoints: 'КПП',
     security: 'Охрана',
-    fencing: 'Ограждение',
+    fencing: 'Закрытая территория',
     video_surveillance: 'Видеонаблюдение',
+    underground_electricity: 'Подземная электросеть',
     playgrounds: 'Детские площадки',
     sports: 'Спортивные объекты',
     public_spaces: 'Общественные пространства',
     beach_or_water_access: 'Выход к воде',
     admin_building: 'Административное здание',
-    retail_or_services: 'Магазины и услуги'
+    retail_or_services: 'Магазины'
   };
 
-  // Status icons
+  // Status icons for AvailabilityStatus
   const icons: Record<AvailabilityStatus, string> = {
     yes: '✓',
     no: '✗',
@@ -45,13 +46,67 @@
     unknown: 'bg-gray-100 text-gray-500 border-gray-200'
   };
 
-  // Get status text
+  // Get status text for AvailabilityStatus
   const statusText: Record<AvailabilityStatus, string> = {
     yes: 'Есть',
     no: 'Нет',
     partial: 'Частично',
     unknown: 'Неизвестно'
   };
+
+  // Road type display config
+  const roadConfig: Record<RoadType, { icon: string; text: string; color: string }> = {
+    asphalt: { icon: '●', text: 'Асфальт', color: 'bg-green-100 text-green-700 border-green-200' },
+    partial_asphalt: { icon: '◐', text: 'Частично асфальт', color: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
+    gravel: { icon: '○', text: 'Крошка', color: 'bg-orange-100 text-orange-700 border-orange-200' },
+    dirt: { icon: '✗', text: 'Грунт', color: 'bg-red-100 text-red-700 border-red-200' }
+  };
+
+  // Drainage type display config
+  const drainageConfig: Record<DrainageType, { icon: string; text: string; color: string }> = {
+    closed: { icon: '✓', text: 'Закрытая', color: 'bg-green-100 text-green-700 border-green-200' },
+    open: { icon: '◐', text: 'Открытая', color: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
+    none: { icon: '✗', text: 'Отсутствует', color: 'bg-red-100 text-red-700 border-red-200' }
+  };
+
+  // Video surveillance display config
+  const videoConfig: Record<VideoSurveillance, { icon: string; text: string; color: string }> = {
+    full: { icon: '✓', text: 'Есть', color: 'bg-green-100 text-green-700 border-green-200' },
+    checkpoint_only: { icon: '◐', text: 'Только на КПП', color: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
+    none: { icon: '✗', text: 'Нет', color: 'bg-red-100 text-red-700 border-red-200' }
+  };
+
+  // Underground electricity display config
+  const electricityConfig: Record<UndergroundElectricity, { icon: string; text: string; color: string }> = {
+    full: { icon: '✓', text: 'Полностью', color: 'bg-green-100 text-green-700 border-green-200' },
+    partial: { icon: '◐', text: 'Частично', color: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
+    none: { icon: '✗', text: 'По столбам', color: 'bg-red-100 text-red-700 border-red-200' }
+  };
+
+  // Get display config for a specific infrastructure key and value
+  function getDisplayConfig(key: string, value: string | undefined): { icon: string; text: string; color: string } {
+    if (value === undefined) {
+      return { icon: '?', text: 'Неизвестно', color: 'bg-gray-100 text-gray-500 border-gray-200' };
+    }
+
+    switch (key) {
+      case 'roads':
+        return roadConfig[value as RoadType] || { icon: '?', text: 'Неизвестно', color: 'bg-gray-100 text-gray-500 border-gray-200' };
+      case 'drainage':
+        return drainageConfig[value as DrainageType] || { icon: '?', text: 'Неизвестно', color: 'bg-gray-100 text-gray-500 border-gray-200' };
+      case 'video_surveillance':
+        return videoConfig[value as VideoSurveillance] || { icon: '?', text: 'Неизвестно', color: 'bg-gray-100 text-gray-500 border-gray-200' };
+      case 'underground_electricity':
+        return electricityConfig[value as UndergroundElectricity] || { icon: '?', text: 'Неизвестно', color: 'bg-gray-100 text-gray-500 border-gray-200' };
+      default:
+        // Use AvailabilityStatus config for other fields
+        return {
+          icon: icons[value as AvailabilityStatus] || '?',
+          text: statusText[value as AvailabilityStatus] || 'Неизвестно',
+          color: colors[value as AvailabilityStatus] || 'bg-gray-100 text-gray-500 border-gray-200'
+        };
+    }
+  }
 
   // Check if there's a difference between settlement and Shelkovo
   function hasDifference(key: string): boolean {
@@ -62,8 +117,8 @@
   // Order of infrastructure items for display
   const infraOrder = [
     'roads', 'sidewalks', 'lighting', 'gas', 'water', 'sewage', 'drainage',
-    'checkpoints', 'security', 'fencing', 'video_surveillance', 'playgrounds',
-    'sports', 'public_spaces', 'beach_or_water_access', 'admin_building', 'retail_or_services'
+    'checkpoints', 'security', 'fencing', 'video_surveillance', 'underground_electricity',
+    'playgrounds', 'sports', 'public_spaces', 'beach_or_water_access', 'admin_building', 'retail_or_services'
   ];
 </script>
 
@@ -84,32 +139,34 @@
         {@const value = infra[key as keyof Infrastructure]}
         {@const shelkovoValue = shelkovoInfra?.[key as keyof Infrastructure]}
         {@const isDifferent = hasDifference(key)}
+        {@const display = getDisplayConfig(key, value)}
+        {@const shelkovoDisplay = shelkovoInfra ? getDisplayConfig(key, shelkovoValue) : null}
         <tr data-testid="infra-row" class="border-b border-gray-100 last:border-b-0 hover:bg-gray-50">
           <td class="py-3 px-4 text-sm text-gray-900">
             {labels[key] || key}
           </td>
           <td class="py-3 px-4 text-center">
-            <span 
+            <span
               data-testid="infra-status"
-              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border {colors[value]}"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border {display.color}"
             >
-              <span class="w-4 h-4 flex items-center justify-center">{icons[value]}</span>
-              <span class="hidden sm:inline">{statusText[value]}</span>
+              <span class="w-4 h-4 flex items-center justify-center">{display.icon}</span>
+              <span class="hidden sm:inline">{display.text}</span>
             </span>
           </td>
-          {#if shelkovoInfra && shelkovoValue}
+          {#if shelkovoInfra && shelkovoValue && shelkovoDisplay}
             <td class="py-3 px-4 text-center">
-              <span 
+              <span
                 data-testid="shelkovo-status"
-                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border {colors[shelkovoValue]}"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border {shelkovoDisplay.color}"
               >
-                <span class="w-4 h-4 flex items-center justify-center">{icons[shelkovoValue]}</span>
-                <span class="hidden sm:inline">{statusText[shelkovoValue]}</span>
+                <span class="w-4 h-4 flex items-center justify-center">{shelkovoDisplay.icon}</span>
+                <span class="hidden sm:inline">{shelkovoDisplay.text}</span>
               </span>
             </td>
             <td class="py-3 px-4 text-center">
               {#if isDifferent}
-                <span 
+                <span
                   data-testid="diff-indicator"
                   class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-100 text-orange-600 text-xs font-bold"
                   title="Отличается от Шелково"
@@ -117,7 +174,7 @@
                   ≠
                 </span>
               {:else}
-                <span 
+                <span
                   class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 text-green-600 text-xs font-bold"
                   title="Совпадает с Шелково"
                 >

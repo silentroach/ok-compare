@@ -38,17 +38,18 @@ describe('Schema Validation', () => {
         },
         settlement_status: 'complete',
         infrastructure: {
-          roads: 'yes',
+          roads: 'asphalt',
           sidewalks: 'yes',
           lighting: 'yes',
           gas: 'yes',
           water: 'yes',
           sewage: 'yes',
-          drainage: 'yes',
+          drainage: 'closed',
           checkpoints: 'yes',
           security: 'yes',
           fencing: 'yes',
-          video_surveillance: 'yes',
+          video_surveillance: 'full',
+          underground_electricity: 'full',
           playgrounds: 'yes',
           sports: 'yes',
           public_spaces: 'yes',
@@ -221,7 +222,7 @@ describe('Schema Validation', () => {
   describe('Partial Infrastructure Valid', () => {
     it('should parse with defaults for missing infrastructure fields', () => {
       const partialInfrastructure = {
-        roads: 'yes',
+        roads: 'asphalt',
         sidewalks: 'yes',
         lighting: 'yes',
         gas: 'yes',
@@ -232,10 +233,10 @@ describe('Schema Validation', () => {
       const result = InfrastructureSchema.safeParse(partialInfrastructure);
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.roads).toBe('yes');
+        expect(result.data.roads).toBe('asphalt');
         expect(result.data.sidewalks).toBe('yes');
-        expect(result.data.drainage).toBe('unknown'); // Default value
-        expect(result.data.security).toBe('unknown'); // Default value
+        expect(result.data.drainage).toBe(undefined); // Not specified
+        expect(result.data.security).toBe(undefined); // Not specified
       }
     });
 
@@ -243,9 +244,9 @@ describe('Schema Validation', () => {
       const result = InfrastructureSchema.safeParse({});
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.roads).toBe('unknown');
-        expect(result.data.water).toBe('unknown');
-        expect(result.data.playgrounds).toBe('unknown');
+        expect(result.data.roads).toBe(undefined);
+        expect(result.data.water).toBe(undefined);
+        expect(result.data.playgrounds).toBe(undefined);
       }
     });
   });
@@ -255,7 +256,6 @@ describe('Schema Validation', () => {
       expect(AvailabilityStatusEnum.safeParse('yes').success).toBe(true);
       expect(AvailabilityStatusEnum.safeParse('no').success).toBe(true);
       expect(AvailabilityStatusEnum.safeParse('partial').success).toBe(true);
-      expect(AvailabilityStatusEnum.safeParse('unknown').success).toBe(true);
       expect(AvailabilityStatusEnum.safeParse('invalid').success).toBe(false);
     });
 
@@ -275,8 +275,9 @@ describe('Schema Validation', () => {
 
     it('should validate SettlementStatus enum', () => {
       expect(SettlementStatusEnum.safeParse('under_construction').success).toBe(true);
+      expect(SettlementStatusEnum.safeParse('partially_complete').success).toBe(true);
+      expect(SettlementStatusEnum.safeParse('mostly_complete').success).toBe(true);
       expect(SettlementStatusEnum.safeParse('complete').success).toBe(true);
-      expect(SettlementStatusEnum.safeParse('unknown').success).toBe(true);
       expect(SettlementStatusEnum.safeParse('finished').success).toBe(false);
     });
 

@@ -21,6 +21,22 @@ export type TariffPeriod = z.infer<typeof TariffPeriodEnum>;
 export const SourceTypeEnum = z.enum(['official', 'community', 'media', 'personal']);
 export type SourceType = z.infer<typeof SourceTypeEnum>;
 
+// Road type enum (ordered from best to worst)
+export const RoadTypeEnum = z.enum(['asphalt', 'partial_asphalt', 'gravel', 'dirt']);
+export type RoadType = z.infer<typeof RoadTypeEnum>;
+
+// Drainage type enum (ordered from best to worst)
+export const DrainageTypeEnum = z.enum(['closed', 'open', 'none']);
+export type DrainageType = z.infer<typeof DrainageTypeEnum>;
+
+// Video surveillance enum (ordered from best to worst)
+export const VideoSurveillanceEnum = z.enum(['full', 'checkpoint_only', 'none']);
+export type VideoSurveillance = z.infer<typeof VideoSurveillanceEnum>;
+
+// Underground electricity enum (ordered from best to worst)
+export const UndergroundElectricityEnum = z.enum(['full', 'partial', 'none']);
+export type UndergroundElectricity = z.infer<typeof UndergroundElectricityEnum>;
+
 // Location schema with coordinate validation
 export const LocationSchema = z.object({
   address_text: z.string().min(1),
@@ -43,22 +59,31 @@ export type Tariff = z.infer<typeof TariffSchema>;
 
 // Infrastructure schema - all fields optional
 export const InfrastructureSchema = z.object({
-  roads: AvailabilityStatusEnum.optional(),
+  // Road type (allows comparison: asphalt > partial_asphalt > gravel > dirt)
+  roads: RoadTypeEnum.optional(),
   sidewalks: AvailabilityStatusEnum.optional(),
   lighting: AvailabilityStatusEnum.optional(),
   gas: AvailabilityStatusEnum.optional(),
+  // Central water supply
   water: AvailabilityStatusEnum.optional(),
+  // Central sewage
   sewage: AvailabilityStatusEnum.optional(),
-  drainage: AvailabilityStatusEnum.optional(),
+  // Drainage/stormwater (allows comparison: closed > open > none)
+  drainage: DrainageTypeEnum.optional(),
   checkpoints: AvailabilityStatusEnum.optional(),
   security: AvailabilityStatusEnum.optional(),
+  // Closed territory (fencing)
   fencing: AvailabilityStatusEnum.optional(),
-  video_surveillance: AvailabilityStatusEnum.optional(),
+  // Video surveillance (allows comparison: full > checkpoint_only > none)
+  video_surveillance: VideoSurveillanceEnum.optional(),
+  // Underground electricity (allows comparison: full > partial > none)
+  underground_electricity: UndergroundElectricityEnum.optional(),
   playgrounds: AvailabilityStatusEnum.optional(),
   sports: AvailabilityStatusEnum.optional(),
   public_spaces: AvailabilityStatusEnum.optional(),
   beach_or_water_access: AvailabilityStatusEnum.optional(),
   admin_building: AvailabilityStatusEnum.optional(),
+  // Shops
   retail_or_services: AvailabilityStatusEnum.optional()
 });
 export type Infrastructure = z.infer<typeof InfrastructureSchema>;

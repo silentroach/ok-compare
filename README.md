@@ -55,23 +55,28 @@ settlement_status: "complete"           # under_construction | partially_complet
 
 # Инфраструктура (yes | no | partial - не указано = неизвестно)
 infrastructure:
-  roads: "yes"
-  sidewalks: "yes"
+  # Тип дорог (asphalt > partial_asphalt > gravel > dirt)
+  roads: "partial_asphalt"
+  sidewalks: "no"
   lighting: "yes"
   gas: "yes"
-  water: "yes"
-  sewage: "yes"
-  drainage: "partial"
+  water: "yes"                      # Центральное водоснабжение
+  sewage: "no"                      # Центральная канализация
+  # Ливневка (closed > open > none)
+  drainage: "open"
   checkpoints: "yes"
   security: "yes"
-  fencing: "yes"
-  video_surveillance: "yes"
+  fencing: "yes"                    # Закрытая территория
+  # Видеонаблюдение (full > checkpoint_only > none)
+  video_surveillance: "checkpoint_only"
+  # Подземная электросеть (full > partial > none)
+  underground_electricity: "partial"
   playgrounds: "yes"
   sports: "yes"
   public_spaces: "yes"
-  beach_or_water_access: "no"
-  admin_building: "yes"
-  retail_or_services: "partial"
+  beach_or_water_access: "yes"
+  admin_building: "no"
+  retail_or_services: "no"          # Магазины
 
 # Сервисная модель (yes | no | partial - не указано = неизвестно)
 service_model:
@@ -115,6 +120,27 @@ comparison_notes: ["Наш поселок для сравнения"]
 - `no` — нет
 - `partial` — частично
 - Не указано — неизвестно
+
+**RoadType** (тип дорог, упорядочен от лучшего к худшему):
+- `asphalt` — асфальт
+- `partial_asphalt` — частично асфальт
+- `gravel` — асфальтная крошка/гравий
+- `dirt` — грунтовка
+
+**DrainageType** (ливневая канализация, упорядочена от лучшей к худшей):
+- `closed` — закрытая
+- `open` — открытая
+- `none` — отсутствует
+
+**VideoSurveillance** (видеонаблюдение, упорядочено от лучшего к худшему):
+- `full` — есть по всему периметру
+- `checkpoint_only` — только на КПП
+- `none` — отсутствует
+
+**UndergroundElectricity** (подземная электросеть, упорядочено от лучшего к худшему):
+- `full` — полностью подземная
+- `partial` — частично подземная
+- `none` — только по столбам
 
 **SettlementStatus** (статус поселка):
 - `under_construction` — строится

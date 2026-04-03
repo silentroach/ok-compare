@@ -5,7 +5,7 @@ import type { Infrastructure } from '../lib/schema';
 
 describe('InfrastructureTable', () => {
   const mockInfra: Infrastructure = {
-    roads: 'yes',
+    roads: 'asphalt',
     sidewalks: 'partial',
     lighting: 'yes',
     gas: 'yes',
@@ -15,7 +15,8 @@ describe('InfrastructureTable', () => {
     checkpoints: 'yes',
     security: 'yes',
     fencing: 'no',
-    video_surveillance: 'partial',
+    video_surveillance: 'checkpoint_only',
+    underground_electricity: undefined,
     playgrounds: 'yes',
     sports: 'no',
     public_spaces: undefined,
@@ -25,26 +26,27 @@ describe('InfrastructureTable', () => {
   };
 
   const mockShelkovoInfra: Infrastructure = {
-    roads: 'yes',
-    sidewalks: 'yes',
+    roads: 'partial_asphalt',
+    sidewalks: 'no',
     lighting: 'yes',
     gas: 'yes',
     water: 'yes',
-    sewage: 'yes',
-    drainage: 'partial',
+    sewage: 'no',
+    drainage: 'open',
     checkpoints: 'yes',
     security: 'yes',
     fencing: 'yes',
-    video_surveillance: 'yes',
+    video_surveillance: 'checkpoint_only',
+    underground_electricity: 'partial',
     playgrounds: 'yes',
     sports: 'yes',
     public_spaces: 'yes',
     beach_or_water_access: 'yes',
-    admin_building: 'yes',
-    retail_or_services: 'yes'
+    admin_building: 'no',
+    retail_or_services: 'no'
   };
 
-  it('renders all 17 infrastructure items', () => {
+  it('renders all 18 infrastructure items', () => {
     const { container } = render(InfrastructureTable, {
       props: {
         infra: mockInfra,
@@ -52,9 +54,9 @@ describe('InfrastructureTable', () => {
       }
     });
 
-    // Check that all infrastructure items are displayed
+    // Check that all infrastructure items are displayed (18 with underground_electricity)
     const rows = container.querySelectorAll('[data-testid="infra-row"]');
-    expect(rows.length).toBe(17);
+    expect(rows.length).toBe(18);
   });
 
   it('displays correct labels for infrastructure items', () => {
@@ -68,10 +70,10 @@ describe('InfrastructureTable', () => {
     // Check Russian labels are displayed
     expect(getByText('Дороги')).toBeTruthy();
     expect(getByText('Тротуары')).toBeTruthy();
-    expect(getByText('Освещение')).toBeTruthy();
+    expect(getByText('Уличное освещение')).toBeTruthy();
     expect(getByText('Газ')).toBeTruthy();
-    expect(getByText('Вода')).toBeTruthy();
-    expect(getByText('Канализация')).toBeTruthy();
+    expect(getByText('Центральное водоснабжение')).toBeTruthy();
+    expect(getByText('Центральная канализация')).toBeTruthy();
     expect(getByText('Охрана')).toBeTruthy();
   });
 
@@ -83,9 +85,9 @@ describe('InfrastructureTable', () => {
       }
     });
 
-    // Check that all items have status indicators
+    // Check that all items have status indicators (18 with underground_electricity)
     const statusIcons = container.querySelectorAll('[data-testid="infra-status"]');
-    expect(statusIcons.length).toBe(17);
+    expect(statusIcons.length).toBe(18);
   });
 
   it('shows comparison column when shelkovoInfra is provided', () => {
@@ -99,9 +101,9 @@ describe('InfrastructureTable', () => {
     // Should have comparison column header
     expect(getByText('Шелково')).toBeTruthy();
 
-    // Should have comparison column
+    // Should have comparison column (18 with underground_electricity)
     const comparisonCells = container.querySelectorAll('[data-testid="shelkovo-status"]');
-    expect(comparisonCells.length).toBe(17);
+    expect(comparisonCells.length).toBe(18);
   });
 
   it('does not show comparison column when shelkovoInfra is null', () => {
@@ -146,7 +148,8 @@ describe('InfrastructureTable', () => {
       }
     });
 
+    // Should still render all 18 rows even with empty data
     const rows = container.querySelectorAll('[data-testid="infra-row"]');
-    expect(rows.length).toBe(17);
+    expect(rows.length).toBe(18);
   });
 });
