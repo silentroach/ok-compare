@@ -26,7 +26,7 @@
   let ymapsLoaded = $state(false);
 
   // Yandex Maps API key from environment
-  const API_KEY = (import.meta as any).env?.YANDEX_MAPS_API_KEY || '';
+  const API_KEY = import.meta.env.PUBLIC_YANDEX_MAPS_API_KEY || '';
 
   // Get color based on tariff level (green = low, red = high)
   function getTariffColor(tariff: number, isBaseline: boolean): string {
