@@ -159,7 +159,7 @@ describe('SettlementCard', () => {
       }
     });
 
-    const links = container.querySelectorAll('a[href="/compare/settlements/testovo/"]');
+    const links = container.querySelectorAll('a[href="/settlements/testovo/"]');
     expect(links.length).toBeGreaterThan(0);
     // Check that at least one link contains "Подробнее"
     let foundDetailsLink = false;

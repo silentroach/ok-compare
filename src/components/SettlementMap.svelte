@@ -59,7 +59,7 @@
         <div style="color: #374151; margin-bottom: 12px;">
           Тариф: <strong>${tariffFormatted}</strong>
         </div>
-        <a href="/compare/settlements/${settlement.slug}/" 
+        <a href="/settlements/${settlement.slug}/" 
            style="color: #2563EB; text-decoration: none; font-size: 14px;"
            target="_parent">
           Подробнее →

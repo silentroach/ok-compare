@@ -18,7 +18,7 @@
   <div class="p-6">
     <div class="flex items-start justify-between mb-4">
       <h3 class="text-lg font-semibold text-gray-900">
-        <a href={`/compare/settlements/${settlement.slug}/`} class="hover:text-blue-600">
+        <a href={`/settlements/${settlement.slug}/`} class="hover:text-blue-600">
           {settlement.short_name}
         </a>
       </h3>
@@ -78,7 +78,7 @@
   
   <div class="px-6 py-3 bg-gray-50 border-t border-gray-200">
     <a 
-      href={`/compare/settlements/${settlement.slug}/`}
+      href={`/settlements/${settlement.slug}/`}
       class="text-blue-600 hover:text-blue-800 text-sm font-medium"
     >
       Подробнее →
