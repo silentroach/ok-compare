@@ -15,7 +15,6 @@ const mockSettlement: Settlement = {
     lat: 55.5,
     lng: 37.5,
     district: 'Тестовский район',
-    area: 'Тестовское направление'
   },
   tariff: {
     value: 100,
@@ -24,7 +23,6 @@ const mockSettlement: Settlement = {
     normalized_per_sotka_month: 100,
     note: ''
   },
-  settlement_status: 'complete',
   infrastructure: {},
   service_model: {},
   promises_vs_fact: {
@@ -65,7 +63,6 @@ describe('SettlementCard', () => {
 
     expect(container.textContent).toContain('Тестово');
     expect(container.textContent).toContain('Тестовский район');
-    expect(container.textContent).toContain('Тестовское направление');
   });
 
   it('renders tariff formatted correctly', () => {

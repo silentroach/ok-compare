@@ -10,7 +10,6 @@ location:
   lat: 55.065422
   lng: 37.733096
   district: "Ступинский район"
-  area: "Ступинский округ"
 
 tariff:
   value: 815
@@ -18,8 +17,6 @@ tariff:
   period: "month"
   normalized_per_sotka_month: 815
   note: "Тариф за сотку в месяц"
-
-settlement_status: "complete"
 
 infrastructure:
   roads: "partial_asphalt"

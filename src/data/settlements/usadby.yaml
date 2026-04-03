@@ -10,7 +10,6 @@ location:
   lat: 56.0200
   lng: 37.6500
   district: "Мытищинский район"
-  area: "Мытищинский округ"
 
 tariff:
   value: 6500
@@ -18,8 +17,6 @@ tariff:
   period: "month"
   normalized_per_sotka_month: 6500
   note: "Премиум обслуживание"
-
-settlement_status: "complete"
 
 infrastructure:
   roads: "asphalt"
@@ -33,7 +30,6 @@ infrastructure:
   security: "yes"
   fencing: "yes"
   video_surveillance: "full"
-  underground_electricity: "unknown"
   playgrounds: "yes"
   sports: "yes"
   public_spaces: "yes"

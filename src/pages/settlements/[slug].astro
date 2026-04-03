@@ -98,7 +98,7 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
             </div>
           </div>
           <p class="text-gray-600">
-            {settlement.location.district} район • {settlement.location.area}
+            {settlement.location.district} район
           </p>
         </div>
         
@@ -148,18 +148,6 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
               {formatDistance(distanceFromShelkovo)} от Шелково
             </p>
           )}
-        </div>
-        
-        <!-- Status -->
-        <div>
-          <h3 class="text-sm font-medium text-gray-500 mb-2">Статус посёлка</h3>
-          <p class="text-gray-900 capitalize">
-            {settlement.settlement_status === 'under_construction' && 'Строится'}
-            {settlement.settlement_status === 'partially_complete' && 'Частично построен'}
-            {settlement.settlement_status === 'mostly_complete' && 'В основном построен'}
-            {settlement.settlement_status === 'complete' && 'Построен'}
-            {settlement.settlement_status === 'unknown' && 'Неизвестно'}
-          </p>
         </div>
       </div>
     </section>

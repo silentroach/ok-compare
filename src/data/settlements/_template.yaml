@@ -1,5 +1,6 @@
 # Template for settlement data files
 # Copy this file and fill in all required fields
+# For optional infrastructure/service fields, use only valid enum values or omit the field
 
 name: "Название поселка"
 short_name: "Поселок"
@@ -13,7 +14,6 @@ location:
   lat: 55.7558
   lng: 37.6173
   district: "Округ"
-  area: "Район"
 
 tariff:
   value: 0
@@ -22,39 +22,20 @@ tariff:
   normalized_per_sotka_month: 0
   note: ""
 
-settlement_status: "complete"  # Options: under_construction, partially_complete, mostly_complete, complete, unknown
+# Infrastructure - all fields are optional
+# Use only valid enum values:
+#   roads: asphalt | partial_asphalt | gravel | dirt
+#   drainage: closed | open | none
+#   video_surveillance: full | checkpoint_only | none
+#   underground_electricity: full | partial | none
+#   sidewalks, lighting, gas, water, sewage, checkpoints, security, fencing,
+#   playgrounds, sports, public_spaces, beach_or_water_access, admin_building,
+#   retail_or_services: yes | no | partial
+infrastructure: {}
 
-infrastructure:
-  # Road type (ordered from best to worst): asphalt | partial_asphalt | gravel | dirt
-  roads: "unknown"
-  sidewalks: "unknown"           # Options: yes, no, partial, unknown
-  lighting: "unknown"
-  gas: "unknown"
-  water: "unknown"               # Central water supply
-  sewage: "unknown"              # Central sewage
-  # Drainage type (ordered from best to worst): closed | open | none
-  drainage: "unknown"
-  checkpoints: "unknown"
-  security: "unknown"
-  fencing: "unknown"             # Closed territory
-  # Video surveillance (ordered from best to worst): full | checkpoint_only | none
-  video_surveillance: "unknown"
-  # Underground electricity (ordered from best to worst): full | partial | none
-  underground_electricity: "unknown"
-  playgrounds: "unknown"
-  sports: "unknown"
-  public_spaces: "unknown"
-  beach_or_water_access: "unknown"
-  admin_building: "unknown"
-  retail_or_services: "unknown"  # Shops
-
-service_model:
-  garbage_collection: "unknown"
-  snow_removal: "unknown"
-  road_cleaning: "unknown"
-  landscaping: "unknown"
-  emergency_service: "unknown"
-  dispatcher: "unknown"
+# Service model - all fields are optional
+# Valid values: yes | no | partial
+service_model: {}
 
 promises_vs_fact:
   promised: []

@@ -98,11 +98,6 @@
         <span class="text-gray-700">{settlement.location.district}</span>
       </div>
 
-      <div class="flex items-center justify-between text-sm">
-        <span class="text-gray-500">Направление:</span>
-        <span class="text-gray-700">{settlement.location.area}</span>
-      </div>
-
     </div>
   </div>
 

@@ -96,7 +96,6 @@ describe('Stats Module', () => {
           lat: 55.0,
           lng: 37.0,
           district: 'Test',
-          area: 'Test'
         },
         tariff: {
           value: 4500,
@@ -105,7 +104,6 @@ describe('Stats Module', () => {
           normalized_per_sotka_month: 4500,
           note: ''
         },
-        settlement_status: 'complete',
         infrastructure: {
           roads: 'partial_asphalt',
           sidewalks: 'no',
@@ -151,7 +149,6 @@ describe('Stats Module', () => {
           lat: 55.1,
           lng: 37.1,
           district: 'Test',
-          area: 'Test'
         },
         tariff: {
           value: 3500,
@@ -160,7 +157,6 @@ describe('Stats Module', () => {
           normalized_per_sotka_month: 3500,
           note: ''
         },
-        settlement_status: 'complete',
         infrastructure: {
           roads: 'asphalt',
           sidewalks: 'yes',
@@ -206,7 +202,6 @@ describe('Stats Module', () => {
           lat: 55.2,
           lng: 37.2,
           district: 'Test',
-          area: 'Test'
         },
         tariff: {
           value: 5500,
@@ -215,7 +210,6 @@ describe('Stats Module', () => {
           normalized_per_sotka_month: 5500,
           note: ''
         },
-        settlement_status: 'complete',
         infrastructure: {
           roads: 'asphalt',
           sidewalks: 'yes',

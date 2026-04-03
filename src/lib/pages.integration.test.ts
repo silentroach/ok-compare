@@ -17,7 +17,6 @@ const mockSettlements: Settlement[] = [
       lat: 55.8234,
       lng: 37.1456,
       district: 'Истринский',
-      area: 'Новорижское направление'
     },
     tariff: {
       value: 120,
@@ -26,7 +25,6 @@ const mockSettlements: Settlement[] = [
       normalized_per_sotka_month: 120,
       note: 'Тариф с января 2026 года'
     },
-    settlement_status: 'mostly_complete',
     infrastructure: {
       roads: 'partial_asphalt',
       sidewalks: 'no',
@@ -90,7 +88,6 @@ const mockSettlements: Settlement[] = [
       lat: 55.8432,
       lng: 37.1234,
       district: 'Истринский',
-      area: 'Новорижское направление'
     },
     tariff: {
       value: 95,
@@ -99,7 +96,6 @@ const mockSettlements: Settlement[] = [
       normalized_per_sotka_month: 95,
       note: ''
     },
-    settlement_status: 'complete',
     infrastructure: {
       roads: 'asphalt',
       sidewalks: 'yes',

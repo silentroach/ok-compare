@@ -4,14 +4,6 @@ import { z } from 'zod';
 export const AvailabilityStatusEnum = z.enum(['yes', 'no', 'partial']);
 export type AvailabilityStatus = z.infer<typeof AvailabilityStatusEnum>;
 
-export const SettlementStatusEnum = z.enum([
-  'under_construction',
-  'partially_complete',
-  'mostly_complete',
-  'complete'
-]);
-export type SettlementStatus = z.infer<typeof SettlementStatusEnum>;
-
 export const TariffUnitEnum = z.enum(['rub_per_sotka', 'rub_per_lot', 'rub_fixed']);
 export type TariffUnit = z.infer<typeof TariffUnitEnum>;
 
@@ -42,8 +34,7 @@ export const LocationSchema = z.object({
   address_text: z.string().min(1),
   lat: z.number().min(-90).max(90),
   lng: z.number().min(-180).max(180),
-  district: z.string().min(1),
-  area: z.string().min(1)
+  district: z.string().min(1)
 });
 export type Location = z.infer<typeof LocationSchema>;
 
@@ -137,7 +128,6 @@ export const SettlementSchema = z.object({
   is_baseline: z.boolean().default(false),
   location: LocationSchema,
   tariff: TariffSchema,
-  settlement_status: SettlementStatusEnum.optional(),
   infrastructure: InfrastructureSchema.default({}),
   service_model: ServiceModelSchema.default({}),
   promises_vs_fact: PromisesVsFactSchema.default({}),

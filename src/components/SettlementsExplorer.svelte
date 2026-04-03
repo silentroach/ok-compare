@@ -34,16 +34,6 @@
     security: false,
     roads: false,
   });
-  let statusFilter = $state<string>('all');
-
-  // Status options mapping
-  const statusOptions = [
-    { value: 'all', label: 'Все статусы' },
-    { value: 'under_construction', label: 'Строится' },
-    { value: 'partially_complete', label: 'Частично сдан' },
-    { value: 'mostly_complete', label: 'Почти сдан' },
-    { value: 'complete', label: 'Завершён' },
-  ];
 
   // Derived: filtered and sorted settlements
   let filteredSettlements = $derived.by(() => {
@@ -69,11 +59,6 @@
     }
     if (infraFilters.roads) {
       result = result.filter((s) => s.infrastructure.roads === 'asphalt' || s.infrastructure.roads === 'partial_asphalt');
-    }
-
-    // Apply status filter
-    if (statusFilter !== 'all') {
-      result = result.filter((s) => s.settlement_status === statusFilter);
     }
 
     // Sort
@@ -102,7 +87,7 @@
     return result;
   });
 
-  let displayedSettlements = $derived(filteredSettlements());
+  let displayedSettlements = $derived(filteredSettlements);
   let totalCount = $derived(settlements.length);
   let displayedCount = $derived(displayedSettlements.length);
 </script>
@@ -192,21 +177,6 @@
         </label>
       </div>
 
-      <!-- Status Filter -->
-      <div class="flex items-center gap-3">
-        <label for="status" class="text-sm font-medium text-gray-700 whitespace-nowrap">
-          Статус:
-        </label>
-        <select
-          id="status"
-          bind:value={statusFilter}
-          class="block w-full lg:w-auto rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-        >
-          {#each statusOptions as option (option.value)}
-            <option value={option.value}>{option.label}</option>
-          {/each}
-        </select>
-      </div>
     </div>
   </div>
 

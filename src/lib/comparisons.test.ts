@@ -21,7 +21,6 @@ describe('Comparisons Module', () => {
       lat: 55.0,
       lng: 37.0,
       district: 'Test',
-      area: 'Test'
     },
     tariff: {
       value: 120,
@@ -30,7 +29,6 @@ describe('Comparisons Module', () => {
       normalized_per_sotka_month: 120,
       note: ''
     },
-    settlement_status: 'complete',
     infrastructure: {
       roads: 'partial_asphalt',
       sidewalks: 'no',

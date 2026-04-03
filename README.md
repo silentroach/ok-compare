@@ -37,10 +37,6 @@ location:
   lat: 56.0500                          # Широта
   lng: 37.6000                          # Долгота
   district: "Мытищинский район"         # Район
-  area: "Мытищинский округ"             # Округ
-
-# Расстояние от Шелково
-distance_from_shelkovo_km: 0            # км от базового поселка
 
 # Тариф
 tariff:
@@ -49,9 +45,6 @@ tariff:
   period: "month"                       # Период: month | quarter | year
   normalized_per_sotka_month: 4500      # Нормализовано к руб/сотка/месяц
   note: "Тариф за сотку в месяц"        # Примечание
-
-# Статус поселка
-settlement_status: "complete"           # under_construction | partially_complete | mostly_complete | complete
 
 # Инфраструктура (yes | no | partial - не указано = неизвестно)
 infrastructure:
@@ -141,13 +134,6 @@ comparison_notes: ["Наш поселок для сравнения"]
 - `full` — полностью подземная
 - `partial` — частично подземная
 - `none` — только по столбам
-
-**SettlementStatus** (статус поселка):
-- `under_construction` — строится
-- `partially_complete` — частично построен
-- `mostly_complete` — в основном построен
-- `complete` — полностью построен
-- Не указано — неизвестно
 
 **TariffUnit** (единица тарифа):
 - `rub_per_sotka` — рубли за сотку

@@ -7,7 +7,6 @@ import {
   AvailabilityStatusEnum,
   TariffUnitEnum,
   TariffPeriodEnum,
-  SettlementStatusEnum,
   SourceTypeEnum
 } from '../lib/schema';
 
@@ -26,7 +25,6 @@ describe('Schema Validation', () => {
           lat: 55.7558,
           lng: 37.6173,
           district: 'Тестовый район',
-          area: 'Тестовый округ'
         },
         tariff: {
           value: 3000,
@@ -35,7 +33,6 @@ describe('Schema Validation', () => {
           normalized_per_sotka_month: 3000,
           note: 'Тестовая заметка'
         },
-        settlement_status: 'complete',
         infrastructure: {
           roads: 'asphalt',
           sidewalks: 'yes',
@@ -109,7 +106,6 @@ describe('Schema Validation', () => {
           lat: 55.7558,
           lng: 37.6173,
           district: 'Район',
-          area: 'Округ'
         },
         tariff: {
           value: 3000,
@@ -152,7 +148,6 @@ describe('Schema Validation', () => {
           lat: 55.7558,
           lng: 37.6173,
           district: 'Район',
-          area: 'Округ'
         },
         tariff: {
           value: 3000,
@@ -187,7 +182,6 @@ describe('Schema Validation', () => {
         lat: 999, // Invalid latitude
         lng: 37.6173,
         district: 'Район',
-        area: 'Округ'
       };
 
       const result = LocationSchema.safeParse(invalidLocation);
@@ -204,7 +198,6 @@ describe('Schema Validation', () => {
         lat: 55.7558,
         lng: 999, // Invalid longitude
         district: 'Район',
-        area: 'Округ'
       };
 
       const result = LocationSchema.safeParse(invalidLocation);
@@ -270,14 +263,6 @@ describe('Schema Validation', () => {
       expect(TariffPeriodEnum.safeParse('week').success).toBe(false);
     });
 
-    it('should validate SettlementStatus enum', () => {
-      expect(SettlementStatusEnum.safeParse('under_construction').success).toBe(true);
-      expect(SettlementStatusEnum.safeParse('partially_complete').success).toBe(true);
-      expect(SettlementStatusEnum.safeParse('mostly_complete').success).toBe(true);
-      expect(SettlementStatusEnum.safeParse('complete').success).toBe(true);
-      expect(SettlementStatusEnum.safeParse('finished').success).toBe(false);
-    });
-
     it('should validate SourceType enum', () => {
       expect(SourceTypeEnum.safeParse('official').success).toBe(true);
       expect(SourceTypeEnum.safeParse('community').success).toBe(true);
@@ -328,7 +313,6 @@ describe('Schema Validation', () => {
           lat: 55.7558,
           lng: 37.6173,
           district: 'Район',
-          area: 'Округ'
         },
         tariff: {
           value: 3000,
@@ -362,7 +346,6 @@ describe('Schema Validation', () => {
           lat: 55.7558,
           lng: 37.6173,
           district: 'Район',
-          area: 'Округ'
         },
         tariff: {
           value: 3000,
