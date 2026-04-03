@@ -1,24 +1,24 @@
 name: "Коттеджный поселок Шелково"
 short_name: "Шелково"
 slug: "shelkovo"
-website: "https://shelkovo.ru"
+website: "https://kpshelkovo.ru"
 management_company: "УК Шелково"
 is_baseline: true
 
 location:
-  address_text: "Московская область, Мытищинский район, д. Шелково"
-  lat: 56.0500
-  lng: 37.6000
-  district: "Мытищинский район"
-  area: "Мытищинский округ"
+  address_text: "Московская область, Ступинский район, 45 мин от МКАД по М-2/М-4"
+  lat: 55.065422
+  lng: 37.733096
+  district: "Ступинский район"
+  area: "Ступинский округ"
 
 distance_from_shelkovo_km: 0
 
 tariff:
-  value: 4500
+  value: 815
   unit: "rub_per_sotka"
   period: "month"
-  normalized_per_sotka_month: 4500
+  normalized_per_sotka_month: 815
   note: "Тариф за сотку в месяц"
 
 settlement_status: "complete"
@@ -63,15 +63,15 @@ transparency:
   notes: ""
 
 sources:
-  - title: "Официальный сайт Шелково"
-    url: "https://shelkovo.ru"
+  - title: "Официальный сайт Шелково Эко Клаб"
+    url: "https://kpshelkovo.ru"
     type: "official"
     date_checked: "2026-04-03"
-    comment: "Текущий тариф"
-  - title: "Договор управления"
-    url: "https://shelkovo.ru/documents"
+    comment: "Текущий тариф и информация о 4 посёлках"
+  - title: "Документы"
+    url: "https://ok-komfort.ru/objects/shelkovo-eco-club/"
     type: "official"
     date_checked: "2026-04-03"
     comment: "Условия обслуживания"
 
-comparison_notes: ["Базовый поселок для сравнения"]
+comparison_notes: ["Наш поселок для сравнения", "Группа из 4 посёлков общей площадью 242 Га"]
