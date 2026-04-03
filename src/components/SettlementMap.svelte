@@ -18,44 +18,32 @@
 
   let { settlements }: Props = $props();
 
-  // State
   let mapContainer: HTMLDivElement | null = $state(null);
   let map: any = $state(null);
   let isLoading = $state(true);
   let error: string | null = $state(null);
   let ymapsLoaded = $state(false);
 
-  // Yandex Maps API key from environment
   const API_KEY = import.meta.env.PUBLIC_YANDEX_MAPS_API_KEY || '';
 
-  // Get color based on tariff level (green = low, red = high)
   function getTariffColor(tariff: number, isBaseline: boolean): string {
     if (isBaseline) {
-      return '#3B82F6'; // Blue for baseline
+      return '#3B82F6';
     }
-    // Simple color scale: green (low) to red (high)
-    // Assuming range 50-200 rub/sotka/month
     const minTariff = 50;
     const maxTariff = 200;
     const normalized = Math.max(0, Math.min(1, (tariff - minTariff) / (maxTariff - minTariff)));
-    
-    // Green (hsl 120) to Red (hsl 0)
-    const hue = 120 - (normalized * 120);
-    return `hsl(${hue}, 70%, 45%)`;
+    const red = Math.round(255 * normalized);
+    const green = Math.round(255 * (1 - normalized));
+    return `rgb(${red}, ${green}, 0)`;
   }
 
-  // Create popup content
   function createPopupContent(settlement: SettlementMapData): string {
     const tariffFormatted = formatTariff(settlement.normalizedTariff);
-    const baselineBadge = settlement.isBaseline
-      ? '<span style="background: #3B82F6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px;">Наш</span>'
-      : '';
-
     return `
-      <div style="font-family: system-ui, -apple-system, sans-serif; padding: 8px; min-width: 180px;">
-        <div style="font-weight: 600; font-size: 16px; margin-bottom: 8px; display: flex; align-items: center;">
+      <div style="font-family: system-ui, sans-serif; padding: 8px; min-width: 200px;">
+        <div style="font-weight: 600; font-size: 16px; margin-bottom: 8px; color: #111827;">
           ${settlement.name}
-          ${baselineBadge}
         </div>
         <div style="color: #374151; margin-bottom: 12px;">
           Тариф: <strong>${tariffFormatted}</strong>
@@ -69,9 +57,7 @@
     `;
   }
 
-  // Load Yandex Maps API dynamically
   async function loadYandexMaps(): Promise<void> {
-    // Small delay to allow loading state to render first
     await new Promise(resolve => setTimeout(resolve, 50));
 
     if (!API_KEY) {
@@ -80,15 +66,14 @@
       return;
     }
 
-    // Check if already loaded
-    if (typeof (window as any).ymaps !== 'undefined') {
+    if (typeof (window as any).ymaps3 !== 'undefined') {
       ymapsLoaded = true;
       return;
     }
 
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
-      script.src = `https://api-maps.yandex.ru/3.0/?apikey=${API_KEY}&lang=ru_RU`;
+      script.src = `https://api-maps.yandex.ru/v3/?apikey=${API_KEY}&lang=ru_RU`;
       script.async = true;
       
       script.onload = () => {
@@ -106,48 +91,60 @@
     });
   }
 
-  // Initialize map
   async function initMap(): Promise<void> {
     if (!mapContainer || !ymapsLoaded) return;
 
     try {
-      const ymaps = (window as any).ymaps;
+      const ymaps3 = (window as any).ymaps3;
       
-      if (!ymaps) {
+      if (!ymaps3) {
         error = 'Yandex Maps API не доступен';
         isLoading = false;
         return;
       }
 
-      // Wait for ymaps to be ready
-      await ymaps.ready();
+      await ymaps3.ready;
 
-      // Create map
-      map = new ymaps.Map(mapContainer, {
-        center: getMapCenter(),
-        zoom: 11,
-      });
+      const {YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapMarker} = ymaps3;
 
-      // Add markers for each settlement
-      settlements.forEach((settlement) => {
-        const placemark = new ymaps.Placemark(
-          [settlement.lat, settlement.lng],
-          {
-            balloonContent: createPopupContent(settlement),
-            settlementData: settlement,
+      const center = getMapCenter();
+      
+      map = new YMap(
+        mapContainer,
+        {
+          location: {
+            center: [center[1], center[0]],
+            zoom: 11,
           },
-          {
-            iconColor: getTariffColor(settlement.normalizedTariff, settlement.isBaseline),
-            preset: settlement.isBaseline 
-              ? 'islands#blueDotIcon' 
-              : 'islands#circleDotIcon',
-            iconCaption: settlement.name.substring(0, 15),
-            iconCaptionMaxWidth: '100',
-          }
-        );
+        },
+        [
+          new YMapDefaultSchemeLayer(),
+          new YMapDefaultFeaturesLayer(),
+        ]
+      );
 
-        map.geoObjects.add(placemark);
-      });
+      for (const settlement of settlements) {
+        const color = getTariffColor(settlement.normalizedTariff, settlement.isBaseline);
+        const el = document.createElement('div');
+        el.style.cssText = `
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: ${color};
+          border: 2px solid white;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+          cursor: pointer;
+        `;
+        
+        const marker = new YMapMarker(
+          {
+            coordinates: [settlement.lng, settlement.lat],
+          },
+          el
+        );
+        
+        map.addChild(marker);
+      }
 
       isLoading = false;
     } catch (err) {
@@ -157,16 +154,14 @@
     }
   }
 
-  // Calculate map center (prefer baseline, or use average)
   function getMapCenter(): [number, number] {
     const baseline = settlements.find(s => s.isBaseline);
     if (baseline) {
       return [baseline.lat, baseline.lng];
     }
 
-    // Calculate average position
     if (settlements.length === 0) {
-      return [55.7558, 37.6173]; // Moscow center as fallback
+      return [55.7558, 37.6173];
     }
 
     const avgLat = settlements.reduce((sum, s) => sum + s.lat, 0) / settlements.length;
@@ -205,40 +200,20 @@
 
   {#if error}
     <div class="absolute inset-0 flex items-center justify-center bg-gray-50">
-      <div class="text-center px-4">
-        <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-        <p class="text-gray-700 font-medium mb-1">Карта недоступна</p>
-        <p class="text-gray-500 text-sm">{error}</p>
+      <div class="text-center max-w-md px-4">
+        <div class="text-4xl mb-3">🗺️</div>
+        <p class="text-gray-700 font-medium mb-2">{error}</p>
+        <p class="text-gray-500 text-sm">Попробуйте обновить страницу</p>
       </div>
     </div>
   {/if}
 
-  <div bind:this={mapContainer} class="w-full h-full" class:hidden={isLoading || error}></div>
-
-  <!-- Legend -->
-  {#if !isLoading && !error && settlements.length > 0}
-    <div class="absolute bottom-4 left-4 bg-white/95 backdrop-blur rounded-lg shadow-lg p-3 text-xs">
-      <div class="font-medium text-gray-700 mb-2">Тариф:</div>
-      <div class="space-y-1.5">
-        <div class="flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full" style="background: #22C55E;"></span>
-          <span class="text-gray-600">Низкий (до 100 ₽)</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full" style="background: #EAB308;"></span>
-          <span class="text-gray-600">Средний (100-150 ₽)</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full" style="background: #EF4444;"></span>
-          <span class="text-gray-600">Высокий (150+ ₽)</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full" style="background: #3B82F6;"></span>
-          <span class="text-gray-600">Шелково (базовый)</span>
-        </div>
-      </div>
-    </div>
-  {/if}
+  <div bind:this={mapContainer} class="w-full h-full" style="min-height: 500px;"></div>
 </div>
+
+<style>
+  :global(.ymaps-2-1-79-map) {
+    width: 100% !important;
+    height: 100% !important;
+  }
+</style>
