@@ -7,6 +7,7 @@ import type { Settlement } from '../../lib/schema';
 import InfrastructureTable from '../../components/InfrastructureTable.svelte';
 import ServiceTable from '../../components/ServiceTable.svelte';
 import SourcesList from '../../components/SourcesList.svelte';
+import SettlementMap from '../../components/SettlementMap.svelte';
 
 // Generate static paths for all settlements
 export async function getStaticPaths() {
@@ -50,11 +51,132 @@ const distanceFromShelkovo = shelkovo && !settlement.is_baseline
 
 // Build page title
 const pageTitle = `${settlement.name} — Тарифы и сравнение`;
+const hasPoint = Number.isFinite(settlement.location.lat) && Number.isFinite(settlement.location.lng);
+const heroMap = hasPoint
+  ? [{
+      slug: settlement.slug,
+      name: settlement.name,
+      shortName: settlement.short_name,
+      lat: settlement.location.lat,
+      lng: settlement.location.lng,
+      normalizedTariff: settlement.tariff.normalized_per_sotka_month,
+      isBaseline: settlement.is_baseline,
+    }]
+  : [];
 ---
 
 <BaseLayout title={pageTitle}>
-  <main class="ui-page py-6 md:py-10">
-    <header class="ui-shell-strong mb-6 p-6 md:mb-8 md:p-8">
+  <main class="ui-page py-6 md:py-10 lg:pt-0">
+    <section class="hero-bleed relative hidden min-h-[430px] lg:block" data-testid="settlement-hero">
+      <div class={`hero-map-fade absolute inset-0 overflow-hidden ${hasPoint ? '' : 'bg-[radial-gradient(1200px_360px_at_8%_0%,rgba(214,230,239,0.9),transparent_68%),radial-gradient(900px_340px_at_100%_100%,rgba(220,237,233,0.85),transparent_72%),linear-gradient(180deg,#f7fbfd_0%,#edf4f7_100%)]'}`}>
+        {hasPoint && (
+          <div class="absolute inset-0 opacity-80">
+            <SettlementMap
+              settlements={heroMap}
+              interactive={false}
+              popup={false}
+              shell={false}
+              muted={false}
+              height={430}
+              focusX={0.8}
+              client:media="(min-width: 1024px)"
+            />
+          </div>
+        )}
+
+        <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(244,250,253,0.5)_0%,rgba(244,250,253,0.2)_46%,rgba(244,250,253,0.04)_70%,rgba(244,250,253,0)_84%)]"></div>
+        <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(244,250,253,0)_62%,rgba(244,250,253,0.7)_88%,rgba(244,250,253,1)_100%)]"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(560px_280px_at_22%_24%,rgba(255,255,255,0.42),transparent_72%)]"></div>
+      </div>
+
+      <div class="relative z-10 mx-auto flex h-full w-[min(1200px,100%-2rem)] flex-col justify-between p-8 xl:p-10">
+          <div class="flex items-center justify-between">
+            <Link href="/" class="ui-link inline-flex items-center rounded-full border border-white/65 bg-white/42 px-4 py-2 text-sm font-semibold shadow-[0_6px_18px_-14px_rgba(15,23,42,0.6)] backdrop-blur-md">
+              ← Назад к списку
+            </Link>
+            {settlement.is_baseline && (
+              <span class="inline-flex items-center rounded-full border border-sky-300/90 bg-sky-100/90 px-3 py-1 text-sm font-semibold text-sky-800">
+                Наш посёлок
+              </span>
+            )}
+          </div>
+
+          <div class="mt-6 max-w-3xl">
+            <div class="mb-4 flex items-start justify-between gap-4">
+              <div>
+                <h1 class="text-4xl font-bold text-slate-900 [text-shadow:0_2px_10px_rgba(255,255,255,0.75)] xl:text-[2.7rem]">
+                  {settlement.name}
+                </h1>
+                <p class="mt-2 text-base text-slate-700 [text-shadow:0_1px_6px_rgba(255,255,255,0.72)]">
+                  {settlement.location.district} район
+                </p>
+              </div>
+              <div class="flex items-center gap-2">
+                {settlement.website && (
+                  <a
+                    href={settlement.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Открыть сайт поселка"
+                    class="rounded-md p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                    title="Перейти на сайт поселка"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                    </svg>
+                  </a>
+                )}
+                <a
+                  href={settlement.location.map_url ?? `https://yandex.ru/maps/?pt=${settlement.location.lng},${settlement.location.lat}&z=15&l=map`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Открыть поселок на Яндекс.Картах"
+                  class="rounded-md p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                  title="Открыть на Яндекс.Картах"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+
+            <div class={`grid gap-3 ${settlement.is_baseline ? 'grid-cols-2' : 'grid-cols-3'}`}>
+              <div class="rounded-2xl border border-white/60 bg-white/50 p-4 backdrop-blur-[2px]">
+                <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Тариф</p>
+                <p class="text-xl font-bold text-slate-900">{formatTariff(settlement.tariff.normalized_per_sotka_month)}</p>
+              </div>
+
+              {!settlement.is_baseline && (
+                <div class="rounded-2xl border border-white/60 bg-white/50 p-4 backdrop-blur-[2px]">
+                  <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Разница с Шелково</p>
+                  {comparison && (
+                    <>
+                      <p class={`text-xl font-bold ${comparison.isCheaper ? 'text-emerald-700' : 'text-amber-700'}`}>
+                        {comparison.isCheaper ? '−' : '+'}{formatCurrency(Math.abs(comparison.tariffDelta))}
+                      </p>
+                      <p class="mt-1 text-xs text-slate-600">
+                        {comparison.isCheaper ? 'Дешевле' : 'Дороже'} на {formatPercentage(comparison.tariffDeltaPercent / 100)}
+                      </p>
+                    </>
+                  )}
+                </div>
+              )}
+
+              <div class="rounded-2xl border border-white/60 bg-white/50 p-4 backdrop-blur-[2px]">
+                <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Расположение</p>
+                <p class="text-sm font-semibold text-slate-800">{settlement.location.address_text}</p>
+                {distanceFromShelkovo > 0 && (
+                  <p class="mt-1 text-xs text-slate-600">{formatDistance(distanceFromShelkovo)} от Шелково</p>
+                )}
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+
+    <header class="ui-shell-strong mb-6 p-6 md:mb-8 md:p-8 lg:hidden">
       <div class="mb-4 flex items-center gap-3">
         <Link href="/" class="ui-link text-sm font-semibold">
           ← Назад к списку
@@ -110,7 +232,7 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
       </div>
     </header>
 
-    <section class="ui-shell mb-6 p-6 md:mb-8" data-testid="base-info-section">
+    <section class="ui-shell mb-6 p-6 md:mb-8 lg:hidden" data-testid="base-info-section">
       <h2 class="mb-6 text-xl font-semibold text-slate-900">Основная информация</h2>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -148,7 +270,7 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
       </div>
     </section>
 
-    <section class="ui-shell mb-6 p-6 md:mb-8" data-testid="infrastructure-section">
+    <section class="ui-shell mb-6 p-6 md:mb-8 lg:-mt-[3em]" data-testid="infrastructure-section">
       <h2 class="mb-5 text-xl font-semibold text-slate-900">Инфраструктура</h2>
       <InfrastructureTable 
         infra={settlement.infrastructure} 
@@ -172,3 +294,16 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
     )}
   </main>
 </BaseLayout>
+
+<style>
+  .hero-bleed {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+
+  .hero-map-fade {
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.88) 48%, rgba(0, 0, 0, 0.52) 74%, rgba(0, 0, 0, 0.12) 90%, rgba(0, 0, 0, 0) 100%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.88) 48%, rgba(0, 0, 0, 0.52) 74%, rgba(0, 0, 0, 0.12) 90%, rgba(0, 0, 0, 0) 100%);
+  }
+</style>

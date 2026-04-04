@@ -15,6 +15,12 @@
 
   interface Props {
     settlements: SettlementMapData[];
+    interactive?: boolean;
+    popup?: boolean;
+    shell?: boolean;
+    muted?: boolean;
+    height?: number;
+    focusX?: number;
   }
 
   interface YMapLike {
@@ -43,7 +49,15 @@
     }
   }
 
-  let { settlements }: Props = $props();
+  let {
+    settlements,
+    interactive = true,
+    popup = true,
+    shell = true,
+    muted = false,
+    height = 375,
+    focusX = 0.5,
+  }: Props = $props();
 
   let mapContainer: HTMLDivElement | null = $state(null);
   let popupEl: HTMLDivElement | null = $state(null);
@@ -62,6 +76,21 @@
   let tip: Tip | null = $state(null);
 
   const API_KEY = import.meta.env.PUBLIC_YANDEX_MAPS_API_KEY || '';
+
+  function clamp(v: number, min: number, max: number): number {
+    return Math.max(min, Math.min(max, v));
+  }
+
+  function shift(lng: number, zoom: number): number {
+    if (!mapContainer) return lng;
+
+    const fx = clamp(focusX, 0.05, 0.95);
+    if (Math.abs(fx - 0.5) < 0.01) return lng;
+
+    const w = Math.max(1, mapContainer.clientWidth);
+    const deg = 360 / (256 * 2 ** zoom);
+    return lng - (fx - 0.5) * w * deg;
+  }
 
   function getTariffColor(tariff: number, isBaseline: boolean): string {
     if (isBaseline) {
@@ -117,7 +146,8 @@
 
     if (settlements.length === 1) {
       const item = settlements[0];
-      return { center: [item.lng, item.lat], zoom: 12 };
+      const zoom = 12;
+      return { center: [shift(item.lng, zoom), item.lat], zoom };
     }
 
     const lat = settlements.map(s => s.lat);
@@ -167,14 +197,16 @@
         background: ${color};
         border: 2px solid #ffffff;
         box-shadow: 0 2px 6px rgba(15, 23, 42, 0.35);
-        cursor: pointer;
+        cursor: ${interactive && popup ? 'pointer' : 'default'};
       `;
       el.setAttribute('title', settlement.name);
       el.setAttribute('aria-label', `Маркер: ${settlement.name}`);
-      el.addEventListener('click', (evt) => {
-        evt.stopPropagation();
-        open(settlement, el);
-      });
+      if (interactive && popup) {
+        el.addEventListener('click', (evt) => {
+          evt.stopPropagation();
+          open(settlement, el);
+        });
+      }
 
       const marker = new YMapMarker(
         {
@@ -202,7 +234,7 @@
 
       await ymaps3.ready;
 
-      const {YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapMarker} = ymaps3;
+      const {YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer} = ymaps3;
 
       const view = getMapView();
       
@@ -319,7 +351,11 @@
   });
 </script>
 
-<div data-testid="settlement-map" class="ui-shell relative h-[375px] w-full overflow-hidden">
+<div
+  data-testid="settlement-map"
+  class={`relative w-full overflow-hidden ${shell ? 'ui-shell' : ''}`}
+  style={`height: ${height}px; min-height: ${height}px;`}
+>
   {#if isLoading}
     <div class="absolute inset-0 flex items-center justify-center bg-slate-50">
       <div class="text-center">
@@ -339,7 +375,7 @@
     </div>
   {/if}
 
-  {#if tip}
+  {#if tip && popup}
     <div
       class="pointer-events-none absolute z-10"
       style={`left: ${tip.x}px; top: ${tip.y}px; transform: translate(-50%, ${tip.up ? '-100%' : '0%'});`}
@@ -380,12 +416,24 @@
     </div>
   {/if}
 
-  <div bind:this={mapContainer} class="w-full h-full" style="min-height: 375px;"></div>
+  <div
+    bind:this={mapContainer}
+    class={`h-full w-full ${interactive ? '' : 'pointer-events-none'} ${muted ? 'map-muted' : ''}`}
+  ></div>
+
+  {#if !interactive}
+    <div class="absolute inset-0 z-[5]" aria-hidden="true"></div>
+  {/if}
 </div>
 
 <style>
   :global(.ymaps-2-1-79-map) {
     width: 100% !important;
     height: 100% !important;
+  }
+
+  .map-muted {
+    opacity: 0.56;
+    filter: saturate(0.62) contrast(0.9) brightness(1.02);
   }
 </style>
