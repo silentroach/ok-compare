@@ -98,6 +98,93 @@ describe('SettlementMap', () => {
     });
   });
 
+  it('uses dynamic gradient for non-baseline markers', async () => {
+    render(SettlementMap, {
+      props: {
+        settlements: [
+          {
+            slug: 'base',
+            name: 'База',
+            shortName: 'База',
+            lat: 55.8,
+            lng: 37.1,
+            normalizedTariff: 640,
+            isBaseline: true,
+          },
+          {
+            slug: 'low',
+            name: 'Низкий',
+            shortName: 'Низкий',
+            lat: 55.81,
+            lng: 37.11,
+            normalizedTariff: 495,
+            isBaseline: false,
+          },
+          {
+            slug: 'high',
+            name: 'Высокий',
+            shortName: 'Высокий',
+            lat: 55.82,
+            lng: 37.12,
+            normalizedTariff: 815,
+            isBaseline: false,
+          },
+        ],
+      },
+    });
+
+    await waitFor(() => {
+      expect(markers.length).toBe(3);
+    });
+
+    expect(markers[0]?.style.background).toBe('#0369a1');
+    expect(markers[1]?.style.background).not.toBe(markers[2]?.style.background);
+  });
+
+  it('uses neutral color when all non-baseline tariffs are equal', async () => {
+    render(SettlementMap, {
+      props: {
+        settlements: [
+          {
+            slug: 'base',
+            name: 'База',
+            shortName: 'База',
+            lat: 55.8,
+            lng: 37.1,
+            normalizedTariff: 700,
+            isBaseline: true,
+          },
+          {
+            slug: 'same-1',
+            name: 'Одинаковый 1',
+            shortName: 'Одинаковый 1',
+            lat: 55.81,
+            lng: 37.11,
+            normalizedTariff: 700,
+            isBaseline: false,
+          },
+          {
+            slug: 'same-2',
+            name: 'Одинаковый 2',
+            shortName: 'Одинаковый 2',
+            lat: 55.82,
+            lng: 37.12,
+            normalizedTariff: 700,
+            isBaseline: false,
+          },
+        ],
+      },
+    });
+
+    await waitFor(() => {
+      expect(markers.length).toBe(3);
+    });
+
+    expect(markers[0]?.style.background).toBe('#0369a1');
+    expect(markers[1]?.style.background).toBe('rgb(205, 165, 101)');
+    expect(markers[2]?.style.background).toBe('rgb(205, 165, 101)');
+  });
+
   it('updates markers and recenters on settlements change', async () => {
     const { rerender } = render(SettlementMap, {
       props: { settlements: mockSettlements },

@@ -28,6 +28,11 @@
     el: HTMLElement;
   }
 
+  interface Range {
+    min: number;
+    max: number;
+  }
+
   declare global {
     interface Window {
       ymaps3?: typeof ymaps3;
@@ -78,13 +83,22 @@
     return lng - (fx - 0.5) * w * deg;
   }
 
-  function getTariffColor(tariff: number, isBaseline: boolean): string {
+  function getRange(list: SettlementMapData[]): Range | null {
+    const vals = list.filter(item => !item.isBaseline).map(item => item.normalizedTariff);
+    if (vals.length === 0) return null;
+    return { min: Math.min(...vals), max: Math.max(...vals) };
+  }
+
+  function getTariffColor(tariff: number, isBaseline: boolean, range: Range | null): string {
     if (isBaseline) {
       return '#0369a1';
     }
-    const minTariff = 50;
-    const maxTariff = 200;
-    const normalized = Math.max(0, Math.min(1, (tariff - minTariff) / (maxTariff - minTariff)));
+
+    if (!range || range.min === range.max) {
+      return 'rgb(205, 165, 101)';
+    }
+
+    const normalized = Math.max(0, Math.min(1, (tariff - range.min) / (range.max - range.min)));
     const red = Math.round(180 + 50 * normalized);
     const green = Math.round(130 + 70 * (1 - normalized));
     const blue = Math.round(86 + 30 * (1 - normalized));
@@ -170,10 +184,11 @@
     if (!map) return;
 
     const { YMapMarker } = ym;
+    const range = getRange(settlements);
     clearMarkers();
 
     for (const settlement of settlements) {
-      const color = getTariffColor(settlement.normalizedTariff, settlement.isBaseline);
+      const color = getTariffColor(settlement.normalizedTariff, settlement.isBaseline, range);
       const el = document.createElement('div');
       el.style.cssText = `
         width: 18px;
@@ -366,7 +381,11 @@
       data-testid="map-popup"
     >
       <div class="relative">
-        <div bind:this={popupEl} class="pointer-events-auto w-64 rounded-lg border border-border bg-card p-3 shadow-lg">
+        <div
+          bind:this={popupEl}
+          class="pointer-events-auto w-64 rounded-lg border p-3 shadow-xl"
+          style="background: color-mix(in oklab, var(--color-card) 42%, transparent); border-color: color-mix(in oklab, var(--color-border) 70%, transparent); backdrop-filter: blur(4px) saturate(1.03); -webkit-backdrop-filter: blur(4px) saturate(1.03);"
+        >
           <div class="mb-1 flex items-start justify-between gap-3">
             <a
               class="text-base font-semibold text-foreground hover:text-primary"
@@ -392,7 +411,8 @@
           <p class="mb-2 text-sm text-muted-foreground"><strong>{formatTariff(tip.item.normalizedTariff)}</strong></p>
         </div>
         <div
-          class={`absolute left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border border-border bg-card ${tip.up ? '-bottom-1.5 border-t-0 border-l-0' : '-top-1.5 border-b-0 border-r-0'}`}
+          class={`absolute left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border ${tip.up ? '-bottom-1.5 border-t-0 border-l-0' : '-top-1.5 border-b-0 border-r-0'}`}
+          style="background: color-mix(in oklab, var(--color-card) 42%, transparent); border-color: color-mix(in oklab, var(--color-border) 70%, transparent); backdrop-filter: blur(4px) saturate(1.03); -webkit-backdrop-filter: blur(4px) saturate(1.03);"
           aria-hidden="true"
         ></div>
       </div>
