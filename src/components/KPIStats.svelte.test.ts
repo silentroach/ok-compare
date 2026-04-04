@@ -18,17 +18,6 @@ describe('KPIStats', () => {
     shelkovoVsMeanPercent: 18
   };
 
-  it('renders rank information', () => {
-    const { container } = render(KPIStats, {
-      props: { stats: mockStats }
-    });
-
-    expect(container.textContent).toContain('Шелково');
-    expect(container.textContent).toContain('3-й');
-    expect(container.textContent).toContain('4');
-    expect(container.textContent).toContain('по стоимости');
-  });
-
   it('displays median comparison when more expensive', () => {
     const { container } = render(KPIStats, {
       props: { stats: mockStats }
@@ -58,7 +47,7 @@ describe('KPIStats', () => {
     });
 
     expect(container.textContent).toContain('2');
-    expect(container.textContent).toContain('дешевле');
+    expect(container.textContent).toContain('поселка дешевле Шелково');
   });
 
   it('displays more expensive count', () => {
@@ -67,7 +56,20 @@ describe('KPIStats', () => {
     });
 
     expect(container.textContent).toContain('1');
-    expect(container.textContent).toContain('дороже');
+    expect(container.textContent).toContain('поселок дороже Шелково');
+  });
+
+  it('uses plural form for many settlements', () => {
+    const manyStats: Stats = {
+      ...mockStats,
+      moreExpensiveCount: 5
+    };
+
+    const { container } = render(KPIStats, {
+      props: { stats: manyStats }
+    });
+
+    expect(container.textContent).toContain('поселков дороже Шелково');
   });
 
   it('formats percentage correctly', () => {

@@ -1,71 +1,98 @@
 <script lang="ts">
   import type { Stats } from '../lib/schema';
-  import { formatCurrency, formatPercentage } from '../lib/format';
+  import { formatPercentage } from '../lib/format';
 
   interface Props {
     stats: Stats;
+    embed?: boolean;
   }
 
-  let { stats }: Props = $props();
+  let { stats, embed = false }: Props = $props();
+  const plural = new Intl.PluralRules('ru-RU');
 
-  function getRankSuffix(rank: number): string {
-    if (rank === 1) return 'й';
-    if (rank === 2) return 'й';
-    if (rank === 3) return 'й';
-    if (rank >= 4 && rank <= 20) return 'й';
-    const lastDigit = rank % 10;
-    if (lastDigit === 1) return 'й';
-    if (lastDigit >= 2 && lastDigit <= 4) return 'й';
-    return 'й';
+  function getMedianText(diff: number): string {
+    if (diff > 0) return 'дороже медианы';
+    if (diff < 0) return 'дешевле медианы';
+    return 'совпадает с медианой';
   }
 
-  function getOrdinalRank(rank: number): string {
-    return `${rank}-${getRankSuffix(rank)}`;
+  function getMedianTone(diff: number): string {
+    if (diff > 0) return 'text-[color:var(--color-danger-text)]';
+    if (diff < 0) return 'text-[color:var(--color-success-text)]';
+    return 'text-[color:var(--color-muted-foreground)]';
+  }
+
+  function getNoun(n: number): string {
+    const kind = plural.select(Math.abs(n));
+    if (kind === 'one') return 'поселок';
+    if (kind === 'few') return 'поселка';
+    return 'поселков';
+  }
+
+  function getCheaperText(n: number): string {
+    return `${getNoun(n)} дешевле Шелково`;
+  }
+
+  function getExpensiveText(n: number): string {
+    return `${getNoun(n)} дороже Шелково`;
   }
 </script>
 
-<section class="mb-12">
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <div class="text-3xl font-bold text-blue-600 mb-2">
-        {getOrdinalRank(stats.shelkovoRank)}
-      </div>
-      <div class="text-sm text-gray-600">
-        Шелково — {stats.shelkovoRank}-й по стоимости из {stats.totalSettlements} поселков
-      </div>
+<section
+  class={embed
+    ? 'p-1'
+    : 'ui-shell p-4 md:p-5'}
+  data-testid="kpi-stats"
+>
+  {#if !embed}
+    <div class="mb-3 flex items-end justify-between gap-3">
+      <h2 class="text-sm font-semibold uppercase tracking-wide ui-muted" data-testid="kpi-stats-title">
+        Ключевые показатели
+      </h2>
+      <p class="text-xs ui-muted">по текущему набору поселков</p>
     </div>
+  {/if}
 
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <div class="text-3xl font-bold {stats.shelkovoVsMedianPercent > 0 ? 'text-red-600' : 'text-green-600'} mb-2">
+  <div class={embed ? 'grid grid-cols-1 gap-2 sm:grid-cols-3' : 'grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3'}>
+
+    <article
+      class={embed
+        ? 'mx-auto w-[96%] rounded-2xl bg-white/45 px-3.5 py-2.5 backdrop-blur-[3px] shadow-[0_8px_24px_-18px_rgba(15,23,42,0.6)] dark:bg-white/10'
+        : 'rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-muted-soft)] p-4'}
+      data-testid="kpi-median"
+    >
+      <div class={`${embed ? 'mb-0.5 text-lg' : 'mb-1 text-2xl'} font-semibold ${getMedianTone(stats.shelkovoVsMedianPercent)}`}>
         {formatPercentage(stats.shelkovoVsMedianPercent / 100)}
       </div>
-      <div class="text-sm text-gray-600">
-        {#if stats.shelkovoVsMedianPercent > 0}
-          дороже медианы
-        {:else if stats.shelkovoVsMedianPercent < 0}
-          дешевле медианы
-        {:else}
-          совпадает с медианой
-        {/if}
-      </div>
-    </div>
+      <div class={embed ? 'text-xs ui-muted' : 'text-sm ui-muted'}>{getMedianText(stats.shelkovoVsMedianPercent)}</div>
+    </article>
 
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <div class="text-3xl font-bold text-green-600 mb-2">
+    <article
+      class={embed
+        ? 'mx-auto w-[96%] rounded-2xl bg-white/45 px-3.5 py-2.5 backdrop-blur-[3px] shadow-[0_8px_24px_-18px_rgba(15,23,42,0.6)] dark:bg-white/10'
+        : 'rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-muted-soft)] p-4'}
+      data-testid="kpi-cheaper"
+    >
+      <div class={embed ? 'mb-0.5 text-lg font-semibold text-[color:var(--color-success-text)]' : 'mb-1 text-2xl font-semibold text-[color:var(--color-success-text)]'}>
         {stats.cheaperCount}
       </div>
-      <div class="text-sm text-gray-600">
-        поселков дешевле Шелково
+      <div class={embed ? 'text-xs ui-muted' : 'text-sm ui-muted'}>
+        {getCheaperText(stats.cheaperCount)}
       </div>
-    </div>
+    </article>
 
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <div class="text-3xl font-bold text-red-600 mb-2">
+    <article
+      class={embed
+        ? 'mx-auto w-[96%] rounded-2xl bg-white/45 px-3.5 py-2.5 backdrop-blur-[3px] shadow-[0_8px_24px_-18px_rgba(15,23,42,0.6)] dark:bg-white/10'
+        : 'rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-muted-soft)] p-4'}
+      data-testid="kpi-expensive"
+    >
+      <div class={embed ? 'mb-0.5 text-lg font-semibold text-[color:var(--color-danger-text)]' : 'mb-1 text-2xl font-semibold text-[color:var(--color-danger-text)]'}>
         {stats.moreExpensiveCount}
       </div>
-      <div class="text-sm text-gray-600">
-        поселков дороже Шелково
+      <div class={embed ? 'text-xs ui-muted' : 'text-sm ui-muted'}>
+        {getExpensiveText(stats.moreExpensiveCount)}
       </div>
-    </div>
+    </article>
   </div>
 </section>

@@ -291,9 +291,46 @@
   }
 
   .ui-btn-warning.ui-btn-solid {
-    border-color: var(--color-warning);
-    background: var(--color-warning);
+    border-color: color-mix(in oklab, var(--color-warning) 82%, var(--color-primary) 18%);
+    background: color-mix(in oklab, var(--color-warning) 82%, var(--color-primary) 18%);
     color: var(--color-warning-foreground);
+  }
+
+  .ui-btn-warning.ui-btn-solid:hover {
+    border-color: color-mix(in oklab, var(--color-warning) 72%, var(--color-primary) 28%);
+    background: color-mix(in oklab, var(--color-warning) 72%, var(--color-primary) 28%);
+  }
+
+  .ui-btn-soft {
+    border-width: 1px;
+    border-style: solid;
+  }
+
+  .ui-btn-primary.ui-btn-soft {
+    background: color-mix(in oklab, var(--color-primary) 16%, var(--color-card) 84%);
+    color: color-mix(in oklab, var(--color-primary) 78%, var(--color-foreground) 22%);
+  }
+
+  .ui-btn-primary.ui-btn-soft:hover {
+    background: color-mix(in oklab, var(--color-primary) 21%, var(--color-card) 79%);
+  }
+
+  .ui-btn-success.ui-btn-soft {
+    background: var(--color-success-soft);
+    color: var(--color-success-text);
+  }
+
+  .ui-btn-success.ui-btn-soft:hover {
+    background: color-mix(in oklab, var(--color-success-soft) 88%, var(--color-success-border) 12%);
+  }
+
+  .ui-btn-warning.ui-btn-soft {
+    background: var(--color-warning-soft);
+    color: var(--color-warning-text);
+  }
+
+  .ui-btn-warning.ui-btn-soft:hover {
+    background: color-mix(in oklab, var(--color-warning-soft) 88%, var(--color-warning-border) 12%);
   }
 
   .ui-btn-danger.ui-btn-solid {

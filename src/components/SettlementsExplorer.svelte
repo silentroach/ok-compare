@@ -166,7 +166,7 @@
           />
           <label
             for={allid}
-            class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'all' ? 'ui-btn-solid ui-btn-primary' : ''}"
+            class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'all' ? 'ui-btn-soft ui-btn-primary' : ''}"
           >
             Все
           </label>
@@ -181,7 +181,7 @@
           />
           <label
             for={cheapid}
-            class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'cheaper' ? 'ui-btn-solid ui-btn-success' : ''}"
+            class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'cheaper' ? 'ui-btn-soft ui-btn-success' : ''}"
           >
             {mobile ? 'Дешевле' : 'Дешевле Шелково'}
           </label>
@@ -196,14 +196,14 @@
           />
           <label
             for={moreid}
-            class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'more_expensive' ? 'ui-btn-solid ui-btn-warning' : ''}"
+            class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'more_expensive' ? 'ui-btn-soft ui-btn-warning' : ''}"
           >
             {mobile ? 'Дороже' : 'Дороже Шелково'}
           </label>
         </div>
         <button
           type="button"
-          class="ui-btn ui-btn-outline h-10 w-10 shrink-0 p-0 md:h-auto md:w-auto md:px-4 md:py-2.5 {showMap ? 'ui-btn-solid ui-btn-primary' : ''}"
+          class="ui-btn ui-btn-sm ui-btn-outline h-8 w-8 shrink-0 p-0 md:h-auto md:w-auto md:px-3 md:py-1.5 {showMap ? 'ui-btn-solid ui-btn-primary' : ''}"
           onclick={() => {
             showMap = !showMap;
           }}
