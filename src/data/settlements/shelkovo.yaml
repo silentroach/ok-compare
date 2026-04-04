@@ -1,4 +1,4 @@
-name: "Коттеджный поселок Шелково"
+name: "КП Шелково"
 short_name: "Шелково"
 slug: "shelkovo"
 website: "https://kpshelkovo.ru"
@@ -6,7 +6,7 @@ management_company: "УК Шелково"
 is_baseline: true
 
 location:
-  address_text: "Московская область, Ступинский, 45 мин от МКАД по М-2/М-4"
+  address_text: "Ступинский район, Московская область"
   lat: 55.065422
   lng: 37.733096
   map_url: "https://yandex.ru/maps/org/shelkovo_eko_klab/92228099436"

@@ -2,6 +2,7 @@
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
     "strict": true,
+    "types": ["@yandex/ymaps3-types"],
     "noImplicitAny": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,

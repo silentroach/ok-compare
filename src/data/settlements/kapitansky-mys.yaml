@@ -1,0 +1,64 @@
+# Вне схемы: на странице указано 40 га и 273 участка.
+# Вне схемы: на странице указано, что это дачный поселок в окружении хвойного леса.
+
+name: "КП Капитанский Мыс"
+short_name: "Капитанский Мыс"
+slug: "kapitansky-mys"
+website: "https://xn----7sbabf2bmejrt1b.xn--p1ai/kapitansky_mys"
+management_company: "Капитан Клаб"
+is_baseline: false
+
+location:
+  address_text: "Заокский район, Тульская область"
+  lat: 54.73051
+  lng: 37.574444
+  district: "Заокский"
+
+tariff:
+  value: 495
+  unit: "rub_per_sotka"
+  period: "month"
+  normalized_per_sotka_month: 495
+  note: "не подтверждено"
+
+infrastructure:
+  gas: "yes"
+  water: "yes"
+  sewage: "yes"
+  playgrounds: "yes"
+  sports: "yes"
+  beach_or_water_access: "yes"
+  retail_or_services: "yes"
+  # roads: неизвестно
+  # checkpoints: неизвестно
+  # security: неизвестно
+
+# service_model.garbage_collection: неизвестно
+# service_model.snow_removal: неизвестно
+# service_model.road_cleaning: неизвестно
+service_model: {}
+
+promises_vs_fact:
+  promised: []
+  actual: []
+  notes: ""
+
+transparency:
+  has_public_tariff: false
+  has_website: true
+  has_phone: true
+  has_management_info: false
+  notes: ""
+
+sources:
+  - title: "Капитан Клаб — Капитанский мыс"
+    url: "https://xn----7sbabf2bmejrt1b.xn--p1ai/kapitansky_mys"
+    type: "official"
+    date_checked: "2026-04-04"
+    comment: "Описание поселка, объекты и коммуникации"
+  - title: "Капитан Клаб — главный сайт"
+    url: "https://xn----7sbabf2bmejrt1b.xn--p1ai/"
+    type: "official"
+    date_checked: "2026-04-04"
+    comment: "Контакты и список поселков"
+comparison_notes: []

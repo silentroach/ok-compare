@@ -89,7 +89,7 @@ describe('ServiceTable', () => {
   it('renders with empty/unknown services', () => {
     const emptyServices: ServiceModel = {};
 
-    const { container } = render(ServiceTable, {
+    const { container, getAllByText } = render(ServiceTable, {
       props: {
         services: emptyServices,
         shelkovoServices: null
@@ -98,5 +98,6 @@ describe('ServiceTable', () => {
 
     const rows = container.querySelectorAll('[data-testid="service-row"]');
     expect(rows.length).toBe(6);
+    expect(getAllByText('Неизвестно').length).toBe(6);
   });
 });

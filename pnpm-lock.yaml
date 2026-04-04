@@ -36,6 +36,9 @@ importers:
       '@types/luxon':
         specifier: ^3.6.2
         version: 3.7.1
+      '@yandex/ymaps3-types':
+        specifier: ^1.0.19072130
+        version: 1.0.19072130
       happy-dom:
         specifier: ^20.8.9
         version: 20.8.9
@@ -838,6 +841,20 @@ packages:
 
   '@vitest/utils@3.2.4':
     resolution: {integrity: sha512-fB2V0JFrQSMsCo9HiSq3Ezpdv4iYaXRG1Sx8edX3MwxfyNn83mKiGzOcH+Fkxt4MHxr3y42fQi1oeAInqgX2QA==}
+
+  '@yandex/ymaps3-types@1.0.19072130':
+    resolution: {integrity: sha512-3loWJh1NFSYR+L8HdcoqIXhy/xZHVDgZ4z//hWFbdauPmIJxF6ZHj+mtBCPLwEXTyMUH8n9nwo+KCllnbPqjHQ==}
+    peerDependencies:
+      '@types/react': ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      '@types/react-dom': ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      '@vue/runtime-core': '3'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+      '@vue/runtime-core':
+        optional: true
 
   acorn@8.16.0:
     resolution: {integrity: sha512-UVJyE9MttOsBQIDKw1skb9nAwQuR5wuGD3+82K6JgJlm/Y+KI92oNsMNGZCYdDsVtRHSak0pcV5Dno5+4jh9sw==}
@@ -2756,6 +2773,8 @@ snapshots:
       '@vitest/pretty-format': 3.2.4
       loupe: 3.2.1
       tinyrainbow: 2.0.0
+
+  '@yandex/ymaps3-types@1.0.19072130': {}
 
   acorn@8.16.0: {}
 

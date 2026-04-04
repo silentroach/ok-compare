@@ -23,29 +23,14 @@
     focusX?: number;
   }
 
-  interface YMapLike {
-    addChild: (child: unknown) => void;
-    removeChild?: (child: unknown) => void;
-    update?: (props: { location: { center: [number, number]; zoom: number } }) => void;
-    destroy: () => void;
-  }
-
   interface MarkerLike {
-    marker: unknown;
+    marker: ymaps3.YMapMarker;
     el: HTMLElement;
-  }
-
-  interface YMapAPI {
-    ready: Promise<void>;
-    YMap: new (root: HTMLElement, props: { location: { center: [number, number]; zoom: number } }, layers: unknown[]) => YMapLike;
-    YMapDefaultSchemeLayer: new () => unknown;
-    YMapDefaultFeaturesLayer: new () => unknown;
-    YMapMarker: new (props: { coordinates: [number, number] }, el: HTMLElement) => unknown;
   }
 
   declare global {
     interface Window {
-      ymaps3?: YMapAPI;
+      ymaps3?: typeof ymaps3;
     }
   }
 
@@ -61,7 +46,7 @@
 
   let mapContainer: HTMLDivElement | null = $state(null);
   let popupEl: HTMLDivElement | null = $state(null);
-  let map: YMapLike | null = $state(null);
+  let map: ymaps3.YMap | null = $state(null);
   let marks: MarkerLike[] = $state([]);
   let isLoading = $state(true);
   let error: string | null = $state(null);
@@ -76,6 +61,7 @@
   let tip: Tip | null = $state(null);
 
   const API_KEY = import.meta.env.PUBLIC_YANDEX_MAPS_API_KEY || '';
+  const PAD = 32;
 
   function clamp(v: number, min: number, max: number): number {
     return Math.max(min, Math.min(max, v));
@@ -139,15 +125,24 @@
     });
   }
 
-  function getMapView(): { center: [number, number]; zoom: number } {
+  function getMapView(): {
+    location: ymaps3.YMapLocationRequest;
+    margin: [number, number, number, number];
+  } {
     if (settlements.length === 0) {
-      return { center: [37.6173, 55.7558], zoom: 9 };
+      return {
+        location: { center: [37.6173, 55.7558], zoom: 9 },
+        margin: [0, 0, 0, 0],
+      };
     }
 
     if (settlements.length === 1) {
       const item = settlements[0];
       const zoom = 12;
-      return { center: [shift(item.lng, zoom), item.lat], zoom };
+      return {
+        location: { center: [shift(item.lng, zoom), item.lat], zoom },
+        margin: [0, 0, 0, 0],
+      };
     }
 
     const lat = settlements.map(s => s.lat);
@@ -156,19 +151,9 @@
     const maxLat = Math.max(...lat);
     const minLng = Math.min(...lng);
     const maxLng = Math.max(...lng);
-    const span = Math.max(maxLat - minLat, maxLng - minLng);
-    let zoom = 11;
-
-    if (span > 1) zoom = 8;
-    else if (span > 0.6) zoom = 9;
-    else if (span > 0.3) zoom = 10;
-    else if (span > 0.15) zoom = 11;
-    else if (span > 0.07) zoom = 12;
-    else zoom = 13;
-
     return {
-      center: [(minLng + maxLng) / 2, (minLat + maxLat) / 2],
-      zoom,
+      location: { bounds: [[minLng, minLat], [maxLng, maxLat]] },
+      margin: [PAD, PAD, PAD, PAD],
     };
   }
 
@@ -181,10 +166,10 @@
     marks = [];
   }
 
-  function renderMarkers(ymaps3: YMapAPI): void {
+  function renderMarkers(ym: typeof ymaps3): void {
     if (!map) return;
 
-    const { YMapMarker } = ymaps3;
+    const { YMapMarker } = ym;
     clearMarkers();
 
     for (const settlement of settlements) {
@@ -241,10 +226,8 @@
       map = new YMap(
         mapContainer,
         {
-          location: {
-            center: view.center,
-            zoom: view.zoom,
-          },
+          location: view.location,
+          margin: view.margin,
         },
         [
           new YMapDefaultSchemeLayer(),
@@ -282,9 +265,10 @@
     }
     map.update?.({
       location: {
-        center: view.center,
-        zoom: view.zoom,
+        ...view.location,
+        duration: 250,
       },
+      margin: view.margin,
     });
   }
 
@@ -384,7 +368,14 @@
       <div class="relative">
         <div bind:this={popupEl} class="pointer-events-auto w-64 rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
           <div class="mb-1 flex items-start justify-between gap-3">
-            <p class="text-base font-semibold text-slate-900">{tip.item.shortName}</p>
+            <a
+              class="text-base font-semibold text-slate-900 hover:text-sky-700"
+              href={withBase(`settlements/${tip.item.slug}/`)}
+              target="_parent"
+              data-testid="map-popup-link"
+            >
+              {tip.item.shortName}
+            </a>
             <button
               type="button"
               class="rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
@@ -399,14 +390,6 @@
             </button>
           </div>
           <p class="mb-2 text-sm text-slate-600"><strong>{formatTariff(tip.item.normalizedTariff)}</strong></p>
-          <a
-            class="text-sm font-medium text-sky-700 hover:text-sky-900"
-            href={withBase(`settlements/${tip.item.slug}/`)}
-            target="_parent"
-            data-testid="map-popup-link"
-          >
-            Подробнее ->
-          </a>
         </div>
         <div
           class={`absolute left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border border-slate-200 bg-white ${tip.up ? '-bottom-1.5 border-t-0 border-l-0' : '-top-1.5 border-b-0 border-r-0'}`}

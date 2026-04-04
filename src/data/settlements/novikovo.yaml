@@ -1,0 +1,60 @@
+# Вне схемы: на странице указано 100 га и 298 домовладений.
+# Вне схемы: на странице указано расположение в зоне Приокско-Террасного заповедника.
+
+name: "КП Новиково"
+short_name: "Новиково"
+slug: "novikovo"
+website: "https://xn----7sbabf2bmejrt1b.xn--p1ai/novikovo"
+management_company: "Капитан Клаб"
+is_baseline: false
+
+location:
+  address_text: "Заокский район, Тульская область"
+  lat: 54.716596
+  lng: 37.502786
+  district: "Заокский"
+
+tariff:
+  value: 495
+  unit: "rub_per_sotka"
+  period: "month"
+  normalized_per_sotka_month: 495
+  note: "не подтверждено"
+
+infrastructure:
+  gas: "yes"
+  water: "yes"
+  sewage: "yes"
+  # roads: неизвестно
+  # checkpoints: неизвестно
+  # security: неизвестно
+
+# service_model.garbage_collection: неизвестно
+# service_model.snow_removal: неизвестно
+# service_model.road_cleaning: неизвестно
+service_model: {}
+
+promises_vs_fact:
+  promised: []
+  actual: []
+  notes: ""
+
+transparency:
+  has_public_tariff: false
+  has_website: true
+  has_phone: true
+  has_management_info: false
+  notes: ""
+
+sources:
+  - title: "Капитан Клаб — Новиково"
+    url: "https://xn----7sbabf2bmejrt1b.xn--p1ai/novikovo"
+    type: "official"
+    date_checked: "2026-04-04"
+    comment: "Описание поселка и коммуникации"
+  - title: "Капитан Клаб — главный сайт"
+    url: "https://xn----7sbabf2bmejrt1b.xn--p1ai/"
+    type: "official"
+    date_checked: "2026-04-04"
+    comment: "Контакты и список поселков"
+comparison_notes: []

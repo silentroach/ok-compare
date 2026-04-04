@@ -22,25 +22,38 @@
   const icons: Record<AvailabilityStatus, string> = {
     yes: '✓',
     no: '✗',
-    partial: '◐',
-    unknown: '?'
+    partial: '◐'
   };
 
   // Status colors for badges
   const colors: Record<AvailabilityStatus, string> = {
     yes: 'bg-green-100 text-green-700 border-green-200',
     no: 'bg-red-100 text-red-700 border-red-200',
-    partial: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-    unknown: 'bg-gray-100 text-gray-500 border-gray-200'
+    partial: 'bg-yellow-100 text-yellow-700 border-yellow-200'
   };
 
   // Get status text
   const statusText: Record<AvailabilityStatus, string> = {
     yes: 'Есть',
     no: 'Нет',
-    partial: 'Частично',
-    unknown: 'Неизвестно'
+    partial: 'Частично'
   };
+
+  const unknown = {
+    icon: '?',
+    text: 'Неизвестно',
+    color: 'bg-gray-100 text-gray-500 border-gray-200'
+  };
+
+  function getDisplay(value: AvailabilityStatus | undefined): { icon: string; text: string; color: string } {
+    if (value === undefined) return unknown;
+
+    return {
+      icon: icons[value],
+      text: statusText[value],
+      color: colors[value]
+    };
+  }
 
   // Check if there's a difference between settlement and Shelkovo
   function hasDifference(key: string): boolean {
@@ -76,6 +89,8 @@
         {@const value = services[key as keyof ServiceModel]}
         {@const shelkovoValue = shelkovoServices?.[key as keyof ServiceModel]}
         {@const isDifferent = hasDifference(key)}
+        {@const display = getDisplay(value)}
+        {@const shelkovoDisplay = shelkovoServices ? getDisplay(shelkovoValue) : null}
         <tr data-testid="service-row" class="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/70">
           <td class="px-4 py-3 text-sm text-slate-900">
             {labels[key] || key}
@@ -83,20 +98,20 @@
           <td class="px-4 py-3 text-center">
             <span 
               data-testid="service-status"
-              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border {colors[value]}"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border {display.color}"
             >
-              <span class="w-4 h-4 flex items-center justify-center">{icons[value]}</span>
-              <span class="hidden sm:inline">{statusText[value]}</span>
+              <span class="w-4 h-4 flex items-center justify-center">{display.icon}</span>
+              <span class="hidden sm:inline">{display.text}</span>
             </span>
           </td>
-          {#if shelkovoServices && shelkovoValue}
+          {#if shelkovoServices && shelkovoDisplay}
             <td class="px-4 py-3 text-center">
               <span 
                 data-testid="shelkovo-service-status"
-                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border {colors[shelkovoValue]}"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border {shelkovoDisplay.color}"
               >
-                <span class="w-4 h-4 flex items-center justify-center">{icons[shelkovoValue]}</span>
-                <span class="hidden sm:inline">{statusText[shelkovoValue]}</span>
+                <span class="w-4 h-4 flex items-center justify-center">{shelkovoDisplay.icon}</span>
+                <span class="hidden sm:inline">{shelkovoDisplay.text}</span>
               </span>
             </td>
             <td class="px-4 py-3 text-center">
