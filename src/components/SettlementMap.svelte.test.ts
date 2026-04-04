@@ -4,6 +4,8 @@ import SettlementMap from './SettlementMap.svelte';
 
 const mockMap = {
   addChild: vi.fn(),
+  removeChild: vi.fn(),
+  update: vi.fn(),
   destroy: vi.fn(),
 };
 
@@ -93,6 +95,23 @@ describe('SettlementMap', () => {
 
     await waitFor(() => {
       expect(markers.length).toBe(mockSettlements.length);
+    });
+  });
+
+  it('updates markers and recenters on settlements change', async () => {
+    const { rerender } = render(SettlementMap, {
+      props: { settlements: mockSettlements },
+    });
+
+    await waitFor(() => {
+      expect(mockYandexMaps.YMapMarker).toHaveBeenCalledTimes(3);
+    });
+
+    await rerender({ settlements: [mockSettlements[0]] });
+
+    await waitFor(() => {
+      expect(mockYandexMaps.YMapMarker).toHaveBeenCalledTimes(4);
+      expect(mockMap.update).toHaveBeenCalled();
     });
   });
 

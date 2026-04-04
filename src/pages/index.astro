@@ -1,9 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.svelte';
-import KPIStats from '../components/KPIStats.svelte';
 import SettlementsExplorer from '../components/SettlementsExplorer.svelte';
-import SettlementMap from '../components/SettlementMap.svelte';
 import { loadAllData } from '../lib/data';
 
 // Load all data at build time
@@ -11,17 +9,6 @@ const { settlements, stats, comparisons } = await loadAllData();
 
 // Convert comparisons Map to a plain object for serialization
 const comparisonsObj = Object.fromEntries(comparisons);
-
-// Prepare map data from settlements
-const mapData = settlements.map(s => ({
-  slug: s.slug,
-  name: s.name,
-  shortName: s.short_name,
-  lat: s.location.lat,
-  lng: s.location.lng,
-  normalizedTariff: s.tariff.normalized_per_sotka_month,
-  isBaseline: s.is_baseline,
-}));
 ---
 
 <BaseLayout>
@@ -31,23 +18,13 @@ const mapData = settlements.map(s => ({
 			title="Тарифы на содержание поселков"
 		/>
 
-		<!-- KPI Stats Section -->
+		<!-- Временно скрыто: вернем плашки, когда данных станет больше -->
+		<!--
 		<KPIStats stats={stats} />
+		-->
 
-		<!-- Interactive Map Section -->
-		<section id="map" class="mb-12">
-			<h2 class="text-2xl font-bold text-gray-900 mb-4">Карта поселков</h2>
-			
-			<SettlementMap 
-				settlements={mapData}
-				client:visible
-			/>
-		</section>
-
-		<!-- Settlements Explorer with filters -->
+		<!-- Settlements Explorer with filters and map -->
 		<section id="settlements">
-			<h2 class="text-2xl font-bold text-gray-900 mb-6">Коттеджные посёлки</h2>
-			
 		<SettlementsExplorer 
 			settlements={settlements}
 			comparisons={comparisonsObj}

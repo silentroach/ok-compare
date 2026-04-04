@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import type { Settlement, Stats, ComparisonResult } from '../lib/schema';
   import { calculateDistance } from '../lib/format';
+  import SettlementMap from './SettlementMap.svelte';
   import SettlementCard from './SettlementCard.svelte';
 
   interface Props {
@@ -34,6 +36,7 @@
     security: false,
     roads: false,
   });
+  let showMap = $state(true);
 
   // Derived: filtered and sorted settlements
   let filteredSettlements = $derived.by(() => {
@@ -90,6 +93,19 @@
   let displayedSettlements = $derived(filteredSettlements);
   let totalCount = $derived(settlements.length);
   let displayedCount = $derived(displayedSettlements.length);
+  let mapSettlements = $derived.by(() => displayedSettlements.map((s) => ({
+    slug: s.slug,
+    name: s.name,
+    shortName: s.short_name,
+    lat: s.location.lat,
+    lng: s.location.lng,
+    normalizedTariff: s.tariff.normalized_per_sotka_month,
+    isBaseline: s.is_baseline,
+  })));
+
+  onMount(() => {
+    showMap = !window.matchMedia('(max-width: 767px)').matches;
+  });
 </script>
 
 <div class="space-y-6">
@@ -174,7 +190,27 @@
       </div>
 
     </div>
+
+    <div class="mt-4 flex items-center justify-end">
+      <button
+        type="button"
+        class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50"
+        onclick={() => {
+          showMap = !showMap;
+        }}
+        data-testid="map-toggle"
+      >
+        {showMap ? 'Скрыть карту' : 'Показать карту'}
+      </button>
+    </div>
   </div>
+
+  {#if showMap}
+    <section class="space-y-4" data-testid="filtered-map">
+      <h2 class="text-2xl font-bold text-gray-900">Карта поселков</h2>
+      <SettlementMap settlements={mapSettlements} />
+    </section>
+  {/if}
 
   <div class="flex items-center justify-between">
     <p class="text-sm text-gray-600">

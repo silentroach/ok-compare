@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount, onDestroy, untrack } from 'svelte';
   import { formatTariff } from '../lib/format';
   import { withBase } from '../lib/url';
 
@@ -19,7 +19,14 @@
 
   interface YMapLike {
     addChild: (child: unknown) => void;
+    removeChild?: (child: unknown) => void;
+    update?: (props: { location: { center: [number, number]; zoom: number } }) => void;
     destroy: () => void;
+  }
+
+  interface MarkerLike {
+    marker: unknown;
+    el: HTMLElement;
   }
 
   interface YMapAPI {
@@ -41,6 +48,7 @@
   let mapContainer: HTMLDivElement | null = $state(null);
   let popupEl: HTMLDivElement | null = $state(null);
   let map: YMapLike | null = $state(null);
+  let marks: MarkerLike[] = $state([]);
   let isLoading = $state(true);
   let error: string | null = $state(null);
   let ymapsLoaded = $state(false);
@@ -101,6 +109,84 @@
     });
   }
 
+  function getMapView(): { center: [number, number]; zoom: number } {
+    if (settlements.length === 0) {
+      return { center: [37.6173, 55.7558], zoom: 9 };
+    }
+
+    if (settlements.length === 1) {
+      const item = settlements[0];
+      return { center: [item.lng, item.lat], zoom: 12 };
+    }
+
+    const lat = settlements.map(s => s.lat);
+    const lng = settlements.map(s => s.lng);
+    const minLat = Math.min(...lat);
+    const maxLat = Math.max(...lat);
+    const minLng = Math.min(...lng);
+    const maxLng = Math.max(...lng);
+    const span = Math.max(maxLat - minLat, maxLng - minLng);
+    let zoom = 11;
+
+    if (span > 1) zoom = 8;
+    else if (span > 0.6) zoom = 9;
+    else if (span > 0.3) zoom = 10;
+    else if (span > 0.15) zoom = 11;
+    else if (span > 0.07) zoom = 12;
+    else zoom = 13;
+
+    return {
+      center: [(minLng + maxLng) / 2, (minLat + maxLat) / 2],
+      zoom,
+    };
+  }
+
+  function clearMarkers(): void {
+    if (!map) return;
+
+    for (const item of marks) {
+      map.removeChild?.(item.marker);
+    }
+    marks = [];
+  }
+
+  function renderMarkers(ymaps3: YMapAPI): void {
+    if (!map) return;
+
+    const { YMapMarker } = ymaps3;
+    clearMarkers();
+
+    for (const settlement of settlements) {
+      const color = getTariffColor(settlement.normalizedTariff, settlement.isBaseline);
+      const el = document.createElement('div');
+      el.style.cssText = `
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: ${color};
+        border: 2px solid white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        cursor: pointer;
+      `;
+      el.setAttribute('title', settlement.name);
+      el.setAttribute('aria-label', `Маркер: ${settlement.name}`);
+      el.addEventListener('click', (evt) => {
+        evt.stopPropagation();
+        open(settlement, el);
+      });
+
+      const marker = new YMapMarker(
+        {
+          coordinates: [settlement.lng, settlement.lat],
+        },
+        el
+      );
+
+      map.addChild(marker);
+      marks.push({ marker, el });
+    }
+  }
+
   async function initMap(): Promise<void> {
     if (!mapContainer || !ymapsLoaded) return;
 
@@ -117,14 +203,14 @@
 
       const {YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapMarker} = ymaps3;
 
-      const center = getMapCenter();
+      const view = getMapView();
       
       map = new YMap(
         mapContainer,
         {
           location: {
-            center: [center[1], center[0]],
-            zoom: 11,
+            center: view.center,
+            zoom: view.zoom,
           },
         },
         [
@@ -133,34 +219,7 @@
         ]
       );
 
-      for (const settlement of settlements) {
-        const color = getTariffColor(settlement.normalizedTariff, settlement.isBaseline);
-        const el = document.createElement('div');
-        el.style.cssText = `
-          width: 16px;
-          height: 16px;
-          border-radius: 50%;
-          background: ${color};
-          border: 2px solid white;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-          cursor: pointer;
-        `;
-        el.setAttribute('title', settlement.name);
-        el.setAttribute('aria-label', `Маркер: ${settlement.name}`);
-        el.addEventListener('click', (evt) => {
-          evt.stopPropagation();
-          open(settlement, el);
-        });
-        
-        const marker = new YMapMarker(
-          {
-            coordinates: [settlement.lng, settlement.lat],
-          },
-          el
-        );
-        
-        map.addChild(marker);
-      }
+      renderMarkers(ymaps3);
 
       isLoading = false;
     } catch (err) {
@@ -170,19 +229,30 @@
     }
   }
 
-  function getMapCenter(): [number, number] {
-    const baseline = settlements.find(s => s.isBaseline);
-    if (baseline) {
-      return [baseline.lat, baseline.lng];
+  async function syncMap(): Promise<void> {
+    const ymaps3 = window.ymaps3;
+    if (!ymaps3 || !mapContainer) return;
+
+    if (!map) {
+      await initMap();
+      return;
     }
 
-    if (settlements.length === 0) {
-      return [55.7558, 37.6173];
+    tip = null;
+    renderMarkers(ymaps3);
+    const view = getMapView();
+    if (!map.update) {
+      map.destroy();
+      map = null;
+      await initMap();
+      return;
     }
-
-    const avgLat = settlements.reduce((sum, s) => sum + s.lat, 0) / settlements.length;
-    const avgLng = settlements.reduce((sum, s) => sum + s.lng, 0) / settlements.length;
-    return [avgLat, avgLng];
+    map.update?.({
+      location: {
+        center: view.center,
+        zoom: view.zoom,
+      },
+    });
   }
 
   function open(item: SettlementMapData, el: HTMLElement): void {
@@ -219,7 +289,6 @@
 
     try {
       await loadYandexMaps();
-      await initMap();
     } catch (err) {
       console.error('Map setup error:', err);
       error = 'Карта недоступна';
@@ -232,10 +301,20 @@
   });
 
   onDestroy(() => {
+    clearMarkers();
     if (map) {
       map.destroy();
       map = null;
     }
+  });
+
+  $effect(() => {
+    const sig = settlements.map(s => `${s.slug}:${s.lat}:${s.lng}:${s.normalizedTariff}`).join('|');
+    sig;
+    if (!ymapsLoaded || !mapContainer || error) return;
+    untrack(() => {
+      void syncMap();
+    });
   });
 </script>
 

@@ -1,0 +1,164 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, waitFor, fireEvent } from '@testing-library/svelte';
+import SettlementsExplorer from './SettlementsExplorer.svelte';
+import type { ComparisonResult, Settlement, Stats } from '../lib/schema';
+
+const mockMap = {
+  addChild: vi.fn(),
+  removeChild: vi.fn(),
+  update: vi.fn(),
+  destroy: vi.fn(),
+};
+
+const mockYandexMaps = {
+  ready: Promise.resolve(),
+  YMap: vi.fn(() => mockMap),
+  YMapDefaultSchemeLayer: vi.fn(() => ({})),
+  YMapDefaultFeaturesLayer: vi.fn(() => ({})),
+  YMapMarker: vi.fn(() => ({})),
+};
+
+const stats: Stats = {
+  shelkovoTariff: 120,
+  medianTariff: 100,
+  meanTariff: 110,
+  minTariff: 80,
+  maxTariff: 160,
+  shelkovoRank: 2,
+  totalSettlements: 2,
+  cheaperCount: 1,
+  moreExpensiveCount: 0,
+  shelkovoVsMedianPercent: 20,
+  shelkovoVsMeanPercent: 10,
+};
+
+const settlements: Settlement[] = [
+  {
+    name: 'КП Шелково',
+    short_name: 'Шелково',
+    slug: 'shelkovo',
+    website: 'https://example.com/shelkovo',
+    management_company: 'УК Шелково',
+    is_baseline: true,
+    location: { address_text: 'Московская область', lat: 55.82, lng: 37.14, district: 'Истра' },
+    tariff: { value: 120, unit: 'rub_per_sotka', period: 'month', normalized_per_sotka_month: 120, note: '' },
+    infrastructure: { gas: 'yes', security: 'yes', roads: 'asphalt' },
+    service_model: {},
+    promises_vs_fact: { promised: [], actual: [], notes: '' },
+    transparency: { has_public_tariff: false, has_website: true, has_phone: true, has_management_info: false, notes: '' },
+    sources: [],
+    comparison_notes: [],
+  },
+  {
+    name: 'КП Лесное',
+    short_name: 'Лесное',
+    slug: 'lesnoe',
+    website: 'https://example.com/lesnoe',
+    management_company: 'УК Лесное',
+    is_baseline: false,
+    location: { address_text: 'Московская область', lat: 55.85, lng: 37.2, district: 'Истра' },
+    tariff: { value: 90, unit: 'rub_per_sotka', period: 'month', normalized_per_sotka_month: 90, note: '' },
+    infrastructure: { gas: 'yes', security: 'no', roads: 'gravel' },
+    service_model: {},
+    promises_vs_fact: { promised: [], actual: [], notes: '' },
+    transparency: { has_public_tariff: false, has_website: true, has_phone: true, has_management_info: false, notes: '' },
+    sources: [],
+    comparison_notes: [],
+  },
+];
+
+const comparisons: Record<string, ComparisonResult> = {
+  shelkovo: {
+    tariffDelta: 0,
+    tariffDeltaPercent: 0,
+    isCheaper: false,
+    infrastructureDelta: {},
+    servicesDelta: {},
+    transparencyDelta: {},
+  },
+  lesnoe: {
+    tariffDelta: -30,
+    tariffDeltaPercent: -25,
+    isCheaper: true,
+    infrastructureDelta: {},
+    servicesDelta: {},
+    transparencyDelta: {},
+  },
+};
+
+function setScreen(mobile: boolean): void {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: vi.fn().mockImplementation((query: string) => ({
+      matches: mobile && query.includes('max-width: 767px'),
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
+}
+
+describe('SettlementsExplorer', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    Object.defineProperty(window, 'ymaps3', {
+      value: mockYandexMaps,
+      writable: true,
+      configurable: true,
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    delete (window as { ymaps3?: unknown }).ymaps3;
+  });
+
+  it('hides map by default on mobile', async () => {
+    setScreen(true);
+
+    const { container } = render(SettlementsExplorer, {
+      props: { settlements, comparisons, stats },
+    });
+
+    await waitFor(() => {
+      expect(container.querySelector('[data-testid="filtered-map"]')).toBeNull();
+    });
+  });
+
+  it('toggles map visibility by button', async () => {
+    setScreen(true);
+
+    const { getByTestId, container } = render(SettlementsExplorer, {
+      props: { settlements, comparisons, stats },
+    });
+
+    const btn = getByTestId('map-toggle');
+    await fireEvent.click(btn);
+
+    await waitFor(() => {
+      expect(container.querySelector('[data-testid="filtered-map"]')).toBeTruthy();
+    });
+  });
+
+  it('updates map markers after filter change', async () => {
+    setScreen(false);
+
+    const { getByLabelText } = render(SettlementsExplorer, {
+      props: { settlements, comparisons, stats },
+    });
+
+    await waitFor(() => {
+      expect(mockYandexMaps.YMapMarker).toHaveBeenCalledTimes(2);
+    });
+
+    await fireEvent.click(getByLabelText('Дешевле Шелково'));
+
+    await waitFor(() => {
+      expect(mockYandexMaps.YMapMarker).toHaveBeenCalledTimes(3);
+    });
+  });
+});
