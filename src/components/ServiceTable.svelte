@@ -60,14 +60,14 @@
 </script>
 
 <div class="overflow-x-auto">
-  <table class="w-full text-left border-collapse">
+  <table class="w-full border-collapse text-left">
     <thead>
-      <tr class="border-b border-gray-200">
-        <th class="py-3 px-4 text-sm font-medium text-gray-500">Услуга</th>
-        <th class="py-3 px-4 text-sm font-medium text-gray-500 text-center">Статус</th>
+      <tr class="border-b border-slate-200 bg-slate-50">
+        <th class="px-4 py-3 text-sm font-semibold text-slate-600">Услуга</th>
+        <th class="px-4 py-3 text-center text-sm font-semibold text-slate-600">Статус</th>
         {#if shelkovoServices}
-          <th class="py-3 px-4 text-sm font-medium text-gray-500 text-center">Шелково</th>
-          <th class="py-3 px-4 text-sm font-medium text-gray-500 text-center w-16"></th>
+          <th class="px-4 py-3 text-center text-sm font-semibold text-slate-600">Шелково</th>
+          <th class="w-16 px-4 py-3 text-center text-sm font-semibold text-slate-600"></th>
         {/if}
       </tr>
     </thead>
@@ -76,11 +76,11 @@
         {@const value = services[key as keyof ServiceModel]}
         {@const shelkovoValue = shelkovoServices?.[key as keyof ServiceModel]}
         {@const isDifferent = hasDifference(key)}
-        <tr data-testid="service-row" class="border-b border-gray-100 last:border-b-0 hover:bg-gray-50">
-          <td class="py-3 px-4 text-sm text-gray-900">
+        <tr data-testid="service-row" class="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/70">
+          <td class="px-4 py-3 text-sm text-slate-900">
             {labels[key] || key}
           </td>
-          <td class="py-3 px-4 text-center">
+          <td class="px-4 py-3 text-center">
             <span 
               data-testid="service-status"
               class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border {colors[value]}"
@@ -90,7 +90,7 @@
             </span>
           </td>
           {#if shelkovoServices && shelkovoValue}
-            <td class="py-3 px-4 text-center">
+            <td class="px-4 py-3 text-center">
               <span 
                 data-testid="shelkovo-service-status"
                 class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border {colors[shelkovoValue]}"
@@ -99,7 +99,7 @@
                 <span class="hidden sm:inline">{statusText[shelkovoValue]}</span>
               </span>
             </td>
-            <td class="py-3 px-4 text-center">
+            <td class="px-4 py-3 text-center">
               {#if isDifferent}
                 <span 
                   data-testid="diff-indicator"

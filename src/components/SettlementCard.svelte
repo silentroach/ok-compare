@@ -15,14 +15,17 @@
   let { settlement, comparison, maxTariff, isBaseline }: Props = $props();
 </script>
 
-<article data-testid="settlement-card" class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-  <div class="p-6">
-    <div class="flex items-start justify-between mb-4">
-      <h3 class="text-lg font-semibold text-gray-900">
-        <Link href={`settlements/${settlement.slug}/`} class="hover:text-blue-600">
+<article data-testid="settlement-card" class="ui-shell overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+  <div class="p-5 md:p-6">
+    <div class="mb-4 flex items-start justify-between gap-3">
+      <div>
+        <h3 class="text-xl font-semibold text-slate-900">
+          <Link href={`settlements/${settlement.slug}/`} class="ui-link">
           {settlement.short_name}
         </Link>
       </h3>
+        <p class="mt-1 text-sm text-slate-500">{settlement.location.district} район</p>
+      </div>
       <div class="flex items-center gap-2">
         {#if settlement.website}
           <a
@@ -30,7 +33,7 @@
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Открыть сайт поселка"
-            class="text-gray-400 hover:text-blue-600 transition-colors"
+            class="rounded-md p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
             title="Перейти на сайт поселка"
             data-testid="website-link"
           >
@@ -44,7 +47,7 @@
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Открыть поселок на Яндекс.Картах"
-          class="text-gray-400 hover:text-blue-600 transition-colors"
+          class="rounded-md p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
           title="Открыть на Яндекс.Картах"
           data-testid="map-link"
         >
@@ -54,7 +57,7 @@
           </svg>
         </a>
         {#if isBaseline}
-          <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+          <span class="rounded-full border border-sky-200 bg-sky-100 px-2.5 py-1 text-xs font-semibold text-sky-800">
             Наш
           </span>
         {/if}
@@ -63,26 +66,21 @@
 
     <div class="space-y-3">
       <div class="flex items-center justify-between">
-        <span class="text-gray-600">Тариф:</span>
-        <span class="text-lg font-semibold text-gray-900">
+        <span class="text-sm font-medium text-slate-500">Тариф</span>
+        <span class="text-2xl font-bold text-slate-900">
           {formatTariff(settlement.tariff.normalized_per_sotka_month)}
         </span>
       </div>
 
-      {#if !isBaseline && comparison}
+      {#if !isBaseline}
         <ComparisonBadge
-          delta={comparison.tariffDelta}
-          deltaPercent={comparison.tariffDeltaPercent}
-          isCheaper={comparison.isCheaper}
+          delta={comparison?.tariffDelta ?? 0}
+          deltaPercent={comparison?.tariffDeltaPercent ?? 0}
+          isCheaper={comparison?.isCheaper ?? false}
           isBaseline={false}
         />
-      {:else if isBaseline}
-        <ComparisonBadge
-          delta={0}
-          deltaPercent={0}
-          isCheaper={false}
-          isBaseline={true}
-        />
+      {:else}
+        <div class="h-[24px]" aria-hidden="true"></div>
       {/if}
 
       <TariffBar
@@ -90,21 +88,6 @@
         maxValue={maxTariff}
         shelkovoValue={comparison?.tariffDelta ? settlement.tariff.normalized_per_sotka_month + comparison.tariffDelta : settlement.tariff.normalized_per_sotka_month}
       />
-
-      <div class="flex items-center justify-between text-sm">
-        <span class="text-gray-500">Район:</span>
-        <span class="text-gray-700">{settlement.location.district}</span>
-      </div>
-
     </div>
-  </div>
-
-  <div class="px-6 py-3 bg-gray-50 border-t border-gray-200">
-    <Link
-      href={`settlements/${settlement.slug}/`}
-      class="text-blue-600 hover:text-blue-800 text-sm font-medium"
-    >
-      Подробнее →
-    </Link>
   </div>
 </article>

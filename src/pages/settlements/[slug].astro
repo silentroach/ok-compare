@@ -53,18 +53,18 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
 ---
 
 <BaseLayout title={pageTitle}>
-  <main class="container mx-auto px-4 py-8 max-w-4xl">
-    <header class="mb-8">
-      <div class="flex items-center gap-3 mb-4">
-        <Link href="/" class="text-blue-600 hover:text-blue-800 text-sm">
+  <main class="ui-page py-6 md:py-10">
+    <header class="ui-shell-strong mb-6 p-6 md:mb-8 md:p-8">
+      <div class="mb-4 flex items-center gap-3">
+        <Link href="/" class="ui-link text-sm font-semibold">
           ← Назад к списку
         </Link>
       </div>
       
-      <div class="flex items-start justify-between">
+      <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
-          <div class="flex items-center gap-3 mb-2">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">
+          <div class="mb-2 flex items-center gap-3">
+            <h1 class="text-3xl font-bold text-slate-900 md:text-4xl">
               {settlement.name}
             </h1>
             <div class="flex items-center gap-2">
@@ -74,7 +74,7 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Открыть сайт поселка"
-                  class="text-gray-400 hover:text-blue-600 transition-colors"
+                  class="rounded-md p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
                   title="Перейти на сайт поселка"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -87,7 +87,7 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Открыть поселок на Яндекс.Картах"
-                class="text-gray-400 hover:text-blue-600 transition-colors"
+                class="rounded-md p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
                 title="Открыть на Яндекс.Картах"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -97,50 +97,50 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
               </a>
             </div>
           </div>
-          <p class="text-gray-600">
+          <p class="text-slate-600">
             {settlement.location.district} район
           </p>
         </div>
         
         {settlement.is_baseline && (
-          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+          <span class="inline-flex items-center rounded-full border border-sky-200 bg-sky-100 px-3 py-1 text-sm font-semibold text-sky-800">
             Наш посёлок
           </span>
         )}
       </div>
     </header>
 
-    <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
-      <h2 class="text-xl font-semibold text-gray-900 mb-6">Основная информация</h2>
+    <section class="ui-shell mb-6 p-6 md:mb-8" data-testid="base-info-section">
+      <h2 class="mb-6 text-xl font-semibold text-slate-900">Основная информация</h2>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <h3 class="text-sm font-medium text-gray-500 mb-2">Тариф на обслуживание</h3>
-          <div class="text-3xl font-bold text-gray-900">
+        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">Тариф на обслуживание</h3>
+          <div class="text-3xl font-bold text-slate-900">
             {formatTariff(settlement.tariff.normalized_per_sotka_month)}
           </div>
           {settlement.tariff.note && (
-            <p class="text-sm text-gray-500 mt-1">{settlement.tariff.note}</p>
+            <p class="mt-1 text-sm text-slate-500">{settlement.tariff.note}</p>
           )}
         </div>
         
         {!settlement.is_baseline && comparison && (
-          <div>
-            <h3 class="text-sm font-medium text-gray-500 mb-2">Сравнение с Шелково</h3>
-            <div class={`text-2xl font-bold ${comparison.isCheaper ? 'text-green-600' : 'text-red-600'}`}>
+          <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">Сравнение с Шелково</h3>
+            <div class={`text-2xl font-bold ${comparison.isCheaper ? 'text-emerald-700' : 'text-amber-700'}`}>
               {comparison.isCheaper ? '−' : '+'}{formatCurrency(Math.abs(comparison.tariffDelta))}
             </div>
-            <p class="text-sm text-gray-600 mt-1">
+            <p class="mt-1 text-sm text-slate-600">
               {comparison.isCheaper ? 'Дешевле' : 'Дороже'} Шелково на {formatPercentage(comparison.tariffDeltaPercent / 100)}
             </p>
           </div>
         )}
         
-        <div>
-          <h3 class="text-sm font-medium text-gray-500 mb-2">Расположение</h3>
-          <p class="text-gray-900">{settlement.location.address_text}</p>
+        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 md:col-span-2">
+          <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">Расположение</h3>
+          <p class="text-slate-900">{settlement.location.address_text}</p>
           {distanceFromShelkovo > 0 && (
-            <p class="text-sm text-gray-500 mt-1">
+            <p class="mt-1 text-sm text-slate-500">
               {formatDistance(distanceFromShelkovo)} от Шелково
             </p>
           )}
@@ -148,16 +148,16 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
       </div>
     </section>
 
-    <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8" data-testid="infrastructure-section">
-      <h2 class="text-xl font-semibold text-gray-900 mb-6">Инфраструктура</h2>
+    <section class="ui-shell mb-6 p-6 md:mb-8" data-testid="infrastructure-section">
+      <h2 class="mb-5 text-xl font-semibold text-slate-900">Инфраструктура</h2>
       <InfrastructureTable 
         infra={settlement.infrastructure} 
         shelkovoInfra={!settlement.is_baseline ? shelkovo?.infrastructure || null : null}
       />
     </section>
 
-    <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8" data-testid="services-section">
-      <h2 class="text-xl font-semibold text-gray-900 mb-6">Модель обслуживания</h2>
+    <section class="ui-shell mb-6 p-6 md:mb-8" data-testid="services-section">
+      <h2 class="mb-5 text-xl font-semibold text-slate-900">Модель обслуживания</h2>
       <ServiceTable 
         services={settlement.service_model} 
         shelkovoServices={!settlement.is_baseline ? shelkovo?.service_model || null : null}
@@ -165,8 +165,8 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
     </section>
 
     {settlement.sources.length > 0 && (
-      <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8" data-testid="sources-section">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">Источники</h2>
+      <section class="ui-shell mb-6 p-6 md:mb-8" data-testid="sources-section">
+        <h2 class="mb-4 text-xl font-semibold text-slate-900">Источники</h2>
         <SourcesList sources={settlement.sources} />
       </section>
     )}

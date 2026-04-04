@@ -1,32 +1,50 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #3b82f6;
-  --color-secondary: #64748b;
-  --color-accent: #10b981;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
+  --color-primary: #1f4c67;
+  --color-secondary: #556270;
+  --color-accent: #0f766e;
+  --color-warning: #b45309;
+  --color-danger: #b42318;
   --font-heading: 'PT Sans Caption', 'PT Sans', system-ui, sans-serif;
   --font-body: 'Fira Sans', system-ui, sans-serif;
 }
 
-/* Base typography */
+:root {
+  --bg: #f4f7f9;
+  --bg-soft: #edf3f6;
+  --surface: #ffffff;
+  --surface-strong: #f8fbfc;
+  --line: #d7e1e7;
+  --line-strong: #c4d2db;
+  --text: #13202a;
+  --text-soft: #4d5b66;
+  --focus: #1f4c67;
+  --shadow-1: 0 1px 2px rgba(16, 24, 40, 0.07), 0 6px 20px rgba(16, 24, 40, 0.05);
+  --shadow-2: 0 2px 4px rgba(16, 24, 40, 0.06), 0 16px 30px rgba(16, 24, 40, 0.09);
+}
+
 html {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
 }
 
 body {
   font-family: var(--font-body);
-  line-height: 1.6;
+  line-height: 1.55;
+  color: var(--text);
+  background:
+    radial-gradient(1200px 420px at 15% -5%, #dce9ef 0%, transparent 62%),
+    radial-gradient(1000px 420px at 90% -15%, #e7f0f4 0%, transparent 56%),
+    linear-gradient(180deg, #f8fbfd 0%, var(--bg) 52%, #f2f6f8 100%);
 }
 
-/* Headings */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
-  font-weight: 700;
+  letter-spacing: 0.01em;
   line-height: 1.25;
 }
 
@@ -34,13 +52,60 @@ h1 {
   font-weight: 700;
 }
 
-/* Better text selection */
 ::selection {
-  background-color: rgba(59, 130, 246, 0.2);
+  background-color: color-mix(in srgb, var(--color-primary) 24%, transparent);
   color: inherit;
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--focus) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.ui-shell {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-strong) 100%);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-1);
+}
+
+.ui-shell-strong {
+  background: linear-gradient(180deg, #ffffff 0%, #f9fbfc 100%);
+  border: 1px solid var(--line-strong);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-2);
+}
+
+.ui-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: #f8fbfd;
+  color: var(--text-soft);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.ui-link {
+  color: var(--color-primary);
+  transition: color .2s ease;
+}
+
+.ui-link:hover {
+  color: #173a50;
+}
+
+.ui-muted {
+  color: var(--text-soft);
+}
+
+.ui-page {
+  width: min(1200px, 100% - 2rem);
+  margin-inline: auto;
 }

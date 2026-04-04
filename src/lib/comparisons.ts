@@ -9,7 +9,7 @@ export function calculateTariffDelta(
   otherTariff: number
 ): { delta: number; deltaPercent: number; isCheaper: boolean } {
   const delta = shelkovoTariff - otherTariff;
-  const deltaPercent = otherTariff !== 0 ? Math.round((delta / otherTariff) * 100) : 0;
+  const deltaPercent = shelkovoTariff !== 0 ? Math.round((delta / shelkovoTariff) * 100) : 0;
   const isCheaper = otherTariff < shelkovoTariff;
 
   return { delta, deltaPercent, isCheaper };

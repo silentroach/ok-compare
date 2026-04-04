@@ -65,14 +65,15 @@
 
   function getTariffColor(tariff: number, isBaseline: boolean): string {
     if (isBaseline) {
-      return '#3B82F6';
+      return '#0369a1';
     }
     const minTariff = 50;
     const maxTariff = 200;
     const normalized = Math.max(0, Math.min(1, (tariff - minTariff) / (maxTariff - minTariff)));
-    const red = Math.round(255 * normalized);
-    const green = Math.round(255 * (1 - normalized));
-    return `rgb(${red}, ${green}, 0)`;
+    const red = Math.round(180 + 50 * normalized);
+    const green = Math.round(130 + 70 * (1 - normalized));
+    const blue = Math.round(86 + 30 * (1 - normalized));
+    return `rgb(${red}, ${green}, ${blue})`;
   }
 
   async function loadYandexMaps(): Promise<void> {
@@ -160,12 +161,12 @@
       const color = getTariffColor(settlement.normalizedTariff, settlement.isBaseline);
       const el = document.createElement('div');
       el.style.cssText = `
-        width: 16px;
-        height: 16px;
+        width: 18px;
+        height: 18px;
         border-radius: 50%;
         background: ${color};
-        border: 2px solid white;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        border: 2px solid #ffffff;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.35);
         cursor: pointer;
       `;
       el.setAttribute('title', settlement.name);
@@ -318,22 +319,22 @@
   });
 </script>
 
-<div data-testid="settlement-map" class="relative w-full h-[375px] rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+<div data-testid="settlement-map" class="ui-shell relative h-[375px] w-full overflow-hidden">
   {#if isLoading}
-    <div class="absolute inset-0 flex items-center justify-center bg-gray-50">
+    <div class="absolute inset-0 flex items-center justify-center bg-slate-50">
       <div class="text-center">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
-        <p class="text-gray-600 text-sm">Загрузка карты...</p>
+        <div class="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-b-2 border-slate-700"></div>
+        <p class="text-sm text-slate-600">Загрузка карты...</p>
       </div>
     </div>
   {/if}
 
   {#if error}
-    <div class="absolute inset-0 flex items-center justify-center bg-gray-50">
+    <div class="absolute inset-0 flex items-center justify-center bg-slate-50">
       <div class="text-center max-w-md px-4">
         <div class="text-4xl mb-3">🗺️</div>
-        <p class="text-gray-700 font-medium mb-2">{error}</p>
-        <p class="text-gray-500 text-sm">Попробуйте обновить страницу</p>
+        <p class="mb-2 font-medium text-slate-700">{error}</p>
+        <p class="text-sm text-slate-500">Попробуйте обновить страницу</p>
       </div>
     </div>
   {/if}
@@ -345,12 +346,12 @@
       data-testid="map-popup"
     >
       <div class="relative">
-        <div bind:this={popupEl} class="pointer-events-auto w-64 rounded-lg border border-gray-200 bg-white p-3 shadow-lg">
+        <div bind:this={popupEl} class="pointer-events-auto w-64 rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
           <div class="mb-1 flex items-start justify-between gap-3">
-            <p class="text-base font-semibold text-gray-900">{tip.item.shortName}</p>
+            <p class="text-base font-semibold text-slate-900">{tip.item.shortName}</p>
             <button
               type="button"
-              class="rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+              class="rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
               aria-label="Закрыть попап"
               onclick={() => {
                 tip = null;
@@ -361,18 +362,18 @@
               </svg>
             </button>
           </div>
-          <p class="mb-2 text-sm text-gray-600"><strong>{formatTariff(tip.item.normalizedTariff)}</strong></p>
+          <p class="mb-2 text-sm text-slate-600"><strong>{formatTariff(tip.item.normalizedTariff)}</strong></p>
           <a
-            class="text-sm font-medium text-blue-600 hover:text-blue-800"
+            class="text-sm font-medium text-sky-700 hover:text-sky-900"
             href={withBase(`settlements/${tip.item.slug}/`)}
             target="_parent"
             data-testid="map-popup-link"
           >
-            Подробнее →
+            Подробнее ->
           </a>
         </div>
         <div
-          class={`absolute left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border border-gray-200 bg-white ${tip.up ? '-bottom-1.5 border-t-0 border-l-0' : '-top-1.5 border-b-0 border-r-0'}`}
+          class={`absolute left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border border-slate-200 bg-white ${tip.up ? '-bottom-1.5 border-t-0 border-l-0' : '-top-1.5 border-b-0 border-r-0'}`}
           aria-hidden="true"
         ></div>
       </div>

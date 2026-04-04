@@ -31,6 +31,7 @@
   } = $props();
 
   let ready = $derived(settlements.length > 0 || dataUrl.length === 0);
+  let err = $state('');
 
   // Find Shelkovo (baseline) for distance calculations
   const shelkovo = $derived(settlements.find((s) => s.is_baseline));
@@ -96,6 +97,7 @@
   let displayedSettlements = $derived(filteredSettlements);
   let totalCount = $derived(settlements.length);
   let displayedCount = $derived(displayedSettlements.length);
+  let compact = $derived(priceFilter !== 'all' || sortBy !== 'tariff_asc');
   let mapSettlements = $derived.by(() => displayedSettlements.map((s) => ({
     slug: s.slug,
     name: s.name,
@@ -122,54 +124,61 @@
         return res.json() as Promise<Payload>;
       })
       .then((data) => {
-        if (!data) return;
+        if (!data) {
+          err = 'Не удалось загрузить данные';
+          return;
+        }
         settlements = data.settlements;
         comparisons = data.comparisons;
         stats = data.stats;
         window.dispatchEvent(new CustomEvent('explorer:ready'));
+      })
+      .catch(() => {
+        err = 'Не удалось загрузить данные';
       });
   });
 </script>
 
 <div class="space-y-6">
-  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <div class="flex flex-wrap items-center gap-3 sm:flex-1">
-        <span class="text-sm font-medium text-gray-700 whitespace-nowrap">Цена:</span>
-        <label class="inline-flex items-center">
-          <input
-            type="radio"
-            name="price"
-            value="all"
-            bind:group={priceFilter}
-            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-          />
-          <span class="ml-2 text-sm text-gray-700">Все</span>
-        </label>
-        <label class="inline-flex items-center">
-          <input
-            type="radio"
-            name="price"
-            value="cheaper"
-            bind:group={priceFilter}
-            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-          />
-          <span class="ml-2 text-sm text-gray-700">Дешевле Шелково</span>
-        </label>
-        <label class="inline-flex items-center">
-          <input
-            type="radio"
-            name="price"
-            value="more_expensive"
-            bind:group={priceFilter}
-            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-          />
-          <span class="ml-2 text-sm text-gray-700">Дороже Шелково</span>
-        </label>
-      </div>
+  <div class="ui-shell p-4 md:p-6">
+    <div class="flex flex-col gap-5">
+      <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="mr-1 text-sm font-semibold text-slate-700 whitespace-nowrap">Фильтр:</span>
+          <label class="inline-flex cursor-pointer items-center rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors {priceFilter === 'all' ? 'border-slate-700 bg-slate-700 text-white' : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'}">
+            <input
+              type="radio"
+              name="price"
+              value="all"
+              bind:group={priceFilter}
+              class="sr-only"
+            />
+            Все
+          </label>
+          <label class="inline-flex cursor-pointer items-center rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors {priceFilter === 'cheaper' ? 'border-emerald-700 bg-emerald-700 text-white' : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'}">
+            <input
+              type="radio"
+              name="price"
+              value="cheaper"
+              bind:group={priceFilter}
+              class="sr-only"
+            />
+            Дешевле Шелково
+          </label>
+          <label class="inline-flex cursor-pointer items-center rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors {priceFilter === 'more_expensive' ? 'border-amber-700 bg-amber-700 text-white' : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'}">
+            <input
+              type="radio"
+              name="price"
+              value="more_expensive"
+              bind:group={priceFilter}
+              class="sr-only"
+            />
+            Дороже Шелково
+          </label>
+        </div>
       <button
         type="button"
-        class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50"
+        class="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
         onclick={() => {
           showMap = !showMap;
         }}
@@ -177,6 +186,8 @@
       >
         {showMap ? 'Скрыть карту' : 'Показать карту'}
       </button>
+    </div>
+
     </div>
   </div>
 
@@ -187,12 +198,15 @@
   {/if}
 
   <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-    <p class="text-sm text-gray-600" data-testid="displayed-count">
-      Показано <span class="font-medium text-gray-900">{displayedCount}</span> из
-      <span class="font-medium text-gray-900">{totalCount}</span>
+    <p class="text-sm text-slate-600" data-testid="displayed-count">
+      Показано <span class="font-semibold text-slate-900">{displayedCount}</span> из
+      <span class="font-semibold text-slate-900">{totalCount}</span>
+      {#if compact}
+        <span class="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">активные фильтры</span>
+      {/if}
     </p>
     <div class="flex flex-wrap items-center gap-3 sm:justify-end">
-      <label for="sort" class="text-sm font-medium text-gray-700 whitespace-nowrap">
+      <label for="sort" class="text-sm font-semibold text-slate-700 whitespace-nowrap">
         Сортировка:
       </label>
       <select
@@ -201,16 +215,13 @@
         onchange={(e) => {
           sortBy = (e.currentTarget as HTMLSelectElement).value as typeof sortBy;
         }}
-        class="block w-full sm:w-auto rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+        class="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 sm:w-auto"
       >
         <option value="tariff_asc">По тарифу (↑)</option>
         <option value="tariff_desc">По тарифу (↓)</option>
         <option value="distance">По расстоянию</option>
         <option value="name">По названию</option>
       </select>
-      {#if ready && displayedCount === 0}
-        <p class="text-sm text-gray-500">Ничего не найдено</p>
-      {/if}
     </div>
   </div>
 
@@ -225,10 +236,15 @@
     {/each}
   </div>
 
-  {#if ready && displayedCount === 0}
-    <div class="text-center py-12 bg-gray-50 rounded-lg">
-      <p class="text-gray-500 text-lg">Ничего не найдено</p>
-      <p class="text-gray-400 text-sm mt-2">Попробуйте изменить фильтры</p>
+  {#if err}
+    <div class="ui-shell p-6 text-center">
+      <p class="text-base font-semibold text-slate-800">{err}</p>
+      <p class="mt-2 text-sm text-slate-500">Показана статическая версия списка ниже.</p>
+    </div>
+  {:else if ready && displayedCount === 0}
+    <div class="ui-shell p-10 text-center">
+      <p class="text-lg font-semibold text-slate-800">Ничего не найдено</p>
+      <p class="mt-2 text-sm text-slate-500">Попробуйте изменить фильтры</p>
     </div>
   {/if}
 </div>

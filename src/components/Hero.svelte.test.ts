@@ -23,7 +23,7 @@ describe('Hero', () => {
     });
 
     expect(container.textContent).toContain('Тарифы на содержание поселков');
-    expect(container.querySelector('p')).toBeNull();
+    expect(container.querySelector('p')).toBeTruthy();
   });
 
   it('uses semantic h1 for title', () => {

@@ -16,36 +16,36 @@
   };
 
   const typeColors: Record<string, string> = {
-    official: 'bg-green-100 text-green-800',
-    community: 'bg-blue-100 text-blue-800',
-    media: 'bg-purple-100 text-purple-800',
-    personal: 'bg-gray-100 text-gray-800'
+    official: 'bg-emerald-100 text-emerald-800',
+    community: 'bg-sky-100 text-sky-800',
+    media: 'bg-amber-100 text-amber-800',
+    personal: 'bg-slate-100 text-slate-700'
   };
 </script>
 
 <div data-testid="sources-list" class="space-y-3">
   {#each sources as source}
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+    <div class="flex flex-col rounded-xl border border-slate-200 bg-slate-50 p-3 sm:flex-row sm:items-center sm:justify-between">
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 mb-1">
           <a 
             href={source.url}
             target="_blank"
             rel="noopener noreferrer"
-            class="text-blue-600 hover:text-blue-800 font-medium truncate"
+            class="truncate font-medium text-slate-800 hover:text-slate-950"
             data-testid="source-link"
           >
             {source.title}
           </a>
-          <span class={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${typeColors[source.type]}`}>
+          <span class={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium ${typeColors[source.type]}`}>
             {typeLabels[source.type]}
           </span>
         </div>
         {#if source.comment}
-          <p class="text-sm text-gray-600 mt-1">{source.comment}</p>
+          <p class="mt-1 text-sm text-slate-600">{source.comment}</p>
         {/if}
       </div>
-      <div class="mt-2 sm:mt-0 sm:ml-4 text-sm text-gray-500 whitespace-nowrap">
+      <div class="mt-2 whitespace-nowrap text-sm text-slate-500 sm:ml-4 sm:mt-0">
         {formatDate(source.date_checked)}
       </div>
     </div>

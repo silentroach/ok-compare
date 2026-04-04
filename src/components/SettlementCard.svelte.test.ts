@@ -120,7 +120,7 @@ describe('SettlementCard', () => {
     expect(tariffBar).toBeTruthy();
   });
 
-  it('renders link to detail page', () => {
+  it('renders title link to detail page', () => {
     const { container } = render(SettlementCard, {
       props: {
         settlement: mockSettlement,
@@ -130,16 +130,8 @@ describe('SettlementCard', () => {
       }
     });
 
-    const links = container.querySelectorAll('a[href="/settlements/testovo/"]');
-    expect(links.length).toBeGreaterThan(0);
-    // Check that at least one link contains "Подробнее"
-    let foundDetailsLink = false;
-    links.forEach(link => {
-      if (link.textContent?.includes('Подробнее')) {
-        foundDetailsLink = true;
-      }
-    });
-    expect(foundDetailsLink).toBe(true);
+    const link = container.querySelector('h3 a[href="/settlements/testovo/"]');
+    expect(link).toBeTruthy();
   });
 
   it('handles missing comparison gracefully', () => {
