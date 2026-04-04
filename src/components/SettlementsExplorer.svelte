@@ -30,6 +30,13 @@
     dataUrl: string;
   } = $props();
 
+  const uid = $props.id();
+  const allid = `${uid}-price-all`;
+  const cheapid = `${uid}-price-cheaper`;
+  const moreid = `${uid}-price-more`;
+  const sortid = `${uid}-sort`;
+  const mapid = `${uid}-map`;
+
   let ready = $derived(settlements.length > 0 || dataUrl.length === 0);
   let err = $state('');
 
@@ -148,34 +155,49 @@
       <div class="flex items-start justify-between gap-2 md:items-center">
         <div class="flex min-w-0 flex-nowrap items-center gap-2 overflow-x-auto pr-1">
           <span class="mr-1 text-sm font-semibold text-slate-700 whitespace-nowrap">Фильтр:</span>
-          <label class="inline-flex cursor-pointer items-center rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors {priceFilter === 'all' ? 'border-slate-700 bg-slate-700 text-white' : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'}">
-            <input
-              type="radio"
-              name="price"
-              value="all"
-              bind:group={priceFilter}
-              class="sr-only"
-            />
+          <input
+            id={allid}
+            type="radio"
+            name={`${uid}-price`}
+            value="all"
+            bind:group={priceFilter}
+            class="sr-only"
+            data-testid="price-all"
+          />
+          <label
+            for={allid}
+            class="inline-flex cursor-pointer items-center rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors {priceFilter === 'all' ? 'border-slate-700 bg-slate-700 text-white' : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'}"
+          >
             Все
           </label>
-          <label class="inline-flex cursor-pointer items-center rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors {priceFilter === 'cheaper' ? 'border-emerald-700 bg-emerald-700 text-white' : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'}">
-            <input
-              type="radio"
-              name="price"
-              value="cheaper"
-              bind:group={priceFilter}
-              class="sr-only"
-            />
+          <input
+            id={cheapid}
+            type="radio"
+            name={`${uid}-price`}
+            value="cheaper"
+            bind:group={priceFilter}
+            class="sr-only"
+            data-testid="price-cheaper"
+          />
+          <label
+            for={cheapid}
+            class="inline-flex cursor-pointer items-center rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors {priceFilter === 'cheaper' ? 'border-emerald-700 bg-emerald-700 text-white' : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'}"
+          >
             {mobile ? 'Дешевле' : 'Дешевле Шелково'}
           </label>
-          <label class="inline-flex cursor-pointer items-center rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors {priceFilter === 'more_expensive' ? 'border-amber-700 bg-amber-700 text-white' : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'}">
-            <input
-              type="radio"
-              name="price"
-              value="more_expensive"
-              bind:group={priceFilter}
-              class="sr-only"
-            />
+          <input
+            id={moreid}
+            type="radio"
+            name={`${uid}-price`}
+            value="more_expensive"
+            bind:group={priceFilter}
+            class="sr-only"
+            data-testid="price-more"
+          />
+          <label
+            for={moreid}
+            class="inline-flex cursor-pointer items-center rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors {priceFilter === 'more_expensive' ? 'border-amber-700 bg-amber-700 text-white' : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'}"
+          >
             {mobile ? 'Дороже' : 'Дороже Шелково'}
           </label>
         </div>
@@ -187,6 +209,7 @@
           }}
           aria-label={showMap ? 'Скрыть карту' : 'Показать карту'}
           aria-pressed={showMap}
+          aria-controls={mapid}
           data-testid="map-toggle"
         >
           <svg viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 md:hidden" aria-hidden="true">
@@ -200,7 +223,7 @@
   </div>
 
   {#if showMap}
-    <section class="space-y-4" data-testid="filtered-map">
+    <section id={mapid} class="space-y-4" data-testid="filtered-map">
       <SettlementMap settlements={mapSettlements} />
     </section>
   {/if}
@@ -214,16 +237,17 @@
       {/if}
     </p>
     <div class="flex shrink-0 items-center gap-3">
-      <label for="sort" class="hidden text-sm font-semibold text-slate-700 whitespace-nowrap sm:inline">
+      <label for={sortid} class="hidden text-sm font-semibold text-slate-700 whitespace-nowrap sm:inline">
         Сортировка:
       </label>
       <select
-        id="sort"
+        id={sortid}
         value={sortBy}
         onchange={(e) => {
           sortBy = (e.currentTarget as HTMLSelectElement).value as typeof sortBy;
         }}
         class="block w-auto rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800"
+        data-testid="sort-select"
       >
         <option value="tariff_asc">По тарифу (↑)</option>
         <option value="tariff_desc">По тарифу (↓)</option>

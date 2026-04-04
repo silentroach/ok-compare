@@ -83,6 +83,9 @@ THIS RULE IS MANDATORY FOR AGENT WRITTEN CODE.
 
 - Использовать Runes: `$props()`, `$state()` и т.д.
 - Добавлять `data-testid` атрибуты для тестирования
+- Для id/for и aria-связей в повторяемых компонентах использовать `$props.id()` как префикс
+- Для `label`/`input` и `label`/`select` использовать явную связку `for` + `id` (не только вложенность)
+- Для toggle-кнопок синхронизировать `aria-pressed` и `aria-controls` с фактическим блоком
 
 ### Порядок импортов
 

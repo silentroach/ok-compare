@@ -221,4 +221,25 @@ describe('SettlementsExplorer', () => {
       expect(cardNames(container)).toEqual(['Шелково', 'Лесное', 'Усадьбы']);
     });
   });
+
+  it('keeps explicit control links for accessibility', async () => {
+    setScreen(false);
+
+    const { getByTestId, getByLabelText, container } = render(SettlementsExplorer, {
+      props: { settlements, comparisons, stats },
+    });
+
+    const sort = getByTestId('sort-select') as HTMLSelectElement;
+    const sortLabel = getByLabelText('Сортировка:') as HTMLSelectElement;
+    expect(sortLabel.id).toBe(sort.id);
+
+    const filter = getByTestId('price-cheaper') as HTMLInputElement;
+    const filterLabel = container.querySelector(`label[for="${filter.id}"]`);
+    expect(filterLabel?.textContent).toContain('Дешевле');
+
+    const btn = getByTestId('map-toggle');
+    const mapid = btn.getAttribute('aria-controls');
+    expect(mapid).toBeTruthy();
+    expect(container.querySelector(`#${mapid}`)).toBeTruthy();
+  });
 });
