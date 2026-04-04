@@ -1,80 +1,146 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
+  --color-background: #f4f7f9;
+  --color-foreground: #13202a;
+  --color-muted: #edf3f6;
+  --color-muted-foreground: #4d5b66;
+  --color-border: #d7e1e7;
+  --color-ring: #1f4c67;
+
   --color-primary: #1f4c67;
   --color-secondary: #556270;
   --color-accent: #0f766e;
+  --color-card: #ffffff;
+  --color-card-foreground: #13202a;
+  --color-elevated: #f8fbfc;
+
+  --color-success: #166534;
+  --color-success-foreground: #f0fdf4;
   --color-warning: #b45309;
+  --color-warning-foreground: #fffbeb;
   --color-danger: #b42318;
+  --color-danger-foreground: #fef2f2;
+  --color-info: #0c4a6e;
+  --color-info-foreground: #f0f9ff;
+
   --font-heading: 'PT Sans Caption', 'PT Sans', system-ui, sans-serif;
   --font-body: 'Fira Sans', system-ui, sans-serif;
 }
 
 :root {
-  --bg: #f4f7f9;
-  --bg-soft: #edf3f6;
-  --surface: #ffffff;
-  --surface-strong: #f8fbfc;
-  --line: #d7e1e7;
-  --line-strong: #c4d2db;
-  --text: #13202a;
-  --text-soft: #4d5b66;
-  --focus: #1f4c67;
   --shadow-1: 0 1px 2px rgba(16, 24, 40, 0.07), 0 6px 20px rgba(16, 24, 40, 0.05);
   --shadow-2: 0 2px 4px rgba(16, 24, 40, 0.06), 0 16px 30px rgba(16, 24, 40, 0.09);
+  --hero-glow-a: #dce9ef;
+  --hero-glow-b: #e7f0f4;
+  --hero-base-a: #f8fbfd;
+  --hero-base-b: #f2f6f8;
 }
 
-html {
-  font-family: var(--font-body);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  scroll-behavior: smooth;
+.dark {
+  --color-background: #0f1720;
+  --color-foreground: #e6eef3;
+  --color-muted: #16242d;
+  --color-muted-foreground: #9fb0bb;
+  --color-border: #2a3a46;
+  --color-ring: #8fb5d0;
+
+  --color-primary: #8fb5d0;
+  --color-secondary: #8fa0ad;
+  --color-accent: #2fa7a0;
+  --color-card: #13202a;
+  --color-card-foreground: #e6eef3;
+  --color-elevated: #1a2a35;
+
+  --color-success: #34d399;
+  --color-success-foreground: #052e16;
+  --color-warning: #f6b84a;
+  --color-warning-foreground: #3b2403;
+  --color-danger: #f38c88;
+  --color-danger-foreground: #3f0908;
+  --color-info: #67c5f2;
+  --color-info-foreground: #082f49;
+
+  --shadow-1: 0 1px 2px rgba(8, 12, 18, 0.45), 0 10px 24px rgba(8, 12, 18, 0.4);
+  --shadow-2: 0 2px 5px rgba(6, 10, 15, 0.5), 0 18px 34px rgba(6, 10, 15, 0.45);
+  --hero-glow-a: #1d2f3d;
+  --hero-glow-b: #22394a;
+  --hero-base-a: #12202b;
+  --hero-base-b: #0f1720;
 }
 
-body {
-  font-family: var(--font-body);
-  line-height: 1.55;
-  color: var(--text);
-  background:
-    radial-gradient(1200px 420px at 15% -5%, #dce9ef 0%, transparent 62%),
-    radial-gradient(1000px 420px at 90% -15%, #e7f0f4 0%, transparent 56%),
-    linear-gradient(180deg, #f8fbfd 0%, var(--bg) 52%, #f2f6f8 100%);
-}
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-border);
+  }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
-  letter-spacing: 0.01em;
-  line-height: 1.25;
-}
+  html {
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
 
-h1 {
-  font-weight: 700;
-}
+  body {
+    font-family: var(--font-body);
+    line-height: 1.55;
+    color: var(--color-foreground);
+    background-color: var(--color-background);
+    background-image:
+      radial-gradient(1200px 420px at 15% -5%, var(--hero-glow-a) 0%, transparent 62%),
+      radial-gradient(1000px 420px at 90% -15%, var(--hero-glow-b) 0%, transparent 56%),
+      linear-gradient(180deg, var(--hero-base-a) 0%, var(--color-background) 52%, var(--hero-base-b) 100%);
+  }
 
-::selection {
-  background-color: color-mix(in srgb, var(--color-primary) 24%, transparent);
-  color: inherit;
-}
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    letter-spacing: 0.01em;
+    line-height: 1.25;
+  }
 
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-select:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--focus) 55%, transparent);
-  outline-offset: 2px;
+  h1 {
+    font-weight: 700;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-primary) 24%, transparent);
+    color: inherit;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--color-ring) 64%, transparent);
+    outline-offset: 2px;
+  }
 }
 
 .ui-shell {
-  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-strong) 100%);
-  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--color-card) 0%, var(--color-elevated) 100%);
+  border: 1px solid var(--color-border);
   border-radius: 1rem;
   box-shadow: var(--shadow-1);
 }
 
 .ui-shell-strong {
-  background: linear-gradient(180deg, #ffffff 0%, #f9fbfc 100%);
-  border: 1px solid var(--line-strong);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-card) 88%, var(--color-background) 12%) 0%,
+    color-mix(in srgb, var(--color-elevated) 82%, var(--color-muted) 18%) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--color-border) 75%, var(--color-foreground) 25%);
   border-radius: 1rem;
   box-shadow: var(--shadow-2);
 }
@@ -85,9 +151,9 @@ select:focus-visible {
   gap: 0.4rem;
   padding: 0.25rem 0.65rem;
   border-radius: 999px;
-  border: 1px solid var(--line-strong);
-  background: #f8fbfd;
-  color: var(--text-soft);
+  border: 1px solid color-mix(in srgb, var(--color-border) 80%, var(--color-foreground) 20%);
+  background: color-mix(in srgb, var(--color-elevated) 86%, var(--color-muted) 14%);
+  color: var(--color-muted-foreground);
   font-size: 0.75rem;
   font-weight: 600;
 }
@@ -98,14 +164,25 @@ select:focus-visible {
 }
 
 .ui-link:hover {
-  color: #173a50;
+  color: color-mix(in srgb, var(--color-primary) 76%, var(--color-foreground) 24%);
 }
 
 .ui-muted {
-  color: var(--text-soft);
+  color: var(--color-muted-foreground);
 }
 
 .ui-page {
   width: min(1200px, 100% - 2rem);
   margin-inline: auto;
 }
+
+/*
+  Token contract (назначение -> token -> utility)
+  app bg -> --color-background -> bg-background
+  app text -> --color-foreground -> text-foreground
+  muted text -> --color-muted-foreground -> text-muted-foreground
+  cards -> --color-card / --color-card-foreground -> bg-card / text-card-foreground
+  separators -> --color-border -> border-border
+  focus -> --color-ring -> ring-ring / focus-visible:outline
+  state success|warning|danger|info -> --color-{state} -> bg-{state} / text-{state}
+*/
