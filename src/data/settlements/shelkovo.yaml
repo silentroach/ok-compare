@@ -17,7 +17,7 @@ tariff:
   unit: "rub_per_sotka"
   period: "month"
   normalized_per_sotka_month: 544
-  note: "Повышают до 815 ₽."
+  note: "Повышают до 815 ₽"
 
 infrastructure:
   roads: "partial_asphalt"

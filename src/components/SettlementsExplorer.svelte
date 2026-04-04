@@ -52,6 +52,7 @@
   let sortBy = $state<'tariff_asc' | 'tariff_desc' | 'distance' | 'name'>('tariff_asc');
   let priceFilter = $state<'all' | 'cheaper' | 'more_expensive'>('all');
   let showMap = $state(true);
+  let mobile = $state(false);
 
   // Derived: filtered and sorted settlements
   let filteredSettlements = $derived.by(() => {
@@ -109,7 +110,9 @@
   })));
 
   onMount(() => {
-    showMap = !window.matchMedia('(max-width: 767px)').matches;
+    const media = window.matchMedia('(max-width: 767px)');
+    mobile = media.matches;
+    showMap = !mobile;
 
     if (ready) {
       window.dispatchEvent(new CustomEvent('explorer:ready'));
@@ -142,8 +145,8 @@
 <div class="space-y-6">
   <div class="ui-shell p-4 md:p-6">
     <div class="flex flex-col gap-5">
-      <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div class="flex flex-wrap items-center gap-2">
+      <div class="flex items-start justify-between gap-2 md:items-center">
+        <div class="flex min-w-0 flex-nowrap items-center gap-2 overflow-x-auto pr-1">
           <span class="mr-1 text-sm font-semibold text-slate-700 whitespace-nowrap">Фильтр:</span>
           <label class="inline-flex cursor-pointer items-center rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors {priceFilter === 'all' ? 'border-slate-700 bg-slate-700 text-white' : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'}">
             <input
@@ -163,7 +166,7 @@
               bind:group={priceFilter}
               class="sr-only"
             />
-            Дешевле Шелково
+            {mobile ? 'Дешевле' : 'Дешевле Шелково'}
           </label>
           <label class="inline-flex cursor-pointer items-center rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors {priceFilter === 'more_expensive' ? 'border-amber-700 bg-amber-700 text-white' : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'}">
             <input
@@ -173,20 +176,25 @@
               bind:group={priceFilter}
               class="sr-only"
             />
-            Дороже Шелково
+            {mobile ? 'Дороже' : 'Дороже Шелково'}
           </label>
         </div>
-      <button
-        type="button"
-        class="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
-        onclick={() => {
-          showMap = !showMap;
-        }}
-        data-testid="map-toggle"
-      >
-        {showMap ? 'Скрыть карту' : 'Показать карту'}
-      </button>
-    </div>
+        <button
+          type="button"
+          class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border text-sm font-semibold transition md:h-auto md:w-auto md:px-4 md:py-2.5 {showMap ? 'border-slate-700 bg-slate-700 text-white hover:border-slate-700 hover:bg-slate-700 md:border-slate-300 md:bg-white md:text-slate-700 md:hover:border-slate-400 md:hover:bg-slate-50' : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50'}"
+          onclick={() => {
+            showMap = !showMap;
+          }}
+          aria-label={showMap ? 'Скрыть карту' : 'Показать карту'}
+          aria-pressed={showMap}
+          data-testid="map-toggle"
+        >
+          <svg viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 md:hidden" aria-hidden="true">
+            <path d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm5.8 7h-2.3A12 12 0 0 0 12.6 4a6.5 6.5 0 0 1 3.2 5Zm-5.8 7.4A10.5 10.5 0 0 1 8.6 11h2.8A10.5 10.5 0 0 1 10 16.4Zm-1.7 0A8.9 8.9 0 0 1 7 11h2.1a8.9 8.9 0 0 0 1.2 5.4 6.2 6.2 0 0 1-2 0Zm-3-7.4A6.5 6.5 0 0 1 8.5 4 12 12 0 0 0 7.6 9H5.3Zm0 2h2.3a12 12 0 0 0 .9 5 6.5 6.5 0 0 1-3.2-5Zm4.7-2A10.5 10.5 0 0 1 10 3.6 10.5 10.5 0 0 1 11.4 9H8.6Zm2.9 2H15a6.5 6.5 0 0 1-3.2 5 12 12 0 0 0 .9-5Z" />
+          </svg>
+          <span class="hidden md:inline">{showMap ? 'Скрыть карту' : 'Показать карту'}</span>
+        </button>
+      </div>
 
     </div>
   </div>
@@ -197,16 +205,16 @@
     </section>
   {/if}
 
-  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-    <p class="text-sm text-slate-600" data-testid="displayed-count">
+  <div class="flex items-center justify-between gap-3">
+    <p class="min-w-0 text-sm text-slate-600" data-testid="displayed-count">
       Показано <span class="font-semibold text-slate-900">{displayedCount}</span> из
       <span class="font-semibold text-slate-900">{totalCount}</span>
       {#if compact}
         <span class="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">активные фильтры</span>
       {/if}
     </p>
-    <div class="flex flex-wrap items-center gap-3 sm:justify-end">
-      <label for="sort" class="text-sm font-semibold text-slate-700 whitespace-nowrap">
+    <div class="flex shrink-0 items-center gap-3">
+      <label for="sort" class="hidden text-sm font-semibold text-slate-700 whitespace-nowrap sm:inline">
         Сортировка:
       </label>
       <select
@@ -215,7 +223,7 @@
         onchange={(e) => {
           sortBy = (e.currentTarget as HTMLSelectElement).value as typeof sortBy;
         }}
-        class="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 sm:w-auto"
+        class="block w-auto rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800"
       >
         <option value="tariff_asc">По тарифу (↑)</option>
         <option value="tariff_desc">По тарифу (↓)</option>

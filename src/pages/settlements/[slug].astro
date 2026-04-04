@@ -146,6 +146,9 @@ const heroMap = hasPoint
               <div class="rounded-2xl border border-white/60 bg-white/50 p-4 backdrop-blur-[2px]">
                 <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Тариф</p>
                 <p class="text-xl font-bold text-slate-900">{formatTariff(settlement.tariff.normalized_per_sotka_month)}</p>
+                {settlement.tariff.note && (
+                  <p class="mt-1 text-xs text-slate-600">{settlement.tariff.note}</p>
+                )}
               </div>
 
               {!settlement.is_baseline && (
