@@ -63,7 +63,7 @@ export function formatDistance(value: number): string {
  * -0.2345 → "−23.5%"
  * Uses U+2212 minus sign for negative values
  */
-export function formatPercentage(value: number): string {
+export function formatPercentage(value: number, opts?: { signed?: boolean }): string {
   const percentage = value * 100;
   // Round to 1 decimal place using half-up rounding
   // Multiply by 10, add 0.5 (or subtract for negatives), floor, then divide
@@ -76,6 +76,7 @@ export function formatPercentage(value: number): string {
     return '0%';
   }
 
+  const signed = opts?.signed ?? true;
   const sign = rounded > 0 ? '+' : '−';
   const absValue = Math.abs(rounded);
 
@@ -84,7 +85,7 @@ export function formatPercentage(value: number): string {
     ? absValue.toString()
     : absValue.toFixed(1);
 
-  return `${sign}${formatted}%`;
+  return `${signed ? sign : ''}${formatted}%`;
 }
 
 /**

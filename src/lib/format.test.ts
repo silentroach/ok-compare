@@ -89,6 +89,15 @@ describe('Format Module', () => {
       expect(formatPercentage(0.1234)).toBe('+12.3%');
       expect(formatPercentage(0.1256)).toBe('+12.6%');
     });
+
+    it('should format without sign when signed is false', () => {
+      expect(formatPercentage(0.4567, { signed: false })).toBe('45.7%');
+      expect(formatPercentage(-0.2345, { signed: false })).toBe('23.5%');
+    });
+
+    it('should keep 0 unchanged when signed is false', () => {
+      expect(formatPercentage(0, { signed: false })).toBe('0%');
+    });
   });
 
   describe('formatTariff', () => {

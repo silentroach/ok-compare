@@ -157,7 +157,7 @@ const heroMap = hasPoint
                         {comparison.isCheaper ? '−' : '+'}{formatCurrency(Math.abs(comparison.tariffDelta))}
                       </p>
                       <p class="mt-1 text-xs text-slate-600">
-                        {comparison.isCheaper ? 'Дешевле' : 'Дороже'} на {formatPercentage(comparison.tariffDeltaPercent / 100)}
+                        {comparison.isCheaper ? 'Дешевле' : 'Дороже'} на {formatPercentage(comparison.tariffDeltaPercent / 100, { signed: false })}
                       </p>
                     </>
                   )}
@@ -253,7 +253,7 @@ const heroMap = hasPoint
               {comparison.isCheaper ? '−' : '+'}{formatCurrency(Math.abs(comparison.tariffDelta))}
             </div>
             <p class="mt-1 text-sm text-slate-600">
-              {comparison.isCheaper ? 'Дешевле' : 'Дороже'} Шелково на {formatPercentage(comparison.tariffDeltaPercent / 100)}
+              {comparison.isCheaper ? 'Дешевле' : 'Дороже'} Шелково на {formatPercentage(comparison.tariffDeltaPercent / 100, { signed: false })}
             </p>
           </div>
         )}
