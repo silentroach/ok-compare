@@ -37,6 +37,19 @@ describe('ComparisonBadge', () => {
     expect(badge).toBeTruthy();
   });
 
+  it('formats delta with thousands separator', () => {
+    const { container } = render(ComparisonBadge, {
+      props: {
+        delta: 1250,
+        deltaPercent: 10,
+        isCheaper: true,
+        isBaseline: false
+      }
+    });
+
+    expect(container.textContent).toContain('−1\u00A0250 ₽');
+  });
+
   it('renders baseline badge', () => {
     const { container } = render(ComparisonBadge, {
       props: {

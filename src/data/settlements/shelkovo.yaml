@@ -6,17 +6,17 @@ management_company: "УК Шелково"
 is_baseline: true
 
 location:
-  address_text: "Московская область, Ступинский район, 45 мин от МКАД по М-2/М-4"
+  address_text: "Московская область, Ступинский, 45 мин от МКАД по М-2/М-4"
   lat: 55.065422
   lng: 37.733096
-  district: "Ступинский район"
+  district: "Ступинский"
 
 tariff:
-  value: 815
+  value: 544
   unit: "rub_per_sotka"
   period: "month"
-  normalized_per_sotka_month: 815
-  note: "Тариф за сотку в месяц"
+  normalized_per_sotka_month: 544
+  note: "Повышают до 815 ₽."
 
 infrastructure:
   roads: "partial_asphalt"

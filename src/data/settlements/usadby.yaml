@@ -6,10 +6,10 @@ management_company: "Премиум УК"
 is_baseline: false
 
 location:
-  address_text: "Московская область, Мытищинский район, д. Усадьбы"
+  address_text: "Московская область, Мытищинский, д. Усадьбы"
   lat: 56.0200
   lng: 37.6500
-  district: "Мытищинский район"
+  district: "Мытищинский"
 
 tariff:
   value: 6500

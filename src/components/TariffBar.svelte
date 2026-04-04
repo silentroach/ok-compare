@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { formatTariff } from '../lib/format';
+
   interface Props {
     value: number;
     maxValue: number;
@@ -16,7 +18,7 @@
 
 <div data-testid="tariff-bar" class="tariff-bar {isBaseline ? 'is-baseline' : ''}">
   <div class="flex items-center justify-between text-sm mb-1">
-    <span class="text-gray-500">{value} ₽</span>
+    <span class="text-gray-500">{formatTariff(value)}</span>
     <span class="text-gray-400 text-xs">{percentage.toFixed(0)}%</span>
   </div>
   <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">

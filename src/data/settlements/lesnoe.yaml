@@ -6,10 +6,10 @@ management_company: "УК Лесное"
 is_baseline: false
 
 location:
-  address_text: "Московская область, Мытищинский район, д. Лесное"
+  address_text: "Московская область, Мытищинский, д. Лесное"
   lat: 56.0800
   lng: 37.5500
-  district: "Мытищинский район"
+  district: "Мытищинский"
 
 tariff:
   value: 2800

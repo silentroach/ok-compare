@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { formatCurrency } from '../lib/format';
+
   interface Props {
     delta: number;
     deltaPercent: number;
@@ -19,12 +21,12 @@
       <span class="text-sm font-medium text-gray-600">Наш</span>
     {:else if isCheaper}
       <span class="text-sm font-medium text-green">
-        −{Math.abs(delta)} ₽
+        −{formatCurrency(Math.abs(delta))}
         <span class="text-xs">(дешевле на {Math.abs(deltaPercent)}%)</span>
       </span>
     {:else}
       <span class="text-sm font-medium text-red">
-        +{Math.abs(delta)} ₽
+        +{formatCurrency(Math.abs(delta))}
         <span class="text-xs">(дороже на {Math.abs(deltaPercent)}%)</span>
       </span>
     {/if}

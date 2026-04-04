@@ -54,7 +54,7 @@ describe('TariffBar', () => {
       }
     });
 
-    expect(container.textContent).toContain('100 ₽');
+    expect(container.textContent).toContain('100 ₽/сотка');
   });
 
   it('handles zero max value gracefully', () => {
