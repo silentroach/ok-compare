@@ -154,7 +154,7 @@
     <div class="flex flex-col gap-5">
       <div class="flex items-start justify-between gap-2 md:items-center">
         <div class="flex min-w-0 flex-nowrap items-center gap-2 overflow-x-auto pr-1">
-          <span class="mr-1 text-sm font-semibold text-slate-700 whitespace-nowrap">Фильтр:</span>
+          <span class="mr-1 whitespace-nowrap text-sm font-semibold text-foreground">Фильтр:</span>
           <input
             id={allid}
             type="radio"
@@ -229,15 +229,15 @@
   {/if}
 
   <div class="flex items-center justify-between gap-3">
-    <p class="min-w-0 text-sm text-slate-600" data-testid="displayed-count">
-      Показано <span class="font-semibold text-slate-900">{displayedCount}</span> из
-      <span class="font-semibold text-slate-900">{totalCount}</span>
+    <p class="min-w-0 text-sm text-muted-foreground" data-testid="displayed-count">
+      Показано <span class="font-semibold text-foreground">{displayedCount}</span> из
+      <span class="font-semibold text-foreground">{totalCount}</span>
       {#if compact}
         <span class="ui-pill ui-pill-muted ml-2">активные фильтры</span>
       {/if}
     </p>
     <div class="flex shrink-0 items-center gap-3">
-      <label for={sortid} class="hidden text-sm font-semibold text-slate-700 whitespace-nowrap sm:inline">
+      <label for={sortid} class="hidden whitespace-nowrap text-sm font-semibold text-foreground sm:inline">
         Сортировка:
       </label>
       <select
@@ -246,7 +246,7 @@
         onchange={(e) => {
           sortBy = (e.currentTarget as HTMLSelectElement).value as typeof sortBy;
         }}
-        class="block w-auto rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800"
+        class="block w-auto rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground"
         data-testid="sort-select"
       >
         <option value="tariff_asc">По тарифу (↑)</option>
@@ -270,13 +270,13 @@
 
   {#if err}
     <div class="ui-shell p-6 text-center">
-      <p class="text-base font-semibold text-slate-800">{err}</p>
-      <p class="mt-2 text-sm text-slate-500">Показана статическая версия списка ниже.</p>
+      <p class="text-base font-semibold text-foreground">{err}</p>
+      <p class="mt-2 text-sm text-muted-foreground">Показана статическая версия списка ниже.</p>
     </div>
   {:else if ready && displayedCount === 0}
     <div class="ui-shell p-10 text-center">
-      <p class="text-lg font-semibold text-slate-800">Ничего не найдено</p>
-      <p class="mt-2 text-sm text-slate-500">Попробуйте изменить фильтры</p>
+      <p class="text-lg font-semibold text-foreground">Ничего не найдено</p>
+      <p class="mt-2 text-sm text-muted-foreground">Попробуйте изменить фильтры</p>
     </div>
   {/if}
 </div>

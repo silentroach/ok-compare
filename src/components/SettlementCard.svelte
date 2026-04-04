@@ -19,12 +19,12 @@
   <div class="p-5 md:p-6">
     <div class="mb-4 flex items-start justify-between gap-3">
       <div>
-        <h3 class="text-xl font-semibold text-slate-900">
+        <h3 class="text-xl font-semibold text-foreground">
           <Link href={`settlements/${settlement.slug}/`} class="ui-link">
             {settlement.short_name}
           </Link>
         </h3>
-        <p class="mt-1 text-sm text-slate-500">{settlement.location.district} район</p>
+        <p class="mt-1 text-sm text-muted-foreground">{settlement.location.district} район</p>
       </div>
       <div class="flex items-center gap-2">
         {#if settlement.website}
@@ -66,8 +66,8 @@
 
     <div class="space-y-3">
       <div class="flex items-center justify-between">
-        <span class="text-sm font-medium text-slate-500">Тариф</span>
-        <span class="text-2xl font-bold text-slate-900">
+        <span class="text-sm font-medium text-muted-foreground">Тариф</span>
+        <span class="text-2xl font-bold text-foreground">
           {formatTariff(settlement.tariff.normalized_per_sotka_month)}
         </span>
       </div>

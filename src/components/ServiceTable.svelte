@@ -81,7 +81,7 @@
 <div class="overflow-x-auto">
   {#if title}
     <div class={`mb-5 ${shelkovoServices ? 'grid grid-cols-[1fr_auto_auto_4rem] items-center' : 'flex items-center justify-between gap-4'}`}>
-      <h2 class={`text-xl font-semibold text-slate-900 ${shelkovoServices ? 'col-span-3' : ''}`}>{title}</h2>
+      <h2 class={`text-xl font-semibold text-foreground ${shelkovoServices ? 'col-span-3' : ''}`}>{title}</h2>
       {#if shelkovoServices}
         <button
           type="button"
@@ -143,7 +143,7 @@
     <tbody>
       {#if rows.length === 0}
         <tr class="ui-table-row">
-          <td class="ui-table-cell text-center text-sm text-slate-500" colspan={shelkovoServices ? 4 : 2}>
+          <td class="ui-table-cell text-center text-sm text-muted-foreground" colspan={shelkovoServices ? 4 : 2}>
             Отличий с Шелково не найдено
           </td>
         </tr>
@@ -155,7 +155,7 @@
           {@const display = getDisplay(value)}
           {@const shelkovoDisplay = shelkovoServices ? getDisplay(shelkovoValue) : null}
           <tr data-testid="service-row" class="ui-table-row">
-            <td class="ui-table-cell text-sm text-slate-900">
+            <td class="ui-table-cell text-sm text-foreground">
               {labels[key] || key}
             </td>
             <td class="ui-table-cell ui-table-cell-center">

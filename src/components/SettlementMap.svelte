@@ -341,20 +341,20 @@
   style={`height: ${height}px; min-height: ${height}px;`}
 >
   {#if isLoading}
-    <div class="absolute inset-0 flex items-center justify-center bg-slate-50">
+    <div class="absolute inset-0 flex items-center justify-center bg-muted-soft">
       <div class="text-center">
-        <div class="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-b-2 border-slate-700"></div>
-        <p class="text-sm text-slate-600">Загрузка карты...</p>
+        <div class="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-b-2 border-foreground"></div>
+        <p class="text-sm text-muted-foreground">Загрузка карты...</p>
       </div>
     </div>
   {/if}
 
   {#if error}
-    <div class="absolute inset-0 flex items-center justify-center bg-slate-50">
+    <div class="absolute inset-0 flex items-center justify-center bg-muted-soft">
       <div class="text-center max-w-md px-4">
         <div class="text-4xl mb-3">🗺️</div>
-        <p class="mb-2 font-medium text-slate-700">{error}</p>
-        <p class="text-sm text-slate-500">Попробуйте обновить страницу</p>
+        <p class="mb-2 font-medium text-foreground">{error}</p>
+        <p class="text-sm text-muted-foreground">Попробуйте обновить страницу</p>
       </div>
     </div>
   {/if}
@@ -366,10 +366,10 @@
       data-testid="map-popup"
     >
       <div class="relative">
-        <div bind:this={popupEl} class="pointer-events-auto w-64 rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
+        <div bind:this={popupEl} class="pointer-events-auto w-64 rounded-lg border border-border bg-card p-3 shadow-lg">
           <div class="mb-1 flex items-start justify-between gap-3">
             <a
-              class="text-base font-semibold text-slate-900 hover:text-sky-700"
+              class="text-base font-semibold text-foreground hover:text-primary"
               href={withBase(`settlements/${tip.item.slug}/`)}
               target="_parent"
               data-testid="map-popup-link"
@@ -378,7 +378,7 @@
             </a>
             <button
               type="button"
-              class="rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+              class="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
               aria-label="Закрыть попап"
               onclick={() => {
                 tip = null;
@@ -389,10 +389,10 @@
               </svg>
             </button>
           </div>
-          <p class="mb-2 text-sm text-slate-600"><strong>{formatTariff(tip.item.normalizedTariff)}</strong></p>
+          <p class="mb-2 text-sm text-muted-foreground"><strong>{formatTariff(tip.item.normalizedTariff)}</strong></p>
         </div>
         <div
-          class={`absolute left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border border-slate-200 bg-white ${tip.up ? '-bottom-1.5 border-t-0 border-l-0' : '-top-1.5 border-b-0 border-r-0'}`}
+          class={`absolute left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border border-border bg-card ${tip.up ? '-bottom-1.5 border-t-0 border-l-0' : '-top-1.5 border-b-0 border-r-0'}`}
           aria-hidden="true"
         ></div>
       </div>

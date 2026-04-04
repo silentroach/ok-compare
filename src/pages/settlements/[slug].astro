@@ -95,7 +95,7 @@ const heroMap = hasPoint
               ← Назад к списку
             </Link>
             {settlement.is_baseline && (
-              <span class="inline-flex items-center rounded-full border border-sky-300/90 bg-sky-100/90 px-3 py-1 text-sm font-semibold text-sky-800">
+              <span class="ui-badge ui-badge-info border-white/40 bg-white/72 text-info-text">
                 Наш посёлок
               </span>
             )}
@@ -104,10 +104,10 @@ const heroMap = hasPoint
           <div class="mt-6 max-w-3xl">
             <div class="mb-4 flex items-start justify-between gap-4">
               <div>
-                <h1 class="text-4xl font-bold text-slate-900 [text-shadow:0_2px_10px_rgba(255,255,255,0.75)] xl:text-[2.7rem]">
+                <h1 class="text-4xl font-bold text-foreground [text-shadow:0_2px_10px_rgba(255,255,255,0.75)] xl:text-[2.7rem]">
                   {settlement.name}
                 </h1>
-                <p class="mt-2 text-base text-slate-700 [text-shadow:0_1px_6px_rgba(255,255,255,0.72)]">
+                <p class="mt-2 text-base text-muted-foreground [text-shadow:0_1px_6px_rgba(255,255,255,0.72)]">
                   {settlement.location.district} район
                 </p>
               </div>
@@ -118,7 +118,7 @@ const heroMap = hasPoint
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Открыть сайт поселка"
-                    class="rounded-md p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                    class="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                     title="Перейти на сайт поселка"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -131,7 +131,7 @@ const heroMap = hasPoint
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Открыть поселок на Яндекс.Картах"
-                  class="rounded-md p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                  class="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   title="Открыть на Яндекс.Картах"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -144,22 +144,22 @@ const heroMap = hasPoint
 
             <div class={`grid gap-3 ${settlement.is_baseline ? 'grid-cols-2' : 'grid-cols-3'}`}>
               <div class="rounded-2xl border border-white/60 bg-white/50 p-4 backdrop-blur-[2px]">
-                <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Тариф</p>
-                <p class="text-xl font-bold text-slate-900">{formatTariff(settlement.tariff.normalized_per_sotka_month)}</p>
+                <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Тариф</p>
+                <p class="text-xl font-bold text-foreground">{formatTariff(settlement.tariff.normalized_per_sotka_month)}</p>
                 {settlement.tariff.note && (
-                  <p class="mt-1 text-xs text-slate-600">{settlement.tariff.note}</p>
+                  <p class="mt-1 text-xs text-muted-foreground">{settlement.tariff.note}</p>
                 )}
               </div>
 
               {!settlement.is_baseline && (
                 <div class="rounded-2xl border border-white/60 bg-white/50 p-4 backdrop-blur-[2px]">
-                  <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Разница с Шелково</p>
+                  <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Разница с Шелково</p>
                   {comparison && (
                     <>
-                      <p class={`text-xl font-bold ${comparison.isCheaper ? 'text-emerald-700' : 'text-amber-700'}`}>
+                      <p class={`text-xl font-bold ${comparison.isCheaper ? 'text-success-text' : 'text-warning-text'}`}>
                         {comparison.isCheaper ? '−' : '+'}{formatCurrency(Math.abs(comparison.tariffDelta))}
                       </p>
-                      <p class="mt-1 text-xs text-slate-600">
+                      <p class="mt-1 text-xs text-muted-foreground">
                         {comparison.isCheaper ? 'Дешевле' : 'Дороже'} на {formatPercentage(comparison.tariffDeltaPercent / 100, { signed: false })}
                       </p>
                     </>
@@ -168,10 +168,10 @@ const heroMap = hasPoint
               )}
 
               <div class="rounded-2xl border border-white/60 bg-white/50 p-4 backdrop-blur-[2px]">
-                <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Расположение</p>
-                <p class="text-sm font-semibold text-slate-800">{settlement.location.address_text}</p>
+                <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Расположение</p>
+                <p class="text-sm font-semibold text-foreground">{settlement.location.address_text}</p>
                 {distanceFromShelkovo > 0 && (
-                  <p class="mt-1 text-xs text-slate-600">{formatDistance(distanceFromShelkovo)} от Шелково</p>
+                  <p class="mt-1 text-xs text-muted-foreground">{formatDistance(distanceFromShelkovo)} от Шелково</p>
                 )}
               </div>
             </div>
@@ -189,7 +189,7 @@ const heroMap = hasPoint
       <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <div class="mb-2 flex items-center gap-3">
-            <h1 class="text-3xl font-bold text-slate-900 md:text-4xl">
+            <h1 class="text-3xl font-bold text-foreground md:text-4xl">
               {settlement.name}
             </h1>
             <div class="flex items-center gap-2">
@@ -199,7 +199,7 @@ const heroMap = hasPoint
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Открыть сайт поселка"
-                  class="rounded-md p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                  class="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   title="Перейти на сайт поселка"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -212,7 +212,7 @@ const heroMap = hasPoint
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Открыть поселок на Яндекс.Картах"
-                class="rounded-md p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                class="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 title="Открыть на Яндекс.Картах"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -222,13 +222,13 @@ const heroMap = hasPoint
               </a>
             </div>
           </div>
-          <p class="text-slate-600">
+          <p class="text-muted-foreground">
             {settlement.location.district} район
           </p>
         </div>
         
         {settlement.is_baseline && (
-          <span class="inline-flex items-center rounded-full border border-sky-200 bg-sky-100 px-3 py-1 text-sm font-semibold text-sky-800">
+          <span class="ui-badge ui-badge-info">
             Наш посёлок
           </span>
         )}
@@ -236,36 +236,36 @@ const heroMap = hasPoint
     </header>
 
     <section class="ui-shell mb-6 p-6 md:mb-8 lg:hidden" data-testid="base-info-section">
-      <h2 class="mb-6 text-xl font-semibold text-slate-900">Основная информация</h2>
+      <h2 class="mb-6 text-xl font-semibold text-foreground">Основная информация</h2>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-          <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">Тариф на обслуживание</h3>
-          <div class="text-3xl font-bold text-slate-900">
+        <div class="rounded-xl border border-border bg-muted-soft p-4">
+          <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Тариф на обслуживание</h3>
+          <div class="text-3xl font-bold text-foreground">
             {formatTariff(settlement.tariff.normalized_per_sotka_month)}
           </div>
           {settlement.tariff.note && (
-            <p class="mt-1 text-sm text-slate-500">{settlement.tariff.note}</p>
+            <p class="mt-1 text-sm text-muted-foreground">{settlement.tariff.note}</p>
           )}
         </div>
         
         {!settlement.is_baseline && comparison && (
-          <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">Сравнение с Шелково</h3>
-            <div class={`text-2xl font-bold ${comparison.isCheaper ? 'text-emerald-700' : 'text-amber-700'}`}>
+          <div class="rounded-xl border border-border bg-muted-soft p-4">
+            <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Сравнение с Шелково</h3>
+            <div class={`text-2xl font-bold ${comparison.isCheaper ? 'text-success-text' : 'text-warning-text'}`}>
               {comparison.isCheaper ? '−' : '+'}{formatCurrency(Math.abs(comparison.tariffDelta))}
             </div>
-            <p class="mt-1 text-sm text-slate-600">
+            <p class="mt-1 text-sm text-muted-foreground">
               {comparison.isCheaper ? 'Дешевле' : 'Дороже'} Шелково на {formatPercentage(comparison.tariffDeltaPercent / 100, { signed: false })}
             </p>
           </div>
         )}
         
-        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 md:col-span-2">
-          <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">Расположение</h3>
-          <p class="text-slate-900">{settlement.location.address_text}</p>
+        <div class="rounded-xl border border-border bg-muted-soft p-4 md:col-span-2">
+          <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Расположение</h3>
+          <p class="text-foreground">{settlement.location.address_text}</p>
           {distanceFromShelkovo > 0 && (
-            <p class="mt-1 text-sm text-slate-500">
+            <p class="mt-1 text-sm text-muted-foreground">
               {formatDistance(distanceFromShelkovo)} от Шелково
             </p>
           )}
@@ -293,7 +293,7 @@ const heroMap = hasPoint
 
     {settlement.sources.length > 0 && (
       <section class="ui-shell mb-6 p-6 md:mb-8" data-testid="sources-section">
-        <h2 class="mb-4 text-xl font-semibold text-slate-900">Источники</h2>
+        <h2 class="mb-4 text-xl font-semibold text-foreground">Источники</h2>
         <SourcesList sources={settlement.sources} />
       </section>
     )}

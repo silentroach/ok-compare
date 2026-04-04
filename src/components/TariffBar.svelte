@@ -24,8 +24,8 @@
 
 <div data-testid="tariff-bar" class="tariff-bar {isBaseline ? 'is-baseline' : ''}">
   <div class="mb-1 flex items-center justify-between text-sm">
-    <span class="text-slate-500">{formatTariff(value)}</span>
-    <span class="text-xs font-medium text-slate-400">{percentage.toFixed(0)}%</span>
+    <span class="text-muted-foreground">{formatTariff(value)}</span>
+    <span class="text-xs font-medium text-muted-foreground">{percentage.toFixed(0)}%</span>
   </div>
   <div class="ui-bar-track">
     <div
