@@ -111,22 +111,6 @@
 <div class="space-y-6">
   <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <label for="sort" class="text-sm font-medium text-gray-700 whitespace-nowrap">
-          Сортировка:
-        </label>
-        <select
-          id="sort"
-          bind:value={sortBy}
-          class="block w-full lg:w-auto rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-        >
-          <option value="tariff_asc">По тарифу (↑)</option>
-          <option value="tariff_desc">По тарифу (↓)</option>
-          <option value="distance">По расстоянию</option>
-          <option value="name">По названию</option>
-        </select>
-      </div>
-
       <div class="flex flex-wrap items-center gap-3">
         <span class="text-sm font-medium text-gray-700 whitespace-nowrap">Цена:</span>
         <label class="inline-flex items-center">
@@ -212,14 +196,29 @@
     </section>
   {/if}
 
-  <div class="flex items-center justify-between">
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
     <p class="text-sm text-gray-600">
       Показано <span class="font-medium text-gray-900">{displayedCount}</span> из
       <span class="font-medium text-gray-900">{totalCount}</span>
     </p>
-    {#if displayedCount === 0}
-      <p class="text-sm text-gray-500">Ничего не найдено</p>
-    {/if}
+    <div class="flex flex-wrap items-center gap-3 sm:justify-end">
+      <label for="sort" class="text-sm font-medium text-gray-700 whitespace-nowrap">
+        Сортировка:
+      </label>
+      <select
+        id="sort"
+        bind:value={sortBy}
+        class="block w-full sm:w-auto rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+      >
+        <option value="tariff_asc">По тарифу (↑)</option>
+        <option value="tariff_desc">По тарифу (↓)</option>
+        <option value="distance">По расстоянию</option>
+        <option value="name">По названию</option>
+      </select>
+      {#if displayedCount === 0}
+        <p class="text-sm text-gray-500">Ничего не найдено</p>
+      {/if}
+    </div>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
