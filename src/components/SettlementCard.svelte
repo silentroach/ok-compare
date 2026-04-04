@@ -40,7 +40,7 @@
           </a>
         {/if}
         <a
-          href={`https://yandex.ru/maps/?pt=${settlement.location.lng},${settlement.location.lat}&z=15&l=map`}
+          href={settlement.location.map_url ?? `https://yandex.ru/maps/?pt=${settlement.location.lng},${settlement.location.lat}&z=15&l=map`}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Открыть поселок на Яндекс.Картах"

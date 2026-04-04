@@ -65,6 +65,22 @@ const settlements: Settlement[] = [
     sources: [],
     comparison_notes: [],
   },
+  {
+    name: 'КП Усадьбы',
+    short_name: 'Усадьбы',
+    slug: 'usadby',
+    website: 'https://example.com/usadby',
+    management_company: 'УК Усадьбы',
+    is_baseline: false,
+    location: { address_text: 'Московская область', lat: 55.83, lng: 37.16, district: 'Истра' },
+    tariff: { value: 150, unit: 'rub_per_sotka', period: 'month', normalized_per_sotka_month: 150, note: '' },
+    infrastructure: { gas: 'yes', security: 'yes', roads: 'asphalt' },
+    service_model: {},
+    promises_vs_fact: { promised: [], actual: [], notes: '' },
+    transparency: { has_public_tariff: false, has_website: true, has_phone: true, has_management_info: false, notes: '' },
+    sources: [],
+    comparison_notes: [],
+  },
 ];
 
 const comparisons: Record<string, ComparisonResult> = {
@@ -84,7 +100,19 @@ const comparisons: Record<string, ComparisonResult> = {
     servicesDelta: {},
     transparencyDelta: {},
   },
+  usadby: {
+    tariffDelta: 30,
+    tariffDeltaPercent: 25,
+    isCheaper: false,
+    infrastructureDelta: {},
+    servicesDelta: {},
+    transparencyDelta: {},
+  },
 };
+
+function cardNames(container: HTMLElement): string[] {
+  return [...container.querySelectorAll('[data-testid="settlement-card"] h3')].map((el) => el.textContent?.trim() ?? '');
+}
 
 function setScreen(mobile: boolean): void {
   Object.defineProperty(window, 'matchMedia', {
@@ -152,13 +180,45 @@ describe('SettlementsExplorer', () => {
     });
 
     await waitFor(() => {
-      expect(mockYandexMaps.YMapMarker).toHaveBeenCalledTimes(2);
+      expect(mockYandexMaps.YMapMarker).toHaveBeenCalledTimes(3);
     });
 
     await fireEvent.click(getByLabelText('Дешевле Шелково'));
 
     await waitFor(() => {
-      expect(mockYandexMaps.YMapMarker).toHaveBeenCalledTimes(3);
+      expect(mockYandexMaps.YMapMarker).toHaveBeenCalledTimes(4);
+    });
+  });
+
+  it('sorts by distance from Shelkovo', async () => {
+    setScreen(false);
+
+    const { container, getByLabelText } = render(SettlementsExplorer, {
+      props: { settlements, comparisons, stats },
+    });
+
+    const sort = getByLabelText('Сортировка:') as HTMLSelectElement;
+    sort.value = 'distance';
+    await fireEvent.change(sort);
+
+    expect(sort.value).toBe('distance');
+
+    await waitFor(() => {
+      expect(cardNames(container)).toEqual(['Шелково', 'Усадьбы', 'Лесное']);
+    });
+  });
+
+  it('sorts alphabetically by name', async () => {
+    setScreen(false);
+
+    const { container, getByLabelText } = render(SettlementsExplorer, {
+      props: { settlements, comparisons, stats },
+    });
+
+    await fireEvent.change(getByLabelText('Сортировка:'), { target: { value: 'name' } });
+
+    await waitFor(() => {
+      expect(cardNames(container)).toEqual(['Шелково', 'Лесное', 'Усадьбы']);
     });
   });
 });

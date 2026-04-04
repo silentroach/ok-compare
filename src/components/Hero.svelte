@@ -7,8 +7,8 @@
   let { title, subtitle }: Props = $props();
 </script>
 
-<section class="text-center py-12 md:py-16">
-  <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+<section class="text-center pt-3 pb-6 md:pt-4 md:pb-8">
+  <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
     {title}
   </h1>
   {#if subtitle}

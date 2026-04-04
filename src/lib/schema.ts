@@ -34,6 +34,7 @@ export const LocationSchema = z.object({
   address_text: z.string().min(1),
   lat: z.number().min(-90).max(90),
   lng: z.number().min(-180).max(180),
+  map_url: z.string().url().optional(),
   district: z.string().min(1)
 });
 export type Location = z.infer<typeof LocationSchema>;

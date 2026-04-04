@@ -318,7 +318,7 @@
   });
 </script>
 
-<div data-testid="settlement-map" class="relative w-full h-[500px] rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+<div data-testid="settlement-map" class="relative w-full h-[375px] rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
   {#if isLoading}
     <div class="absolute inset-0 flex items-center justify-center bg-gray-50">
       <div class="text-center">
@@ -379,7 +379,7 @@
     </div>
   {/if}
 
-  <div bind:this={mapContainer} class="w-full h-full" style="min-height: 500px;"></div>
+  <div bind:this={mapContainer} class="w-full h-full" style="min-height: 375px;"></div>
 </div>
 
 <style>
