@@ -108,6 +108,8 @@
     }
   }
 
+  type Display = { icon: string; text: string; color: string };
+
   // Check if there's a difference between settlement and Shelkovo
   function hasDifference(key: string): boolean {
     if (!shelkovoInfra) return false;
@@ -123,6 +125,35 @@
 </script>
 
 <div class="overflow-x-auto">
+  {#snippet badge(display: Display, tid?: string)}
+    <span
+      data-testid={tid}
+      class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium {display.color}"
+    >
+      <span class="flex h-4 w-4 items-center justify-center">{display.icon}</span>
+      <span class="hidden sm:inline">{display.text}</span>
+    </span>
+  {/snippet}
+
+  {#snippet diff(diff: boolean)}
+    {#if diff}
+      <span
+        data-testid="diff-indicator"
+        class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-orange-100 text-xs font-bold text-orange-600"
+        title="Отличается от Шелково"
+      >
+        ≠
+      </span>
+    {:else}
+      <span
+        class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-600"
+        title="Совпадает с Шелково"
+      >
+        =
+      </span>
+    {/if}
+  {/snippet}
+
   <table class="w-full border-collapse text-left">
     <thead>
       <tr class="border-b border-slate-200 bg-slate-50">
@@ -146,41 +177,14 @@
             {labels[key] || key}
           </td>
           <td class="px-4 py-3 text-center">
-            <span
-              data-testid="infra-status"
-              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border {display.color}"
-            >
-              <span class="w-4 h-4 flex items-center justify-center">{display.icon}</span>
-              <span class="hidden sm:inline">{display.text}</span>
-            </span>
+            {@render badge(display, 'infra-status')}
           </td>
           {#if shelkovoInfra && shelkovoValue && shelkovoDisplay}
             <td class="px-4 py-3 text-center">
-              <span
-                data-testid="shelkovo-status"
-                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border {shelkovoDisplay.color}"
-              >
-                <span class="w-4 h-4 flex items-center justify-center">{shelkovoDisplay.icon}</span>
-                <span class="hidden sm:inline">{shelkovoDisplay.text}</span>
-              </span>
+              {@render badge(shelkovoDisplay, 'shelkovo-status')}
             </td>
             <td class="px-4 py-3 text-center">
-              {#if isDifferent}
-                <span
-                  data-testid="diff-indicator"
-                  class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-100 text-orange-600 text-xs font-bold"
-                  title="Отличается от Шелково"
-                >
-                  ≠
-                </span>
-              {:else}
-                <span
-                  class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 text-green-600 text-xs font-bold"
-                  title="Совпадает с Шелково"
-                >
-                  =
-                </span>
-              {/if}
+              {@render diff(isDifferent)}
             </td>
           {/if}
         </tr>
