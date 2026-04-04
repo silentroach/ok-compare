@@ -274,18 +274,20 @@ const heroMap = hasPoint
     </section>
 
     <section class="ui-shell mb-6 p-6 md:mb-8 lg:-mt-[3em]" data-testid="infrastructure-section">
-      <h2 class="mb-5 text-xl font-semibold text-slate-900">Инфраструктура</h2>
       <InfrastructureTable 
+        title="Инфраструктура"
         infra={settlement.infrastructure} 
         shelkovoInfra={!settlement.is_baseline ? shelkovo?.infrastructure || null : null}
+        client:load
       />
     </section>
 
     <section class="ui-shell mb-6 p-6 md:mb-8" data-testid="services-section">
-      <h2 class="mb-5 text-xl font-semibold text-slate-900">Модель обслуживания</h2>
       <ServiceTable 
+        title="Модель обслуживания"
         services={settlement.service_model} 
         shelkovoServices={!settlement.is_baseline ? shelkovo?.service_model || null : null}
+        client:load
       />
     </section>
 

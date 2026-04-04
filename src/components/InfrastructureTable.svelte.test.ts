@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render } from '@testing-library/svelte';
+import { render, fireEvent } from '@testing-library/svelte';
 import InfrastructureTable from './InfrastructureTable.svelte';
 import type { Infrastructure } from '../lib/schema';
 
@@ -125,5 +125,28 @@ describe('InfrastructureTable', () => {
     // Should still render all 18 rows even with empty data
     const rows = container.querySelectorAll('[data-testid="infra-row"]');
     expect(rows.length).toBe(18);
+  });
+
+  it('shows only differing rows when diff toggle is enabled', async () => {
+    const { container, getByTestId } = render(InfrastructureTable, {
+      props: {
+        title: 'Инфраструктура',
+        infra: mockInfra,
+        shelkovoInfra: mockShelkovoInfra
+      }
+    });
+
+    const full = container.querySelectorAll('[data-testid="infra-row"]').length;
+    const diff = container.querySelectorAll('[data-testid="diff-indicator"]').length;
+    expect(full).toBe(18);
+
+    const btn = getByTestId('infra-diff-toggle');
+    await fireEvent.click(btn);
+
+    const filtered = container.querySelectorAll('[data-testid="infra-row"]').length;
+    const marks = container.querySelectorAll('[data-testid="diff-indicator"]').length;
+    expect(filtered).toBe(diff);
+    expect(marks).toBe(diff);
+    expect(btn.getAttribute('title')).toBe('Показать все свойства');
   });
 });

@@ -2,11 +2,13 @@
   import type { Infrastructure, AvailabilityStatus, RoadType, DrainageType, VideoSurveillance, UndergroundElectricity } from '../lib/schema';
 
   interface Props {
+    title?: string;
     infra: Infrastructure;
     shelkovoInfra?: Infrastructure | null;
   }
 
-  let { infra, shelkovoInfra = null }: Props = $props();
+  let { title = '', infra, shelkovoInfra = null }: Props = $props();
+  let only = $state(false);
 
   // Infrastructure item labels in Russian
   const labels: Record<string, string> = {
@@ -122,9 +124,32 @@
     'checkpoints', 'security', 'fencing', 'video_surveillance', 'underground_electricity',
     'playgrounds', 'sports', 'public_spaces', 'beach_or_water_access', 'admin_building', 'retail_or_services'
   ];
+
+  const rows = $derived(only && shelkovoInfra ? infraOrder.filter((key) => hasDifference(key)) : infraOrder);
 </script>
 
 <div class="overflow-x-auto">
+  {#if title}
+    <div class={`mb-5 ${shelkovoInfra ? 'grid grid-cols-[1fr_auto_auto_4rem] items-center' : 'flex items-center justify-between gap-4'}`}>
+      <h2 class={`text-xl font-semibold text-slate-900 ${shelkovoInfra ? 'col-span-3' : ''}`}>{title}</h2>
+      {#if shelkovoInfra}
+        <button
+          type="button"
+          data-testid="infra-diff-toggle"
+          aria-pressed={only}
+          aria-label={only ? 'Показать все свойства' : 'Показать только отличающиеся свойства'}
+          title={only ? 'Показать все свойства' : 'Показать только отличающиеся свойства'}
+          class={`ui-pill justify-self-center min-h-9 px-3 py-1.5 cursor-pointer text-sm font-semibold transition hover:opacity-90 active:opacity-80 ${only ? 'ui-pill-warning' : 'ui-pill-muted'}`}
+          onclick={() => (only = !only)}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
+            <path d="M3 4.75A.75.75 0 0 1 3.75 4h12.5a.75.75 0 0 1 .57 1.238L12 10.84V15a.75.75 0 0 1-.352.636l-2.5 1.563A.75.75 0 0 1 8 16.563v-5.722L3.18 5.238A.75.75 0 0 1 3 4.75Z" />
+          </svg>
+        </button>
+      {/if}
+    </div>
+  {/if}
+
   {#snippet badge(display: Display, tid?: string)}
     <span
       data-testid={tid}
@@ -166,29 +191,37 @@
       </tr>
     </thead>
     <tbody>
-      {#each infraOrder as key (key)}
-        {@const value = infra[key as keyof Infrastructure]}
-        {@const shelkovoValue = shelkovoInfra?.[key as keyof Infrastructure]}
-        {@const isDifferent = hasDifference(key)}
-        {@const display = getDisplayConfig(key, value)}
-        {@const shelkovoDisplay = shelkovoInfra ? getDisplayConfig(key, shelkovoValue) : null}
-        <tr data-testid="infra-row" class="ui-table-row">
-          <td class="ui-table-cell text-sm text-slate-900">
-            {labels[key] || key}
+      {#if rows.length === 0}
+        <tr class="ui-table-row">
+          <td class="ui-table-cell text-center text-sm text-slate-500" colspan={shelkovoInfra ? 4 : 2}>
+            Отличий с Шелково не найдено
           </td>
-          <td class="ui-table-cell ui-table-cell-center">
-            {@render badge(display, 'infra-status')}
-          </td>
-          {#if shelkovoInfra && shelkovoDisplay}
-            <td class="ui-table-cell ui-table-cell-center">
-              {@render badge(shelkovoDisplay, 'shelkovo-status')}
-            </td>
-            <td class="ui-table-cell ui-table-cell-center">
-              {@render diff(isDifferent)}
-            </td>
-          {/if}
         </tr>
-      {/each}
+      {:else}
+        {#each rows as key (key)}
+          {@const value = infra[key as keyof Infrastructure]}
+          {@const shelkovoValue = shelkovoInfra?.[key as keyof Infrastructure]}
+          {@const isDifferent = hasDifference(key)}
+          {@const display = getDisplayConfig(key, value)}
+          {@const shelkovoDisplay = shelkovoInfra ? getDisplayConfig(key, shelkovoValue) : null}
+          <tr data-testid="infra-row" class="ui-table-row">
+            <td class="ui-table-cell text-sm text-slate-900">
+              {labels[key] || key}
+            </td>
+            <td class="ui-table-cell ui-table-cell-center">
+              {@render badge(display, 'infra-status')}
+            </td>
+            {#if shelkovoInfra && shelkovoDisplay}
+              <td class="ui-table-cell ui-table-cell-center">
+                {@render badge(shelkovoDisplay, 'shelkovo-status')}
+              </td>
+              <td class="ui-table-cell ui-table-cell-center">
+                {@render diff(isDifferent)}
+              </td>
+            {/if}
+          </tr>
+        {/each}
+      {/if}
     </tbody>
   </table>
 </div>

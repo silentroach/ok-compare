@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render } from '@testing-library/svelte';
+import { render, fireEvent } from '@testing-library/svelte';
 import ServiceTable from './ServiceTable.svelte';
 import type { ServiceModel } from '../lib/schema';
 
@@ -99,5 +99,27 @@ describe('ServiceTable', () => {
     const rows = container.querySelectorAll('[data-testid="service-row"]');
     expect(rows.length).toBe(6);
     expect(getAllByText('Неизвестно').length).toBe(6);
+  });
+
+  it('shows only differing rows when diff toggle is enabled', async () => {
+    const { container, getByTestId } = render(ServiceTable, {
+      props: {
+        title: 'Модель обслуживания',
+        services: mockServices,
+        shelkovoServices: mockShelkovoServices
+      }
+    });
+
+    const full = container.querySelectorAll('[data-testid="service-row"]').length;
+    expect(full).toBe(6);
+
+    const btn = getByTestId('service-diff-toggle');
+    await fireEvent.click(btn);
+
+    const filtered = container.querySelectorAll('[data-testid="service-row"]').length;
+    const marks = container.querySelectorAll('[data-testid="diff-indicator"]').length;
+    expect(filtered).toBe(3);
+    expect(marks).toBe(3);
+    expect(btn.getAttribute('title')).toBe('Показать все свойства');
   });
 });
