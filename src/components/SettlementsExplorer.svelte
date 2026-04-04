@@ -6,12 +6,31 @@
   import SettlementCard from './SettlementCard.svelte';
 
   interface Props {
+    settlements?: Settlement[];
+    comparisons?: Record<string, ComparisonResult>;
+    stats?: Stats;
+    dataUrl?: string;
+  }
+
+  interface Payload {
     settlements: Settlement[];
     comparisons: Record<string, ComparisonResult>;
     stats: Stats;
   }
 
-  let { settlements, comparisons, stats }: Props = $props();
+  let {
+    settlements = [],
+    comparisons = {},
+    stats = null,
+    dataUrl = ''
+  }: {
+    settlements: Settlement[];
+    comparisons: Record<string, ComparisonResult>;
+    stats: Stats | null;
+    dataUrl: string;
+  } = $props();
+
+  let ready = $derived(settlements.length > 0 || dataUrl.length === 0);
 
   // Find Shelkovo (baseline) for distance calculations
   const shelkovo = $derived(settlements.find((s) => s.is_baseline));
@@ -89,6 +108,26 @@
 
   onMount(() => {
     showMap = !window.matchMedia('(max-width: 767px)').matches;
+
+    if (ready) {
+      window.dispatchEvent(new CustomEvent('explorer:ready'));
+      return;
+    }
+
+    if (!dataUrl) return;
+
+    void fetch(dataUrl)
+      .then((res) => {
+        if (!res.ok) return null;
+        return res.json() as Promise<Payload>;
+      })
+      .then((data) => {
+        if (!data) return;
+        settlements = data.settlements;
+        comparisons = data.comparisons;
+        stats = data.stats;
+        window.dispatchEvent(new CustomEvent('explorer:ready'));
+      });
   });
 </script>
 
@@ -148,7 +187,7 @@
   {/if}
 
   <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-    <p class="text-sm text-gray-600">
+    <p class="text-sm text-gray-600" data-testid="displayed-count">
       Показано <span class="font-medium text-gray-900">{displayedCount}</span> из
       <span class="font-medium text-gray-900">{totalCount}</span>
     </p>
@@ -169,7 +208,7 @@
         <option value="distance">По расстоянию</option>
         <option value="name">По названию</option>
       </select>
-      {#if displayedCount === 0}
+      {#if ready && displayedCount === 0}
         <p class="text-sm text-gray-500">Ничего не найдено</p>
       {/if}
     </div>
@@ -180,13 +219,13 @@
       <SettlementCard
         {settlement}
         comparison={comparisons[settlement.slug] || null}
-        maxTariff={stats.maxTariff}
+        maxTariff={stats?.maxTariff ?? 0}
         isBaseline={settlement.is_baseline}
       />
     {/each}
   </div>
 
-  {#if displayedCount === 0}
+  {#if ready && displayedCount === 0}
     <div class="text-center py-12 bg-gray-50 rounded-lg">
       <p class="text-gray-500 text-lg">Ничего не найдено</p>
       <p class="text-gray-400 text-sm mt-2">Попробуйте изменить фильтры</p>

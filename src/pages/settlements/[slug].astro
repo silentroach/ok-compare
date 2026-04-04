@@ -54,7 +54,6 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
 
 <BaseLayout title={pageTitle}>
   <main class="container mx-auto px-4 py-8 max-w-4xl">
-    <!-- Header -->
     <header class="mb-8">
       <div class="flex items-center gap-3 mb-4">
         <Link href="/" class="text-blue-600 hover:text-blue-800 text-sm">
@@ -111,12 +110,10 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
       </div>
     </header>
 
-    <!-- Main Info Card -->
     <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
       <h2 class="text-xl font-semibold text-gray-900 mb-6">Основная информация</h2>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Tariff -->
         <div>
           <h3 class="text-sm font-medium text-gray-500 mb-2">Тариф на обслуживание</h3>
           <div class="text-3xl font-bold text-gray-900">
@@ -127,7 +124,6 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
           )}
         </div>
         
-        <!-- Comparison -->
         {!settlement.is_baseline && comparison && (
           <div>
             <h3 class="text-sm font-medium text-gray-500 mb-2">Сравнение с Шелково</h3>
@@ -140,7 +136,6 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
           </div>
         )}
         
-        <!-- Location -->
         <div>
           <h3 class="text-sm font-medium text-gray-500 mb-2">Расположение</h3>
           <p class="text-gray-900">{settlement.location.address_text}</p>
@@ -153,7 +148,6 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
       </div>
     </section>
 
-    <!-- Infrastructure -->
     <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8" data-testid="infrastructure-section">
       <h2 class="text-xl font-semibold text-gray-900 mb-6">Инфраструктура</h2>
       <InfrastructureTable 
@@ -162,7 +156,6 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
       />
     </section>
 
-    <!-- Service Model -->
     <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8" data-testid="services-section">
       <h2 class="text-xl font-semibold text-gray-900 mb-6">Модель обслуживания</h2>
       <ServiceTable 
@@ -171,7 +164,6 @@ const pageTitle = `${settlement.name} — Тарифы и сравнение`;
       />
     </section>
 
-    <!-- Sources -->
     {settlement.sources.length > 0 && (
       <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8" data-testid="sources-section">
         <h2 class="text-xl font-semibold text-gray-900 mb-4">Источники</h2>
