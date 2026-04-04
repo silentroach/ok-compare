@@ -45,7 +45,7 @@ export const TariffSchema = z.object({
   unit: TariffUnitEnum,
   period: TariffPeriodEnum,
   normalized_per_sotka_month: z.number().nonnegative(),
-  note: z.string().default('')
+  note: z.string().optional()
 });
 export type Tariff = z.infer<typeof TariffSchema>;
 

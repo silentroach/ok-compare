@@ -13,11 +13,10 @@ location:
   district: "Ступинский"
 
 tariff:
-  value: 544
+  value: 815
   unit: "rub_per_sotka"
   period: "month"
-  normalized_per_sotka_month: 544
-  note: "Повышают до 815 ₽"
+  normalized_per_sotka_month: 815
 
 infrastructure:
   roads: "partial_asphalt"
