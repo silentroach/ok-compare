@@ -26,10 +26,10 @@
   };
 
   // Status colors for badges
-  const colors: Record<AvailabilityStatus, string> = {
-    yes: 'bg-green-100 text-green-700 border-green-200',
-    no: 'bg-red-100 text-red-700 border-red-200',
-    partial: 'bg-yellow-100 text-yellow-700 border-yellow-200'
+  const tones: Record<AvailabilityStatus, string> = {
+    yes: 'ui-badge-success',
+    no: 'ui-badge-danger',
+    partial: 'ui-badge-warning'
   };
 
   // Get status text
@@ -42,20 +42,20 @@
   const unknown = {
     icon: '?',
     text: 'Неизвестно',
-    color: 'bg-gray-100 text-gray-500 border-gray-200'
+    tone: 'ui-badge-muted'
   };
 
-  function getDisplay(value: AvailabilityStatus | undefined): { icon: string; text: string; color: string } {
+  function getDisplay(value: AvailabilityStatus | undefined): { icon: string; text: string; tone: string } {
     if (value === undefined) return unknown;
 
     return {
       icon: icons[value],
       text: statusText[value],
-      color: colors[value]
+      tone: tones[value]
     };
   }
 
-  type Display = { icon: string; text: string; color: string };
+  type Display = { icon: string; text: string; tone: string };
 
   // Check if there's a difference between settlement and Shelkovo
   function hasDifference(key: string): boolean {
@@ -78,7 +78,7 @@
   {#snippet badge(display: Display, tid?: string)}
     <span
       data-testid={tid}
-      class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium {display.color}"
+      class="ui-badge {display.tone}"
     >
       <span class="flex h-4 w-4 items-center justify-center">{display.icon}</span>
       <span class="hidden sm:inline">{display.text}</span>
@@ -89,14 +89,14 @@
     {#if diff}
       <span
         data-testid="diff-indicator"
-        class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-orange-100 text-xs font-bold text-orange-600"
+        class="ui-pill ui-pill-warning h-6 w-6 p-0 text-xs font-bold"
         title="Отличается от Шелково"
       >
         ≠
       </span>
     {:else}
       <span
-        class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-600"
+        class="ui-pill ui-pill-success h-6 w-6 p-0 text-xs font-bold"
         title="Совпадает с Шелково"
       >
         =
@@ -104,14 +104,14 @@
     {/if}
   {/snippet}
 
-  <table class="w-full border-collapse text-left">
+  <table class="ui-table">
     <thead>
-      <tr class="border-b border-slate-200 bg-slate-50">
-        <th class="px-4 py-3 text-sm font-semibold text-slate-600">Услуга</th>
-        <th class="px-4 py-3 text-center text-sm font-semibold text-slate-600">Статус</th>
+      <tr class="ui-table-head">
+        <th>Услуга</th>
+        <th class="text-center">Статус</th>
         {#if shelkovoServices}
-          <th class="px-4 py-3 text-center text-sm font-semibold text-slate-600">Шелково</th>
-          <th class="w-16 px-4 py-3 text-center text-sm font-semibold text-slate-600"></th>
+          <th class="text-center">Шелково</th>
+          <th class="w-16 text-center"></th>
         {/if}
       </tr>
     </thead>
@@ -122,18 +122,18 @@
         {@const isDifferent = hasDifference(key)}
         {@const display = getDisplay(value)}
         {@const shelkovoDisplay = shelkovoServices ? getDisplay(shelkovoValue) : null}
-        <tr data-testid="service-row" class="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/70">
-          <td class="px-4 py-3 text-sm text-slate-900">
+        <tr data-testid="service-row" class="ui-table-row">
+          <td class="ui-table-cell text-sm text-slate-900">
             {labels[key] || key}
           </td>
-          <td class="px-4 py-3 text-center">
+          <td class="ui-table-cell ui-table-cell-center">
             {@render badge(display, 'service-status')}
           </td>
           {#if shelkovoServices && shelkovoDisplay}
-            <td class="px-4 py-3 text-center">
+            <td class="ui-table-cell ui-table-cell-center">
               {@render badge(shelkovoDisplay, 'shelkovo-service-status')}
             </td>
-            <td class="px-4 py-3 text-center">
+            <td class="ui-table-cell ui-table-cell-center">
               {@render diff(isDifferent)}
             </td>
           {/if}

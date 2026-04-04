@@ -21,9 +21,9 @@
       <div>
         <h3 class="text-xl font-semibold text-slate-900">
           <Link href={`settlements/${settlement.slug}/`} class="ui-link">
-          {settlement.short_name}
-        </Link>
-      </h3>
+            {settlement.short_name}
+          </Link>
+        </h3>
         <p class="mt-1 text-sm text-slate-500">{settlement.location.district} район</p>
       </div>
       <div class="flex items-center gap-2">
@@ -33,7 +33,7 @@
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Открыть сайт поселка"
-            class="rounded-md p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+            class="ui-icon-btn"
             title="Перейти на сайт поселка"
             data-testid="website-link"
           >
@@ -47,7 +47,7 @@
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Открыть поселок на Яндекс.Картах"
-          class="rounded-md p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+          class="ui-icon-btn"
           title="Открыть на Яндекс.Картах"
           data-testid="map-link"
         >
@@ -57,7 +57,7 @@
           </svg>
         </a>
         {#if isBaseline}
-          <span class="rounded-full border border-sky-200 bg-sky-100 px-2.5 py-1 text-xs font-semibold text-sky-800">
+          <span class="ui-badge ui-badge-info">
             Наш
           </span>
         {/if}

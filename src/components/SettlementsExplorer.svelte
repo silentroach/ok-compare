@@ -166,7 +166,7 @@
           />
           <label
             for={allid}
-            class="inline-flex cursor-pointer items-center rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors {priceFilter === 'all' ? 'border-slate-700 bg-slate-700 text-white' : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'}"
+            class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'all' ? 'ui-btn-solid ui-btn-primary' : ''}"
           >
             Все
           </label>
@@ -181,7 +181,7 @@
           />
           <label
             for={cheapid}
-            class="inline-flex cursor-pointer items-center rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors {priceFilter === 'cheaper' ? 'border-emerald-700 bg-emerald-700 text-white' : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'}"
+            class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'cheaper' ? 'ui-btn-solid ui-btn-success' : ''}"
           >
             {mobile ? 'Дешевле' : 'Дешевле Шелково'}
           </label>
@@ -196,14 +196,14 @@
           />
           <label
             for={moreid}
-            class="inline-flex cursor-pointer items-center rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors {priceFilter === 'more_expensive' ? 'border-amber-700 bg-amber-700 text-white' : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'}"
+            class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'more_expensive' ? 'ui-btn-solid ui-btn-warning' : ''}"
           >
             {mobile ? 'Дороже' : 'Дороже Шелково'}
           </label>
         </div>
         <button
           type="button"
-          class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border text-sm font-semibold transition md:h-auto md:w-auto md:px-4 md:py-2.5 {showMap ? 'border-slate-700 bg-slate-700 text-white hover:border-slate-700 hover:bg-slate-700 md:border-slate-300 md:bg-white md:text-slate-700 md:hover:border-slate-400 md:hover:bg-slate-50' : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50'}"
+          class="ui-btn ui-btn-outline h-10 w-10 shrink-0 p-0 md:h-auto md:w-auto md:px-4 md:py-2.5 {showMap ? 'ui-btn-solid ui-btn-primary' : ''}"
           onclick={() => {
             showMap = !showMap;
           }}
@@ -233,7 +233,7 @@
       Показано <span class="font-semibold text-slate-900">{displayedCount}</span> из
       <span class="font-semibold text-slate-900">{totalCount}</span>
       {#if compact}
-        <span class="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">активные фильтры</span>
+        <span class="ui-pill ui-pill-muted ml-2">активные фильтры</span>
       {/if}
     </p>
     <div class="flex shrink-0 items-center gap-3">
