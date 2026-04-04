@@ -5,13 +5,14 @@ import KPIStats from '../components/KPIStats.svelte';
 import SettlementCard from '../components/SettlementCard.svelte';
 import SettlementsExplorer from '../components/SettlementsExplorer.svelte';
 import { loadAllData } from '../lib/data';
+import { withBase } from '../lib/url';
 
 // Load all data at build time
 const { settlements, stats, comparisons } = await loadAllData();
 
 // Convert comparisons Map to a plain object for serialization
 const comparisonsObj = Object.fromEntries(comparisons);
-const dataUrl = `${import.meta.env.BASE_URL}data/explorer.json`;
+const dataUrl = withBase('data/explorer.json');
 
 const cards = [...settlements].sort((a, b) => {
 	const d = a.tariff.normalized_per_sotka_month - b.tariff.normalized_per_sotka_month;
