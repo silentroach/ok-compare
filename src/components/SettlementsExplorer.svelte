@@ -53,7 +53,6 @@
     settlements = data.settlements;
     comparisons = data.comparisons;
     stats = data.stats;
-    window.dispatchEvent(new CustomEvent('explorer:ready'));
   }
 
   let run = $derived.by(async () => {
@@ -81,7 +80,7 @@
   // Filter and sort state
   let sortBy = $state<'tariff_asc' | 'tariff_desc' | 'distance' | 'name'>('tariff_asc');
   let priceFilter = $state<'all' | 'cheaper' | 'more_expensive'>('all');
-  let showMap = $state(true);
+  let showMap = $state(false);
   let mobile = $state(false);
 
   // Derived: filtered and sorted settlements
@@ -143,10 +142,6 @@
     const media = window.matchMedia('(max-width: 767px)');
     mobile = media.matches;
     showMap = !mobile;
-
-    if (ready) {
-      window.dispatchEvent(new CustomEvent('explorer:ready'));
-    }
   });
 </script>
 

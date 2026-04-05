@@ -163,6 +163,9 @@ describe('SettlementsExplorer', () => {
       props: { settlements, comparisons, stats },
     });
 
+    await waitFor(() => {
+      expect(getByTestId('map-toggle')).toBeTruthy();
+    });
     const btn = getByTestId('map-toggle');
     await fireEvent.click(btn);
 
@@ -196,6 +199,9 @@ describe('SettlementsExplorer', () => {
       props: { settlements, comparisons, stats },
     });
 
+    await waitFor(() => {
+      expect(getByLabelText('Сортировка:')).toBeTruthy();
+    });
     const sort = getByLabelText('Сортировка:') as HTMLSelectElement;
     sort.value = 'distance';
     await fireEvent.change(sort);
@@ -214,6 +220,9 @@ describe('SettlementsExplorer', () => {
       props: { settlements, comparisons, stats },
     });
 
+    await waitFor(() => {
+      expect(getByLabelText('Сортировка:')).toBeTruthy();
+    });
     await fireEvent.change(getByLabelText('Сортировка:'), { target: { value: 'name' } });
 
     await waitFor(() => {
@@ -228,6 +237,9 @@ describe('SettlementsExplorer', () => {
       props: { settlements, comparisons, stats },
     });
 
+    await waitFor(() => {
+      expect(getByTestId('sort-select')).toBeTruthy();
+    });
     const sort = getByTestId('sort-select') as HTMLSelectElement;
     const sortLabel = getByLabelText('Сортировка:') as HTMLSelectElement;
     expect(sortLabel.id).toBe(sort.id);

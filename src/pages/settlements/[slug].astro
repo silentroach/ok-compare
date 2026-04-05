@@ -79,7 +79,7 @@ const heroMap = hasPoint
               muted={false}
               height={430}
               focusX={0.8}
-              client:media="(min-width: 1024px)"
+              client:visible
             />
           </div>
         )}
@@ -280,7 +280,7 @@ const heroMap = hasPoint
         title="Инфраструктура"
         infra={settlement.infrastructure} 
         shelkovoInfra={!settlement.is_baseline ? shelkovo?.infrastructure || null : null}
-        client:load
+        client:idle
       />
     </section>
 
@@ -289,7 +289,7 @@ const heroMap = hasPoint
         title="Модель обслуживания"
         services={settlement.service_model} 
         shelkovoServices={!settlement.is_baseline ? shelkovo?.service_model || null : null}
-        client:load
+        client:idle
       />
     </section>
 
