@@ -2,14 +2,17 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.svelte';
 import KPIStats from '../components/KPIStats.svelte';
+import SettlementCard from '../components/SettlementCard.svelte';
 import SettlementsExplorer from '../components/SettlementsExplorer.svelte';
 import { loadAllData } from '../lib/data';
+import { withBase } from '../lib/url';
 
 // Load all data at build time
 const { settlements, stats, comparisons } = await loadAllData();
 
 // Convert comparisons Map to a plain object for serialization
 const comparisonsObj = Object.fromEntries(comparisons);
+const dataUrl = withBase('data/explorer.json');
 
 const cards = [...settlements].sort((a, b) => {
 	const d = a.tariff.normalized_per_sotka_month - b.tariff.normalized_per_sotka_month;
@@ -34,12 +37,27 @@ if (base > 0) {
 		</Hero>
 
 		<section id="settlements" class="mt-6 space-y-6 md:mt-8">
-			<SettlementsExplorer
-				settlements={cards}
-				comparisons={comparisonsObj}
-				stats={stats}
-				client:idle
-			/>
+			<SettlementsExplorer dataUrl={dataUrl} client:only="svelte" />
+
+			<div id="settlements-static">
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					{cards.map((settlement) => (
+						<SettlementCard
+							settlement={settlement}
+							comparison={comparisonsObj[settlement.slug]}
+							maxTariff={stats.maxTariff}
+							isBaseline={settlement.is_baseline}
+						/>
+					))}
+				</div>
+			</div>
+
+			<script is:inline>
+				window.addEventListener('explorer:ready', () => {
+					const fallback = document.getElementById('settlements-static');
+					if (fallback) fallback.style.display = 'none';
+				});
+			</script>
 		</section>
 	</main>
 </BaseLayout>

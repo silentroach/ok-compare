@@ -53,6 +53,8 @@
     settlements = data.settlements;
     comparisons = data.comparisons;
     stats = data.stats;
+
+    window.dispatchEvent(new CustomEvent('explorer:ready'));
   }
 
   let run = $derived.by(async () => {
@@ -149,6 +151,10 @@
     const media = window.matchMedia('(max-width: 767px)');
     mobile = media.matches;
     showMap = !mobile;
+
+    if (ready) {
+      window.dispatchEvent(new CustomEvent('explorer:ready'));
+    }
   });
 </script>
 
