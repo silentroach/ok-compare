@@ -13,11 +13,19 @@ const markers: HTMLElement[] = [];
 
 const mockYandexMaps = {
   ready: Promise.resolve(),
-  Map: vi.fn(() => mockMap),
-  YMap: vi.fn(() => mockMap),
-  YMapDefaultSchemeLayer: vi.fn(() => ({})),
-  YMapDefaultFeaturesLayer: vi.fn(() => ({})),
-  YMapMarker: vi.fn((_: unknown, el: HTMLElement) => {
+  Map: vi.fn(function Map() {
+    return mockMap;
+  }),
+  YMap: vi.fn(function YMap() {
+    return mockMap;
+  }),
+  YMapDefaultSchemeLayer: vi.fn(function YMapDefaultSchemeLayer() {
+    return {};
+  }),
+  YMapDefaultFeaturesLayer: vi.fn(function YMapDefaultFeaturesLayer() {
+    return {};
+  }),
+  YMapMarker: vi.fn(function YMapMarker(_: unknown, el: HTMLElement) {
     markers.push(el);
     return { el };
   }),

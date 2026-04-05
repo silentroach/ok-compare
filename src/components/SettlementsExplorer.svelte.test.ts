@@ -12,10 +12,18 @@ const mockMap = {
 
 const mockYandexMaps = {
   ready: Promise.resolve(),
-  YMap: vi.fn(() => mockMap),
-  YMapDefaultSchemeLayer: vi.fn(() => ({})),
-  YMapDefaultFeaturesLayer: vi.fn(() => ({})),
-  YMapMarker: vi.fn(() => ({})),
+  YMap: vi.fn(function YMap() {
+    return mockMap;
+  }),
+  YMapDefaultSchemeLayer: vi.fn(function YMapDefaultSchemeLayer() {
+    return {};
+  }),
+  YMapDefaultFeaturesLayer: vi.fn(function YMapDefaultFeaturesLayer() {
+    return {};
+  }),
+  YMapMarker: vi.fn(function YMapMarker() {
+    return {};
+  }),
 };
 
 const stats: Stats = {
