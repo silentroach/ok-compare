@@ -1,0 +1,84 @@
+# Вне схемы: на лендинге указано 92 участка; в genplan data.xml найдено 95 лотов (включая номера с суффиксами).
+# Вне схемы: снимок статусов из genplan data.xml на 2026-04-05 — свободно 13, забронировано 1, продано 81.
+# Вне схемы: снимок распределения по стилям из genplan data.xml на 2026-04-05 — Барнхаусы 59, Скандинавия 28, Хай-тек 5, стиль не указан 3.
+# Вне схемы: диапазон площадей участков по genplan data.xml — от 6.25 до 16.49 соток, средняя 9.92 сотки.
+# Вне схемы: на странице поселка отдельно заявлены экотропа и тест-драйв загородной жизни в A-frame.
+
+name: "КП Нордик Форест"
+short_name: "Нордик Форест"
+slug: "nordic-forest"
+website: "https://kp-nordic.ru/"
+management_company: "УК Эколайф"
+is_baseline: false
+
+location:
+  address_text: "Московская область, м.о. Истра"
+  lat: 56.006019
+  lng: 36.451281
+  map_url: "https://genplan.kp-nordic.ru/forest/"
+  district: "Истра"
+
+tariff:
+  value: 450
+  unit: "rub_per_sotka"
+  period: "month"
+  normalized_per_sotka_month: 450
+  note: "по словам собственника"
+
+infrastructure:
+  checkpoints: "yes"
+  security: "yes"
+  video_surveillance: "checkpoint_only"
+  underground_electricity: "full"
+  playgrounds: "yes"
+  public_spaces: "yes"
+  # roads: не нашел информации
+  # sidewalks: не нашел информации
+  # lighting: не нашел информации
+  # gas: не нашел информации
+  # water: не нашел информации
+  # sewage: не нашел информации
+  # drainage: не нашел информации
+  # fencing: не нашел информации
+  # retail_or_services: не нашел информации
+
+# service_model.garbage_collection: не нашел информации
+# service_model.snow_removal: не нашел информации
+# service_model.road_cleaning: не нашел информации
+# service_model.landscaping: не нашел информации
+# service_model.emergency_service: не нашел информации
+# service_model.dispatcher: не нашел информации
+service_model: {}
+
+promises_vs_fact:
+  promised: []
+  actual: []
+  notes: ""
+
+transparency:
+  has_public_tariff: false
+  has_website: true
+  has_phone: true
+  has_management_info: true
+  notes: "Публичный тариф на содержание на сайте не найден; контакты и реквизиты УК опубликованы."
+
+sources:
+  - title: "КП Нордик — официальный сайт"
+    url: "https://kp-nordic.ru/"
+    type: "official"
+    date_checked: "2026-04-05"
+    comment: "Инфраструктура проекта, контактные данные, УК Эколайф."
+  - title: "КП Нордик — страница final"
+    url: "https://kp-nordic.ru/final"
+    type: "official"
+    date_checked: "2026-04-05"
+    comment: "По Нордик Форест указано 92 участка, экотропа, подземное электричество, детская площадка."
+  - title: "Генплан Нордик Форест"
+    url: "https://genplan.kp-nordic.ru/forest/"
+    type: "official"
+    date_checked: "2026-04-05"
+    comment: "Официальная карта поселка."
+
+comparison_notes:
+  - "Тариф 450 руб/сотка указан со слов собственника."
+  - "Публичного тарифа на содержание на сайте не найдено."
