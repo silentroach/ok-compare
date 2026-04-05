@@ -37,10 +37,10 @@ infrastructure:
   # sidewalks: не нашел информации
   # lighting: не нашел информации
   # gas: не нашел информации
-  # water: не нашел информации
-  # sewage: не нашел информации
+  water: "no"
+  sewage: "no"
   # drainage: не нашел информации
-  # fencing: не нашел информации
+  fencing: "yes"
   # beach_or_water_access: не нашел информации
   # retail_or_services: не нашел информации
 

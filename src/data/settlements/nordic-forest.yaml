@@ -36,10 +36,10 @@ infrastructure:
   # sidewalks: не нашел информации
   # lighting: не нашел информации
   # gas: не нашел информации
-  # water: не нашел информации
-  # sewage: не нашел информации
+  water: "no"
+  sewage: "no"
   # drainage: не нашел информации
-  # fencing: не нашел информации
+  fencing: "yes"
   # retail_or_services: не нашел информации
 
 # service_model.garbage_collection: не нашел информации
