@@ -4,17 +4,31 @@ import { z } from 'zod';
 export const AvailabilityStatusEnum = z.enum(['yes', 'no', 'partial']);
 export type AvailabilityStatus = z.infer<typeof AvailabilityStatusEnum>;
 
-export const TariffUnitEnum = z.enum(['rub_per_sotka', 'rub_per_lot', 'rub_fixed']);
+export const TariffUnitEnum = z.enum([
+  'rub_per_sotka',
+  'rub_per_lot',
+  'rub_fixed',
+]);
 export type TariffUnit = z.infer<typeof TariffUnitEnum>;
 
 export const TariffPeriodEnum = z.enum(['month', 'quarter', 'year']);
 export type TariffPeriod = z.infer<typeof TariffPeriodEnum>;
 
-export const SourceTypeEnum = z.enum(['official', 'community', 'media', 'personal']);
+export const SourceTypeEnum = z.enum([
+  'official',
+  'community',
+  'media',
+  'personal',
+]);
 export type SourceType = z.infer<typeof SourceTypeEnum>;
 
 // Road type enum (ordered from best to worst)
-export const RoadTypeEnum = z.enum(['asphalt', 'partial_asphalt', 'gravel', 'dirt']);
+export const RoadTypeEnum = z.enum([
+  'asphalt',
+  'partial_asphalt',
+  'gravel',
+  'dirt',
+]);
 export type RoadType = z.infer<typeof RoadTypeEnum>;
 
 // Drainage type enum (ordered from best to worst)
@@ -22,7 +36,11 @@ export const DrainageTypeEnum = z.enum(['closed', 'open', 'none']);
 export type DrainageType = z.infer<typeof DrainageTypeEnum>;
 
 // Video surveillance enum (ordered from best to worst)
-export const VideoSurveillanceEnum = z.enum(['full', 'checkpoint_only', 'none']);
+export const VideoSurveillanceEnum = z.enum([
+  'full',
+  'checkpoint_only',
+  'none',
+]);
 export type VideoSurveillance = z.infer<typeof VideoSurveillanceEnum>;
 
 // Underground electricity enum (ordered from best to worst)
@@ -35,7 +53,7 @@ export const LocationSchema = z.object({
   lat: z.number().min(-90).max(90),
   lng: z.number().min(-180).max(180),
   map_url: z.string().url().optional(),
-  district: z.string().min(1)
+  district: z.string().min(1),
 });
 export type Location = z.infer<typeof LocationSchema>;
 
@@ -59,12 +77,12 @@ export const TariffSchema = z
     value: z.number().nonnegative(),
     unit: TariffUnitEnum,
     period: TariffPeriodEnum,
-    note: z.string().optional()
+    note: z.string().optional(),
   })
   .transform((item) => ({
     ...item,
     normalized_per_sotka_month: norm(item.value, item.unit, item.period),
-    normalized_is_estimate: item.unit !== 'rub_per_sotka'
+    normalized_is_estimate: item.unit !== 'rub_per_sotka',
   }));
 export type Tariff = z.infer<typeof TariffSchema>;
 
@@ -95,7 +113,7 @@ export const InfrastructureSchema = z.object({
   beach_or_water_access: AvailabilityStatusEnum.optional(),
   admin_building: AvailabilityStatusEnum.optional(),
   // Shops
-  retail_or_services: AvailabilityStatusEnum.optional()
+  retail_or_services: AvailabilityStatusEnum.optional(),
 });
 export type Infrastructure = z.infer<typeof InfrastructureSchema>;
 
@@ -106,7 +124,7 @@ export const ServiceModelSchema = z.object({
   road_cleaning: AvailabilityStatusEnum.optional(),
   landscaping: AvailabilityStatusEnum.optional(),
   emergency_service: AvailabilityStatusEnum.optional(),
-  dispatcher: AvailabilityStatusEnum.optional()
+  dispatcher: AvailabilityStatusEnum.optional(),
 });
 export type ServiceModel = z.infer<typeof ServiceModelSchema>;
 
@@ -117,9 +135,9 @@ export const SourceSchema = z.object({
   type: SourceTypeEnum,
   date_checked: z.union([
     z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-    z.date().transform((item) => item.toISOString().slice(0, 10))
+    z.date().transform((item) => item.toISOString().slice(0, 10)),
   ]),
-  comment: z.string().default('')
+  comment: z.string().default(''),
 });
 export type Source = z.infer<typeof SourceSchema>;
 
@@ -127,8 +145,8 @@ export const ManagementCompanySchema = z.union([
   z.string().min(1),
   z.object({
     title: z.string().min(1),
-    url: z.string().url()
-  })
+    url: z.string().url(),
+  }),
 ]);
 export type ManagementCompany = z.infer<typeof ManagementCompanySchema>;
 
@@ -136,7 +154,10 @@ export type ManagementCompany = z.infer<typeof ManagementCompanySchema>;
 export const SettlementSchema = z.object({
   name: z.string().min(1),
   short_name: z.string().min(1),
-  slug: z.string().min(1).regex(/^[a-z0-9-]+$/),
+  slug: z
+    .string()
+    .min(1)
+    .regex(/^[a-z0-9-]+$/),
   website: z.string().url(),
   management_company: ManagementCompanySchema.optional(),
   is_baseline: z.boolean().default(false),

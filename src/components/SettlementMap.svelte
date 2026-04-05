@@ -86,12 +86,18 @@
   }
 
   function getRange(list: SettlementMapData[]): Range | undefined {
-    const vals = list.filter(item => !item.isBaseline).map(item => item.normalizedTariff);
+    const vals = list
+      .filter((item) => !item.isBaseline)
+      .map((item) => item.normalizedTariff);
     if (vals.length === 0) return;
     return { min: Math.min(...vals), max: Math.max(...vals) };
   }
 
-  function getTariffColor(tariff: number, isBaseline: boolean, range: Range | undefined): string {
+  function getTariffColor(
+    tariff: number,
+    isBaseline: boolean,
+    range: Range | undefined,
+  ): string {
     if (isBaseline) {
       return '#0369a1';
     }
@@ -100,7 +106,10 @@
       return 'rgb(205, 165, 101)';
     }
 
-    const normalized = Math.max(0, Math.min(1, (tariff - range.min) / (range.max - range.min)));
+    const normalized = Math.max(
+      0,
+      Math.min(1, (tariff - range.min) / (range.max - range.min)),
+    );
     const red = Math.round(180 + 50 * normalized);
     const green = Math.round(130 + 70 * (1 - normalized));
     const blue = Math.round(86 + 30 * (1 - normalized));
@@ -108,7 +117,7 @@
   }
 
   async function loadYandexMaps(): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     if (window.ymaps3) {
       ymapsLoaded = true;
@@ -125,12 +134,12 @@
       const script = document.createElement('script');
       script.src = `https://api-maps.yandex.ru/v3/?apikey=${API_KEY}&lang=ru_RU`;
       script.async = true;
-      
+
       script.onload = () => {
         ymapsLoaded = true;
         resolve();
       };
-      
+
       script.onerror = () => {
         error = 'Не удалось загрузить карту';
         isLoading = false;
@@ -161,14 +170,19 @@
       };
     }
 
-    const lat = settlements.map(s => s.lat);
-    const lng = settlements.map(s => s.lng);
+    const lat = settlements.map((s) => s.lat);
+    const lng = settlements.map((s) => s.lng);
     const minLat = Math.min(...lat);
     const maxLat = Math.max(...lat);
     const minLng = Math.min(...lng);
     const maxLng = Math.max(...lng);
     return {
-      location: { bounds: [[minLng, minLat], [maxLng, maxLat]] },
+      location: {
+        bounds: [
+          [minLng, minLat],
+          [maxLng, maxLat],
+        ],
+      },
       margin: [PAD, PAD, PAD, PAD],
     };
   }
@@ -190,7 +204,11 @@
     clearMarkers();
 
     for (const settlement of settlements) {
-      const color = getTariffColor(settlement.normalizedTariff, settlement.isBaseline, range);
+      const color = getTariffColor(
+        settlement.normalizedTariff,
+        settlement.isBaseline,
+        range,
+      );
       const el = document.createElement('div');
       el.style.cssText = `
         width: 18px;
@@ -214,7 +232,7 @@
         {
           coordinates: [settlement.lng, settlement.lat],
         },
-        el
+        el,
       );
 
       map.addChild(marker);
@@ -227,7 +245,7 @@
 
     try {
       const ymaps3 = window.ymaps3;
-      
+
       if (!ymaps3) {
         error = 'Yandex Maps API не доступен';
         isLoading = false;
@@ -236,20 +254,17 @@
 
       await ymaps3.ready;
 
-      const {YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer} = ymaps3;
+      const { YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer } = ymaps3;
 
       const view = getMapView();
-      
+
       map = new YMap(
         mapContainer,
         {
           location: view.location,
           margin: view.margin,
         },
-        [
-          new YMapDefaultSchemeLayer(),
-          new YMapDefaultFeaturesLayer(),
-        ]
+        [new YMapDefaultSchemeLayer(), new YMapDefaultFeaturesLayer()],
       );
 
       renderMarkers(ymaps3);
@@ -343,7 +358,9 @@
   });
 
   $effect(() => {
-    const sig = settlements.map(s => `${s.slug}:${s.lat}:${s.lng}:${s.normalizedTariff}`).join('|');
+    const sig = settlements
+      .map((s) => `${s.slug}:${s.lat}:${s.lng}:${s.normalizedTariff}`)
+      .join('|');
     sig;
     if (!ymapsLoaded || !mapContainer || error) return;
     untrack(() => {
@@ -358,20 +375,28 @@
   style={`height: ${height}px; min-height: ${height}px;`}
 >
   {#if isLoading}
-    <div class="absolute inset-0 flex items-center justify-center bg-muted-soft">
+    <div
+      class="absolute inset-0 flex items-center justify-center bg-muted-soft"
+    >
       <div class="text-center">
-        <div class="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-b-2 border-foreground"></div>
+        <div
+          class="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-b-2 border-foreground"
+        ></div>
         <p class="text-sm text-muted-foreground">Загрузка карты...</p>
       </div>
     </div>
   {/if}
 
   {#if error}
-    <div class="absolute inset-0 flex items-center justify-center bg-muted-soft">
+    <div
+      class="absolute inset-0 flex items-center justify-center bg-muted-soft"
+    >
       <div class="text-center max-w-md px-4">
         <div class="text-4xl mb-3">🗺️</div>
         <p class="mb-2 font-medium text-foreground">{error}</p>
-        <p class="text-sm text-muted-foreground">Попробуйте обновить страницу</p>
+        <p class="text-sm text-muted-foreground">
+          Попробуйте обновить страницу
+        </p>
       </div>
     </div>
   {/if}
@@ -405,18 +430,33 @@
                 tip = undefined;
               }}
             >
-              <svg viewBox="0 0 20 20" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <svg
+                viewBox="0 0 20 20"
+                class="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
                 <path d="M5 5l10 10M15 5L5 15"></path>
               </svg>
             </button>
           </div>
           {#if tip.item.companyText}
-            <p class="mb-2 text-xs leading-tight text-muted-foreground opacity-80">
+            <p
+              class="mb-2 text-xs leading-tight text-muted-foreground opacity-80"
+            >
               {tip.item.companyText}
             </p>
           {/if}
-          <p class="mb-0 text-sm text-muted-foreground" title={tip.item.tariffHint}>
-            <strong>{tip.item.tariffText ?? `${Math.round(tip.item.normalizedTariff).toLocaleString('ru-RU')} ₽/сотка`}</strong>
+          <p
+            class="mb-0 text-sm text-muted-foreground"
+            title={tip.item.tariffHint}
+          >
+            <strong
+              >{tip.item.tariffText ??
+                `${Math.round(tip.item.normalizedTariff).toLocaleString('ru-RU')} ₽/сотка`}</strong
+            >
           </p>
         </div>
         <div

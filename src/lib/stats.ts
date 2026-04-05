@@ -50,12 +50,12 @@ export function computeStats(settlements: Settlement[]): Stats {
     throw new Error('No settlements provided');
   }
 
-  const baseline = settlements.find(s => s.is_baseline);
+  const baseline = settlements.find((s) => s.is_baseline);
   if (!baseline) {
     throw new Error('Baseline settlement (Shelkovo) not found');
   }
 
-  const tariffs = settlements.map(s => s.tariff.normalized_per_sotka_month);
+  const tariffs = settlements.map((s) => s.tariff.normalized_per_sotka_month);
   const shelkovoTariff = baseline.tariff.normalized_per_sotka_month;
 
   const medianTariff = calculateMedian(tariffs);
@@ -64,9 +64,16 @@ export function computeStats(settlements: Settlement[]): Stats {
   const maxTariff = Math.max(...tariffs);
   const shelkovoRank = calculateRank(shelkovoTariff, tariffs);
   const totalSettlements = settlements.length;
-  const cheaperCount = settlements.filter(s => s.tariff.normalized_per_sotka_month < shelkovoTariff).length;
-  const moreExpensiveCount = settlements.filter(s => s.tariff.normalized_per_sotka_month > shelkovoTariff).length;
-  const shelkovoVsMedianPercent = calculatePercentile(shelkovoTariff, medianTariff);
+  const cheaperCount = settlements.filter(
+    (s) => s.tariff.normalized_per_sotka_month < shelkovoTariff,
+  ).length;
+  const moreExpensiveCount = settlements.filter(
+    (s) => s.tariff.normalized_per_sotka_month > shelkovoTariff,
+  ).length;
+  const shelkovoVsMedianPercent = calculatePercentile(
+    shelkovoTariff,
+    medianTariff,
+  );
   const shelkovoVsMeanPercent = calculatePercentile(shelkovoTariff, meanTariff);
 
   return {
@@ -80,6 +87,6 @@ export function computeStats(settlements: Settlement[]): Stats {
     cheaperCount,
     moreExpensiveCount,
     shelkovoVsMedianPercent,
-    shelkovoVsMeanPercent
+    shelkovoVsMeanPercent,
   };
 }

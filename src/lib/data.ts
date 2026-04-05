@@ -8,14 +8,16 @@ import { compareSettlements } from './comparisons';
  */
 export async function loadSettlements(): Promise<Settlement[]> {
   const settlements = await getCollection('settlements');
-  return settlements.map(entry => entry.data);
+  return settlements.map((entry) => entry.data);
 }
 
 /**
  * Find the baseline settlement (Shelkovo)
  */
-export function findBaseline(settlements: Settlement[]): Settlement | undefined {
-  return settlements.find(s => s.is_baseline);
+export function findBaseline(
+  settlements: Settlement[],
+): Settlement | undefined {
+  return settlements.find((s) => s.is_baseline);
 }
 
 /**
@@ -36,7 +38,7 @@ export async function loadSettlementsWithStats(): Promise<{
  * Returns a Map of slug -> ComparisonResult
  */
 export function compareAllSettlements(
-  settlements: Settlement[]
+  settlements: Settlement[],
 ): Map<string, ComparisonResult> {
   const baseline = findBaseline(settlements);
 

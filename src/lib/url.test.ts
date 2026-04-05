@@ -16,6 +16,8 @@ describe('withBase', () => {
   });
 
   it('prepends base to absolute internal paths', () => {
-    expect(withBase('/settlements/usadby/')).toBe(`${base}/settlements/usadby/`);
+    expect(withBase('/settlements/usadby/')).toBe(
+      `${base}/settlements/usadby/`,
+    );
   });
 });

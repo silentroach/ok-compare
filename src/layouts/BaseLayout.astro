@@ -3,45 +3,59 @@ import '../styles/global.css';
 import { withBase } from '../lib/url';
 
 interface Props {
-	title?: string;
-	description?: string;
+  title?: string;
+  description?: string;
 }
 
-const { 
-	title = 'Шелково Сравнение — Сравнение тарифов на обслуживание коттеджных поселков',
-	description = 'Сравнение тарифов на обслуживание коттеджных поселков в Истринском районе. Прозрачные данные о стоимости услуг управляющих компаний.'
+const {
+  title = 'Шелково Сравнение — Сравнение тарифов на обслуживание коттеджных поселков',
+  description = 'Сравнение тарифов на обслуживание коттеджных поселков в Истринском районе. Прозрачные данные о стоимости услуг управляющих компаний.',
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).toString();
+const canonical = new URL(
+  Astro.url.pathname,
+  Astro.site ?? Astro.url.origin,
+).toString();
 ---
 
 <!doctype html>
 <html lang="ru">
-	<head>
-		<base href={import.meta.env.BASE_URL} />
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta name="theme-color" content="#edf3f7" media="(prefers-color-scheme: light)" />
-		<meta name="theme-color" content="#1b222b" media="(prefers-color-scheme: dark)" />
-		<meta name="description" content={description} />
-		<meta name="generator" content={Astro.generator} />
-		<link rel="canonical" href={canonical} />
-		
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=PT+Sans+Caption:wght@400;700&family=Fira+Sans:wght@400;450;500;600&display=swap" rel="stylesheet">
-		
-		<link rel="icon" type="image/svg+xml" href={withBase('favicon.svg')} />
-		
-		<meta property="og:title" content={title} />
-		<meta property="og:description" content={description} />
-		<meta property="og:type" content="website" />
-		<meta property="og:locale" content="ru_RU" />
-		<meta property="og:url" content={canonical} />
-		
-		<title>{title}</title>
-	</head>
-	<body class="min-h-screen text-foreground">
-		<slot />
-	</body>
+  <head>
+    <base href={import.meta.env.BASE_URL} />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="theme-color"
+      content="#edf3f7"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#1b222b"
+      media="(prefers-color-scheme: dark)"
+    />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonical} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=PT+Sans+Caption:wght@400;700&family=Fira+Sans:wght@400;450;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="icon" type="image/svg+xml" href={withBase('favicon.svg')} />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:url" content={canonical} />
+
+    <title>{title}</title>
+  </head>
+  <body class="min-h-screen text-foreground">
+    <slot />
+  </body>
 </html>

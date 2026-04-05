@@ -8,11 +8,13 @@ describe('TariffBar', () => {
       props: {
         value: 100,
         maxValue: 200,
-        shelkovoValue: 150
-      }
+        shelkovoValue: 150,
+      },
     });
 
-    const barFill = container.querySelector('[data-testid="tariff-bar-fill"]') as HTMLElement;
+    const barFill = container.querySelector(
+      '[data-testid="tariff-bar-fill"]',
+    ) as HTMLElement;
     expect(barFill).toBeTruthy();
     expect(barFill?.style.width).toBe('50%');
   });
@@ -22,11 +24,13 @@ describe('TariffBar', () => {
       props: {
         value: 250,
         maxValue: 200,
-        shelkovoValue: 150
-      }
+        shelkovoValue: 150,
+      },
     });
 
-    const barFill = container.querySelector('[data-testid="tariff-bar-fill"]') as HTMLElement;
+    const barFill = container.querySelector(
+      '[data-testid="tariff-bar-fill"]',
+    ) as HTMLElement;
     expect(barFill).toBeTruthy();
     expect(barFill?.style.width).toBe('100%');
   });
@@ -36,8 +40,8 @@ describe('TariffBar', () => {
       props: {
         value: 150,
         maxValue: 200,
-        shelkovoValue: 150
-      }
+        shelkovoValue: 150,
+      },
     });
 
     const barContainer = container.querySelector('[data-testid="tariff-bar"]');
@@ -50,8 +54,8 @@ describe('TariffBar', () => {
       props: {
         value: 100,
         maxValue: 200,
-        shelkovoValue: 150
-      }
+        shelkovoValue: 150,
+      },
     });
 
     expect(container.textContent).toContain('100 ₽/сотка');
@@ -62,8 +66,8 @@ describe('TariffBar', () => {
       props: {
         value: 100,
         maxValue: 0,
-        shelkovoValue: 150
-      }
+        shelkovoValue: 150,
+      },
     });
 
     // Should not throw and should render

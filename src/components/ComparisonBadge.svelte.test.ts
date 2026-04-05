@@ -9,8 +9,8 @@ describe('ComparisonBadge', () => {
         delta: 50,
         deltaPercent: 33,
         isCheaper: true,
-        isBaseline: false
-      }
+        isBaseline: false,
+      },
     });
 
     expect(container.textContent).toContain('−50 ₽');
@@ -26,8 +26,8 @@ describe('ComparisonBadge', () => {
         delta: -30,
         deltaPercent: -20,
         isCheaper: false,
-        isBaseline: false
-      }
+        isBaseline: false,
+      },
     });
 
     expect(container.textContent).toContain('+30 ₽');
@@ -43,8 +43,8 @@ describe('ComparisonBadge', () => {
         delta: 1250,
         deltaPercent: 10,
         isCheaper: true,
-        isBaseline: false
-      }
+        isBaseline: false,
+      },
     });
 
     expect(container.textContent).toContain('−1\u00A0250 ₽');
@@ -56,12 +56,12 @@ describe('ComparisonBadge', () => {
         delta: 0,
         deltaPercent: 0,
         isCheaper: false,
-        isBaseline: true
-      }
+        isBaseline: true,
+      },
     });
 
     expect(container.textContent).toContain('Наш');
-    
+
     // Baseline badge should render (wrapper has data-testid)
     const badge = container.querySelector('[data-testid="comparison-badge"]');
     expect(badge).toBeTruthy();
@@ -73,8 +73,8 @@ describe('ComparisonBadge', () => {
         delta: 0,
         deltaPercent: 0,
         isCheaper: false,
-        isBaseline: false
-      }
+        isBaseline: false,
+      },
     });
 
     // Svelte renders <!----> when conditional is false

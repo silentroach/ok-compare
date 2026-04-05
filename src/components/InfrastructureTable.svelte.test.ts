@@ -19,7 +19,7 @@ describe('InfrastructureTable', () => {
     sports: 'no',
     beach_or_water_access: 'no',
     admin_building: 'yes',
-    retail_or_services: 'partial'
+    retail_or_services: 'partial',
   };
 
   const mockShelkovoInfra: Infrastructure = {
@@ -40,14 +40,14 @@ describe('InfrastructureTable', () => {
     public_spaces: 'yes',
     beach_or_water_access: 'yes',
     admin_building: 'no',
-    retail_or_services: 'no'
+    retail_or_services: 'no',
   };
 
   it('displays correct labels for infrastructure items', () => {
     const { getByText } = render(InfrastructureTable, {
       props: {
-        infra: mockInfra
-      }
+        infra: mockInfra,
+      },
     });
 
     // Check Russian labels are displayed
@@ -64,30 +64,34 @@ describe('InfrastructureTable', () => {
     const { container, getByText } = render(InfrastructureTable, {
       props: {
         infra: mockInfra,
-        shelkovoInfra: mockShelkovoInfra
-      }
+        shelkovoInfra: mockShelkovoInfra,
+      },
     });
 
     // Should have comparison column header
     expect(getByText('Шелково')).toBeTruthy();
 
     // Should have comparison column (18 with underground_electricity)
-    const comparisonCells = container.querySelectorAll('[data-testid="shelkovo-status"]');
+    const comparisonCells = container.querySelectorAll(
+      '[data-testid="shelkovo-status"]',
+    );
     expect(comparisonCells.length).toBe(18);
   });
 
   it('does not show comparison column when shelkovoInfra is not provided', () => {
     const { container, queryByText } = render(InfrastructureTable, {
       props: {
-        infra: mockInfra
-      }
+        infra: mockInfra,
+      },
     });
 
     // Should not have comparison column header
     expect(queryByText('Шелково')).toBeNull();
 
     // Should not have comparison cells
-    const comparisonCells = container.querySelectorAll('[data-testid="shelkovo-status"]');
+    const comparisonCells = container.querySelectorAll(
+      '[data-testid="shelkovo-status"]',
+    );
     expect(comparisonCells.length).toBe(0);
   });
 
@@ -95,13 +99,15 @@ describe('InfrastructureTable', () => {
     const { container } = render(InfrastructureTable, {
       props: {
         infra: mockInfra,
-        shelkovoInfra: mockShelkovoInfra
-      }
+        shelkovoInfra: mockShelkovoInfra,
+      },
     });
 
     // Find rows where there's a difference (e.g., sports: no vs yes)
-    const diffIndicators = container.querySelectorAll('[data-testid="diff-indicator"]');
-    
+    const diffIndicators = container.querySelectorAll(
+      '[data-testid="diff-indicator"]',
+    );
+
     // There should be some differences highlighted
     // (sidewalks, drainage, fencing, video_surveillance, sports, public_spaces, beach_or_water_access, retail_or_services)
     expect(diffIndicators.length).toBeGreaterThan(0);
@@ -112,8 +118,8 @@ describe('InfrastructureTable', () => {
 
     const { container } = render(InfrastructureTable, {
       props: {
-        infra: emptyInfra
-      }
+        infra: emptyInfra,
+      },
     });
 
     // Should still render all 18 rows even with empty data
@@ -126,19 +132,25 @@ describe('InfrastructureTable', () => {
       props: {
         title: 'Инфраструктура',
         infra: mockInfra,
-        shelkovoInfra: mockShelkovoInfra
-      }
+        shelkovoInfra: mockShelkovoInfra,
+      },
     });
 
     const full = container.querySelectorAll('[data-testid="infra-row"]').length;
-    const diff = container.querySelectorAll('[data-testid="diff-indicator"]').length;
+    const diff = container.querySelectorAll(
+      '[data-testid="diff-indicator"]',
+    ).length;
     expect(full).toBe(18);
 
     const btn = getByTestId('infra-diff-toggle');
     await fireEvent.click(btn);
 
-    const filtered = container.querySelectorAll('[data-testid="infra-row"]').length;
-    const marks = container.querySelectorAll('[data-testid="diff-indicator"]').length;
+    const filtered = container.querySelectorAll(
+      '[data-testid="infra-row"]',
+    ).length;
+    const marks = container.querySelectorAll(
+      '[data-testid="diff-indicator"]',
+    ).length;
     expect(filtered).toBe(diff);
     expect(marks).toBe(diff);
     expect(btn.getAttribute('title')).toBe('Показать все свойства');

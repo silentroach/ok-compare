@@ -9,7 +9,7 @@ export function calculateDistance(
   lat1: number,
   lng1: number,
   lat2: number,
-  lng2: number
+  lng2: number,
 ): number {
   const R = 6371; // Earth's radius in kilometers
   const dLat = toRadians(lat2 - lat1);
@@ -37,7 +37,7 @@ export function formatCurrency(value: number): string {
   // Use nbsp (U+00A0) which is the Russian standard for thousands separator
   const formatted = rounded.toLocaleString('ru-RU', {
     style: 'decimal',
-    maximumFractionDigits: 0
+    maximumFractionDigits: 0,
   });
   return formatted + ' ₽';
 }
@@ -64,14 +64,18 @@ export function formatDistance(value: number): string {
  * -0.2345 → "−23.5%"
  * Uses U+2212 minus sign for negative values
  */
-export function formatPercentage(value: number, opts?: { signed?: boolean }): string {
+export function formatPercentage(
+  value: number,
+  opts?: { signed?: boolean },
+): string {
   const percentage = value * 100;
   // Round to 1 decimal place using half-up rounding
   // Multiply by 10, add 0.5 (or subtract for negatives), floor, then divide
   const factor = 10;
-  const rounded = percentage >= 0
-    ? Math.floor(percentage * factor + 0.5) / factor
-    : Math.ceil(percentage * factor - 0.5) / factor;
+  const rounded =
+    percentage >= 0
+      ? Math.floor(percentage * factor + 0.5) / factor
+      : Math.ceil(percentage * factor - 0.5) / factor;
 
   if (rounded === 0) {
     return '0%';
@@ -98,7 +102,7 @@ export function formatTariff(value: number): string {
   // Use nbsp (U+00A0) which is the Russian standard for thousands separator
   const formatted = rounded.toLocaleString('ru-RU', {
     style: 'decimal',
-    maximumFractionDigits: 0
+    maximumFractionDigits: 0,
   });
   return `${formatted} ₽/сотка`;
 }
@@ -113,7 +117,7 @@ function num(value: number): string {
   return value.toLocaleString('ru-RU', {
     style: 'decimal',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
   });
 }
 
@@ -136,7 +140,10 @@ export function getTariffHint(tariff: Tariff): string | undefined {
   const m = months(tariff.period);
   const monthly = tariff.value / m;
   const normalized = monthly / size;
-  const source = tariff.unit === 'rub_per_lot' ? 'Тариф указан за участок.' : 'Тариф указан фиксированной суммой за участок.';
+  const source =
+    tariff.unit === 'rub_per_lot'
+      ? 'Тариф указан за участок.'
+      : 'Тариф указан фиксированной суммой за участок.';
 
   return `${source} Пересчет: (${num(tariff.value)} ₽ / ${m}) / ${size} соток = ${num(normalized)} ₽/сотка в месяц.`;
 }

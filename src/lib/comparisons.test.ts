@@ -3,7 +3,7 @@ import {
   compareSettlements,
   calculateTariffDelta,
   compareInfrastructure,
-  compareServices
+  compareServices,
 } from './comparisons';
 import type { Settlement, Infrastructure, ServiceModel } from './schema';
 
@@ -27,7 +27,7 @@ describe('Comparisons Module', () => {
       period: 'month',
       normalized_per_sotka_month: 120,
       normalized_is_estimate: false,
-      note: ''
+      note: '',
     },
     infrastructure: {
       roads: 'partial_asphalt',
@@ -47,7 +47,7 @@ describe('Comparisons Module', () => {
       public_spaces: 'yes',
       beach_or_water_access: 'yes',
       admin_building: 'no',
-      retail_or_services: 'no'
+      retail_or_services: 'no',
     },
     service_model: {
       garbage_collection: 'yes',
@@ -55,9 +55,17 @@ describe('Comparisons Module', () => {
       road_cleaning: 'yes',
       landscaping: 'yes',
       emergency_service: 'yes',
-      dispatcher: 'yes'
+      dispatcher: 'yes',
     },
-    sources: [{ title: 'Test', url: 'https://test.com', type: 'official', date_checked: '2026-04-03', comment: '' }]
+    sources: [
+      {
+        title: 'Test',
+        url: 'https://test.com',
+        type: 'official',
+        date_checked: '2026-04-03',
+        comment: '',
+      },
+    ],
   };
 
   describe('calculateTariffDelta', () => {
@@ -88,12 +96,12 @@ describe('Comparisons Module', () => {
   describe('compareInfrastructure', () => {
     it('should count differences correctly', () => {
       const otherInfra: Infrastructure = {
-        roads: 'asphalt',  // 3 vs 2 = better
-        sidewalks: 'yes',  // 2 vs 0 = better
+        roads: 'asphalt', // 3 vs 2 = better
+        sidewalks: 'yes', // 2 vs 0 = better
         lighting: 'yes',
         gas: 'yes',
         water: 'yes',
-        sewage: 'yes',     // 2 vs 0 = better (Shelkovo has 'no')
+        sewage: 'yes', // 2 vs 0 = better (Shelkovo has 'no')
         drainage: 'closed', // 2 vs 1 = better
         checkpoints: 'no', // 0 vs 2 = worse
         security: 'yes',
@@ -105,10 +113,13 @@ describe('Comparisons Module', () => {
         public_spaces: 'yes',
         beach_or_water_access: 'no', // 0 vs 2 = worse (Shelkovo has 'yes')
         admin_building: 'yes', // 2 vs 0 = better (Shelkovo has 'no')
-        retail_or_services: 'partial' // 1 vs 0 = better (Shelkovo has 'no')
+        retail_or_services: 'partial', // 1 vs 0 = better (Shelkovo has 'no')
       };
 
-      const result = compareInfrastructure(mockShelkovo.infrastructure, otherInfra);
+      const result = compareInfrastructure(
+        mockShelkovo.infrastructure,
+        otherInfra,
+      );
       expect(result.betterCount).toBe(8); // roads, sidewalks, sewage, drainage, video, underground, admin, retail
       expect(result.worseCount).toBe(2); // checkpoints, beach
       expect(result.differences).toHaveLength(10);
@@ -117,7 +128,7 @@ describe('Comparisons Module', () => {
     it('should handle unknown values', () => {
       const otherInfra: Infrastructure = {
         roads: undefined,
-        sidewalks: 'yes',  // 2 vs 0 = better
+        sidewalks: 'yes', // 2 vs 0 = better
         lighting: 'yes',
         gas: 'yes',
         water: 'yes',
@@ -133,10 +144,13 @@ describe('Comparisons Module', () => {
         public_spaces: 'yes',
         beach_or_water_access: undefined,
         admin_building: undefined,
-        retail_or_services: undefined
+        retail_or_services: undefined,
       };
 
-      const result = compareInfrastructure(mockShelkovo.infrastructure, otherInfra);
+      const result = compareInfrastructure(
+        mockShelkovo.infrastructure,
+        otherInfra,
+      );
       // Only sidewalks differs (other is better), rest either match or skipped due to undefined
       expect(result.betterCount).toBe(1);
       expect(result.worseCount).toBe(0);
@@ -162,7 +176,7 @@ describe('Comparisons Module', () => {
         public_spaces: 'yes', // score: 2
         beach_or_water_access: 'yes', // score: 2
         admin_building: 'yes', // score: 2
-        retail_or_services: 'yes' // score: 2
+        retail_or_services: 'yes', // score: 2
       };
 
       const otherInfra: Infrastructure = {
@@ -183,7 +197,7 @@ describe('Comparisons Module', () => {
         public_spaces: 'yes', // score: 2 (same)
         beach_or_water_access: 'yes', // score: 2 (same)
         admin_building: 'yes', // score: 2 (same)
-        retail_or_services: 'yes' // score: 2 (same)
+        retail_or_services: 'yes', // score: 2 (same)
       };
 
       const result = compareInfrastructure(shelkovoInfra, otherInfra);
@@ -200,7 +214,7 @@ describe('Comparisons Module', () => {
         road_cleaning: 'yes',
         landscaping: 'partial', // Different
         emergency_service: 'yes',
-        dispatcher: 'yes'
+        dispatcher: 'yes',
       };
 
       const result = compareServices(mockShelkovo.service_model, otherService);
@@ -223,8 +237,8 @@ describe('Comparisons Module', () => {
           period: 'month',
           normalized_per_sotka_month: 80,
           normalized_is_estimate: false,
-          note: ''
-        }
+          note: '',
+        },
       };
 
       const result = compareSettlements(mockShelkovo, otherSettlement);

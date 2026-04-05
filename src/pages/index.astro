@@ -15,49 +15,52 @@ const comparisonsObj = Object.fromEntries(comparisons);
 const dataUrl = withBase('data/explorer.json');
 
 const cards = [...settlements].sort((a, b) => {
-	const d = a.tariff.normalized_per_sotka_month - b.tariff.normalized_per_sotka_month;
-	if (d !== 0) return d;
-	return a.short_name.localeCompare(b.short_name, 'ru');
+  const d =
+    a.tariff.normalized_per_sotka_month - b.tariff.normalized_per_sotka_month;
+  if (d !== 0) return d;
+  return a.short_name.localeCompare(b.short_name, 'ru');
 });
 
 const base = cards.findIndex((s) => s.is_baseline);
 if (base > 0) {
-	const item = cards.splice(base, 1)[0];
-	cards.unshift(item);
+  const item = cards.splice(base, 1)[0];
+  cards.unshift(item);
 }
 ---
 
 <BaseLayout>
-	<main class="ui-page py-6 md:py-10">
-		<Hero
-			title="Тарифы на содержание поселков"
-			subtitle="Структурированное сравнение поселков по цене, инфраструктуре и сервисам с опорой на проверяемые источники."
-		>
-			<KPIStats stats={stats} embed />
-		</Hero>
+  <main class="ui-page py-6 md:py-10">
+    <Hero
+      title="Тарифы на содержание поселков"
+      subtitle="Структурированное сравнение поселков по цене, инфраструктуре и сервисам с опорой на проверяемые источники."
+    >
+      <KPIStats stats={stats} embed />
+    </Hero>
 
-		<section id="settlements" class="mt-6 space-y-6 md:mt-8">
-			<SettlementsExplorer dataUrl={dataUrl} client:only="svelte" />
+    <section id="settlements" class="mt-6 space-y-6 md:mt-8">
+      <SettlementsExplorer dataUrl={dataUrl} client:only="svelte" />
 
-			<div id="settlements-static">
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-					{cards.map((settlement) => (
-						<SettlementCard
-							settlement={settlement}
-							comparison={comparisonsObj[settlement.slug]}
-							maxTariff={stats.maxTariff}
-							isBaseline={settlement.is_baseline}
-						/>
-					))}
-				</div>
-			</div>
+      <div id="settlements-static">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {
+            cards.map((settlement) => (
+              <SettlementCard
+                settlement={settlement}
+                comparison={comparisonsObj[settlement.slug]}
+                maxTariff={stats.maxTariff}
+                isBaseline={settlement.is_baseline}
+              />
+            ))
+          }
+        </div>
+      </div>
 
-			<script is:inline>
-				window.addEventListener('explorer:ready', () => {
-					const fallback = document.getElementById('settlements-static');
-					if (fallback) fallback.style.display = 'none';
-				});
-			</script>
-		</section>
-	</main>
+      <script is:inline>
+        window.addEventListener('explorer:ready', () => {
+          const fallback = document.getElementById('settlements-static');
+          if (fallback) fallback.style.display = 'none';
+        });
+      </script>
+    </section>
+  </main>
 </BaseLayout>

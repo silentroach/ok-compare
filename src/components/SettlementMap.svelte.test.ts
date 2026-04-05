@@ -20,7 +20,7 @@ const mockYandexMaps = {
   YMapMarker: vi.fn((_: unknown, el: HTMLElement) => {
     markers.push(el);
     return { el };
-  })
+  }),
 };
 
 // Mock settlements data
@@ -39,8 +39,8 @@ const mockSettlements = [
     slug: 'lesnoe',
     name: 'КП Лесное',
     shortName: 'Лесное',
-    lat: 55.8500,
-    lng: 37.2000,
+    lat: 55.85,
+    lng: 37.2,
     normalizedTariff: 80,
     isBaseline: false,
     companyText: 'УК Лесное',
@@ -49,8 +49,8 @@ const mockSettlements = [
     slug: 'usadby',
     name: 'Усадьбы Истра',
     shortName: 'Усадьбы Истра',
-    lat: 55.7800,
-    lng: 37.1000,
+    lat: 55.78,
+    lng: 37.1,
     normalizedTariff: 150,
     isBaseline: false,
     companyText: 'УК Усадьбы',
@@ -65,7 +65,7 @@ describe('SettlementMap', () => {
     Object.defineProperty(window, 'ymaps3', {
       value: mockYandexMaps,
       writable: true,
-      configurable: true
+      configurable: true,
     });
   });
 
@@ -79,7 +79,9 @@ describe('SettlementMap', () => {
       props: { settlements: mockSettlements },
     });
 
-    const mapContainer = container.querySelector('[data-testid="settlement-map"]');
+    const mapContainer = container.querySelector(
+      '[data-testid="settlement-map"]',
+    );
     expect(mapContainer).toBeTruthy();
   });
 
@@ -211,7 +213,9 @@ describe('SettlementMap', () => {
     });
 
     // Should still render container without crashing
-    expect(container.querySelector('[data-testid="settlement-map"]')).toBeTruthy();
+    expect(
+      container.querySelector('[data-testid="settlement-map"]'),
+    ).toBeTruthy();
   });
 
   it('opens popup on marker click with details link', async () => {
@@ -242,8 +246,11 @@ describe('SettlementMap', () => {
       props: { settlements: mockSettlements },
     });
 
-    await waitFor(() => {
-      expect(container.textContent).toContain('API ключ не настроен');
-    }, { timeout: 2000 });
+    await waitFor(
+      () => {
+        expect(container.textContent).toContain('API ключ не настроен');
+      },
+      { timeout: 2000 },
+    );
   });
 });

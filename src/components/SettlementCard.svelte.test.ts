@@ -22,7 +22,7 @@ const mockSettlement: Settlement = {
     period: 'month',
     normalized_per_sotka_month: 100,
     normalized_is_estimate: false,
-    note: ''
+    note: '',
   },
   infrastructure: {},
   service_model: {},
@@ -34,7 +34,7 @@ const mockComparison: ComparisonResult = {
   tariffDeltaPercent: 33,
   isCheaper: true,
   infrastructureDelta: { betterCount: 2, worseCount: 1 },
-  servicesDelta: { betterCount: 1, worseCount: 0 }
+  servicesDelta: { betterCount: 1, worseCount: 0 },
 };
 
 describe('SettlementCard', () => {
@@ -44,8 +44,8 @@ describe('SettlementCard', () => {
         settlement: mockSettlement,
         comparison: mockComparison,
         maxTariff: 150,
-        isBaseline: false
-      }
+        isBaseline: false,
+      },
     });
 
     expect(container.textContent).toContain('Тестово');
@@ -58,8 +58,8 @@ describe('SettlementCard', () => {
         settlement: mockSettlement,
         comparison: mockComparison,
         maxTariff: 150,
-        isBaseline: false
-      }
+        isBaseline: false,
+      },
     });
 
     expect(container.textContent).toContain('100 ₽/сотка');
@@ -74,7 +74,7 @@ describe('SettlementCard', () => {
         period: 'month' as const,
         normalized_per_sotka_month: 1200,
         normalized_is_estimate: true,
-      }
+      },
     };
 
     const { container } = render(SettlementCard, {
@@ -82,8 +82,8 @@ describe('SettlementCard', () => {
         settlement,
         comparison: mockComparison,
         maxTariff: 1500,
-        isBaseline: false
-      }
+        isBaseline: false,
+      },
     });
 
     expect(container.textContent).toContain('~1');
@@ -97,8 +97,8 @@ describe('SettlementCard', () => {
         settlement: mockSettlement,
         comparison: mockComparison,
         maxTariff: 150,
-        isBaseline: false
-      }
+        isBaseline: false,
+      },
     });
 
     const badge = container.querySelector('[data-testid="comparison-badge"]');
@@ -111,8 +111,8 @@ describe('SettlementCard', () => {
       props: {
         settlement: baselineSettlement,
         maxTariff: 150,
-        isBaseline: true
-      }
+        isBaseline: true,
+      },
     });
 
     expect(container.textContent).toContain('Наш');
@@ -124,8 +124,8 @@ describe('SettlementCard', () => {
         settlement: mockSettlement,
         comparison: mockComparison,
         maxTariff: 150,
-        isBaseline: false
-      }
+        isBaseline: false,
+      },
     });
 
     const tariffBar = container.querySelector('[data-testid="tariff-bar"]');
@@ -138,8 +138,8 @@ describe('SettlementCard', () => {
         settlement: mockSettlement,
         comparison: mockComparison,
         maxTariff: 150,
-        isBaseline: false
-      }
+        isBaseline: false,
+      },
     });
 
     const link = container.querySelector('h3 a[href="/settlements/testovo/"]');
@@ -151,11 +151,13 @@ describe('SettlementCard', () => {
       props: {
         settlement: mockSettlement,
         maxTariff: 150,
-        isBaseline: false
-      }
+        isBaseline: false,
+      },
     });
 
     // Should still render without errors
-    expect(container.querySelector('[data-testid="settlement-card"]')).toBeTruthy();
+    expect(
+      container.querySelector('[data-testid="settlement-card"]'),
+    ).toBeTruthy();
   });
 });

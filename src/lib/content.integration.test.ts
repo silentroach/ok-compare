@@ -9,7 +9,7 @@ function list() {
     .filter((name) => name.endsWith('.yaml') && !name.startsWith('_'))
     .map((name) => ({
       name,
-      code: readFileSync(join(dir, name), 'utf-8')
+      code: readFileSync(join(dir, name), 'utf-8'),
     }));
 }
 
@@ -38,13 +38,15 @@ describe('settlements content collection', () => {
   it('uses unique slug values', () => {
     const rows = list().map((file) => ({
       name: file.name,
-      slug: parseSlug(file.code)
+      slug: parseSlug(file.code),
     }));
 
     const miss = rows.filter((row) => !row.slug).map((row) => row.name);
     expect(miss, `Missing slug in files: ${miss.join(', ')}`).toEqual([]);
 
-    const slugs = rows.map((row) => row.slug).filter((slug): slug is string => Boolean(slug));
+    const slugs = rows
+      .map((row) => row.slug)
+      .filter((slug): slug is string => Boolean(slug));
     const dup = slugs.filter((slug, idx) => slugs.indexOf(slug) !== idx);
     expect(dup, `Duplicate slugs: ${dup.join(', ')}`).toEqual([]);
   });
@@ -52,11 +54,15 @@ describe('settlements content collection', () => {
   it('has exactly one baseline settlement', () => {
     const rows = list().map((file) => ({
       name: file.name,
-      base: parseBase(file.code)
+      base: parseBase(file.code),
     }));
 
-    const miss = rows.filter((row) => row.base === undefined).map((row) => row.name);
-    expect(miss, `Missing is_baseline in files: ${miss.join(', ')}`).toEqual([]);
+    const miss = rows
+      .filter((row) => row.base === undefined)
+      .map((row) => row.name);
+    expect(miss, `Missing is_baseline in files: ${miss.join(', ')}`).toEqual(
+      [],
+    );
 
     const base = rows.filter((row) => row.base).map((row) => row.name);
     expect(base, `Baseline files: ${base.join(', ')}`).toHaveLength(1);

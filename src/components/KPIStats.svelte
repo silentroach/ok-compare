@@ -38,33 +38,38 @@
   }
 </script>
 
-<section
-  class={embed
-    ? 'p-1'
-    : 'ui-shell p-4 md:p-5'}
-  data-testid="kpi-stats"
->
+<section class={embed ? 'p-1' : 'ui-shell p-4 md:p-5'} data-testid="kpi-stats">
   {#if !embed}
     <div class="mb-3 flex items-end justify-between gap-3">
-      <h2 class="text-sm font-semibold uppercase tracking-wide ui-muted" data-testid="kpi-stats-title">
+      <h2
+        class="text-sm font-semibold uppercase tracking-wide ui-muted"
+        data-testid="kpi-stats-title"
+      >
         Ключевые показатели
       </h2>
       <p class="text-xs ui-muted">по текущему набору поселков</p>
     </div>
   {/if}
 
-  <div class={embed ? 'grid grid-cols-1 gap-2 sm:grid-cols-3' : 'grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3'}>
-
+  <div
+    class={embed
+      ? 'grid grid-cols-1 gap-2 sm:grid-cols-3'
+      : 'grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3'}
+  >
     <article
       class={embed
         ? 'mx-auto w-[96%] rounded-2xl bg-white/45 px-3.5 py-2.5 backdrop-blur-[3px] shadow-[0_8px_24px_-18px_rgba(15,23,42,0.6)] dark:bg-white/10'
         : 'rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-muted-soft)] p-4'}
       data-testid="kpi-median"
     >
-      <div class={`${embed ? 'mb-0.5 text-lg' : 'mb-1 text-2xl'} font-semibold ${getMedianTone(stats.shelkovoVsMedianPercent)}`}>
+      <div
+        class={`${embed ? 'mb-0.5 text-lg' : 'mb-1 text-2xl'} font-semibold ${getMedianTone(stats.shelkovoVsMedianPercent)}`}
+      >
         {formatPercentage(stats.shelkovoVsMedianPercent / 100)}
       </div>
-      <div class={embed ? 'text-xs ui-muted' : 'text-sm ui-muted'}>{getMedianText(stats.shelkovoVsMedianPercent)}</div>
+      <div class={embed ? 'text-xs ui-muted' : 'text-sm ui-muted'}>
+        {getMedianText(stats.shelkovoVsMedianPercent)}
+      </div>
     </article>
 
     <article
@@ -73,7 +78,11 @@
         : 'rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-muted-soft)] p-4'}
       data-testid="kpi-cheaper"
     >
-      <div class={embed ? 'mb-0.5 text-lg font-semibold text-[color:var(--color-success-text)]' : 'mb-1 text-2xl font-semibold text-[color:var(--color-success-text)]'}>
+      <div
+        class={embed
+          ? 'mb-0.5 text-lg font-semibold text-[color:var(--color-success-text)]'
+          : 'mb-1 text-2xl font-semibold text-[color:var(--color-success-text)]'}
+      >
         {stats.cheaperCount}
       </div>
       <div class={embed ? 'text-xs ui-muted' : 'text-sm ui-muted'}>
@@ -87,7 +96,11 @@
         : 'rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-muted-soft)] p-4'}
       data-testid="kpi-expensive"
     >
-      <div class={embed ? 'mb-0.5 text-lg font-semibold text-[color:var(--color-danger-text)]' : 'mb-1 text-2xl font-semibold text-[color:var(--color-danger-text)]'}>
+      <div
+        class={embed
+          ? 'mb-0.5 text-lg font-semibold text-[color:var(--color-danger-text)]'
+          : 'mb-1 text-2xl font-semibold text-[color:var(--color-danger-text)]'}
+      >
         {stats.moreExpensiveCount}
       </div>
       <div class={embed ? 'text-xs ui-muted' : 'text-sm ui-muted'}>

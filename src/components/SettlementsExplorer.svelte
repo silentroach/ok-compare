@@ -1,7 +1,11 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { Settlement, Stats, ComparisonResult } from '../lib/schema';
-  import { calculateDistance, formatTariffAuto, getTariffHint } from '../lib/format';
+  import {
+    calculateDistance,
+    formatTariffAuto,
+    getTariffHint,
+  } from '../lib/format';
   import SettlementMap from './SettlementMap.svelte';
   import SettlementCard from './SettlementCard.svelte';
 
@@ -22,7 +26,7 @@
     settlements = [],
     comparisons = {},
     stats,
-    dataUrl = ''
+    dataUrl = '',
   }: {
     settlements: Settlement[];
     comparisons: Record<string, ComparisonResult>;
@@ -49,7 +53,7 @@
     const res = await fetch(url);
     if (!res.ok) throw new Error('Не удалось загрузить данные');
 
-    const data = await res.json() as Payload;
+    const data = (await res.json()) as Payload;
     settlements = data.settlements;
     comparisons = data.comparisons;
     stats = data.stats;
@@ -75,12 +79,14 @@
       baseline.location.lat,
       baseline.location.lng,
       settlement.location.lat,
-      settlement.location.lng
+      settlement.location.lng,
     );
   }
 
   // Filter and sort state
-  let sortBy = $state<'tariff_asc' | 'tariff_desc' | 'distance' | 'name'>('tariff_asc');
+  let sortBy = $state<'tariff_asc' | 'tariff_desc' | 'distance' | 'name'>(
+    'tariff_asc',
+  );
   let priceFilter = $state<'all' | 'cheaper' | 'more_expensive'>('all');
   let showMap = $state(false);
   let mobile = $state(false);
@@ -95,7 +101,8 @@
         const comparison = comparisons[s.slug];
         if (!comparison) return true;
         if (priceFilter === 'cheaper') return comparison.isCheaper;
-        if (priceFilter === 'more_expensive') return !comparison.isCheaper && !s.is_baseline;
+        if (priceFilter === 'more_expensive')
+          return !comparison.isCheaper && !s.is_baseline;
         return true;
       });
     }
@@ -104,9 +111,15 @@
     result.sort((a, b) => {
       switch (sortBy) {
         case 'tariff_asc':
-          return a.tariff.normalized_per_sotka_month - b.tariff.normalized_per_sotka_month;
+          return (
+            a.tariff.normalized_per_sotka_month -
+            b.tariff.normalized_per_sotka_month
+          );
         case 'tariff_desc':
-          return b.tariff.normalized_per_sotka_month - a.tariff.normalized_per_sotka_month;
+          return (
+            b.tariff.normalized_per_sotka_month -
+            a.tariff.normalized_per_sotka_month
+          );
         case 'distance':
           return getDistanceFromShelkovo(a) - getDistanceFromShelkovo(b);
         case 'name':
@@ -130,22 +143,24 @@
   let totalCount = $derived(settlements.length);
   let displayedCount = $derived(displayedSettlements.length);
   let compact = $derived(priceFilter !== 'all' || sortBy !== 'tariff_asc');
-  let mapSettlements = $derived.by(() => displayedSettlements.map((s) => {
-    const company = s.management_company;
+  let mapSettlements = $derived.by(() =>
+    displayedSettlements.map((s) => {
+      const company = s.management_company;
 
-    return {
-      slug: s.slug,
-      name: s.name,
-      shortName: s.short_name,
-      lat: s.location.lat,
-      lng: s.location.lng,
-      normalizedTariff: s.tariff.normalized_per_sotka_month,
-      isBaseline: s.is_baseline,
-      tariffText: formatTariffAuto(s.tariff),
-      tariffHint: getTariffHint(s.tariff),
-      companyText: typeof company === 'string' ? company : company?.title,
-    };
-  }));
+      return {
+        slug: s.slug,
+        name: s.name,
+        shortName: s.short_name,
+        lat: s.location.lat,
+        lng: s.location.lng,
+        normalizedTariff: s.tariff.normalized_per_sotka_month,
+        isBaseline: s.is_baseline,
+        tariffText: formatTariffAuto(s.tariff),
+        tariffHint: getTariffHint(s.tariff),
+        companyText: typeof company === 'string' ? company : company?.title,
+      };
+    }),
+  );
 
   onMount(() => {
     const media = window.matchMedia('(max-width: 767px)');
@@ -165,8 +180,13 @@
     <div class="ui-shell p-4 md:p-6">
       <div class="flex flex-col gap-5">
         <div class="flex items-start justify-between gap-2 md:items-center">
-          <div class="flex min-w-0 flex-nowrap items-center gap-2 overflow-x-auto pr-1">
-            <span class="mr-1 whitespace-nowrap text-sm font-semibold text-foreground">Фильтр:</span>
+          <div
+            class="flex min-w-0 flex-nowrap items-center gap-2 overflow-x-auto pr-1"
+          >
+            <span
+              class="mr-1 whitespace-nowrap text-sm font-semibold text-foreground"
+              >Фильтр:</span
+            >
             <input
               id={allid}
               type="radio"
@@ -178,7 +198,9 @@
             />
             <label
               for={allid}
-              class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'all' ? 'ui-btn-soft ui-btn-primary' : ''}"
+              class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'all'
+                ? 'ui-btn-soft ui-btn-primary'
+                : ''}"
             >
               Все
             </label>
@@ -193,7 +215,9 @@
             />
             <label
               for={cheapid}
-              class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'cheaper' ? 'ui-btn-soft ui-btn-success' : ''}"
+              class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'cheaper'
+                ? 'ui-btn-soft ui-btn-success'
+                : ''}"
             >
               {mobile ? 'Дешевле' : 'Дешевле Шелково'}
             </label>
@@ -208,14 +232,19 @@
             />
             <label
               for={moreid}
-              class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'more_expensive' ? 'ui-btn-soft ui-btn-warning' : ''}"
+              class="ui-btn ui-btn-sm ui-btn-outline {priceFilter ===
+              'more_expensive'
+                ? 'ui-btn-soft ui-btn-warning'
+                : ''}"
             >
               {mobile ? 'Дороже' : 'Дороже Шелково'}
             </label>
           </div>
           <button
             type="button"
-            class="ui-btn ui-btn-sm ui-btn-outline h-8 w-8 shrink-0 p-0 md:h-auto md:w-auto md:px-3 md:py-1.5 {showMap ? 'ui-btn-solid ui-btn-primary' : ''}"
+            class="ui-btn ui-btn-sm ui-btn-outline h-8 w-8 shrink-0 p-0 md:h-auto md:w-auto md:px-3 md:py-1.5 {showMap
+              ? 'ui-btn-solid ui-btn-primary'
+              : ''}"
             onclick={() => {
               showMap = !showMap;
             }}
@@ -224,13 +253,21 @@
             aria-controls={mapid}
             data-testid="map-toggle"
           >
-            <svg viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 md:hidden" aria-hidden="true">
-              <path d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm5.8 7h-2.3A12 12 0 0 0 12.6 4a6.5 6.5 0 0 1 3.2 5Zm-5.8 7.4A10.5 10.5 0 0 1 8.6 11h2.8A10.5 10.5 0 0 1 10 16.4Zm-1.7 0A8.9 8.9 0 0 1 7 11h2.1a8.9 8.9 0 0 0 1.2 5.4 6.2 6.2 0 0 1-2 0Zm-3-7.4A6.5 6.5 0 0 1 8.5 4 12 12 0 0 0 7.6 9H5.3Zm0 2h2.3a12 12 0 0 0 .9 5 6.5 6.5 0 0 1-3.2-5Zm4.7-2A10.5 10.5 0 0 1 10 3.6 10.5 10.5 0 0 1 11.4 9H8.6Zm2.9 2H15a6.5 6.5 0 0 1-3.2 5 12 12 0 0 0 .9-5Z" />
+            <svg
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              class="h-5 w-5 md:hidden"
+              aria-hidden="true"
+            >
+              <path
+                d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm5.8 7h-2.3A12 12 0 0 0 12.6 4a6.5 6.5 0 0 1 3.2 5Zm-5.8 7.4A10.5 10.5 0 0 1 8.6 11h2.8A10.5 10.5 0 0 1 10 16.4Zm-1.7 0A8.9 8.9 0 0 1 7 11h2.1a8.9 8.9 0 0 0 1.2 5.4 6.2 6.2 0 0 1-2 0Zm-3-7.4A6.5 6.5 0 0 1 8.5 4 12 12 0 0 0 7.6 9H5.3Zm0 2h2.3a12 12 0 0 0 .9 5 6.5 6.5 0 0 1-3.2-5Zm4.7-2A10.5 10.5 0 0 1 10 3.6 10.5 10.5 0 0 1 11.4 9H8.6Zm2.9 2H15a6.5 6.5 0 0 1-3.2 5 12 12 0 0 0 .9-5Z"
+              />
             </svg>
-            <span class="hidden md:inline">{showMap ? 'Скрыть карту' : 'Показать карту'}</span>
+            <span class="hidden md:inline"
+              >{showMap ? 'Скрыть карту' : 'Показать карту'}</span
+            >
           </button>
         </div>
-
       </div>
     </div>
 
@@ -241,22 +278,32 @@
     {/if}
 
     <div class="flex items-center justify-between gap-3">
-      <p class="min-w-0 text-sm text-muted-foreground" data-testid="displayed-count">
-        Показано <span class="font-semibold text-foreground">{displayedCount}</span> из
+      <p
+        class="min-w-0 text-sm text-muted-foreground"
+        data-testid="displayed-count"
+      >
+        Показано <span class="font-semibold text-foreground"
+          >{displayedCount}</span
+        >
+        из
         <span class="font-semibold text-foreground">{totalCount}</span>
         {#if compact}
           <span class="ui-pill ui-pill-muted ml-2">активные фильтры</span>
         {/if}
       </p>
       <div class="flex shrink-0 items-center gap-3">
-        <label for={sortid} class="hidden whitespace-nowrap text-sm font-semibold text-foreground sm:inline">
+        <label
+          for={sortid}
+          class="hidden whitespace-nowrap text-sm font-semibold text-foreground sm:inline"
+        >
           Сортировка:
         </label>
         <select
           id={sortid}
           value={sortBy}
           onchange={(e) => {
-            sortBy = (e.currentTarget as HTMLSelectElement).value as typeof sortBy;
+            sortBy = (e.currentTarget as HTMLSelectElement)
+              .value as typeof sortBy;
           }}
           class="block w-auto rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground"
           data-testid="sort-select"
@@ -283,21 +330,30 @@
     {#if ready && displayedCount === 0}
       <div class="ui-shell p-10 text-center">
         <p class="text-lg font-semibold text-foreground">Ничего не найдено</p>
-        <p class="mt-2 text-sm text-muted-foreground">Попробуйте изменить фильтры</p>
+        <p class="mt-2 text-sm text-muted-foreground">
+          Попробуйте изменить фильтры
+        </p>
       </div>
     {/if}
   </div>
 
   {#snippet pending()}
     <div class="ui-shell p-6 text-center" data-testid="explorer-pending">
-      <p class="text-base font-semibold text-foreground">Загружаем данные сравнения...</p>
+      <p class="text-base font-semibold text-foreground">
+        Загружаем данные сравнения...
+      </p>
     </div>
   {/snippet}
 
   {#snippet failed(err, reset)}
-    <div class="ui-shell space-y-3 p-6 text-center" data-testid="explorer-error">
+    <div
+      class="ui-shell space-y-3 p-6 text-center"
+      data-testid="explorer-error"
+    >
       <p class="text-base font-semibold text-foreground">{msg(err)}</p>
-      <p class="text-sm text-muted-foreground">Показана статическая версия списка ниже.</p>
+      <p class="text-sm text-muted-foreground">
+        Показана статическая версия списка ниже.
+      </p>
       <div>
         <button
           type="button"

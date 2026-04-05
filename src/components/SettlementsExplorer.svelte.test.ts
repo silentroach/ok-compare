@@ -40,8 +40,20 @@ const settlements: Settlement[] = [
     website: 'https://example.com/shelkovo',
     management_company: 'УК Шелково',
     is_baseline: true,
-    location: { address_text: 'Московская область', lat: 55.82, lng: 37.14, district: 'Истра' },
-    tariff: { value: 120, unit: 'rub_per_sotka', period: 'month', normalized_per_sotka_month: 120, normalized_is_estimate: false, note: '' },
+    location: {
+      address_text: 'Московская область',
+      lat: 55.82,
+      lng: 37.14,
+      district: 'Истра',
+    },
+    tariff: {
+      value: 120,
+      unit: 'rub_per_sotka',
+      period: 'month',
+      normalized_per_sotka_month: 120,
+      normalized_is_estimate: false,
+      note: '',
+    },
     infrastructure: { gas: 'yes', security: 'yes', roads: 'asphalt' },
     service_model: {},
     sources: [],
@@ -53,8 +65,20 @@ const settlements: Settlement[] = [
     website: 'https://example.com/lesnoe',
     management_company: 'УК Лесное',
     is_baseline: false,
-    location: { address_text: 'Московская область', lat: 55.85, lng: 37.2, district: 'Истра' },
-    tariff: { value: 90, unit: 'rub_per_sotka', period: 'month', normalized_per_sotka_month: 90, normalized_is_estimate: false, note: '' },
+    location: {
+      address_text: 'Московская область',
+      lat: 55.85,
+      lng: 37.2,
+      district: 'Истра',
+    },
+    tariff: {
+      value: 90,
+      unit: 'rub_per_sotka',
+      period: 'month',
+      normalized_per_sotka_month: 90,
+      normalized_is_estimate: false,
+      note: '',
+    },
     infrastructure: { gas: 'yes', security: 'no', roads: 'gravel' },
     service_model: {},
     sources: [],
@@ -66,8 +90,20 @@ const settlements: Settlement[] = [
     website: 'https://example.com/usadby',
     management_company: 'УК Усадьбы',
     is_baseline: false,
-    location: { address_text: 'Московская область', lat: 55.83, lng: 37.16, district: 'Истра' },
-    tariff: { value: 150, unit: 'rub_per_sotka', period: 'month', normalized_per_sotka_month: 150, normalized_is_estimate: false, note: '' },
+    location: {
+      address_text: 'Московская область',
+      lat: 55.83,
+      lng: 37.16,
+      district: 'Истра',
+    },
+    tariff: {
+      value: 150,
+      unit: 'rub_per_sotka',
+      period: 'month',
+      normalized_per_sotka_month: 150,
+      normalized_is_estimate: false,
+      note: '',
+    },
     infrastructure: { gas: 'yes', security: 'yes', roads: 'asphalt' },
     service_model: {},
     sources: [],
@@ -99,7 +135,9 @@ const comparisons: Record<string, ComparisonResult> = {
 };
 
 function cardNames(container: HTMLElement): string[] {
-  return [...container.querySelectorAll('[data-testid="settlement-card"] h3')].map((el) => el.textContent?.trim() ?? '');
+  return [
+    ...container.querySelectorAll('[data-testid="settlement-card"] h3'),
+  ].map((el) => el.textContent?.trim() ?? '');
 }
 
 function setScreen(mobile: boolean): void {
@@ -140,7 +178,9 @@ describe('SettlementsExplorer', () => {
     });
 
     await waitFor(() => {
-      expect(container.querySelector('[data-testid="filtered-map"]')).toBeNull();
+      expect(
+        container.querySelector('[data-testid="filtered-map"]'),
+      ).toBeNull();
     });
   });
 
@@ -158,7 +198,9 @@ describe('SettlementsExplorer', () => {
     await fireEvent.click(btn);
 
     await waitFor(() => {
-      expect(container.querySelector('[data-testid="filtered-map"]')).toBeTruthy();
+      expect(
+        container.querySelector('[data-testid="filtered-map"]'),
+      ).toBeTruthy();
     });
   });
 
@@ -211,7 +253,9 @@ describe('SettlementsExplorer', () => {
     await waitFor(() => {
       expect(getByLabelText('Сортировка:')).toBeTruthy();
     });
-    await fireEvent.change(getByLabelText('Сортировка:'), { target: { value: 'name' } });
+    await fireEvent.change(getByLabelText('Сортировка:'), {
+      target: { value: 'name' },
+    });
 
     await waitFor(() => {
       expect(cardNames(container)).toEqual(['Шелково', 'Лесное', 'Усадьбы']);
@@ -221,9 +265,12 @@ describe('SettlementsExplorer', () => {
   it('keeps explicit control links for accessibility', async () => {
     setScreen(false);
 
-    const { getByTestId, getByLabelText, container } = render(SettlementsExplorer, {
-      props: { settlements, comparisons, stats },
-    });
+    const { getByTestId, getByLabelText, container } = render(
+      SettlementsExplorer,
+      {
+        props: { settlements, comparisons, stats },
+      },
+    );
 
     await waitFor(() => {
       expect(getByTestId('sort-select')).toBeTruthy();

@@ -10,7 +10,9 @@
   let { value, maxValue, shelkovoValue }: Props = $props();
 
   // Calculate percentage (capped at 100%)
-  const percentage = $derived(maxValue > 0 ? Math.min((value / maxValue) * 100, 100) : 0);
+  const percentage = $derived(
+    maxValue > 0 ? Math.min((value / maxValue) * 100, 100) : 0,
+  );
 
   // Check if this is the baseline (Shelkovo)
   const isBaseline = $derived(value === shelkovoValue);
@@ -22,10 +24,15 @@
   });
 </script>
 
-<div data-testid="tariff-bar" class="tariff-bar {isBaseline ? 'is-baseline' : ''}">
+<div
+  data-testid="tariff-bar"
+  class="tariff-bar {isBaseline ? 'is-baseline' : ''}"
+>
   <div class="mb-1 flex items-center justify-between text-sm">
     <span class="text-muted-foreground">{formatTariff(value)}</span>
-    <span class="text-xs font-medium text-muted-foreground">{percentage.toFixed(0)}%</span>
+    <span class="text-xs font-medium text-muted-foreground"
+      >{percentage.toFixed(0)}%</span
+    >
   </div>
   <div class="ui-bar-track">
     <div

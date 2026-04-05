@@ -3,7 +3,7 @@ import {
   calculateMedian,
   calculateRank,
   calculatePercentile,
-  computeStats
+  computeStats,
 } from './stats';
 import type { Settlement } from './schema';
 
@@ -25,7 +25,9 @@ describe('Stats Module', () => {
     });
 
     it('should throw error for empty array', () => {
-      expect(() => calculateMedian([])).toThrow('Cannot calculate median of empty array');
+      expect(() => calculateMedian([])).toThrow(
+        'Cannot calculate median of empty array',
+      );
     });
 
     it('should handle unsorted arrays', () => {
@@ -103,7 +105,7 @@ describe('Stats Module', () => {
           period: 'month',
           normalized_per_sotka_month: 4500,
           normalized_is_estimate: false,
-          note: ''
+          note: '',
         },
         infrastructure: {
           roads: 'partial_asphalt',
@@ -123,7 +125,7 @@ describe('Stats Module', () => {
           public_spaces: 'yes',
           beach_or_water_access: 'yes',
           admin_building: 'no',
-          retail_or_services: 'no'
+          retail_or_services: 'no',
         },
         service_model: {
           garbage_collection: 'yes',
@@ -131,9 +133,17 @@ describe('Stats Module', () => {
           road_cleaning: 'yes',
           landscaping: 'yes',
           emergency_service: 'yes',
-          dispatcher: 'yes'
+          dispatcher: 'yes',
         },
-        sources: [{ title: 'Test', url: 'https://test.com', type: 'official', date_checked: '2026-04-03', comment: '' }]
+        sources: [
+          {
+            title: 'Test',
+            url: 'https://test.com',
+            type: 'official',
+            date_checked: '2026-04-03',
+            comment: '',
+          },
+        ],
       },
       {
         name: 'Lesnoe',
@@ -154,7 +164,7 @@ describe('Stats Module', () => {
           period: 'month',
           normalized_per_sotka_month: 3500,
           normalized_is_estimate: false,
-          note: ''
+          note: '',
         },
         infrastructure: {
           roads: 'asphalt',
@@ -174,7 +184,7 @@ describe('Stats Module', () => {
           public_spaces: 'yes',
           beach_or_water_access: 'no',
           admin_building: 'yes',
-          retail_or_services: 'yes'
+          retail_or_services: 'yes',
         },
         service_model: {
           garbage_collection: 'yes',
@@ -182,9 +192,17 @@ describe('Stats Module', () => {
           road_cleaning: 'yes',
           landscaping: 'yes',
           emergency_service: 'yes',
-          dispatcher: 'yes'
+          dispatcher: 'yes',
         },
-        sources: [{ title: 'Test', url: 'https://test.com', type: 'official', date_checked: '2026-04-03', comment: '' }]
+        sources: [
+          {
+            title: 'Test',
+            url: 'https://test.com',
+            type: 'official',
+            date_checked: '2026-04-03',
+            comment: '',
+          },
+        ],
       },
       {
         name: 'Usadby',
@@ -205,7 +223,7 @@ describe('Stats Module', () => {
           period: 'month',
           normalized_per_sotka_month: 5500,
           normalized_is_estimate: false,
-          note: ''
+          note: '',
         },
         infrastructure: {
           roads: 'asphalt',
@@ -225,7 +243,7 @@ describe('Stats Module', () => {
           public_spaces: 'yes',
           beach_or_water_access: 'yes',
           admin_building: 'yes',
-          retail_or_services: 'yes'
+          retail_or_services: 'yes',
         },
         service_model: {
           garbage_collection: 'yes',
@@ -233,10 +251,18 @@ describe('Stats Module', () => {
           road_cleaning: 'yes',
           landscaping: 'yes',
           emergency_service: 'yes',
-          dispatcher: 'yes'
+          dispatcher: 'yes',
         },
-        sources: [{ title: 'Test', url: 'https://test.com', type: 'official', date_checked: '2026-04-03', comment: '' }]
-      }
+        sources: [
+          {
+            title: 'Test',
+            url: 'https://test.com',
+            type: 'official',
+            date_checked: '2026-04-03',
+            comment: '',
+          },
+        ],
+      },
     ];
 
     it('should compute correct stats for settlements', () => {
@@ -256,8 +282,13 @@ describe('Stats Module', () => {
     });
 
     it('should throw error when no baseline settlement found', () => {
-      const noBaselineSettlements = mockSettlements.map(s => ({ ...s, is_baseline: false }));
-      expect(() => computeStats(noBaselineSettlements)).toThrow('Baseline settlement (Shelkovo) not found');
+      const noBaselineSettlements = mockSettlements.map((s) => ({
+        ...s,
+        is_baseline: false,
+      }));
+      expect(() => computeStats(noBaselineSettlements)).toThrow(
+        'Baseline settlement (Shelkovo) not found',
+      );
     });
 
     it('should throw error when settlements array is empty', () => {

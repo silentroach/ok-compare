@@ -15,12 +15,12 @@ describe('KPIStats', () => {
     cheaperCount: 2,
     moreExpensiveCount: 1,
     shelkovoVsMedianPercent: 23,
-    shelkovoVsMeanPercent: 18
+    shelkovoVsMeanPercent: 18,
   };
 
   it('displays median comparison when more expensive', () => {
     const { container } = render(KPIStats, {
-      props: { stats: mockStats }
+      props: { stats: mockStats },
     });
 
     expect(container.textContent).toContain('дороже');
@@ -30,11 +30,11 @@ describe('KPIStats', () => {
   it('displays median comparison when cheaper', () => {
     const cheaperStats: Stats = {
       ...mockStats,
-      shelkovoVsMedianPercent: -15
+      shelkovoVsMedianPercent: -15,
     };
-    
+
     const { container } = render(KPIStats, {
-      props: { stats: cheaperStats }
+      props: { stats: cheaperStats },
     });
 
     expect(container.textContent).toContain('дешевле');
@@ -43,7 +43,7 @@ describe('KPIStats', () => {
 
   it('displays cheaper count', () => {
     const { container } = render(KPIStats, {
-      props: { stats: mockStats }
+      props: { stats: mockStats },
     });
 
     expect(container.textContent).toContain('2');
@@ -52,7 +52,7 @@ describe('KPIStats', () => {
 
   it('displays more expensive count', () => {
     const { container } = render(KPIStats, {
-      props: { stats: mockStats }
+      props: { stats: mockStats },
     });
 
     expect(container.textContent).toContain('1');
@@ -62,11 +62,11 @@ describe('KPIStats', () => {
   it('uses plural form for many settlements', () => {
     const manyStats: Stats = {
       ...mockStats,
-      moreExpensiveCount: 5
+      moreExpensiveCount: 5,
     };
 
     const { container } = render(KPIStats, {
-      props: { stats: manyStats }
+      props: { stats: manyStats },
     });
 
     expect(container.textContent).toContain('поселков дороже Шелково');
@@ -74,7 +74,7 @@ describe('KPIStats', () => {
 
   it('formats percentage correctly', () => {
     const { container } = render(KPIStats, {
-      props: { stats: mockStats }
+      props: { stats: mockStats },
     });
 
     expect(container.textContent).toContain('%');

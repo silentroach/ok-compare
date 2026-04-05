@@ -1,4 +1,9 @@
-import type { Settlement, Infrastructure, ServiceModel, ComparisonResult } from './schema';
+import type {
+  Settlement,
+  Infrastructure,
+  ServiceModel,
+  ComparisonResult,
+} from './schema';
 
 /**
  * Calculate tariff delta between Shelkovo and another settlement
@@ -6,10 +11,11 @@ import type { Settlement, Infrastructure, ServiceModel, ComparisonResult } from 
  */
 export function calculateTariffDelta(
   shelkovoTariff: number,
-  otherTariff: number
+  otherTariff: number,
 ): { delta: number; deltaPercent: number; isCheaper: boolean } {
   const delta = shelkovoTariff - otherTariff;
-  const deltaPercent = shelkovoTariff !== 0 ? Math.round((delta / shelkovoTariff) * 100) : 0;
+  const deltaPercent =
+    shelkovoTariff !== 0 ? Math.round((delta / shelkovoTariff) * 100) : 0;
   const isCheaper = otherTariff < shelkovoTariff;
 
   return { delta, deltaPercent, isCheaper };
@@ -24,45 +30,47 @@ function scoreStatus(status: string | undefined, key?: string): number {
   // Handle new ordered enum types
   if (key === 'roads') {
     const roadScores: Record<string, number> = {
-      'asphalt': 3,
-      'partial_asphalt': 2,
-      'gravel': 1,
-      'dirt': 0
+      asphalt: 3,
+      partial_asphalt: 2,
+      gravel: 1,
+      dirt: 0,
     };
     return roadScores[status || ''] ?? 0;
   }
-  
+
   if (key === 'drainage') {
     const drainageScores: Record<string, number> = {
-      'closed': 2,
-      'open': 1,
-      'none': 0
+      closed: 2,
+      open: 1,
+      none: 0,
     };
     return drainageScores[status || ''] ?? 0;
   }
-  
+
   if (key === 'video_surveillance') {
     const videoScores: Record<string, number> = {
-      'full': 2,
-      'checkpoint_only': 1,
-      'none': 0
+      full: 2,
+      checkpoint_only: 1,
+      none: 0,
     };
     return videoScores[status || ''] ?? 0;
   }
-  
+
   if (key === 'underground_electricity') {
     const electricityScores: Record<string, number> = {
-      'full': 2,
-      'partial': 1,
-      'none': 0
+      full: 2,
+      partial: 1,
+      none: 0,
     };
     return electricityScores[status || ''] ?? 0;
   }
-  
+
   // Default AvailabilityStatus scoring
   switch (status) {
-    case 'yes': return 2;
-    case 'partial': return 1;
+    case 'yes':
+      return 2;
+    case 'partial':
+      return 1;
     case 'no':
     default:
       return 0;
@@ -76,7 +84,7 @@ function scoreStatus(status: string | undefined, key?: string): number {
  */
 export function compareInfrastructure(
   baseline: Infrastructure,
-  other: Infrastructure
+  other: Infrastructure,
 ): { betterCount: number; worseCount: number; differences: string[] } {
   let betterCount = 0;
   let worseCount = 0;
@@ -114,7 +122,7 @@ export function compareInfrastructure(
  */
 export function compareServices(
   baseline: ServiceModel,
-  other: ServiceModel
+  other: ServiceModel,
 ): { betterCount: number; worseCount: number; differences: string[] } {
   let betterCount = 0;
   let worseCount = 0;
@@ -152,21 +160,21 @@ export function compareServices(
  */
 export function compareSettlements(
   baseline: Settlement,
-  other: Settlement
+  other: Settlement,
 ): ComparisonResult {
   const tariffDelta = calculateTariffDelta(
     baseline.tariff.normalized_per_sotka_month,
-    other.tariff.normalized_per_sotka_month
+    other.tariff.normalized_per_sotka_month,
   );
 
   const infrastructureDelta = compareInfrastructure(
     baseline.infrastructure,
-    other.infrastructure
+    other.infrastructure,
   );
 
   const servicesDelta = compareServices(
     baseline.service_model,
-    other.service_model
+    other.service_model,
   );
 
   return {
@@ -175,11 +183,11 @@ export function compareSettlements(
     isCheaper: tariffDelta.isCheaper,
     infrastructureDelta: {
       betterCount: infrastructureDelta.betterCount,
-      worseCount: infrastructureDelta.worseCount
+      worseCount: infrastructureDelta.worseCount,
     },
     servicesDelta: {
       betterCount: servicesDelta.betterCount,
-      worseCount: servicesDelta.worseCount
-    }
+      worseCount: servicesDelta.worseCount,
+    },
   };
 }

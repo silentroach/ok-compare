@@ -6,7 +6,7 @@ import {
   formatPercentage,
   formatTariff,
   formatTariffAuto,
-  getTariffHint
+  getTariffHint,
 } from './format';
 
 describe('Format Module', () => {
@@ -118,35 +118,41 @@ describe('Format Module', () => {
 
   describe('formatTariffAuto', () => {
     it('should keep exact tariffs without tilde', () => {
-      expect(formatTariffAuto({
-        value: 1000,
-        unit: 'rub_per_sotka',
-        period: 'month',
-        normalized_per_sotka_month: 1000,
-        normalized_is_estimate: false,
-      })).toBe('1\u00A0000 ₽/сотка');
+      expect(
+        formatTariffAuto({
+          value: 1000,
+          unit: 'rub_per_sotka',
+          period: 'month',
+          normalized_per_sotka_month: 1000,
+          normalized_is_estimate: false,
+        }),
+      ).toBe('1\u00A0000 ₽/сотка');
     });
 
     it('should add tilde for estimated tariffs', () => {
-      expect(formatTariffAuto({
-        value: 12000,
-        unit: 'rub_per_lot',
-        period: 'month',
-        normalized_per_sotka_month: 1200,
-        normalized_is_estimate: true,
-      })).toBe('~1\u00A0200 ₽/сотка');
+      expect(
+        formatTariffAuto({
+          value: 12000,
+          unit: 'rub_per_lot',
+          period: 'month',
+          normalized_per_sotka_month: 1200,
+          normalized_is_estimate: true,
+        }),
+      ).toBe('~1\u00A0200 ₽/сотка');
     });
   });
 
   describe('getTariffHint', () => {
     it('should return undefined for exact tariffs', () => {
-      expect(getTariffHint({
-        value: 1000,
-        unit: 'rub_per_sotka',
-        period: 'month',
-        normalized_per_sotka_month: 1000,
-        normalized_is_estimate: false,
-      })).toBe(undefined);
+      expect(
+        getTariffHint({
+          value: 1000,
+          unit: 'rub_per_sotka',
+          period: 'month',
+          normalized_per_sotka_month: 1000,
+          normalized_is_estimate: false,
+        }),
+      ).toBe(undefined);
     });
 
     it('should return formula for estimated tariffs', () => {

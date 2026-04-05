@@ -7,8 +7,8 @@ describe('Hero', () => {
     const { container } = render(Hero, {
       props: {
         title: 'Test Title',
-        subtitle: 'Test Subtitle'
-      }
+        subtitle: 'Test Subtitle',
+      },
     });
 
     expect(container.textContent).toContain('Test Title');
@@ -18,8 +18,8 @@ describe('Hero', () => {
   it('renders with Russian text for settlements', () => {
     const { container } = render(Hero, {
       props: {
-        title: 'Тарифы на содержание поселков'
-      }
+        title: 'Тарифы на содержание поселков',
+      },
     });
 
     expect(container.textContent).toContain('Тарифы на содержание поселков');
@@ -30,8 +30,8 @@ describe('Hero', () => {
     const { container } = render(Hero, {
       props: {
         title: 'Test Title',
-        subtitle: 'Test Subtitle'
-      }
+        subtitle: 'Test Subtitle',
+      },
     });
 
     const h1 = container.querySelector('h1');

@@ -9,7 +9,7 @@ import {
   AvailabilityStatusEnum,
   TariffUnitEnum,
   TariffPeriodEnum,
-  SourceTypeEnum
+  SourceTypeEnum,
 } from '../lib/schema';
 
 describe('Schema Validation', () => {
@@ -32,7 +32,7 @@ describe('Schema Validation', () => {
           value: 3000,
           unit: 'rub_per_sotka',
           period: 'month',
-          note: 'Тестовая заметка'
+          note: 'Тестовая заметка',
         },
         infrastructure: {
           roads: 'asphalt',
@@ -52,7 +52,7 @@ describe('Schema Validation', () => {
           public_spaces: 'yes',
           beach_or_water_access: 'no',
           admin_building: 'yes',
-          retail_or_services: 'yes'
+          retail_or_services: 'yes',
         },
         service_model: {
           garbage_collection: 'yes',
@@ -60,15 +60,17 @@ describe('Schema Validation', () => {
           road_cleaning: 'yes',
           landscaping: 'yes',
           emergency_service: 'yes',
-          dispatcher: 'yes'
+          dispatcher: 'yes',
         },
-        sources: [{
-          title: 'Тестовый источник',
-          url: 'https://example.com/source',
-          type: 'official',
-          date_checked: '2026-04-03',
-          comment: ''
-        }]
+        sources: [
+          {
+            title: 'Тестовый источник',
+            url: 'https://example.com/source',
+            type: 'official',
+            date_checked: '2026-04-03',
+            comment: '',
+          },
+        ],
       };
 
       const result = SettlementSchema.safeParse(validSettlement);
@@ -100,13 +102,15 @@ describe('Schema Validation', () => {
           unit: 'rub_per_lot',
           period: 'month',
         },
-        sources: [{
-          title: 'Тестовый источник',
-          url: 'https://example.com/source',
-          type: 'official',
-          date_checked: '2026-04-03',
-          comment: ''
-        }]
+        sources: [
+          {
+            title: 'Тестовый источник',
+            url: 'https://example.com/source',
+            type: 'official',
+            date_checked: '2026-04-03',
+            comment: '',
+          },
+        ],
       };
 
       const result = SettlementSchema.safeParse(validSettlement);
@@ -125,7 +129,7 @@ describe('Schema Validation', () => {
         website: 'https://test.example.com',
         management_company: {
           title: 'УК Тест',
-          url: 'https://example.com/uk-test'
+          url: 'https://example.com/uk-test',
         },
         is_baseline: false,
         location: {
@@ -138,17 +142,19 @@ describe('Schema Validation', () => {
           value: 3000,
           unit: 'rub_per_sotka',
           period: 'month',
-          note: 'Тестовая заметка'
+          note: 'Тестовая заметка',
         },
         infrastructure: {},
         service_model: {},
-        sources: [{
-          title: 'Тестовый источник',
-          url: 'https://example.com/source',
-          type: 'official',
-          date_checked: '2026-04-03',
-          comment: ''
-        }]
+        sources: [
+          {
+            title: 'Тестовый источник',
+            url: 'https://example.com/source',
+            type: 'official',
+            date_checked: '2026-04-03',
+            comment: '',
+          },
+        ],
       };
 
       const result = SettlementSchema.safeParse(validSettlement);
@@ -175,17 +181,19 @@ describe('Schema Validation', () => {
           value: 3000,
           unit: 'rub_per_sotka',
           period: 'month',
-          note: 'Тестовая заметка'
+          note: 'Тестовая заметка',
         },
         infrastructure: {},
         service_model: {},
-        sources: [{
-          title: 'Тестовый источник',
-          url: 'https://example.com/source',
-          type: 'official',
-          date_checked: '2026-04-03',
-          comment: ''
-        }]
+        sources: [
+          {
+            title: 'Тестовый источник',
+            url: 'https://example.com/source',
+            type: 'official',
+            date_checked: '2026-04-03',
+            comment: '',
+          },
+        ],
       };
 
       const result = SettlementSchema.safeParse(validSettlement);
@@ -214,15 +222,17 @@ describe('Schema Validation', () => {
           value: 3000,
           unit: 'per_day', // Invalid unit
           period: 'month',
-          note: ''
+          note: '',
         },
-        sources: [{
-          title: 'Источник',
-          url: 'https://example.com',
-          type: 'official',
-          date_checked: '2026-04-03',
-          comment: ''
-        }]
+        sources: [
+          {
+            title: 'Источник',
+            url: 'https://example.com',
+            type: 'official',
+            date_checked: '2026-04-03',
+            comment: '',
+          },
+        ],
       };
 
       const result = SettlementSchema.safeParse(invalidSettlement);
@@ -255,21 +265,25 @@ describe('Schema Validation', () => {
           value: 3000,
           unit: 'rub_per_sotka',
           period: 'month',
-          note: ''
+          note: '',
         },
-        sources: [{
-          title: 'Источник',
-          url: 'https://example.com',
-          type: 'official',
-          date_checked: '2026-04-03',
-          comment: ''
-        }]
+        sources: [
+          {
+            title: 'Источник',
+            url: 'https://example.com',
+            type: 'official',
+            date_checked: '2026-04-03',
+            comment: '',
+          },
+        ],
       };
 
       const result = SettlementSchema.safeParse(incompleteSettlement);
       expect(result.success).toBe(false);
       if (!result.success) {
-        const nameError = result.error.issues.find((e) => e.path.includes('name'));
+        const nameError = result.error.issues.find((e) =>
+          e.path.includes('name'),
+        );
         expect(nameError).toBeDefined();
         expect(nameError?.message.toLowerCase()).toContain('expected string');
       }
@@ -288,7 +302,9 @@ describe('Schema Validation', () => {
       const result = LocationSchema.safeParse(invalidLocation);
       expect(result.success).toBe(false);
       if (!result.success) {
-        const latError = result.error.issues.find((e) => e.path.includes('lat'));
+        const latError = result.error.issues.find((e) =>
+          e.path.includes('lat'),
+        );
         expect(latError).toBeDefined();
       }
     });
@@ -304,7 +320,9 @@ describe('Schema Validation', () => {
       const result = LocationSchema.safeParse(invalidLocation);
       expect(result.success).toBe(false);
       if (!result.success) {
-        const lngError = result.error.issues.find((e) => e.path.includes('lng'));
+        const lngError = result.error.issues.find((e) =>
+          e.path.includes('lng'),
+        );
         expect(lngError).toBeDefined();
       }
     });
@@ -317,7 +335,7 @@ describe('Schema Validation', () => {
         sidewalks: 'yes',
         lighting: 'yes',
         gas: 'yes',
-        water: 'yes'
+        water: 'yes',
         // Missing 11 other fields
       };
 
@@ -380,7 +398,7 @@ describe('Schema Validation', () => {
         url: 'https://example.com',
         type: 'official',
         date_checked: '2026-04-03',
-        comment: ''
+        comment: '',
       };
 
       const result = SourceSchema.safeParse(validSource);
@@ -393,7 +411,7 @@ describe('Schema Validation', () => {
         url: 'not-a-url',
         type: 'official',
         date_checked: '2026-04-03',
-        comment: ''
+        comment: '',
       };
 
       const result = SourceSchema.safeParse(invalidSource);
@@ -419,15 +437,17 @@ describe('Schema Validation', () => {
           value: 3000,
           unit: 'rub_per_sotka',
           period: 'month',
-          note: ''
+          note: '',
         },
-        sources: [{
-          title: 'Источник',
-          url: 'https://example.com',
-          type: 'official',
-          date_checked: '2026-04-03',
-          comment: ''
-        }]
+        sources: [
+          {
+            title: 'Источник',
+            url: 'https://example.com',
+            type: 'official',
+            date_checked: '2026-04-03',
+            comment: '',
+          },
+        ],
       };
 
       const result = SettlementSchema.safeParse(settlementWithValidSlug);
@@ -451,15 +471,17 @@ describe('Schema Validation', () => {
           value: 3000,
           unit: 'rub_per_sotka',
           period: 'month',
-          note: ''
+          note: '',
         },
-        sources: [{
-          title: 'Источник',
-          url: 'https://example.com',
-          type: 'official',
-          date_checked: '2026-04-03',
-          comment: ''
-        }]
+        sources: [
+          {
+            title: 'Источник',
+            url: 'https://example.com',
+            type: 'official',
+            date_checked: '2026-04-03',
+            comment: '',
+          },
+        ],
       };
 
       const result = SettlementSchema.safeParse(settlementWithInvalidSlug);
