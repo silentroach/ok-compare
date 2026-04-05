@@ -1,4 +1,6 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, expectTypeOf } from 'vitest';
+import type { CollectionEntry } from 'astro:content';
+import type { Settlement } from '../lib/schema';
 import {
   SettlementSchema,
   LocationSchema,
@@ -365,6 +367,13 @@ describe('Schema Validation', () => {
 
       const result = SettlementSchema.safeParse(settlementWithInvalidSlug);
       expect(result.success).toBe(false);
+    });
+  });
+
+  describe('Type Contracts', () => {
+    it('should keep settlement schema and collection data aligned', () => {
+      type Data = CollectionEntry<'settlements'>['data'];
+      expectTypeOf<Data>().toEqualTypeOf<Settlement>();
     });
   });
 });

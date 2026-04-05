@@ -8,7 +8,7 @@ import { compareSettlements } from './comparisons';
  */
 export async function loadSettlements(): Promise<Settlement[]> {
   const settlements = await getCollection('settlements');
-  return settlements.map(entry => entry.data as Settlement);
+  return settlements.map(entry => entry.data);
 }
 
 /**

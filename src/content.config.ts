@@ -7,7 +7,7 @@ const settlements = defineCollection({
     pattern: '[!_]*.yaml',
     base: './src/data/settlements'
   }),
-  schema: SettlementSchema as unknown as Parameters<typeof defineCollection>[0]['schema']
+  schema: SettlementSchema
 });
 
 export const collections = { settlements };
