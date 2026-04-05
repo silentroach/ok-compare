@@ -21,12 +21,12 @@
   let {
     settlements = [],
     comparisons = {},
-    stats = null,
+    stats,
     dataUrl = ''
   }: {
     settlements: Settlement[];
     comparisons: Record<string, ComparisonResult>;
-    stats: Stats | null;
+    stats?: Stats;
     dataUrl: string;
   } = $props();
 
@@ -130,7 +130,7 @@
 
     void fetch(dataUrl)
       .then((res) => {
-        if (!res.ok) return null;
+        if (!res.ok) return;
         return res.json() as Promise<Payload>;
       })
       .then((data) => {
@@ -261,7 +261,7 @@
     {#each displayedSettlements as settlement (settlement.slug)}
       <SettlementCard
         {settlement}
-        comparison={comparisons[settlement.slug] || null}
+        comparison={comparisons[settlement.slug]}
         maxTariff={stats?.maxTariff ?? 0}
         isBaseline={settlement.is_baseline}
       />

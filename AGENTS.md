@@ -47,6 +47,9 @@ pnpm exec vitest run -t "описание теста"
 - Strict mode
 - Явные типы для параметров и возвращаемых значений
 - `interface` для объектов, `type` для union/utility types
+- Всюду, где можно использовать `undefined` вместо `null` - стоит использовать именно `undefined` и опциональные свойства
+- Если нужно вернуть `undefined`, писать `return;` (не `return undefined;`)
+- Не передавать свойства со значением `undefined` в объектах/props: опускать ключ целиком
 
 ### General Principles
 

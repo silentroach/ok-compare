@@ -11,15 +11,12 @@ describe('InfrastructureTable', () => {
     gas: 'yes',
     water: 'yes',
     sewage: 'yes',
-    drainage: undefined,
     checkpoints: 'yes',
     security: 'yes',
     fencing: 'no',
     video_surveillance: 'checkpoint_only',
-    underground_electricity: undefined,
     playgrounds: 'yes',
     sports: 'no',
-    public_spaces: undefined,
     beach_or_water_access: 'no',
     admin_building: 'yes',
     retail_or_services: 'partial'
@@ -49,8 +46,7 @@ describe('InfrastructureTable', () => {
   it('displays correct labels for infrastructure items', () => {
     const { getByText } = render(InfrastructureTable, {
       props: {
-        infra: mockInfra,
-        shelkovoInfra: null
+        infra: mockInfra
       }
     });
 
@@ -80,11 +76,10 @@ describe('InfrastructureTable', () => {
     expect(comparisonCells.length).toBe(18);
   });
 
-  it('does not show comparison column when shelkovoInfra is null', () => {
+  it('does not show comparison column when shelkovoInfra is not provided', () => {
     const { container, queryByText } = render(InfrastructureTable, {
       props: {
-        infra: mockInfra,
-        shelkovoInfra: null
+        infra: mockInfra
       }
     });
 
@@ -117,8 +112,7 @@ describe('InfrastructureTable', () => {
 
     const { container } = render(InfrastructureTable, {
       props: {
-        infra: emptyInfra,
-        shelkovoInfra: null
+        infra: emptyInfra
       }
     });
 

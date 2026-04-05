@@ -9,8 +9,7 @@ describe('ServiceTable', () => {
     snow_removal: 'partial',
     road_cleaning: 'yes',
     landscaping: 'yes',
-    emergency_service: 'no',
-    dispatcher: undefined
+    emergency_service: 'no'
   };
 
   const mockShelkovoServices: ServiceModel = {
@@ -25,8 +24,7 @@ describe('ServiceTable', () => {
   it('displays correct labels for service items', () => {
     const { getByText } = render(ServiceTable, {
       props: {
-        services: mockServices,
-        shelkovoServices: null
+        services: mockServices
       }
     });
 
@@ -55,11 +53,10 @@ describe('ServiceTable', () => {
     expect(comparisonCells.length).toBe(6);
   });
 
-  it('does not show comparison column when shelkovoServices is null', () => {
+  it('does not show comparison column when shelkovoServices is not provided', () => {
     const { container, queryByText } = render(ServiceTable, {
       props: {
-        services: mockServices,
-        shelkovoServices: null
+        services: mockServices
       }
     });
 
@@ -79,7 +76,7 @@ describe('ServiceTable', () => {
       }
     });
 
-    // Find rows where there's a difference (snow_removal: partial vs yes, emergency_service: no vs yes, dispatcher: undefined vs yes)
+    // Find rows where there's a difference (snow_removal: partial vs yes, emergency_service: no vs yes, dispatcher: missing vs yes)
     const diffIndicators = container.querySelectorAll('[data-testid="diff-indicator"]');
     
     // There should be some differences highlighted
@@ -91,8 +88,7 @@ describe('ServiceTable', () => {
 
     const { container, getAllByText } = render(ServiceTable, {
       props: {
-        services: emptyServices,
-        shelkovoServices: null
+        services: emptyServices
       }
     });
 

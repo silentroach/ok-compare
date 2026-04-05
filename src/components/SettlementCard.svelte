@@ -7,7 +7,7 @@
 
   interface Props {
     settlement: Settlement;
-    comparison: ComparisonResult | null;
+    comparison?: ComparisonResult;
     maxTariff: number;
     isBaseline: boolean;
   }

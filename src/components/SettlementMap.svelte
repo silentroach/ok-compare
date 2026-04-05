@@ -49,12 +49,12 @@
     focusX = 0.5,
   }: Props = $props();
 
-  let mapContainer: HTMLDivElement | null = $state(null);
-  let popupEl: HTMLDivElement | null = $state(null);
-  let map: ymaps3.YMap | null = $state(null);
+  let mapContainer: HTMLDivElement | undefined = $state(undefined);
+  let popupEl: HTMLDivElement | undefined = $state(undefined);
+  let map: ymaps3.YMap | undefined = $state(undefined);
   let marks: MarkerLike[] = $state([]);
   let isLoading = $state(true);
-  let error: string | null = $state(null);
+  let error: string | undefined = $state(undefined);
   let ymapsLoaded = $state(false);
   interface Tip {
     item: SettlementMapData;
@@ -63,7 +63,7 @@
     up: boolean;
   }
 
-  let tip: Tip | null = $state(null);
+  let tip: Tip | undefined = $state(undefined);
 
   const API_KEY = import.meta.env.PUBLIC_YANDEX_MAPS_API_KEY || '';
   const PAD = 32;
@@ -83,13 +83,13 @@
     return lng - (fx - 0.5) * w * deg;
   }
 
-  function getRange(list: SettlementMapData[]): Range | null {
+  function getRange(list: SettlementMapData[]): Range | undefined {
     const vals = list.filter(item => !item.isBaseline).map(item => item.normalizedTariff);
-    if (vals.length === 0) return null;
+    if (vals.length === 0) return;
     return { min: Math.min(...vals), max: Math.max(...vals) };
   }
 
-  function getTariffColor(tariff: number, isBaseline: boolean, range: Range | null): string {
+  function getTariffColor(tariff: number, isBaseline: boolean, range: Range | undefined): string {
     if (isBaseline) {
       return '#0369a1';
     }
@@ -269,12 +269,12 @@
       return;
     }
 
-    tip = null;
+    tip = undefined;
     renderMarkers(ymaps3);
     const view = getMapView();
     if (!map.update) {
       map.destroy();
-      map = null;
+      map = undefined;
       await initMap();
       return;
     }
@@ -314,7 +314,7 @@
       if (!(node instanceof Node)) return;
       if (popupEl?.contains(node)) return;
 
-      tip = null;
+      tip = undefined;
     };
 
     document.addEventListener('pointerdown', onDown);
@@ -336,7 +336,7 @@
     clearMarkers();
     if (map) {
       map.destroy();
-      map = null;
+      map = undefined;
     }
   });
 
@@ -400,7 +400,7 @@
               class="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
               aria-label="Закрыть попап"
               onclick={() => {
-                tip = null;
+                tip = undefined;
               }}
             >
               <svg viewBox="0 0 20 20" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">

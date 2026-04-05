@@ -97,7 +97,6 @@ describe('SettlementCard', () => {
     const { container } = render(SettlementCard, {
       props: {
         settlement: baselineSettlement,
-        comparison: null,
         maxTariff: 150,
         isBaseline: true
       }
@@ -138,7 +137,6 @@ describe('SettlementCard', () => {
     const { container } = render(SettlementCard, {
       props: {
         settlement: mockSettlement,
-        comparison: null,
         maxTariff: 150,
         isBaseline: false
       }

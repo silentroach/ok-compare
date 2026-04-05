@@ -4,10 +4,10 @@
   interface Props {
     title?: string;
     infra: Infrastructure;
-    shelkovoInfra?: Infrastructure | null;
+    shelkovoInfra?: Infrastructure;
   }
 
-  let { title = '', infra, shelkovoInfra = null }: Props = $props();
+  let { title = '', infra, shelkovoInfra }: Props = $props();
   let only = $state(false);
 
   // Infrastructure item labels in Russian
@@ -203,7 +203,7 @@
           {@const shelkovoValue = shelkovoInfra?.[key as keyof Infrastructure]}
           {@const isDifferent = hasDifference(key)}
           {@const display = getDisplayConfig(key, value)}
-          {@const shelkovoDisplay = shelkovoInfra ? getDisplayConfig(key, shelkovoValue) : null}
+          {@const shelkovoDisplay = shelkovoInfra ? getDisplayConfig(key, shelkovoValue) : undefined}
           <tr data-testid="infra-row" class="ui-table-row">
             <td class="ui-table-cell text-sm text-foreground">
               {labels[key] || key}

@@ -4,10 +4,10 @@
   interface Props {
     title?: string;
     services: ServiceModel;
-    shelkovoServices?: ServiceModel | null;
+    shelkovoServices?: ServiceModel;
   }
 
-  let { title = '', services, shelkovoServices = null }: Props = $props();
+  let { title = '', services, shelkovoServices }: Props = $props();
   let only = $state(false);
 
   // Service item labels in Russian
@@ -153,7 +153,7 @@
           {@const shelkovoValue = shelkovoServices?.[key as keyof ServiceModel]}
           {@const isDifferent = hasDifference(key)}
           {@const display = getDisplay(value)}
-          {@const shelkovoDisplay = shelkovoServices ? getDisplay(shelkovoValue) : null}
+          {@const shelkovoDisplay = shelkovoServices ? getDisplay(shelkovoValue) : undefined}
           <tr data-testid="service-row" class="ui-table-row">
             <td class="ui-table-cell text-sm text-foreground">
               {labels[key] || key}

@@ -120,7 +120,6 @@ function setScreen(mobile: boolean): void {
     value: vi.fn().mockImplementation((query: string) => ({
       matches: mobile && query.includes('max-width: 767px'),
       media: query,
-      onchange: null,
       addListener: vi.fn(),
       removeListener: vi.fn(),
       addEventListener: vi.fn(),
