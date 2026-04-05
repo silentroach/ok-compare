@@ -2,7 +2,9 @@ name: "КП Шелково"
 short_name: "Шелково"
 slug: "shelkovo"
 website: "https://kpshelkovo.ru"
-management_company: "ОК \"Комфорт\""
+management_company:
+  title: "ОК \"Комфорт\""
+  url: "https://ok-komfort.ru/"
 is_baseline: true
 
 location:

@@ -52,6 +52,9 @@ const distanceFromShelkovo = shelkovo && !settlement.is_baseline
 // Build page title
 const pageTitle = `${settlement.name} — Тарифы и сравнение`;
 const hasPoint = Number.isFinite(settlement.location.lat) && Number.isFinite(settlement.location.lng);
+const company = settlement.management_company;
+const companyTitle = typeof company === 'string' ? company : company?.title ?? '';
+const companyUrl = typeof company === 'object' ? company.url : '';
 const heroMap = hasPoint
   ? [{
       slug: settlement.slug,
@@ -141,6 +144,24 @@ const heroMap = hasPoint
                 <p class="mt-2 text-base text-muted-foreground [text-shadow:0_1px_6px_rgba(255,255,255,0.72)]">
                   {settlement.location.district} район
                 </p>
+                {companyTitle && (
+                  <div class="mt-3 inline-flex items-center gap-2 rounded-full border border-white/65 bg-white/55 px-3 py-1.5 text-sm backdrop-blur-[2px]">
+                    <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Обслуживается</span>
+                    {companyUrl ? (
+                      <a
+                        href={companyUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="font-semibold text-foreground underline decoration-foreground/30 underline-offset-3 transition-colors hover:text-primary"
+                        title="Перейти на сайт управляющей компании"
+                      >
+                        {companyTitle}
+                      </a>
+                    ) : (
+                      <span class="font-semibold text-foreground">{companyTitle}</span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -227,6 +248,24 @@ const heroMap = hasPoint
           <p class="text-muted-foreground">
             {settlement.location.district} район
           </p>
+          {companyTitle && (
+            <p class="mt-2 text-sm text-muted-foreground">
+              Обслуживается:{' '}
+              {companyUrl ? (
+                <a
+                  href={companyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="font-semibold text-foreground underline decoration-foreground/30 underline-offset-2 transition-colors hover:text-primary"
+                  title="Перейти на сайт управляющей компании"
+                >
+                  {companyTitle}
+                </a>
+              ) : (
+                <span class="font-semibold text-foreground">{companyTitle}</span>
+              )}
+            </p>
+          )}
         </div>
         
         {settlement.is_baseline && (
@@ -250,6 +289,25 @@ const heroMap = hasPoint
             <p class="mt-1 text-sm text-muted-foreground">{settlement.tariff.note}</p>
           )}
         </div>
+
+        {companyTitle && (
+          <div class="rounded-xl border border-border bg-muted-soft p-4">
+            <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Обслуживается</h3>
+            {companyUrl ? (
+              <a
+                href={companyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-semibold text-foreground underline decoration-foreground/30 underline-offset-2 transition-colors hover:text-primary"
+                title="Перейти на сайт управляющей компании"
+              >
+                {companyTitle}
+              </a>
+            ) : (
+              <p class="font-semibold text-foreground">{companyTitle}</p>
+            )}
+          </div>
+        )}
         
         {!settlement.is_baseline && comparison && (
           <div class="rounded-xl border border-border bg-muted-soft p-4">

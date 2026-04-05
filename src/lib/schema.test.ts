@@ -93,6 +93,112 @@ describe('Schema Validation', () => {
         expect(result.data.is_baseline).toBe(false);
       }
     });
+
+    it('should parse settlement with management company object', () => {
+      const validSettlement = {
+        name: 'Коттеджный поселок Тестовый',
+        short_name: 'Тестовый',
+        slug: 'testovyy',
+        website: 'https://test.example.com',
+        management_company: {
+          title: 'УК Тест',
+          url: 'https://example.com/uk-test'
+        },
+        is_baseline: false,
+        location: {
+          address_text: 'Московская область, Тестовый район',
+          lat: 55.7558,
+          lng: 37.6173,
+          district: 'Тестовый район',
+        },
+        tariff: {
+          value: 3000,
+          unit: 'rub_per_sotka',
+          period: 'month',
+          normalized_per_sotka_month: 3000,
+          note: 'Тестовая заметка'
+        },
+        infrastructure: {},
+        service_model: {},
+        promises_vs_fact: {
+          promised: [],
+          actual: [],
+          notes: ''
+        },
+        transparency: {
+          has_public_tariff: true,
+          has_website: true,
+          has_phone: true,
+          has_management_info: true,
+          notes: ''
+        },
+        sources: [{
+          title: 'Тестовый источник',
+          url: 'https://example.com/source',
+          type: 'official',
+          date_checked: '2026-04-03',
+          comment: ''
+        }],
+        comparison_notes: ['Тестовая заметка']
+      };
+
+      const result = SettlementSchema.safeParse(validSettlement);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(typeof result.data.management_company).toBe('object');
+      }
+    });
+
+    it('should parse settlement without management company', () => {
+      const validSettlement = {
+        name: 'Коттеджный поселок Тестовый',
+        short_name: 'Тестовый',
+        slug: 'testovyy',
+        website: 'https://test.example.com',
+        is_baseline: false,
+        location: {
+          address_text: 'Московская область, Тестовый район',
+          lat: 55.7558,
+          lng: 37.6173,
+          district: 'Тестовый район',
+        },
+        tariff: {
+          value: 3000,
+          unit: 'rub_per_sotka',
+          period: 'month',
+          normalized_per_sotka_month: 3000,
+          note: 'Тестовая заметка'
+        },
+        infrastructure: {},
+        service_model: {},
+        promises_vs_fact: {
+          promised: [],
+          actual: [],
+          notes: ''
+        },
+        transparency: {
+          has_public_tariff: true,
+          has_website: true,
+          has_phone: true,
+          has_management_info: true,
+          notes: ''
+        },
+        sources: [{
+          title: 'Тестовый источник',
+          url: 'https://example.com/source',
+          type: 'official',
+          date_checked: '2026-04-03',
+          comment: ''
+        }],
+        comparison_notes: ['Тестовая заметка']
+      };
+
+      const result = SettlementSchema.safeParse(validSettlement);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.management_company).toBe(undefined);
+      }
+    });
   });
 
   describe('Invalid Tariff Unit Fails', () => {

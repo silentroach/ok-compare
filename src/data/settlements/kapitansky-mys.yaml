@@ -5,7 +5,9 @@ name: "КП Капитанский Мыс"
 short_name: "Капитанский Мыс"
 slug: "kapitansky-mys"
 website: "https://xn----7sbabf2bmejrt1b.xn--p1ai/kapitansky_mys"
-management_company: "Капитан Клаб"
+management_company:
+  title: "Капитан Клаб"
+  url: "https://xn----7sbabf2bmejrt1b.xn--p1ai/"
 is_baseline: false
 
 location:

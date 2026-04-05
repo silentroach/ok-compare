@@ -6,7 +6,12 @@ name: "Название поселка"
 short_name: "Поселок"
 slug: "settlement-slug"
 website: "https://example.com"
-management_company: "УК Название"
+management_company: "УК Название"  # Optional. Legacy fallback: plain string
+# or
+# management_company:
+#   title: "УК Название"
+#   url: "https://example.com"
+# if unknown: omit management_company entirely
 is_baseline: false
 
 location:

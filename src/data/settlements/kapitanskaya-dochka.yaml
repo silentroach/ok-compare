@@ -5,7 +5,9 @@ name: "КП Капитанская Дочка"
 short_name: "Капитанская Дочка"
 slug: "kapitanskaya-dochka"
 website: "https://xn----7sbabf2bmejrt1b.xn--p1ai/kapitanskaya_dochka"
-management_company: "Капитан Клаб"
+management_company:
+  title: "Капитан Клаб"
+  url: "https://xn----7sbabf2bmejrt1b.xn--p1ai/"
 is_baseline: false
 
 location:

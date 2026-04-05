@@ -33,7 +33,12 @@ name: "Коттеджный поселок Шелково"     # Полное н
 short_name: "Шелково"                   # Короткое название
 slug: "shelkovo"                        # URL-friendly идентификатор
 website: "https://shelkovo.ru"          # Официальный сайт
-management_company: "УК Шелково"        # Управляющая компания
+management_company: "УК Шелково"        # Опционально: управляющая компания (legacy fallback)
+# или объект с ссылкой:
+# management_company:
+#   title: "УК Шелково"
+#   url: "https://example.com"
+# поле можно опустить целиком, если данных нет
 is_baseline: true                       # true для базового поселка (Шелково)
 
 # Локация

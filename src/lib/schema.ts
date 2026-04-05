@@ -119,13 +119,22 @@ export const SourceSchema = z.object({
 });
 export type Source = z.infer<typeof SourceSchema>;
 
+export const ManagementCompanySchema = z.union([
+  z.string().min(1),
+  z.object({
+    title: z.string().min(1),
+    url: z.string().url()
+  })
+]);
+export type ManagementCompany = z.infer<typeof ManagementCompanySchema>;
+
 // Main Settlement schema
 export const SettlementSchema = z.object({
   name: z.string().min(1),
   short_name: z.string().min(1),
   slug: z.string().min(1).regex(/^[a-z0-9-]+$/),
   website: z.string().url(),
-  management_company: z.string().min(1),
+  management_company: ManagementCompanySchema.optional(),
   is_baseline: z.boolean().default(false),
   location: LocationSchema,
   tariff: TariffSchema,

@@ -5,7 +5,9 @@ name: "КП Капитанская Бухта"
 short_name: "Капитанская Бухта"
 slug: "kapitanskaya-buhta"
 website: "https://xn----7sbabf2bmejrt1b.xn--p1ai/kapitanskaya_buhta"
-management_company: "Капитан Клаб"
+management_company:
+  title: "Капитан Клаб"
+  url: "https://xn----7sbabf2bmejrt1b.xn--p1ai/"
 is_baseline: false
 
 location:

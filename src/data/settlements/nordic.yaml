@@ -9,7 +9,9 @@ name: "КП Нордик"
 short_name: "Нордик"
 slug: "nordic"
 website: "https://kp-nordic.ru/"
-management_company: "УК Эколайф"
+management_company:
+  title: "УК Эколайф"
+  url: "https://uslugi.kp-nordic.ru/"
 is_baseline: false
 
 location:
