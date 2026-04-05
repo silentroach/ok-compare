@@ -38,7 +38,30 @@
   const mapid = `${uid}-map`;
 
   let ready = $derived(settlements.length > 0 || dataUrl.length === 0);
-  let err = $state('');
+  let tryid = $state(0);
+
+  function msg(err: unknown): string {
+    if (err instanceof Error) return err.message;
+    return 'Не удалось загрузить данные';
+  }
+
+  async function pull(url: string): Promise<void> {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Не удалось загрузить данные');
+
+    const data = await res.json() as Payload;
+    settlements = data.settlements;
+    comparisons = data.comparisons;
+    stats = data.stats;
+    window.dispatchEvent(new CustomEvent('explorer:ready'));
+  }
+
+  let run = $derived.by(async () => {
+    tryid;
+    if (ready) return;
+    if (!dataUrl) throw new Error('Не указан источник данных');
+    await pull(dataUrl);
+  });
 
   // Find Shelkovo (baseline) for distance calculations
   const shelkovo = $derived(settlements.find((s) => s.is_baseline));
@@ -123,160 +146,162 @@
 
     if (ready) {
       window.dispatchEvent(new CustomEvent('explorer:ready'));
-      return;
     }
-
-    if (!dataUrl) return;
-
-    void fetch(dataUrl)
-      .then((res) => {
-        if (!res.ok) return;
-        return res.json() as Promise<Payload>;
-      })
-      .then((data) => {
-        if (!data) {
-          err = 'Не удалось загрузить данные';
-          return;
-        }
-        settlements = data.settlements;
-        comparisons = data.comparisons;
-        stats = data.stats;
-        window.dispatchEvent(new CustomEvent('explorer:ready'));
-      })
-      .catch(() => {
-        err = 'Не удалось загрузить данные';
-      });
   });
 </script>
 
-<div class="space-y-6">
-  <div class="ui-shell p-4 md:p-6">
-    <div class="flex flex-col gap-5">
-      <div class="flex items-start justify-between gap-2 md:items-center">
-        <div class="flex min-w-0 flex-nowrap items-center gap-2 overflow-x-auto pr-1">
-          <span class="mr-1 whitespace-nowrap text-sm font-semibold text-foreground">Фильтр:</span>
-          <input
-            id={allid}
-            type="radio"
-            name={`${uid}-price`}
-            value="all"
-            bind:group={priceFilter}
-            class="sr-only"
-            data-testid="price-all"
-          />
-          <label
-            for={allid}
-            class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'all' ? 'ui-btn-soft ui-btn-primary' : ''}"
+<svelte:boundary>
+  <span class="sr-only" aria-hidden="true">{await run}</span>
+
+  <div class="space-y-6">
+    <div class="ui-shell p-4 md:p-6">
+      <div class="flex flex-col gap-5">
+        <div class="flex items-start justify-between gap-2 md:items-center">
+          <div class="flex min-w-0 flex-nowrap items-center gap-2 overflow-x-auto pr-1">
+            <span class="mr-1 whitespace-nowrap text-sm font-semibold text-foreground">Фильтр:</span>
+            <input
+              id={allid}
+              type="radio"
+              name={`${uid}-price`}
+              value="all"
+              bind:group={priceFilter}
+              class="sr-only"
+              data-testid="price-all"
+            />
+            <label
+              for={allid}
+              class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'all' ? 'ui-btn-soft ui-btn-primary' : ''}"
+            >
+              Все
+            </label>
+            <input
+              id={cheapid}
+              type="radio"
+              name={`${uid}-price`}
+              value="cheaper"
+              bind:group={priceFilter}
+              class="sr-only"
+              data-testid="price-cheaper"
+            />
+            <label
+              for={cheapid}
+              class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'cheaper' ? 'ui-btn-soft ui-btn-success' : ''}"
+            >
+              {mobile ? 'Дешевле' : 'Дешевле Шелково'}
+            </label>
+            <input
+              id={moreid}
+              type="radio"
+              name={`${uid}-price`}
+              value="more_expensive"
+              bind:group={priceFilter}
+              class="sr-only"
+              data-testid="price-more"
+            />
+            <label
+              for={moreid}
+              class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'more_expensive' ? 'ui-btn-soft ui-btn-warning' : ''}"
+            >
+              {mobile ? 'Дороже' : 'Дороже Шелково'}
+            </label>
+          </div>
+          <button
+            type="button"
+            class="ui-btn ui-btn-sm ui-btn-outline h-8 w-8 shrink-0 p-0 md:h-auto md:w-auto md:px-3 md:py-1.5 {showMap ? 'ui-btn-solid ui-btn-primary' : ''}"
+            onclick={() => {
+              showMap = !showMap;
+            }}
+            aria-label={showMap ? 'Скрыть карту' : 'Показать карту'}
+            aria-pressed={showMap}
+            aria-controls={mapid}
+            data-testid="map-toggle"
           >
-            Все
-          </label>
-          <input
-            id={cheapid}
-            type="radio"
-            name={`${uid}-price`}
-            value="cheaper"
-            bind:group={priceFilter}
-            class="sr-only"
-            data-testid="price-cheaper"
-          />
-          <label
-            for={cheapid}
-            class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'cheaper' ? 'ui-btn-soft ui-btn-success' : ''}"
-          >
-            {mobile ? 'Дешевле' : 'Дешевле Шелково'}
-          </label>
-          <input
-            id={moreid}
-            type="radio"
-            name={`${uid}-price`}
-            value="more_expensive"
-            bind:group={priceFilter}
-            class="sr-only"
-            data-testid="price-more"
-          />
-          <label
-            for={moreid}
-            class="ui-btn ui-btn-sm ui-btn-outline {priceFilter === 'more_expensive' ? 'ui-btn-soft ui-btn-warning' : ''}"
-          >
-            {mobile ? 'Дороже' : 'Дороже Шелково'}
-          </label>
+            <svg viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 md:hidden" aria-hidden="true">
+              <path d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm5.8 7h-2.3A12 12 0 0 0 12.6 4a6.5 6.5 0 0 1 3.2 5Zm-5.8 7.4A10.5 10.5 0 0 1 8.6 11h2.8A10.5 10.5 0 0 1 10 16.4Zm-1.7 0A8.9 8.9 0 0 1 7 11h2.1a8.9 8.9 0 0 0 1.2 5.4 6.2 6.2 0 0 1-2 0Zm-3-7.4A6.5 6.5 0 0 1 8.5 4 12 12 0 0 0 7.6 9H5.3Zm0 2h2.3a12 12 0 0 0 .9 5 6.5 6.5 0 0 1-3.2-5Zm4.7-2A10.5 10.5 0 0 1 10 3.6 10.5 10.5 0 0 1 11.4 9H8.6Zm2.9 2H15a6.5 6.5 0 0 1-3.2 5 12 12 0 0 0 .9-5Z" />
+            </svg>
+            <span class="hidden md:inline">{showMap ? 'Скрыть карту' : 'Показать карту'}</span>
+          </button>
         </div>
+
+      </div>
+    </div>
+
+    {#if showMap}
+      <section id={mapid} class="space-y-4" data-testid="filtered-map">
+        <SettlementMap settlements={mapSettlements} />
+      </section>
+    {/if}
+
+    <div class="flex items-center justify-between gap-3">
+      <p class="min-w-0 text-sm text-muted-foreground" data-testid="displayed-count">
+        Показано <span class="font-semibold text-foreground">{displayedCount}</span> из
+        <span class="font-semibold text-foreground">{totalCount}</span>
+        {#if compact}
+          <span class="ui-pill ui-pill-muted ml-2">активные фильтры</span>
+        {/if}
+      </p>
+      <div class="flex shrink-0 items-center gap-3">
+        <label for={sortid} class="hidden whitespace-nowrap text-sm font-semibold text-foreground sm:inline">
+          Сортировка:
+        </label>
+        <select
+          id={sortid}
+          value={sortBy}
+          onchange={(e) => {
+            sortBy = (e.currentTarget as HTMLSelectElement).value as typeof sortBy;
+          }}
+          class="block w-auto rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground"
+          data-testid="sort-select"
+        >
+          <option value="tariff_asc">По тарифу (↑)</option>
+          <option value="tariff_desc">По тарифу (↓)</option>
+          <option value="distance">По расстоянию</option>
+          <option value="name">По названию</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {#each displayedSettlements as settlement (settlement.slug)}
+        <SettlementCard
+          {settlement}
+          comparison={comparisons[settlement.slug]}
+          maxTariff={stats?.maxTariff ?? 0}
+          isBaseline={settlement.is_baseline}
+        />
+      {/each}
+    </div>
+
+    {#if ready && displayedCount === 0}
+      <div class="ui-shell p-10 text-center">
+        <p class="text-lg font-semibold text-foreground">Ничего не найдено</p>
+        <p class="mt-2 text-sm text-muted-foreground">Попробуйте изменить фильтры</p>
+      </div>
+    {/if}
+  </div>
+
+  {#snippet pending()}
+    <div class="ui-shell p-6 text-center" data-testid="explorer-pending">
+      <p class="text-base font-semibold text-foreground">Загружаем данные сравнения...</p>
+    </div>
+  {/snippet}
+
+  {#snippet failed(err, reset)}
+    <div class="ui-shell space-y-3 p-6 text-center" data-testid="explorer-error">
+      <p class="text-base font-semibold text-foreground">{msg(err)}</p>
+      <p class="text-sm text-muted-foreground">Показана статическая версия списка ниже.</p>
+      <div>
         <button
           type="button"
-          class="ui-btn ui-btn-sm ui-btn-outline h-8 w-8 shrink-0 p-0 md:h-auto md:w-auto md:px-3 md:py-1.5 {showMap ? 'ui-btn-solid ui-btn-primary' : ''}"
+          class="ui-btn ui-btn-sm ui-btn-outline"
           onclick={() => {
-            showMap = !showMap;
+            tryid += 1;
+            reset();
           }}
-          aria-label={showMap ? 'Скрыть карту' : 'Показать карту'}
-          aria-pressed={showMap}
-          aria-controls={mapid}
-          data-testid="map-toggle"
         >
-          <svg viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 md:hidden" aria-hidden="true">
-            <path d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm5.8 7h-2.3A12 12 0 0 0 12.6 4a6.5 6.5 0 0 1 3.2 5Zm-5.8 7.4A10.5 10.5 0 0 1 8.6 11h2.8A10.5 10.5 0 0 1 10 16.4Zm-1.7 0A8.9 8.9 0 0 1 7 11h2.1a8.9 8.9 0 0 0 1.2 5.4 6.2 6.2 0 0 1-2 0Zm-3-7.4A6.5 6.5 0 0 1 8.5 4 12 12 0 0 0 7.6 9H5.3Zm0 2h2.3a12 12 0 0 0 .9 5 6.5 6.5 0 0 1-3.2-5Zm4.7-2A10.5 10.5 0 0 1 10 3.6 10.5 10.5 0 0 1 11.4 9H8.6Zm2.9 2H15a6.5 6.5 0 0 1-3.2 5 12 12 0 0 0 .9-5Z" />
-          </svg>
-          <span class="hidden md:inline">{showMap ? 'Скрыть карту' : 'Показать карту'}</span>
+          Повторить
         </button>
       </div>
-
     </div>
-  </div>
-
-  {#if showMap}
-    <section id={mapid} class="space-y-4" data-testid="filtered-map">
-      <SettlementMap settlements={mapSettlements} />
-    </section>
-  {/if}
-
-  <div class="flex items-center justify-between gap-3">
-    <p class="min-w-0 text-sm text-muted-foreground" data-testid="displayed-count">
-      Показано <span class="font-semibold text-foreground">{displayedCount}</span> из
-      <span class="font-semibold text-foreground">{totalCount}</span>
-      {#if compact}
-        <span class="ui-pill ui-pill-muted ml-2">активные фильтры</span>
-      {/if}
-    </p>
-    <div class="flex shrink-0 items-center gap-3">
-      <label for={sortid} class="hidden whitespace-nowrap text-sm font-semibold text-foreground sm:inline">
-        Сортировка:
-      </label>
-      <select
-        id={sortid}
-        value={sortBy}
-        onchange={(e) => {
-          sortBy = (e.currentTarget as HTMLSelectElement).value as typeof sortBy;
-        }}
-        class="block w-auto rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground"
-        data-testid="sort-select"
-      >
-        <option value="tariff_asc">По тарифу (↑)</option>
-        <option value="tariff_desc">По тарифу (↓)</option>
-        <option value="distance">По расстоянию</option>
-        <option value="name">По названию</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    {#each displayedSettlements as settlement (settlement.slug)}
-      <SettlementCard
-        {settlement}
-        comparison={comparisons[settlement.slug]}
-        maxTariff={stats?.maxTariff ?? 0}
-        isBaseline={settlement.is_baseline}
-      />
-    {/each}
-  </div>
-
-  {#if err}
-    <div class="ui-shell p-6 text-center">
-      <p class="text-base font-semibold text-foreground">{err}</p>
-      <p class="mt-2 text-sm text-muted-foreground">Показана статическая версия списка ниже.</p>
-    </div>
-  {:else if ready && displayedCount === 0}
-    <div class="ui-shell p-10 text-center">
-      <p class="text-lg font-semibold text-foreground">Ничего не найдено</p>
-      <p class="mt-2 text-sm text-muted-foreground">Попробуйте изменить фильтры</p>
-    </div>
-  {/if}
-</div>
+  {/snippet}
+</svelte:boundary>
