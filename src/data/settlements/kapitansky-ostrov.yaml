@@ -1,63 +1,34 @@
-# Вне схемы: на странице указано 29,6 га и 150 домовладений.
-# Вне схемы: на странице указано, что это самый тихий камерный поселок комплекса.
-
-name: "КП Капитанский Остров"
-short_name: "Капитанский Остров"
-slug: "kapitansky-ostrov"
-website: "https://xn----7sbabf2bmejrt1b.xn--p1ai/kapitanskii_ostrov"
+name: КП Капитанский Остров
+short_name: Капитанский Остров
+slug: kapitansky-ostrov
+website: https://xn----7sbabf2bmejrt1b.xn--p1ai/kapitanskii_ostrov
 management_company:
-  title: "Капитан Клаб"
-  url: "https://xn----7sbabf2bmejrt1b.xn--p1ai/"
+  title: Капитан Клаб
+  url: https://xn----7sbabf2bmejrt1b.xn--p1ai/
 is_baseline: false
-
 location:
-  address_text: "Заокский район, Тульская область"
+  address_text: Заокский район, Тульская область
   lat: 54.719976
   lng: 37.560493
-  district: "Заокский"
-
+  district: Заокский
 tariff:
   value: 495
-  unit: "rub_per_sotka"
-  period: "month"
-  normalized_per_sotka_month: 495
-  note: "не подтверждено"
-
+  unit: rub_per_sotka
+  period: month
+  note: не подтверждено
 infrastructure:
-  gas: "yes"
-  water: "yes"
-  sewage: "yes"
-  # roads: неизвестно
-  # checkpoints: неизвестно
-  # security: неизвестно
-
-# service_model.garbage_collection: неизвестно
-# service_model.snow_removal: неизвестно
-# service_model.road_cleaning: неизвестно
+  gas: yes
+  water: yes
+  sewage: yes
 service_model: {}
-
-promises_vs_fact:
-  promised: []
-  actual: []
-  notes: ""
-
-transparency:
-  has_public_tariff: false
-  has_website: true
-  has_phone: true
-  has_management_info: false
-  notes: ""
-
 sources:
-  - title: "Капитан Клаб — Капитанский остров"
-    url: "https://xn----7sbabf2bmejrt1b.xn--p1ai/kapitanskii_ostrov"
-    type: "official"
-    date_checked: "2026-04-04"
-    comment: "Описание поселка и коммуникации"
-  - title: "Капитан Клаб — главный сайт"
-    url: "https://xn----7sbabf2bmejrt1b.xn--p1ai/"
-    type: "official"
-    date_checked: "2026-04-04"
-    comment: "Контакты и список поселков"
-
-comparison_notes: []
+  - title: Капитан Клаб — Капитанский остров
+    url: https://xn----7sbabf2bmejrt1b.xn--p1ai/kapitanskii_ostrov
+    type: official
+    date_checked: 2026-04-04
+    comment: Описание поселка и коммуникации
+  - title: Капитан Клаб — главный сайт
+    url: https://xn----7sbabf2bmejrt1b.xn--p1ai/
+    type: official
+    date_checked: 2026-04-04
+    comment: Контакты и список поселков

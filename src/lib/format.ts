@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import type { Tariff } from './schema';
 
 /**
  * Calculate distance between two points on Earth using Haversine formula
@@ -100,6 +101,44 @@ export function formatTariff(value: number): string {
     maximumFractionDigits: 0
   });
   return `${formatted} ₽/сотка`;
+}
+
+function months(period: Tariff['period']): number {
+  if (period === 'month') return 1;
+  if (period === 'quarter') return 3;
+  return 12;
+}
+
+function num(value: number): string {
+  return value.toLocaleString('ru-RU', {
+    style: 'decimal',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  });
+}
+
+/**
+ * Format normalized tariff and add '~' for estimated values.
+ */
+export function formatTariffAuto(tariff: Tariff): string {
+  const text = formatTariff(tariff.normalized_per_sotka_month);
+  if (!tariff.normalized_is_estimate) return text;
+  return `~${text}`;
+}
+
+/**
+ * Build formula tooltip for estimated normalized tariff.
+ */
+export function getTariffHint(tariff: Tariff): string | undefined {
+  if (!tariff.normalized_is_estimate) return;
+
+  const size = 10;
+  const m = months(tariff.period);
+  const monthly = tariff.value / m;
+  const normalized = monthly / size;
+  const source = tariff.unit === 'rub_per_lot' ? 'Тариф указан за участок.' : 'Тариф указан фиксированной суммой за участок.';
+
+  return `${source} Пересчет: (${num(tariff.value)} ₽ / ${m}) / ${size} соток = ${num(normalized)} ₽/сотка в месяц.`;
 }
 
 /**

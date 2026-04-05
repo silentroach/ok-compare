@@ -1,32 +1,30 @@
 # Template for settlement data files
-# Copy this file and fill in all required fields
-# For optional infrastructure/service fields, use only valid enum values or omit the field
+# Copy this file and fill in required fields.
+# For optional infrastructure/service fields, use valid enum values or omit the field.
 
-name: "Название поселка"
-short_name: "Поселок"
-slug: "settlement-slug"
-website: "https://example.com"
-management_company: "УК Название"  # Optional. Legacy fallback: plain string
-# or
-# management_company:
-#   title: "УК Название"
-#   url: "https://example.com"
-# if unknown: omit management_company entirely
+name: Название поселка
+short_name: Поселок
+slug: settlement-slug
+website: https://example.com
+management_company:
+  title: УК Название
+  url: https://example.com
 is_baseline: false
 
 location:
-  address_text: "Московская область, округ"
+  address_text: Московская область, округ
   lat: 55.7558
   lng: 37.6173
-  map_url: "https://yandex.ru/maps/org/example/1234567890"  # Optional: direct object URL on maps
-  district: "Округ"
+  map_url: https://yandex.ru/maps/org/example/1234567890 # Optional
+  district: Округ
 
 tariff:
   value: 0
-  unit: "rub_per_sotka"  # Options: rub_per_sotka, rub_per_lot, rub_fixed
-  period: "month"        # Options: month, quarter, year
-  normalized_per_sotka_month: 0
-  note: ""
+  unit: rub_per_sotka # rub_per_sotka | rub_per_lot | rub_fixed
+  period: month # month | quarter | year
+  # normalized_per_sotka_month is computed automatically.
+  # If unit is rub_per_lot or rub_fixed, UI shows ~ and uses 10 sotok per lot.
+  note: Комментарий к тарифу
 
 # Infrastructure - all fields are optional
 # Use only valid enum values:
@@ -43,23 +41,9 @@ infrastructure: {}
 # Valid values: yes | no | partial
 service_model: {}
 
-promises_vs_fact:
-  promised: []
-  actual: []
-  notes: ""
-
-transparency:
-  has_public_tariff: false
-  has_website: false
-  has_phone: false
-  has_management_info: false
-  notes: ""
-
 sources:
-  - title: "Источник данных"
-    url: "https://example.com/source"
-    type: "official"  # Options: official, community, media, personal
-    date_checked: "2026-01-01"
-    comment: ""
-
-comparison_notes: []
+  - title: Источник данных
+    url: https://example.com/source
+    type: official # official | community | media | personal
+    date_checked: 2026-01-01
+    comment: Комментарий

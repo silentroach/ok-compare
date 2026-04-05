@@ -32,7 +32,6 @@ describe('Schema Validation', () => {
           value: 3000,
           unit: 'rub_per_sotka',
           period: 'month',
-          normalized_per_sotka_month: 3000,
           note: 'Тестовая заметка'
         },
         infrastructure: {
@@ -63,26 +62,13 @@ describe('Schema Validation', () => {
           emergency_service: 'yes',
           dispatcher: 'yes'
         },
-        promises_vs_fact: {
-          promised: ['Обещание 1'],
-          actual: ['Факт 1'],
-          notes: 'Заметки'
-        },
-        transparency: {
-          has_public_tariff: true,
-          has_website: true,
-          has_phone: true,
-          has_management_info: true,
-          notes: ''
-        },
         sources: [{
           title: 'Тестовый источник',
           url: 'https://example.com/source',
           type: 'official',
           date_checked: '2026-04-03',
           comment: ''
-        }],
-        comparison_notes: ['Тестовая заметка']
+        }]
       };
 
       const result = SettlementSchema.safeParse(validSettlement);
@@ -91,6 +77,43 @@ describe('Schema Validation', () => {
         expect(result.data.name).toBe('Коттеджный поселок Тестовый');
         expect(result.data.slug).toBe('testovyy');
         expect(result.data.is_baseline).toBe(false);
+        expect(result.data.tariff.normalized_per_sotka_month).toBe(3000);
+        expect(result.data.tariff.normalized_is_estimate).toBe(false);
+      }
+    });
+
+    it('should auto-normalize lot tariff with estimate flag', () => {
+      const validSettlement = {
+        name: 'Коттеджный поселок Тестовый',
+        short_name: 'Тестовый',
+        slug: 'testovyy',
+        website: 'https://test.example.com',
+        is_baseline: false,
+        location: {
+          address_text: 'Московская область, Тестовый район',
+          lat: 55.7558,
+          lng: 37.6173,
+          district: 'Тестовый район',
+        },
+        tariff: {
+          value: 12000,
+          unit: 'rub_per_lot',
+          period: 'month',
+        },
+        sources: [{
+          title: 'Тестовый источник',
+          url: 'https://example.com/source',
+          type: 'official',
+          date_checked: '2026-04-03',
+          comment: ''
+        }]
+      };
+
+      const result = SettlementSchema.safeParse(validSettlement);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.tariff.normalized_per_sotka_month).toBe(1200);
+        expect(result.data.tariff.normalized_is_estimate).toBe(true);
       }
     });
 
@@ -115,31 +138,17 @@ describe('Schema Validation', () => {
           value: 3000,
           unit: 'rub_per_sotka',
           period: 'month',
-          normalized_per_sotka_month: 3000,
           note: 'Тестовая заметка'
         },
         infrastructure: {},
         service_model: {},
-        promises_vs_fact: {
-          promised: [],
-          actual: [],
-          notes: ''
-        },
-        transparency: {
-          has_public_tariff: true,
-          has_website: true,
-          has_phone: true,
-          has_management_info: true,
-          notes: ''
-        },
         sources: [{
           title: 'Тестовый источник',
           url: 'https://example.com/source',
           type: 'official',
           date_checked: '2026-04-03',
           comment: ''
-        }],
-        comparison_notes: ['Тестовая заметка']
+        }]
       };
 
       const result = SettlementSchema.safeParse(validSettlement);
@@ -166,31 +175,17 @@ describe('Schema Validation', () => {
           value: 3000,
           unit: 'rub_per_sotka',
           period: 'month',
-          normalized_per_sotka_month: 3000,
           note: 'Тестовая заметка'
         },
         infrastructure: {},
         service_model: {},
-        promises_vs_fact: {
-          promised: [],
-          actual: [],
-          notes: ''
-        },
-        transparency: {
-          has_public_tariff: true,
-          has_website: true,
-          has_phone: true,
-          has_management_info: true,
-          notes: ''
-        },
         sources: [{
           title: 'Тестовый источник',
           url: 'https://example.com/source',
           type: 'official',
           date_checked: '2026-04-03',
           comment: ''
-        }],
-        comparison_notes: ['Тестовая заметка']
+        }]
       };
 
       const result = SettlementSchema.safeParse(validSettlement);
@@ -219,7 +214,6 @@ describe('Schema Validation', () => {
           value: 3000,
           unit: 'per_day', // Invalid unit
           period: 'month',
-          normalized_per_sotka_month: 3000,
           note: ''
         },
         sources: [{
@@ -261,7 +255,6 @@ describe('Schema Validation', () => {
           value: 3000,
           unit: 'rub_per_sotka',
           period: 'month',
-          normalized_per_sotka_month: 3000,
           note: ''
         },
         sources: [{
@@ -426,7 +419,6 @@ describe('Schema Validation', () => {
           value: 3000,
           unit: 'rub_per_sotka',
           period: 'month',
-          normalized_per_sotka_month: 3000,
           note: ''
         },
         sources: [{
@@ -459,7 +451,6 @@ describe('Schema Validation', () => {
           value: 3000,
           unit: 'rub_per_sotka',
           period: 'month',
-          normalized_per_sotka_month: 3000,
           note: ''
         },
         sources: [{

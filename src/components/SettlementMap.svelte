@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount, onDestroy, untrack } from 'svelte';
-  import { formatTariff } from '../lib/format';
   import { withBase } from '../lib/url';
 
   interface SettlementMapData {
@@ -11,6 +10,9 @@
     lng: number;
     normalizedTariff: number;
     isBaseline: boolean;
+    tariffText?: string;
+    tariffHint?: string;
+    companyText?: string;
   }
 
   interface Props {
@@ -386,7 +388,7 @@
           class="pointer-events-auto w-64 rounded-lg border p-3 shadow-xl"
           style="background: color-mix(in oklab, var(--color-card) 42%, transparent); border-color: color-mix(in oklab, var(--color-border) 70%, transparent); backdrop-filter: blur(4px) saturate(1.03); -webkit-backdrop-filter: blur(4px) saturate(1.03);"
         >
-          <div class="mb-1 flex items-start justify-between gap-3">
+          <div class="mb-0 flex items-start justify-between gap-3">
             <a
               class="text-base font-semibold text-foreground hover:text-primary"
               href={withBase(`settlements/${tip.item.slug}/`)}
@@ -408,7 +410,14 @@
               </svg>
             </button>
           </div>
-          <p class="mb-2 text-sm text-muted-foreground"><strong>{formatTariff(tip.item.normalizedTariff)}</strong></p>
+          {#if tip.item.companyText}
+            <p class="mb-2 text-xs leading-tight text-muted-foreground opacity-80">
+              {tip.item.companyText}
+            </p>
+          {/if}
+          <p class="mb-0 text-sm text-muted-foreground" title={tip.item.tariffHint}>
+            <strong>{tip.item.tariffText ?? `${Math.round(tip.item.normalizedTariff).toLocaleString('ru-RU')} ₽/сотка`}</strong>
+          </p>
         </div>
         <div
           class={`absolute left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border ${tip.up ? '-bottom-1.5 border-t-0 border-l-0' : '-top-1.5 border-b-0 border-r-0'}`}

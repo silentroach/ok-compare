@@ -33,6 +33,7 @@ const mockSettlements = [
     lng: 37.1456,
     normalizedTariff: 120,
     isBaseline: true,
+    companyText: 'ОК "Комфорт"',
   },
   {
     slug: 'lesnoe',
@@ -42,6 +43,7 @@ const mockSettlements = [
     lng: 37.2000,
     normalizedTariff: 80,
     isBaseline: false,
+    companyText: 'УК Лесное',
   },
   {
     slug: 'usadby',
@@ -51,6 +53,7 @@ const mockSettlements = [
     lng: 37.1000,
     normalizedTariff: 150,
     isBaseline: false,
+    companyText: 'УК Усадьбы',
   },
 ];
 
@@ -225,6 +228,7 @@ describe('SettlementMap', () => {
     await waitFor(() => {
       expect(container.querySelector('[data-testid="map-popup"]')).toBeTruthy();
       expect(container.textContent).toContain('Лесное');
+      expect(container.textContent).toContain('УК Лесное');
     });
 
     const link = container.querySelector('[data-testid="map-popup-link"]');

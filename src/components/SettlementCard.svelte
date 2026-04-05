@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Settlement, ComparisonResult } from '../lib/schema';
-  import { formatTariff } from '../lib/format';
+  import { formatTariffAuto, getTariffHint } from '../lib/format';
   import ComparisonBadge from './ComparisonBadge.svelte';
   import TariffBar from './TariffBar.svelte';
   import Link from './Link.svelte';
@@ -67,8 +67,8 @@
     <div class="space-y-3">
       <div class="flex items-center justify-between">
         <span class="text-sm font-medium text-muted-foreground">Тариф</span>
-        <span class="text-2xl font-bold text-foreground">
-          {formatTariff(settlement.tariff.normalized_per_sotka_month)}
+        <span class="text-2xl font-bold text-foreground" title={getTariffHint(settlement.tariff)}>
+          {formatTariffAuto(settlement.tariff)}
         </span>
       </div>
 

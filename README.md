@@ -29,92 +29,88 @@
 
 ```yaml
 # Основная информация
-name: "Коттеджный поселок Шелково"     # Полное название
-short_name: "Шелково"                   # Короткое название
-slug: "shelkovo"                        # URL-friendly идентификатор
-website: "https://shelkovo.ru"          # Официальный сайт
-management_company: "УК Шелково"        # Опционально: управляющая компания (legacy fallback)
-# или объект с ссылкой:
-# management_company:
-#   title: "УК Шелково"
-#   url: "https://example.com"
-# поле можно опустить целиком, если данных нет
+name: Коттеджный поселок Шелково          # Полное название
+short_name: Шелково                       # Короткое название
+slug: shelkovo                            # URL-friendly идентификатор
+website: https://shelkovo.ru              # Официальный сайт
+management_company:
+  title: УК Шелково
+  url: https://example.com
 is_baseline: true                       # true для базового поселка (Шелково)
 
 # Локация
 location:
-  address_text: "Московская область, Мытищинский район, д. Шелково"
+  address_text: Московская область, Мытищинский район, д. Шелково
   lat: 56.0500                          # Широта
   lng: 37.6000                          # Долгота
-  district: "Мытищинский район"         # Район
+  map_url: https://yandex.ru/maps/org/example/1234567890
+  district: Мытищинский район           # Район
 
 # Тариф
 tariff:
   value: 4500                           # Стоимость
-  unit: "rub_per_sotka"                 # Единица: rub_per_sotka | rub_per_lot | rub_fixed
-  period: "month"                       # Период: month | quarter | year
-  normalized_per_sotka_month: 4500      # Нормализовано к руб/сотка/месяц
-  note: "Тариф за сотку в месяц"        # Примечание
+  unit: rub_per_sotka                   # rub_per_sotka | rub_per_lot | rub_fixed
+  period: month                         # month | quarter | year
+  note: Тариф за сотку в месяц          # Примечание
+
+# normalized_per_sotka_month НЕ заполняется в YAML:
+# поле считается автоматически в схеме.
 
 # Инфраструктура (yes | no | partial - не указано = неизвестно)
 infrastructure:
   # Тип дорог (asphalt > partial_asphalt > gravel > dirt)
-  roads: "partial_asphalt"
-  sidewalks: "no"
-  lighting: "yes"
-  gas: "yes"
-  water: "yes"                      # Центральное водоснабжение
-  sewage: "no"                      # Центральная канализация
+  roads: partial_asphalt
+  sidewalks: no
+  lighting: yes
+  gas: yes
+  water: yes                         # Центральное водоснабжение
+  sewage: no                         # Центральная канализация
   # Ливневка (closed > open > none)
-  drainage: "open"
-  checkpoints: "yes"
-  security: "yes"
-  fencing: "yes"                    # Закрытая территория
+  drainage: open
+  checkpoints: yes
+  security: yes
+  fencing: yes                       # Закрытая территория
   # Видеонаблюдение (full > checkpoint_only > none)
-  video_surveillance: "checkpoint_only"
+  video_surveillance: checkpoint_only
   # Подземная электросеть (full > partial > none)
-  underground_electricity: "partial"
-  playgrounds: "yes"
-  sports: "yes"
-  public_spaces: "yes"
-  beach_or_water_access: "yes"
-  admin_building: "no"
-  retail_or_services: "no"          # Магазины
+  underground_electricity: partial
+  playgrounds: yes
+  sports: yes
+  public_spaces: yes
+  beach_or_water_access: yes
+  admin_building: no
+  retail_or_services: no             # Магазины
 
 # Сервисная модель (yes | no | partial - не указано = неизвестно)
 service_model:
-  garbage_collection: "yes"
-  snow_removal: "yes"
-  road_cleaning: "yes"
-  landscaping: "yes"
-  emergency_service: "yes"
-  dispatcher: "yes"
-
-# Обещания vs Факт
-promises_vs_fact:
-  promised: ["Круглосуточная охрана", "Видеонаблюдение"]
-  actual: ["Охрана до 22:00", "Видеонаблюдение частичное"]
-  notes: "Часть обещаний не выполнена полностью"
-
-# Прозрачность
-transparency:
-  has_public_tariff: true
-  has_website: true
-  has_phone: true
-  has_management_info: true
-  notes: ""
+  garbage_collection: yes
+  snow_removal: yes
+  road_cleaning: yes
+  landscaping: yes
+  emergency_service: yes
+  dispatcher: yes
 
 # Источники данных
 sources:
-  - title: "Официальный сайт Шелково"
-    url: "https://shelkovo.ru"
-    type: "official"                    # official | community | media | personal
-    date_checked: "2026-04-03"
-    comment: "Текущий тариф"
-
-# Заметки для сравнения
-comparison_notes: ["Наш поселок для сравнения"]
+  - title: Официальный сайт Шелково
+    url: https://shelkovo.ru
+    type: official                     # official | community | media | personal
+    date_checked: 2026-04-03
+    comment: Текущий тариф
 ```
+
+### Нормализация тарифа
+
+- `normalized_per_sotka_month` вычисляется автоматически из `value + unit + period`.
+- Формулы:
+  - `rub_per_sotka`: `value / period`
+  - `rub_per_lot`: `(value / period) / 10`
+  - `rub_fixed`: `(value / period) / 10`
+- На интерфейсе:
+  - для `rub_per_sotka` показывается точное значение,
+  - для `rub_per_lot` и `rub_fixed` показывается `~` перед тарифом,
+  - на hover выводится формула пересчета (с допущением `10 соток = 1 участок`).
+- В YAML не используйте кавычки, если значение можно записать без них.
 
 ### Enum значения
 

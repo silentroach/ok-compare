@@ -1,4 +1,4 @@
-import type { Settlement, Infrastructure, ServiceModel, Transparency, ComparisonResult } from './schema';
+import type { Settlement, Infrastructure, ServiceModel, ComparisonResult } from './schema';
 
 /**
  * Calculate tariff delta between Shelkovo and another settlement
@@ -147,42 +147,6 @@ export function compareServices(
 }
 
 /**
- * Compare two transparency objects
- */
-export function compareTransparency(
-  baseline: Transparency,
-  other: Transparency
-): { betterCount: number; worseCount: number; differences: string[] } {
-  let betterCount = 0;
-  let worseCount = 0;
-  const differences: string[] = [];
-
-  const keys: Array<keyof Transparency> = [
-    'has_public_tariff',
-    'has_website',
-    'has_phone',
-    'has_management_info'
-  ];
-
-  for (const key of keys) {
-    if (key === 'notes') continue;
-
-    const baselineValue = baseline[key];
-    const otherValue = other[key];
-
-    if (otherValue && !baselineValue) {
-      betterCount++;
-      differences.push(key);
-    } else if (!otherValue && baselineValue) {
-      worseCount++;
-      differences.push(key);
-    }
-  }
-
-  return { betterCount, worseCount, differences };
-}
-
-/**
  * Compare a settlement with Shelkovo baseline
  * Returns complete comparison result
  */
@@ -205,11 +169,6 @@ export function compareSettlements(
     other.service_model
   );
 
-  const transparencyDelta = compareTransparency(
-    baseline.transparency,
-    other.transparency
-  );
-
   return {
     tariffDelta: tariffDelta.delta,
     tariffDeltaPercent: tariffDelta.deltaPercent,
@@ -221,10 +180,6 @@ export function compareSettlements(
     servicesDelta: {
       betterCount: servicesDelta.betterCount,
       worseCount: servicesDelta.worseCount
-    },
-    transparencyDelta: {
-      betterCount: transparencyDelta.betterCount,
-      worseCount: transparencyDelta.worseCount
     }
   };
 }

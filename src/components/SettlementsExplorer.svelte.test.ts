@@ -41,13 +41,10 @@ const settlements: Settlement[] = [
     management_company: 'УК Шелково',
     is_baseline: true,
     location: { address_text: 'Московская область', lat: 55.82, lng: 37.14, district: 'Истра' },
-    tariff: { value: 120, unit: 'rub_per_sotka', period: 'month', normalized_per_sotka_month: 120, note: '' },
+    tariff: { value: 120, unit: 'rub_per_sotka', period: 'month', normalized_per_sotka_month: 120, normalized_is_estimate: false, note: '' },
     infrastructure: { gas: 'yes', security: 'yes', roads: 'asphalt' },
     service_model: {},
-    promises_vs_fact: { promised: [], actual: [], notes: '' },
-    transparency: { has_public_tariff: false, has_website: true, has_phone: true, has_management_info: false, notes: '' },
     sources: [],
-    comparison_notes: [],
   },
   {
     name: 'КП Лесное',
@@ -57,13 +54,10 @@ const settlements: Settlement[] = [
     management_company: 'УК Лесное',
     is_baseline: false,
     location: { address_text: 'Московская область', lat: 55.85, lng: 37.2, district: 'Истра' },
-    tariff: { value: 90, unit: 'rub_per_sotka', period: 'month', normalized_per_sotka_month: 90, note: '' },
+    tariff: { value: 90, unit: 'rub_per_sotka', period: 'month', normalized_per_sotka_month: 90, normalized_is_estimate: false, note: '' },
     infrastructure: { gas: 'yes', security: 'no', roads: 'gravel' },
     service_model: {},
-    promises_vs_fact: { promised: [], actual: [], notes: '' },
-    transparency: { has_public_tariff: false, has_website: true, has_phone: true, has_management_info: false, notes: '' },
     sources: [],
-    comparison_notes: [],
   },
   {
     name: 'КП Усадьбы',
@@ -73,13 +67,10 @@ const settlements: Settlement[] = [
     management_company: 'УК Усадьбы',
     is_baseline: false,
     location: { address_text: 'Московская область', lat: 55.83, lng: 37.16, district: 'Истра' },
-    tariff: { value: 150, unit: 'rub_per_sotka', period: 'month', normalized_per_sotka_month: 150, note: '' },
+    tariff: { value: 150, unit: 'rub_per_sotka', period: 'month', normalized_per_sotka_month: 150, normalized_is_estimate: false, note: '' },
     infrastructure: { gas: 'yes', security: 'yes', roads: 'asphalt' },
     service_model: {},
-    promises_vs_fact: { promised: [], actual: [], notes: '' },
-    transparency: { has_public_tariff: false, has_website: true, has_phone: true, has_management_info: false, notes: '' },
     sources: [],
-    comparison_notes: [],
   },
 ];
 
@@ -90,7 +81,6 @@ const comparisons: Record<string, ComparisonResult> = {
     isCheaper: false,
     infrastructureDelta: {},
     servicesDelta: {},
-    transparencyDelta: {},
   },
   lesnoe: {
     tariffDelta: -30,
@@ -98,7 +88,6 @@ const comparisons: Record<string, ComparisonResult> = {
     isCheaper: true,
     infrastructureDelta: {},
     servicesDelta: {},
-    transparencyDelta: {},
   },
   usadby: {
     tariffDelta: 30,
@@ -106,7 +95,6 @@ const comparisons: Record<string, ComparisonResult> = {
     isCheaper: false,
     infrastructureDelta: {},
     servicesDelta: {},
-    transparencyDelta: {},
   },
 };
 

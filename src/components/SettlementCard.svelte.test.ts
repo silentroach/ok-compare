@@ -21,24 +21,12 @@ const mockSettlement: Settlement = {
     unit: 'rub_per_sotka',
     period: 'month',
     normalized_per_sotka_month: 100,
+    normalized_is_estimate: false,
     note: ''
   },
   infrastructure: {},
   service_model: {},
-  promises_vs_fact: {
-    promised: [],
-    actual: [],
-    notes: ''
-  },
-  transparency: {
-    has_public_tariff: false,
-    has_website: false,
-    has_phone: false,
-    has_management_info: false,
-    notes: ''
-  },
   sources: [],
-  comparison_notes: []
 };
 
 const mockComparison: ComparisonResult = {
@@ -46,8 +34,7 @@ const mockComparison: ComparisonResult = {
   tariffDeltaPercent: 33,
   isCheaper: true,
   infrastructureDelta: { betterCount: 2, worseCount: 1 },
-  servicesDelta: { betterCount: 1, worseCount: 0 },
-  transparencyDelta: { betterCount: 0, worseCount: 1 }
+  servicesDelta: { betterCount: 1, worseCount: 0 }
 };
 
 describe('SettlementCard', () => {
@@ -76,6 +63,32 @@ describe('SettlementCard', () => {
     });
 
     expect(container.textContent).toContain('100 ₽/сотка');
+  });
+
+  it('renders estimated tariff with tilde and hint', () => {
+    const settlement = {
+      ...mockSettlement,
+      tariff: {
+        value: 12000,
+        unit: 'rub_per_lot' as const,
+        period: 'month' as const,
+        normalized_per_sotka_month: 1200,
+        normalized_is_estimate: true,
+      }
+    };
+
+    const { container } = render(SettlementCard, {
+      props: {
+        settlement,
+        comparison: mockComparison,
+        maxTariff: 1500,
+        isBaseline: false
+      }
+    });
+
+    expect(container.textContent).toContain('~1');
+    expect(container.textContent).toContain('₽/сотка');
+    expect(container.querySelector('[title*="Пересчет"]')).toBeTruthy();
   });
 
   it('renders comparison badge for non-baseline', () => {

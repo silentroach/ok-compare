@@ -102,6 +102,7 @@ describe('Stats Module', () => {
           unit: 'rub_per_sotka',
           period: 'month',
           normalized_per_sotka_month: 4500,
+          normalized_is_estimate: false,
           note: ''
         },
         infrastructure: {
@@ -132,10 +133,7 @@ describe('Stats Module', () => {
           emergency_service: 'yes',
           dispatcher: 'yes'
         },
-        promises_vs_fact: { promised: [], actual: [], notes: '' },
-        transparency: { has_public_tariff: true, has_website: true, has_phone: true, has_management_info: true, notes: '' },
-        sources: [{ title: 'Test', url: 'https://test.com', type: 'official', date_checked: '2026-04-03', comment: '' }],
-        comparison_notes: []
+        sources: [{ title: 'Test', url: 'https://test.com', type: 'official', date_checked: '2026-04-03', comment: '' }]
       },
       {
         name: 'Lesnoe',
@@ -155,6 +153,7 @@ describe('Stats Module', () => {
           unit: 'rub_per_sotka',
           period: 'month',
           normalized_per_sotka_month: 3500,
+          normalized_is_estimate: false,
           note: ''
         },
         infrastructure: {
@@ -185,10 +184,7 @@ describe('Stats Module', () => {
           emergency_service: 'yes',
           dispatcher: 'yes'
         },
-        promises_vs_fact: { promised: [], actual: [], notes: '' },
-        transparency: { has_public_tariff: true, has_website: true, has_phone: true, has_management_info: true, notes: '' },
-        sources: [{ title: 'Test', url: 'https://test.com', type: 'official', date_checked: '2026-04-03', comment: '' }],
-        comparison_notes: []
+        sources: [{ title: 'Test', url: 'https://test.com', type: 'official', date_checked: '2026-04-03', comment: '' }]
       },
       {
         name: 'Usadby',
@@ -208,6 +204,7 @@ describe('Stats Module', () => {
           unit: 'rub_per_sotka',
           period: 'month',
           normalized_per_sotka_month: 5500,
+          normalized_is_estimate: false,
           note: ''
         },
         infrastructure: {
@@ -238,10 +235,7 @@ describe('Stats Module', () => {
           emergency_service: 'yes',
           dispatcher: 'yes'
         },
-        promises_vs_fact: { promised: [], actual: [], notes: '' },
-        transparency: { has_public_tariff: true, has_website: true, has_phone: true, has_management_info: true, notes: '' },
-        sources: [{ title: 'Test', url: 'https://test.com', type: 'official', date_checked: '2026-04-03', comment: '' }],
-        comparison_notes: []
+        sources: [{ title: 'Test', url: 'https://test.com', type: 'official', date_checked: '2026-04-03', comment: '' }]
       }
     ];
 

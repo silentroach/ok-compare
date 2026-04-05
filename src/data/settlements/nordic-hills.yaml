@@ -1,93 +1,52 @@
-# Вне схемы: на страницах проекта есть расхождение — указано 84 участка (final) и 82 участка (main).
-# Вне схемы: в genplan data.xml найдено 84 лота.
-# Вне схемы: снимок статусов из genplan data.xml на 2026-04-05 — свободно 3, забронировано 2, продано 79.
-# Вне схемы: снимок распределения по стилям из genplan data.xml на 2026-04-05 — Барнхаусы 48, Скандинавия 33, стиль не указан 3.
-# Вне схемы: диапазон площадей участков по genplan data.xml — от 7.05 до 15.25 соток, средняя 9.76 сотки.
-
-name: "КП Нордик Хиллс"
-short_name: "Нордик Хиллс"
-slug: "nordic-hills"
-website: "https://kp-nordic.ru/"
+name: КП Нордик Хиллс
+short_name: Нордик Хиллс
+slug: nordic-hills
+website: https://kp-nordic.ru/
 management_company:
-  title: "УК Эколайф"
-  url: "https://uslugi.kp-nordic.ru/"
+  title: УК Эколайф
+  url: https://uslugi.kp-nordic.ru/
 is_baseline: false
-
 location:
-  address_text: "Московская область, м.о. Истра"
+  address_text: Московская область, м.о. Истра
   lat: 56.008611
   lng: 36.458162
-  map_url: "https://genplan.kp-nordic.ru/hills/"
-  district: "Истра"
-
+  map_url: https://genplan.kp-nordic.ru/hills/
+  district: Истра
 tariff:
   value: 450
-  unit: "rub_per_sotka"
-  period: "month"
-  normalized_per_sotka_month: 450
-  note: "по словам собственника"
-
+  unit: rub_per_sotka
+  period: month
+  note: по словам собственника
 infrastructure:
-  checkpoints: "yes"
-  security: "yes"
-  video_surveillance: "checkpoint_only"
-  underground_electricity: "full"
-  playgrounds: "yes"
-  sports: "yes"
-  public_spaces: "yes"
-  # roads: не нашел информации
-  # sidewalks: не нашел информации
-  # lighting: не нашел информации
-  # gas: не нашел информации
-  water: "no"
-  sewage: "no"
-  # drainage: не нашел информации
-  fencing: "yes"
-  # beach_or_water_access: не нашел информации
-  # retail_or_services: не нашел информации
-
-# service_model.garbage_collection: не нашел информации
-# service_model.snow_removal: не нашел информации
-# service_model.road_cleaning: не нашел информации
-# service_model.landscaping: не нашел информации
-# service_model.emergency_service: не нашел информации
-# service_model.dispatcher: не нашел информации
+  checkpoints: yes
+  security: yes
+  video_surveillance: checkpoint_only
+  underground_electricity: full
+  playgrounds: yes
+  sports: yes
+  public_spaces: yes
+  water: no
+  sewage: no
+  fencing: yes
 service_model: {}
-
-promises_vs_fact:
-  promised: []
-  actual: []
-  notes: ""
-
-transparency:
-  has_public_tariff: false
-  has_website: true
-  has_phone: true
-  has_management_info: true
-  notes: "Публичный тариф на содержание на сайте не найден; контакты и реквизиты УК опубликованы."
-
 sources:
-  - title: "КП Нордик — официальный сайт"
-    url: "https://kp-nordic.ru/"
-    type: "official"
-    date_checked: "2026-04-05"
-    comment: "Инфраструктура проекта, контактные данные, УК Эколайф."
-  - title: "КП Нордик — страница final"
-    url: "https://kp-nordic.ru/final"
-    type: "official"
-    date_checked: "2026-04-05"
-    comment: "По Нордик Хиллс указано 84 участка, спорт-зоны и подземное электричество."
-  - title: "КП Нордик — страница main"
-    url: "https://kp-nordic.ru/main"
-    type: "official"
-    date_checked: "2026-04-05"
-    comment: "На этой странице для Нордик Хиллс указано 82 участка (расхождение с final)."
-  - title: "Генплан Нордик Хиллс"
-    url: "https://genplan.kp-nordic.ru/hills/"
-    type: "official"
-    date_checked: "2026-04-05"
-    comment: "Официальная карта поселка."
-
-comparison_notes:
-  - "Тариф 450 руб/сотка указан со слов собственника."
-  - "Публичного тарифа на содержание на сайте не найдено."
+  - title: КП Нордик — официальный сайт
+    url: https://kp-nordic.ru/
+    type: official
+    date_checked: 2026-04-05
+    comment: Инфраструктура проекта, контактные данные, УК Эколайф.
+  - title: КП Нордик — страница final
+    url: https://kp-nordic.ru/final
+    type: official
+    date_checked: 2026-04-05
+    comment: По Нордик Хиллс указано 84 участка, спорт-зоны и подземное электричество.
+  - title: КП Нордик — страница main
+    url: https://kp-nordic.ru/main
+    type: official
+    date_checked: 2026-04-05
+    comment: На этой странице для Нордик Хиллс указано 82 участка (расхождение с final).
+  - title: Генплан Нордик Хиллс
+    url: https://genplan.kp-nordic.ru/hills/
+    type: official
+    date_checked: 2026-04-05
+    comment: Официальная карта поселка.

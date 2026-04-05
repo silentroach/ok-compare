@@ -3,10 +3,9 @@ import {
   compareSettlements,
   calculateTariffDelta,
   compareInfrastructure,
-  compareServices,
-  compareTransparency
+  compareServices
 } from './comparisons';
-import type { Settlement, Infrastructure, ServiceModel, Transparency } from './schema';
+import type { Settlement, Infrastructure, ServiceModel } from './schema';
 
 describe('Comparisons Module', () => {
   const mockShelkovo: Settlement = {
@@ -27,6 +26,7 @@ describe('Comparisons Module', () => {
       unit: 'rub_per_sotka',
       period: 'month',
       normalized_per_sotka_month: 120,
+      normalized_is_estimate: false,
       note: ''
     },
     infrastructure: {
@@ -57,16 +57,7 @@ describe('Comparisons Module', () => {
       emergency_service: 'yes',
       dispatcher: 'yes'
     },
-    promises_vs_fact: { promised: [], actual: [], notes: '' },
-    transparency: {
-      has_public_tariff: true,
-      has_website: true,
-      has_phone: true,
-      has_management_info: true,
-      notes: ''
-    },
-    sources: [{ title: 'Test', url: 'https://test.com', type: 'official', date_checked: '2026-04-03', comment: '' }],
-    comparison_notes: []
+    sources: [{ title: 'Test', url: 'https://test.com', type: 'official', date_checked: '2026-04-03', comment: '' }]
   };
 
   describe('calculateTariffDelta', () => {
@@ -218,22 +209,6 @@ describe('Comparisons Module', () => {
     });
   });
 
-  describe('compareTransparency', () => {
-    it('should count transparency differences', () => {
-      const otherTransparency: Transparency = {
-        has_public_tariff: false, // Different
-        has_website: true,
-        has_phone: false, // Different
-        has_management_info: true,
-        notes: ''
-      };
-
-      const result = compareTransparency(mockShelkovo.transparency, otherTransparency);
-      expect(result.betterCount).toBe(0);
-      expect(result.worseCount).toBe(2); // public_tariff, phone - other is missing these
-    });
-  });
-
   describe('compareSettlements', () => {
     it('should return complete comparison result', () => {
       const otherSettlement: Settlement = {
@@ -247,6 +222,7 @@ describe('Comparisons Module', () => {
           unit: 'rub_per_sotka',
           period: 'month',
           normalized_per_sotka_month: 80,
+          normalized_is_estimate: false,
           note: ''
         }
       };
@@ -257,7 +233,6 @@ describe('Comparisons Module', () => {
       expect(result.isCheaper).toBe(true);
       expect(result.infrastructureDelta).toBeDefined();
       expect(result.servicesDelta).toBeDefined();
-      expect(result.transparencyDelta).toBeDefined();
     });
   });
 });

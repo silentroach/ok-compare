@@ -40,13 +40,32 @@ export const LocationSchema = z.object({
 export type Location = z.infer<typeof LocationSchema>;
 
 // Tariff schema
-export const TariffSchema = z.object({
-  value: z.number().nonnegative(),
-  unit: TariffUnitEnum,
-  period: TariffPeriodEnum,
-  normalized_per_sotka_month: z.number().nonnegative(),
-  note: z.string().optional()
-});
+const LOT = 10;
+
+function month(period: TariffPeriod): number {
+  if (period === 'month') return 1;
+  if (period === 'quarter') return 3;
+  return 12;
+}
+
+function norm(value: number, unit: TariffUnit, period: TariffPeriod): number {
+  const monthly = value / month(period);
+  if (unit === 'rub_per_sotka') return monthly;
+  return monthly / LOT;
+}
+
+export const TariffSchema = z
+  .object({
+    value: z.number().nonnegative(),
+    unit: TariffUnitEnum,
+    period: TariffPeriodEnum,
+    note: z.string().optional()
+  })
+  .transform((item) => ({
+    ...item,
+    normalized_per_sotka_month: norm(item.value, item.unit, item.period),
+    normalized_is_estimate: item.unit !== 'rub_per_sotka'
+  }));
 export type Tariff = z.infer<typeof TariffSchema>;
 
 // Infrastructure schema - all fields optional
@@ -91,30 +110,15 @@ export const ServiceModelSchema = z.object({
 });
 export type ServiceModel = z.infer<typeof ServiceModelSchema>;
 
-// Promises vs Fact schema
-export const PromisesVsFactSchema = z.object({
-  promised: z.array(z.string()).default([]),
-  actual: z.array(z.string()).default([]),
-  notes: z.string().default('')
-});
-export type PromisesVsFact = z.infer<typeof PromisesVsFactSchema>;
-
-// Transparency schema
-export const TransparencySchema = z.object({
-  has_public_tariff: z.boolean().default(false),
-  has_website: z.boolean().default(false),
-  has_phone: z.boolean().default(false),
-  has_management_info: z.boolean().default(false),
-  notes: z.string().default('')
-});
-export type Transparency = z.infer<typeof TransparencySchema>;
-
 // Source schema
 export const SourceSchema = z.object({
   title: z.string().min(1),
   url: z.string().url(),
   type: SourceTypeEnum,
-  date_checked: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  date_checked: z.union([
+    z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    z.date().transform((item) => item.toISOString().slice(0, 10))
+  ]),
   comment: z.string().default('')
 });
 export type Source = z.infer<typeof SourceSchema>;
@@ -140,10 +144,7 @@ export const SettlementSchema = z.object({
   tariff: TariffSchema,
   infrastructure: InfrastructureSchema.default({}),
   service_model: ServiceModelSchema.default({}),
-  promises_vs_fact: PromisesVsFactSchema.prefault({}),
-  transparency: TransparencySchema.prefault({}),
   sources: z.array(SourceSchema).min(1),
-  comparison_notes: z.array(z.string()).default([])
 });
 export type Settlement = z.infer<typeof SettlementSchema>;
 
@@ -169,5 +170,4 @@ export interface ComparisonResult {
   isCheaper: boolean;
   infrastructureDelta: Record<string, number>;
   servicesDelta: Record<string, number>;
-  transparencyDelta: Record<string, number>;
 }

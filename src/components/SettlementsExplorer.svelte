@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { Settlement, Stats, ComparisonResult } from '../lib/schema';
-  import { calculateDistance } from '../lib/format';
+  import { calculateDistance, formatTariffAuto, getTariffHint } from '../lib/format';
   import SettlementMap from './SettlementMap.svelte';
   import SettlementCard from './SettlementCard.svelte';
 
@@ -128,15 +128,22 @@
   let totalCount = $derived(settlements.length);
   let displayedCount = $derived(displayedSettlements.length);
   let compact = $derived(priceFilter !== 'all' || sortBy !== 'tariff_asc');
-  let mapSettlements = $derived.by(() => displayedSettlements.map((s) => ({
-    slug: s.slug,
-    name: s.name,
-    shortName: s.short_name,
-    lat: s.location.lat,
-    lng: s.location.lng,
-    normalizedTariff: s.tariff.normalized_per_sotka_month,
-    isBaseline: s.is_baseline,
-  })));
+  let mapSettlements = $derived.by(() => displayedSettlements.map((s) => {
+    const company = s.management_company;
+
+    return {
+      slug: s.slug,
+      name: s.name,
+      shortName: s.short_name,
+      lat: s.location.lat,
+      lng: s.location.lng,
+      normalizedTariff: s.tariff.normalized_per_sotka_month,
+      isBaseline: s.is_baseline,
+      tariffText: formatTariffAuto(s.tariff),
+      tariffHint: getTariffHint(s.tariff),
+      companyText: typeof company === 'string' ? company : company?.title,
+    };
+  }));
 
   onMount(() => {
     const media = window.matchMedia('(max-width: 767px)');

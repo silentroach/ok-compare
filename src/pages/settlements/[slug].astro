@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Link from '../../components/Link.astro';
 import { loadAllData, findBaseline } from '../../lib/data';
-import { formatCurrency, formatTariff, formatDistance, formatPercentage, calculateDistance } from '../../lib/format';
+import { formatCurrency, formatTariffAuto, getTariffHint, formatDistance, formatPercentage, calculateDistance } from '../../lib/format';
 import type { Settlement } from '../../lib/schema';
 import InfrastructureTable from '../../components/InfrastructureTable.svelte';
 import ServiceTable from '../../components/ServiceTable.svelte';
@@ -32,7 +32,6 @@ interface Props {
     isCheaper: boolean;
     infrastructureDelta: Record<string, number>;
     servicesDelta: Record<string, number>;
-    transparencyDelta: Record<string, number>;
   } | undefined;
   shelkovo: Settlement | null;
 }
@@ -168,7 +167,7 @@ const heroMap = hasPoint
             <div class={`grid gap-3 ${settlement.is_baseline ? 'grid-cols-2' : 'grid-cols-3'}`}>
               <div class="rounded-2xl border border-white/60 bg-white/50 p-4 backdrop-blur-[2px]">
                 <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Тариф</p>
-                <p class="text-xl font-bold text-foreground">{formatTariff(settlement.tariff.normalized_per_sotka_month)}</p>
+                <p class="text-xl font-bold text-foreground" title={getTariffHint(settlement.tariff)}>{formatTariffAuto(settlement.tariff)}</p>
                 {settlement.tariff.note && (
                   <p class="mt-1 text-xs text-muted-foreground">{settlement.tariff.note}</p>
                 )}
@@ -283,7 +282,7 @@ const heroMap = hasPoint
         <div class="rounded-xl border border-border bg-muted-soft p-4">
           <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Тариф на обслуживание</h3>
           <div class="text-3xl font-bold text-foreground">
-            {formatTariff(settlement.tariff.normalized_per_sotka_month)}
+            <span title={getTariffHint(settlement.tariff)}>{formatTariffAuto(settlement.tariff)}</span>
           </div>
           {settlement.tariff.note && (
             <p class="mt-1 text-sm text-muted-foreground">{settlement.tariff.note}</p>
