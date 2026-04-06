@@ -6,6 +6,7 @@ import {
   formatPercentage,
   formatTariff,
   formatTariffAuto,
+  formatTariffBase,
   getTariffHint,
 } from './format';
 
@@ -142,6 +143,44 @@ describe('Format Module', () => {
     });
   });
 
+  describe('formatTariffBase', () => {
+    it('should format tariff per sotka', () => {
+      expect(
+        formatTariffBase({
+          value: 500,
+          unit: 'rub_per_sotka',
+          period: 'month',
+          normalized_per_sotka_month: 500,
+          normalized_is_estimate: false,
+        }),
+      ).toBe('500 ₽/сотка');
+    });
+
+    it('should format tariff per lot', () => {
+      expect(
+        formatTariffBase({
+          value: 4000,
+          unit: 'rub_per_lot',
+          period: 'month',
+          normalized_per_sotka_month: 400,
+          normalized_is_estimate: true,
+        }),
+      ).toBe('4\u00A0000 ₽/участок');
+    });
+
+    it('should format fixed tariff as per lot', () => {
+      expect(
+        formatTariffBase({
+          value: 12000,
+          unit: 'rub_fixed',
+          period: 'year',
+          normalized_per_sotka_month: 100,
+          normalized_is_estimate: true,
+        }),
+      ).toBe('12\u00A0000 ₽/участок');
+    });
+  });
+
   describe('getTariffHint', () => {
     it('should return undefined for exact tariffs', () => {
       expect(
@@ -165,6 +204,19 @@ describe('Format Module', () => {
       });
 
       expect(hint).toContain('Пересчет');
+      expect(hint).toContain('10 соток');
+    });
+
+    it('should use correct Russian plural forms in formula', () => {
+      const hint = getTariffHint({
+        value: 9000,
+        unit: 'rub_per_lot',
+        period: 'quarter',
+        normalized_per_sotka_month: 300,
+        normalized_is_estimate: true,
+      });
+
+      expect(hint).toContain('3 месяца');
       expect(hint).toContain('10 соток');
     });
   });

@@ -1,0 +1,50 @@
+# Вне схемы: формат земли — ИЖС.
+# Вне схемы: в поселке заявлен оптический интернет.
+# Вне схемы: в поселке заявлен спа-отель на 5 номеров.
+name: КП Резиденции Мелихово Парк
+short_name: Мелихово Парк
+slug: melikhovo-park
+website: https://xn----8sbelppcgvbmn2d.xn--p1ai/
+is_baseline: false
+location:
+  address_text: Московская область, муниципальный округ Чехов, село Талеж
+  lat: 55.072867
+  lng: 37.709496
+  map_url: https://yandex.ru/maps/org/rezidentsii_melikhovo_park/58500356653/
+  district: Чехов
+tariff:
+  value: 400
+  unit: rub_per_sotka
+  period: month
+  note: стоимость обслуживания по официальному сайту
+infrastructure:
+  roads: asphalt
+  sidewalks: yes
+  lighting: yes
+  gas: yes
+  water: yes
+  sewage: yes
+  checkpoints: yes
+  security: yes
+  fencing: yes
+  underground_electricity: full
+common_spaces:
+  club_infrastructure: yes
+  playgrounds: yes
+  sports: yes
+  spa_center: partial
+  walking_routes: yes
+  water_access: yes
+  beach_zones: yes
+service_model: {}
+sources:
+  - title: Официальный сайт Резиденции Мелихово Парк
+    url: https://xn----8sbelppcgvbmn2d.xn--p1ai/
+    type: official
+    date_checked: 2026-04-06
+    comment: Тариф 400 руб/сотка, коммуникации, охрана, благоустройство и адрес.
+  - title: Яндекс Карты — Резиденции Мелихово Парк
+    url: https://yandex.ru/maps/org/rezidentsii_melikhovo_park/58500356653/
+    type: community
+    date_checked: 2026-04-06
+    comment: Координаты и карточка объекта.

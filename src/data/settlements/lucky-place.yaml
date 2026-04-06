@@ -1,0 +1,54 @@
+# Вне схемы: формат земли — ИЖС.
+# Вне схемы: в поселке заявлены интернет и ТВ на участках.
+# Вне схемы: в поселке заявлены банный комплекс и озеро для рыбалки.
+name: КП Lucky Place
+short_name: Lucky Place
+slug: lucky-place
+website: https://kpluckyplace.ru/
+is_baseline: false
+location:
+  address_text: Московская область, городской округ Ступино, деревня Гридюкино
+  lat: 55.092541
+  lng: 37.778164
+  map_url: https://yandex.ru/maps/org/lucky_place/163515554292/
+  district: Ступино
+tariff:
+  value: 500
+  unit: rub_per_sotka
+  period: month
+infrastructure:
+  roads: asphalt
+  lighting: yes
+  gas: yes
+  water: yes
+  sewage: no
+  checkpoints: yes
+  security: yes
+  fencing: yes
+  underground_electricity: full
+common_spaces:
+  club_infrastructure: yes
+  playgrounds: yes
+  sports: yes
+  walking_routes: yes
+  water_access: yes
+  beach_zones: yes
+  bbq_zones: yes
+service_model:
+  garbage_collection: yes
+sources:
+  - title: Официальный сайт Lucky Place
+    url: https://kpluckyplace.ru/
+    type: official
+    date_checked: 2026-04-06
+    comment: Закрытый формат, коммуникации, КПП, охрана, детские и спортивные зоны, озеро и пляж.
+  - title: Яндекс Карты — Lucky Place
+    url: https://yandex.ru/maps/org/lucky_place/163515554292/
+    type: community
+    date_checked: 2026-04-06
+    comment: Координаты и адрес объекта.
+  - title: Domzamkad — КП Lucky Place
+    url: https://www.domzamkad.ru/villages/lucky-place.html
+    type: media
+    date_checked: 2026-04-06
+    comment: ИЖС, прогулочный парк и дополнительная инфраструктура поселка.

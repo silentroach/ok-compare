@@ -1,0 +1,52 @@
+# Вне схемы: формат земли — ИЖС.
+# Вне схемы: в поселке заявлен оптоволоконный интернет.
+# Вне схемы: в поселке 207 участков.
+name: КП Захаркино Парк
+short_name: Захаркино Парк
+slug: zaharkino-park
+website: https://zaharkino.ru/
+is_baseline: false
+location:
+  address_text: Московская область, городской округ Серпухов
+  lat: 55.029495
+  lng: 37.302147
+  map_url: https://yandex.ru/maps/org/zakharkino_park/68020559215/
+  district: Серпухов
+tariff:
+  value: 4000
+  unit: rub_fixed
+  period: month
+infrastructure:
+  roads: asphalt
+  lighting: yes
+  gas: yes
+  water: yes
+  sewage: no
+  checkpoints: yes
+  security: yes
+  fencing: yes
+  underground_electricity: full
+common_spaces:
+  club_infrastructure: yes
+  playgrounds: yes
+  sports: yes
+  walking_routes: yes
+  water_access: yes
+service_model:
+  garbage_collection: yes
+sources:
+  - title: Официальный сайт Захаркино Парк
+    url: https://zaharkino.ru/
+    type: official
+    date_checked: 2026-04-06
+    comment: Закрытый формат, коммуникации, инфраструктура и адрес.
+  - title: Яндекс Карты — Захаркино Парк
+    url: https://yandex.ru/maps/org/zakharkino_park/68020559215/
+    type: community
+    date_checked: 2026-04-06
+    comment: Координаты и адрес объекта.
+  - title: Domzamkad — КП Захаркино Парк
+    url: https://www.domzamkad.ru/villages/zaharkino-park.html
+    type: media
+    date_checked: 2026-04-06
+    comment: ИЖС, количество участков, КПП и вывоз мусора.

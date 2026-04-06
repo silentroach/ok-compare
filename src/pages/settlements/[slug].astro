@@ -5,6 +5,7 @@ import { loadAllData, findBaseline } from '../../lib/data';
 import {
   formatCurrency,
   formatTariffAuto,
+  formatTariffBase,
   getTariffHint,
   formatDistance,
   formatPercentage,
@@ -258,6 +259,13 @@ const heroMap = hasPoint
                 {formatTariffAuto(settlement.tariff)}
               </p>
               {
+                settlement.tariff.normalized_is_estimate && (
+                  <p class="mt-1 text-xs text-muted-foreground opacity-75">
+                    {formatTariffBase(settlement.tariff)}
+                  </p>
+                )
+              }
+              {
                 settlement.tariff.note && (
                   <p class="mt-1 text-xs text-muted-foreground">
                     {settlement.tariff.note}
@@ -445,6 +453,13 @@ const heroMap = hasPoint
               >{formatTariffAuto(settlement.tariff)}</span
             >
           </div>
+          {
+            settlement.tariff.normalized_is_estimate && (
+              <p class="mt-1 text-xs text-muted-foreground opacity-75">
+                {formatTariffBase(settlement.tariff)}
+              </p>
+            )
+          }
           {
             settlement.tariff.note && (
               <p class="mt-1 text-sm text-muted-foreground">

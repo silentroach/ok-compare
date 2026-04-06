@@ -121,6 +121,17 @@ function num(value: number): string {
   });
 }
 
+function word(value: number, one: string, few: string, many: string): string {
+  const n = Math.abs(Math.trunc(value));
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return one;
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
+    return few;
+  }
+  return many;
+}
+
 /**
  * Format normalized tariff and add '~' for estimated values.
  */
@@ -131,13 +142,26 @@ export function formatTariffAuto(tariff: Tariff): string {
 }
 
 /**
+ * Format original tariff (before normalization).
+ */
+export function formatTariffBase(tariff: Tariff): string {
+  const val = formatCurrency(tariff.value);
+  if (tariff.unit === 'rub_per_sotka') {
+    return `${val}/сотка`;
+  }
+  return `${val}/участок`;
+}
+
+/**
  * Build formula tooltip for estimated normalized tariff.
  */
 export function getTariffHint(tariff: Tariff): string | undefined {
   if (!tariff.normalized_is_estimate) return;
 
   const size = 10;
+  const sotok = word(size, 'сотка', 'сотки', 'соток');
   const m = months(tariff.period);
+  const mons = word(m, 'месяц', 'месяца', 'месяцев');
   const monthly = tariff.value / m;
   const normalized = monthly / size;
   const source =
@@ -145,7 +169,7 @@ export function getTariffHint(tariff: Tariff): string | undefined {
       ? 'Тариф указан за участок.'
       : 'Тариф указан фиксированной суммой за участок.';
 
-  return `${source} Пересчет: (${num(tariff.value)} ₽ / ${m}) / ${size} соток = ${num(normalized)} ₽/сотка в месяц.`;
+  return `${source} Для сравнения переводим его в ₽/сотка с допущением, что площадь участка — ${size} ${sotok}. Пересчет: (${num(tariff.value)} ₽ / ${m} ${mons}) / ${size} ${sotok} = ${num(normalized)} ₽/сотка в месяц.`;
 }
 
 /**
