@@ -262,7 +262,6 @@
         mapContainer,
         {
           location: view.location,
-          margin: view.margin,
         },
         [new YMapDefaultSchemeLayer(), new YMapDefaultFeaturesLayer()],
       );
@@ -270,6 +269,15 @@
       renderMarkers(ymaps3);
 
       isLoading = false;
+
+      // Apply margin via update() — passing margin only in the constructor
+      // produces a different (too-wide) zoom for bounds-based views.
+      if (view.location.bounds) {
+        map.update?.({
+          location: { ...view.location, duration: 0 },
+          margin: view.margin,
+        });
+      }
     } catch (err) {
       console.error('Map initialization error:', err);
       error = 'Ошибка при загрузке карты';
