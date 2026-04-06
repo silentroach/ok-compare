@@ -470,29 +470,6 @@ const heroMap = hasPoint
         </div>
 
         {
-          companyTitle && (
-            <div class="rounded-xl border border-border bg-muted-soft p-4">
-              <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                Обслуживается
-              </h3>
-              {companyUrl ? (
-                <a
-                  href={companyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="font-semibold text-foreground underline decoration-foreground/30 underline-offset-2 transition-colors hover:text-primary"
-                  title="Перейти на сайт управляющей компании"
-                >
-                  {companyTitle}
-                </a>
-              ) : (
-                <p class="font-semibold text-foreground">{companyTitle}</p>
-              )}
-            </div>
-          )
-        }
-
-        {
           !settlement.is_baseline && comparison && (
             <div class="rounded-xl border border-border bg-muted-soft p-4">
               <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
