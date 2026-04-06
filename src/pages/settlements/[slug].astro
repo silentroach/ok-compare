@@ -12,6 +12,7 @@ import {
 } from '../../lib/format';
 import type { Settlement } from '../../lib/schema';
 import InfrastructureTable from '../../components/InfrastructureTable.svelte';
+import CommonSpacesTable from '../../components/CommonSpacesTable.svelte';
 import ServiceTable from '../../components/ServiceTable.svelte';
 import SourcesList from '../../components/SourcesList.svelte';
 import SettlementMap from '../../components/SettlementMap.svelte';
@@ -26,7 +27,7 @@ export async function getStaticPaths() {
     props: {
       settlement,
       comparison: comparisons.get(settlement.slug),
-      shelkovo: shelkovo || null,
+      shelkovo,
     },
   }));
 }
@@ -38,11 +39,9 @@ interface Props {
         tariffDelta: number;
         tariffDeltaPercent: number;
         isCheaper: boolean;
-        infrastructureDelta: Record<string, number>;
-        servicesDelta: Record<string, number>;
       }
     | undefined;
-  shelkovo: Settlement | null;
+  shelkovo?: Settlement;
 }
 
 const { settlement, comparison, shelkovo } = Astro.props;
@@ -528,8 +527,22 @@ const heroMap = hasPoint
         title="Инфраструктура"
         infra={settlement.infrastructure}
         shelkovoInfra={!settlement.is_baseline
-          ? shelkovo?.infrastructure || null
-          : null}
+          ? shelkovo?.infrastructure
+          : undefined}
+        client:idle
+      />
+    </section>
+
+    <section
+      class="ui-shell mb-6 p-6 md:mb-8"
+      data-testid="common-spaces-section"
+    >
+      <CommonSpacesTable
+        title="Общие пространства"
+        spaces={settlement.common_spaces}
+        shelkovoSpaces={!settlement.is_baseline
+          ? shelkovo?.common_spaces
+          : undefined}
         client:idle
       />
     </section>
@@ -539,8 +552,8 @@ const heroMap = hasPoint
         title="Модель обслуживания"
         services={settlement.service_model}
         shelkovoServices={!settlement.is_baseline
-          ? shelkovo?.service_model || null
-          : null}
+          ? shelkovo?.service_model
+          : undefined}
         client:idle
       />
     </section>

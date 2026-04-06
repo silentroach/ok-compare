@@ -21,13 +21,15 @@ infrastructure:
   checkpoints: yes
   security: yes
   video_surveillance: checkpoint_only
-  playgrounds: yes
-  sports: yes
-  public_spaces: yes
-  beach_or_water_access: yes
   water: no
   sewage: no
   fencing: yes
+common_spaces:
+  club_infrastructure: yes
+  playgrounds: yes
+  sports: yes
+  walking_routes: yes
+  water_access: yes
 service_model: {}
 sources:
   - title: КП Нордик — официальный сайт

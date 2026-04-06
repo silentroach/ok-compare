@@ -20,10 +20,20 @@ infrastructure:
   gas: yes
   water: yes
   sewage: yes
-  sports: yes
-  playgrounds: yes
   admin_building: yes
   retail_or_services: yes
+common_spaces:
+  club_infrastructure: yes
+  playgrounds: yes
+  sports: yes
+  pool: yes
+  fitness_club: yes
+  restaurant: yes
+  spa_center: yes
+  walking_routes: yes
+  water_access: yes
+  beach_zones: yes
+  bbq_zones: yes
 service_model: {}
 sources:
   - title: Капитан Клаб — Рождествено

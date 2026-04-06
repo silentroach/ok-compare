@@ -31,10 +31,6 @@
     fencing: 'Закрытая территория',
     video_surveillance: 'Видеонаблюдение',
     underground_electricity: 'Подземная электросеть',
-    playgrounds: 'Детские площадки',
-    sports: 'Спортивные объекты',
-    public_spaces: 'Общественные пространства',
-    beach_or_water_access: 'Выход к воде',
     admin_building: 'Административное здание',
     retail_or_services: 'Магазины',
   };
@@ -44,7 +40,6 @@
     yes: '✓',
     no: '✗',
     partial: '◐',
-    unknown: '?',
   };
 
   // Status colors for badges
@@ -52,7 +47,6 @@
     yes: 'ui-badge-success',
     no: 'ui-badge-danger',
     partial: 'ui-badge-warning',
-    unknown: 'ui-badge-muted',
   };
 
   // Get status text for AvailabilityStatus
@@ -60,7 +54,6 @@
     yes: 'Есть',
     no: 'Нет',
     partial: 'Частично',
-    unknown: 'Неизвестно',
   };
 
   // Road type display config
@@ -189,10 +182,6 @@
     'fencing',
     'video_surveillance',
     'underground_electricity',
-    'playgrounds',
-    'sports',
-    'public_spaces',
-    'beach_or_water_access',
     'admin_building',
     'retail_or_services',
   ];

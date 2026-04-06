@@ -25,6 +25,7 @@ const mockSettlement: Settlement = {
     note: '',
   },
   infrastructure: {},
+  common_spaces: {},
   service_model: {},
   sources: [],
 };
@@ -33,8 +34,6 @@ const mockComparison: ComparisonResult = {
   tariffDelta: 50,
   tariffDeltaPercent: 33,
   isCheaper: true,
-  infrastructureDelta: { betterCount: 2, worseCount: 1 },
-  servicesDelta: { betterCount: 1, worseCount: 0 },
 };
 
 describe('SettlementCard', () => {

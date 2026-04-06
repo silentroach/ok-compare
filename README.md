@@ -35,29 +35,29 @@
 
 ```yaml
 # Основная информация
-name: Коттеджный поселок Шелково          # Полное название
-short_name: Шелково                       # Короткое название
-slug: shelkovo                            # URL-friendly идентификатор
-website: https://shelkovo.ru              # Официальный сайт
+name: Коттеджный поселок Шелково # Полное название
+short_name: Шелково # Короткое название
+slug: shelkovo # URL-friendly идентификатор
+website: https://shelkovo.ru # Официальный сайт
 management_company:
   title: УК Шелково
   url: https://example.com
-is_baseline: true                       # true для базового поселка (Шелково)
+is_baseline: true # true для базового поселка (Шелково)
 
 # Локация
 location:
   address_text: Московская область, Мытищинский район, д. Шелково
-  lat: 56.0500                          # Широта
-  lng: 37.6000                          # Долгота
+  lat: 56.0500 # Широта
+  lng: 37.6000 # Долгота
   map_url: https://yandex.ru/maps/org/example/1234567890
-  district: Мытищинский район           # Район
+  district: Мытищинский район # Район
 
 # Тариф
 tariff:
-  value: 4500                           # Стоимость
-  unit: rub_per_sotka                   # rub_per_sotka | rub_per_lot | rub_fixed
-  period: month                         # month | quarter | year
-  note: Тариф за сотку в месяц          # Примечание
+  value: 4500 # Стоимость
+  unit: rub_per_sotka # rub_per_sotka | rub_per_lot | rub_fixed
+  period: month # month | quarter | year
+  note: Тариф за сотку в месяц # Примечание
 
 # normalized_per_sotka_month НЕ заполняется в YAML:
 # поле считается автоматически в схеме.
@@ -69,23 +69,36 @@ infrastructure:
   sidewalks: no
   lighting: yes
   gas: yes
-  water: yes                         # Центральное водоснабжение
-  sewage: no                         # Центральная канализация
+  water: yes # Центральное водоснабжение
+  sewage: no # Центральная канализация
   # Ливневка (closed > open > none)
   drainage: open
   checkpoints: yes
   security: yes
-  fencing: yes                       # Закрытая территория
+  fencing: yes # Закрытая территория
   # Видеонаблюдение (full > checkpoint_only > none)
   video_surveillance: checkpoint_only
   # Подземная электросеть (full > partial > none)
   underground_electricity: partial
+  admin_building: no
+  retail_or_services: no # Магазины
+
+# Общие пространства (yes | no | partial - не указано = неизвестно)
+common_spaces:
+  club_infrastructure: yes # Общая клубная инфраструктура (агрегирует многие пункты ниже)
   playgrounds: yes
   sports: yes
-  public_spaces: yes
-  beach_or_water_access: yes
-  admin_building: no
-  retail_or_services: no             # Магазины
+  pool: no
+  fitness_club: no
+  restaurant: no
+  spa_center: no
+  walking_routes: no
+  water_access: yes # Выход к воде (отдельно от пляжа)
+  beach_zones: no # Пляжные зоны
+  kids_club: no
+  sports_camp: no
+  primary_school: no
+  bbq_zones: no
 
 # Сервисная модель (yes | no | partial - не указано = неизвестно)
 service_model:
@@ -100,7 +113,7 @@ service_model:
 sources:
   - title: Официальный сайт Шелково
     url: https://shelkovo.ru
-    type: official                     # official | community | media | personal
+    type: official # official | community | media | personal
     date_checked: 2026-04-03
     comment: Текущий тариф
 ```
@@ -120,44 +133,52 @@ sources:
 
 ### Enum значения
 
-**AvailabilityStatus** (для инфраструктуры и сервисов):
+**AvailabilityStatus** (для инфраструктуры, общих пространств и сервисов):
+
 - `yes` — есть
 - `no` — нет
 - `partial` — частично
 - Не указано — неизвестно
 
 **RoadType** (тип дорог, упорядочен от лучшего к худшему):
+
 - `asphalt` — асфальт
 - `partial_asphalt` — частично асфальт
 - `gravel` — асфальтная крошка/гравий
 - `dirt` — грунтовка
 
 **DrainageType** (ливневая канализация, упорядочена от лучшей к худшей):
+
 - `closed` — закрытая
 - `open` — открытая
 - `none` — отсутствует
 
 **VideoSurveillance** (видеонаблюдение, упорядочено от лучшего к худшему):
+
 - `full` — есть по всему периметру
 - `checkpoint_only` — только на КПП
 - `none` — отсутствует
 
 **UndergroundElectricity** (подземная электросеть, упорядочено от лучшего к худшему):
+
 - `full` — полностью подземная
 - `partial` — частично подземная
 - `none` — только по столбам
 
 **TariffUnit** (единица тарифа):
+
 - `rub_per_sotka` — рубли за сотку
 - `rub_per_lot` — рубли за участок
 - `rub_fixed` — фиксированная сумма
 
 **TariffPeriod** (период тарифа):
+
 - `month` — в месяц
 - `quarter` — в квартал
 - `year` — в год
 
 **SourceType** (тип источника):
+
 - `official` — официальный (сайт УК, документы)
 - `community` — сообщество (чаты, форумы)
 - `media` — СМИ

@@ -15,9 +15,6 @@ describe('InfrastructureTable', () => {
     security: 'yes',
     fencing: 'no',
     video_surveillance: 'checkpoint_only',
-    playgrounds: 'yes',
-    sports: 'no',
-    beach_or_water_access: 'no',
     admin_building: 'yes',
     retail_or_services: 'partial',
   };
@@ -35,10 +32,6 @@ describe('InfrastructureTable', () => {
     fencing: 'yes',
     video_surveillance: 'checkpoint_only',
     underground_electricity: 'partial',
-    playgrounds: 'yes',
-    sports: 'yes',
-    public_spaces: 'yes',
-    beach_or_water_access: 'yes',
     admin_building: 'no',
     retail_or_services: 'no',
   };
@@ -71,11 +64,11 @@ describe('InfrastructureTable', () => {
     // Should have comparison column header
     expect(getByText('Шелково')).toBeTruthy();
 
-    // Should have comparison column (18 with underground_electricity)
+    // Should have comparison column (14 with underground_electricity)
     const comparisonCells = container.querySelectorAll(
       '[data-testid="shelkovo-status"]',
     );
-    expect(comparisonCells.length).toBe(18);
+    expect(comparisonCells.length).toBe(14);
   });
 
   it('does not show comparison column when shelkovoInfra is not provided', () => {
@@ -103,13 +96,13 @@ describe('InfrastructureTable', () => {
       },
     });
 
-    // Find rows where there's a difference (e.g., sports: no vs yes)
+    // Find rows where there's a difference
     const diffIndicators = container.querySelectorAll(
       '[data-testid="diff-indicator"]',
     );
 
     // There should be some differences highlighted
-    // (sidewalks, drainage, fencing, video_surveillance, sports, public_spaces, beach_or_water_access, retail_or_services)
+    // (roads, sidewalks, sewage, drainage, fencing, underground_electricity, admin_building, retail_or_services)
     expect(diffIndicators.length).toBeGreaterThan(0);
   });
 
@@ -122,9 +115,9 @@ describe('InfrastructureTable', () => {
       },
     });
 
-    // Should still render all 18 rows even with empty data
+    // Should still render all 14 rows even with empty data
     const rows = container.querySelectorAll('[data-testid="infra-row"]');
-    expect(rows.length).toBe(18);
+    expect(rows.length).toBe(14);
   });
 
   it('shows only differing rows when diff toggle is enabled', async () => {
@@ -140,7 +133,7 @@ describe('InfrastructureTable', () => {
     const diff = container.querySelectorAll(
       '[data-testid="diff-indicator"]',
     ).length;
-    expect(full).toBe(18);
+    expect(full).toBe(14);
 
     const btn = getByTestId('infra-diff-toggle');
     await fireEvent.click(btn);

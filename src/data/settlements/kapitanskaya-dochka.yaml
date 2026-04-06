@@ -20,11 +20,15 @@ infrastructure:
   gas: yes
   water: yes
   sewage: yes
-  playgrounds: yes
-  sports: yes
-  beach_or_water_access: yes
   admin_building: yes
   retail_or_services: yes
+common_spaces:
+  club_infrastructure: yes
+  playgrounds: yes
+  sports: yes
+  water_access: yes
+  beach_zones: yes
+  bbq_zones: yes
 service_model: {}
 sources:
   - title: Капитан Клаб — Капитанская дочка

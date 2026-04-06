@@ -107,15 +107,30 @@ export const InfrastructureSchema = z.object({
   video_surveillance: VideoSurveillanceEnum.optional(),
   // Underground electricity (allows comparison: full > partial > none)
   underground_electricity: UndergroundElectricityEnum.optional(),
-  playgrounds: AvailabilityStatusEnum.optional(),
-  sports: AvailabilityStatusEnum.optional(),
-  public_spaces: AvailabilityStatusEnum.optional(),
-  beach_or_water_access: AvailabilityStatusEnum.optional(),
   admin_building: AvailabilityStatusEnum.optional(),
   // Shops
   retail_or_services: AvailabilityStatusEnum.optional(),
 });
 export type Infrastructure = z.infer<typeof InfrastructureSchema>;
+
+// Common spaces schema - all fields optional
+export const CommonSpacesSchema = z.object({
+  playgrounds: AvailabilityStatusEnum.optional(),
+  sports: AvailabilityStatusEnum.optional(),
+  pool: AvailabilityStatusEnum.optional(),
+  fitness_club: AvailabilityStatusEnum.optional(),
+  restaurant: AvailabilityStatusEnum.optional(),
+  spa_center: AvailabilityStatusEnum.optional(),
+  walking_routes: AvailabilityStatusEnum.optional(),
+  water_access: AvailabilityStatusEnum.optional(),
+  beach_zones: AvailabilityStatusEnum.optional(),
+  kids_club: AvailabilityStatusEnum.optional(),
+  sports_camp: AvailabilityStatusEnum.optional(),
+  primary_school: AvailabilityStatusEnum.optional(),
+  club_infrastructure: AvailabilityStatusEnum.optional(),
+  bbq_zones: AvailabilityStatusEnum.optional(),
+});
+export type CommonSpaces = z.infer<typeof CommonSpacesSchema>;
 
 // Service model schema
 export const ServiceModelSchema = z.object({
@@ -164,6 +179,7 @@ export const SettlementSchema = z.object({
   location: LocationSchema,
   tariff: TariffSchema,
   infrastructure: InfrastructureSchema.default({}),
+  common_spaces: CommonSpacesSchema.default({}),
   service_model: ServiceModelSchema.default({}),
   sources: z.array(SourceSchema).min(1),
 });
@@ -189,6 +205,4 @@ export interface ComparisonResult {
   tariffDelta: number;
   tariffDeltaPercent: number;
   isCheaper: boolean;
-  infrastructureDelta: Record<string, number>;
-  servicesDelta: Record<string, number>;
 }

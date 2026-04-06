@@ -20,10 +20,16 @@ infrastructure:
   gas: yes
   water: yes
   sewage: yes
+  retail_or_services: yes
+common_spaces:
+  club_infrastructure: yes
   playgrounds: yes
   sports: yes
-  beach_or_water_access: yes
-  retail_or_services: yes
+  restaurant: yes
+  walking_routes: yes
+  water_access: yes
+  beach_zones: yes
+  bbq_zones: yes
 service_model: {}
 sources:
   - title: Капитан Клаб — Капитанский мыс

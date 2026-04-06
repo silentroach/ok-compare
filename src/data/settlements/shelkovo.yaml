@@ -29,12 +29,23 @@ infrastructure:
   fencing: yes
   video_surveillance: checkpoint_only
   underground_electricity: partial
-  playgrounds: yes
-  sports: yes
-  public_spaces: no
-  beach_or_water_access: yes
   admin_building: no
   retail_or_services: no
+common_spaces:
+  club_infrastructure: yes
+  playgrounds: yes
+  sports: yes
+  pool: no
+  fitness_club: no
+  restaurant: no
+  spa_center: no
+  walking_routes: no
+  water_access: yes
+  beach_zones: no
+  kids_club: no
+  sports_camp: no
+  primary_school: no
+  bbq_zones: no
 service_model:
   garbage_collection: yes
   snow_removal: yes
@@ -53,3 +64,8 @@ sources:
     type: official
     date_checked: 2026-04-03
     comment: Условия обслуживания
+  - title: Шелково Эко Клаб — инфраструктура
+    url: https://kpshelkovo.ru/infrastructure/
+    type: official
+    date_checked: 2026-04-06
+    comment: Описание спортивной и клубной инфраструктуры

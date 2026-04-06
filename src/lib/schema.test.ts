@@ -5,6 +5,7 @@ import {
   SettlementSchema,
   LocationSchema,
   InfrastructureSchema,
+  CommonSpacesSchema,
   SourceSchema,
   AvailabilityStatusEnum,
   TariffUnitEnum,
@@ -47,12 +48,24 @@ describe('Schema Validation', () => {
           fencing: 'yes',
           video_surveillance: 'full',
           underground_electricity: 'full',
-          playgrounds: 'yes',
-          sports: 'yes',
-          public_spaces: 'yes',
-          beach_or_water_access: 'no',
           admin_building: 'yes',
           retail_or_services: 'yes',
+        },
+        common_spaces: {
+          club_infrastructure: 'yes',
+          playgrounds: 'yes',
+          sports: 'yes',
+          pool: 'no',
+          fitness_club: 'no',
+          restaurant: 'yes',
+          spa_center: 'no',
+          walking_routes: 'yes',
+          water_access: 'yes',
+          beach_zones: 'no',
+          kids_club: 'no',
+          sports_camp: 'no',
+          primary_school: 'no',
+          bbq_zones: 'yes',
         },
         service_model: {
           garbage_collection: 'yes',
@@ -336,7 +349,7 @@ describe('Schema Validation', () => {
         lighting: 'yes',
         gas: 'yes',
         water: 'yes',
-        // Missing 11 other fields
+        // Missing other optional fields
       };
 
       const result = InfrastructureSchema.safeParse(partialInfrastructure);
@@ -355,7 +368,19 @@ describe('Schema Validation', () => {
       if (result.success) {
         expect(result.data.roads).toBe(undefined);
         expect(result.data.water).toBe(undefined);
+        expect(result.data.admin_building).toBe(undefined);
+      }
+    });
+  });
+
+  describe('Common Spaces Validation', () => {
+    it('should parse empty common spaces object with all defaults', () => {
+      const result = CommonSpacesSchema.safeParse({});
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.club_infrastructure).toBe(undefined);
         expect(result.data.playgrounds).toBe(undefined);
+        expect(result.data.water_access).toBe(undefined);
       }
     });
   });

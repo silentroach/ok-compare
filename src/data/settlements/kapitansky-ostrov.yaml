@@ -20,6 +20,8 @@ infrastructure:
   gas: yes
   water: yes
   sewage: yes
+common_spaces:
+  club_infrastructure: yes
 service_model: {}
 sources:
   - title: Капитан Клаб — Капитанский остров

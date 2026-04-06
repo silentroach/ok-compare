@@ -33,9 +33,15 @@ tariff:
 #   video_surveillance: full | checkpoint_only | none
 #   underground_electricity: full | partial | none
 #   sidewalks, lighting, gas, water, sewage, checkpoints, security, fencing,
-#   playgrounds, sports, public_spaces, beach_or_water_access, admin_building,
-#   retail_or_services: yes | no | partial
+#   admin_building, retail_or_services: yes | no | partial
 infrastructure: {}
+
+# Common spaces - all fields are optional
+# Valid values: yes | no | partial
+#   club_infrastructure, playgrounds, sports, pool, fitness_club, restaurant,
+#   spa_center, walking_routes, water_access, beach_zones, kids_club,
+#   sports_camp, primary_school, bbq_zones
+common_spaces: {}
 
 # Service model - all fields are optional
 # Valid values: yes | no | partial

@@ -20,6 +20,11 @@ infrastructure:
   gas: yes
   water: yes
   sewage: yes
+common_spaces:
+  club_infrastructure: yes
+  sports: yes
+  spa_center: yes
+  sports_camp: yes
 service_model: {}
 sources:
   - title: Капитан Клаб — Капитанская бухта
@@ -32,3 +37,13 @@ sources:
     type: official
     date_checked: 2026-04-04
     comment: Контакты и список поселков
+  - title: Капитан Арена
+    url: https://xn----7sbabf2bmejrt1b.xn--p1ai/arena
+    type: official
+    date_checked: 2026-04-06
+    comment: Спорткомплекс, спа-центр и спортивный городок в Капитанской бухте
+  - title: Яндекс Карты — Капитан Арена
+    url: https://yandex.ru/maps/org/kapitan_arena/70001572821/
+    type: community
+    date_checked: 2026-04-06
+    comment: Карточка объекта с адресом в КП Капитанская бухта
