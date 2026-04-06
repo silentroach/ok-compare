@@ -72,23 +72,6 @@ describe('ServiceTable', () => {
     expect(comparisonCells.length).toBe(0);
   });
 
-  it('highlights differences between settlement and Shelkovo', () => {
-    const { container } = render(ServiceTable, {
-      props: {
-        services: mockServices,
-        shelkovoServices: mockShelkovoServices,
-      },
-    });
-
-    // Find rows where there's a difference (snow_removal: partial vs yes, emergency_service: no vs yes, dispatcher: missing vs yes)
-    const diffIndicators = container.querySelectorAll(
-      '[data-testid="diff-indicator"]',
-    );
-
-    // There should be some differences highlighted
-    expect(diffIndicators.length).toBeGreaterThan(0);
-  });
-
   it('renders with empty/unknown services', () => {
     const emptyServices: ServiceModel = {};
 
@@ -123,11 +106,7 @@ describe('ServiceTable', () => {
     const filtered = container.querySelectorAll(
       '[data-testid="service-row"]',
     ).length;
-    const marks = container.querySelectorAll(
-      '[data-testid="diff-indicator"]',
-    ).length;
     expect(filtered).toBe(3);
-    expect(marks).toBe(3);
     expect(btn.getAttribute('title')).toBe('Показать все свойства');
   });
 });

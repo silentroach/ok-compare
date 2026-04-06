@@ -88,24 +88,6 @@ describe('InfrastructureTable', () => {
     expect(comparisonCells.length).toBe(0);
   });
 
-  it('highlights differences between settlement and Shelkovo', () => {
-    const { container } = render(InfrastructureTable, {
-      props: {
-        infra: mockInfra,
-        shelkovoInfra: mockShelkovoInfra,
-      },
-    });
-
-    // Find rows where there's a difference
-    const diffIndicators = container.querySelectorAll(
-      '[data-testid="diff-indicator"]',
-    );
-
-    // There should be some differences highlighted
-    // (roads, sidewalks, sewage, drainage, fencing, underground_electricity, admin_building, retail_or_services)
-    expect(diffIndicators.length).toBeGreaterThan(0);
-  });
-
   it('renders with empty/unknown infrastructure', () => {
     const emptyInfra: Infrastructure = {};
 
@@ -130,9 +112,6 @@ describe('InfrastructureTable', () => {
     });
 
     const full = container.querySelectorAll('[data-testid="infra-row"]').length;
-    const diff = container.querySelectorAll(
-      '[data-testid="diff-indicator"]',
-    ).length;
     expect(full).toBe(14);
 
     const btn = getByTestId('infra-diff-toggle');
@@ -141,11 +120,7 @@ describe('InfrastructureTable', () => {
     const filtered = container.querySelectorAll(
       '[data-testid="infra-row"]',
     ).length;
-    const marks = container.querySelectorAll(
-      '[data-testid="diff-indicator"]',
-    ).length;
-    expect(filtered).toBe(diff);
-    expect(marks).toBe(diff);
+    expect(filtered).toBe(8);
     expect(btn.getAttribute('title')).toBe('Показать все свойства');
   });
 });

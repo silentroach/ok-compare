@@ -91,9 +91,6 @@ describe('CommonSpacesTable', () => {
     });
 
     const full = container.querySelectorAll('[data-testid="space-row"]').length;
-    const diff = container.querySelectorAll(
-      '[data-testid="diff-indicator"]',
-    ).length;
     expect(full).toBe(14);
 
     const btn = getByTestId('spaces-diff-toggle');
@@ -102,11 +99,7 @@ describe('CommonSpacesTable', () => {
     const filtered = container.querySelectorAll(
       '[data-testid="space-row"]',
     ).length;
-    const marks = container.querySelectorAll(
-      '[data-testid="diff-indicator"]',
-    ).length;
-    expect(filtered).toBe(diff);
-    expect(marks).toBe(diff);
+    expect(filtered).toBe(0);
     expect(btn.getAttribute('title')).toBe('Показать все свойства');
   });
 

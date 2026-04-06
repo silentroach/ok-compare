@@ -91,12 +91,8 @@
 
 <div class="overflow-x-auto">
   {#if title}
-    <div
-      class={`mb-5 ${shelkovoServices ? 'grid grid-cols-[1fr_auto_auto_4rem] items-center' : 'flex items-center justify-between gap-4'}`}
-    >
-      <h2
-        class={`text-xl font-semibold text-foreground ${shelkovoServices ? 'col-span-3' : ''}`}
-      >
+    <div class="mb-5 flex items-center justify-between gap-4">
+      <h2 class="text-xl font-semibold text-foreground">
         {title}
       </h2>
       {#if shelkovoServices}
@@ -110,7 +106,7 @@
           title={only
             ? 'Показать все свойства'
             : 'Показать только отличающиеся свойства'}
-          class={`ui-pill justify-self-center min-h-9 px-3 py-1.5 cursor-pointer text-sm font-semibold transition hover:opacity-90 active:opacity-80 ${only ? 'ui-pill-warning' : 'ui-pill-muted'}`}
+          class={`ui-pill min-h-9 px-3 py-1.5 cursor-pointer text-sm font-semibold transition hover:opacity-90 active:opacity-80 ${only ? 'ui-pill-warning' : 'ui-pill-muted'}`}
           onclick={() => (only = !only)}
         >
           <svg
@@ -137,25 +133,6 @@
     </span>
   {/snippet}
 
-  {#snippet diff(diff: boolean)}
-    {#if diff}
-      <span
-        data-testid="diff-indicator"
-        class="ui-pill ui-pill-warning h-6 w-6 p-0 text-xs font-bold"
-        title="Отличается от Шелково"
-      >
-        ≠
-      </span>
-    {:else}
-      <span
-        class="ui-pill ui-pill-success h-6 w-6 p-0 text-xs font-bold"
-        title="Совпадает с Шелково"
-      >
-        =
-      </span>
-    {/if}
-  {/snippet}
-
   <table class="ui-table table-fixed">
     <thead>
       <tr class="ui-table-head">
@@ -163,7 +140,6 @@
         <th class="w-24 text-center md:w-48">Статус</th>
         {#if shelkovoServices}
           <th class="w-24 text-center md:w-48">Шелково</th>
-          <th class="w-16 text-center"></th>
         {/if}
       </tr>
     </thead>
@@ -172,7 +148,7 @@
         <tr class="ui-table-row">
           <td
             class="ui-table-cell text-center text-sm text-muted-foreground"
-            colspan={shelkovoServices ? 4 : 2}
+            colspan={shelkovoServices ? 3 : 2}
           >
             Отличий с Шелково не найдено
           </td>
@@ -181,7 +157,6 @@
         {#each rows as key (key)}
           {@const value = services[key as keyof ServiceModel]}
           {@const shelkovoValue = shelkovoServices?.[key as keyof ServiceModel]}
-          {@const isDifferent = hasDifference(key)}
           {@const display = getDisplay(value)}
           {@const shelkovoDisplay = shelkovoServices
             ? getDisplay(shelkovoValue)
@@ -196,9 +171,6 @@
             {#if shelkovoServices && shelkovoDisplay}
               <td class="ui-table-cell ui-table-cell-center">
                 {@render badge(shelkovoDisplay, 'shelkovo-service-status')}
-              </td>
-              <td class="ui-table-cell ui-table-cell-center">
-                {@render diff(isDifferent)}
               </td>
             {/if}
           </tr>
