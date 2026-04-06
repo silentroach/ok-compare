@@ -237,7 +237,7 @@
       <span class="flex h-4 w-4 items-center justify-center"
         >{display.icon}</span
       >
-      <span class="hidden sm:inline">{display.text}</span>
+      <span class="hidden md:inline">{display.text}</span>
     </span>
   {/snippet}
 
@@ -260,13 +260,13 @@
     {/if}
   {/snippet}
 
-  <table class="ui-table">
+  <table class="ui-table table-fixed">
     <thead>
       <tr class="ui-table-head">
         <th>Инфраструктура</th>
-        <th class="text-center">Статус</th>
+        <th class="w-24 text-center md:w-48">Статус</th>
         {#if shelkovoInfra}
-          <th class="text-center">Шелково</th>
+          <th class="w-24 text-center md:w-48">Шелково</th>
           <th class="w-16 text-center"></th>
         {/if}
       </tr>
