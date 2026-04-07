@@ -1,0 +1,59 @@
+name: КП Юсупово Village
+short_name: Юсупово Village
+slug: yusupovo-village
+website: https://www.usupovo-village.ru/
+telegram: usupovovillage
+is_baseline: false
+location:
+  address_text: МО, округ Домодедово, д. Юсупово
+  lat: 55.399244
+  lng: 37.705706
+  map_url: https://yandex.ru/maps/org/yusupovo_village/137991111690/
+  district: Домодедово
+tariff:
+  value: 13000
+  unit: rub_per_lot
+  period: month
+  note: вода входит в тариф
+infrastructure:
+  roads: asphalt
+  drainage: closed
+  sidewalks: yes
+  lighting: yes
+  gas: yes
+  water: yes
+  sewage: yes
+  checkpoints: yes
+  security: yes
+  fencing: yes
+  video_surveillance: full
+  underground_electricity: full
+  admin_building: yes
+  retail_or_services: yes
+common_spaces:
+  playgrounds: yes
+  sports: yes
+  fitness_club: yes
+  restaurant: yes
+service_model: {}
+sources:
+  - title: Юсупово Village — официальный сайт
+    url: https://www.usupovo-village.ru/
+    type: official
+    date_checked: 2026-04-07
+    comment: На сайте заявлены центральные коммуникации, круглосуточная охрана, патрулирование, видеонаблюдение, ограждение и въезд по пропускам.
+  - title: Юсупово Village — Контакты
+    url: https://www.usupovo-village.ru/contacts/
+    type: official
+    date_checked: 2026-04-07
+    comment: Публичные контакты и адрес в д. Юсупово; указана ссылка на Telegram-канал поселка.
+  - title: Яндекс Карты — Юсупово Village
+    url: https://yandex.ru/maps/org/yusupovo_village/137991111690/
+    type: community
+    date_checked: 2026-04-07
+    comment: Карточка объекта, адрес и координаты точки на карте.
+  - title: Юсупово Village — официальный ответ компании
+    url: https://www.usupovo-village.ru/contacts/
+    type: personal
+    date_checked: 2026-04-07
+    comment: По официальному ответу компании тариф 13 000 руб/мес с участка, вода включена в тариф; подтверждены асфальтовые дороги, крытая ливневка, тротуары, освещение, КПП, охрана, закрытая территория, видеонаблюдение, подземная электросеть, административное здание, магазин, ФОК, кальянная, караоке и спортивные площадки.
