@@ -10,7 +10,7 @@ location:
   address_text: Тульская обл., Заокский район
   lat: 54.729054
   lng: 37.541638
-  district: Заокский
+  district: Заокский район
 tariff:
   value: 495
   unit: rub_per_sotka

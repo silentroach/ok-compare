@@ -28,7 +28,7 @@
           </Link>
         </h3>
         <p class="mt-1 text-sm text-muted-foreground">
-          {settlement.location.district} район
+          {settlement.location.district}
         </p>
       </div>
       <div class="flex items-center gap-2">

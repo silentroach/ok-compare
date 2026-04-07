@@ -11,7 +11,7 @@ location:
   lat: 54.989832
   lng: 38.130717
   map_url: https://yandex.ru/maps/org/garmoniya/15271861429/
-  district: Ступино
+  district: Ступинский район
 tariff:
   value: 3000
   unit: rub_per_lot

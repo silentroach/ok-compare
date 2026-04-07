@@ -11,7 +11,7 @@ location:
   lat: 56.005495
   lng: 36.461683
   map_url: https://genplan.kp-nordic.ru/lake/
-  district: Истра
+  district: Истринский район
 tariff:
   value: 450
   unit: rub_per_sotka

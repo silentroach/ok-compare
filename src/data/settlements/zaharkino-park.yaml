@@ -11,7 +11,7 @@ location:
   lat: 55.029495
   lng: 37.302147
   map_url: https://yandex.ru/maps/org/zakharkino_park/68020559215/
-  district: Серпухов
+  district: Серпуховский район
 tariff:
   value: 4000
   unit: rub_fixed

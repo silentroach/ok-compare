@@ -52,7 +52,7 @@ const settlements: Settlement[] = [
       address_text: 'Московская область',
       lat: 55.82,
       lng: 37.14,
-      district: 'Истра',
+      district: 'Истринский район',
     },
     tariff: {
       value: 120,
@@ -78,7 +78,7 @@ const settlements: Settlement[] = [
       address_text: 'Московская область',
       lat: 55.85,
       lng: 37.2,
-      district: 'Истра',
+      district: 'Истринский район',
     },
     tariff: {
       value: 90,
@@ -104,7 +104,7 @@ const settlements: Settlement[] = [
       address_text: 'Московская область',
       lat: 55.83,
       lng: 37.16,
-      district: 'Истра',
+      district: 'Истринский район',
     },
     tariff: {
       value: 150,

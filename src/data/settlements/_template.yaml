@@ -18,7 +18,7 @@ location:
   lat: 55.7558
   lng: 37.6173
   map_url: https://yandex.ru/maps/org/example/1234567890 # Optional
-  district: Округ
+  district: Чеховский район
 
 tariff:
   value: 0

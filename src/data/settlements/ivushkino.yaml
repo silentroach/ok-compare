@@ -13,7 +13,7 @@ location:
   lat: 55.241385
   lng: 37.803012
   map_url: https://yandex.ru/maps/org/ivushkino/206780786655/
-  district: Домодедово
+  district: Домодедовский район
 tariff:
   - value: 5813
     unit: rub_per_lot

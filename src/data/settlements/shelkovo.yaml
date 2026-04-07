@@ -12,7 +12,7 @@ location:
   lat: 55.065422
   lng: 37.733096
   map_url: https://yandex.ru/maps/org/shelkovo_eko_klab/92228099436
-  district: Ступинский
+  district: Ступинский район
 tariff:
   value: 815
   unit: rub_per_sotka

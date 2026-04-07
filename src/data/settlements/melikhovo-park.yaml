@@ -11,7 +11,7 @@ location:
   lat: 55.072867
   lng: 37.709496
   map_url: https://yandex.ru/maps/org/rezidentsii_melikhovo_park/58500356653/
-  district: Чехов
+  district: Чеховский район
 tariff:
   value: 400
   unit: rub_per_sotka

@@ -10,7 +10,7 @@ location:
   lat: 55.147737
   lng: 37.622228
   map_url: https://yandex.ru/maps/org/sokolinaya_gora/132933571487/
-  district: Чехов
+  district: Чеховский район
 tariff:
   value: 2250
   unit: rub_per_lot

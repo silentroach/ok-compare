@@ -9,7 +9,7 @@ location:
   lat: 55.399244
   lng: 37.705706
   map_url: https://yandex.ru/maps/org/yusupovo_village/137991111690/
-  district: Домодедово
+  district: Домодедовский район
 tariff:
   value: 13000
   unit: rub_per_lot

@@ -11,7 +11,7 @@ location:
   lat: 56.008611
   lng: 36.458162
   map_url: https://genplan.kp-nordic.ru/hills/
-  district: Истра
+  district: Истринский район
 tariff:
   value: 450
   unit: rub_per_sotka

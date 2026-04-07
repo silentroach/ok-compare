@@ -11,7 +11,7 @@ location:
   lat: 55.209324
   lng: 37.426573
   map_url: https://yandex.ru/maps/?text=%D0%9A%D0%9F%20%D0%9E%D0%BB%D0%B2%D0%B8%D0%BB%D1%8C%20%D0%A7%D0%B5%D1%85%D0%BE%D0%B2
-  district: Чехов
+  district: Чеховский район
 tariff:
   value: 3000
   unit: rub_per_lot
