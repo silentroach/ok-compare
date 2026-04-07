@@ -43,7 +43,8 @@ jobs:
       - name: Build
         env:
           PUBLIC_YANDEX_MAPS_API_KEY: ${{ secrets.YANDEX_MAPS_API_KEY }}
-        run: pnpm build
+          ASTRO_BASE: /ok-compare
+        run: pnpm build:pages
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   output: 'static',
-  base: '/ok-compare',
+  base: process.env.ASTRO_BASE || '/ok-compare',
   prefetch: {
     prefetchAll: true,
     defaultStrategy: 'hover',
