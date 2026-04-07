@@ -30,10 +30,16 @@ const mockSettlement: Settlement = {
   sources: [],
 };
 
-const mockComparison: ComparisonResult = {
+const mockComparisonCheaper: ComparisonResult = {
   tariffDelta: 50,
   tariffDeltaPercent: 33,
   isCheaper: true,
+};
+
+const mockComparisonExpensive: ComparisonResult = {
+  tariffDelta: 50,
+  tariffDeltaPercent: 33,
+  isCheaper: false,
 };
 
 describe('SettlementCard', () => {
@@ -41,7 +47,7 @@ describe('SettlementCard', () => {
     const { container } = render(SettlementCard, {
       props: {
         settlement: mockSettlement,
-        comparison: mockComparison,
+        comparison: mockComparisonCheaper,
         maxTariff: 150,
         isBaseline: false,
       },
@@ -55,7 +61,7 @@ describe('SettlementCard', () => {
     const { container } = render(SettlementCard, {
       props: {
         settlement: mockSettlement,
-        comparison: mockComparison,
+        comparison: mockComparisonCheaper,
         maxTariff: 150,
         isBaseline: false,
       },
@@ -79,7 +85,7 @@ describe('SettlementCard', () => {
     const { container } = render(SettlementCard, {
       props: {
         settlement,
-        comparison: mockComparison,
+        comparison: mockComparisonCheaper,
         maxTariff: 1500,
         isBaseline: false,
       },
@@ -94,21 +100,35 @@ describe('SettlementCard', () => {
     ).toBeTruthy();
   });
 
-  it('renders comparison badge for non-baseline', () => {
+  it('renders "дешевле на" for cheaper settlement', () => {
     const { container } = render(SettlementCard, {
       props: {
         settlement: mockSettlement,
-        comparison: mockComparison,
+        comparison: mockComparisonCheaper,
         maxTariff: 150,
         isBaseline: false,
       },
     });
 
-    const badge = container.querySelector('[data-testid="comparison-badge"]');
-    expect(badge).toBeTruthy();
+    expect(container.textContent).toContain('дешевле на');
+    expect(container.textContent).toContain('50');
   });
 
-  it('renders baseline badge for baseline settlement', () => {
+  it('renders "дороже на" for more expensive settlement', () => {
+    const { container } = render(SettlementCard, {
+      props: {
+        settlement: mockSettlement,
+        comparison: mockComparisonExpensive,
+        maxTariff: 150,
+        isBaseline: false,
+      },
+    });
+
+    expect(container.textContent).toContain('дороже на');
+    expect(container.textContent).toContain('50');
+  });
+
+  it('renders "базовый тариф" for baseline settlement', () => {
     const baselineSettlement = { ...mockSettlement, is_baseline: true };
     const { container } = render(SettlementCard, {
       props: {
@@ -118,6 +138,7 @@ describe('SettlementCard', () => {
       },
     });
 
+    expect(container.textContent).toContain('базовый тариф');
     expect(container.textContent).toContain('Наш');
   });
 
@@ -125,7 +146,7 @@ describe('SettlementCard', () => {
     const { container } = render(SettlementCard, {
       props: {
         settlement: mockSettlement,
-        comparison: mockComparison,
+        comparison: mockComparisonCheaper,
         maxTariff: 150,
         isBaseline: false,
       },
@@ -139,13 +160,13 @@ describe('SettlementCard', () => {
     const { container } = render(SettlementCard, {
       props: {
         settlement: mockSettlement,
-        comparison: mockComparison,
+        comparison: mockComparisonCheaper,
         maxTariff: 150,
         isBaseline: false,
       },
     });
 
-    const link = container.querySelector('h3 a[href="/settlements/testovo/"]');
+    const link = container.querySelector('h3 a[href*="settlements/testovo/"]');
     expect(link).toBeTruthy();
   });
 
@@ -162,5 +183,9 @@ describe('SettlementCard', () => {
     expect(
       container.querySelector('[data-testid="settlement-card"]'),
     ).toBeTruthy();
+    // Should render tariff but no comparison text
+    expect(container.textContent).toContain('100 ₽/сотка');
+    expect(container.textContent).not.toContain('дешевле на');
+    expect(container.textContent).not.toContain('дороже на');
   });
 });
