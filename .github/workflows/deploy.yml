@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy
 
 on:
   workflow_run:
@@ -13,11 +13,11 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: deploy
   cancel-in-progress: false
 
 jobs:
-  build:
+  build-pages:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
@@ -54,8 +54,8 @@ jobs:
         with:
           path: dist
 
-  deploy:
-    needs: build
+  deploy-pages:
+    needs: build-pages
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -64,3 +64,125 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  build-vps:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: 10.20.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        env:
+          PUBLIC_YANDEX_MAPS_API_KEY: ${{ secrets.YANDEX_MAPS_API_KEY }}
+          ASTRO_BASE: /
+        run: pnpm build
+
+      - name: Upload VPS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vps-dist
+          path: dist
+          if-no-files-found: error
+          retention-days: 1
+
+  deploy-vps:
+    needs: build-vps
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER || 'deploy' }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+    steps:
+      - name: Download VPS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: vps-dist
+          path: dist
+
+      - name: Validate deploy settings
+        run: |
+          host="$(printf '%s' "$DEPLOY_HOST" | tr -d '\r\n' | xargs)"
+          user="$(printf '%s' "$DEPLOY_USER" | tr -d '\r\n' | xargs)"
+          path="$(printf '%s' "$DEPLOY_PATH" | tr -d '\r\n')"
+          port="$(printf '%s' "$DEPLOY_PORT" | tr -d '\r\n' | xargs)"
+
+          host="${host#http://}"
+          host="${host#https://}"
+          host="${host%/}"
+
+          test -n "$host"
+          test -n "$user"
+          test -n "$path"
+
+          case "$host" in
+            *[[:space:]]*|*/*|*@*)
+              echo "Invalid DEPLOY_HOST: $host"
+              exit 1
+              ;;
+          esac
+
+          case "$user" in
+            *[[:space:]]*|*@*|*/*)
+              echo "Invalid DEPLOY_USER: $user"
+              exit 1
+              ;;
+          esac
+
+          case "$port" in
+            ''|*[!0-9]*)
+              echo "Invalid DEPLOY_PORT: $port"
+              exit 1
+              ;;
+          esac
+
+          if [ "${path#/}" = "$path" ]; then
+            echo "DEPLOY_PATH must be absolute: $path"
+            exit 1
+          fi
+
+          {
+            echo "DEPLOY_HOST=$host"
+            echo "DEPLOY_USER=$user"
+            echo "DEPLOY_PATH=$path"
+            echo "DEPLOY_PORT=$port"
+          } >> "$GITHUB_ENV"
+
+      - name: Setup SSH key
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+
+      - name: Setup known_hosts
+        env:
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          if [ -n "$DEPLOY_KNOWN_HOSTS" ]; then
+            printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          else
+            ssh-keyscan -T 10 -p "$DEPLOY_PORT" -H "$DEPLOY_HOST" > ~/.ssh/known_hosts
+          fi
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Sync build to server
+        run: |
+          rsync -az --delete --mkpath --chmod=D755,F644 -e "ssh -p $DEPLOY_PORT" dist/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/"
