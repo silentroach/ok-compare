@@ -145,6 +145,18 @@ export function formatTariffAuto(tariff: Tariff): string {
  * Format original tariff (before normalization).
  */
 export function formatTariffBase(tariff: Tariff): string {
+  if ('parts' in tariff) {
+    return tariff.parts
+      .map((item) => {
+        const val = formatCurrency(item.value);
+        if (item.unit === 'rub_per_sotka') {
+          return `${val}/сотка`;
+        }
+        return `${val}/участок`;
+      })
+      .join(' + ');
+  }
+
   const val = formatCurrency(tariff.value);
   if (tariff.unit === 'rub_per_sotka') {
     return `${val}/сотка`;
@@ -152,24 +164,71 @@ export function formatTariffBase(tariff: Tariff): string {
   return `${val}/участок`;
 }
 
+export interface TariffCalcRow {
+  title: string;
+  source: string;
+  formula: string;
+}
+
+export interface TariffCalc {
+  intro: string;
+  assumption?: string;
+  rows: TariffCalcRow[];
+  total: string;
+}
+
 /**
- * Build formula tooltip for estimated normalized tariff.
+ * Generic tooltip for compact cards.
  */
 export function getTariffHint(tariff: Tariff): string | undefined {
   if (!tariff.normalized_is_estimate) return;
+  return 'Тариф приведен к сотке автоматически.';
+}
 
-  const size = 10;
-  const sotok = word(size, 'сотка', 'сотки', 'соток');
-  const m = months(tariff.period);
-  const mons = word(m, 'месяц', 'месяца', 'месяцев');
-  const monthly = tariff.value / m;
-  const normalized = monthly / size;
-  const source =
-    tariff.unit === 'rub_per_lot'
-      ? 'Тариф указан за участок.'
-      : 'Тариф указан фиксированной суммой за участок.';
+/**
+ * Detailed normalization breakdown for settlement page.
+ */
+export function getTariffCalc(tariff: Tariff): TariffCalc | undefined {
+  const list = 'parts' in tariff ? tariff.parts : [tariff];
+  const multi = list.length > 1;
+  const lot = list.some((item) => item.unit !== 'rub_per_sotka');
 
-  return `${source} Для сравнения переводим его в ₽/сотка с допущением, что площадь участка — ${size} ${sotok}. Пересчет: (${num(tariff.value)} ₽ / ${m} ${mons}) / ${size} ${sotok} = ${num(normalized)} ₽/сотка в месяц.`;
+  if (!multi && !lot) return;
+
+  const rows = list.map((item, i) => {
+    const m = months(item.period);
+    const mons = word(m, 'месяц', 'месяца', 'месяцев');
+    const monthly = item.value / m;
+    const normalized = item.unit === 'rub_per_sotka' ? monthly : monthly / 10;
+    const title = multi ? `Часть ${i + 1}` : 'Тариф';
+    const source =
+      item.unit === 'rub_per_sotka'
+        ? 'Указан за сотку.'
+        : item.unit === 'rub_per_lot'
+          ? 'Указан за участок.'
+          : 'Указан фиксированной суммой за участок.';
+    const formula =
+      item.unit === 'rub_per_sotka'
+        ? `${num(item.value)} ₽ / ${m} ${mons} = ${num(normalized)} ₽/сотка в месяц`
+        : `(${num(item.value)} ₽ / ${m} ${mons}) / 10 соток = ${num(normalized)} ₽/сотка в месяц`;
+
+    return { title, source, formula };
+  });
+
+  const total = list.reduce((sum, item) => {
+    const monthly = item.value / months(item.period);
+    if (item.unit === 'rub_per_sotka') return sum + monthly;
+    return sum + monthly / 10;
+  }, 0);
+
+  return {
+    intro: multi
+      ? 'Тариф состоит из нескольких частей. Для сравнения каждая часть приведена к ₽/сотка в месяц, затем значения суммированы.'
+      : 'Тариф приведен к ₽/сотка в месяц для корректного сравнения.',
+    ...(lot ? { assumption: 'Допущение: 1 участок = 10 соток.' } : {}),
+    rows,
+    total: `${num(total)} ₽/сотка в месяц`,
+  };
 }
 
 /**

@@ -15,7 +15,6 @@ tariff:
   value: 495
   unit: rub_per_sotka
   period: month
-  note: не подтверждено
 infrastructure:
   gas: yes
   water: yes

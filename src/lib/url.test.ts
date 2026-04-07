@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { withBase } from './url';
+import { telegram, withBase } from './url';
 
 describe('withBase', () => {
   const base = import.meta.env.BASE_URL?.replace(/\/$/, '') ?? '';
@@ -18,6 +18,18 @@ describe('withBase', () => {
   it('prepends base to absolute internal paths', () => {
     expect(withBase('/settlements/usadby/')).toBe(
       `${base}/settlements/usadby/`,
+    );
+  });
+});
+
+describe('telegram', () => {
+  it('builds URL from plain channel name', () => {
+    expect(telegram('shelkovoecoclub')).toBe('https://t.me/shelkovoecoclub');
+  });
+
+  it('strips @ prefix and spaces', () => {
+    expect(telegram('  @shelkovoecoclub  ')).toBe(
+      'https://t.me/shelkovoecoclub',
     );
   });
 });

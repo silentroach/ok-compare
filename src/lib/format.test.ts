@@ -8,6 +8,7 @@ import {
   formatTariffAuto,
   formatTariffBase,
   getTariffHint,
+  getTariffCalc,
 } from './format';
 
 describe('Format Module', () => {
@@ -179,6 +180,30 @@ describe('Format Module', () => {
         }),
       ).toBe('12\u00A0000 ₽/участок');
     });
+
+    it('should format multi-part tariff as combined formula', () => {
+      expect(
+        formatTariffBase({
+          value: 5813,
+          unit: 'rub_per_lot',
+          period: 'month',
+          normalized_per_sotka_month: 681.3,
+          normalized_is_estimate: true,
+          parts: [
+            {
+              value: 5813,
+              unit: 'rub_per_lot',
+              period: 'month',
+            },
+            {
+              value: 100,
+              unit: 'rub_per_sotka',
+              period: 'month',
+            },
+          ],
+        }),
+      ).toBe('5\u00A0813 ₽/участок + 100 ₽/сотка');
+    });
   });
 
   describe('getTariffHint', () => {
@@ -194,21 +219,46 @@ describe('Format Module', () => {
       ).toBe(undefined);
     });
 
-    it('should return formula for estimated tariffs', () => {
+    it('should return generic hint for estimated tariffs', () => {
       const hint = getTariffHint({
-        value: 12000,
+        value: 5813,
         unit: 'rub_per_lot',
         period: 'month',
-        normalized_per_sotka_month: 1200,
+        normalized_per_sotka_month: 681.3,
         normalized_is_estimate: true,
+        parts: [
+          {
+            value: 5813,
+            unit: 'rub_per_lot',
+            period: 'month',
+          },
+          {
+            value: 100,
+            unit: 'rub_per_sotka',
+            period: 'month',
+          },
+        ],
       });
 
-      expect(hint).toContain('Пересчет');
-      expect(hint).toContain('10 соток');
+      expect(hint).toBe('Тариф приведен к сотке автоматически.');
+    });
+  });
+
+  describe('getTariffCalc', () => {
+    it('should return undefined for exact single tariff', () => {
+      expect(
+        getTariffCalc({
+          value: 1000,
+          unit: 'rub_per_sotka',
+          period: 'month',
+          normalized_per_sotka_month: 1000,
+          normalized_is_estimate: false,
+        }),
+      ).toBe(undefined);
     });
 
-    it('should use correct Russian plural forms in formula', () => {
-      const hint = getTariffHint({
+    it('should build detailed calc for estimated single tariff', () => {
+      const calc = getTariffCalc({
         value: 9000,
         unit: 'rub_per_lot',
         period: 'quarter',
@@ -216,8 +266,38 @@ describe('Format Module', () => {
         normalized_is_estimate: true,
       });
 
-      expect(hint).toContain('3 месяца');
-      expect(hint).toContain('10 соток');
+      expect(calc?.intro).toContain('приведен');
+      expect(calc?.assumption).toContain('1 участок = 10 соток');
+      expect(calc?.rows).toHaveLength(1);
+      expect(calc?.rows[0]?.formula).toContain('10 соток');
+      expect(calc?.total).toContain('300');
+    });
+
+    it('should build detailed calc for multi-part tariff', () => {
+      const calc = getTariffCalc({
+        value: 5813,
+        unit: 'rub_per_lot',
+        period: 'month',
+        normalized_per_sotka_month: 681.3,
+        normalized_is_estimate: true,
+        parts: [
+          {
+            value: 5813,
+            unit: 'rub_per_lot',
+            period: 'month',
+          },
+          {
+            value: 100,
+            unit: 'rub_per_sotka',
+            period: 'month',
+          },
+        ],
+      });
+
+      expect(calc?.intro).toContain('нескольких частей');
+      expect(calc?.rows).toHaveLength(2);
+      expect(calc?.rows[0]?.title).toBe('Часть 1');
+      expect(calc?.total).toContain('681');
     });
   });
 

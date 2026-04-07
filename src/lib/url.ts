@@ -19,3 +19,8 @@ export function withBase(url: string): string {
 
   return `${base}${path}`;
 }
+
+export function telegram(handle: string): string {
+  const clean = handle.trim().replace(/^@/, '');
+  return `https://t.me/${clean}`;
+}

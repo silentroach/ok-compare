@@ -87,7 +87,11 @@ describe('SettlementCard', () => {
 
     expect(container.textContent).toContain('~1');
     expect(container.textContent).toContain('₽/сотка');
-    expect(container.querySelector('[title*="Пересчет"]')).toBeTruthy();
+    expect(
+      container.querySelector(
+        '[title="Тариф приведен к сотке автоматически."]',
+      ),
+    ).toBeTruthy();
   });
 
   it('renders comparison badge for non-baseline', () => {

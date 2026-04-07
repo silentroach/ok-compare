@@ -72,18 +72,38 @@ function norm(value: number, unit: TariffUnit, period: TariffPeriod): number {
   return monthly / LOT;
 }
 
+const TariffPartSchema = z.object({
+  value: z.number().nonnegative(),
+  unit: TariffUnitEnum,
+  period: TariffPeriodEnum,
+  note: z.string().optional(),
+});
+
 export const TariffSchema = z
-  .object({
-    value: z.number().nonnegative(),
-    unit: TariffUnitEnum,
-    period: TariffPeriodEnum,
-    note: z.string().optional(),
-  })
-  .transform((item) => ({
-    ...item,
-    normalized_per_sotka_month: norm(item.value, item.unit, item.period),
-    normalized_is_estimate: item.unit !== 'rub_per_sotka',
-  }));
+  .union([TariffPartSchema, z.array(TariffPartSchema).min(1)])
+  .transform((raw) => {
+    const list = Array.isArray(raw) ? raw : [raw];
+    const first = list[0];
+    const total = list.reduce(
+      (sum, item) => sum + norm(item.value, item.unit, item.period),
+      0,
+    );
+    const estimated = list.some((item) => item.unit !== 'rub_per_sotka');
+    const notes = list.flatMap((item) => (item.note ? [item.note] : []));
+    const note = notes.length ? [...new Set(notes)].join('; ') : undefined;
+
+    const base = {
+      value: first.value,
+      unit: first.unit,
+      period: first.period,
+      normalized_per_sotka_month: total,
+      normalized_is_estimate: estimated,
+      ...(note ? { note } : {}),
+    };
+
+    if (list.length === 1) return base;
+    return { ...base, parts: list };
+  });
 export type Tariff = z.infer<typeof TariffSchema>;
 
 // Infrastructure schema - all fields optional
@@ -165,6 +185,13 @@ export const ManagementCompanySchema = z.union([
 ]);
 export type ManagementCompany = z.infer<typeof ManagementCompanySchema>;
 
+export const TelegramSchema = z
+  .string()
+  .trim()
+  .regex(/^@?[A-Za-z0-9_]{5,32}$/)
+  .transform((item) => item.replace(/^@/, ''));
+export type Telegram = z.infer<typeof TelegramSchema>;
+
 // Main Settlement schema
 export const SettlementSchema = z.object({
   name: z.string().min(1),
@@ -174,6 +201,7 @@ export const SettlementSchema = z.object({
     .min(1)
     .regex(/^[a-z0-9-]+$/),
   website: z.string().url(),
+  telegram: TelegramSchema.optional(),
   management_company: ManagementCompanySchema.optional(),
   is_baseline: z.boolean().default(false),
   location: LocationSchema,

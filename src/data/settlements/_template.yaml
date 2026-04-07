@@ -6,6 +6,8 @@ name: Название поселка
 short_name: Поселок
 slug: settlement-slug
 website: https://example.com
+# Optional: Telegram channel name (without @)
+# telegram: example
 management_company:
   title: УК Название
   url: https://example.com
@@ -25,6 +27,16 @@ tariff:
   # normalized_per_sotka_month is computed automatically.
   # If unit is rub_per_lot or rub_fixed, UI shows ~ and uses 10 sotok per lot.
   note: Комментарий к тарифу
+
+# Alternative for multi-part tariff:
+# tariff:
+#   - value: 5813
+#     unit: rub_per_lot
+#     period: month
+#     note: Комментарий к тарифу
+#   - value: 100
+#     unit: rub_per_sotka
+#     period: month
 
 # Infrastructure - all fields are optional
 # Use only valid enum values:

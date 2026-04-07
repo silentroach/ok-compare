@@ -39,6 +39,7 @@ name: Коттеджный поселок Шелково # Полное назв
 short_name: Шелково # Короткое название
 slug: shelkovo # URL-friendly идентификатор
 website: https://shelkovo.ru # Официальный сайт
+telegram: shelkovo # Telegram-канал (опционально, без @)
 management_company:
   title: УК Шелково
   url: https://example.com
@@ -58,6 +59,15 @@ tariff:
   unit: rub_per_sotka # rub_per_sotka | rub_per_lot | rub_fixed
   period: month # month | quarter | year
   note: Тариф за сотку в месяц # Примечание
+
+# Для двухкомпонентного/многокомпонентного тарифа можно передать список:
+# tariff:
+#   - value: 5813
+#     unit: rub_per_lot
+#     period: month
+#   - value: 100
+#     unit: rub_per_sotka
+#     period: month
 
 # normalized_per_sotka_month НЕ заполняется в YAML:
 # поле считается автоматически в схеме.
@@ -120,7 +130,9 @@ sources:
 
 ### Нормализация тарифа
 
-- `normalized_per_sotka_month` вычисляется автоматически из `value + unit + period`.
+- `normalized_per_sotka_month` вычисляется автоматически.
+- Для одного тарифа (object) используется `value + unit + period`.
+- Для списка тарифов (array) нормализуется каждый элемент и берется сумма.
 - Формулы:
   - `rub_per_sotka`: `value / period`
   - `rub_per_lot`: `(value / period) / 10`

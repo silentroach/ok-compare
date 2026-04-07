@@ -1,0 +1,41 @@
+# Вне схемы: на официальном сайте указано, что все участки проданы.
+# Вне схемы: на официальном сайте указано 1045 участков.
+name: КП Соколиная Гора
+short_name: Соколиная Гора
+slug: sokolinaya-gora
+website: https://skgora.ru/
+is_baseline: false
+location:
+  address_text: Московская область, городской округ Чехов, деревня Сокольниково
+  lat: 55.147737
+  lng: 37.622228
+  map_url: https://yandex.ru/maps/org/sokolinaya_gora/132933571487/
+  district: Чехов
+tariff:
+  value: 2250
+  unit: rub_per_lot
+  period: month
+  note: тариф взят с сайта
+infrastructure:
+  gas: no
+  checkpoints: yes
+  security: yes
+  retail_or_services: yes
+common_spaces:
+  playgrounds: yes
+  sports: yes
+service_model:
+  garbage_collection: yes
+  snow_removal: yes
+  road_cleaning: yes
+sources:
+  - title: Соколиная Гора — официальный сайт
+    url: https://skgora.ru/
+    type: official
+    date_checked: 2026-04-07
+    comment: Ежемесячная оплата 2250 руб/мес за участок до 10 соток, координаты, газ в перспективе, магазин у первого КПП, детские и спортивные площадки.
+  - title: Яндекс Карты — Соколиная гора
+    url: https://yandex.ru/maps/org/sokolinaya_gora/132933571487/
+    type: community
+    date_checked: 2026-04-07
+    comment: Карточка объекта и адрес поселка.

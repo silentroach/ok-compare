@@ -1,0 +1,63 @@
+# Вне схемы: на сайте поселка указано расстояние 38 км от МКАД по Каширскому шоссе.
+# Вне схемы: на сайте есть новость о Telegram-канале поселка, но публичная ссылка на канал не раскрыта.
+name: КП Ивушкино
+short_name: Ивушкино
+slug: ivushkino
+website: https://ivushkino.ru/
+management_company:
+  title: СТСН Поселок Ивушкино
+  url: https://ivushkino.ru/
+is_baseline: false
+location:
+  address_text: Московская область, городской округ Домодедово, деревня Матчино
+  lat: 55.241385
+  lng: 37.803012
+  map_url: https://yandex.ru/maps/org/ivushkino/206780786655/
+  district: Домодедово
+tariff:
+  - value: 5813
+    unit: rub_per_lot
+    period: month
+    note: тариф взят с сайта
+  - value: 100
+    unit: rub_per_sotka
+    period: month
+infrastructure:
+  gas: yes
+  water: yes
+  sewage: yes
+  checkpoints: yes
+  security: yes
+  fencing: yes
+common_spaces:
+  playgrounds: yes
+  sports: yes
+  water_access: yes
+  beach_zones: yes
+service_model: {}
+sources:
+  - title: Ивушкино — главная страница
+    url: https://ivushkino.ru/
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Инфраструктура поселка: магистральный газ, центральные вода и канализация, охрана, пляж, детские и спортивные площадки, закрытая территория.'
+  - title: Ивушкино — Как нас найти
+    url: https://ivushkino.ru/informatsiya-dlya-zhitelei
+    type: official
+    date_checked: 2026-04-07
+    comment: Публикация ссылки на КПП Центральный на Яндекс Картах.
+  - title: Ивушкино — Тарифы и взносы текущего 2023 года
+    url: https://ivushkino.ru/tarify-74cc32e5-f8ce-44af-b35d-50ddf18db1fd
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Тарифы 2023 года на электроэнергию 6,73 руб за 1 кВтч и газ 6,88 руб за 1 м3, а также взносы в дорожный фонд.'
+  - title: СудАкт — дело № 2-3656/2025
+    url: https://sudact.ru/regular/doc/VrpJHOb53FmJ/
+    type: media
+    date_checked: 2026-04-07
+    comment: 'В решении приведен размещенный на ivushkino.ru двухкомпонентный взнос 2024-2025: 5813 руб в месяц с участка и 100 руб в месяц с сотки.'
+  - title: Яндекс Карты — Ивушкино
+    url: https://yandex.ru/maps/org/ivushkino/206780786655/
+    type: community
+    date_checked: 2026-04-07
+    comment: Карточка объекта и адрес в деревне Матчино.

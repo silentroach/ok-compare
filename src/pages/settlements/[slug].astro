@@ -6,11 +6,12 @@ import {
   formatCurrency,
   formatTariffAuto,
   formatTariffBase,
-  getTariffHint,
+  getTariffCalc,
   formatDistance,
   formatPercentage,
   calculateDistance,
 } from '../../lib/format';
+import { telegram } from '../../lib/url';
 import type { Settlement } from '../../lib/schema';
 import InfrastructureTable from '../../components/InfrastructureTable.svelte';
 import CommonSpacesTable from '../../components/CommonSpacesTable.svelte';
@@ -67,6 +68,10 @@ const company = settlement.management_company;
 const companyTitle =
   typeof company === 'string' ? company : (company?.title ?? '');
 const companyUrl = typeof company === 'object' ? company.url : '';
+const tg = settlement.telegram ? telegram(settlement.telegram) : undefined;
+const tariffCalc = getTariffCalc(settlement.tariff);
+const tipDesktopId = `${settlement.slug}-tariff-tip-desktop`;
+const tipMobileId = `${settlement.slug}-tariff-tip-mobile`;
 const heroMap = hasPoint
   ? [
       {
@@ -178,6 +183,39 @@ const heroMap = hasPoint
                       </a>
                     )
                   }
+                  {
+                    tg && (
+                      <a
+                        href={tg}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Открыть Telegram-канал поселка"
+                        class="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                        title="Перейти в Telegram-канал"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="h-6 w-6"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M3 11.5L21 3 13 21l-2.5-7.5L3 11.5z"
+                          />
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M10.5 13.5L21 3"
+                          />
+                        </svg>
+                      </a>
+                    )
+                  }
                   <a
                     href={settlement.location.map_url ??
                       `https://yandex.ru/maps/?pt=${settlement.location.lng},${settlement.location.lat}&z=15&l=map`}
@@ -245,19 +283,58 @@ const heroMap = hasPoint
             class={`grid gap-3 ${settlement.is_baseline ? 'grid-cols-2' : 'grid-cols-3'}`}
           >
             <div
-              class="rounded-2xl border border-white/60 bg-white/50 p-4 backdrop-blur-[2px]"
+              class="relative z-20 rounded-2xl border border-white/60 bg-white/50 p-4 backdrop-blur-[2px]"
             >
               <p
                 class="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
               >
                 Тариф
               </p>
-              <p
-                class="text-xl font-bold text-foreground"
-                title={getTariffHint(settlement.tariff)}
-              >
-                {formatTariffAuto(settlement.tariff)}
-              </p>
+              <div class="group relative inline-flex max-w-full">
+                <span
+                  class={`text-xl font-bold text-foreground ${tariffCalc ? 'cursor-help' : ''}`}
+                  tabindex={tariffCalc ? 0 : undefined}
+                  aria-describedby={tariffCalc ? tipDesktopId : undefined}
+                >
+                  {formatTariffAuto(settlement.tariff)}
+                </span>
+                {
+                  tariffCalc && (
+                    <div
+                      id={tipDesktopId}
+                      role="tooltip"
+                      class="pointer-events-none absolute left-0 top-full z-50 mt-2 hidden w-[min(88vw,25rem)] rounded-xl border border-border bg-background/95 p-3 text-left shadow-xl backdrop-blur-sm group-hover:block group-focus-within:block"
+                    >
+                      <p class="text-xs text-muted-foreground">
+                        {tariffCalc.intro}
+                      </p>
+                      {tariffCalc.assumption && (
+                        <p class="mt-1 text-xs text-muted-foreground">
+                          {tariffCalc.assumption}
+                        </p>
+                      )}
+                      <div class="mt-2 space-y-2">
+                        {tariffCalc.rows.map((item) => (
+                          <div>
+                            <p class="text-xs font-semibold text-foreground">
+                              {item.title}
+                            </p>
+                            <p class="text-xs text-muted-foreground">
+                              {item.source}
+                            </p>
+                            <p class="text-xs text-foreground">
+                              {item.formula}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                      <p class="mt-2 text-xs font-semibold text-foreground">
+                        Итого: {tariffCalc.total}
+                      </p>
+                    </div>
+                  )
+                }
+              </div>
               {
                 settlement.tariff.normalized_is_estimate && (
                   <p class="mt-1 text-xs text-muted-foreground opacity-75">
@@ -367,6 +444,39 @@ const heroMap = hasPoint
                   </a>
                 )
               }
+              {
+                tg && (
+                  <a
+                    href={tg}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Открыть Telegram-канал поселка"
+                    class="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    title="Перейти в Telegram-канал"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M3 11.5L21 3 13 21l-2.5-7.5L3 11.5z"
+                      />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10.5 13.5L21 3"
+                      />
+                    </svg>
+                  </a>
+                )
+              }
               <a
                 href={settlement.location.map_url ??
                   `https://yandex.ru/maps/?pt=${settlement.location.lng},${settlement.location.lat}&z=15&l=map`}
@@ -442,16 +552,58 @@ const heroMap = hasPoint
       </h2>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="rounded-xl border border-border bg-muted-soft p-4">
+        <div
+          class="relative z-20 rounded-xl border border-border bg-muted-soft p-4"
+        >
           <h3
             class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground"
           >
             Тариф на обслуживание
           </h3>
-          <div class="text-3xl font-bold text-foreground">
-            <span title={getTariffHint(settlement.tariff)}
-              >{formatTariffAuto(settlement.tariff)}</span
+          <div
+            class="group relative inline-flex max-w-full text-3xl font-bold text-foreground"
+          >
+            <span
+              class={tariffCalc ? 'cursor-help' : ''}
+              tabindex={tariffCalc ? 0 : undefined}
+              aria-describedby={tariffCalc ? tipMobileId : undefined}
             >
+              {formatTariffAuto(settlement.tariff)}
+            </span>
+            {
+              tariffCalc && (
+                <div
+                  id={tipMobileId}
+                  role="tooltip"
+                  class="pointer-events-none absolute left-0 top-full z-50 mt-2 hidden w-[min(92vw,25rem)] rounded-xl border border-border bg-background/95 p-3 text-left text-sm shadow-xl backdrop-blur-sm group-hover:block group-focus-within:block"
+                >
+                  <p class="text-xs text-muted-foreground">
+                    {tariffCalc.intro}
+                  </p>
+                  {tariffCalc.assumption && (
+                    <p class="mt-1 text-xs text-muted-foreground">
+                      {tariffCalc.assumption}
+                    </p>
+                  )}
+                  <div class="mt-2 space-y-2">
+                    {tariffCalc.rows.map((item) => (
+                      <div>
+                        <p class="text-xs font-semibold text-foreground">
+                          {item.title}
+                        </p>
+                        <p class="text-xs text-muted-foreground">
+                          {item.source}
+                        </p>
+                        <p class="text-xs text-foreground">{item.formula}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <p class="mt-2 text-xs font-semibold text-foreground">
+                    Итого: {tariffCalc.total}
+                  </p>
+                </div>
+              )
+            }
           </div>
           {
             settlement.tariff.normalized_is_estimate && (
@@ -512,7 +664,7 @@ const heroMap = hasPoint
     </section>
 
     <section
-      class="ui-shell mb-6 p-6 md:mb-8 lg:-mt-[3em]"
+      class="ui-shell mb-6 p-6 md:mb-8 lg:-mt-[2em]"
       data-testid="infrastructure-section"
     >
       <InfrastructureTable
