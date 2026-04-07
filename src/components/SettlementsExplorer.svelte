@@ -102,7 +102,11 @@
         if (!comparison) return true;
         if (priceFilter === 'cheaper') return comparison.isCheaper;
         if (priceFilter === 'more_expensive')
-          return !comparison.isCheaper && !s.is_baseline;
+          return (
+            !comparison.isCheaper &&
+            comparison.tariffDelta !== 0 &&
+            !s.is_baseline
+          );
         return true;
       });
     }
