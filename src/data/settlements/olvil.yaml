@@ -1,0 +1,80 @@
+name: КП ОлВиль
+short_name: ОлВиль
+slug: olvil
+website: https://olvil.ru/
+management_company:
+  title: Ассоциация «ОЛВИЛЬ»
+  url: https://olvil.ru/
+is_baseline: false
+location:
+  address_text: МО, округ Чехов, д. Большое Петровское
+  lat: 55.209324
+  lng: 37.426573
+  map_url: https://yandex.ru/maps/?text=%D0%9A%D0%9F%20%D0%9E%D0%BB%D0%B2%D0%B8%D0%BB%D1%8C%20%D0%A7%D0%B5%D1%85%D0%BE%D0%B2
+  district: Чехов
+tariff:
+  value: 3000
+  unit: rub_per_lot
+  period: month
+infrastructure:
+  roads: asphalt
+  sidewalks: yes
+  lighting: yes
+  gas: yes
+  water: yes
+  sewage: no
+  checkpoints: yes
+  security: yes
+  fencing: yes
+  admin_building: yes
+common_spaces:
+  playgrounds: yes
+  sports: yes
+  walking_routes: yes
+  water_access: yes
+  beach_zones: yes
+service_model:
+  garbage_collection: yes
+  road_cleaning: yes
+  landscaping: yes
+sources:
+  - title: ОлВиль — официальный сайт
+    url: https://olvil.ru/
+    type: official
+    date_checked: 2026-04-07
+    comment: На странице проекта заявлены центральное водоснабжение, магистральный газ, асфальтированные дороги, охраняемая территория, детские и спортивные площадки, парковые зоны, рыбалка и пляж; в контактах указана управляющая компания КП.
+  - title: Яндекс Карты — КП Олвиль
+    url: https://yandex.ru/maps/?text=%D0%9A%D0%9F%20%D0%9E%D0%BB%D0%B2%D0%B8%D0%BB%D1%8C%20%D0%A7%D0%B5%D1%85%D0%BE%D0%B2
+    type: community
+    date_checked: 2026-04-07
+    comment: По поиску и геокодеру Яндекса объект КП Олвиль определяется в д. Большое Петровское; координаты точки 55.209324, 37.426573.
+  - title: ОлВиль — протокол общего собрания от 25.05.2020
+    url: https://olvil.ru/files/docs/%D0%A1%D0%BE%D0%B1%D1%80%D0%B0%D0%BD%D0%B8%D0%B5%20%D0%BF%D0%BE%D1%81%D1%91%D0%BB%D0%BA%D0%B0%20%E2%84%962%20%D0%BE%D1%82%2025.05.2020%D0%B3./%D0%9F%D1%80%D0%BE%D1%82%D0%BE%D0%BA%D0%BE%D0%BB%20%D0%BE%D0%B1%D1%89%D0%B5%D0%B3%D0%BE%20%D1%81%D0%BE%D0%B1%D1%80%D0%B0%D0%BD%D0%B8%D1%8F%20%D0%90%D1%81%D1%81%D0%BE%D1%86%D0%B8%D0%B0%D1%86%D0%B8%D0%B8%20%D0%BE%D1%82%2025.05.2020%D0%B3.pdf
+    type: official
+    date_checked: 2026-04-07
+    comment: Протокол подтверждает тариф членского взноса 3000 руб. в месяц с одного участка, действующий с 01.01.2020 по 31.12.2022.
+  - title: ОлВиль — протокол общего собрания от 14.12.2019
+    url: https://olvil.ru/files/docs/%D0%A1%D0%BE%D0%B1%D1%80%D0%B0%D0%BD%D0%B8%D0%B5%20%D0%BF%D0%BE%D1%81%D1%91%D0%BB%D0%BA%D0%B0%20%E2%84%961%20%D0%BE%D1%82%2014.12.2019%D0%B3./%D0%9F%D1%80%D0%BE%D1%82%D0%BE%D0%BA%D0%BE%D0%BB%20%D0%BE%D0%B1%D1%89%D0%B5%D0%B3%D0%BE%20%D1%81%D0%BE%D0%B1%D1%80%D0%B0%D0%BD%D0%B8%D1%8F%20%D0%90%D1%81%D1%81%D0%BE%D1%86%D0%B8%D0%B0%D1%86%D0%B8%D0%B8%20%D0%BE%D1%82%2014.12.2019%D0%B3.pdf
+    type: official
+    date_checked: 2026-04-07
+    comment: В перечне услуг с 01.04.2019 указаны сторожевая служба, содержание инфраструктуры, озеленение, вывоз бытового мусора, уборка дорог и тротуаров, а также оплата электричества для освещения улиц поселка.
+  - title: ОлВиль — протокол общего собрания от 19.03.2022
+    url: https://olvil.ru/files/docs/%D0%A1%D0%BE%D0%B1%D1%80%D0%B0%D0%BD%D0%B8%D0%B5%20%D0%BF%D0%BE%D1%81%D1%91%D0%BB%D0%BA%D0%B0%20%E2%84%965%20%D0%BE%D1%82%2019.03.2022%20%D0%B3./%D0%9F%D1%80%D0%BE%D1%82%D0%BE%D0%BA%D0%BE%D0%BB%20%D0%BE%D0%B1%D1%89%D0%B5%D0%B3%D0%BE%20%D1%81%D0%BE%D0%B1%D1%80%D0%B0%D0%BD%D0%B8%D1%8F%20%D0%90%D1%81%D1%81%D0%BE%D1%86%D0%B8%D0%B0%D1%86%D0%B8%D0%B8%20%D0%BE%D1%82%2019.03.2022%D0%B3.pdf
+    type: official
+    date_checked: 2026-04-07
+    comment: В протоколе указан адрес материалов собрания в КП Олвиль в д. Большое Петровское и перечислено административное здание Ассоциации.
+  - title: Domzamkad — ОлВиль
+    url: https://www.domzamkad.ru/villages/olvil.html
+    type: media
+    date_checked: 2026-04-07
+    comment: В карточке, измененной 20.12.2025, указаны коммунальные платежи 3000 р/мес, охрана с КПП и ЧОП, а по канализации указан септик.
+  - title: Новострой.ру — КП ОлВиль
+    url: https://www.novostroy.ru/buildings/olvil/
+    type: media
+    date_checked: 2026-04-07
+    comment: На странице, обновленной 06.04.2026, указано, что поселок сдан; территория огорожена и охраняется, на въезде установлен КПП; также описаны детские площадки, футбольное поле, парковая зона и пляж.
+  - title: Domclick — дом в КП ОлВиль
+    url: https://domclick.ru/card/sale__house__2065135628
+    type: personal
+    date_checked: 2026-04-07
+    comment: 'Пользователь передал текст объявления: в нем указаны газ, централизованный водопровод, ЛОС, охрана с КПП, асфальтированные дороги, тротуары, игровые площадки и единый платеж 3 тыс. руб. в месяц.'
