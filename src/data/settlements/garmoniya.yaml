@@ -1,0 +1,51 @@
+# Вне схемы: в поселке указано 138 участков.
+# Вне схемы: в поселке указано 15 кВт электричества на дом.
+# Вне схемы: в документах указана общая площадь поселка 15,6 га.
+name: КП Гармония
+short_name: Гармония
+slug: garmoniya
+website: https://garmoniyastupino.ru/
+is_baseline: false
+location:
+  address_text: Московская область, городской округ Ступино, КП Гармония
+  lat: 54.989832
+  lng: 38.130717
+  map_url: https://yandex.ru/maps/org/garmoniya/15271861429/
+  district: Ступино
+tariff:
+  value: 3000
+  unit: rub_per_lot
+  period: month
+  note: тариф взят с сайта
+infrastructure:
+  gas: yes
+  water: no
+  sewage: no
+  checkpoints: yes
+  security: yes
+  fencing: yes
+common_spaces:
+  playgrounds: yes
+  sports: yes
+service_model: {}
+sources:
+  - title: Гармония — Общая информация покупателям
+    url: https://garmoniyastupino.ru/informacziya-pokupatelyam/
+    type: official
+    date_checked: 2026-04-07
+    comment: Тариф 3000 руб/мес с участка, данные о газе, индивидуальной скважине и септике.
+  - title: Гармония — официальный сайт
+    url: https://garmoniyastupino.ru/
+    type: official
+    date_checked: 2026-04-07
+    comment: Адрес, координаты, сведения об ограждении, охране и площадках.
+  - title: Гармония — Наши документы
+    url: https://garmoniyastupino.ru/nashi-dokumenty/
+    type: official
+    date_checked: 2026-04-07
+    comment: Общая площадь поселка 15,6 га и описание юридического статуса участка.
+  - title: Яндекс Карты — Гармония
+    url: https://yandex.ru/maps/org/garmoniya/15271861429/
+    type: community
+    date_checked: 2026-04-07
+    comment: Карточка объекта, адрес и ссылка на официальный сайт.
