@@ -8,7 +8,7 @@ management_company:
   url: https://ok-komfort.ru/
 is_baseline: true
 location:
-  address_text: Ступинский район, Московская область
+  address_text: МО, округ Ступино
   lat: 55.065422
   lng: 37.733096
   map_url: https://yandex.ru/maps/org/shelkovo_eko_klab/92228099436

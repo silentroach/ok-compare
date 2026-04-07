@@ -9,7 +9,7 @@ management_company:
   url: https://ivushkino.ru/
 is_baseline: false
 location:
-  address_text: Московская область, городской округ Домодедово, деревня Матчино
+  address_text: МО, округ Домодедово, д. Матчино
   lat: 55.241385
   lng: 37.803012
   map_url: https://yandex.ru/maps/org/ivushkino/206780786655/

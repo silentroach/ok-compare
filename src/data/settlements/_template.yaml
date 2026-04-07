@@ -14,7 +14,7 @@ management_company:
 is_baseline: false
 
 location:
-  address_text: Московская область, округ
+  address_text: МО, округ Чехов
   lat: 55.7558
   lng: 37.6173
   map_url: https://yandex.ru/maps/org/example/1234567890 # Optional

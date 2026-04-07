@@ -7,7 +7,7 @@ slug: lucky-place
 website: https://kpluckyplace.ru/
 is_baseline: false
 location:
-  address_text: Московская область, городской округ Ступино, деревня Гридюкино
+  address_text: МО, округ Ступино, д. Гридюкино
   lat: 55.092541
   lng: 37.778164
   map_url: https://yandex.ru/maps/org/lucky_place/163515554292/

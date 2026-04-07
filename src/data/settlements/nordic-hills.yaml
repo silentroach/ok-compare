@@ -7,7 +7,7 @@ management_company:
   url: https://uslugi.kp-nordic.ru/
 is_baseline: false
 location:
-  address_text: Московская область, м.о. Истра
+  address_text: МО, округ Истра
   lat: 56.008611
   lng: 36.458162
   map_url: https://genplan.kp-nordic.ru/hills/
