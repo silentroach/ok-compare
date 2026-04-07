@@ -92,7 +92,7 @@ jobs:
         env:
           PUBLIC_YANDEX_MAPS_API_KEY: ${{ secrets.YANDEX_MAPS_API_KEY }}
           ASTRO_BASE: /
-        run: pnpm build
+        run: pnpm build:vps
 
       - name: Upload VPS artifact
         uses: actions/upload-artifact@v4
