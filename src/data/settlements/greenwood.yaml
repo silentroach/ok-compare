@@ -1,0 +1,58 @@
+name: КП Greenwood
+short_name: Greenwood
+slug: greenwood
+website: https://kpgreenwood.ru/
+management_company:
+  title: ОК "Комфорт"
+  url: https://ok-komfort.ru/
+is_baseline: false
+location:
+  address_text: МО, округ Ступино, д. Дубечино
+  lat: 55.081076
+  lng: 37.762951
+  map_url: https://yandex.ru/maps/org/greenwood/100724330462/
+  district: Ступинский район
+tariff:
+  value: 815
+  unit: rub_per_sotka
+  period: month
+infrastructure:
+  gas: yes
+  water: yes
+  sewage: no
+  checkpoints: yes
+  security: yes
+  fencing: yes
+  video_surveillance: full
+common_spaces:
+  club_infrastructure: yes
+  playgrounds: yes
+  sports: yes
+  restaurant: yes
+  water_access: yes
+  beach_zones: yes
+service_model:
+  garbage_collection: yes
+  snow_removal: yes
+  road_cleaning: yes
+sources:
+  - title: Greenwood 1-2 — официальный сайт
+    url: https://kpgreenwood.ru/
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Центральные коммуникации, охрана, видеонаблюдение, ресторан и озера поселка.'
+  - title: ОК Комфорт — Greenwood 1-2
+    url: https://ok-komfort.ru/objects/greenwood/
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Подтверждены обслуживающая компания, документы по поселку и правила проживания.'
+  - title: Приказ ОК Комфорт — Greenwood 2026
+    url: https://ok-komfort.ru/upload/iblock/760/dyrv4mkxc8lwikfpx2x6fb6rsdxm7omo.pdf
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Приказ от 02.02.2026: с 01.03.2026 тариф 815 руб./сотка для Greenwood 1 и 2.'
+  - title: Яндекс Карты — Greenwood
+    url: https://yandex.ru/maps/org/greenwood/100724330462/
+    type: community
+    date_checked: 2026-04-07
+    comment: 'Карточка объекта, адрес и координаты точки на карте.'

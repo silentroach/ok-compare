@@ -47,7 +47,7 @@
         >
           {formatTariffAuto(settlement.tariff)}
         </span>
-        {#if !isBaseline && comparison}
+        {#if !isBaseline && comparison && comparison.tariffDelta !== 0}
           {#if comparison.isCheaper}
             <span class="text-sm font-semibold ui-delta-success">
               дешевле на {formatCurrency(Math.abs(comparison.tariffDelta))}

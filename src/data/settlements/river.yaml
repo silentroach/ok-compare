@@ -1,0 +1,65 @@
+# Группа коттеджных посёлков River (River Park + River Wood).
+# Координаты заданы по центру д. Лапино: отдельная карточка КП в открытых Яндекс Картах не найдена.
+name: КП River
+short_name: River
+slug: river
+website: https://kp-river.ru/
+management_company:
+  title: ОК "Комфорт"
+  url: https://ok-komfort.ru/
+is_baseline: false
+location:
+  address_text: МО, округ Ступино, д. Лапино
+  lat: 54.956787
+  lng: 37.820726
+  district: Ступинский район
+tariff:
+  value: 815
+  unit: rub_per_sotka
+  period: month
+infrastructure:
+  gas: yes
+  water: yes
+common_spaces:
+  club_infrastructure: yes
+  playgrounds: yes
+  sports: yes
+  water_access: yes
+  beach_zones: yes
+service_model: {}
+sources:
+  - title: КП River — официальный сайт
+    url: https://kp-river.ru/
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Общий сайт группы посёлков River (Park, Wood, Site); подтверждены расположение, застройщик, инфраструктура.'
+  - title: ОК Комфорт — River
+    url: https://ok-komfort.ru/objects/river-park-wood-site/
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Подтверждены общая витрина River, обслуживающая компания и отдельные документы по River Park и River Wood.'
+  - title: Приказ ОК Комфорт — River Park 2026
+    url: https://ok-komfort.ru/upload/iblock/cfc/x1mpazneuii5s7u17571y4p8gf8nekvz.pdf
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Приказ от 02.02.2026: с 01.03.2026 тариф 815 руб./сотка для КП River Park; в документе указан адрес в районе д. Лапино.'
+  - title: Приказ ОК Комфорт — River Wood 2026
+    url: https://ok-komfort.ru/upload/iblock/fd8/24hyalr2jki58trvergyjgc028o2rjg7.pdf
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Приказ от 02.02.2026: с 01.03.2026 тариф 815 руб./сотка для КП River Wood; в документе указан адрес в д. Лапино, ЗАО Хатунь.'
+  - title: River Park — официальный генплан
+    url: https://dgtime.ru/riverpark/
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Отдельный встроенный генплан River Park с подтверждением коммуникаций и водно-рекреационной инфраструктуры проекта.'
+  - title: River Wood — официальный генплан
+    url: https://dgtime.ru/riverwood/
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Отдельный встроенный генплан River Wood с подтверждением коммуникаций и спортивно-рекреационной инфраструктуры проекта.'
+  - title: Яндекс Карты — деревня Лапино
+    url: https://yandex.ru/maps/geo/derevnya_lapino/53058061/
+    type: community
+    date_checked: 2026-04-07
+    comment: 'Для координат использован центр д. Лапино, так как отдельная карточка КП в открытых картах не найдена.'

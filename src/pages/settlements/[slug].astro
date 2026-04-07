@@ -69,6 +69,8 @@ const companyTitle =
   typeof company === 'string' ? company : (company?.title ?? '');
 const companyUrl = typeof company === 'object' ? company.url : '';
 const tg = settlement.telegram ? telegram(settlement.telegram) : undefined;
+const hasDelta =
+  !settlement.is_baseline && !!comparison && comparison.tariffDelta !== 0;
 const tariffCalc = getTariffCalc(settlement.tariff);
 const tipDesktopId = `${settlement.slug}-tariff-tip-desktop`;
 const tipMobileId = `${settlement.slug}-tariff-tip-mobile`;
@@ -279,9 +281,7 @@ const heroMap = hasPoint
             </div>
           </div>
 
-          <div
-            class={`grid gap-3 ${settlement.is_baseline ? 'grid-cols-2' : 'grid-cols-3'}`}
-          >
+          <div class={`grid gap-3 ${hasDelta ? 'grid-cols-3' : 'grid-cols-2'}`}>
             <div
               class="relative z-20 rounded-2xl border border-white/60 bg-white/50 p-4 backdrop-blur-[2px]"
             >
@@ -352,27 +352,23 @@ const heroMap = hasPoint
             </div>
 
             {
-              !settlement.is_baseline && (
+              hasDelta && comparison && (
                 <div class="rounded-2xl border border-white/60 bg-white/50 p-4 backdrop-blur-[2px]">
                   <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     Разница с Шелково
                   </p>
-                  {comparison && (
-                    <>
-                      <p
-                        class={`text-xl font-bold ${comparison.isCheaper ? 'text-success-text' : 'text-warning-text'}`}
-                      >
-                        {comparison.isCheaper ? '−' : '+'}
-                        {formatCurrency(Math.abs(comparison.tariffDelta))}
-                      </p>
-                      <p class="mt-1 text-xs text-muted-foreground">
-                        {comparison.isCheaper ? 'Дешевле' : 'Дороже'} на{' '}
-                        {formatPercentage(comparison.tariffDeltaPercent / 100, {
-                          signed: false,
-                        })}
-                      </p>
-                    </>
-                  )}
+                  <p
+                    class={`text-xl font-bold ${comparison.isCheaper ? 'text-success-text' : 'text-warning-text'}`}
+                  >
+                    {comparison.isCheaper ? '−' : '+'}
+                    {formatCurrency(Math.abs(comparison.tariffDelta))}
+                  </p>
+                  <p class="mt-1 text-xs text-muted-foreground">
+                    {comparison.isCheaper ? 'Дешевле' : 'Дороже'} на{' '}
+                    {formatPercentage(comparison.tariffDeltaPercent / 100, {
+                      signed: false,
+                    })}
+                  </p>
                 </div>
               )
             }
@@ -622,7 +618,7 @@ const heroMap = hasPoint
         </div>
 
         {
-          !settlement.is_baseline && comparison && (
+          hasDelta && comparison && (
             <div class="rounded-xl border border-border bg-muted-soft p-4">
               <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Сравнение с Шелково

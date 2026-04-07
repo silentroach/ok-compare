@@ -1,0 +1,57 @@
+name: КП Green Forest
+short_name: Green Forest
+slug: green-forest
+website: https://kpgreenforest.ru/
+management_company:
+  title: ОК "Комфорт"
+  url: https://ok-komfort.ru/
+is_baseline: false
+location:
+  address_text: МО, округ Ступино, с. Мышенское
+  lat: 55.025748
+  lng: 37.745001
+  map_url: https://yandex.ru/maps/org/green_forest_club/64483883044/
+  district: Ступинский район
+tariff:
+  value: 815
+  unit: rub_per_sotka
+  period: month
+infrastructure:
+  roads: asphalt
+  sidewalks: yes
+  gas: yes
+  water: yes
+  security: yes
+  underground_electricity: full
+common_spaces:
+  club_infrastructure: yes
+  playgrounds: yes
+  sports: yes
+  pool: yes
+  fitness_club: yes
+  walking_routes: yes
+  water_access: yes
+  beach_zones: yes
+  bbq_zones: yes
+service_model: {}
+sources:
+  - title: Green Forest — официальный сайт
+    url: https://kpgreenforest.ru/
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Асфальтированные дороги, центральные коммуникации, подземные сети и инфраструктура группы поселков.'
+  - title: ОК Комфорт — Green Forest
+    url: https://ok-komfort.ru/objects/green-forest-club/
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Подтверждены обслуживающая компания и документы по Green Forest Club, Park и Premium.'
+  - title: Приказ ОК Комфорт — Green Forest Club 2026
+    url: https://ok-komfort.ru/upload/iblock/71d/t2e81f9auiftkcgn0dghdevpc3va1ra4.pdf
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Приказ от 02.02.2026: с 01.03.2026 тариф 815 руб./сотка для Green Forest Club.'
+  - title: Яндекс Карты — Green Forest Club
+    url: https://yandex.ru/maps/org/green_forest_club/64483883044/
+    type: community
+    date_checked: 2026-04-07
+    comment: 'Карточка объекта, адрес и координаты точки на карте.'

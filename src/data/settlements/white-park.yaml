@@ -1,0 +1,54 @@
+name: КП White Park
+short_name: White Park
+slug: white-park
+website: https://kp-whitepark.ru/
+management_company:
+  title: ОК "Комфорт"
+  url: https://ok-komfort.ru/
+is_baseline: false
+location:
+  address_text: МО, округ Ступино, д. Гридюкино
+  lat: 55.093641
+  lng: 37.797826
+  map_url: https://yandex.ru/maps/org/white_park/83564552802/
+  district: Ступинский район
+tariff:
+  value: 815
+  unit: rub_per_sotka
+  period: month
+infrastructure:
+  gas: yes
+  water: yes
+  checkpoints: yes
+  security: yes
+  fencing: yes
+  retail_or_services: yes
+common_spaces:
+  club_infrastructure: yes
+  playgrounds: yes
+  sports: yes
+  walking_routes: yes
+  water_access: yes
+  beach_zones: yes
+service_model: {}
+sources:
+  - title: White Park — официальный сайт
+    url: https://kp-whitepark.ru/
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Газ, водоснабжение, озера, парковая территория, детские и спортивные площадки, охрана и магазин.'
+  - title: ОК Комфорт — White Park
+    url: https://ok-komfort.ru/objects/white-park/
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Подтверждены обслуживающая компания, документы по поселку и правила проживания.'
+  - title: Приказ ОК Комфорт — White Park 2026
+    url: https://ok-komfort.ru/upload/iblock/e5b/dgroow3j50to1bvqscrkzpqy9s9cbf6u.pdf
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Приказ от 02.02.2026: с 01.03.2026 тариф 815 руб./сотка для White Park.'
+  - title: Яндекс Карты — White Park
+    url: https://yandex.ru/maps/org/white_park/83564552802/
+    type: community
+    date_checked: 2026-04-07
+    comment: 'Карточка объекта, адрес и координаты точки на карте.'

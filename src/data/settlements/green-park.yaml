@@ -1,0 +1,54 @@
+name: КП Green Park 1-2
+short_name: Green Park 1-2
+slug: green-park
+website: https://kp-greenpark.ru/
+management_company:
+  title: ОК "Комфорт"
+  url: https://ok-komfort.ru/
+is_baseline: false
+location:
+  address_text: МО, округ Ступино, д. Бекетово
+  lat: 55.025723
+  lng: 37.801607
+  map_url: https://yandex.ru/maps/org/green_park/132135159719/
+  district: Ступинский район
+tariff:
+  value: 815
+  unit: rub_per_sotka
+  period: month
+infrastructure:
+  gas: yes
+  water: yes
+  checkpoints: yes
+  security: yes
+  fencing: yes
+  video_surveillance: full
+common_spaces:
+  club_infrastructure: yes
+  playgrounds: yes
+  sports: yes
+  water_access: yes
+  beach_zones: yes
+  bbq_zones: yes
+service_model: {}
+sources:
+  - title: Green Park 1-2 — официальный сайт
+    url: https://kp-greenpark.ru/
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Озера и пляж, спортивные и детские площадки, ресторан, SPA, охрана и видеонаблюдение.'
+  - title: ОК Комфорт — Green Park 1-2
+    url: https://ok-komfort.ru/objects/green-park/
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Подтверждены обслуживающая компания и документы по Green Park 1 и 2.'
+  - title: Приказ ОК Комфорт — Green Park 2026
+    url: https://ok-komfort.ru/upload/iblock/4ca/ml0dsrznodiih6njpeyths15vy0ih1zs.pdf
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Приказ от 02.02.2026: с 01.03.2026 тариф 815 руб./сотка для Green Park.'
+  - title: Яндекс Карты — Green Park
+    url: https://yandex.ru/maps/org/green_park/132135159719/
+    type: community
+    date_checked: 2026-04-07
+    comment: 'Карточка объекта, адрес и координаты точки на карте.'

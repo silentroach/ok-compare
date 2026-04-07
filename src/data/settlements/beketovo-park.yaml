@@ -1,0 +1,55 @@
+name: КП Beketovo Park
+short_name: Beketovo Park
+slug: beketovo-park
+website: https://beketovopark.ru/
+management_company:
+  title: ОК "Комфорт"
+  url: https://ok-komfort.ru/
+is_baseline: false
+location:
+  address_text: МО, округ Ступино, д. Бекетово
+  lat: 55.02742
+  lng: 37.797514
+  map_url: https://yandex.ru/maps/org/beketovo_park/217596878923/
+  district: Ступинский район
+tariff:
+  value: 770
+  unit: rub_per_sotka
+  period: month
+infrastructure:
+  gas: no
+  water: no
+  checkpoints: yes
+  security: yes
+  fencing: yes
+common_spaces:
+  club_infrastructure: yes
+  playgrounds: yes
+  sports: yes
+  water_access: yes
+  beach_zones: yes
+service_model:
+  garbage_collection: yes
+  snow_removal: yes
+  road_cleaning: yes
+sources:
+  - title: Beketovo Park — официальный сайт
+    url: https://beketovopark.ru/
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Закрытый охраняемый поселок, озеро с пляжем, детские и спортивные площадки.'
+  - title: ОК Комфорт — Beketovo Park
+    url: https://ok-komfort.ru/objects/beketovo-park/
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Подтверждены обслуживающая компания, документы по поселку и правила проживания.'
+  - title: Приказ ОК Комфорт — Beketovo Park 2026
+    url: https://ok-komfort.ru/upload/iblock/05b/9639wp7j3812plnq63nbxvhrvqf8xxif.pdf
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Приказ от 02.02.2026: с 01.03.2026 тариф 770 руб./сотка для Beketovo Park.'
+  - title: Яндекс Карты — Beketovo Park
+    url: https://yandex.ru/maps/org/beketovo_park/217596878923/
+    type: community
+    date_checked: 2026-04-07
+    comment: 'Карточка объекта, адрес и координаты точки на карте.'

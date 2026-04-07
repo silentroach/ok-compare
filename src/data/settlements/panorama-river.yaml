@@ -1,0 +1,58 @@
+name: КП Panorama River
+short_name: Panorama River
+slug: panorama-river
+website: https://kp-panoramariver.ru/
+management_company:
+  title: ОК "Комфорт"
+  url: https://ok-komfort.ru/
+is_baseline: false
+location:
+  address_text: МО, округ Ступино, д. Бекетово
+  lat: 55.028482
+  lng: 37.789262
+  map_url: https://yandex.ru/maps/org/panorama_river/222289381048/
+  district: Ступинский район
+tariff:
+  value: 815
+  unit: rub_per_sotka
+  period: month
+infrastructure:
+  roads: asphalt
+  gas: yes
+  water: yes
+  security: yes
+  underground_electricity: full
+common_spaces:
+  club_infrastructure: yes
+  playgrounds: yes
+  sports: yes
+  walking_routes: yes
+  water_access: yes
+  beach_zones: yes
+  bbq_zones: yes
+service_model:
+  garbage_collection: yes
+  snow_removal: yes
+  road_cleaning: yes
+  landscaping: yes
+sources:
+  - title: Panorama River — официальный сайт
+    url: https://kp-panoramariver.ru/
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Центральные коммуникации, подземные сети, асфальтные дороги, парки, пляж и сервисная модель поселка.'
+  - title: ОК Комфорт — Panorama River
+    url: https://ok-komfort.ru/objects/panorama-river/
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Подтверждены обслуживающая компания, документы по поселку и правила проживания.'
+  - title: Приказ ОК Комфорт — Panorama River 2026
+    url: https://ok-komfort.ru/upload/iblock/d5b/jcw46vnsunrmh2pjxwfpnxx0ujmujj86.pdf
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Приказ от 02.02.2026: с 01.03.2026 тариф 815 руб./сотка для Panorama River.'
+  - title: Яндекс Карты — Panorama River
+    url: https://yandex.ru/maps/org/panorama_river/222289381048/
+    type: community
+    date_checked: 2026-04-07
+    comment: 'Карточка объекта, адрес и координаты точки на карте.'

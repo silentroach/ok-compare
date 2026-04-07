@@ -188,4 +188,26 @@ describe('SettlementCard', () => {
     expect(container.textContent).not.toContain('дешевле на');
     expect(container.textContent).not.toContain('дороже на');
   });
+
+  it('does not show comparison text when tariff delta is zero', () => {
+    const zeroComparison: ComparisonResult = {
+      tariffDelta: 0,
+      tariffDeltaPercent: 0,
+      isCheaper: false,
+    };
+
+    const { container } = render(SettlementCard, {
+      props: {
+        settlement: mockSettlement,
+        comparison: zeroComparison,
+        maxTariff: 150,
+        isBaseline: false,
+      },
+    });
+
+    expect(container.textContent).toContain('100 ₽/сотка');
+    expect(container.textContent).not.toContain('дешевле на 0');
+    expect(container.textContent).not.toContain('дороже на 0');
+    expect(container.textContent).not.toContain('базовый тариф');
+  });
 });

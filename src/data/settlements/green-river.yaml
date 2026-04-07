@@ -1,0 +1,55 @@
+name: КП Green River
+short_name: Green River
+slug: green-river
+website: https://kp-greenriver.ru/
+management_company:
+  title: ОК "Комфорт"
+  url: https://ok-komfort.ru/
+is_baseline: false
+location:
+  address_text: МО, округ Ступино, д. Теняково
+  lat: 55.044717
+  lng: 37.779323
+  map_url: https://yandex.ru/maps/geo/kp_grin_river/6065017609/
+  district: Ступинский район
+tariff:
+  value: 815
+  unit: rub_per_sotka
+  period: month
+infrastructure:
+  gas: yes
+  water: yes
+  checkpoints: yes
+  security: yes
+  fencing: yes
+  underground_electricity: full
+  retail_or_services: yes
+common_spaces:
+  club_infrastructure: yes
+  playgrounds: yes
+  sports: yes
+  walking_routes: yes
+  water_access: yes
+  bbq_zones: yes
+service_model: {}
+sources:
+  - title: Green River — официальный сайт
+    url: https://kp-greenriver.ru/
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Центральные коммуникации, закрытый формат, подземные сети, фермерский магазин и инфраструктура поселка.'
+  - title: ОК Комфорт — Green River
+    url: https://ok-komfort.ru/objects/green-river/
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Подтверждены обслуживающая компания, документы по поселку и правила проживания.'
+  - title: Приказ ОК Комфорт — Green River 2026
+    url: https://ok-komfort.ru/upload/iblock/3fc/uba2h7bb5ppz09d2l2owgj54030m7et2.pdf
+    type: official
+    date_checked: 2026-04-07
+    comment: 'Приказ от 02.02.2026: с 01.03.2026 тариф 815 руб./сотка для Green River.'
+  - title: Яндекс Карты — Green River
+    url: https://yandex.ru/maps/geo/kp_grin_river/6065017609/
+    type: community
+    date_checked: 2026-04-07
+    comment: 'Карточка КП и адрес в д. Теняково с координатами точки на карте.'
