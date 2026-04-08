@@ -5,10 +5,12 @@ import KPIStats from '../components/KPIStats.svelte';
 import SettlementCard from '../components/SettlementCard.svelte';
 import SettlementsExplorer from '../components/SettlementsExplorer.svelte';
 import { loadAllData } from '../lib/data';
+import { rankSettlements } from '../lib/stats';
 import { withBase } from '../lib/url';
 
 // Load all data at build time
 const { settlements, stats, comparisons } = await loadAllData();
+const ranks = rankSettlements(settlements);
 
 // Convert comparisons Map to a plain object for serialization
 const comparisonsObj = Object.fromEntries(comparisons);
@@ -47,7 +49,9 @@ if (base > 0) {
               <SettlementCard
                 settlement={settlement}
                 comparison={comparisonsObj[settlement.slug]}
-                maxTariff={stats.maxTariff}
+                rank={ranks.get(settlement.slug) ?? stats.totalSettlements}
+                base={stats.shelkovoRank}
+                total={stats.totalSettlements}
                 isBaseline={settlement.is_baseline}
               />
             ))

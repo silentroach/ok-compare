@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import {
   calculateMedian,
-  calculateRank,
   calculatePercentile,
   computeStats,
+  rankSettlements,
 } from './stats';
 import type { Settlement } from './schema';
 
@@ -41,25 +41,112 @@ describe('Stats Module', () => {
     });
   });
 
-  describe('calculateRank', () => {
-    it('should return rank 1 for lowest tariff', () => {
-      const tariffs = [100, 200, 300];
-      expect(calculateRank(100, tariffs)).toBe(1);
-    });
+  describe('rankSettlements', () => {
+    it('should return stable ranks by tariff and name', () => {
+      const settlements: Settlement[] = [
+        {
+          name: 'Gamma',
+          short_name: 'Гамма',
+          slug: 'gamma',
+          website: 'https://gamma.test',
+          is_baseline: false,
+          location: {
+            address_text: 'МО',
+            lat: 55,
+            lng: 37,
+            district: 'Test',
+          },
+          tariff: {
+            value: 200,
+            unit: 'rub_per_sotka',
+            period: 'month',
+            normalized_per_sotka_month: 200,
+            normalized_is_estimate: false,
+          },
+          infrastructure: {},
+          common_spaces: {},
+          service_model: {},
+          sources: [
+            {
+              title: 'Test',
+              url: 'https://test.com',
+              type: 'official',
+              date_checked: '2026-04-03',
+              comment: '',
+            },
+          ],
+        },
+        {
+          name: 'Alpha',
+          short_name: 'Альфа',
+          slug: 'alpha',
+          website: 'https://alpha.test',
+          is_baseline: true,
+          location: {
+            address_text: 'МО',
+            lat: 55.1,
+            lng: 37.1,
+            district: 'Test',
+          },
+          tariff: {
+            value: 100,
+            unit: 'rub_per_sotka',
+            period: 'month',
+            normalized_per_sotka_month: 100,
+            normalized_is_estimate: false,
+          },
+          infrastructure: {},
+          common_spaces: {},
+          service_model: {},
+          sources: [
+            {
+              title: 'Test',
+              url: 'https://test.com',
+              type: 'official',
+              date_checked: '2026-04-03',
+              comment: '',
+            },
+          ],
+        },
+        {
+          name: 'Beta',
+          short_name: 'Бета',
+          slug: 'beta',
+          website: 'https://beta.test',
+          is_baseline: false,
+          location: {
+            address_text: 'МО',
+            lat: 55.2,
+            lng: 37.2,
+            district: 'Test',
+          },
+          tariff: {
+            value: 100,
+            unit: 'rub_per_sotka',
+            period: 'month',
+            normalized_per_sotka_month: 100,
+            normalized_is_estimate: false,
+          },
+          infrastructure: {},
+          common_spaces: {},
+          service_model: {},
+          sources: [
+            {
+              title: 'Test',
+              url: 'https://test.com',
+              type: 'official',
+              date_checked: '2026-04-03',
+              comment: '',
+            },
+          ],
+        },
+      ];
 
-    it('should return correct rank for middle value', () => {
-      const tariffs = [100, 200, 300];
-      expect(calculateRank(200, tariffs)).toBe(2);
-    });
+      const ranks = rankSettlements(settlements);
 
-    it('should return highest rank for highest tariff', () => {
-      const tariffs = [100, 200, 300];
-      expect(calculateRank(300, tariffs)).toBe(3);
-    });
-
-    it('should handle duplicate values', () => {
-      const tariffs = [100, 100, 200];
-      expect(calculateRank(100, tariffs)).toBe(1);
+      expect(ranks.get('alpha')).toBe(1);
+      expect(ranks.get('beta')).toBe(2);
+      expect(ranks.get('gamma')).toBe(3);
     });
   });
 

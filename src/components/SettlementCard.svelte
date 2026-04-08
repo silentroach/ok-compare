@@ -5,17 +5,26 @@
     formatCurrency,
     getTariffHint,
   } from '../lib/format';
-  import TariffBar from './TariffBar.svelte';
+  import TariffRank from './TariffRank.svelte';
   import Link from './Link.svelte';
 
   interface Props {
     settlement: Settlement;
     comparison?: ComparisonResult;
-    maxTariff: number;
+    rank: number;
+    base: number;
+    total: number;
     isBaseline: boolean;
   }
 
-  let { settlement, comparison, maxTariff, isBaseline }: Props = $props();
+  let { settlement, comparison, rank, base, total, isBaseline }: Props =
+    $props();
+
+  const tone = $derived.by(() => {
+    if (isBaseline || !comparison || comparison.tariffDelta === 0)
+      return 'info';
+    return comparison.isCheaper ? 'success' : 'warning';
+  });
 </script>
 
 <article
@@ -24,7 +33,7 @@
 >
   <div class="p-5 md:p-6">
     <div class="mb-4 flex items-start justify-between gap-3">
-      <div>
+      <div class="min-w-0">
         <h3 class="text-xl font-semibold text-foreground">
           <Link href={`settlements/${settlement.slug}/`} class="ui-link">
             {settlement.short_name}
@@ -34,9 +43,19 @@
           {settlement.location.district}
         </p>
       </div>
-      {#if isBaseline}
-        <span class="ui-badge ui-badge-info">Наш</span>
-      {/if}
+      <div class="shrink-0 flex items-center justify-end gap-1.5 text-right">
+        {#if isBaseline}
+          <span class="ui-badge ui-badge-info px-2 py-1 text-[11px] opacity-75">
+            наш
+          </span>
+        {/if}
+        <p
+          class="text-sm font-medium text-muted-foreground/50"
+          data-testid="tariff-rank-label"
+        >
+          {rank} / {total}
+        </p>
+      </div>
     </div>
 
     <div class="space-y-3">
@@ -64,14 +83,7 @@
         {/if}
       </div>
 
-      <TariffBar
-        value={settlement.tariff.normalized_per_sotka_month}
-        maxValue={maxTariff}
-        shelkovoValue={comparison?.tariffDelta
-          ? settlement.tariff.normalized_per_sotka_month +
-            comparison.tariffDelta
-          : settlement.tariff.normalized_per_sotka_month}
-      />
+      <TariffRank {rank} {base} {total} {tone} />
     </div>
   </div>
 </article>

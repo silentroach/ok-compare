@@ -1,5 +1,14 @@
 import type { Settlement, Stats } from './schema';
 
+function sort(settlements: Settlement[]): Settlement[] {
+  return [...settlements].sort((a, b) => {
+    const diff =
+      a.tariff.normalized_per_sotka_month - b.tariff.normalized_per_sotka_month;
+    if (diff !== 0) return diff;
+    return a.short_name.localeCompare(b.short_name, 'ru');
+  });
+}
+
 /**
  * Calculate median of an array of numbers
  * Returns the middle value for odd-length arrays,
@@ -21,13 +30,15 @@ export function calculateMedian(values: number[]): number {
 }
 
 /**
- * Calculate rank of a value within an array of values
- * Rank 1 = lowest value
+ * Calculate stable tariff rank for every settlement.
+ * Rank 1 = lowest tariff, ties are resolved by short name.
  */
-export function calculateRank(value: number, allValues: number[]): number {
-  const sorted = [...allValues].sort((a, b) => a - b);
-  const index = sorted.indexOf(value);
-  return index !== -1 ? index + 1 : sorted.length;
+export function rankSettlements(
+  settlements: Settlement[],
+): Map<string, number> {
+  return new Map(
+    sort(settlements).map((item, index) => [item.slug, index + 1]),
+  );
 }
 
 /**
@@ -57,12 +68,13 @@ export function computeStats(settlements: Settlement[]): Stats {
 
   const tariffs = settlements.map((s) => s.tariff.normalized_per_sotka_month);
   const shelkovoTariff = baseline.tariff.normalized_per_sotka_month;
+  const ranks = rankSettlements(settlements);
 
   const medianTariff = calculateMedian(tariffs);
   const meanTariff = tariffs.reduce((sum, t) => sum + t, 0) / tariffs.length;
   const minTariff = Math.min(...tariffs);
   const maxTariff = Math.max(...tariffs);
-  const shelkovoRank = calculateRank(shelkovoTariff, tariffs);
+  const shelkovoRank = ranks.get(baseline.slug) ?? settlements.length;
   const totalSettlements = settlements.length;
   const cheaperCount = settlements.filter(
     (s) => s.tariff.normalized_per_sotka_month < shelkovoTariff,

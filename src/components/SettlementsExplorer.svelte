@@ -6,6 +6,7 @@
     formatTariffAuto,
     getTariffHint,
   } from '../lib/format';
+  import { rankSettlements } from '../lib/stats';
   import SettlementMap from './SettlementMap.svelte';
   import SettlementCard from './SettlementCard.svelte';
 
@@ -165,6 +166,7 @@
       };
     }),
   );
+  let ranks = $derived(rankSettlements(settlements));
 
   onMount(() => {
     const media = window.matchMedia('(max-width: 767px)');
@@ -325,7 +327,9 @@
         <SettlementCard
           {settlement}
           comparison={comparisons[settlement.slug]}
-          maxTariff={stats?.maxTariff ?? 0}
+          rank={ranks.get(settlement.slug) ?? settlements.length}
+          base={stats?.shelkovoRank ?? 1}
+          total={stats?.totalSettlements ?? settlements.length}
           isBaseline={settlement.is_baseline}
         />
       {/each}

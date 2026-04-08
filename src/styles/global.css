@@ -612,42 +612,6 @@
       var(--color-foreground) 10%
     );
   }
-
-  .ui-bar-track {
-    height: 0.625rem;
-    width: 100%;
-    overflow: hidden;
-    border-radius: 999px;
-    background: color-mix(
-      in oklab,
-      var(--color-muted) 65%,
-      var(--color-border) 35%
-    );
-  }
-
-  .ui-bar-fill {
-    height: 100%;
-    border-radius: 999px;
-    transition:
-      width 0.3s ease,
-      background-color 0.3s ease;
-  }
-
-  .ui-bar-info {
-    background: var(--color-info);
-  }
-
-  .ui-bar-success {
-    background: var(--color-success);
-  }
-
-  .ui-bar-warning {
-    background: var(--color-warning);
-  }
-
-  .ui-bar-danger {
-    background: var(--color-danger);
-  }
 }
 
 /*

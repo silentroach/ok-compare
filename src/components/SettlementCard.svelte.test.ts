@@ -48,7 +48,9 @@ describe('SettlementCard', () => {
       props: {
         settlement: mockSettlement,
         comparison: mockComparisonCheaper,
-        maxTariff: 150,
+        rank: 1,
+        base: 2,
+        total: 3,
         isBaseline: false,
       },
     });
@@ -62,12 +64,31 @@ describe('SettlementCard', () => {
       props: {
         settlement: mockSettlement,
         comparison: mockComparisonCheaper,
-        maxTariff: 150,
+        rank: 1,
+        base: 2,
+        total: 3,
         isBaseline: false,
       },
     });
 
     expect(container.textContent).toContain('100 ₽/сотка');
+  });
+
+  it('renders rank as plain text in header', () => {
+    const { container } = render(SettlementCard, {
+      props: {
+        settlement: mockSettlement,
+        comparison: mockComparisonCheaper,
+        rank: 1,
+        base: 2,
+        total: 3,
+        isBaseline: false,
+      },
+    });
+
+    expect(
+      container.querySelector('[data-testid="tariff-rank-label"]')?.textContent,
+    ).toContain('1 / 3');
   });
 
   it('renders estimated tariff with tilde and hint', () => {
@@ -86,7 +107,9 @@ describe('SettlementCard', () => {
       props: {
         settlement,
         comparison: mockComparisonCheaper,
-        maxTariff: 1500,
+        rank: 1,
+        base: 2,
+        total: 3,
         isBaseline: false,
       },
     });
@@ -105,7 +128,9 @@ describe('SettlementCard', () => {
       props: {
         settlement: mockSettlement,
         comparison: mockComparisonCheaper,
-        maxTariff: 150,
+        rank: 1,
+        base: 2,
+        total: 3,
         isBaseline: false,
       },
     });
@@ -119,7 +144,9 @@ describe('SettlementCard', () => {
       props: {
         settlement: mockSettlement,
         comparison: mockComparisonExpensive,
-        maxTariff: 150,
+        rank: 3,
+        base: 2,
+        total: 3,
         isBaseline: false,
       },
     });
@@ -133,27 +160,31 @@ describe('SettlementCard', () => {
     const { container } = render(SettlementCard, {
       props: {
         settlement: baselineSettlement,
-        maxTariff: 150,
+        rank: 2,
+        base: 2,
+        total: 3,
         isBaseline: true,
       },
     });
 
     expect(container.textContent).toContain('базовый тариф');
-    expect(container.textContent).toContain('Наш');
+    expect(container.textContent).toContain('наш');
   });
 
-  it('renders tariff bar', () => {
+  it('renders tariff rank strip', () => {
     const { container } = render(SettlementCard, {
       props: {
         settlement: mockSettlement,
         comparison: mockComparisonCheaper,
-        maxTariff: 150,
+        rank: 1,
+        base: 2,
+        total: 3,
         isBaseline: false,
       },
     });
 
-    const tariffBar = container.querySelector('[data-testid="tariff-bar"]');
-    expect(tariffBar).toBeTruthy();
+    const tariffRank = container.querySelector('[data-testid="tariff-rank"]');
+    expect(tariffRank).toBeTruthy();
   });
 
   it('renders title link to detail page', () => {
@@ -161,7 +192,9 @@ describe('SettlementCard', () => {
       props: {
         settlement: mockSettlement,
         comparison: mockComparisonCheaper,
-        maxTariff: 150,
+        rank: 1,
+        base: 2,
+        total: 3,
         isBaseline: false,
       },
     });
@@ -174,7 +207,9 @@ describe('SettlementCard', () => {
     const { container } = render(SettlementCard, {
       props: {
         settlement: mockSettlement,
-        maxTariff: 150,
+        rank: 1,
+        base: 2,
+        total: 3,
         isBaseline: false,
       },
     });
@@ -200,7 +235,9 @@ describe('SettlementCard', () => {
       props: {
         settlement: mockSettlement,
         comparison: zeroComparison,
-        maxTariff: 150,
+        rank: 2,
+        base: 2,
+        total: 3,
         isBaseline: false,
       },
     });
