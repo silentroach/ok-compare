@@ -14,7 +14,7 @@
     "start": "astro dev",
     "build": "pnpm build:pages",
     "build:pages": "astro build --mode pages",
-    "build:vps": "ASTRO_COMPRESS=1 astro build --mode pages",
+    "build:vps": "BUILD_TARGET=vps ASTRO_COMPRESS=1 astro build --mode pages",
     "preview": "astro preview",
     "astro": "astro",
     "typecheck": "astro sync && tsc --noEmit",
