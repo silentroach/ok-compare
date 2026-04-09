@@ -16,6 +16,7 @@ const canonical = new URL(
   Astro.url.pathname,
   Astro.site ?? Astro.url.origin,
 ).toString();
+const year = new Date().getFullYear();
 const vps = process.env.BUILD_TARGET === 'vps';
 const ym = [
   "(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=108465472','ym');",
@@ -77,5 +78,39 @@ const ym = [
       )
     }
     <slot />
+
+    <footer
+      class="ui-page mt-6 border-t border-border/80 py-4 text-xs text-muted-foreground md:mt-8 md:py-5"
+    >
+      <div
+        class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between md:gap-4"
+      >
+        <p>&copy; {year}. Инициативная группа Шелково</p>
+
+        <p class="text-left md:text-right">
+          Если нашли ошибку или у вас есть данные про другие поселки
+          &mdash;&nbsp;
+          <a
+            href="https://t.me/silentroach"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Написать в Telegram silentroach"
+            class="ui-link ml-1 inline-flex items-center gap-1.5 whitespace-nowrap font-medium text-foreground"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              class="size-3.5 text-primary"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                d="M21.5 4.5c.4-.2.9.1.8.6l-3 14.3c-.1.5-.7.8-1.1.5l-4.6-3.4-2.4 2.3c-.3.3-.8.1-.8-.3v-3.2l8.1-7.4c.2-.2 0-.5-.2-.4l-9.8 6.2-4.2-1.4c-.5-.2-.6-.9-.1-1.1l16.3-6.7Z"
+              ></path>
+            </svg>
+            <span>silentroach</span>
+          </a>
+        </p>
+      </div>
+    </footer>
   </body>
 </html>
