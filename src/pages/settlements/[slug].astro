@@ -71,17 +71,15 @@ const hasDelta =
   !settlement.is_baseline && !!comparison && comparison.tariffDelta !== 0;
 const root = Astro.site ?? Astro.url.origin;
 const pageUrl = new URL(Astro.url.pathname, root).toString();
-const pageTitle = settlement.is_baseline
-  ? `${settlement.name}: тариф, инфраструктура и карточка поселка`
-  : `${settlement.name}: тариф, инфраструктура и сравнение с Шелково`;
+const pageTitle = `${settlement.name} — ${settlement.location.district}`;
 const delta =
   hasDelta && comparison
     ? `${comparison.isCheaper ? 'Дешевле' : 'Дороже'} Шелково на ${formatCurrency(Math.abs(comparison.tariffDelta))}.`
     : settlement.is_baseline
-      ? 'Базовый поселок для сравнения остальных карточек.'
+      ? 'Базовый поселок для сравнения.'
       : '';
 const pageDescription = [
-  `${settlement.name}: тариф ${formatTariffAuto(settlement.tariff)}, ${settlement.location.district}.`,
+  `Тариф ${formatTariffAuto(settlement.tariff)}.`,
   delta,
   'Инфраструктура, общие пространства, сервисы и источники данных.',
 ]
