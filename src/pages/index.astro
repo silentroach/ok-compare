@@ -11,6 +11,7 @@ import { withBase } from '../lib/url';
 // Load all data at build time
 const { settlements, stats, comparisons } = await loadAllData();
 const ranks = rankSettlements(settlements);
+const levels = Math.max(new Set(ranks.values()).size, 1);
 
 // Convert comparisons Map to a plain object for serialization
 const comparisonsObj = Object.fromEntries(comparisons);
@@ -49,9 +50,9 @@ if (base > 0) {
               <SettlementCard
                 settlement={settlement}
                 comparison={comparisonsObj[settlement.slug]}
-                rank={ranks.get(settlement.slug) ?? stats.totalSettlements}
+                rank={ranks.get(settlement.slug) ?? levels}
                 base={stats.shelkovoRank}
-                total={stats.totalSettlements}
+                total={levels}
                 isBaseline={settlement.is_baseline}
               />
             ))

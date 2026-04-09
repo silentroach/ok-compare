@@ -167,6 +167,7 @@
     }),
   );
   let ranks = $derived(rankSettlements(settlements));
+  let levels = $derived(Math.max(new Set(ranks.values()).size, 1));
 
   onMount(() => {
     const media = window.matchMedia('(max-width: 767px)');
@@ -327,9 +328,9 @@
         <SettlementCard
           {settlement}
           comparison={comparisons[settlement.slug]}
-          rank={ranks.get(settlement.slug) ?? settlements.length}
+          rank={ranks.get(settlement.slug) ?? levels}
           base={stats?.shelkovoRank ?? 1}
-          total={stats?.totalSettlements ?? settlements.length}
+          total={levels}
           isBaseline={settlement.is_baseline}
         />
       {/each}

@@ -31,14 +31,27 @@ export function calculateMedian(values: number[]): number {
 
 /**
  * Calculate stable tariff rank for every settlement.
- * Rank 1 = lowest tariff, ties are resolved by short name.
+ * Rank 1 = lowest tariff, equal tariffs share the same rank.
  */
 export function rankSettlements(
   settlements: Settlement[],
 ): Map<string, number> {
-  return new Map(
-    sort(settlements).map((item, index) => [item.slug, index + 1]),
-  );
+  let prev: number | undefined;
+  let rank = 0;
+  const ranks = new Map<string, number>();
+
+  sort(settlements).forEach((item) => {
+    const tariff = item.tariff.normalized_per_sotka_month;
+
+    if (tariff !== prev) {
+      prev = tariff;
+      rank += 1;
+    }
+
+    ranks.set(item.slug, rank);
+  });
+
+  return ranks;
 }
 
 /**

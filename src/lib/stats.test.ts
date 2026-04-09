@@ -42,7 +42,7 @@ describe('Stats Module', () => {
   });
 
   describe('rankSettlements', () => {
-    it('should return stable ranks by tariff and name', () => {
+    it('should share ranks for equal tariffs', () => {
       const settlements: Settlement[] = [
         {
           name: 'Gamma',
@@ -145,8 +145,8 @@ describe('Stats Module', () => {
       const ranks = rankSettlements(settlements);
 
       expect(ranks.get('alpha')).toBe(1);
-      expect(ranks.get('beta')).toBe(2);
-      expect(ranks.get('gamma')).toBe(3);
+      expect(ranks.get('beta')).toBe(1);
+      expect(ranks.get('gamma')).toBe(2);
     });
   });
 
@@ -402,6 +402,23 @@ describe('Stats Module', () => {
       expect(stats.moreExpensiveCount).toBe(1); // Usadby is more expensive
       expect(stats.shelkovoVsMedianPercent).toBe(0); // 4500 vs 4500
       expect(stats.shelkovoVsMeanPercent).toBe(0); // 4500 vs 4500
+    });
+
+    it('should use unique tariff levels for baseline rank', () => {
+      const tied = [
+        ...mockSettlements,
+        {
+          ...mockSettlements[1],
+          name: 'Lesnoe 2',
+          short_name: 'Lesnoe 2',
+          slug: 'lesnoe-2',
+          website: 'https://lesnoe-2.ru',
+        },
+      ];
+
+      const stats = computeStats(tied);
+
+      expect(stats.shelkovoRank).toBe(2);
     });
 
     it('should throw error when no baseline settlement found', () => {

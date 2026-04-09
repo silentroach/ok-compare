@@ -293,4 +293,36 @@ describe('SettlementsExplorer', () => {
     expect(mapid).toBeTruthy();
     expect(container.querySelector(`#${mapid}`)).toBeTruthy();
   });
+
+  it('uses one rank for duplicate tariffs', async () => {
+    setScreen(false);
+
+    const tied = [
+      ...settlements,
+      {
+        ...settlements[2],
+        name: 'КП Усадьбы 2',
+        short_name: 'Усадьбы 2',
+        slug: 'usadby-2',
+        website: 'https://example.com/usadby-2',
+      },
+    ];
+
+    const { container } = render(SettlementsExplorer, {
+      props: { settlements: tied, comparisons, stats },
+    });
+
+    await waitFor(() => {
+      expect(
+        container.querySelectorAll('[data-testid="settlement-card"]'),
+      ).toHaveLength(4);
+    });
+
+    const labels = [
+      ...container.querySelectorAll('[data-testid="tariff-rank-label"]'),
+    ].map((item) => item.textContent?.trim() ?? '');
+
+    expect(labels).toContain('3 / 3');
+    expect(labels.filter((item) => item === '3 / 3')).toHaveLength(2);
+  });
 });
