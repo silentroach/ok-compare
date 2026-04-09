@@ -188,4 +188,22 @@ jobs:
 
       - name: Sync build to server
         run: |
-          rsync -az --delete --mkpath --chmod=D755,F644 -e "ssh -p $DEPLOY_PORT" dist/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/"
+          ssh_opts="ssh -p $DEPLOY_PORT"
+
+          rsync -az --delete --mkpath --chmod=D755,F644 \
+            --exclude '/_astro/' \
+            -e "$ssh_opts" \
+            dist/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/"
+
+          rsync -az --mkpath --chmod=D755,F644 \
+            -e "$ssh_opts" \
+            dist/_astro/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/_astro/"
+
+      - name: Prune stale hashed assets
+        run: |
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" '
+            if [ -d "'$DEPLOY_PATH'/_astro" ]; then
+              find "'$DEPLOY_PATH'/_astro" -type f -mtime +30 -delete
+              find "'$DEPLOY_PATH'/_astro" -type d -empty -delete
+            fi
+          '
