@@ -1,11 +1,16 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/url';
 import Link from '../components/Link.astro';
 
 const title = 'Страница не найдена — Шелково Сравнение';
 ---
 
-<BaseLayout title={title}>
+<BaseLayout
+  title={title}
+  robots="noindex, nofollow"
+  canonical={withBase('404.html')}
+>
   <main class="ui-page max-w-2xl py-16 text-center">
     <div class="mb-8">
       <h1 class="mb-4 text-6xl font-bold text-muted-foreground">404</h1>

@@ -5,15 +5,19 @@ import { withBase } from '../lib/url';
 interface Props {
   title?: string;
   description?: string;
+  robots?: string;
+  canonical?: string;
 }
 
 const {
   title = 'Шелково Сравнение — Сравнение тарифов на обслуживание коттеджных поселков',
   description = 'Сравнение тарифов на обслуживание коттеджных поселков в Истринском районе. Прозрачные данные о стоимости услуг управляющих компаний.',
+  robots,
+  canonical: href,
 } = Astro.props;
 
 const canonical = new URL(
-  Astro.url.pathname,
+  href ?? Astro.url.pathname,
   Astro.site ?? Astro.url.origin,
 ).toString();
 const year = new Date().getFullYear();
@@ -43,6 +47,7 @@ const ym = [
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonical} />
+    {robots && <meta name="robots" content={robots} />}
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

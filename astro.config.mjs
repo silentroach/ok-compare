@@ -1,13 +1,27 @@
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 import compressor from 'astro-compressor';
 import svelte from '@astrojs/svelte';
 import tailwindcss from '@tailwindcss/vite';
 import { constants } from 'node:zlib';
 
 const packed = process.env.ASTRO_COMPRESS === '1';
+const base = process.env.ASTRO_BASE || '/ok-compare';
+const site =
+  process.env.ASTRO_SITE ||
+  (base === '/'
+    ? 'https://сравни.шелково.рф'
+    : 'https://silentroach.github.io');
 
 const plugins = [tailwindcss()];
-const integrations = [svelte()];
+const integrations = [
+  svelte(),
+  sitemap({
+    filter(page) {
+      return !/\/404(?:\/|\.html)?$/.test(page);
+    },
+  }),
+];
 
 if (packed) {
   integrations.push(
@@ -38,7 +52,8 @@ if (packed) {
 
 export default defineConfig({
   output: 'static',
-  base: process.env.ASTRO_BASE || '/ok-compare',
+  site,
+  base,
   prefetch: {
     prefetchAll: true,
     defaultStrategy: 'hover',
