@@ -59,8 +59,6 @@ const distanceFromShelkovo =
       )
     : 0;
 
-// Build page title
-const pageTitle = `${settlement.name} — Тарифы и сравнение`;
 const hasPoint =
   Number.isFinite(settlement.location.lat) &&
   Number.isFinite(settlement.location.lng);
@@ -71,6 +69,44 @@ const companyUrl = typeof company === 'object' ? company.url : '';
 const tg = settlement.telegram ? telegram(settlement.telegram) : undefined;
 const hasDelta =
   !settlement.is_baseline && !!comparison && comparison.tariffDelta !== 0;
+const root = Astro.site ?? Astro.url.origin;
+const pageUrl = new URL(Astro.url.pathname, root).toString();
+const pageTitle = settlement.is_baseline
+  ? `${settlement.name}: тариф, инфраструктура и карточка поселка`
+  : `${settlement.name}: тариф, инфраструктура и сравнение с Шелково`;
+const delta =
+  hasDelta && comparison
+    ? `${comparison.isCheaper ? 'Дешевле' : 'Дороже'} Шелково на ${formatCurrency(Math.abs(comparison.tariffDelta))}.`
+    : settlement.is_baseline
+      ? 'Базовый поселок для сравнения остальных карточек.'
+      : '';
+const pageDescription = [
+  `${settlement.name}: тариф ${formatTariffAuto(settlement.tariff)}, ${settlement.location.district}.`,
+  delta,
+  'Инфраструктура, общие пространства, сервисы и источники данных.',
+]
+  .filter(Boolean)
+  .join(' ');
+const same = [settlement.website, ...(tg ? [tg] : [])];
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Place',
+  name: settlement.name,
+  url: pageUrl,
+  description: pageDescription,
+  address: settlement.location.address_text,
+  mainEntityOfPage: pageUrl,
+  ...(same.length ? { sameAs: same } : {}),
+  ...(hasPoint
+    ? {
+        geo: {
+          '@type': 'GeoCoordinates',
+          latitude: settlement.location.lat,
+          longitude: settlement.location.lng,
+        },
+      }
+    : {}),
+};
 const tariffCalc = getTariffCalc(settlement.tariff);
 const tipDesktopId = `${settlement.slug}-tariff-tip-desktop`;
 const tipMobileId = `${settlement.slug}-tariff-tip-mobile`;
@@ -89,7 +125,7 @@ const heroMap = hasPoint
   : [];
 ---
 
-<BaseLayout title={pageTitle}>
+<BaseLayout title={pageTitle} description={pageDescription} schema={schema}>
   <main class="ui-page py-6 md:py-10 lg:pt-0">
     <h1 class="sr-only">{settlement.name}</h1>
 
@@ -134,13 +170,15 @@ const heroMap = hasPoint
       <div
         class="relative z-10 mx-auto flex h-full w-[min(1200px,100%-2rem)] flex-col justify-between p-8 xl:p-10"
       >
-        <div class="flex items-center justify-between">
-          <Link
-            href="/"
-            class="ui-link inline-flex items-center rounded-full border border-white/65 bg-white/42 px-4 py-2 text-sm font-semibold shadow-[0_6px_18px_-14px_rgba(15,23,42,0.6)] backdrop-blur-md"
-          >
-            ← Назад к списку
-          </Link>
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <Link
+              href="/"
+              class="ui-link inline-flex items-center rounded-full border border-white/65 bg-white/42 px-4 py-2 text-sm font-semibold shadow-[0_6px_18px_-14px_rgba(15,23,42,0.6)] backdrop-blur-md"
+            >
+              ← Назад к списку
+            </Link>
+          </div>
           {
             settlement.is_baseline && (
               <span class="ui-badge ui-badge-info border-white/40 bg-white/72 text-info-text">
