@@ -40,7 +40,14 @@ if (base > 0) {
       <KPIStats stats={stats} embed />
     </Hero>
 
-    <section id="settlements" class="mt-6 space-y-6 md:mt-8">
+    <section
+      id="settlements"
+      aria-labelledby="settlements-title"
+      class="mt-6 space-y-6 md:mt-8"
+    >
+      <h2 id="settlements-title" class="sr-only">
+        Список поселков для сравнения
+      </h2>
       <SettlementsExplorer dataUrl={dataUrl} client:only="svelte" />
 
       <div id="settlements-static">

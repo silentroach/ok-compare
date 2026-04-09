@@ -245,8 +245,8 @@
               showMap = !showMap;
             }}
             aria-label={showMap ? 'Скрыть карту' : 'Показать карту'}
-            aria-pressed={showMap}
-            aria-controls={mapid}
+            aria-expanded={showMap}
+            aria-controls={showMap ? mapid : undefined}
             data-testid="map-toggle"
           >
             <svg
@@ -297,6 +297,7 @@
         <select
           id={sortid}
           value={sortBy}
+          aria-label="Сортировка поселков"
           onchange={(e) => {
             sortBy = (e.currentTarget as HTMLSelectElement)
               .value as typeof sortBy;

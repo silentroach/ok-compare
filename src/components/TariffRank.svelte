@@ -55,6 +55,7 @@
 <div
   data-testid="tariff-rank"
   class="min-w-0"
+  role="img"
   aria-label={`Ранг ${current} из ${count}. ${note}.`}
 >
   <div

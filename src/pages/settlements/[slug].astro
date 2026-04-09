@@ -91,6 +91,8 @@ const heroMap = hasPoint
 
 <BaseLayout title={pageTitle}>
   <main class="ui-page py-6 md:py-10 lg:pt-0">
+    <h1 class="sr-only">{settlement.name}</h1>
+
     <section
       class="hero-bleed relative hidden min-h-[430px] lg:block"
       data-testid="settlement-hero"
@@ -152,11 +154,11 @@ const heroMap = hasPoint
           <div class="mb-4 flex items-start gap-4">
             <div>
               <div class="flex items-start gap-6">
-                <h1
+                <p
                   class="text-4xl font-bold text-foreground [text-shadow:0_2px_10px_rgba(255,255,255,0.75)] xl:text-[2.7rem]"
                 >
                   {settlement.name}
-                </h1>
+                </p>
                 <div class="-mt-0.5 flex items-center gap-2">
                   {
                     settlement.website && (
@@ -409,9 +411,9 @@ const heroMap = hasPoint
       >
         <div>
           <div class="mb-2 flex items-center gap-3">
-            <h1 class="text-3xl font-bold text-foreground md:text-4xl">
+            <p class="text-3xl font-bold text-foreground md:text-4xl">
               {settlement.name}
-            </h1>
+            </p>
             <div class="flex items-center gap-2">
               {
                 settlement.website && (
