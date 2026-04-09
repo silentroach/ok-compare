@@ -1,0 +1,52 @@
+# Вне схемы: отдельный поселок от КП Арнеево; это подтверждается отдельной карточкой CIAN для КП Арнеево Парк.
+name: КП Арнеево Парк
+short_name: Арнеево Парк
+slug: arneevo-park
+website: https://arneevo-park.ru/
+is_baseline: false
+location:
+  address_text: МО, округ Серпухов, д. Арнеево
+  lat: 54.967533
+  lng: 37.588727
+  map_url: https://yandex.ru/maps/?um=constructor%3A74e3a5e67f501636995700e03f6ba8bcdfae27eb0018fbfd06b0ff8e92cf1187&source=constructorLink
+  district: Серпуховский район
+tariff:
+  value: 900
+  unit: rub_per_sotka
+  period: month
+  note: тариф по словам Павла Томилко
+infrastructure:
+  roads: asphalt
+  lighting: yes
+  gas: yes
+  water: yes
+  sewage: yes
+  checkpoints: yes
+  security: yes
+  fencing: yes
+  underground_electricity: full
+common_spaces:
+  club_infrastructure: yes
+  walking_routes: yes
+  water_access: yes
+  bbq_zones: yes
+service_model:
+  garbage_collection: yes
+  road_cleaning: yes
+  landscaping: yes
+sources:
+  - title: Арнеево Парк — официальный сайт
+    url: https://arneevo-park.ru/
+    type: official
+    date_checked: 2026-04-09
+    comment: Подтверждены адрес, газ, электричество 15 кВт, водопровод, асфальтированные дороги, управляющая компания, вывоз мусора, уборка дорог, благоустройство, освещение, закрытый периметр, КПП, видеонаблюдение, круглосуточная охрана, гостевая парковка, зоны для отдыха и прогулок, беседки для гриля, помост для купания, подземная прокладка проводов и доступ к соседней клубной инфраструктуре девелопера, где заявлены ресторан, летний бассейн и детская площадка.
+  - title: CIAN — КП Арнеево Парк
+    url: https://www.cian.ru/kottedzhnyj-poselok-arneevo-park-100635/
+    type: media
+    date_checked: 2026-04-09
+    comment: Отдельная карточка поселка; подтверждены год сдачи 2022, отдельность от КП Арнеево, центральная канализация, центральное водоснабжение, магистральный газ, электричество, асфальтированные дороги, круглосуточная охрана, уборка дорог и вывоз мусора.
+  - title: Арнеево Парк — уточнение по тарифу
+    url: https://arneevo-park.ru/
+    type: personal
+    date_checked: 2026-04-09
+    comment: Тариф 900 руб./сотка в месяц по словам Павла Томилко.
