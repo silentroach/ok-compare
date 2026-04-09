@@ -177,3 +177,4 @@ src/
 - Русская локаль для форматирования валюты и чисел
 - Static site output с base path `/compare`
 - **Не запускать `pnpm dev` без явной просьбы** — команда запускает watch-режим и не завершается автоматически
+- Для `src/pages/data/explorer.json.ts` и главного `SettlementsExplorer` использовать отдельный минимальный DTO для списка/карты. Не включать detail-only поля (`sources`, `website`, `telegram`, `infrastructure`, `common_spaces`, `service_model`, лишние поля `location`, полный `tariff`, полный `management_company`) без явной необходимости; при изменениях payload замерять размер до/после.

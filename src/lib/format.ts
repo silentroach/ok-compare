@@ -1,6 +1,12 @@
 import { DateTime } from 'luxon';
 import type { Tariff } from './schema';
 
+type TariffView = Pick<
+  Tariff,
+  'normalized_per_sotka_month' | 'normalized_is_estimate'
+>;
+type TariffLike = Tariff | TariffView;
+
 /**
  * Calculate distance between two points on Earth using Haversine formula
  * Returns distance in kilometers
@@ -135,7 +141,7 @@ function word(value: number, one: string, few: string, many: string): string {
 /**
  * Format normalized tariff and add '~' for estimated values.
  */
-export function formatTariffAuto(tariff: Tariff): string {
+export function formatTariffAuto(tariff: TariffLike): string {
   const text = formatTariff(tariff.normalized_per_sotka_month);
   if (!tariff.normalized_is_estimate) return text;
   return `~${text}`;
@@ -180,7 +186,7 @@ export interface TariffCalc {
 /**
  * Generic tooltip for compact cards.
  */
-export function getTariffHint(tariff: Tariff): string | undefined {
+export function getTariffHint(tariff: TariffLike): string | undefined {
   if (!tariff.normalized_is_estimate) return;
   return 'Тариф приведен к сотке автоматически.';
 }

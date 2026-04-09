@@ -1,5 +1,6 @@
 <script lang="ts">
-  import type { Settlement, ComparisonResult } from '../lib/schema';
+  import type { ExplorerSettlement } from '../lib/explorer';
+  import type { ComparisonResult } from '../lib/schema';
   import {
     formatTariffAuto,
     formatCurrency,
@@ -9,7 +10,7 @@
   import Link from './Link.svelte';
 
   interface Props {
-    settlement: Settlement;
+    settlement: ExplorerSettlement;
     comparison?: ComparisonResult;
     rank: number;
     base: number;

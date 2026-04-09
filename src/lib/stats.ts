@@ -1,6 +1,10 @@
 import type { Settlement, Stats } from './schema';
 
-function sort(settlements: Settlement[]): Settlement[] {
+type Ranked = Pick<Settlement, 'slug' | 'short_name'> & {
+  tariff: Pick<Settlement['tariff'], 'normalized_per_sotka_month'>;
+};
+
+function sort<T extends Ranked>(settlements: T[]): T[] {
   return [...settlements].sort((a, b) => {
     const diff =
       a.tariff.normalized_per_sotka_month - b.tariff.normalized_per_sotka_month;
@@ -33,9 +37,7 @@ export function calculateMedian(values: number[]): number {
  * Calculate stable tariff rank for every settlement.
  * Rank 1 = lowest tariff, equal tariffs share the same rank.
  */
-export function rankSettlements(
-  settlements: Settlement[],
-): Map<string, number> {
+export function rankSettlements(settlements: Ranked[]): Map<string, number> {
   let prev: number | undefined;
   let rank = 0;
   const ranks = new Map<string, number>();

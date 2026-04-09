@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { Settlement, Stats, ComparisonResult } from '../lib/schema';
+  import type { ExplorerPayload, ExplorerSettlement } from '../lib/explorer';
   import {
     calculateDistance,
     formatTariffAuto,
@@ -11,16 +11,10 @@
   import SettlementCard from './SettlementCard.svelte';
 
   interface Props {
-    settlements?: Settlement[];
-    comparisons?: Record<string, ComparisonResult>;
-    stats?: Stats;
+    settlements?: ExplorerSettlement[];
+    comparisons?: ExplorerPayload['comparisons'];
+    stats?: ExplorerPayload['stats'];
     dataUrl?: string;
-  }
-
-  interface Payload {
-    settlements: Settlement[];
-    comparisons: Record<string, ComparisonResult>;
-    stats: Stats;
   }
 
   let {
@@ -28,12 +22,7 @@
     comparisons = {},
     stats,
     dataUrl = '',
-  }: {
-    settlements: Settlement[];
-    comparisons: Record<string, ComparisonResult>;
-    stats?: Stats;
-    dataUrl: string;
-  } = $props();
+  }: Props = $props();
 
   const uid = $props.id();
   const allid = `${uid}-price-all`;
@@ -54,7 +43,7 @@
     const res = await fetch(url);
     if (!res.ok) throw new Error('Не удалось загрузить данные');
 
-    const data = (await res.json()) as Payload;
+    const data = (await res.json()) as ExplorerPayload;
     settlements = data.settlements;
     comparisons = data.comparisons;
     stats = data.stats;
@@ -73,7 +62,7 @@
   const shelkovo = $derived(settlements.find((s) => s.is_baseline));
 
   // Calculate distance from Shelkovo for a settlement
-  function getDistanceFromShelkovo(settlement: Settlement): number {
+  function getDistanceFromShelkovo(settlement: ExplorerSettlement): number {
     const baseline = shelkovo;
     if (!baseline || settlement.is_baseline) return 0;
     return calculateDistance(
