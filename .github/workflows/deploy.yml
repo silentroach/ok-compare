@@ -105,6 +105,9 @@ jobs:
   deploy-vps:
     needs: build-vps
     runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: 'https://сравни.шелково.рф'
     env:
       DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
       DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
