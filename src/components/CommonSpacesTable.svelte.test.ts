@@ -113,4 +113,21 @@ describe('CommonSpacesTable', () => {
     const first = container.querySelector('[data-testid="space-row"] td');
     expect(first?.textContent).toContain('Клубная инфраструктура');
   });
+
+  it('shows badge text and wider columns from small screens', () => {
+    const { container, getAllByText } = render(CommonSpacesTable, {
+      props: {
+        spaces: mockSpaces,
+        shelkovoSpaces: mockShelkovoSpaces,
+      },
+    });
+
+    const label = getAllByText('Есть')[0];
+    expect(label?.className).toContain('hidden');
+    expect(label?.className).toContain('sm:inline');
+
+    const head = container.querySelectorAll('th');
+    expect(head[1]?.className).toContain('sm:w-48');
+    expect(head[2]?.className).toContain('sm:w-48');
+  });
 });

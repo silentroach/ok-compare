@@ -109,4 +109,21 @@ describe('ServiceTable', () => {
     expect(filtered).toBe(3);
     expect(btn.getAttribute('title')).toBe('Показать все свойства');
   });
+
+  it('shows badge text and wider columns from small screens', () => {
+    const { container, getAllByText } = render(ServiceTable, {
+      props: {
+        services: mockServices,
+        shelkovoServices: mockShelkovoServices,
+      },
+    });
+
+    const label = getAllByText('Есть')[0];
+    expect(label?.className).toContain('hidden');
+    expect(label?.className).toContain('sm:inline');
+
+    const head = container.querySelectorAll('th');
+    expect(head[1]?.className).toContain('sm:w-48');
+    expect(head[2]?.className).toContain('sm:w-48');
+  });
 });

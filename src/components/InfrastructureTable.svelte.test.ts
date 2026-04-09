@@ -123,4 +123,21 @@ describe('InfrastructureTable', () => {
     expect(filtered).toBe(8);
     expect(btn.getAttribute('title')).toBe('Показать все свойства');
   });
+
+  it('shows badge text and wider columns from small screens', () => {
+    const { container, getByText } = render(InfrastructureTable, {
+      props: {
+        infra: mockInfra,
+        shelkovoInfra: mockShelkovoInfra,
+      },
+    });
+
+    const label = getByText('Асфальт');
+    expect(label.className).toContain('hidden');
+    expect(label.className).toContain('sm:inline');
+
+    const head = container.querySelectorAll('th');
+    expect(head[1]?.className).toContain('sm:w-48');
+    expect(head[2]?.className).toContain('sm:w-48');
+  });
 });
