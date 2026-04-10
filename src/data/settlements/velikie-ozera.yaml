@@ -1,0 +1,70 @@
+name: КП Великие озёра
+short_name: Великие озёра
+slug: velikie-ozera
+website: https://velikie-ozera.ru/
+is_baseline: false
+location:
+  address_text: МО, округ Раменское
+  lat: 55.379935
+  lng: 38.150067
+  map_url: https://yandex.ru/maps/?ll=38.150067%2C55.379935&z=16
+  district: Раменский район
+tariff:
+  value: 1500
+  unit: rub_fixed
+  period: month
+infrastructure:
+  roads: asphalt
+  lighting: yes
+  gas: yes
+  checkpoints: yes
+  security: yes
+  fencing: yes
+  retail_or_services: yes
+common_spaces:
+  playgrounds: yes
+  sports: yes
+  water_access: yes
+  beach_zones: yes
+service_model: {}
+sources:
+  - title: Великие озёра — официальный сайт
+    url: https://velikie-ozera.ru/
+    type: official
+    date_checked: 2026-04-11
+    comment: На главной странице указаны Раменский район, 48 км от МКАД, проведенный газ, асфальтированная дорога до поселка, охрана и КПП на въезде; также опубликованы базовые параметры поселка.
+  - title: Великие озёра — инфраструктура
+    url: https://velikie-ozera.ru/infrastruktura/
+    type: official
+    date_checked: 2026-04-11
+    comment: На странице инфраструктуры указаны асфальтированные дороги в поселке, магазины и стройматериалы на территории, детская и спортивная площадки, парк, а также водоем в 200 м.
+  - title: Великие озёра — как добраться
+    url: https://velikie-ozera.ru/na-karte/
+    type: official
+    date_checked: 2026-04-11
+    comment: Страница проезда содержит координаты поселка 55.379935, 38.150067 и подтверждает расположение по Новорязанскому шоссе в Раменском районе.
+  - title: Яндекс Геокодер — КП «Великие озёра»
+    url: https://yandex.ru/maps/?ll=38.150067%2C55.379941&mode=search&text=%D0%9A%D0%9F%20%D0%92%D0%B5%D0%BB%D0%B8%D0%BA%D0%B8%D0%B5%20%D0%BE%D0%B7%D1%91%D1%80%D0%B0&z=15
+    type: community
+    date_checked: 2026-04-11
+    comment: Геокодер Яндекса с Referer localhost определяет объект как «КП Великие озёра, Раменский муниципальный округ» и возвращает точку 38.150067 55.379941.
+  - title: Яндекс Недвижимость — КП «Великие озера»
+    url: https://realty.yandex.ru/moskovskaya_oblast/kupit/kottedzhnye-poselki/velikie-ozera-1814158/
+    type: media
+    date_checked: 2026-04-11
+    comment: В карточке указаны уличное освещение, дороги с покрытием, 860 объектов и расположение в Раменском округе; ссылка на Яндекс Карты подтверждает точку на карте.
+  - title: ЦИАН — КП «Великие Озёра»
+    url: https://www.cian.ru/kottedzhnyj-poselok-velikie-ozyora-1648/
+    type: media
+    date_checked: 2026-04-11
+    comment: В карточке поселка указаны асфальтированные дороги, электричество, магистральный газ, магазин, детские и спортивные площадки, а также озеро и песчаный пляж.
+  - title: Poselkino — КП «Великие озёра»
+    url: https://poselkino.ru/poselki/velikie_ozera/
+    type: media
+    date_checked: 2026-04-11
+    comment: Карточка поселка подтверждает асфальтированные дороги в поселке и до поселка, охрану, ограждение, магазин, детскую и спортивную площадки, пляж и парк; на странице также указаны коммунальные платежи 2300 руб./мес, но для тарифа использовано более актуальное значение от пользователя — 1500 руб./мес.
+  - title: Данные от пользователя
+    url: https://velikie-ozera.ru/
+    type: personal
+    date_checked: 2026-04-11
+    comment: Пользователь сообщил подтвержденный актуальный платеж 1500 руб. с участка в месяц; это значение использовано для тарифа.
