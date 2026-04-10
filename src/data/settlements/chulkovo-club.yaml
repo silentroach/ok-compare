@@ -1,0 +1,69 @@
+name: КП Чулково Club
+short_name: Чулково Club
+slug: chulkovo-club
+website: https://www.ydacha.ru/poselki/yugo-vostochnoe-napravlenie/chulkovo-club/
+is_baseline: false
+location:
+  address_text: МО, округ Раменское, д. Каменное Тяжино
+  lat: 55.545681
+  lng: 38.022677
+  map_url: https://yandex.ru/maps/geo/kp_chulkovo_klab/53209459/
+  district: Раменский район
+tariff:
+  value: 6000
+  unit: rub_fixed
+  period: month
+  note: минимальный платеж по обзорам, не подтверждено
+infrastructure:
+  roads: asphalt
+  lighting: yes
+  gas: yes
+  water: yes
+  sewage: yes
+  drainage: closed
+  checkpoints: yes
+  security: yes
+  fencing: yes
+  video_surveillance: full
+  admin_building: yes
+  retail_or_services: yes
+common_spaces:
+  club_infrastructure: yes
+  playgrounds: yes
+  sports: yes
+  pool: yes
+  fitness_club: yes
+  restaurant: yes
+  spa_center: yes
+  water_access: yes
+  beach_zones: yes
+  kids_club: yes
+service_model:
+  garbage_collection: yes
+  road_cleaning: yes
+sources:
+  - title: Чулково Club — официальный сайт
+    url: https://www.ydacha.ru/poselki/yugo-vostochnoe-napravlenie/chulkovo-club/
+    type: official
+    date_checked: 2026-04-10
+    comment: На странице поселка указаны ИЖС, газ, водопровод, канализация, интернет, ограждение, охрана, КПП, видеонаблюдение, освещение, офис ДНП, детская и спортивная площадки, пляж; на странице проезда опубликованы координаты GPS.
+  - title: Яндекс Карты — КП Чулково клаб
+    url: https://yandex.ru/maps/geo/kp_chulkovo_klab/53209459/
+    type: community
+    date_checked: 2026-04-10
+    comment: Карточка объекта подтверждает адрес в д. Каменное Тяжино и координаты точки на карте.
+  - title: ЦИАН — КП Чулково Club (Чулково Клаб)
+    url: https://www.cian.ru/kottedzhnyj-poselok-chulkovo-club-chulkovo-klab-2203/
+    type: media
+    date_checked: 2026-04-10
+    comment: В карточке поселка указаны год сдачи 2017, бизнес-класс, асфальтированные дороги, центральная канализация, круглосуточная охрана, пропускная система и видеонаблюдение.
+  - title: Domzamkad — Чулково club (Чулково клаб)
+    url: https://www.domzamkad.ru/villages/chulkovo-club.html
+    type: media
+    date_checked: 2026-04-10
+    comment: В карточке поселка указаны коммунальные платежи от 6000 руб./месяц, центральное водоснабжение, магистральный газ, ливневая и центральная канализация, интернет, кабельное ТВ, бассейн, магазин, ресторан и гостевая парковка; страница обновлена 31.01.2026.
+  - title: Domzamkad — Экскурсия по коттеджному поселку Чулково club
+    url: https://www.domzamkad.ru/articles/osobii-mikroklimat-chylkovo-club.html
+    type: media
+    date_checked: 2026-04-10
+    comment: В разделе «Цена вопроса» дословно указано, что плата за обслуживание привязана к площади домовладения; в нее входят уборка территории, вывоз мусора, обслуживание дорог, освещение и охрана, а газ, электричество и вода оплачиваются отдельно по тарифам Раменского района.
