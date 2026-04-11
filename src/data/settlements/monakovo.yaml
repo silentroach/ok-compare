@@ -1,0 +1,67 @@
+name: КП Монаково
+short_name: Монаково
+slug: monakovo
+website: https://www.cian.ru/kottedzhnyj-poselok-monakovo-20765/
+is_baseline: false
+
+location:
+  address_text: МО, округ Мытищи, д. Хлябово
+  lat: 56.124226
+  lng: 37.558077
+  map_url: https://yandex.ru/maps/geo/kp_monakovo/53204320/
+  district: Мытищинский район
+
+tariff:
+  value: 35000
+  unit: rub_fixed
+  period: month
+  note: Коттеджное рабство
+
+infrastructure:
+  roads: asphalt
+  gas: yes
+  water: yes
+  sewage: yes
+  security: yes
+  fencing: yes
+  video_surveillance: full
+
+common_spaces:
+  playgrounds: yes
+  walking_routes: yes
+  water_access: yes
+  beach_zones: yes
+
+service_model: {}
+
+sources:
+  - title: Яндекс Карты — КП Монаково
+    url: https://yandex.ru/maps/geo/kp_monakovo/53204320/
+    type: community
+    date_checked: 2026-04-11
+    comment: Карточка объекта подтверждает название поселка, адрес в д. Хлябово и координаты 56.124226, 37.558077.
+  - title: ЦИАН — КП «Монаково»
+    url: https://www.cian.ru/kottedzhnyj-poselok-monakovo-20765/
+    type: media
+    date_checked: 2026-04-11
+    comment: Карточка поселка подтверждает адрес Хлябово, Мытищи; указаны центральные водоснабжение и канализация, магистральный газ, асфальтированные дороги, круглосуточная охрана и детские площадки.
+  - title: ЦИАН — лот в КП Монаково, ул. Березовая, 4
+    url: https://mytishchi.cian.ru/sale/suburban/303554461/
+    type: media
+    date_checked: 2026-04-11
+    comment: В описании указаны оборудованная купальная зона и яхт-клуб; также сказано, что территория поселка обнесена высокой кирпичной стеной, действует система видеонаблюдения, охрана патрулирует улицы и берег.
+  - title: ЦИАН — лот в КП Монаково, 12А
+    url: https://mytishchi.cian.ru/sale/suburban/327588894/
+    type: media
+    date_checked: 2026-04-11
+    comment: В описании указаны лесная прогулочная зона на берегу, детские площадки, яхт-клуб, зона для купания, центральные коммуникации и многоступенчатая система охраны.
+  - title: HomeHunter — КП «Монаково»
+    url: https://homehunter.ru/mo/poselki/monakovo
+    type: media
+    date_checked: 2026-04-11
+    comment: В характеристиках поселка указаны видеонаблюдение, огороженная территория, патрулирование, прогулочная зона и детская площадка.
+  - title: Аргументы недели — Как дельцы со связями создают проблемы жителям коттеджей в Подмосковье
+    url: https://dzen.ru/a/aIcTRKakGWjsRkSO
+    type: media
+    date_checked: 2026-04-11
+    comment: В статье прямо названы д. Хлябово и НП «Монаково-Клаб»; указано, что ежемесячный платеж «на содержание поселка» вырос с 10 до 35 тыс. руб. в период с 2019 по 2025 год.
