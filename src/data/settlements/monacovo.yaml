@@ -19,6 +19,7 @@ tariff:
 
 infrastructure:
   roads: asphalt
+  sidewalks: yes
   gas: yes
   water: yes
   sewage: yes
