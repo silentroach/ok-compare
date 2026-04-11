@@ -1,7 +1,7 @@
 name: КП Монаково
 short_name: Монаково
-slug: monakovo
-website: https://www.cian.ru/kottedzhnyj-poselok-monakovo-20765/
+slug: monacovo
+website: https://monacovo.ru/
 is_baseline: false
 
 location:
@@ -22,6 +22,8 @@ infrastructure:
   gas: yes
   water: yes
   sewage: yes
+  drainage: closed
+  checkpoints: yes
   security: yes
   fencing: yes
   video_surveillance: full
@@ -35,6 +37,11 @@ common_spaces:
 service_model: {}
 
 sources:
+  - title: КП Монаково — официальный сайт
+    url: https://monacovo.ru/
+    type: official
+    date_checked: 2026-04-11
+    comment: Официальный сайт подтверждает собственный яхт-клуб и причальный комплекс, прогулочную набережную, детские площадки, зону купания, центральный газ и канализацию, подземную дренажную систему, видеонаблюдение по периметру и строгую пропускную систему.
   - title: Яндекс Карты — КП Монаково
     url: https://yandex.ru/maps/geo/kp_monakovo/53204320/
     type: community
