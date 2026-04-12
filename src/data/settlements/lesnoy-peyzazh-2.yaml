@@ -1,0 +1,70 @@
+# Официальный сайт не найден; в поле website временно используется карточка поселка на Яндекс Недвижимости.
+# Вне схемы: по Яндекс Недвижимости поселок относится к ДНП, класс комфорт, 350 объектов, проект сдан, тип земли ИЖС, 32 км до МКАД.
+name: КП Лесной пейзаж 2
+short_name: Лесной пейзаж 2
+slug: lesnoy-peyzazh-2
+website: https://realty.yandex.ru/moskva_i_moskovskaya_oblast/kupit/kottedzhnye-poselki/lesnoj-pejzazh-2-1823659/
+is_baseline: false
+
+location:
+  address_text: Москва, Краснопахорский район, пос. Краснопахорское
+  lat: 55.430344
+  lng: 37.19613
+  map_url: https://maps.yandex.ru/?pt=37.19613,55.430344&z=16
+  district: Краснопахорский район
+
+tariff:
+  value: 6000
+  unit: rub_per_lot
+  period: month
+  note: вода входит в тариф
+
+infrastructure:
+  roads: asphalt
+  lighting: yes
+  gas: yes
+  water: yes
+  sewage: yes
+  checkpoints: yes
+  security: yes
+  fencing: yes
+  underground_electricity: full
+  retail_or_services: yes
+
+common_spaces:
+  playgrounds: yes
+  sports: yes
+  walking_routes: yes
+  water_access: yes
+
+service_model:
+  garbage_collection: yes
+  snow_removal: yes
+  landscaping: yes
+
+sources:
+  - title: Яндекс Недвижимость — КП «Лесной пейзаж 2»
+    url: https://realty.yandex.ru/moskva_i_moskovskaya_oblast/kupit/kottedzhnye-poselki/lesnoj-pejzazh-2-1823659/
+    type: media
+    date_checked: 2026-04-12
+    comment: Карточка поселка подтверждает расположение в пос. Краснопахорское, координаты 55.430344, 37.19613, статус проекта «сдан», 350 объектов, ИЖС, центральные водоснабжение и канализацию, газ, дороги с покрытием и уличное освещение.
+  - title: ЦИАН — дом в КП «Лесной пейзаж 2»
+    url: https://www.cian.ru/sale/suburban/325283348/
+    type: media
+    date_checked: 2026-04-12
+    comment: В описании указаны поселковые платежи 6000 руб. в месяц, КПП, круглосуточная охрана, асфальтированные дороги, освещение, обслуживание коммуникаций, а также детские и спортивные площадки и магазин на въезде.
+  - title: ЦИАН — коттедж в КП «Лесной пейзаж-2»
+    url: https://www.cian.ru/sale/suburban/328848329/
+    type: media
+    date_checked: 2026-04-12
+    comment: В описании указаны центральные коммуникации, огороженная территория, твердое покрытие дорог, специализированная охрана, КПП, прогулочные зоны, парк отдыха, мини-маркет и аптечный пункт.
+  - title: ЦИАН — дом в КП «Лесной пейзаж 2»
+    url: https://www.cian.ru/sale/suburban/288775597/
+    type: media
+    date_checked: 2026-04-12
+    comment: В описании сказано, что электрическая сеть поселка подземная, улицы асфальтированы, поселок охраняемый и примыкает к большому заповедному лесному массиву.
+  - title: Данные от пользователя
+    url: https://yandex.ru/navi?ol=geo&text=%D0%9A%D0%9F%20%D0%9B%D0%B5%D1%81%D0%BD%D0%BE%D0%B9%20%D0%BF%D0%B5%D0%B9%D0%B7%D0%B0%D0%B6-2&sll=37.196137,55.430375&sspn=0.008592,0.012433&si=mw0rd7adkzuzz1wnmwvv00nygr
+    type: personal
+    date_checked: 2026-04-12
+    comment: Пользователь сообщил актуальный платеж 6000 руб. в месяц с участка и состав услуг, входящих в тариф; также отдельно подтвердил полный асфальт внутри поселка и доступ к воде по картам и спутнику.
