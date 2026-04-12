@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Stats } from '../lib/schema';
-  import { formatPercentage } from '../lib/format';
+  import { formatPercentage, formatTariff } from '../lib/format';
 
   interface Props {
     stats: Stats;
@@ -11,9 +11,8 @@
   const plural = new Intl.PluralRules('ru-RU');
 
   function getMedianText(diff: number): string {
-    if (diff > 0) return 'дороже медианы';
-    if (diff < 0) return 'дешевле медианы';
-    return 'совпадает с медианой';
+    if (diff === 0) return 'Шелково = медиане';
+    return `Шелково: ${formatPercentage(diff / 100)} к медиане`;
   }
 
   function getMedianTone(diff: number): string {
@@ -35,6 +34,12 @@
 
   function getExpensiveText(n: number): string {
     return `${getNoun(n)} дороже Шелково`;
+  }
+
+  function getShare(n: number, total: number): string {
+    const rest = Math.max(total - 1, 0);
+    if (rest === 0) return 'нет других поселков';
+    return `${Math.round((n / rest) * 100)}% остальных поселков`;
   }
 </script>
 
@@ -63,11 +68,18 @@
       data-testid="kpi-median"
     >
       <div
-        class={`${embed ? 'mb-0.5 text-lg' : 'mb-1 text-2xl'} font-semibold ${getMedianTone(stats.shelkovoVsMedianPercent)}`}
+        class={embed
+          ? 'mb-0.5 text-lg font-semibold text-foreground'
+          : 'mb-1 text-2xl font-semibold text-foreground'}
       >
-        {formatPercentage(stats.shelkovoVsMedianPercent / 100)}
+        {formatTariff(stats.medianTariff)}
       </div>
       <div class={embed ? 'text-xs ui-muted' : 'text-sm ui-muted'}>
+        медиана по поселкам
+      </div>
+      <div
+        class={`${embed ? 'mt-1 text-xs' : 'mt-1.5 text-sm'} ${getMedianTone(stats.shelkovoVsMedianPercent)}`}
+      >
         {getMedianText(stats.shelkovoVsMedianPercent)}
       </div>
     </article>
@@ -88,6 +100,13 @@
       <div class={embed ? 'text-xs ui-muted' : 'text-sm ui-muted'}>
         {getCheaperText(stats.cheaperCount)}
       </div>
+      <div
+        class={embed
+          ? 'mt-1 text-xs text-[color:var(--color-success-text)]'
+          : 'mt-1.5 text-sm text-[color:var(--color-success-text)]'}
+      >
+        {getShare(stats.cheaperCount, stats.totalSettlements)}
+      </div>
     </article>
 
     <article
@@ -105,6 +124,13 @@
       </div>
       <div class={embed ? 'text-xs ui-muted' : 'text-sm ui-muted'}>
         {getExpensiveText(stats.moreExpensiveCount)}
+      </div>
+      <div
+        class={embed
+          ? 'mt-1 text-xs text-[color:var(--color-danger-text)]'
+          : 'mt-1.5 text-sm text-[color:var(--color-danger-text)]'}
+      >
+        {getShare(stats.moreExpensiveCount, stats.totalSettlements)}
       </div>
     </article>
   </div>

@@ -23,8 +23,9 @@ describe('KPIStats', () => {
       props: { stats: mockStats },
     });
 
-    expect(container.textContent).toContain('дороже');
-    expect(container.textContent).toContain('медианы');
+    expect(container.textContent).toMatch(/3\s650 ₽\/сотка/);
+    expect(container.textContent).toContain('медиана по поселкам');
+    expect(container.textContent).toContain('Шелково: +23% к медиане');
   });
 
   it('displays median comparison when cheaper', () => {
@@ -37,8 +38,20 @@ describe('KPIStats', () => {
       props: { stats: cheaperStats },
     });
 
-    expect(container.textContent).toContain('дешевле');
-    expect(container.textContent).toContain('медианы');
+    expect(container.textContent).toContain('Шелково: −15% к медиане');
+  });
+
+  it('displays median equality text', () => {
+    const equalStats: Stats = {
+      ...mockStats,
+      shelkovoVsMedianPercent: 0,
+    };
+
+    const { container } = render(KPIStats, {
+      props: { stats: equalStats },
+    });
+
+    expect(container.textContent).toContain('Шелково = медиане');
   });
 
   it('displays cheaper count', () => {
@@ -48,6 +61,7 @@ describe('KPIStats', () => {
 
     expect(container.textContent).toContain('2');
     expect(container.textContent).toContain('поселка дешевле Шелково');
+    expect(container.textContent).toContain('67% остальных поселков');
   });
 
   it('displays more expensive count', () => {
@@ -57,6 +71,7 @@ describe('KPIStats', () => {
 
     expect(container.textContent).toContain('1');
     expect(container.textContent).toContain('поселок дороже Шелково');
+    expect(container.textContent).toContain('33% остальных поселков');
   });
 
   it('uses plural form for many settlements', () => {
