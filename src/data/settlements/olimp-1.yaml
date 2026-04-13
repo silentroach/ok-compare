@@ -1,0 +1,55 @@
+# Вне схемы: на генплане указано, что Олимп 1 — первая очередь застройки.
+# Вне схемы: кадастровый номер очереди 50:33:0020172:71.
+# Вне схемы: на главной странице указаны участки от 12 до 20 соток.
+name: КП Олимп 1
+short_name: Олимп 1
+slug: olimp-1
+website: https://olimpland.ru/
+is_baseline: false
+location:
+  address_text: МО, округ Ступино
+  lat: 55.160926
+  lng: 37.975416
+  map_url: https://yandex.ru/maps/geo/kp_olimp/53210118/?ll=37.975326%2C55.161412&z=15
+  district: Ступинский район
+tariff:
+  value: 723.97
+  unit: rub_per_sotka
+  period: month
+infrastructure:
+  roads: asphalt
+  lighting: yes
+  gas: yes
+  water: yes
+  sewage: yes
+  checkpoints: yes
+  security: yes
+  fencing: yes
+  retail_or_services: yes
+common_spaces:
+  club_infrastructure: yes
+  playgrounds: yes
+  sports: yes
+  kids_club: yes
+service_model: {}
+sources:
+  - title: Олимп — официальный сайт
+    url: https://olimpland.ru/
+    type: official
+    date_checked: 2026-04-13
+    comment: На главной странице указаны две очереди Олимп 1 и Олимп 2 с общей инфраструктурой, центральные коммуникации, закрытая территория с КПП и патрулированием, асфальт и освещение, а также мини-маркет, детский клуб и спортивные и игровые площадки.
+  - title: Олимп — изменение тарифов на эксплуатационные услуги
+    url: https://olimpland.ru/izmenenie-tarifov-na-ekspluataczionnye-uslugi/
+    type: official
+    date_checked: 2026-04-13
+    comment: В новости от 01.08.2025 указано, что с 01.09.2025 ежемесячная плата для ДНП «Константиново 1» составит 723,97 руб. за 100 кв.м; новость подписана ООО «УК «ОЛИМП Сервис».
+  - title: Олимп — генплан и цены
+    url: https://olimpland.ru/genplan/
+    type: official
+    date_checked: 2026-04-13
+    comment: На странице генплана Олимп 1 указан как первая очередь застройки; приведен кадастровый номер 50:33:0020172:71.
+  - title: Яндекс Карты — КП Олимп
+    url: https://yandex.ru/maps/geo/kp_olimp/53210118/?ll=37.975326%2C55.161412&z=15
+    type: community
+    date_checked: 2026-04-13
+    comment: Карточка объекта «КП Олимп» подтверждает расположение в городском округе Ступино и координаты 55.160926, 37.975416.
