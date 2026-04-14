@@ -71,7 +71,7 @@ describe('buildRatings', () => {
     expect(near?.score).toBeGreaterThan(far?.score ?? 0);
   });
 
-  it('shrinks sparse rows to dataset priors instead of treating unknown as zero', () => {
+  it('keeps fully unknown rows between strong and weak rows', () => {
     const rows = buildRatings([
       mk('good', {
         infrastructure: {
@@ -136,6 +136,44 @@ describe('buildRatings', () => {
     expect(mid).toBeGreaterThan(bad);
   });
 
+  it('shrinks sparse rows to a neutral midpoint instead of the dataset average', () => {
+    const rows = buildRatings([
+      mk('good', {
+        infrastructure: {
+          roads: 'asphalt',
+          lighting: 'yes',
+          gas: 'yes',
+          water: 'yes',
+          sewage: 'yes',
+          checkpoints: 'yes',
+          security: 'yes',
+          fencing: 'yes',
+          video_surveillance: 'full',
+          retail_or_services: 'yes',
+        },
+        common_spaces: {
+          playgrounds: 'yes',
+          sports: 'yes',
+          walking_routes: 'yes',
+          water_access: 'yes',
+          club_infrastructure: 'yes',
+        },
+        service_model: {
+          garbage_collection: 'yes',
+          snow_removal: 'yes',
+          road_cleaning: 'yes',
+        },
+      }),
+      mk('mid'),
+    ]);
+
+    const good = rows.get('good')?.score ?? 0;
+    const mid = rows.get('mid')?.score ?? 0;
+
+    expect(mid).toBe(57.5);
+    expect(good).toBeGreaterThan(mid);
+  });
+
   it('adds a bonus when central water is included in tariff', () => {
     const rows = buildRatings([
       mk('base', {
@@ -156,7 +194,7 @@ describe('buildRatings', () => {
     const base = rows.get('base')?.score ?? 0;
     const bonus = rows.get('bonus')?.score ?? 0;
 
-    expect(bonus - base).toBe(WATER_BONUS);
+    expect(bonus - base).toBeCloseTo(WATER_BONUS, 6);
   });
 
   it('applies a strong penalty for mentions in obmandachniki', () => {

@@ -113,27 +113,32 @@ Algorithm per group:
 
 1. Compute weighted mean from known fields only.
 2. Compute group fill ratio: `known_weight / total_weight`.
-3. Compute dataset prior for that group from all settlements.
-4. Shrink sparse rows towards the prior:
+3. Shrink sparse rows towards a fixed neutral midpoint `0.5`:
 
-`mixed = raw * fill + prior * (1 - fill)`
+`mixed = raw * fill + 0.5 * (1 - fill)`
 
 Effects:
 
 - fully filled row -> uses its own data
-- sparse row -> pulled towards dataset average
-- fully unknown row -> falls back to prior
+- sparse row -> pulled towards the center of the scale
+- fully unknown row -> falls back to `0.5`
+
+Why midpoint instead of dataset average:
+
+- missing data in this project are not random
+- positive traits are more likely to be explicitly documented than absent ones
+- using the observed dataset average as a prior would systematically overrate sparse rows
 
 This avoids two bad outcomes:
 
 - treating unknown as zero
-- overrating rows with only 1-2 confirmed positive fields
+- letting rows with 1-2 confirmed positives inherit an overly optimistic score from the rest of the dataset
 
 ## Final Formula
 
 `rating = 100 * (infra * 0.50 + spaces * 0.25 + service * 0.10 + distance * 0.15)`
 
-Where `infra`, `spaces`, `service` are the mixed group scores after prior shrinkage.
+Where `infra`, `spaces`, `service` are the mixed group scores after neutral shrinkage.
 
 ## Extra Adjustments
 

@@ -46,6 +46,7 @@ export const MKAD_RADIUS = round(
 
 export const WATER_BONUS = 4;
 export const RABSTVO_PENALTY = 15;
+const MID = 0.5;
 
 const AVAIL = {
   yes: 1,
@@ -212,24 +213,9 @@ function service(item: Settlement): Group {
   ]);
 }
 
-function prior(
-  settlements: Settlement[],
-  pick: (item: Settlement) => Group,
-): number {
-  const list = settlements.map(pick).filter((item) => item.raw !== undefined);
-  if (list.length === 0) return 0.5;
-
-  const total = list.reduce((sum, item) => sum + item.fill, 0);
-  if (total === 0) return 0.5;
-
-  return (
-    list.reduce((sum, item) => sum + (item.raw ?? 0) * item.fill, 0) / total
-  );
-}
-
-function mix(item: Group, avg: number): number {
-  if (item.raw === undefined) return avg;
-  return item.raw * item.fill + avg * (1 - item.fill);
+function mix(item: Group): number {
+  if (item.raw === undefined) return MID;
+  return item.raw * item.fill + MID * (1 - item.fill);
 }
 
 function near(km: number): number {
@@ -248,21 +234,15 @@ function near(km: number): number {
  * Tariff is intentionally excluded from the score.
  */
 export function buildRatings(settlements: Settlement[]): Map<string, Rating> {
-  const avg = {
-    infra: prior(settlements, infra),
-    spaces: prior(settlements, spaces),
-    service: prior(settlements, service),
-  };
-
   return new Map(
     settlements.map((item) => {
       const km = getKm(item.location.lat, item.location.lng);
       const ring = getRing(item.location.lat, item.location.lng);
       const base =
         100 *
-        (mix(infra(item), avg.infra) * 0.5 +
-          mix(spaces(item), avg.spaces) * 0.25 +
-          mix(service(item), avg.service) * 0.1 +
+        (mix(infra(item)) * 0.5 +
+          mix(spaces(item)) * 0.25 +
+          mix(service(item)) * 0.1 +
           near(km) * 0.15);
       const score = Math.max(0, Math.min(base + tune(item), 100));
 
