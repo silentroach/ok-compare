@@ -18,6 +18,7 @@ tariff:
   period: month
 infrastructure:
   roads: asphalt
+  drainage: closed
   lighting: yes
   gas: yes
   water: yes
@@ -25,11 +26,18 @@ infrastructure:
   checkpoints: yes
   security: yes
   fencing: yes
+  video_surveillance: full
+  underground_electricity: full
+  admin_building: yes
   retail_or_services: yes
 common_spaces:
   club_infrastructure: yes
   playgrounds: yes
   sports: yes
+  pool: yes
+  restaurant: yes
+  spa_center: yes
+  walking_routes: yes
   kids_club: yes
 service_model: {}
 sources:
@@ -53,3 +61,8 @@ sources:
     type: community
     date_checked: 2026-04-13
     comment: Карточка объекта «КП Олимп» подтверждает расположение в городском округе Ступино и координаты 55.160926, 37.975416.
+  - title: Данные от пользователя
+    url: https://olimpland.ru/
+    type: personal
+    date_checked: 2026-04-14
+    comment: Пользователь подтвердил крытую ливневку, видеонаблюдение, подземную электросеть, административное здание, спа-комплекс, закрытый бассейн, веревочный панда-парк, прогулочные зоны, ресторан с летней верандой и магазин (мини-маркет).
