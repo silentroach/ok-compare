@@ -635,171 +635,178 @@ const heroMap = hasPoint
         )
       }
     </header>
-  </main>
 
-  <section
-    class="ui-shell mb-6 p-6 md:mb-8 lg:hidden"
-    data-testid="base-info-section"
-  >
-    <h2 class="mb-6 text-xl font-semibold text-foreground">
-      Основная информация
-    </h2>
+    <section
+      class="ui-shell mb-6 p-6 md:mb-8 lg:hidden"
+      data-testid="base-info-section"
+    >
+      <h2 class="mb-6 text-xl font-semibold text-foreground">
+        Основная информация
+      </h2>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div
-        class="relative z-20 rounded-xl border border-border bg-muted-soft p-4"
-      >
-        <h3
-          class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground"
-        >
-          Тариф на обслуживание
-        </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div
-          class="group relative inline-flex max-w-full text-3xl font-bold text-foreground"
+          class="relative z-20 rounded-xl border border-border bg-muted-soft p-4"
         >
-          <span
-            class={tariffCalc ? 'cursor-help' : ''}
-            tabindex={tariffCalc ? 0 : undefined}
-            aria-describedby={tariffCalc ? tipMobileId : undefined}
+          <h3
+            class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground"
           >
-            {formatTariffAuto(settlement.tariff)}
-          </span>
-          {
-            tariffCalc && (
-              <div
-                id={tipMobileId}
-                role="tooltip"
-                class="pointer-events-none absolute left-0 top-full z-50 mt-2 hidden w-[min(92vw,25rem)] rounded-xl border border-border bg-background/95 p-3 text-left text-sm shadow-xl backdrop-blur-sm group-hover:block group-focus-within:block"
-              >
-                <p class="text-xs text-muted-foreground">{tariffCalc.intro}</p>
-                {tariffCalc.assumption && (
-                  <p class="mt-1 text-xs text-muted-foreground">
-                    {tariffCalc.assumption}
+            Тариф на обслуживание
+          </h3>
+          <div
+            class="group relative inline-flex max-w-full text-3xl font-bold text-foreground"
+          >
+            <span
+              class={tariffCalc ? 'cursor-help' : ''}
+              tabindex={tariffCalc ? 0 : undefined}
+              aria-describedby={tariffCalc ? tipMobileId : undefined}
+            >
+              {formatTariffAuto(settlement.tariff)}
+            </span>
+            {
+              tariffCalc && (
+                <div
+                  id={tipMobileId}
+                  role="tooltip"
+                  class="pointer-events-none absolute left-0 top-full z-50 mt-2 hidden w-[min(92vw,25rem)] rounded-xl border border-border bg-background/95 p-3 text-left text-sm shadow-xl backdrop-blur-sm group-hover:block group-focus-within:block"
+                >
+                  <p class="text-xs text-muted-foreground">
+                    {tariffCalc.intro}
                   </p>
-                )}
-                <div class="mt-2 space-y-2">
-                  {tariffCalc.rows.map((item) => (
-                    <div>
-                      <p class="text-xs font-semibold text-foreground">
-                        {item.title}
-                      </p>
-                      <p class="text-xs text-muted-foreground">{item.source}</p>
-                      <p class="text-xs text-foreground">{item.formula}</p>
-                    </div>
-                  ))}
+                  {tariffCalc.assumption && (
+                    <p class="mt-1 text-xs text-muted-foreground">
+                      {tariffCalc.assumption}
+                    </p>
+                  )}
+                  <div class="mt-2 space-y-2">
+                    {tariffCalc.rows.map((item) => (
+                      <div>
+                        <p class="text-xs font-semibold text-foreground">
+                          {item.title}
+                        </p>
+                        <p class="text-xs text-muted-foreground">
+                          {item.source}
+                        </p>
+                        <p class="text-xs text-foreground">{item.formula}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <p class="mt-2 text-xs font-semibold text-foreground">
+                    Итого: {tariffCalc.total}
+                  </p>
                 </div>
-                <p class="mt-2 text-xs font-semibold text-foreground">
-                  Итого: {tariffCalc.total}
-                </p>
-              </div>
+              )
+            }
+          </div>
+          {
+            settlement.tariff.normalized_is_estimate && (
+              <p class="mt-1 text-xs text-muted-foreground opacity-75">
+                {formatTariffBase(settlement.tariff)}
+              </p>
+            )
+          }
+          {
+            settlement.tariff.note && (
+              <p class="mt-1 text-sm text-muted-foreground">
+                {settlement.tariff.note}
+              </p>
             )
           }
         </div>
-        {
-          settlement.tariff.normalized_is_estimate && (
-            <p class="mt-1 text-xs text-muted-foreground opacity-75">
-              {formatTariffBase(settlement.tariff)}
-            </p>
-          )
-        }
-        {
-          settlement.tariff.note && (
-            <p class="mt-1 text-sm text-muted-foreground">
-              {settlement.tariff.note}
-            </p>
-          )
-        }
-      </div>
 
-      {
-        hasDelta && comparison && (
-          <div class="rounded-xl border border-border bg-muted-soft p-4">
-            <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Сравнение с Шелково
-            </h3>
-            <div
-              class={`text-2xl font-bold ${comparison.isCheaper ? 'text-success-text' : 'text-warning-text'}`}
-            >
-              {comparison.isCheaper ? '−' : '+'}
-              {formatCurrency(Math.abs(comparison.tariffDelta))}
+        {
+          hasDelta && comparison && (
+            <div class="rounded-xl border border-border bg-muted-soft p-4">
+              <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                Сравнение с Шелково
+              </h3>
+              <div
+                class={`text-2xl font-bold ${comparison.isCheaper ? 'text-success-text' : 'text-warning-text'}`}
+              >
+                {comparison.isCheaper ? '−' : '+'}
+                {formatCurrency(Math.abs(comparison.tariffDelta))}
+              </div>
+              <p class="mt-1 text-sm text-muted-foreground">
+                {comparison.isCheaper ? 'Дешевле' : 'Дороже'} Шелково на{' '}
+                {formatPercentage(comparison.tariffDeltaPercent / 100, {
+                  signed: false,
+                })}
+              </p>
             </div>
-            <p class="mt-1 text-sm text-muted-foreground">
-              {comparison.isCheaper ? 'Дешевле' : 'Дороже'} Шелково на{' '}
-              {formatPercentage(comparison.tariffDeltaPercent / 100, {
-                signed: false,
-              })}
-            </p>
-          </div>
-        )
-      }
-
-      <div
-        class="rounded-xl border border-border bg-muted-soft p-4 md:col-span-2"
-      >
-        <h3
-          class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground"
-        >
-          Расположение
-        </h3>
-        <p class="text-foreground">{settlement.location.address_text}</p>
-        {
-          distanceFromShelkovo > 0 && (
-            <p class="mt-1 text-sm text-muted-foreground">
-              {formatDistance(distanceFromShelkovo)} от Шелково
-            </p>
           )
         }
+
+        <div
+          class="rounded-xl border border-border bg-muted-soft p-4 md:col-span-2"
+        >
+          <h3
+            class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground"
+          >
+            Расположение
+          </h3>
+          <p class="text-foreground">{settlement.location.address_text}</p>
+          {
+            distanceFromShelkovo > 0 && (
+              <p class="mt-1 text-sm text-muted-foreground">
+                {formatDistance(distanceFromShelkovo)} от Шелково
+              </p>
+            )
+          }
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section
-    class="ui-shell mb-6 p-6 md:mb-8 lg:-mt-[2em]"
-    data-testid="infrastructure-section"
-  >
-    <InfrastructureTable
-      title="Инфраструктура"
-      infra={settlement.infrastructure}
-      shelkovoInfra={!settlement.is_baseline
-        ? shelkovo?.infrastructure
-        : undefined}
-      client:idle
-    />
-  </section>
+    <section
+      class="ui-shell mb-6 p-6 md:mb-8 lg:-mt-[2em]"
+      data-testid="infrastructure-section"
+    >
+      <InfrastructureTable
+        title="Инфраструктура"
+        infra={settlement.infrastructure}
+        shelkovoInfra={!settlement.is_baseline
+          ? shelkovo?.infrastructure
+          : undefined}
+        client:idle
+      />
+    </section>
 
-  <section
-    class="ui-shell mb-6 p-6 md:mb-8"
-    data-testid="common-spaces-section"
-  >
-    <CommonSpacesTable
-      title="Общие пространства"
-      spaces={settlement.common_spaces}
-      shelkovoSpaces={!settlement.is_baseline
-        ? shelkovo?.common_spaces
-        : undefined}
-      client:idle
-    />
-  </section>
+    <section
+      class="ui-shell mb-6 p-6 md:mb-8"
+      data-testid="common-spaces-section"
+    >
+      <CommonSpacesTable
+        title="Общие пространства"
+        spaces={settlement.common_spaces}
+        shelkovoSpaces={!settlement.is_baseline
+          ? shelkovo?.common_spaces
+          : undefined}
+        client:idle
+      />
+    </section>
 
-  <section class="ui-shell mb-6 p-6 md:mb-8" data-testid="services-section">
-    <ServiceTable
-      title="Модель обслуживания"
-      services={settlement.service_model}
-      shelkovoServices={!settlement.is_baseline
-        ? shelkovo?.service_model
-        : undefined}
-      client:idle
-    />
-  </section>
+    <section class="ui-shell mb-6 p-6 md:mb-8" data-testid="services-section">
+      <ServiceTable
+        title="Модель обслуживания"
+        services={settlement.service_model}
+        shelkovoServices={!settlement.is_baseline
+          ? shelkovo?.service_model
+          : undefined}
+        client:idle
+      />
+    </section>
 
-  {
-    settlement.sources.length > 0 && (
-      <section class="ui-shell mb-6 p-6 md:mb-8" data-testid="sources-section">
-        <h2 class="mb-4 text-xl font-semibold text-foreground">Источники</h2>
-        <SourcesList sources={settlement.sources} />
-      </section>
-    )
-  }
+    {
+      settlement.sources.length > 0 && (
+        <section
+          class="ui-shell mb-6 p-6 md:mb-8"
+          data-testid="sources-section"
+        >
+          <h2 class="mb-4 text-xl font-semibold text-foreground">Источники</h2>
+          <SourcesList sources={settlement.sources} />
+        </section>
+      )
+    }
+  </main>
 </BaseLayout>
 
 <style>
