@@ -3,6 +3,8 @@ import { render, waitFor, fireEvent } from '@testing-library/svelte';
 import SettlementsExplorer from './SettlementsExplorer.svelte';
 import type { ComparisonResult, Settlement, Stats } from '../lib/schema';
 
+type Row = Settlement & { rating: number };
+
 const mockMap = {
   addChild: vi.fn(),
   removeChild: vi.fn(),
@@ -40,11 +42,12 @@ const stats: Stats = {
   shelkovoVsMeanPercent: 10,
 };
 
-const settlements: Settlement[] = [
+const settlements: Row[] = [
   {
     name: 'КП Шелково',
     short_name: 'Шелково',
     slug: 'shelkovo',
+    rating: 71.2,
     website: 'https://example.com/shelkovo',
     management_company: 'УК Шелково',
     is_baseline: true,
@@ -71,6 +74,7 @@ const settlements: Settlement[] = [
     name: 'КП Лесное',
     short_name: 'Лесное',
     slug: 'lesnoe',
+    rating: 58.4,
     website: 'https://example.com/lesnoe',
     management_company: 'УК Лесное',
     is_baseline: false,
@@ -97,6 +101,7 @@ const settlements: Settlement[] = [
     name: 'КП Усадьбы',
     short_name: 'Усадьбы',
     slug: 'usadby',
+    rating: 84.7,
     website: 'https://example.com/usadby',
     management_company: 'УК Усадьбы',
     is_baseline: false,
@@ -227,6 +232,96 @@ describe('SettlementsExplorer', () => {
     });
   });
 
+  it('uses rating order by default', async () => {
+    setScreen(false);
+
+    const { container } = render(SettlementsExplorer, {
+      props: { settlements, comparisons, stats },
+    });
+
+    await waitFor(() => {
+      expect(cardNames(container)).toEqual(['Усадьбы', 'Шелково', 'Лесное']);
+    });
+  });
+
+  it('sorts by conditional level in both directions', async () => {
+    setScreen(false);
+
+    const { container, getByLabelText } = render(SettlementsExplorer, {
+      props: { settlements, comparisons, stats },
+    });
+
+    await waitFor(() => {
+      expect(getByLabelText('Сортировка:')).toBeTruthy();
+    });
+
+    await fireEvent.change(getByLabelText('Сортировка:'), {
+      target: { value: 'rating_desc' },
+    });
+
+    await waitFor(() => {
+      expect(cardNames(container)).toEqual(['Усадьбы', 'Шелково', 'Лесное']);
+    });
+
+    await fireEvent.change(getByLabelText('Сортировка:'), {
+      target: { value: 'rating_asc' },
+    });
+
+    await waitFor(() => {
+      expect(cardNames(container)).toEqual(['Лесное', 'Шелково', 'Усадьбы']);
+    });
+  });
+
+  it('shows help link for conditional level sorting', async () => {
+    setScreen(false);
+
+    const { container, getByLabelText, queryByTestId } = render(
+      SettlementsExplorer,
+      {
+        props: { settlements, comparisons, stats },
+      },
+    );
+
+    await waitFor(() => {
+      expect(getByLabelText('Сортировка:')).toBeTruthy();
+    });
+
+    await waitFor(() => {
+      const link = container.querySelector(
+        '[data-testid="rating-help-link"]',
+      ) as HTMLAnchorElement | null;
+      expect(link?.getAttribute('href')).toBe('/rating/');
+    });
+
+    await fireEvent.change(getByLabelText('Сортировка:'), {
+      target: { value: 'tariff_asc' },
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId('rating-help-link')).toBeNull();
+    });
+  });
+
+  it('sorts by distance to MKAD', async () => {
+    setScreen(false);
+
+    const { container, getByLabelText } = render(SettlementsExplorer, {
+      props: { settlements, comparisons, stats },
+    });
+
+    await waitFor(() => {
+      expect(getByLabelText('Сортировка:')).toBeTruthy();
+    });
+
+    await fireEvent.change(getByLabelText('Сортировка:'), {
+      target: { value: 'mkad' },
+    });
+
+    await waitFor(() => {
+      expect(cardNames(container)).toEqual(['Лесное', 'Усадьбы', 'Шелково']);
+    });
+  });
+
   it('sorts by distance from Shelkovo', async () => {
     setScreen(false);
 
@@ -263,7 +358,7 @@ describe('SettlementsExplorer', () => {
     });
 
     await waitFor(() => {
-      expect(cardNames(container)).toEqual(['Шелково', 'Лесное', 'Усадьбы']);
+      expect(cardNames(container)).toEqual(['Лесное', 'Усадьбы', 'Шелково']);
     });
   });
 

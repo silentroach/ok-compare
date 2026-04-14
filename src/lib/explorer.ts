@@ -1,4 +1,5 @@
 import type { ComparisonResult, Settlement, Stats } from './schema';
+import type { Rating } from './rating';
 
 export type ExplorerLocation = Pick<
   Settlement['location'],
@@ -16,6 +17,8 @@ export interface ExplorerSettlement {
   name: Settlement['name'];
   short_name: Settlement['short_name'];
   slug: Settlement['slug'];
+  rating: number;
+  rabstvo?: Settlement['rabstvo'];
   management_company?: ExplorerCompany;
   is_baseline: Settlement['is_baseline'];
   location: ExplorerLocation;
@@ -28,7 +31,10 @@ export interface ExplorerPayload {
   stats: Stats;
 }
 
-export function toExplorer(settlements: Settlement[]): ExplorerSettlement[] {
+export function toExplorer(
+  settlements: Settlement[],
+  ratings: Map<string, Rating>,
+): ExplorerSettlement[] {
   return settlements.map((item) => {
     const company = item.management_company;
 
@@ -36,6 +42,8 @@ export function toExplorer(settlements: Settlement[]): ExplorerSettlement[] {
       name: item.name,
       short_name: item.short_name,
       slug: item.slug,
+      rating: ratings.get(item.slug)?.score ?? 0,
+      ...(item.rabstvo ? { rabstvo: true } : {}),
       ...(company
         ? {
             management_company:

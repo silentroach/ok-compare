@@ -15,7 +15,8 @@ tariff:
   value: 35000
   unit: rub_fixed
   period: month
-  note: Коттеджное рабство
+
+rabstvo: true
 
 infrastructure:
   roads: asphalt

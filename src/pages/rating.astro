@@ -1,0 +1,608 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/url';
+
+const title = 'Как считается условный уровень поселка';
+const description =
+  'Подробное объяснение, какие факторы влияют на условный уровень поселка, как учитываются неизвестные данные и почему тариф не входит в формулу.';
+const root = Astro.site ?? Astro.url.origin;
+const pageUrl = new URL(withBase('/rating/'), root).toString();
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: title,
+  description,
+  url: pageUrl,
+  inLanguage: 'ru-RU',
+};
+
+const nav = [
+  ['summary', 'Что это вообще такое'],
+  ['formula', 'Формула и веса'],
+  ['adjustments', 'Дополнительные корректировки'],
+  ['infra', 'Инфраструктура'],
+  ['spaces', 'Общественные пространства'],
+  ['service', 'Сервисная модель'],
+  ['distance', 'Удаленность от Москвы'],
+  ['unknown', 'Неизвестные данные'],
+  ['read', 'Как читать результат'],
+];
+
+const weights = [
+  ['50%', 'Инфраструктура', 'Базовая инженерная и охранная среда'],
+  ['25%', 'Общественные пространства', 'Повседневный комфорт и досуг'],
+  ['10%', 'Сервисная модель', 'Насколько поселок поддерживается в порядке'],
+  ['15%', 'Близость к Москве', 'Приближенное расстояние за пределами МКАД'],
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <main class="ui-page py-6 md:py-10 lg:py-12">
+    <section
+      class="ui-shell-strong relative overflow-hidden p-6 md:p-8 lg:p-10"
+    >
+      <div
+        class="absolute inset-x-0 top-0 h-32 bg-[radial-gradient(760px_220px_at_6%_0%,rgba(103,152,185,0.12),transparent_72%),radial-gradient(620px_220px_at_100%_18%,rgba(91,176,190,0.12),transparent_74%)]"
+      >
+      </div>
+      <div
+        class="relative grid gap-8 lg:grid-cols-[minmax(0,1.25fr)_20rem] lg:gap-10"
+      >
+        <div class="max-w-3xl space-y-6">
+          <a
+            href={withBase('/')}
+            class="ui-link inline-flex items-center gap-2 text-sm font-semibold"
+          >
+            <span aria-hidden="true">&larr;</span>
+            <span>К списку поселков</span>
+          </a>
+
+          <div class="space-y-4">
+            <div class="flex flex-wrap gap-2">
+              <span class="ui-chip">Методика</span>
+              <span class="ui-chip">Тариф исключен</span>
+              <span class="ui-chip">Москва + МКАД</span>
+            </div>
+
+            <div class="space-y-3">
+              <h1
+                class="max-w-3xl text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
+              >
+                Как считается условный уровень поселка
+              </h1>
+              <p
+                class="max-w-2xl text-[1.02rem] leading-8 text-muted-foreground md:text-[1.08rem]"
+              >
+                Это отдельный показатель качества среды, который помогает
+                сравнивать поселки между собой без привязки к стоимости. Он
+                нужен не для ответа на вопрос «самый лучший поселок вообще», а
+                для более честного вопроса: насколько поселок сильный по своим
+                характеристикам и как потом выглядит его тариф на фоне похожих
+                вариантов.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <div
+              class="rounded-2xl border border-info-border bg-info-soft/70 p-5"
+            >
+              <p
+                class="text-xs font-semibold uppercase tracking-[0.18em] text-info-text/80"
+              >
+                Важно
+              </p>
+              <p class="mt-3 text-sm leading-7 text-info-text">
+                Тариф не влияет на условный уровень вообще. Это сделано
+                специально, чтобы дешевые и дорогие поселки можно было
+                сравнивать внутри близкого по качеству диапазона, а не смешивать
+                цену и среду в одну цифру.
+              </p>
+            </div>
+
+            <div
+              class="rounded-2xl border border-border bg-white/55 p-5 backdrop-blur-[2px]"
+            >
+              <p
+                class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              >
+                Коротко
+              </p>
+              <p class="mt-3 text-sm leading-7 text-muted-foreground">
+                На итог больше всего влияют дороги, вода, газ, канализация,
+                охрана, базовая среда внутри поселка и удаленность от Москвы.
+                Премиальные вещи вроде SPA или ресторана учитываются, но не
+                могут перевесить слабую базовую инфраструктуру.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <aside class="space-y-4">
+          <div
+            class="rounded-[1.35rem] border border-white/55 bg-white/68 p-5 shadow-[0_18px_40px_-26px_rgba(15,23,42,0.35)] backdrop-blur-md"
+          >
+            <p
+              class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              Итоговая структура
+            </p>
+            <dl class="mt-4 space-y-3">
+              {
+                weights.map(([weight, label, note]) => (
+                  <div class="rounded-xl border border-border/70 bg-card/85 px-4 py-3">
+                    <dt class="flex items-baseline justify-between gap-3">
+                      <span class="text-sm font-semibold text-foreground">
+                        {label}
+                      </span>
+                      <span class="text-lg font-bold text-primary">
+                        {weight}
+                      </span>
+                    </dt>
+                    <dd class="mt-1 text-xs leading-5 text-muted-foreground">
+                      {note}
+                    </dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <div
+      class="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-start"
+    >
+      <div class="space-y-6">
+        <section id="summary" class="ui-shell p-6 md:p-7">
+          <div class="max-w-3xl space-y-4">
+            <p
+              class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              Что это вообще такое
+            </p>
+            <h2 class="text-2xl font-semibold text-foreground md:text-[2rem]">
+              Это индекс качества среды, а не интегральная цена жизни
+            </h2>
+            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+              Мы используем условный уровень как техническую ось сравнения. Он
+              отвечает на вопрос, насколько сильным выглядит поселок по тем
+              характеристикам, которые реально собраны в нашей базе: инженерия,
+              охрана, среда, сервис и примерная близость к Москве.
+            </p>
+            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+              Это важно потому, что тариф сам по себе мало о чем говорит. Один и
+              тот же платеж может выглядеть нормально для сильного поселка и
+              завышенно для слабого. Поэтому сначала мы считаем уровень, а уже
+              потом отдельно смотрим на стоимость содержания.
+            </p>
+          </div>
+        </section>
+
+        <section id="formula" class="ui-shell p-6 md:p-7">
+          <div class="max-w-3xl space-y-5">
+            <p
+              class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              Формула и веса
+            </p>
+            <h2 class="text-2xl font-semibold text-foreground md:text-[2rem]">
+              Как складывается итоговая цифра
+            </h2>
+            <div
+              class="overflow-x-auto rounded-2xl border border-border bg-muted-soft p-5"
+            >
+              <pre
+                class="text-sm leading-8 text-foreground"><code>условный уровень =
+  50% инфраструктура +
+  25% общественные пространства +
+  10% сервисная модель +
+  15% близость к Москве</code></pre>
+            </div>
+            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+              Сначала каждый блок переводится в шкалу от 0 до 1. Затем блоки
+              объединяются по весам и превращаются в итоговое число от 0 до 100.
+              Чем число выше, тем сильнее поселок по текущей модели оценки.
+            </p>
+            <div class="grid gap-3 md:grid-cols-2">
+              {
+                weights.map(([weight, label, note]) => (
+                  <div class="rounded-2xl border border-border bg-card p-4">
+                    <div class="flex items-start justify-between gap-4">
+                      <div>
+                        <h3 class="text-sm font-semibold text-foreground">
+                          {label}
+                        </h3>
+                        <p class="mt-1 text-sm leading-6 text-muted-foreground">
+                          {note}
+                        </p>
+                      </div>
+                      <span class="text-xl font-bold text-primary">
+                        {weight}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </section>
+
+        <section id="adjustments" class="ui-shell p-6 md:p-7">
+          <div class="max-w-3xl space-y-5">
+            <p
+              class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              Дополнительные корректировки
+            </p>
+            <h2 class="text-2xl font-semibold text-foreground md:text-[2rem]">
+              После основной формулы есть еще два специальных сигнала
+            </h2>
+            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+              Помимо основных блоков, в условный уровень входят две отдельные
+              корректировки. Они не связаны с ценой и не меняют тариф, а только
+              уточняют восприятие качества поселка по важным дополнительным
+              признакам.
+            </p>
+            <div class="grid gap-4 md:grid-cols-2">
+              <div
+                class="rounded-2xl border border-success-border bg-success-soft p-5"
+              >
+                <p
+                  class="text-xs font-semibold uppercase tracking-[0.18em] text-success-text/80"
+                >
+                  Плюс к рейтингу
+                </p>
+                <h3 class="mt-2 text-lg font-semibold text-success-text">
+                  +4 балла, если вода уже включена в тариф
+                </h3>
+                <p class="mt-3 text-sm leading-7 text-success-text">
+                  Этот бонус применяется только тогда, когда в поселке
+                  подтверждено центральное водоснабжение и вода уже оплачивается
+                  внутри основного тарифа без отдельной доплаты и лимитов.
+                </p>
+              </div>
+              <div
+                class="rounded-2xl border border-danger-border bg-danger-soft p-5"
+              >
+                <p
+                  class="text-xs font-semibold uppercase tracking-[0.18em] text-danger-text/80"
+                >
+                  Минус к рейтингу
+                </p>
+                <h3 class="mt-2 text-lg font-semibold text-danger-text">
+                  −15 баллов за упоминание в «Коттеджном рабстве»
+                </h3>
+                <p class="mt-3 text-sm leading-7 text-danger-text">
+                  Если поселок фигурирует в канале «Коттеджное рабство», это
+                  считается сильным негативным сигналом и заметно понижает его
+                  условный уровень.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="infra" class="ui-shell p-6 md:p-7">
+          <div class="max-w-3xl space-y-5">
+            <p
+              class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              1. Инфраструктура
+            </p>
+            <h2 class="text-2xl font-semibold text-foreground md:text-[2rem]">
+              Самый важный блок
+            </h2>
+            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+              Это основа пригодности поселка для жизни. Если базовая инженерная
+              среда слабая, высокий уровень не получится даже при красивой
+              концепции, воде рядом или наличии премиальных объектов.
+            </p>
+            <div class="grid gap-4 md:grid-cols-2">
+              <div class="rounded-2xl border border-border bg-muted-soft p-5">
+                <h3 class="text-base font-semibold text-foreground">
+                  Максимально влияют
+                </h3>
+                <ul
+                  class="mt-3 space-y-2 text-sm leading-6 text-muted-foreground"
+                >
+                  <li>Дороги</li>
+                  <li>Вода</li>
+                  <li>Газ</li>
+                  <li>Канализация</li>
+                  <li>Охрана</li>
+                  <li>Видеонаблюдение</li>
+                  <li>КПП</li>
+                </ul>
+              </div>
+              <div class="rounded-2xl border border-border bg-muted-soft p-5">
+                <h3 class="text-base font-semibold text-foreground">
+                  Дополняют картину
+                </h3>
+                <ul
+                  class="mt-3 space-y-2 text-sm leading-6 text-muted-foreground"
+                >
+                  <li>Освещение</li>
+                  <li>Тротуары</li>
+                  <li>Ливневка</li>
+                  <li>Ограждение</li>
+                  <li>Подземное электричество</li>
+                  <li>Административное здание</li>
+                  <li>Магазины и сервисы внутри поселка</li>
+                </ul>
+              </div>
+            </div>
+            <div
+              class="rounded-2xl border border-border bg-card p-5 text-sm leading-7 text-muted-foreground"
+            >
+              <p>
+                Если характеристика у поселка явно есть, она получает полный
+                балл. Если она есть только в ограниченном или компромиссном
+                виде, она получает часть баллов. Если характеристики нет,
+                начисляется ноль.
+              </p>
+              <p class="mt-3">
+                Для некоторых признаков используется более тонкая градация.
+                Например, полностью асфальтированная дорога оценивается выше,
+                чем частично асфальтированная, гравийная ниже, а грунтовая дает
+                минимальный вклад.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="spaces" class="ui-shell p-6 md:p-7">
+          <div class="max-w-3xl space-y-5">
+            <p
+              class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              2. Общественные пространства
+            </p>
+            <h2 class="text-2xl font-semibold text-foreground md:text-[2rem]">
+              Комфорт среды, а не только премиальные опции
+            </h2>
+            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+              Этот блок нужен, чтобы оценивать повседневные сценарии жизни:
+              прогулки, детские зоны, спорт, доступ к воде и клубную среду. При
+              этом премиальные признаки не должны перевешивать базовую
+              функциональность поселка.
+            </p>
+            <div class="grid gap-4 md:grid-cols-2">
+              <div class="rounded-2xl border border-border bg-card p-5">
+                <h3 class="text-base font-semibold text-foreground">
+                  Более значимые признаки
+                </h3>
+                <ul
+                  class="mt-3 space-y-2 text-sm leading-6 text-muted-foreground"
+                >
+                  <li>Детские площадки</li>
+                  <li>Спортивные зоны</li>
+                  <li>Пешеходные маршруты</li>
+                  <li>Доступ к воде</li>
+                  <li>Клубная инфраструктура</li>
+                </ul>
+              </div>
+              <div class="rounded-2xl border border-border bg-card p-5">
+                <h3 class="text-base font-semibold text-foreground">
+                  Менее значимые признаки
+                </h3>
+                <ul
+                  class="mt-3 space-y-2 text-sm leading-6 text-muted-foreground"
+                >
+                  <li>Пляжные зоны</li>
+                  <li>Зоны барбекю</li>
+                  <li>Бассейн</li>
+                  <li>Фитнес-клуб</li>
+                  <li>Ресторан</li>
+                  <li>Спа-центр</li>
+                  <li>Детский клуб, спортлагерь, школа</li>
+                </ul>
+              </div>
+            </div>
+            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+              Это сознательная настройка модели. Поселок без SPA или ресторана
+              не считается слабым сам по себе, но поселок без нормальной среды,
+              прогулок и детских зон обычно выглядит хуже для реальной жизни.
+            </p>
+          </div>
+        </section>
+
+        <section id="service" class="ui-shell p-6 md:p-7">
+          <div class="max-w-3xl space-y-5">
+            <p
+              class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              3. Сервисная модель
+            </p>
+            <h2 class="text-2xl font-semibold text-foreground md:text-[2rem]">
+              Насколько поселок поддерживается в рабочем состоянии
+            </h2>
+            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+              Здесь оценивается, есть ли признаки нормального регулярного
+              обслуживания: вывоз мусора, уборка снега и дорог, благоустройство,
+              аварийная поддержка и диспетчеризация.
+            </p>
+            <div class="rounded-2xl border border-border bg-muted-soft p-5">
+              <ul
+                class="grid gap-2 text-sm leading-6 text-muted-foreground sm:grid-cols-2"
+              >
+                <li>Вывоз мусора</li>
+                <li>Уборка снега</li>
+                <li>Уборка дорог</li>
+                <li>Благоустройство</li>
+                <li>Аварийная служба</li>
+                <li>Диспетчер</li>
+              </ul>
+            </div>
+            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+              Вес этого блока ниже, чем у инфраструктуры. Хороший сервис важен,
+              но он не должен компенсировать слабую инженерную базу.
+            </p>
+          </div>
+        </section>
+
+        <section id="distance" class="ui-shell p-6 md:p-7">
+          <div class="max-w-3xl space-y-5">
+            <p
+              class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              4. Удаленность от Москвы
+            </p>
+            <h2 class="text-2xl font-semibold text-foreground md:text-[2rem]">
+              Приближенная оценка расстояния, а не времени в пути
+            </h2>
+            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+              Для расчета используется расстояние по координатам до центра
+              Москвы. Затем из него вычитается приблизительный расчетный радиус
+              МКАД. На выходе получается условное расстояние «за МКАД», которое
+              влияет на итоговый уровень с весом 15%.
+            </p>
+            <div class="rounded-2xl border border-border bg-card p-5">
+              <p class="text-sm leading-7 text-muted-foreground">
+                Чем дальше поселок находится за пределами расчетного радиуса,
+                тем слабее его вклад в итог. При этом влияние ограничено, чтобы
+                дальний, но сильный по среде поселок не проигрывал только из-за
+                расстояния.
+              </p>
+            </div>
+            <div
+              class="rounded-2xl border border-warning-border bg-warning-soft p-5"
+            >
+              <p class="text-sm leading-7 text-warning-text">
+                Важно: здесь не учитываются пробки, качество шоссе, близость к
+                станции, пересадки и реальное время дороги. Это именно
+                упрощенный прокси расстояния.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="unknown" class="ui-shell p-6 md:p-7">
+          <div class="max-w-3xl space-y-5">
+            <p
+              class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              Неизвестные данные
+            </p>
+            <h2 class="text-2xl font-semibold text-foreground md:text-[2rem]">
+              Отсутствие данных не считается автоматическим минусом
+            </h2>
+            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+              Если по какому-то признаку нет подтвержденной информации, это не
+              превращается в ноль. Сначала мы считаем среднее по известным
+              полям, затем смотрим, насколько полно заполнен блок, и при
+              необходимости частично подтягиваем результат к среднему уровню по
+              всей базе.
+            </p>
+            <div class="grid gap-3 md:grid-cols-3">
+              <div class="rounded-2xl border border-border bg-card p-4">
+                <p class="text-sm font-semibold text-foreground">Шаг 1</p>
+                <p class="mt-2 text-sm leading-6 text-muted-foreground">
+                  Считаем среднее только по известным полям.
+                </p>
+              </div>
+              <div class="rounded-2xl border border-border bg-card p-4">
+                <p class="text-sm font-semibold text-foreground">Шаг 2</p>
+                <p class="mt-2 text-sm leading-6 text-muted-foreground">
+                  Считаем, насколько полно заполнен блок.
+                </p>
+              </div>
+              <div class="rounded-2xl border border-border bg-card p-4">
+                <p class="text-sm font-semibold text-foreground">Шаг 3</p>
+                <p class="mt-2 text-sm leading-6 text-muted-foreground">
+                  Если данных мало, частично тянем результат к среднему по базе.
+                </p>
+              </div>
+            </div>
+            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+              Это защищает от двух перекосов: поселок не проваливается вниз
+              из-за отсутствия данных, но и не улетает слишком высоко только на
+              основе 1-2 подтвержденных сильных сторон.
+            </p>
+          </div>
+        </section>
+
+        <section id="read" class="ui-shell p-6 md:p-7">
+          <div class="max-w-3xl space-y-5">
+            <p
+              class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              Как читать результат
+            </p>
+            <h2 class="text-2xl font-semibold text-foreground md:text-[2rem]">
+              Что означает высокий или низкий уровень
+            </h2>
+            <div class="grid gap-4 md:grid-cols-3">
+              <div class="rounded-2xl border border-border bg-muted-soft p-5">
+                <h3 class="text-base font-semibold text-foreground">Высокий</h3>
+                <p class="mt-2 text-sm leading-6 text-muted-foreground">
+                  Обычно это сильная базовая инфраструктура, понятная среда и
+                  неплохая близость к Москве.
+                </p>
+              </div>
+              <div class="rounded-2xl border border-border bg-muted-soft p-5">
+                <h3 class="text-base font-semibold text-foreground">Средний</h3>
+                <p class="mt-2 text-sm leading-6 text-muted-foreground">
+                  Обычно это сочетание сильных и слабых сторон или заметная
+                  удаленность при неплохой внутренней среде.
+                </p>
+              </div>
+              <div class="rounded-2xl border border-border bg-muted-soft p-5">
+                <h3 class="text-base font-semibold text-foreground">Низкий</h3>
+                <p class="mt-2 text-sm leading-6 text-muted-foreground">
+                  Чаще всего это не один минус, а комбинация проблем в
+                  инженерии, среде и общих условиях жизни.
+                </p>
+              </div>
+            </div>
+            <div class="rounded-2xl border border-primary/20 bg-primary/5 p-5">
+              <p class="text-sm leading-7 text-muted-foreground">
+                Самое важное: условный уровень не заменяет тариф, а существует
+                отдельно от него. Поэтому логика страницы сравнения такая:
+                сначала смотрим, насколько поселки сопоставимы по уровню, а уже
+                потом задаем вопрос, какой тариф выглядит разумным для этого
+                уровня.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="space-y-4 lg:sticky lg:top-6">
+        <div class="ui-shell p-5">
+          <p
+            class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+          >
+            На странице
+          </p>
+          <nav class="mt-4 space-y-1.5">
+            {
+              nav.map(([id, label]) => (
+                <a
+                  href={withBase(`/rating/#${id}`)}
+                  class="block rounded-xl px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted-soft hover:text-foreground"
+                >
+                  {label}
+                </a>
+              ))
+            }
+          </nav>
+        </div>
+
+        <div class="ui-shell p-5">
+          <p
+            class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+          >
+            Напоминание
+          </p>
+          <p class="mt-3 text-sm leading-7 text-muted-foreground">
+            Если вы сортируете список по условному уровню, вы сортируете именно
+            по качеству среды по нашей модели, а не по цене, не по престижу и не
+            по ликвидности.
+          </p>
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

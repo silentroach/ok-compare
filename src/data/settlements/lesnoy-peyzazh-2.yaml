@@ -17,7 +17,8 @@ tariff:
   value: 6000
   unit: rub_per_lot
   period: month
-  note: вода входит в тариф
+
+water_in_tariff: true
 
 infrastructure:
   roads: asphalt

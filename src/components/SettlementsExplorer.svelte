@@ -6,7 +6,9 @@
     formatTariffAuto,
     getTariffHint,
   } from '../lib/format';
+  import { getRing } from '../lib/rating';
   import { rankSettlements } from '../lib/stats';
+  import Link from './Link.svelte';
   import SettlementMap from './SettlementMap.svelte';
   import SettlementCard from './SettlementCard.svelte';
 
@@ -18,8 +20,8 @@
   }
 
   let {
-    settlements = [],
-    comparisons = {},
+    settlements = [] as ExplorerSettlement[],
+    comparisons = {} as ExplorerPayload['comparisons'],
     stats,
     dataUrl = '',
   }: Props = $props();
@@ -73,10 +75,20 @@
     );
   }
 
+  function getDistanceFromMkad(settlement: ExplorerSettlement): number {
+    return getRing(settlement.location.lat, settlement.location.lng);
+  }
+
   // Filter and sort state
-  let sortBy = $state<'tariff_asc' | 'tariff_desc' | 'distance' | 'name'>(
-    'tariff_asc',
-  );
+  let sortBy = $state<
+    | 'tariff_asc'
+    | 'tariff_desc'
+    | 'rating_desc'
+    | 'rating_asc'
+    | 'mkad'
+    | 'distance'
+    | 'name'
+  >('rating_desc');
   let priceFilter = $state<'all' | 'cheaper' | 'more_expensive'>('all');
   let showMap = $state(false);
   let mobile = $state(false);
@@ -104,6 +116,16 @@
     // Sort
     result.sort((a, b) => {
       switch (sortBy) {
+        case 'rating_desc': {
+          const diff = b.rating - a.rating;
+          if (diff !== 0) return diff;
+          return a.short_name.localeCompare(b.short_name, 'ru');
+        }
+        case 'rating_asc': {
+          const diff = a.rating - b.rating;
+          if (diff !== 0) return diff;
+          return a.short_name.localeCompare(b.short_name, 'ru');
+        }
         case 'tariff_asc':
           return (
             a.tariff.normalized_per_sotka_month -
@@ -114,6 +136,8 @@
             b.tariff.normalized_per_sotka_month -
             a.tariff.normalized_per_sotka_month
           );
+        case 'mkad':
+          return getDistanceFromMkad(a) - getDistanceFromMkad(b);
         case 'distance':
           return getDistanceFromShelkovo(a) - getDistanceFromShelkovo(b);
         case 'name':
@@ -123,20 +147,14 @@
       }
     });
 
-    // Pin Shelkovo to top
-    const shelkovoIndex = result.findIndex((s) => s.is_baseline);
-    if (shelkovoIndex > 0) {
-      const shelkovo = result.splice(shelkovoIndex, 1)[0];
-      result.unshift(shelkovo);
-    }
-
     return result;
   });
 
   let displayedSettlements = $derived(filteredSettlements);
   let totalCount = $derived(settlements.length);
   let displayedCount = $derived(displayedSettlements.length);
-  let compact = $derived(priceFilter !== 'all' || sortBy !== 'tariff_asc');
+  let compact = $derived(priceFilter !== 'all' || sortBy !== 'rating_desc');
+  let help = $derived(sortBy === 'rating_desc' || sortBy === 'rating_asc');
   let mapSettlements = $derived.by(() =>
     displayedSettlements.map((s) => {
       const company = s.management_company;
@@ -294,22 +312,62 @@
         >
           Сортировка:
         </label>
-        <select
-          id={sortid}
-          value={sortBy}
-          aria-label="Сортировка поселков"
-          onchange={(e) => {
-            sortBy = (e.currentTarget as HTMLSelectElement)
-              .value as typeof sortBy;
-          }}
-          class="block w-auto rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground"
-          data-testid="sort-select"
-        >
-          <option value="tariff_asc">По тарифу (↑)</option>
-          <option value="tariff_desc">По тарифу (↓)</option>
-          <option value="distance">По расстоянию</option>
-          <option value="name">По названию</option>
-        </select>
+        <div class="flex items-center gap-2">
+          <select
+            id={sortid}
+            value={sortBy}
+            aria-label="Сортировка поселков"
+            onchange={(e) => {
+              sortBy = (e.currentTarget as HTMLSelectElement)
+                .value as typeof sortBy;
+            }}
+            class="block w-auto rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground"
+            data-testid="sort-select"
+          >
+            <option value="rating_desc">Условный уровень (↓)</option>
+            <option value="rating_asc">Условный уровень (↑)</option>
+            <option value="tariff_asc">По тарифу (↑)</option>
+            <option value="tariff_desc">По тарифу (↓)</option>
+            <option value="mkad">По расстоянию до МКАД</option>
+            <option value="distance">По расстоянию до Шелково</option>
+            <option value="name">По названию</option>
+          </select>
+
+          <span class="inline-flex h-5 w-5 items-center justify-center">
+            {#if help}
+              <Link
+                href="/rating/"
+                class="inline-flex h-5 w-5 items-center justify-center text-muted-foreground transition-colors hover:text-primary"
+                aria-label="Как считается условный уровень"
+                title="Как считается условный уровень"
+                data-testid="rating-help-link"
+              >
+                <svg
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  class="h-4 w-4"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  aria-hidden="true"
+                >
+                  <circle cx="10" cy="10" r="7.25"></circle>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.7 7.6A1.8 1.8 0 0 1 10.2 7c1 0 1.8.7 1.8 1.7 0 .8-.4 1.2-1.1 1.7-.7.4-1 .8-1 1.6"
+                  ></path>
+                  <circle
+                    cx="10"
+                    cy="13.9"
+                    r="0.7"
+                    fill="currentColor"
+                    stroke="none"
+                  ></circle>
+                </svg>
+              </Link>
+            {/if}
+          </span>
+        </div>
       </div>
     </div>
 

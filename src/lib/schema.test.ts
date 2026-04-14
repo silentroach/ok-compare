@@ -36,6 +36,8 @@ describe('Schema Validation', () => {
           period: 'month',
           note: 'Тестовая заметка',
         },
+        water_in_tariff: true,
+        rabstvo: true,
         infrastructure: {
           roads: 'asphalt',
           sidewalks: 'yes',
@@ -96,6 +98,51 @@ describe('Schema Validation', () => {
         expect(result.data.is_baseline).toBe(false);
         expect(result.data.tariff.normalized_per_sotka_month).toBe(3000);
         expect(result.data.tariff.normalized_is_estimate).toBe(false);
+        expect(result.data.water_in_tariff).toBe(true);
+        expect(result.data.rabstvo).toBe(true);
+      }
+    });
+
+    it('should only allow water_in_tariff with central water supply', () => {
+      const invalidSettlement = {
+        name: 'Коттеджный поселок Тестовый',
+        short_name: 'Тестовый',
+        slug: 'testovyy',
+        website: 'https://test.example.com',
+        is_baseline: false,
+        location: {
+          address_text: 'Московская область, Тестовый район',
+          lat: 55.7558,
+          lng: 37.6173,
+          district: 'Тестовый район',
+        },
+        tariff: {
+          value: 3000,
+          unit: 'rub_per_sotka',
+          period: 'month',
+        },
+        water_in_tariff: true,
+        infrastructure: {
+          water: 'partial',
+        },
+        sources: [
+          {
+            title: 'Тестовый источник',
+            url: 'https://example.com/source',
+            type: 'official',
+            date_checked: '2026-04-03',
+            comment: '',
+          },
+        ],
+      };
+
+      const result = SettlementSchema.safeParse(invalidSettlement);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        const issue = result.error.issues.find(
+          (item) => item.path[0] === 'water_in_tariff',
+        );
+        expect(issue?.message).toContain('central water supply');
       }
     });
 

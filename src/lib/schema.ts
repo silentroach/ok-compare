@@ -193,24 +193,37 @@ export const TelegramSchema = z
 export type Telegram = z.infer<typeof TelegramSchema>;
 
 // Main Settlement schema
-export const SettlementSchema = z.object({
-  name: z.string().min(1),
-  short_name: z.string().min(1),
-  slug: z
-    .string()
-    .min(1)
-    .regex(/^[a-z0-9-]+$/),
-  website: z.string().url(),
-  telegram: TelegramSchema.optional(),
-  management_company: ManagementCompanySchema.optional(),
-  is_baseline: z.boolean().default(false),
-  location: LocationSchema,
-  tariff: TariffSchema,
-  infrastructure: InfrastructureSchema.default({}),
-  common_spaces: CommonSpacesSchema.default({}),
-  service_model: ServiceModelSchema.default({}),
-  sources: z.array(SourceSchema).min(1),
-});
+export const SettlementSchema = z
+  .object({
+    name: z.string().min(1),
+    short_name: z.string().min(1),
+    slug: z
+      .string()
+      .min(1)
+      .regex(/^[a-z0-9-]+$/),
+    website: z.string().url(),
+    telegram: TelegramSchema.optional(),
+    management_company: ManagementCompanySchema.optional(),
+    is_baseline: z.boolean().default(false),
+    location: LocationSchema,
+    tariff: TariffSchema,
+    water_in_tariff: z.boolean().optional(),
+    rabstvo: z.boolean().optional(),
+    infrastructure: InfrastructureSchema.default({}),
+    common_spaces: CommonSpacesSchema.default({}),
+    service_model: ServiceModelSchema.default({}),
+    sources: z.array(SourceSchema).min(1),
+  })
+  .superRefine((item, ctx) => {
+    if (item.water_in_tariff && item.infrastructure.water !== 'yes') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['water_in_tariff'],
+        message:
+          'water_in_tariff can only be used when central water supply is confirmed',
+      });
+    }
+  });
 export type Settlement = z.infer<typeof SettlementSchema>;
 
 // Stats type (computed, not from YAML)

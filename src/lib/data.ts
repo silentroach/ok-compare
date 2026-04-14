@@ -2,6 +2,7 @@ import { getCollection } from 'astro:content';
 import type { Settlement, Stats, ComparisonResult } from './schema';
 import { computeStats } from './stats';
 import { compareSettlements } from './comparisons';
+import { buildRatings, type Rating } from './rating';
 
 /**
  * Load all settlements from content collection
@@ -63,9 +64,11 @@ export async function loadAllData(): Promise<{
   settlements: Settlement[];
   stats: Stats;
   comparisons: Map<string, ComparisonResult>;
+  ratings: Map<string, Rating>;
 }> {
   const { settlements, stats } = await loadSettlementsWithStats();
   const comparisons = compareAllSettlements(settlements);
+  const ratings = buildRatings(settlements);
 
-  return { settlements, stats, comparisons };
+  return { settlements, stats, comparisons, ratings };
 }

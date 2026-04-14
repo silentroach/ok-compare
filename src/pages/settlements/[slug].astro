@@ -67,6 +67,11 @@ const companyTitle =
   typeof company === 'string' ? company : (company?.title ?? '');
 const companyUrl = typeof company === 'object' ? company.url : '';
 const tg = settlement.telegram ? telegram(settlement.telegram) : undefined;
+const waterInc = settlement.water_in_tariff === true;
+const obman = settlement.rabstvo === true;
+const obmanUrl = telegram('obmandachniki');
+const waterTitle =
+  'Центральная вода уже включена в тариф и доступна без отдельной доплаты.';
 const hasDelta =
   !settlement.is_baseline && !!comparison && comparison.tariffDelta !== 0;
 const root = Astro.site ?? Astro.url.origin;
@@ -177,149 +182,176 @@ const heroMap = hasPoint
               ← Назад к списку
             </Link>
           </div>
-          {
-            settlement.is_baseline && (
-              <span class="ui-badge ui-badge-info border-white/40 bg-white/72 text-info-text">
-                Наш посёлок
-              </span>
-            )
-          }
+          <div class="flex flex-wrap justify-end gap-2">
+            {
+              waterInc && (
+                <span
+                  class="inline-flex items-center rounded-md border border-info-border bg-info-soft px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-info-text"
+                  title={waterTitle}
+                >
+                  Вода в тарифе
+                </span>
+              )
+            }
+            {
+              obman && (
+                <a
+                  href={obmanUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center rounded-md border border-danger bg-danger px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-danger-foreground transition-opacity hover:opacity-90"
+                  title="Открыть Telegram-канал Коттеджное рабство"
+                >
+                  Коттеджное рабство
+                </a>
+              )
+            }
+            {
+              settlement.is_baseline && (
+                <span class="ui-badge ui-badge-info border-white/40 bg-white/72 text-info-text">
+                  Наш посёлок
+                </span>
+              )
+            }
+          </div>
         </div>
 
-        <div class="mt-6 max-w-3xl">
-          <div class="mb-4 flex items-start gap-4">
-            <div>
-              <div class="flex items-start gap-6">
+        <div class="mt-6 w-full max-w-3xl self-start">
+          <div class="mb-4">
+            <div class="flex items-start gap-4">
+              <div class="min-w-0">
                 <p
                   class="text-4xl font-bold text-foreground [text-shadow:0_2px_10px_rgba(255,255,255,0.75)] xl:text-[2.7rem]"
                 >
                   {settlement.name}
                 </p>
-                <div class="-mt-0.5 flex items-center gap-2">
-                  {
-                    settlement.website && (
-                      <a
-                        href={settlement.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="Открыть сайт поселка"
-                        class="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                        title="Перейти на сайт поселка"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          class="h-6 w-6"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-                          />
-                        </svg>
-                      </a>
-                    )
-                  }
-                  {
-                    tg && (
-                      <a
-                        href={tg}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="Открыть Telegram-канал поселка"
-                        class="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                        title="Перейти в Telegram-канал"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          class="h-6 w-6"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M3 11.5L21 3 13 21l-2.5-7.5L3 11.5z"
-                          />
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M10.5 13.5L21 3"
-                          />
-                        </svg>
-                      </a>
-                    )
-                  }
-                  <a
-                    href={settlement.location.map_url ??
-                      `https://yandex.ru/maps/?pt=${settlement.location.lng},${settlement.location.lat}&z=15&l=map`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Открыть поселок на Яндекс.Картах"
-                    class="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                    title="Открыть на Яндекс.Картах"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      ></path>
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg>
-                  </a>
-                </div>
               </div>
-              <p
-                class="mt-2 text-base text-muted-foreground [text-shadow:0_1px_6px_rgba(255,255,255,0.72)]"
-              >
-                {settlement.location.district}
-              </p>
-              {
-                companyTitle && (
-                  <div class="mt-3 inline-flex items-center gap-2 rounded-full border border-white/65 bg-white/55 px-3 py-1.5 text-sm backdrop-blur-[2px]">
-                    <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      Обслуживается
-                    </span>
-                    {companyUrl ? (
-                      <a
-                        href={companyUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="font-semibold text-foreground underline decoration-foreground/30 underline-offset-3 transition-colors hover:text-primary"
-                        title="Перейти на сайт управляющей компании"
+              <div class="mt-1 flex shrink-0 items-center gap-2">
+                {
+                  settlement.website && (
+                    <a
+                      href={settlement.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Открыть сайт поселка"
+                      class="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      title="Перейти на сайт поселка"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
                       >
-                        {companyTitle}
-                      </a>
-                    ) : (
-                      <span class="font-semibold text-foreground">
-                        {companyTitle}
-                      </span>
-                    )}
-                  </div>
-                )
-              }
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                        />
+                      </svg>
+                    </a>
+                  )
+                }
+                {
+                  tg && (
+                    <a
+                      href={tg}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Открыть Telegram-канал поселка"
+                      class="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      title="Перейти в Telegram-канал"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M3 11.5L21 3 13 21l-2.5-7.5L3 11.5z"
+                        />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M10.5 13.5L21 3"
+                        />
+                      </svg>
+                    </a>
+                  )
+                }
+                <a
+                  href={settlement.location.map_url ??
+                    `https://yandex.ru/maps/?pt=${settlement.location.lng},${settlement.location.lat}&z=15&l=map`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Открыть поселок на Яндекс.Картах"
+                  class="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  title="Открыть на Яндекс.Картах"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                </a>
+              </div>
             </div>
+            <p
+              class="mt-2 text-base text-muted-foreground [text-shadow:0_1px_6px_rgba(255,255,255,0.72)]"
+            >
+              {settlement.location.district}
+            </p>
+            {
+              companyTitle && (
+                <div class="mt-3 inline-flex items-center gap-2 rounded-full border border-white/65 bg-white/55 px-3 py-1.5 text-sm backdrop-blur-[2px]">
+                  <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Обслуживается
+                  </span>
+                  {companyUrl ? (
+                    <a
+                      href={companyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="font-semibold text-foreground underline decoration-foreground/30 underline-offset-3 transition-colors hover:text-primary"
+                      title="Перейти на сайт управляющей компании"
+                    >
+                      {companyTitle}
+                    </a>
+                  ) : (
+                    <span class="font-semibold text-foreground">
+                      {companyTitle}
+                    </span>
+                  )}
+                </div>
+              )
+            }
           </div>
 
-          <div class={`grid gap-3 ${hasDelta ? 'grid-cols-3' : 'grid-cols-2'}`}>
+          <div
+            class={`grid items-start gap-3 ${hasDelta ? 'grid-cols-[repeat(3,minmax(0,17rem))]' : 'grid-cols-[repeat(2,minmax(0,17rem))]'}`}
+          >
             <div
               class="relative z-20 rounded-2xl border border-white/60 bg-white/50 p-4 backdrop-blur-[2px]"
             >
@@ -436,21 +468,48 @@ const heroMap = hasPoint
     </section>
 
     <header class="ui-shell-strong mb-6 p-6 md:mb-8 md:p-8 lg:hidden">
-      <div class="mb-4 flex items-center gap-3">
+      <div class="mb-4 flex items-start justify-between gap-3">
         <Link href="/" class="ui-link text-sm font-semibold">
           ← Назад к списку
         </Link>
+        <div class="flex flex-wrap justify-end gap-2">
+          {
+            waterInc && (
+              <span
+                class="inline-flex items-center rounded-md border border-info-border bg-info-soft px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-info-text"
+                title={waterTitle}
+              >
+                Вода в тарифе
+              </span>
+            )
+          }
+          {
+            obman && (
+              <a
+                href={obmanUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center rounded-md border border-danger bg-danger px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-danger-foreground transition-opacity hover:opacity-90"
+                title="Открыть Telegram-канал Коттеджное рабство"
+              >
+                Коттеджное рабство
+              </a>
+            )
+          }
+        </div>
       </div>
 
       <div
         class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between"
       >
         <div>
-          <div class="mb-2 flex items-center gap-3">
-            <p class="text-3xl font-bold text-foreground md:text-4xl">
-              {settlement.name}
-            </p>
-            <div class="flex items-center gap-2">
+          <div class="mb-2 flex items-start justify-between gap-3">
+            <div class="min-w-0 flex-1">
+              <p class="text-3xl font-bold text-foreground md:text-4xl">
+                {settlement.name}
+              </p>
+            </div>
+            <div class="flex shrink-0 items-center gap-2">
               {
                 settlement.website && (
                   <a
@@ -542,212 +601,205 @@ const heroMap = hasPoint
               </a>
             </div>
           </div>
-          <p class="text-muted-foreground">
-            {settlement.location.district}
-          </p>
-          {
-            companyTitle && (
-              <p class="mt-2 text-sm text-muted-foreground">
-                Обслуживается:{' '}
-                {companyUrl ? (
-                  <a
-                    href={companyUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="font-semibold text-foreground underline decoration-foreground/30 underline-offset-2 transition-colors hover:text-primary"
-                    title="Перейти на сайт управляющей компании"
-                  >
-                    {companyTitle}
-                  </a>
-                ) : (
-                  <span class="font-semibold text-foreground">
-                    {companyTitle}
-                  </span>
-                )}
-              </p>
-            )
-          }
         </div>
-
+        <p class="text-muted-foreground">
+          {settlement.location.district}
+        </p>
         {
-          settlement.is_baseline && (
-            <span class="ui-badge ui-badge-info">Наш посёлок</span>
-          )
-        }
-      </div>
-    </header>
-
-    <section
-      class="ui-shell mb-6 p-6 md:mb-8 lg:hidden"
-      data-testid="base-info-section"
-    >
-      <h2 class="mb-6 text-xl font-semibold text-foreground">
-        Основная информация
-      </h2>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div
-          class="relative z-20 rounded-xl border border-border bg-muted-soft p-4"
-        >
-          <h3
-            class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground"
-          >
-            Тариф на обслуживание
-          </h3>
-          <div
-            class="group relative inline-flex max-w-full text-3xl font-bold text-foreground"
-          >
-            <span
-              class={tariffCalc ? 'cursor-help' : ''}
-              tabindex={tariffCalc ? 0 : undefined}
-              aria-describedby={tariffCalc ? tipMobileId : undefined}
-            >
-              {formatTariffAuto(settlement.tariff)}
-            </span>
-            {
-              tariffCalc && (
-                <div
-                  id={tipMobileId}
-                  role="tooltip"
-                  class="pointer-events-none absolute left-0 top-full z-50 mt-2 hidden w-[min(92vw,25rem)] rounded-xl border border-border bg-background/95 p-3 text-left text-sm shadow-xl backdrop-blur-sm group-hover:block group-focus-within:block"
+          companyTitle && (
+            <p class="mt-2 text-sm text-muted-foreground">
+              Обслуживается:{' '}
+              {companyUrl ? (
+                <a
+                  href={companyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="font-semibold text-foreground underline decoration-foreground/30 underline-offset-2 transition-colors hover:text-primary"
+                  title="Перейти на сайт управляющей компании"
                 >
-                  <p class="text-xs text-muted-foreground">
-                    {tariffCalc.intro}
-                  </p>
-                  {tariffCalc.assumption && (
-                    <p class="mt-1 text-xs text-muted-foreground">
-                      {tariffCalc.assumption}
-                    </p>
-                  )}
-                  <div class="mt-2 space-y-2">
-                    {tariffCalc.rows.map((item) => (
-                      <div>
-                        <p class="text-xs font-semibold text-foreground">
-                          {item.title}
-                        </p>
-                        <p class="text-xs text-muted-foreground">
-                          {item.source}
-                        </p>
-                        <p class="text-xs text-foreground">{item.formula}</p>
-                      </div>
-                    ))}
-                  </div>
-                  <p class="mt-2 text-xs font-semibold text-foreground">
-                    Итого: {tariffCalc.total}
-                  </p>
-                </div>
-              )
-            }
-          </div>
-          {
-            settlement.tariff.normalized_is_estimate && (
-              <p class="mt-1 text-xs text-muted-foreground opacity-75">
-                {formatTariffBase(settlement.tariff)}
-              </p>
-            )
-          }
-          {
-            settlement.tariff.note && (
-              <p class="mt-1 text-sm text-muted-foreground">
-                {settlement.tariff.note}
-              </p>
-            )
-          }
-        </div>
-
-        {
-          hasDelta && comparison && (
-            <div class="rounded-xl border border-border bg-muted-soft p-4">
-              <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                Сравнение с Шелково
-              </h3>
-              <div
-                class={`text-2xl font-bold ${comparison.isCheaper ? 'text-success-text' : 'text-warning-text'}`}
-              >
-                {comparison.isCheaper ? '−' : '+'}
-                {formatCurrency(Math.abs(comparison.tariffDelta))}
-              </div>
-              <p class="mt-1 text-sm text-muted-foreground">
-                {comparison.isCheaper ? 'Дешевле' : 'Дороже'} Шелково на{' '}
-                {formatPercentage(comparison.tariffDeltaPercent / 100, {
-                  signed: false,
-                })}
-              </p>
-            </div>
+                  {companyTitle}
+                </a>
+              ) : (
+                <span class="font-semibold text-foreground">
+                  {companyTitle}
+                </span>
+              )}
+            </p>
           )
         }
+      </div>
 
-        <div
-          class="rounded-xl border border-border bg-muted-soft p-4 md:col-span-2"
+      {
+        settlement.is_baseline && (
+          <span class="ui-badge ui-badge-info">Наш посёлок</span>
+        )
+      }
+    </header>
+  </main>
+
+  <section
+    class="ui-shell mb-6 p-6 md:mb-8 lg:hidden"
+    data-testid="base-info-section"
+  >
+    <h2 class="mb-6 text-xl font-semibold text-foreground">
+      Основная информация
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div
+        class="relative z-20 rounded-xl border border-border bg-muted-soft p-4"
+      >
+        <h3
+          class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground"
         >
-          <h3
-            class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground"
+          Тариф на обслуживание
+        </h3>
+        <div
+          class="group relative inline-flex max-w-full text-3xl font-bold text-foreground"
+        >
+          <span
+            class={tariffCalc ? 'cursor-help' : ''}
+            tabindex={tariffCalc ? 0 : undefined}
+            aria-describedby={tariffCalc ? tipMobileId : undefined}
           >
-            Расположение
-          </h3>
-          <p class="text-foreground">{settlement.location.address_text}</p>
+            {formatTariffAuto(settlement.tariff)}
+          </span>
           {
-            distanceFromShelkovo > 0 && (
-              <p class="mt-1 text-sm text-muted-foreground">
-                {formatDistance(distanceFromShelkovo)} от Шелково
-              </p>
+            tariffCalc && (
+              <div
+                id={tipMobileId}
+                role="tooltip"
+                class="pointer-events-none absolute left-0 top-full z-50 mt-2 hidden w-[min(92vw,25rem)] rounded-xl border border-border bg-background/95 p-3 text-left text-sm shadow-xl backdrop-blur-sm group-hover:block group-focus-within:block"
+              >
+                <p class="text-xs text-muted-foreground">{tariffCalc.intro}</p>
+                {tariffCalc.assumption && (
+                  <p class="mt-1 text-xs text-muted-foreground">
+                    {tariffCalc.assumption}
+                  </p>
+                )}
+                <div class="mt-2 space-y-2">
+                  {tariffCalc.rows.map((item) => (
+                    <div>
+                      <p class="text-xs font-semibold text-foreground">
+                        {item.title}
+                      </p>
+                      <p class="text-xs text-muted-foreground">{item.source}</p>
+                      <p class="text-xs text-foreground">{item.formula}</p>
+                    </div>
+                  ))}
+                </div>
+                <p class="mt-2 text-xs font-semibold text-foreground">
+                  Итого: {tariffCalc.total}
+                </p>
+              </div>
             )
           }
         </div>
+        {
+          settlement.tariff.normalized_is_estimate && (
+            <p class="mt-1 text-xs text-muted-foreground opacity-75">
+              {formatTariffBase(settlement.tariff)}
+            </p>
+          )
+        }
+        {
+          settlement.tariff.note && (
+            <p class="mt-1 text-sm text-muted-foreground">
+              {settlement.tariff.note}
+            </p>
+          )
+        }
       </div>
-    </section>
 
-    <section
-      class="ui-shell mb-6 p-6 md:mb-8 lg:-mt-[2em]"
-      data-testid="infrastructure-section"
-    >
-      <InfrastructureTable
-        title="Инфраструктура"
-        infra={settlement.infrastructure}
-        shelkovoInfra={!settlement.is_baseline
-          ? shelkovo?.infrastructure
-          : undefined}
-        client:idle
-      />
-    </section>
+      {
+        hasDelta && comparison && (
+          <div class="rounded-xl border border-border bg-muted-soft p-4">
+            <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              Сравнение с Шелково
+            </h3>
+            <div
+              class={`text-2xl font-bold ${comparison.isCheaper ? 'text-success-text' : 'text-warning-text'}`}
+            >
+              {comparison.isCheaper ? '−' : '+'}
+              {formatCurrency(Math.abs(comparison.tariffDelta))}
+            </div>
+            <p class="mt-1 text-sm text-muted-foreground">
+              {comparison.isCheaper ? 'Дешевле' : 'Дороже'} Шелково на{' '}
+              {formatPercentage(comparison.tariffDeltaPercent / 100, {
+                signed: false,
+              })}
+            </p>
+          </div>
+        )
+      }
 
-    <section
-      class="ui-shell mb-6 p-6 md:mb-8"
-      data-testid="common-spaces-section"
-    >
-      <CommonSpacesTable
-        title="Общие пространства"
-        spaces={settlement.common_spaces}
-        shelkovoSpaces={!settlement.is_baseline
-          ? shelkovo?.common_spaces
-          : undefined}
-        client:idle
-      />
-    </section>
-
-    <section class="ui-shell mb-6 p-6 md:mb-8" data-testid="services-section">
-      <ServiceTable
-        title="Модель обслуживания"
-        services={settlement.service_model}
-        shelkovoServices={!settlement.is_baseline
-          ? shelkovo?.service_model
-          : undefined}
-        client:idle
-      />
-    </section>
-
-    {
-      settlement.sources.length > 0 && (
-        <section
-          class="ui-shell mb-6 p-6 md:mb-8"
-          data-testid="sources-section"
+      <div
+        class="rounded-xl border border-border bg-muted-soft p-4 md:col-span-2"
+      >
+        <h3
+          class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground"
         >
-          <h2 class="mb-4 text-xl font-semibold text-foreground">Источники</h2>
-          <SourcesList sources={settlement.sources} />
-        </section>
-      )
-    }
-  </main>
+          Расположение
+        </h3>
+        <p class="text-foreground">{settlement.location.address_text}</p>
+        {
+          distanceFromShelkovo > 0 && (
+            <p class="mt-1 text-sm text-muted-foreground">
+              {formatDistance(distanceFromShelkovo)} от Шелково
+            </p>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="ui-shell mb-6 p-6 md:mb-8 lg:-mt-[2em]"
+    data-testid="infrastructure-section"
+  >
+    <InfrastructureTable
+      title="Инфраструктура"
+      infra={settlement.infrastructure}
+      shelkovoInfra={!settlement.is_baseline
+        ? shelkovo?.infrastructure
+        : undefined}
+      client:idle
+    />
+  </section>
+
+  <section
+    class="ui-shell mb-6 p-6 md:mb-8"
+    data-testid="common-spaces-section"
+  >
+    <CommonSpacesTable
+      title="Общие пространства"
+      spaces={settlement.common_spaces}
+      shelkovoSpaces={!settlement.is_baseline
+        ? shelkovo?.common_spaces
+        : undefined}
+      client:idle
+    />
+  </section>
+
+  <section class="ui-shell mb-6 p-6 md:mb-8" data-testid="services-section">
+    <ServiceTable
+      title="Модель обслуживания"
+      services={settlement.service_model}
+      shelkovoServices={!settlement.is_baseline
+        ? shelkovo?.service_model
+        : undefined}
+      client:idle
+    />
+  </section>
+
+  {
+    settlement.sources.length > 0 && (
+      <section class="ui-shell mb-6 p-6 md:mb-8" data-testid="sources-section">
+        <h2 class="mb-4 text-xl font-semibold text-foreground">Источники</h2>
+        <SourcesList sources={settlement.sources} />
+      </section>
+    )
+  }
 </BaseLayout>
 
 <style>

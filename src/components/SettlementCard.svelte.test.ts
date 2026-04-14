@@ -203,6 +203,29 @@ describe('SettlementCard', () => {
     expect(link).toBeTruthy();
   });
 
+  it('renders rabstvo badge link when settlement is flagged', () => {
+    const flagged = { ...mockSettlement, rabstvo: true };
+
+    const { container } = render(SettlementCard, {
+      props: {
+        settlement: flagged,
+        comparison: mockComparisonCheaper,
+        rank: 1,
+        base: 2,
+        total: 3,
+        isBaseline: false,
+      },
+    });
+
+    const badge = container.querySelector(
+      '[data-testid="rabstvo-badge"]',
+    ) as HTMLAnchorElement | null;
+
+    expect(badge?.textContent).toContain('рабство');
+    expect(badge?.getAttribute('href')).toBe('https://t.me/obmandachniki');
+    expect(badge?.getAttribute('title')).toContain('Коттеджное рабство');
+  });
+
   it('handles missing comparison gracefully', () => {
     const { container } = render(SettlementCard, {
       props: {

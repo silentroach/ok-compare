@@ -28,6 +28,14 @@ tariff:
   # If unit is rub_per_lot or rub_fixed, UI shows ~ and uses 10 sotok per lot.
   note: Комментарий к тарифу
 
+# Optional: only if central water supply is confirmed and unlimited use is already
+# included in the settlement tariff.
+# water_in_tariff: true
+
+# Optional: set only when the settlement is explicitly mentioned in
+# Telegram channel @obmandachniki / "Коттеджное рабство".
+# rabstvo: true
+
 # Alternative for multi-part tariff:
 # tariff:
 #   - value: 5813

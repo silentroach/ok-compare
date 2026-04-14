@@ -5,30 +5,25 @@ import KPIStats from '../components/KPIStats.svelte';
 import SettlementCard from '../components/SettlementCard.svelte';
 import SettlementsExplorer from '../components/SettlementsExplorer.svelte';
 import { loadAllData } from '../lib/data';
+import { toExplorer } from '../lib/explorer';
 import { rankSettlements } from '../lib/stats';
 import { withBase } from '../lib/url';
 
 // Load all data at build time
-const { settlements, stats, comparisons } = await loadAllData();
+const { settlements, stats, comparisons, ratings } = await loadAllData();
 const ranks = rankSettlements(settlements);
 const levels = Math.max(new Set(ranks.values()).size, 1);
+const list = toExplorer(settlements, ratings);
 
 // Convert comparisons Map to a plain object for serialization
 const comparisonsObj = Object.fromEntries(comparisons);
 const dataUrl = withBase('data/explorer.json');
 
-const cards = [...settlements].sort((a, b) => {
-  const d =
-    a.tariff.normalized_per_sotka_month - b.tariff.normalized_per_sotka_month;
+const cards = [...list].sort((a, b) => {
+  const d = b.rating - a.rating;
   if (d !== 0) return d;
   return a.short_name.localeCompare(b.short_name, 'ru');
 });
-
-const base = cards.findIndex((s) => s.is_baseline);
-if (base > 0) {
-  const item = cards.splice(base, 1)[0];
-  cards.unshift(item);
-}
 
 const root = Astro.site ?? Astro.url.origin;
 const pageTitle = 'Сравнение тарифов поселков рядом с Шелково';

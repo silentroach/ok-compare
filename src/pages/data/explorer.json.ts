@@ -5,9 +5,9 @@ import { toExplorer, type ExplorerPayload } from '../../lib/explorer';
 export const prerender = true;
 
 export const GET: APIRoute = async () => {
-  const { settlements, stats, comparisons } = await loadAllData();
+  const { settlements, stats, comparisons, ratings } = await loadAllData();
   const body: ExplorerPayload = {
-    settlements: toExplorer(settlements),
+    settlements: toExplorer(settlements, ratings),
     stats,
     comparisons: Object.fromEntries(comparisons),
   };

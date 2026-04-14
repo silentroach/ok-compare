@@ -1,0 +1,179 @@
+# Rating
+
+Internal note. This file is for future agent sessions, not for UI copy.
+
+## Goal
+
+- Build-time only.
+- Hidden numeric score for manual sorting on the main page and explorer.
+- Tariff is excluded on purpose.
+- Score is a quality proxy, not an absolute real-estate ranking.
+
+## Output
+
+- One computed number per settlement: `rating`.
+- Stored as `score` in `src/lib/rating.ts`, serialized as `rating` in explorer DTO.
+- Rounded to 0.1, range `0..100`.
+
+## Inputs
+
+- `location.lat`, `location.lng`
+- `infrastructure.*`
+- `common_spaces.*`
+- `service_model.*`
+
+Do not add tariff into this formula.
+
+## Distance Block
+
+- Moscow center is fixed at `55.7558, 37.6176`.
+- `MKAD_RADIUS` is an internal approximation from a small hardcoded set of MKAD sample points.
+- `km` = haversine distance from settlement to Moscow center.
+- `ring` = `max(km - MKAD_RADIUS, 0)`.
+- Distance score uses `ring`, not raw `km`, because the intent is “how far beyond MKAD”.
+
+Current piecewise function:
+
+- `0..20 km` beyond MKAD -> `1.00`
+- `20..40 km` -> linear `1.00..0.82`
+- `40..60 km` -> linear `0.82..0.58`
+- `60..80 km` -> linear `0.58..0.32`
+- `80..100 km` -> linear `0.32..0.12`
+- `100+ km` -> `0.12`
+
+This is intentionally soft. Distance matters, but should not dominate basic settlement quality.
+
+## Field Mapping
+
+Binary status:
+
+- `yes = 1`
+- `partial = 0.5`
+- `no = 0`
+
+Ordered enums:
+
+- `roads`: `asphalt = 1`, `partial_asphalt = 0.75`, `gravel = 0.35`, `dirt = 0`
+- `drainage`: `closed = 1`, `open = 0.6`, `none = 0`
+- `video_surveillance`: `full = 1`, `checkpoint_only = 0.55`, `none = 0`
+- `underground_electricity`: `full = 1`, `partial = 0.5`, `none = 0`
+
+## Group Scores
+
+Each group is a weighted mean over known fields only.
+
+### Infrastructure
+
+- `roads 1.00`
+- `sidewalks 0.35`
+- `lighting 0.50`
+- `gas 0.90`
+- `water 1.00`
+- `sewage 0.95`
+- `drainage 0.45`
+- `checkpoints 0.60`
+- `security 0.95`
+- `fencing 0.35`
+- `video_surveillance 0.75`
+- `underground_electricity 0.35`
+- `admin_building 0.25`
+- `retail_or_services 0.55`
+
+### Common Spaces
+
+- `club_infrastructure 0.60`
+- `playgrounds 0.90`
+- `sports 0.80`
+- `walking_routes 0.80`
+- `water_access 0.60`
+- `beach_zones 0.35`
+- `bbq_zones 0.25`
+- `pool 0.45`
+- `fitness_club 0.40`
+- `restaurant 0.35`
+- `spa_center 0.20`
+- `kids_club 0.30`
+- `sports_camp 0.15`
+- `primary_school 0.15`
+
+### Service Model
+
+- `garbage_collection 1.00`
+- `snow_removal 0.90`
+- `road_cleaning 0.80`
+- `landscaping 0.60`
+- `emergency_service 0.60`
+- `dispatcher 0.40`
+
+## Unknown Handling
+
+Unknown is never interpreted as `no`.
+
+Algorithm per group:
+
+1. Compute weighted mean from known fields only.
+2. Compute group fill ratio: `known_weight / total_weight`.
+3. Compute dataset prior for that group from all settlements.
+4. Shrink sparse rows towards the prior:
+
+`mixed = raw * fill + prior * (1 - fill)`
+
+Effects:
+
+- fully filled row -> uses its own data
+- sparse row -> pulled towards dataset average
+- fully unknown row -> falls back to prior
+
+This avoids two bad outcomes:
+
+- treating unknown as zero
+- overrating rows with only 1-2 confirmed positive fields
+
+## Final Formula
+
+`rating = 100 * (infra * 0.50 + spaces * 0.25 + service * 0.10 + distance * 0.15)`
+
+Where `infra`, `spaces`, `service` are the mixed group scores after prior shrinkage.
+
+## Extra Adjustments
+
+After the base formula, apply two explicit corrections and clamp the result to `0..100`.
+
+- `water_in_tariff = true` -> `+4`
+  - Use only when central water supply is confirmed (`infrastructure.water: yes`) and water is already included in the tariff without separate metering/payment.
+- `rabstvo = true` -> `-15`
+  - Strong negative signal.
+  - Use only for confirmed mentions in Telegram channel `@obmandachniki` / `Коттеджное рабство`.
+
+## Data Rules For Rating Fields
+
+These rules belong here, not in generic YAML notes, because they exist specifically to protect rating semantics.
+
+- `water_in_tariff`
+  - Use only when central water supply is explicitly confirmed.
+  - Required precondition: `infrastructure.water = yes`.
+  - Means water is already included in the settlement tariff without separate payment/meters for ordinary use.
+  - If water availability is unknown, partial, seasonal, or billed separately, omit the field.
+- `rabstvo`
+  - Use only for confirmed mentions in Telegram channel `@obmandachniki` / `Коттеджное рабство`.
+  - Do not infer it from rumors, comments, tone, or unrelated complaints.
+  - If a settlement is not clearly confirmed there, omit the field.
+
+## Sorting Rules
+
+- Default sort in UI is `Условный уровень (↓)`.
+- Rating is available as manual sort options: `Условный уровень (↓)` and `Условный уровень (↑)`.
+- Additional sorting options include tariff, distance to MKAD, distance to Shelkovo, and name.
+- Static fallback on the index page follows the same default rating-desc order.
+- Tariff rank remains separate and unchanged.
+
+## Files
+
+- formula: `src/lib/rating.ts`
+- data wiring: `src/lib/data.ts`
+- explorer DTO: `src/lib/explorer.ts`
+- build JSON: `src/pages/data/explorer.json.ts`
+- public explanation page: `src/pages/rating.astro`
+- schema/template/docs for extra flags: `src/lib/schema.ts`, `src/data/settlements/_template.yaml`, `README.md`
+- main page sort: `src/pages/index.astro`
+- explorer default sort: `src/components/SettlementsExplorer.svelte`

@@ -45,6 +45,18 @@
         </p>
       </div>
       <div class="shrink-0 flex items-center justify-end gap-1.5 text-right">
+        {#if settlement.rabstvo}
+          <a
+            href="https://t.me/obmandachniki"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="ui-badge border-danger bg-danger px-2 py-1 text-[11px] text-danger-foreground transition-opacity hover:opacity-90"
+            title="Открыть канал Коттеджное рабство"
+            data-testid="rabstvo-badge"
+          >
+            рабство
+          </a>
+        {/if}
         {#if isBaseline}
           <span class="ui-badge ui-badge-info px-2 py-1 text-[11px] opacity-75">
             наш
