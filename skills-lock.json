@@ -20,6 +20,11 @@
       "source": "wshobson/agents",
       "sourceType": "github",
       "computedHash": "988d80e52c67c3692d43cc963b6a048a239895e88b272b061de55370d0f8efc3"
+    },
+    "web-typography": {
+      "source": "wondelai/skills",
+      "sourceType": "github",
+      "computedHash": "f611f6e756bc592d2b9f5fb118c6335758a056454fd0f5c477633d94da036264"
     }
   }
 }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, onDestroy, untrack } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import { withBase } from '../lib/url';
 
   interface SettlementMapData {
@@ -371,9 +371,16 @@
       .join('|');
     sig;
     if (!ymapsLoaded || !mapContainer || error) return;
-    untrack(() => {
-      void syncMap();
+    let dead = false;
+    queueMicrotask(() => {
+      if (!dead) {
+        void syncMap();
+      }
     });
+
+    return () => {
+      dead = true;
+    };
   });
 </script>
 
