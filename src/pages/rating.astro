@@ -70,9 +70,7 @@ const weights = [
               >
                 Как считается условный уровень поселка
               </h1>
-              <p
-                class="max-w-2xl text-[1.02rem] leading-8 text-muted-foreground md:text-[1.08rem]"
-              >
+              <p class="ui-copy max-w-2xl text-muted-foreground">
                 Это отдельный показатель качества среды, который помогает
                 сравнивать поселки между собой без привязки к стоимости. Он
                 нужен не для ответа на вопрос «самый лучший поселок вообще», а
@@ -135,7 +133,7 @@ const weights = [
                       <span class="text-sm font-semibold text-foreground">
                         {label}
                       </span>
-                      <span class="text-lg font-bold text-primary">
+                      <span class="ui-num text-lg font-bold text-primary">
                         {weight}
                       </span>
                     </dt>
@@ -162,16 +160,18 @@ const weights = [
             >
               Что это вообще такое
             </p>
-            <h2 class="text-2xl font-semibold text-foreground md:text-[2rem]">
+            <h2
+              class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
+            >
               Это индекс качества среды, а не интегральная цена жизни
             </h2>
-            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+            <p class="ui-copy text-muted-foreground">
               Мы используем условный уровень как техническую ось сравнения. Он
               отвечает на вопрос, насколько сильным выглядит поселок по тем
               характеристикам, которые реально собраны в нашей базе: инженерия,
               охрана, среда, сервис и примерная близость к Москве.
             </p>
-            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+            <p class="ui-copy text-muted-foreground">
               Это важно потому, что тариф сам по себе мало о чем говорит. Один и
               тот же платеж может выглядеть нормально для сильного поселка и
               завышенно для слабого. Поэтому сначала мы считаем уровень, а уже
@@ -187,20 +187,22 @@ const weights = [
             >
               Формула и веса
             </p>
-            <h2 class="text-2xl font-semibold text-foreground md:text-[2rem]">
+            <h2
+              class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
+            >
               Как складывается итоговая цифра
             </h2>
             <div
               class="overflow-x-auto rounded-2xl border border-border bg-muted-soft p-5"
             >
               <pre
-                class="text-sm leading-8 text-foreground"><code>условный уровень =
+                class="ui-num text-sm leading-8 text-foreground"><code>условный уровень =
   50% инфраструктура +
   25% общественные пространства +
   10% сервисная модель +
   15% близость к Москве</code></pre>
             </div>
-            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+            <p class="ui-copy text-muted-foreground">
               Сначала каждый блок переводится в шкалу от 0 до 1. Затем блоки
               объединяются по весам и превращаются в итоговое число от 0 до 100.
               Чем число выше, тем сильнее поселок по текущей модели оценки.
@@ -218,7 +220,7 @@ const weights = [
                           {note}
                         </p>
                       </div>
-                      <span class="text-xl font-bold text-primary">
+                      <span class="ui-num text-xl font-bold text-primary">
                         {weight}
                       </span>
                     </div>
@@ -236,10 +238,12 @@ const weights = [
             >
               Дополнительные корректировки
             </p>
-            <h2 class="text-2xl font-semibold text-foreground md:text-[2rem]">
+            <h2
+              class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
+            >
               После основной формулы есть еще два специальных сигнала
             </h2>
-            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+            <p class="ui-copy text-muted-foreground">
               Помимо основных блоков, в условный уровень входят две отдельные
               корректировки. Они не связаны с ценой и не меняют тариф, а только
               уточняют восприятие качества поселка по важным дополнительным
@@ -291,10 +295,12 @@ const weights = [
             >
               1. Инфраструктура
             </p>
-            <h2 class="text-2xl font-semibold text-foreground md:text-[2rem]">
+            <h2
+              class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
+            >
               Самый важный блок
             </h2>
-            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+            <p class="ui-copy text-muted-foreground">
               Это основа пригодности поселка для жизни. Если базовая инженерная
               среда слабая, высокий уровень не получится даже при красивой
               концепции, воде рядом или наличии премиальных объектов.
@@ -359,10 +365,12 @@ const weights = [
             >
               2. Общественные пространства
             </p>
-            <h2 class="text-2xl font-semibold text-foreground md:text-[2rem]">
+            <h2
+              class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
+            >
               Комфорт среды, а не только премиальные опции
             </h2>
-            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+            <p class="ui-copy text-muted-foreground">
               Этот блок нужен, чтобы оценивать повседневные сценарии жизни:
               прогулки, детские зоны, спорт, доступ к воде и клубную среду. При
               этом премиальные признаки не должны перевешивать базовую
@@ -400,7 +408,7 @@ const weights = [
                 </ul>
               </div>
             </div>
-            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+            <p class="ui-copy text-muted-foreground">
               Это сознательная настройка модели. Поселок без SPA или ресторана
               не считается слабым сам по себе, но поселок без нормальной среды,
               прогулок и детских зон обычно выглядит хуже для реальной жизни.
@@ -415,10 +423,12 @@ const weights = [
             >
               3. Сервисная модель
             </p>
-            <h2 class="text-2xl font-semibold text-foreground md:text-[2rem]">
+            <h2
+              class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
+            >
               Насколько поселок поддерживается в рабочем состоянии
             </h2>
-            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+            <p class="ui-copy text-muted-foreground">
               Здесь оценивается, есть ли признаки нормального регулярного
               обслуживания: вывоз мусора, уборка снега и дорог, благоустройство,
               аварийная поддержка и диспетчеризация.
@@ -435,7 +445,7 @@ const weights = [
                 <li>Диспетчер</li>
               </ul>
             </div>
-            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+            <p class="ui-copy text-muted-foreground">
               Вес этого блока ниже, чем у инфраструктуры. Хороший сервис важен,
               но он не должен компенсировать слабую инженерную базу.
             </p>
@@ -449,10 +459,12 @@ const weights = [
             >
               4. Удаленность от Москвы
             </p>
-            <h2 class="text-2xl font-semibold text-foreground md:text-[2rem]">
+            <h2
+              class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
+            >
               Приближенная оценка расстояния, а не времени в пути
             </h2>
-            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+            <p class="ui-copy text-muted-foreground">
               Для расчета используется расстояние по координатам до центра
               Москвы. Затем из него вычитается приблизительный расчетный радиус
               МКАД. На выходе получается условное расстояние «за МКАД», которое
@@ -485,10 +497,12 @@ const weights = [
             >
               Неизвестные данные
             </p>
-            <h2 class="text-2xl font-semibold text-foreground md:text-[2rem]">
+            <h2
+              class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
+            >
               Отсутствие данных не считается автоматическим минусом
             </h2>
-            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+            <p class="ui-copy text-muted-foreground">
               Если по какому-то признаку нет подтвержденной информации, это не
               превращается в ноль. Сначала мы считаем среднее по известным
               полям, затем смотрим, насколько полно заполнен блок, и при
@@ -515,7 +529,7 @@ const weights = [
                 </p>
               </div>
             </div>
-            <p class="text-[0.98rem] leading-8 text-muted-foreground">
+            <p class="ui-copy text-muted-foreground">
               Это защищает от двух перекосов: поселок не проваливается вниз
               из-за отсутствия данных, но и не улетает слишком высоко только на
               основе 1-2 подтвержденных сильных сторон.
@@ -530,7 +544,9 @@ const weights = [
             >
               Как читать результат
             </p>
-            <h2 class="text-2xl font-semibold text-foreground md:text-[2rem]">
+            <h2
+              class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
+            >
               Что означает высокий или низкий уровень
             </h2>
             <div class="grid gap-4 md:grid-cols-3">

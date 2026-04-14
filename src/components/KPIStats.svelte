@@ -69,8 +69,8 @@
     >
       <div
         class={embed
-          ? 'mb-0.5 text-lg font-semibold text-foreground'
-          : 'mb-1 text-2xl font-semibold text-foreground'}
+          ? 'ui-num mb-0.5 text-lg font-semibold text-foreground'
+          : 'ui-num mb-1 text-2xl font-semibold text-foreground'}
       >
         {formatTariff(stats.medianTariff)}
       </div>
@@ -78,7 +78,7 @@
         медиана по поселкам
       </div>
       <div
-        class={`${embed ? 'mt-1 text-xs' : 'mt-1.5 text-sm'} ${getMedianTone(stats.shelkovoVsMedianPercent)}`}
+        class={`ui-num ${embed ? 'mt-1 text-xs' : 'mt-1.5 text-sm'} ${getMedianTone(stats.shelkovoVsMedianPercent)}`}
       >
         {getMedianText(stats.shelkovoVsMedianPercent)}
       </div>
@@ -92,8 +92,8 @@
     >
       <div
         class={embed
-          ? 'mb-0.5 text-lg font-semibold text-[color:var(--color-success-text)]'
-          : 'mb-1 text-2xl font-semibold text-[color:var(--color-success-text)]'}
+          ? 'ui-num mb-0.5 text-lg font-semibold text-[color:var(--color-success-text)]'
+          : 'ui-num mb-1 text-2xl font-semibold text-[color:var(--color-success-text)]'}
       >
         {stats.cheaperCount}
       </div>
@@ -102,8 +102,8 @@
       </div>
       <div
         class={embed
-          ? 'mt-1 text-xs text-[color:var(--color-success-text)]'
-          : 'mt-1.5 text-sm text-[color:var(--color-success-text)]'}
+          ? 'ui-num mt-1 text-xs text-[color:var(--color-success-text)]'
+          : 'ui-num mt-1.5 text-sm text-[color:var(--color-success-text)]'}
       >
         {getShare(stats.cheaperCount, stats.totalSettlements)}
       </div>
@@ -117,8 +117,8 @@
     >
       <div
         class={embed
-          ? 'mb-0.5 text-lg font-semibold text-[color:var(--color-danger-text)]'
-          : 'mb-1 text-2xl font-semibold text-[color:var(--color-danger-text)]'}
+          ? 'ui-num mb-0.5 text-lg font-semibold text-[color:var(--color-danger-text)]'
+          : 'ui-num mb-1 text-2xl font-semibold text-[color:var(--color-danger-text)]'}
       >
         {stats.moreExpensiveCount}
       </div>
@@ -127,8 +127,8 @@
       </div>
       <div
         class={embed
-          ? 'mt-1 text-xs text-[color:var(--color-danger-text)]'
-          : 'mt-1.5 text-sm text-[color:var(--color-danger-text)]'}
+          ? 'ui-num mt-1 text-xs text-[color:var(--color-danger-text)]'
+          : 'ui-num mt-1.5 text-sm text-[color:var(--color-danger-text)]'}
       >
         {getShare(stats.moreExpensiveCount, stats.totalSettlements)}
       </div>

@@ -63,7 +63,7 @@
           </span>
         {/if}
         <p
-          class="text-sm font-medium text-muted-foreground/50"
+          class="ui-num text-sm font-medium text-muted-foreground/50"
           data-testid="tariff-rank-label"
         >
           {rank} / {total}
@@ -74,18 +74,18 @@
     <div class="space-y-3">
       <div class="flex items-center justify-between">
         <span
-          class="text-2xl font-bold text-foreground"
+          class="ui-num text-2xl font-bold text-foreground"
           title={getTariffHint(settlement.tariff)}
         >
           {formatTariffAuto(settlement.tariff)}
         </span>
         {#if !isBaseline && comparison && comparison.tariffDelta !== 0}
           {#if comparison.isCheaper}
-            <span class="text-sm font-semibold ui-delta-success">
+            <span class="ui-num text-sm font-semibold ui-delta-success">
               дешевле на {formatCurrency(Math.abs(comparison.tariffDelta))}
             </span>
           {:else}
-            <span class="text-sm font-semibold ui-delta-warning">
+            <span class="ui-num text-sm font-semibold ui-delta-warning">
               дороже на {formatCurrency(Math.abs(comparison.tariffDelta))}
             </span>
           {/if}
