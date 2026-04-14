@@ -1,0 +1,61 @@
+# Вне схемы: на официальном сайте заявлены широкополосный интернет и гостевая парковка.
+# Вне схемы: на официальном сайте указаны экотропа, родники, купель, пруд для купания,
+# волейбольная площадка и барбекю-зона в 150-250 м от поселка; в приложении к оферте
+# эти объекты инфраструктуры не перечислены.
+# Вне схемы: оферта фиксирует детальный архитектурный регламент и правила стройки.
+name: КП Сосны Village
+short_name: Сосны Village
+slug: sosny-village
+website: https://sosna-village.ru/
+management_company: ИП Кравченко Михаил Станиславович
+is_baseline: false
+
+location:
+  address_text: МО, округ Ступино, д. Кравцово
+  lat: 55.057536
+  lng: 37.816751
+  map_url: https://yandex.ru/maps/?ll=37.818014%2C55.057541&mode=routes&rtext=~55.057536%2C37.816751&rtt=auto&ruri=~&z=17
+  district: Ступинский район
+
+tariff:
+  value: 857.26
+  unit: rub_per_sotka
+  period: month
+
+infrastructure:
+  roads: partial_asphalt
+  lighting: yes
+  gas: no
+  water: yes
+  checkpoints: yes
+  security: yes
+  fencing: yes
+  video_surveillance: full
+  underground_electricity: full
+
+common_spaces:
+  playgrounds: yes
+
+service_model:
+  garbage_collection: yes
+  snow_removal: yes
+  road_cleaning: yes
+  landscaping: yes
+  emergency_service: yes
+
+sources:
+  - title: Сосны Village — официальный сайт
+    url: https://sosna-village.ru/
+    type: official
+    date_checked: 2026-04-14
+    comment: 'На официальном сайте указаны 46 участков, координаты 55.057536, 37.816751, подземное электричество 15 кВт, центральный водопровод, уличное освещение, охрана, детская площадка, а также маркетингово заявлены гостевая парковка, экотропа, родники, купель, пруд, волейбольная площадка и барбекю-зона рядом с поселком.'
+  - title: Сосны Village — оферта на обслуживание
+    url: https://sosna-village.ru/contract
+    type: official
+    date_checked: 2026-04-14
+    comment: 'Оферта от 10.12.2025 указывает адрес в районе д. Кравцово, ежемесячный платеж 857,26 руб./сотка с 01.09.2025, отдельную плату за воду 76 руб./м3, отдельную компенсацию электроэнергии и ТКО, а также состав услуг и инфраструктуры: КПП, шлагбаумы, периметральное ограждение, 40 камер, скважина, ВЗУ, детская площадка и внутренняя дорога из асфальтовой крошки.'
+  - title: Google Drive — Генплан с ценами
+    url: https://drive.google.com/drive/folders/1wGJyL90diIaz7YDDoEtyBwdIaYoJ4nSn?usp=sharing
+    type: official
+    date_checked: 2026-04-14
+    comment: 'В открытой папке с сайта доступен файл "Генплан с ценами.pdf", что дополнительно подтверждает публичный генплан поселка.'
