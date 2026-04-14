@@ -19,6 +19,7 @@ tariff:
 infrastructure:
   roads: asphalt
   drainage: closed
+  sidewalks: no
   lighting: yes
   gas: yes
   water: yes
@@ -38,6 +39,8 @@ common_spaces:
   restaurant: yes
   spa_center: yes
   walking_routes: yes
+  water_access: no
+  beach_zones: no
   kids_club: yes
 service_model: {}
 sources:
