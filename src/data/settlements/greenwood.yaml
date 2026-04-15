@@ -18,6 +18,7 @@ tariff:
   period: month
 infrastructure:
   roads: asphalt
+  sidewalks: no
   lighting: yes
   gas: yes
   water: yes

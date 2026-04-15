@@ -22,6 +22,7 @@ water_in_tariff: true
 
 infrastructure:
   roads: asphalt
+  sidewalks: no
   lighting: yes
   gas: yes
   water: yes
