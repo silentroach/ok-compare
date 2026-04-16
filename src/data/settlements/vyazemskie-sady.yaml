@@ -1,0 +1,60 @@
+# Публичная карточка поселка по-прежнему ведет на сайт ЗемАктив; по данным пользователя текущее управление уже не через УК, а через ТСН.
+# Вне схемы: в отзыве жителя на Яндекс Картах упомянуты батут, уличные тренажеры и настольный теннис на общей территории.
+name: КП Вяземские сады
+short_name: Вяземские сады
+slug: vyazemskie-sady
+website: https://www.zemaktiv.ru/vyazemskie-sady
+is_baseline: false
+management_company: ТСН
+
+location:
+  address_text: МО, округ Серпухов, д. Нижние Велеми
+  lat: 55.041261
+  lng: 37.35124
+  map_url: https://yandex.ru/maps/org/vyazemskiye_sady/77680811695/
+  district: Серпуховский район
+
+tariff:
+  value: 3500
+  unit: rub_per_lot
+  period: month
+  note: Раньше была УК, затем управление перешло на ТСН
+
+water_in_tariff: true
+
+infrastructure:
+  roads: partial_asphalt
+  lighting: yes
+  gas: yes
+  water: yes
+  checkpoints: yes
+  security: yes
+  fencing: yes
+  underground_electricity: full
+
+common_spaces:
+  playgrounds: yes
+  sports: yes
+  water_access: yes
+
+sources:
+  - title: ЗемАктив — Вяземские сады
+    url: https://www.zemaktiv.ru/vyazemskie-sady
+    type: official
+    date_checked: 2026-04-16
+    comment: Официальная страница поселка подтверждает расположение на Симферопольском шоссе, наличие газа, воды и электричества, подземную прокладку электрокабеля на 8 кВт, две артезианские скважины, три КПП, охрану, детские площадки, пруд, лес и близость реки Нары.
+  - title: Яндекс Карты — Вяземские сады
+    url: https://yandex.ru/maps/org/vyazemskiye_sady/77680811695/
+    type: community
+    date_checked: 2026-04-16
+    comment: Карточка объекта подтверждает адрес в д. Нижние Велеми, сайт поселка и координаты; отзыв жителя от 17.08.2021 упоминает три детские площадки, батут, спортивную площадку, тренажеры, настольный теннис, ограждение и охрану.
+  - title: Поселкино — КП Вяземские Сады
+    url: https://poselkino.ru/poselki/vyazemskie-sady/
+    type: media
+    date_checked: 2026-04-16
+    comment: Карточка поселка указывает 67 км от МКАД, свет 8 кВт, проведенные газ и воду, дороги из асфальтовой крошки, охрану, ограждение, пляж, спортивную и детскую площадки; отзыв жителя отдельно подтверждает уличное освещение и отсутствие центральной канализации.
+  - title: Данные от пользователя
+    url: https://yandex.ru/maps/geo/kp_vyazemskiye_sady/1499060296/
+    type: personal
+    date_checked: 2026-04-16
+    comment: Пользователь сообщил актуальный платеж 3500 руб. в месяц с участка, что вода уже входит в тариф, а также уточнил, что раньше была УК, но затем управление перешло на ТСН.
