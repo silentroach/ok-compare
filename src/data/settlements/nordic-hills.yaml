@@ -13,11 +13,12 @@ location:
   map_url: https://genplan.kp-nordic.ru/hills/
   district: Истринский район
 tariff:
-  value: 450
+  value: 457
   unit: rub_per_sotka
   period: month
   note: по словам собственника
 infrastructure:
+  lighting: yes
   checkpoints: yes
   security: yes
   video_surveillance: checkpoint_only
@@ -30,7 +31,10 @@ common_spaces:
   playgrounds: yes
   sports: yes
   walking_routes: yes
-service_model: {}
+service_model:
+  garbage_collection: yes
+  snow_removal: yes
+  road_cleaning: yes
 sources:
   - title: КП Нордик — официальный сайт
     url: https://kp-nordic.ru/
@@ -47,6 +51,11 @@ sources:
     type: official
     date_checked: 2026-04-05
     comment: На этой странице для Нордик Хиллс указано 82 участка (расхождение с final).
+  - title: Договор оферты
+    url: https://uslugi.kp-nordic.ru/bezotzyvnaya_publichnaya_oferta_red_19_12_2026.pdf
+    type: official
+    date_checked: 2026-04-16
+    comment: Оферта УК Эколайф с тарифами и перечнем услуг.
   - title: Генплан Нордик Хиллс
     url: https://genplan.kp-nordic.ru/hills/
     type: official

@@ -13,26 +13,34 @@ location:
   map_url: https://genplan.kp-nordic.ru/lake/
   district: Истринский район
 tariff:
-  value: 450
+  value: 457
   unit: rub_per_sotka
   period: month
   note: по словам собственника
 infrastructure:
+  roads: asphalt
   checkpoints: yes
   security: yes
   video_surveillance: checkpoint_only
+  lighting: yes
   underground_electricity: full
   water: no
   sewage: no
+  drainage: open
   fencing: yes
 common_spaces:
   club_infrastructure: yes
   playgrounds: yes
   sports: yes
+  pool: no
+  restaurant: no
   walking_routes: yes
   water_access: yes
   beach_zones: yes
-service_model: {}
+service_model:
+  garbage_collection: yes
+  snow_removal: yes
+  road_cleaning: yes
 sources:
   - title: КП Нордик — официальный сайт
     url: https://kp-nordic.ru/
@@ -44,6 +52,11 @@ sources:
     type: official
     date_checked: 2026-04-05
     comment: По Нордик Лэйк указано 148 участков, пляж, рыбалка, сапы, йога, подземное электричество.
+  - title: Договор оферты
+    url: https://uslugi.kp-nordic.ru/bezotzyvnaya_publichnaya_oferta_red_19_12_2026.pdf
+    type: official
+    date_checked: 2026-04-16
+    comment: Оферта УК Эколайф с тарифами и перечнем услуг.
   - title: Генплан Нордик Лэйк
     url: https://genplan.kp-nordic.ru/lake/
     type: official
