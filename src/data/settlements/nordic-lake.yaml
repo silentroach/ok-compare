@@ -16,7 +16,6 @@ tariff:
   value: 457
   unit: rub_per_sotka
   period: month
-  note: по словам собственника
 infrastructure:
   roads: asphalt
   checkpoints: yes
