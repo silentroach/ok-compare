@@ -24,13 +24,16 @@ water_in_tariff: true
 
 infrastructure:
   roads: partial_asphalt
+  sidewalks: no
   lighting: yes
   gas: yes
   water: yes
+  drainage: open
   checkpoints: yes
   security: yes
   fencing: yes
   underground_electricity: full
+  retail_or_services: no
 
 common_spaces:
   playgrounds: yes
