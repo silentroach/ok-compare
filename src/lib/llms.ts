@@ -97,7 +97,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           '- Структура `settlements[]` включает подтвержденные поля карточки поселка: `name`, `short_name`, `slug`, `website`, `telegram`, `management_company`, полный `location`, полный `tariff`, `water_in_tariff`, `rabstvo`, `infrastructure`, `common_spaces`, `service_model`, вычисленное поле `rating` и объект `distance` с `moscow_km`, `mkad_km`, `shelkovo_km`.',
           '- Поле `rating` сериализуется как число `0..100` и служит техническим прокси качества среды для сортировки и сравнения.',
           '- Объект `comparisons` индексируется по `slug` и содержит `tariffDelta`, `tariffDeltaPercent` и `isCheaper` относительно базового поселка Шелково.',
-          '- Объект `stats` содержит агрегированные показатели по тарифам и общее число поселков.',
+          '- Объект `stats` содержит агрегированные показатели по тарифам, отдельную peer-медиану для рейтинговой группы Шелково и общее число поселков.',
           '- Список первоисточников `sources` в общий feed не включен; за ним нужно идти на detail-страницу поселка.',
           '',
           'Описание data/explorer.json',

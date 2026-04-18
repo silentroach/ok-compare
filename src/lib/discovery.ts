@@ -342,6 +342,10 @@ export function schema(root: string): Record<string, unknown> {
             type: 'number',
             minimum: 0,
           },
+          peerMedianTariff: {
+            type: 'number',
+            minimum: 0,
+          },
           meanTariff: {
             type: 'number',
             minimum: 0,
@@ -373,6 +377,9 @@ export function schema(root: string): Record<string, unknown> {
           shelkovoVsMedianPercent: {
             type: 'number',
           },
+          shelkovoVsPeerMedianPercent: {
+            type: 'number',
+          },
           shelkovoVsMeanPercent: {
             type: 'number',
           },
@@ -380,6 +387,7 @@ export function schema(root: string): Record<string, unknown> {
         [
           'shelkovoTariff',
           'medianTariff',
+          'peerMedianTariff',
           'meanTariff',
           'minTariff',
           'maxTariff',
@@ -388,6 +396,7 @@ export function schema(root: string): Record<string, unknown> {
           'cheaperCount',
           'moreExpensiveCount',
           'shelkovoVsMedianPercent',
+          'shelkovoVsPeerMedianPercent',
           'shelkovoVsMeanPercent',
         ],
       ),

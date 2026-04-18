@@ -230,6 +230,7 @@ export type Settlement = z.infer<typeof SettlementSchema>;
 export interface Stats {
   shelkovoTariff: number;
   medianTariff: number;
+  peerMedianTariff: number;
   meanTariff: number;
   minTariff: number;
   maxTariff: number;
@@ -238,6 +239,7 @@ export interface Stats {
   cheaperCount: number;
   moreExpensiveCount: number;
   shelkovoVsMedianPercent: number;
+  shelkovoVsPeerMedianPercent: number;
   shelkovoVsMeanPercent: number;
 }
 

@@ -5,6 +5,7 @@ import {
   computeStats,
   rankSettlements,
 } from './stats';
+import type { Rating } from './rating';
 import type { Settlement } from './schema';
 
 describe('Stats Module', () => {
@@ -388,11 +389,18 @@ describe('Stats Module', () => {
       },
     ];
 
+    const ratings = new Map<string, Rating>([
+      ['shelkovo', { score: 62.6, km: 0, ring: 0 }],
+      ['lesnoe', { score: 61.2, km: 0, ring: 0 }],
+      ['usadby', { score: 74.5, km: 0, ring: 0 }],
+    ]);
+
     it('should compute correct stats for settlements', () => {
-      const stats = computeStats(mockSettlements);
+      const stats = computeStats(mockSettlements, ratings);
 
       expect(stats.shelkovoTariff).toBe(4500);
       expect(stats.medianTariff).toBe(4500); // Middle value of [3500, 4500, 5500]
+      expect(stats.peerMedianTariff).toBe(4500);
       expect(stats.meanTariff).toBe(4500); // (3500 + 4500 + 5500) / 3
       expect(stats.minTariff).toBe(3500);
       expect(stats.maxTariff).toBe(5500);
@@ -401,6 +409,7 @@ describe('Stats Module', () => {
       expect(stats.cheaperCount).toBe(1); // Lesnoe is cheaper
       expect(stats.moreExpensiveCount).toBe(1); // Usadby is more expensive
       expect(stats.shelkovoVsMedianPercent).toBe(0); // 4500 vs 4500
+      expect(stats.shelkovoVsPeerMedianPercent).toBe(0); // 4500 vs 4500
       expect(stats.shelkovoVsMeanPercent).toBe(0); // 4500 vs 4500
     });
 
@@ -415,8 +424,13 @@ describe('Stats Module', () => {
           website: 'https://lesnoe-2.ru',
         },
       ];
+      const tiedRatings = new Map(ratings).set('lesnoe-2', {
+        score: 61.5,
+        km: 0,
+        ring: 0,
+      });
 
-      const stats = computeStats(tied);
+      const stats = computeStats(tied, tiedRatings);
 
       expect(stats.shelkovoRank).toBe(2);
     });
@@ -426,13 +440,67 @@ describe('Stats Module', () => {
         ...s,
         is_baseline: false,
       }));
-      expect(() => computeStats(noBaselineSettlements)).toThrow(
+      expect(() => computeStats(noBaselineSettlements, ratings)).toThrow(
         'Baseline settlement (Shelkovo) not found',
       );
     });
 
     it('should throw error when settlements array is empty', () => {
-      expect(() => computeStats([])).toThrow('No settlements provided');
+      expect(() => computeStats([], ratings)).toThrow(
+        'No settlements provided',
+      );
+    });
+
+    it('should isolate the baseline rating band when the base is mid-pack', () => {
+      const list = Array.from({ length: 9 }, (_, i) => ({
+        ...mockSettlements[1],
+        name: `Поселок ${i + 1}`,
+        short_name: `Поселок ${i + 1}`,
+        slug: `row-${i + 1}`,
+        website: `https://row-${i + 1}.ru`,
+        is_baseline: false,
+        tariff: {
+          ...mockSettlements[1].tariff,
+          value: 3000 + i * 100,
+          normalized_per_sotka_month: 3000 + i * 100,
+        },
+      }));
+      const settlements = [
+        list[0],
+        list[1],
+        list[2],
+        {
+          ...mockSettlements[0],
+          tariff: {
+            ...mockSettlements[0].tariff,
+            value: 4500,
+            normalized_per_sotka_month: 4500,
+          },
+        },
+        list[3],
+        list[4],
+        list[5],
+        list[6],
+        list[7],
+        list[8],
+      ];
+      const ratings = new Map<string, Rating>([
+        ['row-1', { score: 50, km: 0, ring: 0 }],
+        ['row-2', { score: 52, km: 0, ring: 0 }],
+        ['row-3', { score: 54, km: 0, ring: 0 }],
+        ['shelkovo', { score: 62, km: 0, ring: 0 }],
+        ['row-4', { score: 63, km: 0, ring: 0 }],
+        ['row-5', { score: 64, km: 0, ring: 0 }],
+        ['row-6', { score: 72, km: 0, ring: 0 }],
+        ['row-7', { score: 74, km: 0, ring: 0 }],
+        ['row-8', { score: 76, km: 0, ring: 0 }],
+        ['row-9', { score: 78, km: 0, ring: 0 }],
+      ]);
+
+      const stats = computeStats(settlements, ratings);
+
+      expect(stats.peerMedianTariff).toBe(3200);
+      expect(stats.shelkovoVsPeerMedianPercent).toBe(41);
     });
   });
 });

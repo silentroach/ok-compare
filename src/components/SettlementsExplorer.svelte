@@ -234,6 +234,15 @@
                 : ''}"
             >
               {mobile ? 'Дешевле' : 'Дешевле Шелково'}
+              {#if stats}
+                <span
+                  class="ml-1 inline-flex min-w-5 items-center justify-center rounded-full bg-white/50 px-1.5 py-0.5 text-[11px] font-semibold text-[color:var(--color-success-text)]/80 opacity-60 backdrop-blur-[2px]"
+                  aria-hidden="true"
+                  data-testid="price-cheaper-count"
+                >
+                  {stats.cheaperCount}
+                </span>
+              {/if}
             </label>
             <input
               id={moreid}
@@ -252,6 +261,15 @@
                 : ''}"
             >
               {mobile ? 'Дороже' : 'Дороже Шелково'}
+              {#if stats}
+                <span
+                  class="ml-1 inline-flex min-w-5 items-center justify-center rounded-full bg-white/50 px-1.5 py-0.5 text-[11px] font-semibold text-[color:var(--color-danger-text)]/80 opacity-60 backdrop-blur-[2px]"
+                  aria-hidden="true"
+                  data-testid="price-more-count"
+                >
+                  {stats.moreExpensiveCount}
+                </span>
+              {/if}
             </label>
           </div>
           <button

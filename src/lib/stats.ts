@@ -1,7 +1,12 @@
 import type { Settlement, Stats } from './schema';
+import type { Rating } from './rating';
 
 type Ranked = Pick<Settlement, 'slug' | 'short_name'> & {
   tariff: Pick<Settlement['tariff'], 'normalized_per_sotka_month'>;
+};
+
+type Rated = Ranked & {
+  score: number;
 };
 
 function sort<T extends Ranked>(settlements: T[]): T[] {
@@ -67,11 +72,58 @@ export function calculatePercentile(value: number, baseline: number): number {
   return Math.round(((value - baseline) / baseline) * 100);
 }
 
+function bands(list: Rated[]): Rated[][] {
+  // Keep rating cohorts broad enough to avoid noisy medians on small bases.
+  const count = Math.min(4, Math.max(1, Math.ceil(list.length / 8)));
+  const size = Math.ceil(list.length / count);
+
+  return Array.from({ length: count }, (_, i) =>
+    list.slice(i * size, (i + 1) * size),
+  ).filter((item) => item.length > 0);
+}
+
+function peers(
+  settlements: Settlement[],
+  ratings: Map<string, Rating>,
+  base: Settlement,
+) {
+  const list = settlements
+    .map((item) => ({
+      slug: item.slug,
+      short_name: item.short_name,
+      tariff: item.tariff,
+      score: ratings.get(item.slug)?.score ?? 0,
+    }))
+    .sort((a, b) => {
+      const diff = a.score - b.score;
+      if (diff !== 0) return diff;
+      return a.short_name.localeCompare(b.short_name, 'ru');
+    });
+
+  const band =
+    bands(list).find((item) => item.some((row) => row.slug === base.slug)) ??
+    list;
+  const first = band[0];
+
+  if (!first) {
+    throw new Error('No peer band found');
+  }
+
+  return {
+    peerMedianTariff: calculateMedian(
+      band.map((item) => item.tariff.normalized_per_sotka_month),
+    ),
+  };
+}
+
 /**
  * Compute statistics for all settlements
  * Shelkovo is always the baseline settlement
  */
-export function computeStats(settlements: Settlement[]): Stats {
+export function computeStats(
+  settlements: Settlement[],
+  ratings: Map<string, Rating>,
+): Stats {
   if (settlements.length === 0) {
     throw new Error('No settlements provided');
   }
@@ -84,6 +136,7 @@ export function computeStats(settlements: Settlement[]): Stats {
   const tariffs = settlements.map((s) => s.tariff.normalized_per_sotka_month);
   const shelkovoTariff = baseline.tariff.normalized_per_sotka_month;
   const ranks = rankSettlements(settlements);
+  const peer = peers(settlements, ratings, baseline);
 
   const medianTariff = calculateMedian(tariffs);
   const meanTariff = tariffs.reduce((sum, t) => sum + t, 0) / tariffs.length;
@@ -101,11 +154,16 @@ export function computeStats(settlements: Settlement[]): Stats {
     shelkovoTariff,
     medianTariff,
   );
+  const shelkovoVsPeerMedianPercent = calculatePercentile(
+    shelkovoTariff,
+    peer.peerMedianTariff,
+  );
   const shelkovoVsMeanPercent = calculatePercentile(shelkovoTariff, meanTariff);
 
   return {
     shelkovoTariff,
     medianTariff,
+    peerMedianTariff: peer.peerMedianTariff,
     meanTariff,
     minTariff,
     maxTariff,
@@ -114,6 +172,7 @@ export function computeStats(settlements: Settlement[]): Stats {
     cheaperCount,
     moreExpensiveCount,
     shelkovoVsMedianPercent,
+    shelkovoVsPeerMedianPercent,
     shelkovoVsMeanPercent,
   };
 }

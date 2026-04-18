@@ -27,11 +27,13 @@ export function findBaseline(
 export async function loadSettlementsWithStats(): Promise<{
   settlements: Settlement[];
   stats: Stats;
+  ratings: Map<string, Rating>;
 }> {
   const settlements = await loadSettlements();
-  const stats = computeStats(settlements);
+  const ratings = buildRatings(settlements);
+  const stats = computeStats(settlements, ratings);
 
-  return { settlements, stats };
+  return { settlements, stats, ratings };
 }
 
 /**
@@ -66,9 +68,8 @@ export async function loadAllData(): Promise<{
   comparisons: Map<string, ComparisonResult>;
   ratings: Map<string, Rating>;
 }> {
-  const { settlements, stats } = await loadSettlementsWithStats();
+  const { settlements, stats, ratings } = await loadSettlementsWithStats();
   const comparisons = compareAllSettlements(settlements);
-  const ratings = buildRatings(settlements);
 
   return { settlements, stats, comparisons, ratings };
 }

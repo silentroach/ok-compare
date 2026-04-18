@@ -8,11 +8,10 @@
   }
 
   let { stats, embed = false }: Props = $props();
-  const plural = new Intl.PluralRules('ru-RU');
 
-  function getMedianText(diff: number): string {
-    if (diff === 0) return 'Шелково = медиане';
-    return `Шелково: ${formatPercentage(diff / 100)} к медиане`;
+  function getDeltaText(diff: number): string {
+    if (diff === 0) return 'на уровне Шелково';
+    return `Шелково: ${formatPercentage(diff / 100)}`;
   }
 
   function getMedianTone(diff: number): string {
@@ -20,30 +19,12 @@
     if (diff < 0) return 'text-[color:var(--color-success-text)]';
     return 'text-[color:var(--color-muted-foreground)]';
   }
-
-  function getNoun(n: number): string {
-    const kind = plural.select(Math.abs(n));
-    if (kind === 'one') return 'поселок';
-    if (kind === 'few') return 'поселка';
-    return 'поселков';
-  }
-
-  function getCheaperText(n: number): string {
-    return `${getNoun(n)} дешевле Шелково`;
-  }
-
-  function getExpensiveText(n: number): string {
-    return `${getNoun(n)} дороже Шелково`;
-  }
-
-  function getShare(n: number, total: number): string {
-    const rest = Math.max(total - 1, 0);
-    if (rest === 0) return 'нет других поселков';
-    return `${Math.round((n / rest) * 100)}% остальных поселков`;
-  }
 </script>
 
-<section class={embed ? 'p-1' : 'ui-shell p-4 md:p-5'} data-testid="kpi-stats">
+<section
+  class={embed ? 'max-w-3xl p-1' : 'ui-shell p-4 md:p-5'}
+  data-testid="kpi-stats"
+>
   {#if !embed}
     <div class="mb-3 flex items-end justify-between gap-3">
       <h2
@@ -58,15 +39,53 @@
 
   <div
     class={embed
-      ? 'grid grid-cols-1 gap-2 sm:grid-cols-3'
-      : 'grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3'}
+      ? 'grid grid-cols-1 gap-2 sm:grid-cols-2'
+      : 'grid grid-cols-1 gap-3 sm:grid-cols-2'}
   >
     <article
       class={embed
-        ? 'mx-auto w-[96%] rounded-2xl bg-white/45 px-3.5 py-2.5 backdrop-blur-[3px] shadow-[0_8px_24px_-18px_rgba(15,23,42,0.6)] dark:bg-white/10'
-        : 'rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-muted-soft)] p-4'}
+        ? 'mx-auto w-[96%] rounded-2xl border border-[#ebd2cc] bg-[linear-gradient(160deg,rgba(255,255,255,0.95),rgba(255,242,239,0.94))] px-3.5 py-3 shadow-[0_14px_32px_-24px_rgba(127,29,29,0.42)] backdrop-blur-[3px] dark:border-white/10 dark:bg-white/10'
+        : 'rounded-xl border border-[#ebd2cc] bg-[linear-gradient(160deg,rgba(255,255,255,0.96),rgba(255,244,241,0.92))] p-4 shadow-[0_18px_34px_-28px_rgba(127,29,29,0.34)] dark:border-white/10 dark:bg-white/10'}
       data-testid="kpi-median"
     >
+      <div
+        class={embed
+          ? 'mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--color-danger-text)]/80'
+          : 'mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--color-danger-text)]/80'}
+      >
+        Похожие по уровню
+      </div>
+      <div
+        class={embed
+          ? 'ui-num mb-0.5 text-lg font-semibold text-foreground'
+          : 'ui-num mb-1 text-2xl font-semibold text-foreground'}
+        data-testid="kpi-peer-median"
+      >
+        {formatTariff(stats.peerMedianTariff)}
+      </div>
+      <div class={embed ? 'text-xs ui-muted' : 'text-sm ui-muted'}>
+        медиана тарифа
+      </div>
+      <div
+        class={`ui-num ${embed ? 'mt-1 text-xs' : 'mt-1.5 text-sm'} ${getMedianTone(stats.shelkovoVsPeerMedianPercent)}`}
+      >
+        {getDeltaText(stats.shelkovoVsPeerMedianPercent)}
+      </div>
+    </article>
+
+    <article
+      class={embed
+        ? 'mx-auto w-[96%] rounded-2xl border border-white/50 bg-white/50 px-3.5 py-3 backdrop-blur-[3px] shadow-[0_12px_28px_-24px_rgba(15,23,42,0.5)] dark:border-white/10 dark:bg-white/8'
+        : 'rounded-xl border border-[color:var(--color-border)] bg-white/70 p-4 shadow-[0_16px_32px_-28px_rgba(15,23,42,0.3)] dark:border-white/10 dark:bg-white/8'}
+      data-testid="kpi-all-median"
+    >
+      <div
+        class={embed
+          ? 'mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] ui-muted'
+          : 'mb-2 text-xs font-semibold uppercase tracking-[0.18em] ui-muted'}
+      >
+        Все поселки
+      </div>
       <div
         class={embed
           ? 'ui-num mb-0.5 text-lg font-semibold text-foreground'
@@ -75,62 +94,12 @@
         {formatTariff(stats.medianTariff)}
       </div>
       <div class={embed ? 'text-xs ui-muted' : 'text-sm ui-muted'}>
-        медиана по поселкам
+        общая медиана тарифа
       </div>
       <div
         class={`ui-num ${embed ? 'mt-1 text-xs' : 'mt-1.5 text-sm'} ${getMedianTone(stats.shelkovoVsMedianPercent)}`}
       >
-        {getMedianText(stats.shelkovoVsMedianPercent)}
-      </div>
-    </article>
-
-    <article
-      class={embed
-        ? 'mx-auto w-[96%] rounded-2xl bg-white/45 px-3.5 py-2.5 backdrop-blur-[3px] shadow-[0_8px_24px_-18px_rgba(15,23,42,0.6)] dark:bg-white/10'
-        : 'rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-muted-soft)] p-4'}
-      data-testid="kpi-cheaper"
-    >
-      <div
-        class={embed
-          ? 'ui-num mb-0.5 text-lg font-semibold text-[color:var(--color-success-text)]'
-          : 'ui-num mb-1 text-2xl font-semibold text-[color:var(--color-success-text)]'}
-      >
-        {stats.cheaperCount}
-      </div>
-      <div class={embed ? 'text-xs ui-muted' : 'text-sm ui-muted'}>
-        {getCheaperText(stats.cheaperCount)}
-      </div>
-      <div
-        class={embed
-          ? 'ui-num mt-1 text-xs text-[color:var(--color-success-text)]'
-          : 'ui-num mt-1.5 text-sm text-[color:var(--color-success-text)]'}
-      >
-        {getShare(stats.cheaperCount, stats.totalSettlements)}
-      </div>
-    </article>
-
-    <article
-      class={embed
-        ? 'mx-auto w-[96%] rounded-2xl bg-white/45 px-3.5 py-2.5 backdrop-blur-[3px] shadow-[0_8px_24px_-18px_rgba(15,23,42,0.6)] dark:bg-white/10'
-        : 'rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-muted-soft)] p-4'}
-      data-testid="kpi-expensive"
-    >
-      <div
-        class={embed
-          ? 'ui-num mb-0.5 text-lg font-semibold text-[color:var(--color-danger-text)]'
-          : 'ui-num mb-1 text-2xl font-semibold text-[color:var(--color-danger-text)]'}
-      >
-        {stats.moreExpensiveCount}
-      </div>
-      <div class={embed ? 'text-xs ui-muted' : 'text-sm ui-muted'}>
-        {getExpensiveText(stats.moreExpensiveCount)}
-      </div>
-      <div
-        class={embed
-          ? 'ui-num mt-1 text-xs text-[color:var(--color-danger-text)]'
-          : 'ui-num mt-1.5 text-sm text-[color:var(--color-danger-text)]'}
-      >
-        {getShare(stats.moreExpensiveCount, stats.totalSettlements)}
+        {getDeltaText(stats.shelkovoVsMedianPercent)}
       </div>
     </article>
   </div>

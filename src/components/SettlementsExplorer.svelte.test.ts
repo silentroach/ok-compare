@@ -31,6 +31,7 @@ const mockYandexMaps = {
 const stats: Stats = {
   shelkovoTariff: 120,
   medianTariff: 100,
+  peerMedianTariff: 95,
   meanTariff: 110,
   minTariff: 80,
   maxTariff: 160,
@@ -39,6 +40,7 @@ const stats: Stats = {
   cheaperCount: 1,
   moreExpensiveCount: 0,
   shelkovoVsMedianPercent: 20,
+  shelkovoVsPeerMedianPercent: 26,
   shelkovoVsMeanPercent: 10,
 };
 
@@ -225,7 +227,7 @@ describe('SettlementsExplorer', () => {
       expect(mockYandexMaps.YMapMarker).toHaveBeenCalledTimes(3);
     });
 
-    await fireEvent.click(getByLabelText('Дешевле Шелково'));
+    await fireEvent.click(getByLabelText(/Дешевле Шелково/));
 
     await waitFor(() => {
       expect(mockYandexMaps.YMapMarker).toHaveBeenCalledTimes(4);
@@ -382,6 +384,8 @@ describe('SettlementsExplorer', () => {
     const filter = getByTestId('price-cheaper') as HTMLInputElement;
     const filterLabel = container.querySelector(`label[for="${filter.id}"]`);
     expect(filterLabel?.textContent).toContain('Дешевле');
+    expect(getByTestId('price-cheaper-count').textContent).toBe('1');
+    expect(getByTestId('price-more-count').textContent).toBe('0');
 
     const btn = getByTestId('map-toggle');
     const mapid = btn.getAttribute('aria-controls');

@@ -23,6 +23,7 @@ description: Используй для чтения полного feed посе
 - `short_name`, `slug`, `website`, `telegram`, `management_company`, `rating`, `is_baseline`
 - полный `location` и полный `tariff`
 - `infrastructure`, `common_spaces`, `service_model`, `distance.moscow_km`, `distance.mkad_km`, `distance.shelkovo_km`
+- `stats` для общих тарифных агрегатов и peer-медианы внутри рейтинговой группы Шелково
 - `comparisons[slug]` для дельты тарифа относительно базового поселка Шелково
 
 ## Ограничения
