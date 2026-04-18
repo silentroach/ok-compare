@@ -84,7 +84,7 @@
           ? 'mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] ui-muted'
           : 'mb-2 text-xs font-semibold uppercase tracking-[0.18em] ui-muted'}
       >
-        Все поселки
+        Все поселки на сайте
       </div>
       <div
         class={embed
