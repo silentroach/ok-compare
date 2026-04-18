@@ -394,14 +394,6 @@
     {/if}
   </div>
 
-  {#snippet pending()}
-    <div class="ui-shell p-6 text-center" data-testid="explorer-pending">
-      <p class="text-base font-semibold text-foreground">
-        Загружаем данные сравнения...
-      </p>
-    </div>
-  {/snippet}
-
   {#snippet failed(err, reset)}
     <div
       class="ui-shell space-y-3 p-6 text-center"
