@@ -11,7 +11,12 @@ const base = import.meta.env.BASE_URL.endsWith('/')
   : `${import.meta.env.BASE_URL}/`;
 const root = new URL(base, site);
 const sitemap = new URL('sitemap-index.xml', root).toString();
-const body = ['User-agent: *', 'Allow: /', `Sitemap: ${sitemap}`].join('\n');
+const body = [
+  'User-agent: *',
+  'Allow: /',
+  'Content-Signal: ai-train=yes, search=yes, ai-input=yes',
+  `Sitemap: ${sitemap}`,
+].join('\n');
 
 export const GET: APIRoute = () =>
   new Response(`${body}\n`, {
