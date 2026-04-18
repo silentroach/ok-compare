@@ -1,36 +1,36 @@
 ---
 name: explorer-data
-description: Используй для массового сравнения поселков через data/explorer.json, список и карту.
+description: Используй для чтения полного feed поселков через data/settlements.json; explorer.json нужен только для облегченного списка и карты.
 ---
 
 # explorer-data
 
 ## Когда использовать
 
-- Когда нужен быстрый список поселков для массового анализа.
-- Когда нужно сравнить рейтинг, тариф, координаты и базовые агрегаты без загрузки detail-страниц.
+- Когда нужен один структурированный источник со всеми подтвержденными данными по поселкам.
+- Когда нужно сравнить рейтинг, тариф, инфраструктуру, сервисы и источники без загрузки detail-страниц.
 - Когда нужен discovery-слой перед переходом к конкретному поселку.
 
 ## Что открыть
 
-- Основной URL: `/data/explorer.json`.
+- Основной URL: `/data/settlements.json`.
 - Смотри прежде всего на `settlements[]`, `comparisons` и `stats`.
+- Для минимального payload и повторения логики главной есть `/data/explorer.json`.
 - Для перехода к detail-странице используй `settlements[].slug`.
 
 ## Поля, полезные для массового анализа
 
-- `short_name`, `slug`, `rating`, `is_baseline`
-- `location.lat`, `location.lng`, `location.district`
-- `tariff.normalized_per_sotka_month`, `tariff.normalized_is_estimate`
-- опциональные `rabstvo`, `management_company`
+- `short_name`, `slug`, `website`, `telegram`, `management_company`, `rating`, `is_baseline`
+- полный `location` и полный `tariff`
+- `infrastructure`, `common_spaces`, `service_model`, `sources`
 - `comparisons[slug]` для дельты тарифа относительно базового поселка Шелково
 
 ## Ограничения
 
-- Это минимальный feed для списка и карты, а не полный слепок карточки поселка.
-- В нем намеренно нет `sources`, `website`, `telegram`, полного `tariff`, полного `location`, `infrastructure`, `common_spaces`, `service_model`.
+- Это полный structured feed, но не замена HTML- или Markdown-странице как человекочитаемому представлению.
+- `data/explorer.json` остается отдельным минимальным feed для списка и карты.
 - Отсутствие поля обычно означает «неизвестно», а не «точно нет».
 
 ## Дальше
 
-- Если нужен полный контекст по одному поселку, переходи на `/settlements/[slug]/`.
+- Если нужен page URL или человекочитаемый контекст по одному поселку, переходи на `/settlements/[slug]/`.

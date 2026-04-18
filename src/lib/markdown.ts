@@ -197,6 +197,7 @@ export async function buildHomeMd(): Promise<string> {
     '## Ключевые ссылки',
     `- HTML: ${abs('/')}`,
     `- Markdown: ${abs('/index.md')}`,
+    `- Полный feed: ${abs('/data/settlements.json')}`,
     `- Explorer feed: ${abs('/data/explorer.json')}`,
     `- Методика рейтинга: ${abs('/rating/')}`,
     `- Markdown-версия методики: ${abs('/rating/index.md')}`,
@@ -220,7 +221,8 @@ export async function buildHomeMd(): Promise<string> {
     '## Ограничения данных',
     '- Если факт не подтвержден источником, поле опускается.',
     '- Отсутствие поля обычно означает «неизвестно», а не «точно нет».',
-    '- `data/explorer.json` сокращен для списка, карты и массового сравнения и не заменяет детальные страницы.',
+    '- `data/settlements.json` является основным полным structured feed поселков.',
+    '- `data/explorer.json` сокращен для списка, карты и массового сравнения.',
     '- Тариф намеренно не входит в формулу условного рейтинга.',
   ];
 

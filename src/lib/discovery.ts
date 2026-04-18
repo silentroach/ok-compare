@@ -1,9 +1,10 @@
 import { withBase } from './url';
 
 export const DOCS = '/for-agents/';
-export const FEED = '/data/explorer.json';
-export const SCHEMA = '/schemas/explorer.schema.json';
-export const OPENAPI = '/openapi/explorer.openapi.json';
+export const FEED = '/data/settlements.json';
+export const EXPLORER = '/data/explorer.json';
+export const SCHEMA = '/schemas/settlements.schema.json';
+export const OPENAPI = '/openapi/settlements.openapi.json';
 export const CATALOG = '/.well-known/api-catalog';
 export const PROFILE = 'https://www.rfc-editor.org/info/rfc9727';
 export const OAS = 'application/vnd.oai.openapi+json';
@@ -20,13 +21,51 @@ function server(root: string): string {
   return new URL(withBase('/'), root).toString().replace(/\/$/, '');
 }
 
+function text(): Record<string, unknown> {
+  return {
+    type: 'string',
+    minLength: 1,
+  };
+}
+
+function uri(): Record<string, unknown> {
+  return {
+    type: 'string',
+    format: 'uri',
+  };
+}
+
+function flag(): Record<string, unknown> {
+  return {
+    type: 'boolean',
+  };
+}
+
+function state(): Record<string, unknown> {
+  return {
+    $ref: '#/$defs/availability',
+  };
+}
+
+function obj(
+  properties: Record<string, unknown>,
+  required: string[],
+): Record<string, unknown> {
+  return {
+    type: 'object',
+    additionalProperties: false,
+    required,
+    properties,
+  };
+}
+
 export function schema(root: string): Record<string, unknown> {
   return {
     $schema: 'https://json-schema.org/draft/2020-12/schema',
     $id: abs(root, SCHEMA),
-    title: 'ExplorerPayload',
+    title: 'SettlementsPayload',
     description:
-      'Read-only feed для списка, карты и массового сравнения поселков.',
+      'Read-only полный feed поселков с detail-полями, рейтингом и агрегатами.',
     type: 'object',
     additionalProperties: false,
     required: ['settlements', 'stats', 'comparisons'],
@@ -51,46 +90,51 @@ export function schema(root: string): Record<string, unknown> {
       },
     },
     $defs: {
+      availability: {
+        enum: ['yes', 'no', 'partial'],
+      },
+      road: {
+        enum: ['asphalt', 'partial_asphalt', 'gravel', 'dirt'],
+      },
+      drainage: {
+        enum: ['closed', 'open', 'none'],
+      },
+      video: {
+        enum: ['full', 'checkpoint_only', 'none'],
+      },
+      wire: {
+        enum: ['full', 'partial', 'none'],
+      },
       company: {
         oneOf: [
           {
             type: 'string',
             minLength: 1,
           },
-          {
-            type: 'object',
-            additionalProperties: false,
-            required: ['title'],
-            properties: {
-              title: {
-                type: 'string',
-                minLength: 1,
-              },
+          obj(
+            {
+              title: text(),
+              url: uri(),
             },
-          },
+            ['title', 'url'],
+          ),
         ],
       },
-      comparison: {
-        type: 'object',
-        additionalProperties: false,
-        required: ['tariffDelta', 'tariffDeltaPercent', 'isCheaper'],
-        properties: {
+      comparison: obj(
+        {
           tariffDelta: {
             type: 'number',
           },
           tariffDeltaPercent: {
             type: 'number',
           },
-          isCheaper: {
-            type: 'boolean',
-          },
+          isCheaper: flag(),
         },
-      },
-      location: {
-        type: 'object',
-        additionalProperties: false,
-        required: ['lat', 'lng', 'district'],
-        properties: {
+        ['tariffDelta', 'tariffDeltaPercent', 'isCheaper'],
+      ),
+      location: obj(
+        {
+          address_text: text(),
           lat: {
             type: 'number',
             minimum: -90,
@@ -101,76 +145,199 @@ export function schema(root: string): Record<string, unknown> {
             minimum: -180,
             maximum: 180,
           },
-          district: {
-            type: 'string',
-            minLength: 1,
+          map_url: uri(),
+          district: text(),
+        },
+        ['address_text', 'lat', 'lng', 'district'],
+      ),
+      tariff_part: obj(
+        {
+          value: {
+            type: 'number',
+            minimum: 0,
+          },
+          unit: {
+            enum: ['rub_per_sotka', 'rub_per_lot', 'rub_fixed'],
+          },
+          period: {
+            enum: ['month', 'quarter', 'year'],
+          },
+          note: text(),
+        },
+        ['value', 'unit', 'period'],
+      ),
+      tariff: obj(
+        {
+          value: {
+            type: 'number',
+            minimum: 0,
+          },
+          unit: {
+            enum: ['rub_per_sotka', 'rub_per_lot', 'rub_fixed'],
+          },
+          period: {
+            enum: ['month', 'quarter', 'year'],
+          },
+          normalized_per_sotka_month: {
+            type: 'number',
+            minimum: 0,
+          },
+          normalized_is_estimate: flag(),
+          note: text(),
+          parts: {
+            type: 'array',
+            minItems: 1,
+            items: {
+              $ref: '#/$defs/tariff_part',
+            },
           },
         },
-      },
-      settlement: {
-        type: 'object',
-        additionalProperties: false,
-        required: [
-          'name',
-          'short_name',
-          'slug',
-          'rating',
-          'is_baseline',
-          'location',
-          'tariff',
+        [
+          'value',
+          'unit',
+          'period',
+          'normalized_per_sotka_month',
+          'normalized_is_estimate',
         ],
-        properties: {
-          name: {
-            type: 'string',
-            minLength: 1,
+      ),
+      infrastructure: obj(
+        {
+          roads: {
+            $ref: '#/$defs/road',
           },
-          short_name: {
-            type: 'string',
-            minLength: 1,
+          sidewalks: state(),
+          lighting: state(),
+          gas: state(),
+          water: state(),
+          sewage: state(),
+          drainage: {
+            $ref: '#/$defs/drainage',
           },
+          checkpoints: state(),
+          security: state(),
+          fencing: state(),
+          video_surveillance: {
+            $ref: '#/$defs/video',
+          },
+          underground_electricity: {
+            $ref: '#/$defs/wire',
+          },
+          admin_building: state(),
+          retail_or_services: state(),
+        },
+        [],
+      ),
+      common_spaces: obj(
+        {
+          playgrounds: state(),
+          sports: state(),
+          pool: state(),
+          fitness_club: state(),
+          restaurant: state(),
+          spa_center: state(),
+          walking_routes: state(),
+          water_access: state(),
+          beach_zones: state(),
+          kids_club: state(),
+          sports_camp: state(),
+          primary_school: state(),
+          club_infrastructure: state(),
+          bbq_zones: state(),
+        },
+        [],
+      ),
+      service_model: obj(
+        {
+          garbage_collection: state(),
+          snow_removal: state(),
+          road_cleaning: state(),
+          landscaping: state(),
+          emergency_service: state(),
+          dispatcher: state(),
+        },
+        [],
+      ),
+      source: obj(
+        {
+          title: text(),
+          url: uri(),
+          type: {
+            enum: ['official', 'community', 'media', 'personal'],
+          },
+          date_checked: {
+            type: 'string',
+            pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+          },
+          comment: {
+            type: 'string',
+          },
+        },
+        ['title', 'url', 'type', 'date_checked', 'comment'],
+      ),
+      settlement: obj(
+        {
+          name: text(),
+          short_name: text(),
           slug: {
             type: 'string',
             pattern: '^[a-z0-9-]+$',
           },
-          rating: {
-            type: 'number',
-            minimum: 0,
-            maximum: 100,
-          },
-          rabstvo: {
-            const: true,
+          website: uri(),
+          telegram: {
+            type: 'string',
+            pattern: '^[A-Za-z0-9_]{5,32}$',
           },
           management_company: {
             $ref: '#/$defs/company',
           },
-          is_baseline: {
-            type: 'boolean',
-          },
+          is_baseline: flag(),
           location: {
             $ref: '#/$defs/location',
           },
           tariff: {
             $ref: '#/$defs/tariff',
           },
+          water_in_tariff: flag(),
+          rabstvo: flag(),
+          infrastructure: {
+            $ref: '#/$defs/infrastructure',
+          },
+          common_spaces: {
+            $ref: '#/$defs/common_spaces',
+          },
+          service_model: {
+            $ref: '#/$defs/service_model',
+          },
+          sources: {
+            type: 'array',
+            minItems: 1,
+            items: {
+              $ref: '#/$defs/source',
+            },
+          },
+          rating: {
+            type: 'number',
+            minimum: 0,
+            maximum: 100,
+          },
         },
-      },
-      stats: {
-        type: 'object',
-        additionalProperties: false,
-        required: [
-          'shelkovoTariff',
-          'medianTariff',
-          'meanTariff',
-          'minTariff',
-          'maxTariff',
-          'shelkovoRank',
-          'totalSettlements',
-          'cheaperCount',
-          'moreExpensiveCount',
-          'shelkovoVsMedianPercent',
-          'shelkovoVsMeanPercent',
+        [
+          'name',
+          'short_name',
+          'slug',
+          'website',
+          'is_baseline',
+          'location',
+          'tariff',
+          'infrastructure',
+          'common_spaces',
+          'service_model',
+          'sources',
+          'rating',
         ],
-        properties: {
+      ),
+      stats: obj(
+        {
           shelkovoTariff: {
             type: 'number',
             minimum: 0,
@@ -214,21 +381,20 @@ export function schema(root: string): Record<string, unknown> {
             type: 'number',
           },
         },
-      },
-      tariff: {
-        type: 'object',
-        additionalProperties: false,
-        required: ['normalized_per_sotka_month', 'normalized_is_estimate'],
-        properties: {
-          normalized_per_sotka_month: {
-            type: 'number',
-            minimum: 0,
-          },
-          normalized_is_estimate: {
-            type: 'boolean',
-          },
-        },
-      },
+        [
+          'shelkovoTariff',
+          'medianTariff',
+          'meanTariff',
+          'minTariff',
+          'maxTariff',
+          'shelkovoRank',
+          'totalSettlements',
+          'cheaperCount',
+          'moreExpensiveCount',
+          'shelkovoVsMedianPercent',
+          'shelkovoVsMeanPercent',
+        ],
+      ),
     },
   };
 }
@@ -244,10 +410,10 @@ export function openapi(root: string): Record<string, unknown> {
     openapi: '3.1.0',
     jsonSchemaDialect: 'https://json-schema.org/draft/2020-12/schema',
     info: {
-      title: 'Сравни.Шелково Explorer Feed',
+      title: 'Сравни.Шелково Settlements Feed',
       version: '1.0.0',
       description:
-        'Read-only OpenAPI wrapper для data/explorer.json, пригодный для автоматического discovery.',
+        'Read-only OpenAPI wrapper для полного feed поселков, пригодный для автоматического discovery.',
     },
     servers: [
       {
@@ -261,17 +427,17 @@ export function openapi(root: string): Record<string, unknown> {
     paths: {
       [FEED]: {
         get: {
-          operationId: 'getExplorer',
-          summary: 'Read explorer feed',
+          operationId: 'getSettlements',
+          summary: 'Read full settlements feed',
           description:
-            'Возвращает краткий feed поселков для списка, карты и массового сравнения.',
+            'Возвращает полный feed поселков с detail-полями, рейтингом, stats и comparisons.',
           responses: {
             200: {
-              description: 'Explorer feed',
+              description: 'Full settlements feed',
               content: {
                 'application/json': {
                   schema: {
-                    $ref: '#/components/schemas/ExplorerPayload',
+                    $ref: '#/components/schemas/SettlementsPayload',
                   },
                 },
               },
@@ -282,7 +448,7 @@ export function openapi(root: string): Record<string, unknown> {
     },
     components: {
       schemas: {
-        ExplorerPayload: body,
+        SettlementsPayload: body,
       },
     },
   };
@@ -297,7 +463,12 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, FEED),
             type: 'application/json',
-            'title*': star('Машиночитаемый feed поселков'),
+            'title*': star('Полный машиночитаемый feed поселков'),
+          },
+          {
+            href: abs(root, EXPLORER),
+            type: 'application/json',
+            'title*': star('Облегченный explorer feed для списка и карты'),
           },
         ],
         'service-doc': [
@@ -311,12 +482,12 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, SCHEMA),
             type: 'application/schema+json',
-            'title*': star('JSON Schema для explorer feed'),
+            'title*': star('JSON Schema для полного feed'),
           },
           {
             href: abs(root, OPENAPI),
             type: OAS,
-            'title*': star('OpenAPI для explorer feed'),
+            'title*': star('OpenAPI для полного feed'),
           },
         ],
       },

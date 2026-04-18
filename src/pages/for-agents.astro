@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { loadAllData } from '../lib/data';
-import { CATALOG, FEED, OPENAPI, SCHEMA } from '../lib/discovery';
+import { CATALOG, EXPLORER, FEED, OPENAPI, SCHEMA } from '../lib/discovery';
 import { withBase } from '../lib/url';
 
 const { settlements } = await loadAllData();
@@ -13,9 +13,9 @@ const picks = [
     .slice(0, 2),
 ].filter((item): item is (typeof settlements)[number] => Boolean(item));
 
-const title = 'Для агентов: explorer feed поселков';
+const title = 'Для агентов: полный feed поселков';
 const description =
-  'Краткая документация по data/explorer.json: для чего подходит feed, чего в нем нет и где лежат schema, OpenAPI и API catalog.';
+  'Краткая документация по data/settlements.json: где лежит полный feed поселков, чем он отличается от data/explorer.json и где найти schema, OpenAPI и API catalog.';
 const root = Astro.site ?? Astro.url.origin;
 const page = new URL(withBase('/for-agents/'), root).toString();
 const schema = {
@@ -30,17 +30,22 @@ const schema = {
 const refs = [
   {
     href: withBase(FEED),
-    label: '/data/explorer.json',
-    note: 'Основной feed только для чтения для списка, карты и массового сравнения.',
+    label: FEED,
+    note: 'Основной полный feed только для чтения со всеми подтвержденными полями, рейтингом и агрегатами.',
+  },
+  {
+    href: withBase(EXPLORER),
+    label: EXPLORER,
+    note: 'Облегченный feed для главной, списка и карты, когда важен минимальный payload.',
   },
   {
     href: withBase(SCHEMA),
-    label: '/schemas/explorer.schema.json',
+    label: SCHEMA,
     note: 'JSON Schema для реального ответа feed.',
   },
   {
     href: withBase(OPENAPI),
-    label: '/openapi/explorer.openapi.json',
+    label: OPENAPI,
     note: 'OpenAPI 3.1-обертка вокруг одного маршрута только для чтения.',
   },
   {
@@ -56,19 +61,18 @@ const refs = [
 ];
 
 const uses = [
-  'получить единый список поселков и их slug без парсинга HTML',
-  'строить карту по location.lat и location.lng',
+  'получить все подтвержденные поля поселка одним запросом без обхода detail-страниц',
+  'брать slug, website, telegram, sources, полный location и полный tariff',
+  'строить карту по location.lat и location.lng и сразу иметь контекст по инфраструктуре и сервисам',
   'сравнивать тариф и рейтинг пакетно по всему списку',
   'использовать comparisons[slug] для сравнения с Шелково',
-  'использовать slug для перехода на детальную страницу поселка',
+  'использовать один feed как основной discovery-слой для агентов',
 ];
 
-const misses = [
-  'sources, website, telegram и другие ссылки из детальной карточки',
-  'полный tariff с value, unit, period, note и parts',
-  'расширенный location с address_text и map_url',
-  'детальная инфраструктура, common_spaces и service_model',
-  'management_company.url, если у УК есть отдельная страница',
+const light = [
+  'когда нужен самый короткий payload для списка, карты или массовой первичной выборки',
+  'когда достаточно short_name, slug, rating, координат и нормализованного тарифа',
+  'когда нужно повторить поведение главной страницы, которая сама читает data/explorer.json',
 ];
 ---
 
@@ -87,16 +91,18 @@ const misses = [
             <h1
               class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
             >
-              Explorer feed для машинного чтения
+              Полный JSON feed для машинного чтения
             </h1>
             <p class="ui-copy max-w-3xl text-muted-foreground">
               <a href={withBase(FEED)} class="ui-link font-semibold">
+                <code>data/settlements.json</code>
+              </a>
+              {' '}это стабильный полный feed только для чтения для discovery,
+              массового сравнения и обхода всей базы.{' '}
+              <a href={withBase(EXPLORER)} class="ui-link font-semibold">
                 <code>data/explorer.json</code>
               </a>
-              {' '}это стабильный feed только для чтения для обнаружения
-              поселков, массового сравнения и карты. Он намеренно короче
-              детальных страниц и не пытается быть полным слепком карточки
-              поселка.
+              {' '}остается облегченной версией для главной, списка и карты.
             </p>
           </div>
 
@@ -113,7 +119,8 @@ const misses = [
                 class="mt-3 space-y-2 text-sm leading-7 text-muted-foreground"
               >
                 <li>
-                  <code>settlements[]</code> — краткие карточки для списка и карты
+                  <code>settlements[]</code> — полные карточки поселков с rating и
+                  подтвержденными полями
                 </li>
                 <li><code>stats</code> — агрегаты по тарифам и размеру базы</li>
                 <li>
@@ -132,8 +139,8 @@ const misses = [
               </p>
               <p class="mt-3 text-sm leading-7 text-info-text">
                 Отсутствие поля обычно означает «неизвестно», а не «точно нет».
-                Если нужен максимум контекста по одному поселку, после первого
-                обнаружения переходите на детальную страницу.
+                Детальные HTML- и Markdown-страницы все еще полезны как
+                каноническое человекочитаемое представление по одному slug.
               </p>
             </div>
           </div>
@@ -181,7 +188,7 @@ const misses = [
             <h2
               class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
             >
-              Лучший вход для массового обхода всей базы
+              Один запрос вместо обхода карточек
             </h2>
             <ul
               class="space-y-2 text-sm leading-7 text-muted-foreground md:text-base"
@@ -196,21 +203,22 @@ const misses = [
             <p
               class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
             >
-              Чего в feed нет
+              Когда все еще нужен explorer
             </p>
             <h2
               class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
             >
-              Эти поля вынесены в карточки поселков
+              Облегченный feed оставлен для списка и карты
             </h2>
             <ul
               class="space-y-2 text-sm leading-7 text-muted-foreground md:text-base"
             >
-              {misses.map((item) => <li>{item}</li>)}
+              {light.map((item) => <li>{item}</li>)}
             </ul>
             <p class="ui-copy text-muted-foreground">
-              Это сделано специально, чтобы feed оставался компактным и удобным
-              для списка и карты.
+              Для агентного discovery лучше начинать с полного feed выше, а
+              data/explorer.json использовать только когда важен минимальный
+              размер ответа.
             </p>
           </div>
         </section>
@@ -224,7 +232,8 @@ const misses = [
             Детальные страницы
           </p>
           <p class="mt-3 text-sm leading-7 text-muted-foreground">
-            Шаблон маршрута: <code>/settlements/[slug]/</code>
+            Шаблон маршрута: <code>/settlements/[slug]/</code>. Используйте его,
+            когда нужна каноническая HTML- или Markdown-страница по одному slug.
           </p>
           <ul class="mt-4 space-y-2 text-sm leading-6 text-muted-foreground">
             {
@@ -249,8 +258,12 @@ const misses = [
             Когда нужен рейтинг
           </p>
           <p class="mt-3 text-sm leading-7 text-muted-foreground">
-            Поле <code>rating</code> в feed уже сериализовано как число
-            <code>0..100</code>, а полная методика описана на{' '}
+            Поле <code>rating</code> уже сериализовано как число <code
+              >0..100</code
+            >
+            и в полном feed, и в explorer feed, а полная методика описана на{
+              ' '
+            }
             <a href={withBase('/rating/')} class="ui-link font-medium">
               странице рейтинга
             </a>
