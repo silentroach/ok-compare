@@ -114,6 +114,11 @@ jobs:
       DEPLOY_USER: ${{ secrets.DEPLOY_USER || 'deploy' }}
       DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
       - name: Download VPS artifact
         uses: actions/download-artifact@v8
         with:
@@ -206,4 +211,35 @@ jobs:
               find "'$DEPLOY_PATH'/_astro" -type f -mtime +30 -delete
               find "'$DEPLOY_PATH'/_astro" -type d -empty -delete
             fi
+          '
+
+      - name: Deploy nginx config
+        run: |
+          ssh_opts="ssh -p $DEPLOY_PORT"
+
+          rsync -az --chmod=F644 \
+            -e "$ssh_opts" \
+            ops/nginx/sravni-shelkovo.conf \
+            "$DEPLOY_USER@$DEPLOY_HOST:/tmp/sravni-shelkovo.conf"
+
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" '
+            set -eu
+
+            tmp="/tmp/sravni-shelkovo.conf"
+            dst="/etc/nginx/sites-enabled/sravni-shelkovo"
+            bak="$(mktemp /tmp/sravni-shelkovo.conf.bak.XXXXXX)"
+
+            sudo -n cp "$dst" "$bak"
+            sudo -n install -m 644 "$tmp" "$dst"
+
+            if ! sudo -n nginx -t; then
+              sudo -n install -m 644 "$bak" "$dst"
+              sudo -n nginx -t
+              exit 1
+            fi
+
+            sudo -n systemctl reload nginx
+            sudo -n systemctl is-active --quiet nginx
+
+            rm -f "$tmp" "$bak"
           '
