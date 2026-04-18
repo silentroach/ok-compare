@@ -193,7 +193,7 @@ jobs:
 
       - name: Sync build to server
         run: |
-          ssh_opts="ssh -p $DEPLOY_PORT"
+          ssh_opts="ssh -p $DEPLOY_PORT -o ControlMaster=auto -o ControlPersist=600 -o ControlPath=$HOME/.ssh/cm-%C"
 
           rsync -az --delete --mkpath --chmod=D755,F644 \
             --exclude '/_astro/' \
@@ -206,7 +206,11 @@ jobs:
 
       - name: Prune stale hashed assets
         run: |
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" '
+          ssh_opts="-p $DEPLOY_PORT -o ControlMaster=auto -o ControlPersist=600 -o ControlPath=$HOME/.ssh/cm-%C"
+
+          ssh $ssh_opts "$DEPLOY_USER@$DEPLOY_HOST" '
+            set -eu
+
             if [ -d "'$DEPLOY_PATH'/_astro" ]; then
               find "'$DEPLOY_PATH'/_astro" -type f -mtime +30 -delete
               find "'$DEPLOY_PATH'/_astro" -type d -empty -delete
@@ -215,19 +219,16 @@ jobs:
 
       - name: Deploy nginx config
         run: |
-          ssh_opts="ssh -p $DEPLOY_PORT"
+          ssh_opts="-p $DEPLOY_PORT -o ControlMaster=auto -o ControlPersist=600 -o ControlPath=$HOME/.ssh/cm-%C"
 
-          rsync -az --chmod=F644 \
-            -e "$ssh_opts" \
-            ops/nginx/sravni-shelkovo.conf \
-            "$DEPLOY_USER@$DEPLOY_HOST:/tmp/sravni-shelkovo.conf"
-
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" '
+          ssh $ssh_opts "$DEPLOY_USER@$DEPLOY_HOST" '
             set -eu
 
-            tmp="/tmp/sravni-shelkovo.conf"
+            tmp="/tmp/sravni-shelkovo.conf.new"
             dst="/etc/nginx/sites-enabled/sravni-shelkovo"
-            bak="$(mktemp /tmp/sravni-shelkovo.conf.bak.XXXXXX)"
+            bak="/tmp/sravni-shelkovo.conf.bak"
+
+            cat > "$tmp"
 
             sudo -n cp "$dst" "$bak"
             sudo -n install -m 644 "$tmp" "$dst"
@@ -242,4 +243,4 @@ jobs:
             sudo -n systemctl is-active --quiet nginx
 
             rm -f "$tmp" "$bak"
-          '
+          ' < ops/nginx/sravni-shelkovo.conf

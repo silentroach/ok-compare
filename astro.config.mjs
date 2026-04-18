@@ -39,6 +39,7 @@ if (packed) {
         '.css',
         '.js',
         '.html',
+        '.md',
         '.xml',
         '.cjs',
         '.mjs',
