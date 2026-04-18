@@ -1,10 +1,45 @@
 import { describe, expect, it } from 'vitest';
 
+import { calculateDistance } from './format';
 import { toFull } from './full';
 import type { Rating } from './rating';
 import type { Settlement } from './schema';
 
-const settlement: Settlement = {
+const base: Settlement = {
+  name: 'КП Шелково',
+  short_name: 'Шелково',
+  slug: 'shelkovo',
+  website: 'https://example.com/shelkovo',
+  is_baseline: true,
+  location: {
+    address_text: 'МО, округ Истра, д. Шелково',
+    lat: 55.7,
+    lng: 37,
+    map_url: 'https://example.com/shelkovo-map',
+    district: 'Истринский район',
+  },
+  tariff: {
+    value: 100,
+    unit: 'rub_per_sotka',
+    period: 'month',
+    normalized_per_sotka_month: 100,
+    normalized_is_estimate: false,
+  },
+  infrastructure: {},
+  common_spaces: {},
+  service_model: {},
+  sources: [
+    {
+      title: 'Источник базы',
+      url: 'https://example.com/base-source',
+      type: 'official',
+      date_checked: '2026-04-09',
+      comment: '',
+    },
+  ],
+};
+
+const row: Settlement = {
   name: 'КП Тестовый',
   short_name: 'Тестовый',
   slug: 'test',
@@ -48,6 +83,14 @@ const settlement: Settlement = {
 
 const ratings = new Map<string, Rating>([
   [
+    'shelkovo',
+    {
+      score: 55,
+      km: 48,
+      ring: 29.8,
+    },
+  ],
+  [
     'test',
     {
       score: 72.4,
@@ -58,17 +101,34 @@ const ratings = new Map<string, Rating>([
 ]);
 
 describe('toFull', () => {
-  it('keeps the full settlement shape and adds rating', () => {
-    const [item] = toFull([settlement], ratings);
+  it('keeps full data, adds distance, and omits sources', () => {
+    const list = toFull([base, row], ratings);
+    const home = list.find((item) => item.slug === 'shelkovo');
+    const item = list.find((item) => item.slug === 'test');
 
-    expect(item).toEqual({
-      ...settlement,
-      rating: 72.4,
+    expect(home?.distance).toEqual({
+      moscow_km: 48,
+      mkad_km: 29.8,
+      shelkovo_km: 0,
     });
 
-    expect(item.website).toBe('https://example.com');
-    expect(item.location.address_text).toBe('МО, округ Истра, д. Тестово');
-    expect(item.tariff.note).toBe('Тестовое примечание');
-    expect(item.sources[0]?.url).toBe('https://example.com/source');
+    expect(item?.rating).toBe(72.4);
+    expect(item?.distance).toEqual({
+      moscow_km: 62.1,
+      mkad_km: 43.9,
+      shelkovo_km:
+        Math.round(
+          calculateDistance(
+            base.location.lat,
+            base.location.lng,
+            row.location.lat,
+            row.location.lng,
+          ) * 10,
+        ) / 10,
+    });
+
+    expect(item?.website).toBe('https://example.com');
+    expect(item?.location.address_text).toBe('МО, округ Истра, д. Тестово');
+    expect(item?.tariff.note).toBe('Тестовое примечание');
   });
 });

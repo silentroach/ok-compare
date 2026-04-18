@@ -65,7 +65,7 @@ export function schema(root: string): Record<string, unknown> {
     $id: abs(root, SCHEMA),
     title: 'SettlementsPayload',
     description:
-      'Read-only полный feed поселков с detail-полями, рейтингом и агрегатами.',
+      'Read-only полный feed поселков с detail-полями, вычисленными расстояниями, рейтингом и агрегатами.',
     type: 'object',
     additionalProperties: false,
     required: ['settlements', 'stats', 'comparisons'],
@@ -257,22 +257,22 @@ export function schema(root: string): Record<string, unknown> {
         },
         [],
       ),
-      source: obj(
+      distance: obj(
         {
-          title: text(),
-          url: uri(),
-          type: {
-            enum: ['official', 'community', 'media', 'personal'],
+          moscow_km: {
+            type: 'number',
+            minimum: 0,
           },
-          date_checked: {
-            type: 'string',
-            pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+          mkad_km: {
+            type: 'number',
+            minimum: 0,
           },
-          comment: {
-            type: 'string',
+          shelkovo_km: {
+            type: 'number',
+            minimum: 0,
           },
         },
-        ['title', 'url', 'type', 'date_checked', 'comment'],
+        ['moscow_km', 'mkad_km', 'shelkovo_km'],
       ),
       settlement: obj(
         {
@@ -308,12 +308,8 @@ export function schema(root: string): Record<string, unknown> {
           service_model: {
             $ref: '#/$defs/service_model',
           },
-          sources: {
-            type: 'array',
-            minItems: 1,
-            items: {
-              $ref: '#/$defs/source',
-            },
+          distance: {
+            $ref: '#/$defs/distance',
           },
           rating: {
             type: 'number',
@@ -332,7 +328,7 @@ export function schema(root: string): Record<string, unknown> {
           'infrastructure',
           'common_spaces',
           'service_model',
-          'sources',
+          'distance',
           'rating',
         ],
       ),
@@ -413,7 +409,7 @@ export function openapi(root: string): Record<string, unknown> {
       title: 'Сравни.Шелково Settlements Feed',
       version: '1.0.0',
       description:
-        'Read-only OpenAPI wrapper для полного feed поселков, пригодный для автоматического discovery.',
+        'Read-only OpenAPI wrapper для полного feed поселков с вычисленными расстояниями, пригодный для автоматического discovery.',
     },
     servers: [
       {
@@ -430,7 +426,7 @@ export function openapi(root: string): Record<string, unknown> {
           operationId: 'getSettlements',
           summary: 'Read full settlements feed',
           description:
-            'Возвращает полный feed поселков с detail-полями, рейтингом, stats и comparisons.',
+            'Возвращает полный feed поселков с detail-полями, distance, rating, stats и comparisons.',
           responses: {
             200: {
               description: 'Full settlements feed',

@@ -14,7 +14,7 @@ import {
 const root = 'https://example.com';
 
 describe('schema', () => {
-  it('describes the actual full settlements payload with detail fields', () => {
+  it('describes the actual full settlements payload with distance', () => {
     const body = schema(root);
     const props = body.properties as Record<string, unknown>;
     const defs = body.$defs as Record<string, Record<string, unknown>>;
@@ -27,8 +27,8 @@ describe('schema', () => {
     expect(settlement).toHaveProperty('tariff');
     expect(settlement).toHaveProperty('website');
     expect(settlement).toHaveProperty('telegram');
-    expect(settlement).toHaveProperty('sources');
     expect(settlement).toHaveProperty('infrastructure');
+    expect(settlement).toHaveProperty('distance');
     expect(settlement).toHaveProperty('rating');
   });
 });
