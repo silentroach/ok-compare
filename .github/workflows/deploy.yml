@@ -230,7 +230,7 @@ jobs:
 
             cat > "$tmp"
 
-            sudo -n cp "$dst" "$bak"
+            cp "$dst" "$bak"
             sudo -n install -m 644 "$tmp" "$dst"
 
             if ! sudo -n nginx -t; then
