@@ -183,10 +183,11 @@ src/
 - Svelte 5 runes mode включен (compilerOptions.runes: true)
 - Тесты используют happy-dom окружение
 - Русская локаль для форматирования валюты и чисел
-- Static site output с base path `/compare`
+- Static site output; default base path `/ok-compare`, для `build:vps` используется `/`
 - **Не запускать `pnpm dev` без явной просьбы** — команда запускает watch-режим и не завершается автоматически
 - Для `src/pages/data/explorer.json.ts` и главного `SettlementsExplorer` использовать отдельный минимальный DTO для списка/карты. Не включать detail-only поля (`sources`, `website`, `telegram`, `infrastructure`, `common_spaces`, `service_model`, лишние поля `location`, полный `tariff`, полный `management_company`) без явной необходимости; при изменениях payload замерять размер до/после.
-- Публичные text endpoints для агентов: `src/pages/llms.txt.ts` и `src/pages/llms-full.txt.ts` (`/llms.txt` и `/llms-full.txt`). При изменениях канонических URL, `data/explorer.json`, покрытия детальных страниц поселков, контакта для правок или методики рейтинга эти файлы нужно обновлять синхронно.
+- Публичные agent-facing endpoints: `src/pages/llms.txt.ts`, `src/pages/llms-full.txt.ts` и `src/pages/.well-known/agent-skills/index.json.ts` (`/.well-known/agent-skills/index.json`). Skill-файлы лежат в `public/.well-known/agent-skills/*/SKILL.md`, а `index.json` собирается из их frontmatter и содержимого с автоматическим `sha256` digest.
+- При изменениях канонических URL, `data/explorer.json`, маршрута `/settlements/[slug]/`, контакта для правок, правил работы с источниками или методики рейтинга нужно синхронно обновлять `src/lib/llms.ts`, `src/lib/skills.ts` и соответствующие `public/.well-known/agent-skills/*/SKILL.md`.
 - Build-time рейтинг поселков описан в `docs/rating.md`.
 - Если меняется схема данных поселка или состав полей, которые реально хранятся/отдаются по поселку, нужно пересмотреть формулу рейтинга в `src/lib/rating.ts` и обновить `docs/rating.md` под новую схему.
 - Если меняются правила расчета рейтинга или текстовые объяснения логики, нужно обновить и публичную страницу `src/pages/rating.astro`.

@@ -36,6 +36,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
   const feed = abs('/data/explorer.json');
   const short = abs('/llms.txt');
   const full = abs('/llms-full.txt');
+  const skills = abs('/.well-known/agent-skills/index.json');
 
   const body =
     kind === 'short'
@@ -53,6 +54,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           `- Главная: ${home}`,
           `- Методика рейтинга: ${rating}`,
           `- Общий машиночитаемый feed: ${feed}`,
+          `- Индекс agent skills: ${skills}`,
           `- Расширенная версия этого текста: ${full}`,
           '- Примеры детальных страниц:',
           ...refs(list),
@@ -82,6 +84,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           `- Расширенный агентный обзор: ${full}`,
           `- Методика рейтинга: ${rating}`,
           `- Общий машиночитаемый feed: ${feed}`,
+          `- Индекс agent skills: ${skills}`,
           '- Примеры детальных страниц поселков:',
           ...refs(list),
           '',
