@@ -16,19 +16,39 @@ tariff:
   unit: rub_per_sotka
   period: month
 infrastructure:
+  roads: asphalt
+  sidewalks: partial
+  lighting: yes
   gas: yes
   water: yes
   sewage: yes
+  drainage: open
+  checkpoints: yes
+  security: yes
+  fencing: yes
+  video_surveillance: full
+  admin_building: yes
+  retail_or_services: yes
 common_spaces:
   club_infrastructure: yes
   playgrounds: yes
   sports: yes
+  pool: yes
+  fitness_club: yes
   restaurant: yes
+  spa_center: yes
   walking_routes: yes
   water_access: yes
   beach_zones: yes
+  kids_club: yes
   bbq_zones: yes
-service_model: {}
+service_model:
+  garbage_collection: partial
+  snow_removal: yes
+  road_cleaning: yes
+  landscaping: yes
+  emergency_service: yes
+  dispatcher: yes
 sources:
   - title: Капитан Клаб — Новиково
     url: https://xn----7sbabf2bmejrt1b.xn--p1ai/novikovo

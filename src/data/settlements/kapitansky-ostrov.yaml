@@ -21,7 +21,13 @@ infrastructure:
   sewage: yes
 common_spaces:
   club_infrastructure: yes
-service_model: {}
+service_model:
+  garbage_collection: partial
+  snow_removal: yes
+  road_cleaning: yes
+  landscaping: yes
+  emergency_service: yes
+  dispatcher: yes
 sources:
   - title: Капитан Клаб — Капитанский остров
     url: https://xn----7sbabf2bmejrt1b.xn--p1ai/kapitanskii_ostrov

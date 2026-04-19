@@ -33,7 +33,13 @@ common_spaces:
   water_access: yes
   beach_zones: yes
   bbq_zones: yes
-service_model: {}
+service_model:
+  garbage_collection: partial
+  snow_removal: yes
+  road_cleaning: yes
+  landscaping: yes
+  emergency_service: yes
+  dispatcher: yes
 sources:
   - title: Капитан Клаб — Рождествено
     url: https://xn----7sbabf2bmejrt1b.xn--p1ai/rozhdestveno
