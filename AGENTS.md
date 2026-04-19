@@ -183,7 +183,7 @@ src/
 - Svelte 5 runes mode включен (compilerOptions.runes: true)
 - Тесты используют happy-dom окружение
 - Русская локаль для форматирования валюты и чисел
-- Static site output; default base path `/ok-compare`, для `build:vps` используется `/`
+- Static site output; сборка идет в корень сайта (`/`)
 - **Не запускать `pnpm dev` без явной просьбы** — команда запускает watch-режим и не завершается автоматически
 - Для `src/pages/data/explorer.json.ts` и главного `SettlementsExplorer` использовать отдельный минимальный DTO для списка/карты. Полный agent-facing feed живет отдельно в `src/pages/data/settlements.json.ts`. Не включать detail-only поля (`sources`, `website`, `telegram`, `infrastructure`, `common_spaces`, `service_model`, лишние поля `location`, полный `tariff`, полный `management_company`) в `explorer.json` без явной необходимости; при изменениях payload замерять размер до/после.
 - Публичные agent-facing endpoints: `src/pages/llms.txt.ts`, `src/pages/llms-full.txt.ts` и `src/pages/.well-known/agent-skills/index.json.ts` (`/.well-known/agent-skills/index.json`). Skill-файлы лежат в `public/.well-known/agent-skills/*/SKILL.md`, а `index.json` собирается из их frontmatter и содержимого с автоматическим `sha256` digest.

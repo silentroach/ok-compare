@@ -12,9 +12,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "pnpm build:pages",
-    "build:pages": "astro build --mode pages",
-    "build:vps": "BUILD_TARGET=vps ASTRO_BASE=/ ASTRO_COMPRESS=1 astro build --mode pages",
+    "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
     "typecheck": "astro sync && tsc --noEmit",
