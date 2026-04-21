@@ -12,8 +12,8 @@ location:
   lng: 37.541638
   district: Заокский район
 tariff:
-  value: 495
-  unit: rub_per_sotka
+  value: 12100
+  unit: rub_per_lot
   period: month
 infrastructure:
   gas: yes
