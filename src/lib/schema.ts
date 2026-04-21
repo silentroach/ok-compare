@@ -122,12 +122,17 @@ export const TariffSchema = z
   });
 export type Tariff = z.infer<typeof TariffSchema>;
 
-export const LotsSchema = z.object({
-  count: z.number().int().positive().optional(),
-  area_ha: z.number().positive().optional(),
-  average_sotka: z.number().positive().optional(),
-  average_note: z.string().min(1).optional(),
-});
+export const LotsSchema = z
+  .object({
+    count: z.number().int().positive().optional(),
+    area_ha: z.number().positive().optional(),
+    average_sotka: z.number().positive().optional(),
+    average_note: z.string().min(1).optional(),
+  })
+  .refine((item) => !item.average_note || item.average_sotka !== undefined, {
+    message: 'average_note requires average_sotka',
+    path: ['average_note'],
+  });
 export type Lots = z.infer<typeof LotsSchema>;
 
 export interface LotPart {
@@ -136,17 +141,26 @@ export interface LotPart {
   note?: string;
 }
 
-export interface LotBreakdown {
+export interface LotExact {
   size: number;
-  exact: boolean;
+  exact: true;
   count?: number;
   area_ha?: number;
-  gross?: number;
-  shared?: number;
   note?: string;
+}
+
+export interface LotEstimate {
+  size: number;
+  exact: false;
+  count: number;
+  area_ha: number;
+  gross: number;
+  shared: number;
   cap: boolean;
   rows: LotPart[];
 }
+
+export type LotBreakdown = LotExact | LotEstimate;
 
 function share(
   value: AvailabilityStatus | undefined,
@@ -211,11 +225,9 @@ export function getLotBreakdown(
     return {
       size: lots.average_sotka,
       exact: true,
-      count: lots.count,
-      area_ha: lots.area_ha,
-      note: lots.average_note,
-      cap: false,
-      rows: [],
+      ...(lots.count !== undefined ? { count: lots.count } : {}),
+      ...(lots.area_ha !== undefined ? { area_ha: lots.area_ha } : {}),
+      ...(lots.average_note ? { note: lots.average_note } : {}),
     };
   }
 

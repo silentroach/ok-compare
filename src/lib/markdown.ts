@@ -6,7 +6,10 @@ import {
   formatDate,
   formatDistance,
   formatPercentage,
+  formatTariff,
   formatTariffAuto,
+  formatTariffOriginal,
+  hasNonSotkaUnit,
 } from './format';
 import type { Rating } from './rating';
 import type {
@@ -341,7 +344,12 @@ export function buildSettlementMd({
     `- Markdown: ${md}`,
     `- Район: ${settlement.location.district}`,
     `- Адрес: ${settlement.location.address_text}`,
-    `- Тариф: ${formatTariffAuto(settlement.tariff)}`,
+    `- Тариф: ${formatTariffOriginal(settlement.tariff)}`,
+    ...(hasNonSotkaUnit(settlement.tariff)
+      ? [
+          `- Средняя за сотку: ${settlement.tariff.normalized_is_estimate ? '~' : ''}${formatTariff(settlement.tariff.normalized_per_sotka_month)} в месяц`,
+        ]
+      : []),
     ...(settlement.tariff.note
       ? [`- Примечание к тарифу: ${settlement.tariff.note}`]
       : []),

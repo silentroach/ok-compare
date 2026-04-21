@@ -204,6 +204,35 @@ export function formatTariffBase(tariff: Tariff): string {
   return `${val}/участок`;
 }
 
+function period(value: Tariff['period']): string {
+  if (value === 'month') return 'в месяц';
+  if (value === 'quarter') return 'в квартал';
+  return 'в год';
+}
+
+/**
+ * Format original tariff with period included (for markdown/long-form display).
+ */
+export function formatTariffOriginal(tariff: Tariff): string {
+  const list = 'parts' in tariff ? tariff.parts : [tariff];
+  return list
+    .map((item) => {
+      const val = formatCurrency(item.value);
+      const base =
+        item.unit === 'rub_per_sotka' ? `${val}/сотка` : `${val}/участок`;
+      return `${base} ${period(item.period)}`;
+    })
+    .join(' + ');
+}
+
+/**
+ * True when any part of the tariff is not expressed in ₽/сотка.
+ */
+export function hasNonSotkaUnit(tariff: Tariff): boolean {
+  const list = 'parts' in tariff ? tariff.parts : [tariff];
+  return list.some((item) => item.unit !== 'rub_per_sotka');
+}
+
 export interface TariffCalcRow {
   title: string;
   source: string;
@@ -261,11 +290,11 @@ export function getLotCalc(
         : `${head}.`;
 
   return {
-    known: `${num(item.area_ha ?? 0)} га и ${num(item.count ?? 0)} участков.`,
+    known: `${num(item.area_ha)} га и ${num(item.count)} участков.`,
     factors: item.cap
       ? `${factors} Вычет ограничен 2,5 сот. на участок.`
       : factors,
-    total: `${num(item.gross ?? 0)} − ${num(item.shared ?? 0)} = ${num(item.size)} сот.`,
+    total: `${num(item.gross)} − ${num(item.shared)} = ${num(item.size)} сот.`,
   };
 }
 
