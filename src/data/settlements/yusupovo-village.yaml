@@ -15,6 +15,11 @@ tariff:
   unit: rub_per_lot
   period: month
 
+# Данные на основе генплана (https://www.usupovo-village.ru/genplan/)
+lots:
+  count: 498
+  average_sotka: 7.97
+
 water_in_tariff: true
 
 infrastructure:

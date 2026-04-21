@@ -273,7 +273,9 @@ export function getLotCalc(
       known:
         item.area_ha && item.count
           ? `${num(item.area_ha)} га и ${num(item.count)} участков.`
-          : 'Подтвержденные данные.',
+          : item.count
+            ? `${num(item.count)} участков.`
+            : 'Подтвержденные данные.',
       ...(item.note ? { factors: item.note } : {}),
       total: area(item.size),
     };
