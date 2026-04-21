@@ -28,6 +28,17 @@ tariff:
   # If unit is rub_per_lot or rub_fixed, UI shows ~ and uses 10 sotok per lot.
   note: Комментарий к тарифу
 
+# Optional: settlement lot metrics. Use only confirmed values.
+# average_sotka заполнять только когда средняя площадь участка найдена в явном виде
+# или посчитана по опубликованным площадям конкретных лотов. Не заполнять ее как
+# area_ha * 100 / count. Если average_sotka отсутствует, UI и нормализация тарифа
+# сначала пробуют оценку по area_ha и count, и только потом fallback 10 соток.
+# lots:
+#   count: 150
+#   area_ha: 29.6
+#   average_sotka: 17.8
+#   average_note: Средняя площадь рассчитана по опубликованным площадям лотов
+
 # Optional: only if central water supply is confirmed and unlimited use is already
 # included in the settlement tariff.
 # water_in_tariff: true

@@ -220,6 +220,94 @@ describe('Schema Validation', () => {
       }
     });
 
+    it('should use known average lot size for normalization', () => {
+      const validSettlement = {
+        name: 'Коттеджный поселок Тестовый',
+        short_name: 'Тестовый',
+        slug: 'testovyy',
+        website: 'https://test.example.com',
+        is_baseline: false,
+        location: {
+          address_text: 'Московская область, Тестовый район',
+          lat: 55.7558,
+          lng: 37.6173,
+          district: 'Тестовый район',
+        },
+        tariff: {
+          value: 12000,
+          unit: 'rub_per_lot',
+          period: 'month',
+        },
+        lots: {
+          count: 150,
+          area_ha: 32,
+          average_sotka: 20.4,
+        },
+        sources: [
+          {
+            title: 'Тестовый источник',
+            url: 'https://example.com/source',
+            type: 'official',
+            date_checked: '2026-04-03',
+            comment: '',
+          },
+        ],
+      };
+
+      const result = SettlementSchema.safeParse(validSettlement);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.lots?.average_sotka).toBe(20.4);
+        expect(result.data.tariff.normalized_per_sotka_month).toBeCloseTo(
+          588.235294,
+          6,
+        );
+      }
+    });
+
+    it('should derive average lot size from area and count', () => {
+      const validSettlement = {
+        name: 'Коттеджный поселок Тестовый',
+        short_name: 'Тестовый',
+        slug: 'testovyy',
+        website: 'https://test.example.com',
+        is_baseline: false,
+        location: {
+          address_text: 'Московская область, Тестовый район',
+          lat: 55.7558,
+          lng: 37.6173,
+          district: 'Тестовый район',
+        },
+        tariff: {
+          value: 12100,
+          unit: 'rub_per_lot',
+          period: 'month',
+        },
+        lots: {
+          count: 298,
+          area_ha: 100,
+        },
+        sources: [
+          {
+            title: 'Тестовый источник',
+            url: 'https://example.com/source',
+            type: 'official',
+            date_checked: '2026-04-03',
+            comment: '',
+          },
+        ],
+      };
+
+      const result = SettlementSchema.safeParse(validSettlement);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.tariff.normalized_per_sotka_month).toBeCloseTo(
+          360.58,
+          2,
+        );
+      }
+    });
+
     it('should parse multi-part tariff and sum components', () => {
       const validSettlement = {
         name: 'Коттеджный поселок Тестовый',

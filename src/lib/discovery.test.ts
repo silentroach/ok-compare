@@ -25,6 +25,7 @@ describe('schema', () => {
     expect(settlement).toHaveProperty('slug');
     expect(settlement).toHaveProperty('location');
     expect(settlement).toHaveProperty('tariff');
+    expect(settlement).toHaveProperty('lots');
     expect(settlement).toHaveProperty('website');
     expect(settlement).toHaveProperty('telegram');
     expect(settlement).toHaveProperty('infrastructure');

@@ -13,12 +13,14 @@ import type {
   AvailabilityStatus,
   ComparisonResult,
   DrainageType,
+  Lots,
   RoadType,
   Settlement,
   SourceType,
   UndergroundElectricity,
   VideoSurveillance,
 } from './schema';
+import { getLotAverage } from './schema';
 import { telegram, withBase } from './url';
 
 const site = import.meta.env.SITE;
@@ -81,6 +83,27 @@ function num(value: number): string {
     minimumFractionDigits: Number.isInteger(value) ? 0 : 1,
     maximumFractionDigits: 1,
   });
+}
+
+function lots(item?: Lots): string[] {
+  if (!item) return [];
+
+  const avg = getLotAverage(item);
+
+  return [
+    ...(item.count
+      ? [`- Количество участков/домовладений: ${num(item.count)}`]
+      : []),
+    ...(item.area_ha ? [`- Площадь поселка: ${num(item.area_ha)} га`] : []),
+    ...(avg
+      ? [
+          `- Средняя площадь участка: ${num(avg)} сот.${item.average_sotka ? '' : ' (оценка по общей площади и числу участков)'}`,
+        ]
+      : []),
+    ...(item.average_note
+      ? [`- Основание для средней площади: ${item.average_note}`]
+      : []),
+  ];
 }
 
 function avail(value?: AvailabilityStatus): string | undefined {
@@ -321,6 +344,7 @@ export function buildSettlementMd({
     ...(settlement.tariff.note
       ? [`- Примечание к тарифу: ${settlement.tariff.note}`]
       : []),
+    ...lots(settlement.lots),
     ...(score ? [`- Условный рейтинг: ${score}`] : []),
     ...(rating
       ? [`- Примерное расстояние от Москвы: ${formatDistance(rating.km)}`]

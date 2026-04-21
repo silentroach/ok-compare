@@ -110,9 +110,20 @@ const schema = {
       }
     : {}),
 };
-const tariffCalc = getTariffCalc(settlement.tariff);
+const tariffCalc = getTariffCalc(settlement.tariff, settlement.lots);
 const tipDesktopId = `${settlement.slug}-tariff-tip-desktop`;
 const tipMobileId = `${settlement.slug}-tariff-tip-mobile`;
+const rough = 'грубая оценка';
+const split = (value?: string) => {
+  if (!value) return;
+  const i = value.indexOf(rough);
+  if (i === -1) return { head: value };
+  return {
+    head: value.slice(0, i),
+    tail: value.slice(i + rough.length),
+  };
+};
+const assumption = split(tariffCalc?.assumption);
 const heroMap = hasPoint
   ? [
       {
@@ -376,9 +387,13 @@ const heroMap = hasPoint
                       <p class="text-xs text-muted-foreground">
                         {tariffCalc.intro}
                       </p>
-                      {tariffCalc.assumption && (
+                      {assumption && (
                         <p class="mt-1 text-xs text-muted-foreground">
-                          {tariffCalc.assumption}
+                          {assumption.head}
+                          {assumption.tail !== undefined && (
+                            <strong>{rough}</strong>
+                          )}
+                          {assumption.tail}
                         </p>
                       )}
                       <div class="mt-2 space-y-2">
@@ -673,9 +688,13 @@ const heroMap = hasPoint
                   <p class="text-xs text-muted-foreground">
                     {tariffCalc.intro}
                   </p>
-                  {tariffCalc.assumption && (
+                  {assumption && (
                     <p class="mt-1 text-xs text-muted-foreground">
-                      {tariffCalc.assumption}
+                      {assumption.head}
+                      {assumption.tail !== undefined && (
+                        <strong>{rough}</strong>
+                      )}
+                      {assumption.tail}
                     </p>
                   )}
                   <div class="mt-2 space-y-2">

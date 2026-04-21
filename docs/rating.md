@@ -21,6 +21,7 @@ Internal note. This file is for future agent sessions, not for UI copy.
 - `infrastructure.*`
 - `common_spaces.*`
 - `service_model.*`
+- `lots.*` is metadata only for tariff normalization and is excluded from rating.
 
 Do not add tariff into this formula.
 

@@ -1,5 +1,10 @@
 import { getCollection } from 'astro:content';
-import type { Settlement, Stats, ComparisonResult } from './schema';
+import {
+  normalizeSettlement,
+  type Settlement,
+  type Stats,
+  type ComparisonResult,
+} from './schema';
 import { computeStats } from './stats';
 import { compareSettlements } from './comparisons';
 import { buildRatings, type Rating } from './rating';
@@ -9,7 +14,7 @@ import { buildRatings, type Rating } from './rating';
  */
 export async function loadSettlements(): Promise<Settlement[]> {
   const settlements = await getCollection('settlements');
-  return settlements.map((entry) => entry.data);
+  return settlements.map((entry) => normalizeSettlement(entry.data));
 }
 
 /**

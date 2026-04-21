@@ -16,6 +16,9 @@ tariff:
   unit: rub_per_lot
   period: month
   note: без подключения к сетям — 3 970 ₽/мес.
+lots:
+  count: 273
+  area_ha: 40
 infrastructure:
   gas: yes
   water: yes
@@ -42,7 +45,7 @@ sources:
     url: https://xn----7sbabf2bmejrt1b.xn--p1ai/kapitansky_mys
     type: official
     date_checked: 2026-04-04
-    comment: Описание поселка, объекты и коммуникации
+    comment: Описание поселка, коммуникации, площадь 40 га и 273 участка
   - title: Капитан Клаб — главный сайт
     url: https://xn----7sbabf2bmejrt1b.xn--p1ai/
     type: official

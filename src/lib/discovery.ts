@@ -200,6 +200,24 @@ export function schema(root: string): Record<string, unknown> {
           'normalized_is_estimate',
         ],
       ),
+      lots: obj(
+        {
+          count: {
+            type: 'integer',
+            minimum: 1,
+          },
+          area_ha: {
+            type: 'number',
+            exclusiveMinimum: 0,
+          },
+          average_sotka: {
+            type: 'number',
+            exclusiveMinimum: 0,
+          },
+          average_note: text(),
+        },
+        [],
+      ),
       infrastructure: obj(
         {
           roads: {
@@ -296,6 +314,9 @@ export function schema(root: string): Record<string, unknown> {
           },
           tariff: {
             $ref: '#/$defs/tariff',
+          },
+          lots: {
+            $ref: '#/$defs/lots',
           },
           water_in_tariff: flag(),
           rabstvo: flag(),

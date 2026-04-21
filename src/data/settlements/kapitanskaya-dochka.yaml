@@ -16,6 +16,9 @@ tariff:
   unit: rub_per_lot
   period: month
   note: без подключения к сетям — 3 780 ₽/мес.
+lots:
+  count: 120
+  area_ha: 18
 infrastructure:
   gas: yes
   water: yes
@@ -41,7 +44,7 @@ sources:
     url: https://xn----7sbabf2bmejrt1b.xn--p1ai/kapitanskaya_dochka
     type: official
     date_checked: 2026-04-04
-    comment: Описание поселка, объекты и коммуникации
+    comment: Описание поселка, коммуникации, площадь 18 га и 120 участков
   - title: Капитан Клаб — главный сайт
     url: https://xn----7sbabf2bmejrt1b.xn--p1ai/
     type: official

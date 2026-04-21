@@ -14,6 +14,12 @@ export type TariffUnit = z.infer<typeof TariffUnitEnum>;
 export const TariffPeriodEnum = z.enum(['month', 'quarter', 'year']);
 export type TariffPeriod = z.infer<typeof TariffPeriodEnum>;
 
+type TariffValue = {
+  value: number;
+  unit: TariffUnit;
+  period: TariffPeriod;
+};
+
 export const SourceTypeEnum = z.enum([
   'official',
   'community',
@@ -59,6 +65,7 @@ export type Location = z.infer<typeof LocationSchema>;
 
 // Tariff schema
 const LOT = 10;
+const SOTKA = 100;
 
 function month(period: TariffPeriod): number {
   if (period === 'month') return 1;
@@ -66,10 +73,22 @@ function month(period: TariffPeriod): number {
   return 12;
 }
 
-function norm(value: number, unit: TariffUnit, period: TariffPeriod): number {
+function norm(
+  value: number,
+  unit: TariffUnit,
+  period: TariffPeriod,
+  lot = LOT,
+): number {
   const monthly = value / month(period);
   if (unit === 'rub_per_sotka') return monthly;
-  return monthly / LOT;
+  return monthly / lot;
+}
+
+function total(list: TariffValue[], lot = LOT): number {
+  return list.reduce(
+    (sum, item) => sum + norm(item.value, item.unit, item.period, lot),
+    0,
+  );
 }
 
 const TariffPartSchema = z.object({
@@ -84,10 +103,7 @@ export const TariffSchema = z
   .transform((raw) => {
     const list = Array.isArray(raw) ? raw : [raw];
     const first = list[0];
-    const total = list.reduce(
-      (sum, item) => sum + norm(item.value, item.unit, item.period),
-      0,
-    );
+    const normalized = total(list);
     const estimated = list.some((item) => item.unit !== 'rub_per_sotka');
     const notes = list.flatMap((item) => (item.note ? [item.note] : []));
     const note = notes.length ? [...new Set(notes)].join('; ') : undefined;
@@ -96,7 +112,7 @@ export const TariffSchema = z
       value: first.value,
       unit: first.unit,
       period: first.period,
-      normalized_per_sotka_month: total,
+      normalized_per_sotka_month: normalized,
       normalized_is_estimate: estimated,
       ...(note ? { note } : {}),
     };
@@ -105,6 +121,38 @@ export const TariffSchema = z
     return { ...base, parts: list };
   });
 export type Tariff = z.infer<typeof TariffSchema>;
+
+export const LotsSchema = z.object({
+  count: z.number().int().positive().optional(),
+  area_ha: z.number().positive().optional(),
+  average_sotka: z.number().positive().optional(),
+  average_note: z.string().min(1).optional(),
+});
+export type Lots = z.infer<typeof LotsSchema>;
+
+export function getLotAverage(lots?: Lots): number | undefined {
+  if (lots?.average_sotka) return lots.average_sotka;
+  if (!lots?.count || !lots.area_ha) return;
+  return (lots.area_ha * SOTKA) / lots.count;
+}
+
+export function normalizeSettlement<T extends { lots?: Lots; tariff: Tariff }>(
+  item: T,
+): T {
+  const lot = getLotAverage(item.lots);
+
+  if (!lot) return item;
+
+  const list = 'parts' in item.tariff ? item.tariff.parts : [item.tariff];
+
+  return {
+    ...item,
+    tariff: {
+      ...item.tariff,
+      normalized_per_sotka_month: total(list, lot),
+    },
+  };
+}
 
 // Infrastructure schema - all fields optional
 export const InfrastructureSchema = z.object({
@@ -207,6 +255,7 @@ export const SettlementSchema = z
     is_baseline: z.boolean().default(false),
     location: LocationSchema,
     tariff: TariffSchema,
+    lots: LotsSchema.optional(),
     water_in_tariff: z.boolean().optional(),
     rabstvo: z.boolean().optional(),
     infrastructure: InfrastructureSchema.default({}),
@@ -223,7 +272,8 @@ export const SettlementSchema = z
           'water_in_tariff can only be used when central water supply is confirmed',
       });
     }
-  });
+  })
+  .transform((item) => normalizeSettlement(item));
 export type Settlement = z.infer<typeof SettlementSchema>;
 
 // Stats type (computed, not from YAML)

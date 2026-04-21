@@ -18,6 +18,11 @@ tariff:
   note: >
     без подключения в первый год — 4 720 ₽/мес.; участки KO-3-KO-8 и
     KO-150-KO-155 — 12 100 ₽/мес.
+lots:
+  count: 150
+  area_ha: 29.6
+  average_sotka: 17.8
+  average_note: Средняя площадь рассчитана по опубликованным на странице 93 текущим лотам; среднее 17,82 сот.
 infrastructure:
   gas: yes
   water: yes
@@ -36,7 +41,7 @@ sources:
     url: https://xn----7sbabf2bmejrt1b.xn--p1ai/kapitanskii_ostrov
     type: official
     date_checked: 2026-04-04
-    comment: Описание поселка и коммуникации
+    comment: Описание поселка, коммуникации, площадь 29,6 га и 150 участков; на странице опубликованы площади текущих лотов
   - title: Капитан Клаб — главный сайт
     url: https://xn----7sbabf2bmejrt1b.xn--p1ai/
     type: official

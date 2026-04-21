@@ -15,6 +15,9 @@ tariff:
   value: 12100
   unit: rub_per_lot
   period: month
+lots:
+  count: 298
+  area_ha: 100
 infrastructure:
   roads: asphalt
   sidewalks: partial
@@ -54,7 +57,7 @@ sources:
     url: https://xn----7sbabf2bmejrt1b.xn--p1ai/novikovo
     type: official
     date_checked: 2026-04-04
-    comment: Описание поселка и коммуникации
+    comment: Описание поселка, коммуникации, площадь 100 га и 298 домовладений
   - title: Капитан Клаб — главный сайт
     url: https://xn----7sbabf2bmejrt1b.xn--p1ai/
     type: official

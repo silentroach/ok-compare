@@ -1,11 +1,13 @@
 import { DateTime } from 'luxon';
-import type { Tariff } from './schema';
+import { getLotAverage, type Lots, type Tariff } from './schema';
 
 type TariffView = Pick<
   Tariff,
   'normalized_per_sotka_month' | 'normalized_is_estimate'
 >;
 type TariffLike = Tariff | TariffView;
+
+const LOT = 10;
 
 /**
  * Calculate distance between two points on Earth using Haversine formula
@@ -138,6 +140,31 @@ function word(value: number, one: string, few: string, many: string): string {
   return many;
 }
 
+function area(value: number): string {
+  const text = num(value);
+  if (Number.isInteger(value)) return `${text} соток`;
+  return `${text} сот.`;
+}
+
+function why(lots: Lots | undefined, size: number): string {
+  if (lots?.average_sotka) {
+    return (
+      lots.average_note ??
+      'Средняя площадь участка добавлена по подтвержденным данным.'
+    );
+  }
+
+  if (lots?.count && lots.area_ha) {
+    return `Средняя площадь участка оценена как ${num(lots.area_ha)} га x 100 / ${num(lots.count)} участков = ${num(size)} сот. Это грубая оценка по площади всего поселка, в нее могут входить дороги и общие зоны.`;
+  }
+
+  return 'Среднюю площадь участка по подтвержденным данным не нашли.';
+}
+
+function join(value: string): string {
+  return value.endsWith('.') ? ' ' : '. ';
+}
+
 /**
  * Format normalized tariff and add '~' for estimated values.
  */
@@ -194,7 +221,11 @@ export function getTariffHint(tariff: TariffLike): string | undefined {
 /**
  * Detailed normalization breakdown for settlement page.
  */
-export function getTariffCalc(tariff: Tariff): TariffCalc | undefined {
+export function getTariffCalc(
+  tariff: Tariff,
+  lots?: Lots,
+): TariffCalc | undefined {
+  const size = getLotAverage(lots) ?? LOT;
   const list = 'parts' in tariff ? tariff.parts : [tariff];
   const multi = list.length > 1;
   const lot = list.some((item) => item.unit !== 'rub_per_sotka');
@@ -205,7 +236,7 @@ export function getTariffCalc(tariff: Tariff): TariffCalc | undefined {
     const m = months(item.period);
     const mons = word(m, 'месяц', 'месяца', 'месяцев');
     const monthly = item.value / m;
-    const normalized = item.unit === 'rub_per_sotka' ? monthly : monthly / 10;
+    const normalized = item.unit === 'rub_per_sotka' ? monthly : monthly / size;
     const title = multi ? `Часть ${i + 1}` : 'Тариф';
     const source =
       item.unit === 'rub_per_sotka'
@@ -216,7 +247,7 @@ export function getTariffCalc(tariff: Tariff): TariffCalc | undefined {
     const formula =
       item.unit === 'rub_per_sotka'
         ? `${num(item.value)} ₽ / ${m} ${mons} = ${num(normalized)} ₽/сотка в месяц`
-        : `(${num(item.value)} ₽ / ${m} ${mons}) / 10 соток = ${num(normalized)} ₽/сотка в месяц`;
+        : `(${num(item.value)} ₽ / ${m} ${mons}) / ${area(size)} = ${num(normalized)} ₽/сотка в месяц`;
 
     return { title, source, formula };
   });
@@ -224,14 +255,18 @@ export function getTariffCalc(tariff: Tariff): TariffCalc | undefined {
   const total = list.reduce((sum, item) => {
     const monthly = item.value / months(item.period);
     if (item.unit === 'rub_per_sotka') return sum + monthly;
-    return sum + monthly / 10;
+    return sum + monthly / size;
   }, 0);
 
   return {
     intro: multi
       ? 'Тариф состоит из нескольких частей. Для сравнения каждая часть приведена к ₽/сотка в месяц, затем значения суммированы.'
       : 'Тариф приведен к ₽/сотка в месяц для корректного сравнения.',
-    ...(lot ? { assumption: 'Допущение: 1 участок = 10 соток.' } : {}),
+    ...(lot
+      ? {
+          assumption: `Допущение: 1 участок = ${area(size)}${join(area(size))}${why(lots, size)}`,
+        }
+      : {}),
     rows,
     total: `${num(total)} ₽/сотка в месяц`,
   };

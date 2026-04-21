@@ -15,6 +15,9 @@ tariff:
   value: 12100
   unit: rub_per_lot
   period: month
+lots:
+  count: 334
+  area_ha: 91
 infrastructure:
   gas: yes
   water: yes
@@ -45,7 +48,7 @@ sources:
     url: https://xn----7sbabf2bmejrt1b.xn--p1ai/rozhdestveno
     type: official
     date_checked: 2026-04-04
-    comment: Описание поселка, объекты и коммуникации
+    comment: Описание поселка, объекты, коммуникации, площадь 91 га и 334 домовладения
   - title: Капитан Клаб — главный сайт
     url: https://xn----7sbabf2bmejrt1b.xn--p1ai/
     type: official

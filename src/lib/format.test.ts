@@ -268,9 +268,34 @@ describe('Format Module', () => {
 
       expect(calc?.intro).toContain('приведен');
       expect(calc?.assumption).toContain('1 участок = 10 соток');
+      expect(calc?.assumption).toContain(
+        'Среднюю площадь участка по подтвержденным данным не нашли',
+      );
       expect(calc?.rows).toHaveLength(1);
       expect(calc?.rows[0]?.formula).toContain('10 соток');
       expect(calc?.total).toContain('300');
+    });
+
+    it('should use known average lot size in tariff breakdown', () => {
+      const calc = getTariffCalc(
+        {
+          value: 1780,
+          unit: 'rub_per_lot',
+          period: 'month',
+          normalized_per_sotka_month: 100,
+          normalized_is_estimate: true,
+        },
+        {
+          average_sotka: 17.8,
+          average_note:
+            'Средняя площадь рассчитана по опубликованным площадям лотов.',
+        },
+      );
+
+      expect(calc?.assumption).toContain('17,8 сот.');
+      expect(calc?.assumption).toContain('опубликованным площадям лотов');
+      expect(calc?.rows[0]?.formula).toContain('17,8 сот.');
+      expect(calc?.total).toContain('100');
     });
 
     it('should build detailed calc for multi-part tariff', () => {
