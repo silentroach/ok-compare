@@ -14,6 +14,8 @@ tariff:
   unit: rub_fixed
   period: month
   note: минимальный платеж по обзорам, не подтверждено
+lots:
+  count: 108
 infrastructure:
   roads: asphalt
   lighting: yes
@@ -44,8 +46,8 @@ sources:
   - title: Чулково Club — официальный сайт
     url: https://www.ydacha.ru/poselki/yugo-vostochnoe-napravlenie/chulkovo-club/
     type: official
-    date_checked: 2026-04-10
-    comment: На странице поселка указаны ИЖС, газ, водопровод, канализация, интернет, ограждение, охрана, КПП, видеонаблюдение, освещение, офис ДНП, детская и спортивная площадки, пляж; на странице проезда опубликованы координаты GPS.
+    date_checked: 2026-04-21
+    comment: На странице поселка указаны ИЖС, 108 участков, газ, водопровод, канализация, интернет, ограждение, охрана, КПП, видеонаблюдение, освещение, офис ДНП, детская и спортивная площадки, пляж; на странице проезда опубликованы координаты GPS.
   - title: Яндекс Карты — КП Чулково клаб
     url: https://yandex.ru/maps/geo/kp_chulkovo_klab/53209459/
     type: community

@@ -16,6 +16,8 @@ tariff:
   value: 500
   unit: rub_per_sotka
   period: month
+lots:
+  count: 183
 infrastructure:
   roads: asphalt
   lighting: yes
@@ -50,5 +52,5 @@ sources:
   - title: Domzamkad — КП Lucky Place
     url: https://www.domzamkad.ru/villages/lucky-place.html
     type: media
-    date_checked: 2026-04-06
-    comment: ИЖС, прогулочный парк и дополнительная инфраструктура поселка.
+    date_checked: 2026-04-21
+    comment: ИЖС, 183 домовладения/участка, прогулочный парк и дополнительная инфраструктура поселка.

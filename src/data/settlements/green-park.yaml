@@ -16,6 +16,8 @@ tariff:
   value: 815
   unit: rub_per_sotka
   period: month
+lots:
+  count: 137
 infrastructure:
   gas: yes
   water: yes
@@ -35,8 +37,8 @@ sources:
   - title: Green Park 1-2 — официальный сайт
     url: https://kp-greenpark.ru/
     type: official
-    date_checked: 2026-04-07
-    comment: 'Озера и пляж, спортивные и детские площадки, ресторан, SPA, охрана и видеонаблюдение.'
+    date_checked: 2026-04-21
+    comment: 'Озера и пляж, спортивные и детские площадки, ресторан, SPA, охрана и видеонаблюдение; на сайте указано, что Green Park и Green Park-2 рассчитаны на 57 и 80 участков.'
   - title: ОК Комфорт — Green Park 1-2
     url: https://ok-komfort.ru/objects/green-park/
     type: official

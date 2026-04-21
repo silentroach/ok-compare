@@ -16,6 +16,8 @@ tariff:
   value: 426
   unit: rub_per_sotka
   period: month
+lots:
+  count: 210
 infrastructure:
   roads: asphalt
   sidewalks: no
@@ -56,7 +58,7 @@ sources:
   - title: КП Нордик — страница main
     url: https://kp-nordic.ru/main
     type: official
-    date_checked: 2026-04-05
+    date_checked: 2026-04-21
     comment: По Нордик указано 210 участков, пруд и спортивная инфраструктура.
   - title: Договор оферты
     url: https://uslugi.kp-nordic.ru/bezotzyvnaya_publichnaya_oferta_red_19_12_2026.pdf

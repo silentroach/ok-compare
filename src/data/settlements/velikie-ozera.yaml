@@ -15,6 +15,9 @@ tariff:
   unit: rub_fixed
   period: month
   note: до ТСН платили 4500 ₽/участок
+lots:
+  count: 862
+  area_ha: 126
 infrastructure:
   roads: asphalt
   lighting: yes
@@ -33,8 +36,8 @@ sources:
   - title: Великие озёра — официальный сайт
     url: https://velikie-ozera.ru/
     type: official
-    date_checked: 2026-04-11
-    comment: На главной странице указаны Раменский район, 48 км от МКАД, проведенный газ, асфальтированная дорога до поселка, охрана и КПП на въезде; также опубликованы базовые параметры поселка.
+    date_checked: 2026-04-21
+    comment: 'На главной странице указаны Раменский район, 48 км от МКАД, проведенный газ, асфальтированная дорога до поселка, охрана и КПП на въезде, а также базовые параметры поселка: 126 га и 862 участка.'
   - title: Великие озёра — инфраструктура
     url: https://velikie-ozera.ru/infrastruktura/
     type: official

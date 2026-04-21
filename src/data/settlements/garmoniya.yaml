@@ -1,6 +1,4 @@
-# Вне схемы: в поселке указано 138 участков.
 # Вне схемы: в поселке указано 15 кВт электричества на дом.
-# Вне схемы: в документах указана общая площадь поселка 15,6 га.
 name: КП Гармония
 short_name: Гармония
 slug: garmoniya
@@ -17,6 +15,9 @@ tariff:
   unit: rub_per_lot
   period: month
   note: тариф взят с сайта
+lots:
+  count: 138
+  area_ha: 15.6
 infrastructure:
   gas: yes
   water: no
@@ -38,7 +39,7 @@ sources:
     url: https://garmoniyastupino.ru/
     type: official
     date_checked: 2026-04-07
-    comment: Адрес, координаты, сведения об ограждении, охране и площадках.
+    comment: Адрес, координаты, 138 участков, сведения об ограждении, охране и площадках.
   - title: Гармония — Наши документы
     url: https://garmoniyastupino.ru/nashi-dokumenty/
     type: official

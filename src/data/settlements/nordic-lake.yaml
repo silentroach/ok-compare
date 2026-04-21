@@ -16,6 +16,8 @@ tariff:
   value: 457
   unit: rub_per_sotka
   period: month
+lots:
+  count: 148
 infrastructure:
   roads: asphalt
   checkpoints: yes
@@ -49,7 +51,7 @@ sources:
   - title: КП Нордик — страница final
     url: https://kp-nordic.ru/final
     type: official
-    date_checked: 2026-04-05
+    date_checked: 2026-04-21
     comment: По Нордик Лэйк указано 148 участков, пляж, рыбалка, сапы, йога, подземное электричество.
   - title: Договор оферты
     url: https://uslugi.kp-nordic.ru/bezotzyvnaya_publichnaya_oferta_red_19_12_2026.pdf

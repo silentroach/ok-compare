@@ -22,6 +22,9 @@ tariff:
   unit: rub_per_sotka
   period: month
 
+lots:
+  count: 46
+
 infrastructure:
   roads: partial_asphalt
   lighting: yes
