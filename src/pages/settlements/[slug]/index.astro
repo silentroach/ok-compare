@@ -4,6 +4,7 @@ import Link from '@components/Link.astro';
 import { loadAllData, findBaseline } from '@lib/data';
 import {
   formatCurrency,
+  getLotCalc,
   formatTariffAuto,
   formatTariffBase,
   getTariffCalc,
@@ -110,20 +111,20 @@ const schema = {
       }
     : {}),
 };
-const tariffCalc = getTariffCalc(settlement.tariff, settlement.lots);
+const tariffCalc = getTariffCalc(
+  settlement.tariff,
+  settlement.lots,
+  settlement.infrastructure,
+  settlement.common_spaces,
+);
+const lotCalc = getLotCalc(
+  settlement.lots,
+  settlement.infrastructure,
+  settlement.common_spaces,
+);
 const tipDesktopId = `${settlement.slug}-tariff-tip-desktop`;
 const tipMobileId = `${settlement.slug}-tariff-tip-mobile`;
-const rough = 'грубая оценка';
-const split = (value?: string) => {
-  if (!value) return;
-  const i = value.indexOf(rough);
-  if (i === -1) return { head: value };
-  return {
-    head: value.slice(0, i),
-    tail: value.slice(i + rough.length),
-  };
-};
-const assumption = split(tariffCalc?.assumption);
+const assumption = tariffCalc?.assumption;
 const heroMap = hasPoint
   ? [
       {
@@ -389,14 +390,30 @@ const heroMap = hasPoint
                       </p>
                       {assumption && (
                         <p class="mt-1 text-xs text-muted-foreground">
-                          {assumption.head}
-                          {assumption.tail !== undefined && (
-                            <strong>{rough}</strong>
-                          )}
-                          {assumption.tail}
+                          {assumption}
                         </p>
                       )}
-                      <div class="mt-2 space-y-2">
+                      {lotCalc && (
+                        <div class="mt-2 border-t border-border/60 pt-2">
+                          <p class="text-xs font-semibold text-foreground">
+                            Средняя площадь участка
+                          </p>
+                          <p class="mt-1 text-xs text-muted-foreground">
+                            Данные: {lotCalc.known}
+                          </p>
+                          {lotCalc.factors && (
+                            <p class="text-xs text-muted-foreground">
+                              Вычет: {lotCalc.factors}
+                            </p>
+                          )}
+                          <p class="text-xs text-foreground">
+                            Итого: {lotCalc.total}
+                          </p>
+                        </div>
+                      )}
+                      <div
+                        class={`mt-2 space-y-2 ${lotCalc ? 'border-t border-border/60 pt-2' : ''}`}
+                      >
                         {tariffCalc.rows.map((item) => (
                           <div>
                             <p class="text-xs font-semibold text-foreground">
@@ -690,14 +707,30 @@ const heroMap = hasPoint
                   </p>
                   {assumption && (
                     <p class="mt-1 text-xs text-muted-foreground">
-                      {assumption.head}
-                      {assumption.tail !== undefined && (
-                        <strong>{rough}</strong>
-                      )}
-                      {assumption.tail}
+                      {assumption}
                     </p>
                   )}
-                  <div class="mt-2 space-y-2">
+                  {lotCalc && (
+                    <div class="mt-2 border-t border-border/60 pt-2">
+                      <p class="text-xs font-semibold text-foreground">
+                        Средняя площадь участка
+                      </p>
+                      <p class="mt-1 text-xs text-muted-foreground">
+                        Данные: {lotCalc.known}
+                      </p>
+                      {lotCalc.factors && (
+                        <p class="text-xs text-muted-foreground">
+                          Вычет: {lotCalc.factors}
+                        </p>
+                      )}
+                      <p class="text-xs text-foreground">
+                        Итого: {lotCalc.total}
+                      </p>
+                    </div>
+                  )}
+                  <div
+                    class={`mt-2 space-y-2 ${lotCalc ? 'border-t border-border/60 pt-2' : ''}`}
+                  >
                     {tariffCalc.rows.map((item) => (
                       <div>
                         <p class="text-xs font-semibold text-foreground">

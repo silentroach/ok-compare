@@ -2,6 +2,7 @@ import { describe, it, expect, expectTypeOf } from 'vitest';
 import type { CollectionEntry } from 'astro:content';
 import type { Settlement } from '../lib/schema';
 import {
+  getLotAverage,
   SettlementSchema,
   LocationSchema,
   InfrastructureSchema,
@@ -287,6 +288,19 @@ describe('Schema Validation', () => {
           count: 298,
           area_ha: 100,
         },
+        infrastructure: {
+          roads: 'asphalt',
+          sidewalks: 'partial',
+          drainage: 'open',
+          checkpoints: 'yes',
+          admin_building: 'yes',
+          retail_or_services: 'yes',
+        },
+        common_spaces: {
+          playgrounds: 'yes',
+          sports: 'yes',
+          restaurant: 'yes',
+        },
         sources: [
           {
             title: 'Тестовый источник',
@@ -301,8 +315,15 @@ describe('Schema Validation', () => {
       const result = SettlementSchema.safeParse(validSettlement);
       expect(result.success).toBe(true);
       if (result.success) {
+        expect(
+          getLotAverage(
+            result.data.lots,
+            result.data.infrastructure,
+            result.data.common_spaces,
+          ),
+        ).toBeCloseTo(31.56, 2);
         expect(result.data.tariff.normalized_per_sotka_month).toBeCloseTo(
-          360.58,
+          383.43,
           2,
         );
       }

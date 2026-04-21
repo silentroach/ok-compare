@@ -130,16 +130,227 @@ export const LotsSchema = z.object({
 });
 export type Lots = z.infer<typeof LotsSchema>;
 
-export function getLotAverage(lots?: Lots): number | undefined {
-  if (lots?.average_sotka) return lots.average_sotka;
-  if (!lots?.count || !lots.area_ha) return;
-  return (lots.area_ha * SOTKA) / lots.count;
+export interface LotPart {
+  title: string;
+  value: number;
+  note?: string;
 }
 
-export function normalizeSettlement<T extends { lots?: Lots; tariff: Tariff }>(
-  item: T,
-): T {
-  const lot = getLotAverage(item.lots);
+export interface LotBreakdown {
+  size: number;
+  exact: boolean;
+  count?: number;
+  area_ha?: number;
+  gross?: number;
+  shared?: number;
+  note?: string;
+  cap: boolean;
+  rows: LotPart[];
+}
+
+function share(
+  value: AvailabilityStatus | undefined,
+  yes: number,
+  part = yes / 2,
+): number {
+  if (value === 'yes') return yes;
+  if (value === 'partial') return part;
+  return 0;
+}
+
+function road(value: RoadType | undefined): number {
+  if (value === 'asphalt') return 0.9;
+  if (value === 'partial_asphalt') return 0.8;
+  if (value === 'gravel') return 0.7;
+  if (value === 'dirt') return 0.6;
+  return 0;
+}
+
+function drain(value: DrainageType | undefined): number {
+  if (value === 'closed') return 0.25;
+  if (value === 'open') return 0.15;
+  return 0;
+}
+
+function note(value: AvailabilityStatus | undefined): string | undefined {
+  if (value === 'yes') return 'подтверждено';
+  if (value === 'partial') return 'частично подтверждено';
+  return;
+}
+
+function roadNote(value: RoadType | undefined): string | undefined {
+  if (value === 'asphalt') return 'асфальт';
+  if (value === 'partial_asphalt') return 'частично асфальт';
+  if (value === 'gravel') return 'гравий';
+  if (value === 'dirt') return 'грунт';
+  return;
+}
+
+function drainNote(value: DrainageType | undefined): string | undefined {
+  if (value === 'closed') return 'закрытая';
+  if (value === 'open') return 'открытая';
+  return;
+}
+
+function add(
+  rows: LotPart[],
+  title: string,
+  value: number,
+  item?: string,
+): void {
+  if (!value) return;
+  rows.push({ title, value, ...(item ? { note: item } : {}) });
+}
+
+export function getLotBreakdown(
+  lots?: Lots,
+  infra?: Infrastructure,
+  common?: CommonSpaces,
+): LotBreakdown | undefined {
+  if (lots?.average_sotka) {
+    return {
+      size: lots.average_sotka,
+      exact: true,
+      count: lots.count,
+      area_ha: lots.area_ha,
+      note: lots.average_note,
+      cap: false,
+      rows: [],
+    };
+  }
+
+  if (!lots?.count || !lots.area_ha) return;
+
+  const rows: LotPart[] = [];
+  add(rows, 'Дороги', road(infra?.roads), roadNote(infra?.roads));
+  add(
+    rows,
+    'Тротуары',
+    share(infra?.sidewalks, 0.2, 0.1),
+    note(infra?.sidewalks),
+  );
+  add(rows, 'Ливневки', drain(infra?.drainage), drainNote(infra?.drainage));
+  add(
+    rows,
+    'КПП',
+    share(infra?.checkpoints, 0.1, 0.05),
+    note(infra?.checkpoints),
+  );
+  add(
+    rows,
+    'Админка',
+    share(infra?.admin_building, 0.1, 0.05),
+    note(infra?.admin_building),
+  );
+  add(
+    rows,
+    'Сервисы на территории',
+    share(infra?.retail_or_services, 0.15, 0.08),
+    note(infra?.retail_or_services),
+  );
+  add(
+    rows,
+    'Детские площадки',
+    share(common?.playgrounds, 0.15, 0.08),
+    note(common?.playgrounds),
+  );
+  add(rows, 'Спорт', share(common?.sports, 0.15, 0.08), note(common?.sports));
+  add(
+    rows,
+    'Маршруты для прогулок',
+    share(common?.walking_routes, 0.15, 0.08),
+    note(common?.walking_routes),
+  );
+  add(
+    rows,
+    'Доступ к воде',
+    share(common?.water_access, 0.1, 0.05),
+    note(common?.water_access),
+  );
+  add(
+    rows,
+    'Пляжные зоны',
+    share(common?.beach_zones, 0.15, 0.08),
+    note(common?.beach_zones),
+  );
+  add(
+    rows,
+    'Детский клуб',
+    share(common?.kids_club, 0.15, 0.08),
+    note(common?.kids_club),
+  );
+  add(
+    rows,
+    'BBQ-зоны',
+    share(common?.bbq_zones, 0.1, 0.05),
+    note(common?.bbq_zones),
+  );
+  add(rows, 'Бассейн', share(common?.pool, 0.2, 0.1), note(common?.pool));
+  add(
+    rows,
+    'Фитнес',
+    share(common?.fitness_club, 0.2, 0.1),
+    note(common?.fitness_club),
+  );
+  add(
+    rows,
+    'Ресторан',
+    share(common?.restaurant, 0.2, 0.1),
+    note(common?.restaurant),
+  );
+  add(
+    rows,
+    'SPA',
+    share(common?.spa_center, 0.25, 0.12),
+    note(common?.spa_center),
+  );
+  add(
+    rows,
+    'Спортивный лагерь',
+    share(common?.sports_camp, 0.25, 0.12),
+    note(common?.sports_camp),
+  );
+  add(
+    rows,
+    'Школа',
+    share(common?.primary_school, 0.3, 0.15),
+    note(common?.primary_school),
+  );
+
+  const gross = (lots.area_ha * SOTKA) / lots.count;
+  const raw = rows.reduce((sum, item) => sum + item.value, 0);
+  const cap = raw > 2.5;
+  const shared = Math.min(raw, 2.5);
+
+  return {
+    size: Math.max(gross - shared, 1),
+    exact: false,
+    count: lots.count,
+    area_ha: lots.area_ha,
+    gross,
+    shared,
+    cap,
+    rows,
+  };
+}
+
+export function getLotAverage(
+  lots?: Lots,
+  infra?: Infrastructure,
+  common?: CommonSpaces,
+): number | undefined {
+  return getLotBreakdown(lots, infra, common)?.size;
+}
+
+export function normalizeSettlement<
+  T extends {
+    lots?: Lots;
+    tariff: Tariff;
+    infrastructure?: Infrastructure;
+    common_spaces?: CommonSpaces;
+  },
+>(item: T): T {
+  const lot = getLotAverage(item.lots, item.infrastructure, item.common_spaces);
 
   if (!lot) return item;
 

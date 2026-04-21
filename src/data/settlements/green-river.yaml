@@ -16,6 +16,8 @@ tariff:
   value: 815
   unit: rub_per_sotka
   period: month
+lots:
+  count: 165
 infrastructure:
   gas: yes
   water: yes
@@ -36,8 +38,8 @@ sources:
   - title: Green River — официальный сайт
     url: https://kp-greenriver.ru/
     type: official
-    date_checked: 2026-04-07
-    comment: 'Центральные коммуникации, закрытый формат, подземные сети, фермерский магазин и инфраструктура поселка.'
+    date_checked: 2026-04-21
+    comment: 'Центральные коммуникации, закрытый формат, подземные сети, фермерский магазин и инфраструктура поселка; на сайте сказано, что Green River рассчитан на 165 участков.'
   - title: ОК Комфорт — Green River
     url: https://ok-komfort.ru/objects/green-river/
     type: official

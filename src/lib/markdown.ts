@@ -13,7 +13,6 @@ import type {
   AvailabilityStatus,
   ComparisonResult,
   DrainageType,
-  Lots,
   RoadType,
   Settlement,
   SourceType,
@@ -85,23 +84,25 @@ function num(value: number): string {
   });
 }
 
-function lots(item?: Lots): string[] {
-  if (!item) return [];
+function lots(item: Settlement): string[] {
+  if (!item.lots) return [];
 
-  const avg = getLotAverage(item);
+  const avg = getLotAverage(item.lots, item.infrastructure, item.common_spaces);
 
   return [
-    ...(item.count
-      ? [`- Количество участков/домовладений: ${num(item.count)}`]
+    ...(item.lots.count
+      ? [`- Количество участков/домовладений: ${num(item.lots.count)}`]
       : []),
-    ...(item.area_ha ? [`- Площадь поселка: ${num(item.area_ha)} га`] : []),
+    ...(item.lots.area_ha
+      ? [`- Площадь поселка: ${num(item.lots.area_ha)} га`]
+      : []),
     ...(avg
       ? [
-          `- Средняя площадь участка: ${num(avg)} сот.${item.average_sotka ? '' : ' (оценка по общей площади и числу участков)'}`,
+          `- Средняя площадь участка: ${num(avg)} сот.${item.lots.average_sotka ? '' : ' (оценка с вычетом дорог, тротуаров, ливневок и общих зон)'}`,
         ]
       : []),
-    ...(item.average_note
-      ? [`- Основание для средней площади: ${item.average_note}`]
+    ...(item.lots.average_note
+      ? [`- Основание для средней площади: ${item.lots.average_note}`]
       : []),
   ];
 }
@@ -344,7 +345,7 @@ export function buildSettlementMd({
     ...(settlement.tariff.note
       ? [`- Примечание к тарифу: ${settlement.tariff.note}`]
       : []),
-    ...lots(settlement.lots),
+    ...lots(settlement),
     ...(score ? [`- Условный рейтинг: ${score}`] : []),
     ...(rating
       ? [`- Примерное расстояние от Москвы: ${formatDistance(rating.km)}`]

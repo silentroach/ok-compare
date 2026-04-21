@@ -1,5 +1,12 @@
 import { DateTime } from 'luxon';
-import { getLotAverage, type Lots, type Tariff } from './schema';
+import {
+  getLotBreakdown,
+  getLotAverage,
+  type CommonSpaces,
+  type Infrastructure,
+  type Lots,
+  type Tariff,
+} from './schema';
 
 type TariffView = Pick<
   Tariff,
@@ -146,7 +153,7 @@ function area(value: number): string {
   return `${text} сот.`;
 }
 
-function why(lots: Lots | undefined, size: number): string {
+function why(lots: Lots | undefined): string {
   if (lots?.average_sotka) {
     return (
       lots.average_note ??
@@ -155,7 +162,7 @@ function why(lots: Lots | undefined, size: number): string {
   }
 
   if (lots?.count && lots.area_ha) {
-    return `Средняя площадь участка оценена как ${num(lots.area_ha)} га x 100 / ${num(lots.count)} участков = ${num(size)} сот. Это грубая оценка по площади всего поселка, в нее могут входить дороги и общие зоны.`;
+    return 'Площадь участка оценочная.';
   }
 
   return 'Среднюю площадь участка по подтвержденным данным не нашли.';
@@ -210,6 +217,12 @@ export interface TariffCalc {
   total: string;
 }
 
+export interface LotCalc {
+  known: string;
+  factors?: string;
+  total: string;
+}
+
 /**
  * Generic tooltip for compact cards.
  */
@@ -218,14 +231,54 @@ export function getTariffHint(tariff: TariffLike): string | undefined {
   return 'Тариф приведен к сотке автоматически.';
 }
 
+export function getLotCalc(
+  lots?: Lots,
+  infra?: Infrastructure,
+  common?: CommonSpaces,
+): LotCalc | undefined {
+  const item = getLotBreakdown(lots, infra, common);
+  if (!item) return;
+
+  if (item.exact) {
+    return {
+      known:
+        item.area_ha && item.count
+          ? `${num(item.area_ha)} га и ${num(item.count)} участков.`
+          : 'Подтвержденные данные.',
+      ...(item.note ? { factors: item.note } : {}),
+      total: area(item.size),
+    };
+  }
+
+  const list = item.rows.map((row) => row.title.toLowerCase());
+  const head = list.slice(0, 3).join(', ');
+  const more = list.length - 3;
+  const factors =
+    list.length === 0
+      ? 'нет подтвержденных вычетов.'
+      : more > 0
+        ? `${head} и еще ${more} ${word(more, 'фактор', 'фактора', 'факторов')}.`
+        : `${head}.`;
+
+  return {
+    known: `${num(item.area_ha ?? 0)} га и ${num(item.count ?? 0)} участков.`,
+    factors: item.cap
+      ? `${factors} Вычет ограничен 2,5 сот. на участок.`
+      : factors,
+    total: `${num(item.gross ?? 0)} − ${num(item.shared ?? 0)} = ${num(item.size)} сот.`,
+  };
+}
+
 /**
  * Detailed normalization breakdown for settlement page.
  */
 export function getTariffCalc(
   tariff: Tariff,
   lots?: Lots,
+  infra?: Infrastructure,
+  common?: CommonSpaces,
 ): TariffCalc | undefined {
-  const size = getLotAverage(lots) ?? LOT;
+  const size = getLotAverage(lots, infra, common) ?? LOT;
   const list = 'parts' in tariff ? tariff.parts : [tariff];
   const multi = list.length > 1;
   const lot = list.some((item) => item.unit !== 'rub_per_sotka');
@@ -264,7 +317,7 @@ export function getTariffCalc(
       : 'Тариф приведен к ₽/сотка в месяц для корректного сравнения.',
     ...(lot
       ? {
-          assumption: `Допущение: 1 участок = ${area(size)}${join(area(size))}${why(lots, size)}`,
+          assumption: `Допущение: 1 участок = ${area(size)}${join(area(size))}${why(lots)}`,
         }
       : {}),
     rows,

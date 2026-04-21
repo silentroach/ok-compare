@@ -16,6 +16,8 @@ tariff:
   value: 3000
   unit: rub_per_lot
   period: month
+lots:
+  count: 505
 infrastructure:
   roads: asphalt
   sidewalks: yes
@@ -71,8 +73,8 @@ sources:
   - title: Новострой.ру — КП ОлВиль
     url: https://www.novostroy.ru/buildings/olvil/
     type: media
-    date_checked: 2026-04-07
-    comment: На странице, обновленной 06.04.2026, указано, что поселок сдан; территория огорожена и охраняется, на въезде установлен КПП; также описаны детские площадки, футбольное поле, парковая зона и пляж.
+    date_checked: 2026-04-21
+    comment: На странице, обновленной 06.04.2026, указано, что поселок сдан и включает 505 участков; территория огорожена и охраняется, на въезде установлен КПП; также описаны детские площадки, футбольное поле, парковая зона и пляж.
   - title: Domclick — дом в КП ОлВиль
     url: https://domclick.ru/card/sale__house__2065135628
     type: personal

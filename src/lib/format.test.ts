@@ -7,6 +7,7 @@ import {
   formatTariff,
   formatTariffAuto,
   formatTariffBase,
+  getLotCalc,
   getTariffHint,
   getTariffCalc,
 } from './format';
@@ -298,6 +299,34 @@ describe('Format Module', () => {
       expect(calc?.total).toContain('100');
     });
 
+    it('should use short lot-area note in tariff breakdown', () => {
+      const calc = getTariffCalc(
+        {
+          value: 12100,
+          unit: 'rub_per_lot',
+          period: 'month',
+          normalized_per_sotka_month: 360.58,
+          normalized_is_estimate: true,
+        },
+        {
+          count: 298,
+          area_ha: 100,
+        },
+        {
+          roads: 'asphalt',
+          sidewalks: 'partial',
+          drainage: 'open',
+          checkpoints: 'yes',
+        },
+        {
+          playgrounds: 'yes',
+          sports: 'yes',
+        },
+      );
+
+      expect(calc?.assumption).toContain('Площадь участка оценочная.');
+    });
+
     it('should build detailed calc for multi-part tariff', () => {
       const calc = getTariffCalc({
         value: 5813,
@@ -323,6 +352,45 @@ describe('Format Module', () => {
       expect(calc?.rows).toHaveLength(2);
       expect(calc?.rows[0]?.title).toBe('Часть 1');
       expect(calc?.total).toContain('681');
+    });
+  });
+
+  describe('getLotCalc', () => {
+    it('should build lot breakdown for estimated average', () => {
+      const calc = getLotCalc(
+        {
+          count: 298,
+          area_ha: 100,
+        },
+        {
+          roads: 'asphalt',
+          sidewalks: 'partial',
+          drainage: 'open',
+          checkpoints: 'yes',
+        },
+        {
+          playgrounds: 'yes',
+          sports: 'yes',
+        },
+      );
+
+      expect(calc?.known).toContain('100 га и 298 участков');
+      expect(calc?.factors).toContain('дороги, тротуары, ливневки');
+      expect(calc?.total).toContain('33,56 − 1,55 = 32,01');
+    });
+
+    it('should build lot breakdown for explicit average', () => {
+      const calc = getLotCalc({
+        count: 150,
+        area_ha: 32,
+        average_sotka: 20.4,
+        average_note:
+          'Средняя площадь рассчитана по опубликованным площадям лотов.',
+      });
+
+      expect(calc?.known).toContain('32 га и 150 участков');
+      expect(calc?.factors).toContain('опубликованным площадям лотов');
+      expect(calc?.total).toBe('20,4 сот.');
     });
   });
 
