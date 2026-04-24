@@ -146,13 +146,13 @@ jobs:
           ssh_opts="ssh -p $DEPLOY_PORT -o ControlMaster=auto -o ControlPersist=600 -o ControlPath=$HOME/.ssh/cm-%C"
 
           rsync -az --delete --mkpath --chmod=D755,F644 \
-            --exclude '/_astro/' \
+            --exclude '/static/' \
             -e "$ssh_opts" \
             dist/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/"
 
           rsync -az --mkpath --chmod=D755,F644 \
             -e "$ssh_opts" \
-            dist/_astro/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/_astro/"
+            dist/static/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/static/"
 
       - name: Prune stale hashed assets
         run: |
@@ -161,9 +161,9 @@ jobs:
           ssh $ssh_opts "$DEPLOY_USER@$DEPLOY_HOST" '
             set -eu
 
-            if [ -d "'$DEPLOY_PATH'/_astro" ]; then
-              find "'$DEPLOY_PATH'/_astro" -type f -mtime +30 -delete
-              find "'$DEPLOY_PATH'/_astro" -type d -empty -delete
+            if [ -d "'$DEPLOY_PATH'/static" ]; then
+              find "'$DEPLOY_PATH'/static" -type f -mtime +30 -delete
+              find "'$DEPLOY_PATH'/static" -type d -empty -delete
             fi
           '
 

@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 
-import { build } from '../lib/llms';
+import { build } from '@lib/llms';
 
 export const prerender = true;
 

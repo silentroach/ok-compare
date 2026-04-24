@@ -1,6 +1,6 @@
 ---
-import '../styles/global.css';
-import { withBase } from '../lib/url';
+import '@styles/global.css';
+import { withBase } from '@lib/url';
 
 interface Props {
   title?: string;
@@ -68,6 +68,9 @@ const ym = `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).p
     <link rel="canonical" href={canonical} />
     {robots && <meta name="robots" content={robots} />}
 
+    <link rel="preconnect" href="https://mc.yandex.ru" />
+    <link rel="preconnect" href="https://api-maps.yandex.ru" />
+
     <link
       rel="icon"
       type="image/svg+xml"
@@ -125,7 +128,9 @@ const ym = `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).p
     {docs.map((item) => <script type="application/ld+json" set:html={item} />)}
 
     {prod && <script is:inline type="text/javascript" set:html={ym} />}
-    {prod && <script>import '../lib/ymGoal.js';</script>}
+    <script>
+      import '@lib/ymGoal.js';
+    </script>
   </head>
   <body class="min-h-screen text-foreground">
     {

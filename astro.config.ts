@@ -56,5 +56,6 @@ export default defineConfig({
   integrations,
   build: {
     format: 'directory',
+    assets: 'static',
   },
 });
