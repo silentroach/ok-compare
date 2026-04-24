@@ -65,6 +65,7 @@
         <p
           class="ui-num text-sm font-medium text-muted-foreground/50"
           data-testid="tariff-rank-label"
+          title="Ранг по возрастанию тарифа (1 — самый дешевый)"
         >
           {rank} / {total}
         </p>
