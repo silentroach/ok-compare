@@ -116,37 +116,24 @@
     return `rgb(${red}, ${green}, ${blue})`;
   }
 
+  let scriptEl: HTMLScriptElement | undefined;
+
   async function loadYandexMaps(): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 50));
 
-    if (window.ymaps3) {
-      ymapsLoaded = true;
-      return;
-    }
+    if (window.ymaps3) return;
 
-    if (!API_KEY) {
-      error = 'API ключ не настроен';
-      isLoading = false;
-      return;
-    }
+    if (!API_KEY) throw new Error('API ключ не настроен');
 
     return new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = `https://api-maps.yandex.ru/v3/?apikey=${API_KEY}&lang=ru_RU`;
-      script.async = true;
+      scriptEl = document.createElement('script');
+      scriptEl.src = `https://api-maps.yandex.ru/v3/?apikey=${API_KEY}&lang=ru_RU`;
+      scriptEl.async = true;
 
-      script.onload = () => {
-        ymapsLoaded = true;
-        resolve();
-      };
+      scriptEl.onload = () => resolve();
+      scriptEl.onerror = () => reject(new Error('Не удалось загрузить карту'));
 
-      script.onerror = () => {
-        error = 'Не удалось загрузить карту';
-        isLoading = false;
-        reject(new Error('Failed to load Yandex Maps'));
-      };
-
-      document.head.appendChild(script);
+      document.head.appendChild(scriptEl);
     });
   }
 
@@ -332,6 +319,8 @@
   }
 
   onMount(async () => {
+    let dead = false;
+
     const onDown = (evt: PointerEvent): void => {
       if (!tip) return;
 
@@ -346,14 +335,22 @@
 
     try {
       await loadYandexMaps();
+      if (!dead) ymapsLoaded = true;
     } catch (err) {
-      console.error('Map setup error:', err);
-      error = 'Карта недоступна';
-      isLoading = false;
+      if (!dead) {
+        console.error('Map setup error:', err);
+        error = err instanceof Error ? err.message : 'Карта недоступна';
+        isLoading = false;
+      }
     }
 
     return () => {
+      dead = true;
       document.removeEventListener('pointerdown', onDown);
+      if (scriptEl?.parentNode) {
+        scriptEl.parentNode.removeChild(scriptEl);
+        scriptEl = undefined;
+      }
     };
   });
 

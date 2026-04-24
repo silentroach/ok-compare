@@ -53,11 +53,24 @@
     window.dispatchEvent(new CustomEvent('explorer:ready'));
   }
 
-  let run = $derived.by(async () => {
-    tryid;
+  let fetchErr = $state<Error | undefined>(undefined);
+
+  $effect(() => {
     if (ready) return;
-    if (!dataUrl) throw new Error('Не указан источник данных');
-    await pull(dataUrl);
+    if (!dataUrl) {
+      fetchErr = new Error('Не указан источник данных');
+      return;
+    }
+    tryid;
+    let cancelled = false;
+    fetchErr = undefined;
+    pull(dataUrl).catch((err) => {
+      if (!cancelled)
+        fetchErr = err instanceof Error ? err : new Error(String(err));
+    });
+    return () => {
+      cancelled = true;
+    };
   });
 
   // Find Shelkovo (baseline) for distance calculations
@@ -188,7 +201,13 @@
 </script>
 
 <svelte:boundary>
-  <span class="sr-only" aria-hidden="true">{await run}</span>
+  <span class="sr-only" aria-hidden="true">
+    {#if fetchErr}
+      {(() => {
+        throw fetchErr;
+      })()}
+    {/if}
+  </span>
 
   <div class="space-y-6">
     <div class="ui-shell p-4 md:p-6">
@@ -426,6 +445,7 @@
           type="button"
           class="ui-btn ui-btn-sm ui-btn-outline"
           onclick={() => {
+            fetchErr = undefined;
             tryid += 1;
             reset();
           }}
