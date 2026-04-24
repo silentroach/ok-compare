@@ -180,6 +180,7 @@ src/
 
 ## Важные замечания
 
+- **Astro content collections cache**: Astro кэширует распарсенные YAML в `node_modules/.astro/data-store.json`. При изменении схемы (`src/lib/schema.ts`) или логики transform Astro **не** инвалидирует этот кэш автоматически — если YAML-файл не менялся, берётся старая версия из кэша. Скрипт `prebuild` в `package.json` чистит `node_modules/.astro/data-store.json` и `.astro/` перед `pnpm build`. Если ручная пересборка даёт устаревшие данные — удалять `node_modules/.astro/data-store.json` вручную.
 - Svelte 5 runes mode включен (compilerOptions.runes: true)
 - Тесты используют happy-dom окружение
 - Русская локаль для форматирования валюты и чисел

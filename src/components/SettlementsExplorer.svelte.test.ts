@@ -24,7 +24,7 @@ const mockYandexMaps = {
     return {};
   }),
   YMapMarker: vi.fn(function YMapMarker() {
-    return {};
+    return { update: vi.fn() };
   }),
 };
 
@@ -230,7 +230,8 @@ describe('SettlementsExplorer', () => {
     await fireEvent.click(getByLabelText(/Дешевле Шелково/));
 
     await waitFor(() => {
-      expect(mockYandexMaps.YMapMarker).toHaveBeenCalledTimes(4);
+      expect(mockYandexMaps.YMapMarker).toHaveBeenCalledTimes(3);
+      expect(mockMap.removeChild).toHaveBeenCalledTimes(2);
     });
   });
 

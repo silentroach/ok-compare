@@ -26,6 +26,7 @@
   }
 
   interface MarkerLike {
+    slug: string;
     marker: ymaps3.YMapMarker;
     el: HTMLElement;
   }
@@ -183,12 +184,21 @@
     marks = [];
   }
 
-  function renderMarkers(ym: typeof ymaps3): void {
+  function syncMarkers(ym: typeof ymaps3): void {
     if (!map) return;
 
     const { YMapMarker } = ym;
     const range = getRange(settlements);
-    clearMarkers();
+    const currentSlugs = new Set(settlements.map((s) => s.slug));
+
+    for (const item of [...marks]) {
+      if (!currentSlugs.has(item.slug)) {
+        map.removeChild?.(item.marker);
+        marks = marks.filter((m) => m !== item);
+      }
+    }
+
+    const bySlug = new Map(marks.map((m) => [m.slug, m]));
 
     for (const settlement of settlements) {
       const color = getTariffColor(
@@ -196,6 +206,17 @@
         settlement.isBaseline,
         range,
       );
+
+      const existing = bySlug.get(settlement.slug);
+      if (existing) {
+        existing.el.style.background = color;
+        existing.el.style.cursor = interactive && popup ? 'pointer' : 'default';
+        existing.marker.update?.({
+          coordinates: [settlement.lng, settlement.lat],
+        });
+        continue;
+      }
+
       const el = document.createElement('div');
       el.style.cssText = `
         width: 18px;
@@ -211,19 +232,18 @@
       if (interactive && popup) {
         el.addEventListener('click', (evt) => {
           evt.stopPropagation();
-          open(settlement, el);
+          const current = settlements.find((s) => s.slug === settlement.slug);
+          open(current ?? settlement, el);
         });
       }
 
       const marker = new YMapMarker(
-        {
-          coordinates: [settlement.lng, settlement.lat],
-        },
+        { coordinates: [settlement.lng, settlement.lat] },
         el,
       );
 
       map.addChild(marker);
-      marks.push({ marker, el });
+      marks.push({ slug: settlement.slug, marker, el });
     }
   }
 
@@ -253,7 +273,7 @@
         [new YMapDefaultSchemeLayer(), new YMapDefaultFeaturesLayer()],
       );
 
-      renderMarkers(ymaps3);
+      syncMarkers(ymaps3);
 
       isLoading = false;
 
@@ -282,7 +302,7 @@
     }
 
     tip = undefined;
-    renderMarkers(ymaps3);
+    syncMarkers(ymaps3);
     const view = getMapView();
     if (!map.update) {
       map.destroy();
@@ -422,8 +442,7 @@
       <div class="relative">
         <div
           bind:this={popupEl}
-          class="pointer-events-auto w-64 rounded-lg border p-3 shadow-xl"
-          style="background: color-mix(in oklab, var(--color-card) 42%, transparent); border-color: color-mix(in oklab, var(--color-border) 70%, transparent); backdrop-filter: blur(4px) saturate(1.03); -webkit-backdrop-filter: blur(4px) saturate(1.03);"
+          class="pointer-events-auto w-64 rounded-lg border border-border/70 bg-card/42 p-3 shadow-xl backdrop-blur-sm backdrop-saturate-[1.03]"
         >
           <div class="mb-0 flex items-start justify-between gap-3">
             <a
@@ -472,8 +491,7 @@
           </p>
         </div>
         <div
-          class={`absolute left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border ${tip.up ? '-bottom-1.5 border-t-0 border-l-0' : '-top-1.5 border-b-0 border-r-0'}`}
-          style="background: color-mix(in oklab, var(--color-card) 42%, transparent); border-color: color-mix(in oklab, var(--color-border) 70%, transparent); backdrop-filter: blur(4px) saturate(1.03); -webkit-backdrop-filter: blur(4px) saturate(1.03);"
+          class={`absolute left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border border-border/70 bg-card/42 backdrop-blur-sm backdrop-saturate-[1.03] ${tip.up ? '-bottom-1.5 border-t-0 border-l-0' : '-top-1.5 border-b-0 border-r-0'}`}
           aria-hidden="true"
         ></div>
       </div>

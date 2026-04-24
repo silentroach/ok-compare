@@ -10,6 +10,9 @@
     }
   },
   "scripts": {
+    "clean": "rm -rf node_modules/.astro/data-store.json .astro",
+    "prebuild": "pnpm run clean",
+    "predev": "pnpm run clean",
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",

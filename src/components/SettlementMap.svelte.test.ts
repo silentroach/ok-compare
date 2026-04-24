@@ -27,7 +27,7 @@ const mockYandexMaps = {
   }),
   YMapMarker: vi.fn(function YMapMarker(_: unknown, el: HTMLElement) {
     markers.push(el);
-    return { el };
+    return { el, update: vi.fn() };
   }),
 };
 
@@ -210,7 +210,8 @@ describe('SettlementMap', () => {
     await rerender({ settlements: [mockSettlements[0]] });
 
     await waitFor(() => {
-      expect(mockYandexMaps.YMapMarker).toHaveBeenCalledTimes(4);
+      expect(mockYandexMaps.YMapMarker).toHaveBeenCalledTimes(3);
+      expect(mockMap.removeChild).toHaveBeenCalledTimes(2);
       expect(mockMap.update).toHaveBeenCalled();
     });
   });

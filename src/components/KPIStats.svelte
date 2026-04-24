@@ -15,9 +15,9 @@
   }
 
   function getMedianTone(diff: number): string {
-    if (diff > 0) return 'text-[color:var(--color-danger-text)]';
-    if (diff < 0) return 'text-[color:var(--color-success-text)]';
-    return 'text-[color:var(--color-muted-foreground)]';
+    if (diff > 0) return 'text-danger-text';
+    if (diff < 0) return 'text-success-text';
+    return 'text-muted-foreground';
   }
 </script>
 
@@ -50,8 +50,8 @@
     >
       <div
         class={embed
-          ? 'mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--color-danger-text)]/80'
-          : 'mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--color-danger-text)]/80'}
+          ? 'mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-danger-text/80'
+          : 'mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-danger-text/80'}
       >
         Похожие по уровню
       </div>
