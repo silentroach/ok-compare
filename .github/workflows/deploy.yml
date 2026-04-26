@@ -170,66 +170,18 @@ jobs:
       - name: Deploy nginx config
         run: |
           ssh_opts="-p $DEPLOY_PORT -o ControlMaster=auto -o ControlPersist=600 -o ControlPath=$HOME/.ssh/cm-%C"
+          scp_opts="-P $DEPLOY_PORT -o ControlMaster=auto -o ControlPersist=600 -o ControlPath=$HOME/.ssh/cm-%C"
+
+          scp $scp_opts ops/nginx/deploy-sravni-shelkovo.sh "$DEPLOY_USER@$DEPLOY_HOST:/tmp/deploy-sravni-shelkovo.sh"
 
           ssh $ssh_opts "$DEPLOY_USER@$DEPLOY_HOST" '
             set -eu
 
-            dir="$(mktemp -d)"
-            tmp="$dir/sravni-shelkovo.conf.new"
-            dst="/etc/nginx/sites-available/sravni-shelkovo"
-            link="/etc/nginx/sites-enabled/sravni-shelkovo"
-            bak="$dir/sravni-shelkovo.conf.bak"
-            old="$dir/sravni-shelkovo.conf.enabled.bak"
-            state="missing"
+            trap "rm -f /tmp/deploy-sravni-shelkovo.sh /tmp/sravni-shelkovo.conf.new" EXIT
 
-            clean() {
-              rm -rf "$dir"
-            }
+            sudo -n install -m 755 /tmp/deploy-sravni-shelkovo.sh /usr/local/sbin/deploy-sravni-shelkovo
 
-            undo() {
-              if [ -f "$bak" ]; then
-                sudo -n install -m 644 "$bak" "$dst"
-              else
-                sudo -n rm -f "$dst"
-              fi
-
-              case "$state" in
-                symlink)
-                  sudo -n ln -sfn "$dst" "$link"
-                  ;;
-                file)
-                  sudo -n install -m 644 "$old" "$link"
-                  ;;
-                *)
-                  sudo -n rm -f "$link"
-                  ;;
-              esac
-            }
-
-            trap clean EXIT
-
+            tmp="/tmp/sravni-shelkovo.conf.new"
             cat > "$tmp"
-
-            if sudo -n test -e "$dst"; then
-              sudo -n cp "$dst" "$bak"
-            fi
-
-            if sudo -n test -L "$link"; then
-              state="symlink"
-            elif sudo -n test -e "$link"; then
-              state="file"
-              sudo -n cp "$link" "$old"
-            fi
-
-            sudo -n install -m 644 "$tmp" "$dst"
-            sudo -n ln -sfn "$dst" "$link"
-
-            if ! sudo -n nginx -t; then
-              undo
-              sudo -n nginx -t
-              exit 1
-            fi
-
-            sudo -n systemctl reload nginx
-            sudo -n systemctl is-active --quiet nginx
+            sudo -n /usr/local/sbin/deploy-sravni-shelkovo "$tmp"
           ' < ops/nginx/sravni-shelkovo.conf
