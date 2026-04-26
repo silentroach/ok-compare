@@ -174,12 +174,39 @@ jobs:
           ssh $ssh_opts "$DEPLOY_USER@$DEPLOY_HOST" '
             set -eu
 
-            tmp="/tmp/sravni-shelkovo.conf.new"
+            dir="$(mktemp -d)"
+            tmp="$dir/sravni-shelkovo.conf.new"
             dst="/etc/nginx/sites-available/sravni-shelkovo"
             link="/etc/nginx/sites-enabled/sravni-shelkovo"
-            bak="/tmp/sravni-shelkovo.conf.bak"
-            old="/tmp/sravni-shelkovo.conf.enabled.bak"
+            bak="$dir/sravni-shelkovo.conf.bak"
+            old="$dir/sravni-shelkovo.conf.enabled.bak"
             state="missing"
+
+            clean() {
+              rm -rf "$dir"
+            }
+
+            undo() {
+              if [ -f "$bak" ]; then
+                sudo -n install -m 644 "$bak" "$dst"
+              else
+                sudo -n rm -f "$dst"
+              fi
+
+              case "$state" in
+                symlink)
+                  sudo -n ln -sfn "$dst" "$link"
+                  ;;
+                file)
+                  sudo -n install -m 644 "$old" "$link"
+                  ;;
+                *)
+                  sudo -n rm -f "$link"
+                  ;;
+              esac
+            }
+
+            trap clean EXIT
 
             cat > "$tmp"
 
@@ -198,30 +225,11 @@ jobs:
             sudo -n ln -sfn "$dst" "$link"
 
             if ! sudo -n nginx -t; then
-              if [ -f "$bak" ]; then
-                sudo -n install -m 644 "$bak" "$dst"
-              else
-                sudo -n rm -f "$dst"
-              fi
-
-              case "$state" in
-                symlink)
-                  sudo -n ln -sfn "$dst" "$link"
-                  ;;
-                file)
-                  sudo -n install -m 644 "$old" "$link"
-                  ;;
-                *)
-                  sudo -n rm -f "$link"
-                  ;;
-              esac
-
+              undo
               sudo -n nginx -t
               exit 1
             fi
 
             sudo -n systemctl reload nginx
             sudo -n systemctl is-active --quiet nginx
-
-            rm -f "$tmp" "$bak" "$old"
           ' < ops/nginx/sravni-shelkovo.conf
