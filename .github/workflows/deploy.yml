@@ -175,16 +175,47 @@ jobs:
             set -eu
 
             tmp="/tmp/sravni-shelkovo.conf.new"
-            dst="/etc/nginx/sites-enabled/sravni-shelkovo"
+            dst="/etc/nginx/sites-available/sravni-shelkovo"
+            link="/etc/nginx/sites-enabled/sravni-shelkovo"
             bak="/tmp/sravni-shelkovo.conf.bak"
+            old="/tmp/sravni-shelkovo.conf.enabled.bak"
+            state="missing"
 
             cat > "$tmp"
 
-            cp "$dst" "$bak"
+            if sudo -n test -e "$dst"; then
+              sudo -n cp "$dst" "$bak"
+            fi
+
+            if sudo -n test -L "$link"; then
+              state="symlink"
+            elif sudo -n test -e "$link"; then
+              state="file"
+              sudo -n cp "$link" "$old"
+            fi
+
             sudo -n install -m 644 "$tmp" "$dst"
+            sudo -n ln -sfn "$dst" "$link"
 
             if ! sudo -n nginx -t; then
-              sudo -n install -m 644 "$bak" "$dst"
+              if [ -f "$bak" ]; then
+                sudo -n install -m 644 "$bak" "$dst"
+              else
+                sudo -n rm -f "$dst"
+              fi
+
+              case "$state" in
+                symlink)
+                  sudo -n ln -sfn "$dst" "$link"
+                  ;;
+                file)
+                  sudo -n install -m 644 "$old" "$link"
+                  ;;
+                *)
+                  sudo -n rm -f "$link"
+                  ;;
+              esac
+
               sudo -n nginx -t
               exit 1
             fi
@@ -192,5 +223,5 @@ jobs:
             sudo -n systemctl reload nginx
             sudo -n systemctl is-active --quiet nginx
 
-            rm -f "$tmp" "$bak"
+            rm -f "$tmp" "$bak" "$old"
           ' < ops/nginx/sravni-shelkovo.conf
