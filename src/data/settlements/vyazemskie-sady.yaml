@@ -28,21 +28,42 @@ water_in_tariff: true
 
 infrastructure:
   roads: partial_asphalt
-  sidewalks: no
+  sidewalks: partial
   lighting: yes
   gas: yes
   water: yes
+  sewage: no
   drainage: open
   checkpoints: yes
   security: yes
   fencing: yes
+  video_surveillance: checkpoint_only
   underground_electricity: full
-  retail_or_services: no
+  admin_building: yes
+  retail_or_services: yes
 
 common_spaces:
+  club_infrastructure: yes
   playgrounds: yes
   sports: yes
+  pool: no
+  fitness_club: no
+  restaurant: no
+  spa_center: no
+  walking_routes: yes
   water_access: yes
+  beach_zones: no
+  kids_club: yes
+  sports_camp: no
+  primary_school: no
+  bbq_zones: yes
+
+service_model:
+  garbage_collection: yes
+  snow_removal: yes
+  road_cleaning: yes
+  landscaping: yes
+  dispatcher: yes
 
 sources:
   - title: ЗемАктив — Вяземские сады
