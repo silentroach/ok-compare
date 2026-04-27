@@ -24,6 +24,15 @@ jobs:
           node-version: 24
           cache: pnpm
 
+      - name: Restore Turbo cache
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.event.workflow_run.head_branch || github.head_ref || github.ref_name }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'turbo.json') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-${{ github.event.workflow_run.head_branch || github.head_ref || github.ref_name }}-
+            ${{ runner.os }}-turbo-
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -32,3 +41,8 @@ jobs:
 
       - name: Run tests
         run: pnpm test
+
+      - name: Run build
+        env:
+          PUBLIC_YANDEX_MAPS_API_KEY: ${{ secrets.YANDEX_MAPS_API_KEY }}
+        run: pnpm build

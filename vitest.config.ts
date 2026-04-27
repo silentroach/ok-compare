@@ -12,7 +12,10 @@ export default defineConfig({
   test: {
     environment: 'happy-dom',
     globals: true,
-    include: ['src/**/*.{test,spec}.{js,ts}'],
+    include: [
+      'src/**/*.{test,spec}.{js,ts}',
+      'packages/**/*.{test,spec}.{js,ts}',
+    ],
     alias: {
       '@lib/*': './src/lib/*',
     },

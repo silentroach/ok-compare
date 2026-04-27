@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Link from '@shelkovo/ui/Link.svelte';
   import { onMount } from 'svelte';
   import type { ExplorerPayload, ExplorerSettlement } from '../lib/explorer';
   import {
@@ -8,7 +9,6 @@
   } from '../lib/format';
   import { getRing } from '../lib/rating';
   import { rankSettlements } from '../lib/stats';
-  import Link from './Link.svelte';
   import SettlementMap from './SettlementMap.svelte';
   import SettlementCard from './SettlementCard.svelte';
 

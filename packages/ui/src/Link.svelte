@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { withBase } from '../lib/url';
+  import { withBase } from '@shelkovo/url';
   import type { Snippet } from 'svelte';
 
   interface Props {
@@ -11,7 +11,7 @@
 
   let { href, class: className, children, ...rest }: Props = $props();
 
-  const finalHref = $derived(withBase(href));
+  const finalHref = $derived(withBase(import.meta.env.BASE_URL, href));
 </script>
 
 <a href={finalHref} class={className} {...rest}>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Link from '@shelkovo/ui/Link.svelte';
   import type { ExplorerSettlement } from '../lib/explorer';
   import type { ComparisonResult } from '../lib/schema';
   import {
@@ -7,7 +8,6 @@
     getTariffHint,
   } from '../lib/format';
   import TariffRank from './TariffRank.svelte';
-  import Link from './Link.svelte';
 
   interface Props {
     settlement: ExplorerSettlement;
