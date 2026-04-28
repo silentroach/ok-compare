@@ -9,28 +9,43 @@ link="/etc/nginx/sites-enabled/$name"
 dir=$(mktemp -d)
 bak="$dir/$name.conf.bak"
 old="$dir/$name.enabled.bak"
-state=symlink
+target="$dst"
+had_dst=false
+state=missing
 
 clean() {
   rm -rf "$dir"
 }
 
 undo() {
-  install -m 644 "$bak" "$dst"
+  if [ "$had_dst" = true ]; then
+    install -m 644 "$bak" "$dst"
+  else
+    rm -f "$dst"
+  fi
 
   if [ "$state" = file ]; then
     install -m 644 "$old" "$link"
+  elif [ "$state" = symlink ]; then
+    ln -sfn "$target" "$link"
   else
-    ln -sfn "$dst" "$link"
+    rm -f "$link"
   fi
 }
 
 trap clean EXIT
 
 test -f "$src"
-cp "$dst" "$bak"
 
-if [ ! -L "$link" ]; then
+if [ -f "$dst" ]; then
+  cp "$dst" "$bak"
+  had_dst=true
+fi
+
+if [ -L "$link" ]; then
+  state=symlink
+  target=$(readlink "$link")
+elif [ -f "$link" ]; then
   state=file
   cp "$link" "$old"
 fi
