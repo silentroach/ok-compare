@@ -4,6 +4,7 @@
   "type": "module",
   "private": true,
   "exports": {
+    "./theme": "./src/theme.ts",
     "./Link.svelte": "./src/Link.svelte",
     "./styles.css": "./styles.css"
   },

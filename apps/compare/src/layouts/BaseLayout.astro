@@ -1,5 +1,6 @@
 ---
 import '@styles/global.css';
+import { themeColor } from '@shelkovo/ui/theme';
 import { canon } from '@lib/site';
 import { withBase } from '@lib/url';
 
@@ -52,12 +53,12 @@ const ym = `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).p
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="theme-color"
-      content="#edf3f7"
+      content={themeColor.light}
       media="(prefers-color-scheme: light)"
     />
     <meta
       name="theme-color"
-      content="#1b222b"
+      content={themeColor.dark}
       media="(prefers-color-scheme: dark)"
     />
     <meta name="description" content={description} />
