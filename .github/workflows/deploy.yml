@@ -214,3 +214,12 @@ jobs:
             sudo -n /usr/local/sbin/deploy-nginx-site /tmp/kpshelkovo-online.conf.new kpshelkovo-online
             sudo -n /usr/local/sbin/deploy-nginx-site /tmp/sravni-shelkovo.conf.new sravni-shelkovo
           '
+
+      - name: Publish deployed URLs
+        run: |
+          {
+            echo '## Production URLs'
+            echo
+            echo '- https://kpshelkovo.online'
+            echo '- https://сравни.шелково.рф'
+          } >> "$GITHUB_STEP_SUMMARY"
