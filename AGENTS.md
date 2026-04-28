@@ -1,195 +1,58 @@
 # AGENTS.md
 
-Руководство для AI агентов, работающих с этим репозиторием.
+Руководство для AI-агентов на уровне всего workspace.
 
-## Команды разработки
+## Структура репозитория
+
+```text
+apps/
+  compare/   # compare-приложение: standalone legacy + section build для /compare
+  www/       # корневой сайт kpshelkovo.online
+packages/    # shared утилиты и UI
+ops/         # nginx и deploy-инфраструктура
+scripts/     # compose/build helper scripts
+```
+
+## Локальные инструкции
+
+- Перед работой в `apps/compare` обязательно читать `apps/compare/AGENTS.md`.
+- Перед работой в `apps/www` обязательно читать `apps/www/AGENTS.md`.
+- Если меняются shared стили, примитивы ссылок или URL-утилиты, проверить оба app-а.
+
+## Команды workspace
 
 ```bash
-# Запуск dev-сервера
+# dev
 pnpm dev
+pnpm dev:www
+pnpm dev:compare
 
-# Сборка для продакшена
-pnpm build
-
-# Превью продакшен-сборки
-pnpm preview
-
-# Проверка типов
+# typecheck / tests
 pnpm typecheck
-
-# Запуск всех тестов
 pnpm test
 
-# Тесты в watch-режиме
-pnpm test:watch
-
-# Запуск конкретного теста
-pnpm exec vitest run src/components/ComponentName.svelte.test.ts
-
-# Тесты по паттерну
-pnpm exec vitest run -t "описание теста"
+# builds
+pnpm build          # dist/www + dist/legacy
+pnpm build:main     # dist/www
+pnpm build:legacy   # dist/legacy
 ```
 
-## Стек технологий
+## Артефакты сборки
 
-- **Фреймворк**: Astro 5 (static output)
-- **Компоненты**: Svelte 5 с Runes ($props, $state)
-- **Стили**: Tailwind CSS v4
-- **Язык**: TypeScript (strict mode)
-- **Тестирование**: Vitest + @testing-library/svelte + happy-dom
-- **Валидация**: Zod
-- **Данные**: YAML файлы через Astro content collections
+- `dist/www` — корневой сайт `kpshelkovo.online`.
+- `dist/www/compare` — compare-раздел внутри нового сайта.
+- `dist/legacy` — standalone compare для старого домена.
 
-## Стиль кода
+## Local dev ports
 
-### TypeScript
+- `pnpm dev` поднимает интегрированный dev-стек на `http://localhost:4321`.
+- compare в этом режиме живет за прокси по `http://localhost:4321/compare`.
+- внутренний compare dev-server слушает `http://localhost:4322/compare`.
 
-- Strict mode
-- Явные типы для параметров и возвращаемых значений
-- `interface` для объектов, `type` для union/utility types
-- Всюду, где можно использовать `undefined` вместо `null` - стоит использовать именно `undefined` и опциональные свойства
-- Если нужно вернуть `undefined`, писать `return;` (не `return undefined;`)
-- Не передавать свойства со значением `undefined` в объектах/props: опускать ключ целиком
+## Правила workspace
 
-### General Principles
-
-- Keep things in one function unless composable or reusable
-- Avoid `try`/`catch` where possible
-- Avoid using the `any` type
-- Prefer single word variable names where possible
-- Rely on type inference when possible; avoid explicit type annotations or interfaces unless necessary for exports or clarity
-- Prefer functional array methods (flatMap, filter, map) over for loops; use type guards on filter to maintain type inference downstream
-
-### Именование
-
-- Prefer single word names for variables and functions. Only use multiple words if necessary.
-- **Компоненты**: PascalCase (`SettlementCard.svelte`)
-- **Утилиты**: camelCase (`formatCurrency.ts`)
-- **Типы/Интерфейсы**: PascalCase (`Settlement`, `ComparisonResult`)
-- **Константы**: UPPER_SNAKE_CASE
-- **Поля в YAML**: snake_case (`is_baseline`, `short_name`)
-- **Переменные в коде**: camelCase (`isBaseline`, `shortName`)
-
-### Naming Enforcement (Read This)
-
-THIS RULE IS MANDATORY FOR AGENT WRITTEN CODE.
-
-- Use single word names by default for new locals, params, and helper functions.
-- Multi-word names are allowed only when a single word would be unclear or ambiguous.
-- Write comments only in unclear cases.
-- Do not introduce new camelCase compounds when a short single-word alternative is clear.
-- Before finishing edits, review touched lines and shorten newly introduced identifiers where possible.
-- Good short names to prefer: `pid`, `cfg`, `err`, `opts`, `dir`, `root`, `child`, `state`, `timeout`.
-- Examples to avoid unless truly required: `inputPID`, `existingClient`, `connectTimeout`, `workerPath`.
-
-### Svelte компоненты
-
-- Использовать Runes: `$props()`, `$state()` и т.д.
-- Добавлять `data-testid` атрибуты для тестирования
-- Для id/for и aria-связей в повторяемых компонентах использовать `$props.id()` как префикс
-- Для `label`/`input` и `label`/`select` использовать явную связку `for` + `id` (не только вложенность)
-- Для toggle-кнопок синхронизировать `aria-pressed` и `aria-controls` с фактическим блоком
-
-### Hydration directives (Astro)
-
-- `client:load` — только для критичных интерактивных блоков above-the-fold
-- `client:idle` — для интерактивных блоков среднего приоритета, где нужна ранняя, но не блокирующая гидрация
-- `client:visible` — для тяжелых блоков и карт, которые можно гидрировать при появлении в viewport
-- Для декоративных карт/виджетов без моментальной интерактивности предпочитать `client:visible`
-
-### Skills reminder
-
-- Перед любой работой с `.svelte` файлами и Svelte-модулями заранее читать `svelte-code-writer`.
-- Перед созданием или изменением `.astro` страниц, layout'ов и Astro-специфичной логики заранее читать `astro`.
-- Перед заметными изменениями дизайна, типографики, сетки, UI-паттернов и Tailwind-классов заранее читать `tailwind-design-system`.
-- Перед открытием сайтов, браузерной проверкой интерфейса, скриншотами, навигацией по страницам и любым web automation заранее читать `agent-browser`.
-
-### Порядок импортов
-
-1. Внешние библиотеки (zod и т.д.)
-2. Импорты типов (`import type { ... }`)
-3. Внутренние утилиты (`from '../lib/...'`)
-4. Компоненты-соседи (`from './Component.svelte'`)
-5. Стили (если есть)
-
-### Тестирование
-
-- Co-locate: `Component.svelte.test.ts` рядом с компонентом
-- Query по `data-testid`
-- Мокать внешние зависимости
-- Суффикс `.test.ts`
-
-### Обработка ошибок
-
-- Использовать Zod для runtime-валидации внешних данных
-- Бросать описательные ошибки для невалидных состояний
-- Явно обрабатывать nullable значения через type guards
-
-### Комментарии и документация
-
-- Добавлять JSDoc для экспортируемых функций-утилит
-- Использовать inline-комментарии редко — предпочитать читаемый код
-- Русский язык для UI текста и пользовательского контента
-- `llms.txt` и `llms-full.txt` держать целиком на русском языке, без смешивания с английским по умолчанию
-
-### Правила данных (YAML)
-
-- Если факт не подтвержден источником, значение считается **неизвестным**: поле нужно **опускать**, а не ставить `partial`.
-- `partial` использовать только когда объект/услуга реально есть в ограниченном формате (а не при сомнениях).
-- В `common_spaces` поле `club_infrastructure` — агрегированный признак доступа к клубной инфраструктуре (может включать много пунктов списка).
-- Для отдельных пунктов (`restaurant`, `kids_club`, `beach_zones` и т.д.) ставить `yes` только при наличии именно в конкретном поселке.
-- Если объект доступен только в соседнем поселке через клуб, ставить `yes` у `club_infrastructure`, а сам конкретный пункт — `no` или оставлять неизвестным (если нет подтверждения отсутствия).
-- Для `location.address_text` использовать краткий формат: `<регион>, <округ/район>[, <населенный пункт>]`.
-- Порядок в `location.address_text`: сначала регион, затем округ/район, затем (опционально) населенный пункт.
-- Сокращения: `Московская область` → `МО`, `<регион> область` → `<регион> обл.`.
-- В `location.address_text` формы `городской округ`, `муниципальный округ`, `м.о.` приводить к `округ <название>`.
-- В `location.district` хранить готовую строку для UI целиком; UI должен выводить это поле **как есть**, без дописывания `район`, `округ` и т.п.
-- Для `location.district` в поселках Московской области использовать привычную форму `... район` (`Истринский район`, `Ступинский район`, `Домодедовский район`), даже если в `location.address_text` используется нормализованное `округ <название>`.
-- Населенный пункт добавлять только если это повышает понятность и **не** дублирует название поселка; использовать краткие формы `д.` и `с.`.
-- Не включать в `location.address_text` название КП, улицу, дом, кадастровые/служебные формулировки.
-- Примеры: `Московская область, городской округ Домодедово, деревня Матчино` → `МО, округ Домодедово, д. Матчино`; `Ступинский район, Московская область` → `МО, округ Ступино`.
-
-### Path Aliases
-
-Доступны в tsconfig.json:
-
-- `@/*` → `src/*`
-- `@components/*` → `src/components/*`
-- `@lib/*` → `src/lib/*`
-- `@data/*` → `src/data/*`
-- `@layouts/*` → `src/layouts/*`
-- `@styles/*` → `src/styles/*`
-
-### Git
-
-- Не коммитить секреты и credentials
-- Не запускать git-команды без явной просьбы
-- Коммиты должны быть сфокусированы на одной задаче
-
-## Структура проекта
-
-```
-src/
-├── components/    # Svelte компоненты (*.svelte + *.test.ts)
-├── layouts/       # Astro layouts (*.astro)
-├── pages/         # Astro страницы (роуты)
-├── lib/           # Утилиты, схемы, бизнес-логика
-├── data/          # YAML файлы с данными
-└── styles/        # Глобальные CSS
-```
-
-## Важные замечания
-
-- **Astro content collections cache**: Astro кэширует распарсенные YAML в `node_modules/.astro/data-store.json`. При изменении схемы (`src/lib/schema.ts`) или логики transform Astro **не** инвалидирует этот кэш автоматически — если YAML-файл не менялся, берётся старая версия из кэша. Скрипт `prebuild` в `package.json` чистит `node_modules/.astro/data-store.json` и `.astro/` перед `pnpm build`. Если ручная пересборка даёт устаревшие данные — удалять `node_modules/.astro/data-store.json` вручную.
-- Svelte 5 runes mode включен (compilerOptions.runes: true)
-- Тесты используют happy-dom окружение
-- Русская локаль для форматирования валюты и чисел
-- Static site output; сборка идет в корень сайта (`/`)
-- **Не запускать `pnpm dev` без явной просьбы** — команда запускает watch-режим и не завершается автоматически
-- Для `src/pages/data/explorer.json.ts` и главного `SettlementsExplorer` использовать отдельный минимальный DTO для списка/карты. Полный agent-facing feed живет отдельно в `src/pages/data/settlements.json.ts`. Не включать detail-only поля (`sources`, `website`, `telegram`, `infrastructure`, `common_spaces`, `service_model`, лишние поля `location`, полный `tariff`, полный `management_company`) в `explorer.json` без явной необходимости; при изменениях payload замерять размер до/после.
-- Публичные agent-facing endpoints: `src/pages/llms.txt.ts`, `src/pages/llms-full.txt.ts` и `src/pages/.well-known/agent-skills/index.json.ts` (`/.well-known/agent-skills/index.json`). Skill-файлы лежат в `public/.well-known/agent-skills/*/SKILL.md`, а `index.json` собирается из их frontmatter и содержимого с автоматическим `sha256` digest.
-- При изменениях канонических URL, `data/settlements.json`, `data/explorer.json`, маршрута `/settlements/[slug]/`, контакта для правок, правил работы с источниками или методики рейтинга нужно синхронно обновлять `src/lib/llms.ts`, `src/lib/skills.ts` и соответствующие `public/.well-known/agent-skills/*/SKILL.md`.
-- Публичный discovery по полному agent feed завязан на `src/pages/for-agents.astro`, `src/pages/schemas/settlements.schema.json.ts`, `src/pages/openapi/settlements.openapi.json.ts`, `src/pages/.well-known/api-catalog.ts` и `src/lib/discovery.ts`; при изменениях `data/settlements.json`, `data/explorer.json`, канонических URL, маршрута `/settlements/[slug]/` или описания рейтинга нужно синхронно обновлять эти файлы, чтобы agent docs, schema, OpenAPI и catalog не расходились с реальным payload.
-- Build-time рейтинг поселков описан в `docs/rating.md`.
-- Если меняется схема данных поселка или состав полей, которые реально хранятся/отдаются по поселку, нужно пересмотреть формулу рейтинга в `src/lib/rating.ts` и обновить `docs/rating.md` под новую схему.
-- Если меняются правила расчета рейтинга или текстовые объяснения логики, нужно обновить и публичную страницу `src/pages/rating.astro`.
+- Не дублировать compare-логику в `apps/www`; compare должен приезжать туда как отдельный section build.
+- Общие стили и UI-примитивы выносить в `packages/ui`.
+- Общие URL/build helper-утилиты выносить в `packages/url` или `scripts/`.
+- При изменениях deploy-потока синхронно обновлять `.github/workflows/*` и `ops/nginx/*`.
+- Не запускать `pnpm dev` без явной просьбы: использовать точечные `pnpm dev:www` или `pnpm dev:compare`.

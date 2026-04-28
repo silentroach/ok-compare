@@ -1,31 +1,24 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": [".env*"],
+  "globalDependencies": [".env*", "apps/*/.env*"],
   "tasks": {
-    "//#build:app": {
-      "outputs": ["dist/**"]
+    "build": {
+      "outputs": ["dist/site/**"]
     },
-    "build:app": {
-      "outputs": ["dist/**"]
+    "build:section": {
+      "outputs": ["dist/section/**"]
     },
-    "//#dev:app": {
+    "build:legacy": {
+      "outputs": ["dist/legacy/**"]
+    },
+    "dev": {
       "cache": false,
       "persistent": true
     },
-    "dev:app": {
-      "cache": false,
-      "persistent": true
-    },
-    "//#test:app": {
+    "test": {
       "outputs": []
     },
-    "test:app": {
-      "outputs": []
-    },
-    "//#typecheck:app": {
-      "outputs": []
-    },
-    "typecheck:app": {
+    "typecheck": {
       "outputs": []
     }
   }

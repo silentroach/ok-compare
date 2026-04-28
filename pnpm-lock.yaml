@@ -91,6 +91,92 @@ importers:
         specifier: ^4.1.2
         version: 4.1.2(@types/node@25.5.2)(happy-dom@20.8.9)(jsdom@29.0.1)(vite@7.3.2(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.3))
 
+  apps/compare:
+    dependencies:
+      '@astrojs/sitemap':
+        specifier: ^3.7.2
+        version: 3.7.2
+      '@astrojs/svelte':
+        specifier: ^8.0.4
+        version: 8.0.4(@types/node@25.5.2)(astro@6.1.6(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.1)(typescript@6.0.2)(yaml@2.8.3))(jiti@2.6.1)(lightningcss@1.32.0)(svelte@5.55.3(@typescript-eslint/types@8.58.0))(typescript@6.0.2)(yaml@2.8.3)
+      '@shelkovo/format':
+        specifier: workspace:*
+        version: link:../../packages/format
+      '@shelkovo/geo':
+        specifier: workspace:*
+        version: link:../../packages/geo
+      '@shelkovo/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@shelkovo/url':
+        specifier: workspace:*
+        version: link:../../packages/url
+      astro:
+        specifier: ^6.1.6
+        version: 6.1.6(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.1)(typescript@6.0.2)(yaml@2.8.3)
+      svelte:
+        specifier: ^5.25.0
+        version: 5.55.3(@typescript-eslint/types@8.58.0)
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      '@sveltejs/vite-plugin-svelte':
+        specifier: ^7.0.0
+        version: 7.0.0(svelte@5.55.3(@typescript-eslint/types@8.58.0))(vite@7.3.2(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.3))
+      '@tailwindcss/vite':
+        specifier: ^4.0.0
+        version: 4.2.2(vite@7.3.2(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.3))
+      '@testing-library/svelte':
+        specifier: ^5.2.0
+        version: 5.3.1(svelte@5.55.3(@typescript-eslint/types@8.58.0))(vite@7.3.2(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.3))(vitest@4.1.2(@types/node@25.5.2)(happy-dom@20.8.9)(jsdom@29.0.1)(vite@7.3.2(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.3)))
+      '@yandex/ymaps3-types':
+        specifier: ^1.0.19072130
+        version: 1.0.19072130
+      astro-compressor:
+        specifier: ^1.3.0
+        version: 1.3.0
+      happy-dom:
+        specifier: ^20.8.9
+        version: 20.8.9
+      tailwindcss:
+        specifier: ^4.0.0
+        version: 4.2.2
+      typescript:
+        specifier: ^6.0.2
+        version: 6.0.2
+      vite:
+        specifier: ^7
+        version: 7.3.2(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.3)
+      vitest:
+        specifier: ^4.1.2
+        version: 4.1.2(@types/node@25.5.2)(happy-dom@20.8.9)(jsdom@29.0.1)(vite@7.3.2(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.3))
+
+  apps/www:
+    dependencies:
+      '@astrojs/sitemap':
+        specifier: ^3.7.2
+        version: 3.7.2
+      '@shelkovo/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      astro:
+        specifier: ^6.1.6
+        version: 6.1.6(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.1)(typescript@6.0.2)(yaml@2.8.3)
+    devDependencies:
+      '@tailwindcss/vite':
+        specifier: ^4.0.0
+        version: 4.2.2(vite@7.3.2(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.3))
+      tailwindcss:
+        specifier: ^4.0.0
+        version: 4.2.2
+      typescript:
+        specifier: ^6.0.2
+        version: 6.0.2
+      vite:
+        specifier: ^7
+        version: 7.3.2(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.3)
+
   packages/format:
     dependencies:
       luxon:
@@ -109,6 +195,12 @@ importers:
 
   packages/ui:
     dependencies:
+      '@fontsource/fira-sans':
+        specifier: ^5.2.7
+        version: 5.2.7
+      '@fontsource/pt-sans-caption':
+        specifier: ^5.2.8
+        version: 5.2.8
       '@shelkovo/url':
         specifier: workspace:*
         version: link:../url

@@ -1,307 +1,56 @@
-# Shelkovo Compare
+# Shelkovo Workspace
 
-Статический микролендинг для сравнения тарифов на обслуживание коттеджного посёлка Шелково с другими посёлками в округе.
+Монорепозиторий для сайтов и shared-пакетов Шелково.
 
-## Описание
+## Состав
 
-Проект для сравнения тарифов на обслуживание между коттеджными посёлками в округе. Визуальное представление данных для объективной оценки.
-
-### Главная страница: SSR + клиентские данные
-
-- Для SEO/ботов список поселков рендерится целиком в HTML (статический fallback).
-- Интерактивный `SettlementsExplorer` загружается только на клиенте и получает данные из `data/explorer.json`.
-- После успешной загрузки интерактивного блока статический fallback скрывается.
-
-## Технологический стек
-
-- **Фреймворк**: Astro (static output)
-- **UI-компоненты**: Svelte 5
-- **Стили**: Tailwind CSS
-- **Данные**: YAML + Astro Content Collections
-- **Валидация**: Zod (встроенный в Astro)
-- **Карта**: Яндекс JS API v3
-- **Язык**: Русский
-
-## Структура данных Settlement
-
-Каждый поселок описывается в отдельном YAML-файле в директории `src/data/settlements/`.
-
-## Где хранится мета-контекст проекта
-
-- Базовый контекст и предметная область задаются в данных поселков: `src/data/settlements/*.yaml`.
-- SEO-метаданные страниц задаются в `src/layouts/BaseLayout.astro` и в пропсах страниц (`src/pages/**/*.astro`).
-
-### Полная схема данных
-
-```yaml
-# Основная информация
-name: Коттеджный поселок Шелково # Полное название
-short_name: Шелково # Короткое название
-slug: shelkovo # URL-friendly идентификатор
-website: https://shelkovo.ru # Официальный сайт
-telegram: shelkovo # Telegram-канал (опционально, без @)
-# management_company может быть строкой или объектом:
-management_company:
-  title: УК Шелково
-  url: https://example.com
-is_baseline: true # true для базового поселка (Шелково)
-
-# Локация
-location:
-  address_text: МО, округ Мытищи, д. Шелково
-  lat: 56.0500 # Широта
-  lng: 37.6000 # Долгота
-  map_url: https://yandex.ru/maps/org/example/1234567890
-  district: Мытищинский район # Район
-
-# Тариф
-tariff:
-  value: 4500 # Стоимость
-  unit: rub_per_sotka # rub_per_sotka | rub_per_lot | rub_fixed
-  period: month # month | quarter | year
-  note: Тариф за сотку в месяц # Примечание
-
-# Дополнительные сигналы для рейтинга
-water_in_tariff: true # Только если центральная вода уже включена в тариф безлимитно
-rabstvo: true # Если поселок упоминается в канале "Коттеджное рабство"
-
-# Для двухкомпонентного/многокомпонентного тарифа можно передать список:
-# tariff:
-#   - value: 5813
-#     unit: rub_per_lot
-#     period: month
-#   - value: 100
-#     unit: rub_per_sotka
-#     period: month
-
-# normalized_per_sotka_month НЕ заполняется в YAML:
-# поле считается автоматически в схеме.
-
-# Участки (опционально, влияет на нормализацию тарифа)
-lots:
-  count: 150 # Количество участков
-  area_ha: 29.6 # Общая площадь, га
-  average_sotka: 17.8 # Средняя площадь участка, соток (только подтвержденная)
-  average_note: Средняя площадь рассчитана по опубликованным площадям лотов
-
-# Инфраструктура (yes | no | partial - не указано = неизвестно)
-infrastructure:
-  # Тип дорог (asphalt > partial_asphalt > gravel > dirt)
-  roads: partial_asphalt
-  sidewalks: no
-  lighting: yes
-  gas: yes
-  water: yes # Центральное водоснабжение
-  sewage: no # Центральная канализация
-  # Ливневка (closed > open > none)
-  drainage: open
-  checkpoints: yes
-  security: yes
-  fencing: yes # Закрытая территория
-  # Видеонаблюдение (full > checkpoint_only > none)
-  video_surveillance: checkpoint_only
-  # Подземная электросеть (full > partial > none)
-  underground_electricity: partial
-  admin_building: no
-  retail_or_services: no # Магазины
-
-# Общие пространства (yes | no | partial - не указано = неизвестно)
-common_spaces:
-  club_infrastructure: yes # Общая клубная инфраструктура (агрегирует многие пункты ниже)
-  playgrounds: yes
-  sports: yes
-  pool: no
-  fitness_club: no
-  restaurant: no
-  spa_center: no
-  walking_routes: no
-  water_access: yes # Выход к воде (отдельно от пляжа)
-  beach_zones: no # Пляжные зоны
-  kids_club: no
-  sports_camp: no
-  primary_school: no
-  bbq_zones: no
-
-# Сервисная модель (yes | no | partial - не указано = неизвестно)
-service_model:
-  garbage_collection: yes
-  snow_removal: yes
-  road_cleaning: yes
-  landscaping: yes
-  emergency_service: yes
-  dispatcher: yes
-
-# Источники данных
-sources:
-  - title: Официальный сайт Шелково
-    url: https://shelkovo.ru
-    type: official # official | community | media | personal
-    date_checked: 2026-04-03
-    comment: Текущий тариф
+```text
+apps/
+  compare/   # compare-приложение: /compare + legacy standalone
+  www/       # корневой сайт kpshelkovo.online
+packages/
+  ui/        # shared styles / UI primitives
+  url/
+  format/
+  geo/
+ops/         # nginx и deploy-конфиги
 ```
-
-### Нормализация тарифа
-
-- `normalized_per_sotka_month` вычисляется автоматически.
-- Для одного тарифа (object) используется `value + unit + period`.
-- Для списка тарифов (array) нормализуется каждый элемент и берется сумма.
-- Базовые формулы:
-  - `rub_per_sotka`: `value / period`
-  - `rub_per_lot`: `(value / period) / 10`
-  - `rub_fixed`: `(value / period) / 10`
-- Если указано `lots.average_sotka`, оно используется вместо дефолтных `10` соток для пересчета `rub_per_lot` и `rub_fixed`.
-- На интерфейсе:
-  - для `rub_per_lot` и `rub_fixed` показывается `~` перед тарифом,
-  - на hover выводится формула пересчета.
-- Если `water_in_tariff: true`, на странице поселка рядом с тарифом показывается пометка `Вода включена в тариф`.
-- В YAML не используйте кавычки, если значение можно записать без них.
-
-### Дополнительные поля рейтинга
-
-- `water_in_tariff`
-  - Используется только если в поселке подтверждено центральное водоснабжение (`infrastructure.water: yes`).
-  - Означает, что вода уже входит в тариф и ей можно пользоваться без отдельной доплаты.
-  - Для условного рейтинга это положительная корректировка.
-- `rabstvo`
-  - Ставится только при подтвержденном упоминании поселка в Telegram-канале `@obmandachniki` / `Коттеджное рабство`.
-  - Для условного рейтинга это сильная отрицательная корректировка.
-  - На странице поселка показывается красная плашка `Коттеджное рабство` со ссылкой на канал.
-
-### Условный рейтинг
-
-- Методика подробно описана на публичной странице `/rating/` и в технической заметке `docs/rating.md`.
-- Тариф не влияет на условный рейтинг.
-- Дополнительно применяются две корректировки:
-  - `+4` балла, если вода включена в тариф.
-  - `-15` баллов, если поселок упоминается в `Коттеджном рабстве`.
-
-### Enum значения
-
-**AvailabilityStatus** (для инфраструктуры, общих пространств и сервисов):
-
-- `yes` — есть
-- `no` — нет
-- `partial` — частично
-- Не указано — неизвестно
-
-**RoadType** (тип дорог, упорядочен от лучшего к худшему):
-
-- `asphalt` — асфальт
-- `partial_asphalt` — частично асфальт
-- `gravel` — асфальтная крошка/гравий
-- `dirt` — грунтовка
-
-**DrainageType** (ливневая канализация, упорядочена от лучшей к худшей):
-
-- `closed` — закрытая
-- `open` — открытая
-- `none` — отсутствует
-
-**VideoSurveillance** (видеонаблюдение, упорядочено от лучшего к худшему):
-
-- `full` — есть по всему периметру
-- `checkpoint_only` — только на КПП
-- `none` — отсутствует
-
-**UndergroundElectricity** (подземная электросеть, упорядочено от лучшего к худшему):
-
-- `full` — полностью подземная
-- `partial` — частично подземная
-- `none` — только по столбам
-
-**TariffUnit** (единица тарифа):
-
-- `rub_per_sotka` — рубли за сотку
-- `rub_per_lot` — рубли за участок
-- `rub_fixed` — фиксированная сумма
-
-**TariffPeriod** (период тарифа):
-
-- `month` — в месяц
-- `quarter` — в квартал
-- `year` — в год
-
-**SourceType** (тип источника):
-
-- `official` — официальный (сайт УК, документы)
-- `community` — сообщество (чаты, форумы)
-- `media` — СМИ
-- `personal` — личные наблюдения
 
 ## Команды
 
 ```bash
-# Запуск dev-сервера (только по явной необходимости; запускает watch-режим)
+# integrated local stack: www on :4321, compare on /compare
 pnpm dev
 
-# Сборка
-pnpm build
+# root site only
+pnpm dev:www
 
-# Превью сборки
-pnpm preview
+# compare app
+pnpm dev:compare
 
-# Проверка типов
+# проверки
 pnpm typecheck
-
-# Запуск тестов
 pnpm test
 
-# Тесты в watch-режиме
-pnpm test:watch
+# сборка
+pnpm build
+pnpm build:main
+pnpm build:legacy
 ```
 
-## Добавление нового поселка
+## Выходы сборки
 
-1. Скопируйте `src/data/settlements/_template.yaml`
-2. Переименуйте файл в `{slug}.yaml`
-3. Заполните все поля
-4. Убедитесь, что `slug` уникален
-5. Запустите `pnpm typecheck` для проверки
+- `dist/www` — основной сайт `kpshelkovo.online`
+- `dist/www/compare` — compare-раздел на новом домене
+- `dist/legacy` — standalone compare на старом домене
 
 ## Деплой
 
-Сборка производится командой `pnpm build`. Результат находится в директории `dist/` и рассчитан на публикацию в корне сайта.
+- `kpshelkovo.online` получает содержимое `dist/www`
+- старый compare-домен получает содержимое `dist/legacy`
+- nginx-конфиги лежат в `ops/nginx/`
 
-Боевой nginx vhost для `https://сравни.шелково.рф` хранится в `ops/nginx/sravni-shelkovo.conf`.
+## Где искать детали
 
-## Правила развития дизайн-системы
-
-### Как добавлять новый цвет или state
-
-1. Добавляйте токен в `src/styles/global.css` в `@theme` с семантическим именем (`--color-*`).
-2. Для status-состояний добавляйте полный набор: `--color-<state>`, `--color-<state>-soft`, `--color-<state>-border`, `--color-<state>-text`.
-3. Используйте semantic utility-классы (`text-foreground`, `bg-muted-soft`, `border-border`) или готовые `ui-*` примитивы.
-4. Не добавляйте raw palette-классы (`text-slate-*`, `bg-gray-*`, `text-sky-*`) в `src/pages/**` и `src/components/**`.
-
-### Когда использовать `ui-*` примитивы
-
-- Используйте `ui-*`, если паттерн повторяется минимум в двух местах (кнопки, бэйджи, таблицы, карточки, пиллы, икон-кнопки).
-- Используйте локальный Tailwind-класс, если стиль уникален для конкретного блока и не является reusable компонентом.
-- Если локальный стиль начал повторяться, переносите его в `src/styles/global.css` как новый `ui-*` примитив.
-
-### Когда допустимы arbitrary values
-
-Arbitrary values допустимы только в одном из случаев:
-
-1. Декоративные эффекты, которые нельзя выразить стандартными semantic utility (`mask-image`, сложные `radial/linear-gradient`, точечные `text-shadow`).
-2. Точное позиционирование для визуального слоя (например, hero bleed/overlay).
-3. Интеграционные ограничения внешних виджетов (например, map overlay).
-
-Во всех остальных случаях используйте токены и semantic utility-классы.
-
-### Зафиксированные исключения
-
-- `src/pages/settlements/[slug].astro`: hero overlays/gradients, `text-shadow`, backdrop blur и декоративный подъем секции.
-- `src/components/KPIStats.svelte`: точечные glass-эффекты и тени для embed-режима карточек.
-- `src/components/SettlementMap.svelte`: слой-перехватчик поверх неинтерактивной карты (`z-[5]`).
-- `src/components/SettlementCard.svelte`: фиксированный spacer `h-[24px]` для выравнивания карточек baseline/не-baseline.
-
-### QA-чеклист перед merge
-
-1. `pnpm typecheck` — без ошибок.
-2. `pnpm test` — все тесты green.
-3. Ручной smoke по брейкпоинтам: `<=767`, `768-1023`, `>=1024` на страницах главная, карточки, фильтры/карта, страница посёлка, 404.
-
-## Лицензия
-
-Приватный проект.
+- compare-specific правила: `apps/compare/AGENTS.md`
+- www-specific правила: `apps/www/AGENTS.md`

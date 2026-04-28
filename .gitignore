@@ -1,6 +1,8 @@
 node_modules/
 dist/
 .astro/
+apps/*/dist/
+apps/*/.astro/
 .turbo/
 .agents/
 logs/

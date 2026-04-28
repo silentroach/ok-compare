@@ -1,1 +1,1 @@
-deploy ALL=(root) NOPASSWD: /usr/bin/install -m 755 /tmp/deploy-sravni-shelkovo.sh /usr/local/sbin/deploy-sravni-shelkovo, /usr/local/sbin/deploy-sravni-shelkovo /tmp/sravni-shelkovo.conf.new
+deploy ALL=(root) NOPASSWD: /usr/bin/install -m 755 /tmp/deploy-nginx-site.sh /usr/local/sbin/deploy-nginx-site, /usr/local/sbin/deploy-nginx-site /tmp/kpshelkovo-online.conf.new kpshelkovo-online, /usr/local/sbin/deploy-nginx-site /tmp/sravni-shelkovo.conf.new sravni-shelkovo

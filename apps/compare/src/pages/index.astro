@@ -1,0 +1,96 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.svelte';
+import KPIStats from '../components/KPIStats.svelte';
+import SettlementCard from '../components/SettlementCard.svelte';
+import SettlementsExplorer from '../components/SettlementsExplorer.svelte';
+import { loadAllData } from '../lib/data';
+import { toExplorer } from '../lib/explorer';
+import { canon } from '../lib/site';
+import { rankSettlements } from '../lib/stats';
+import { withBase } from '../lib/url';
+
+// Load all data at build time
+const { settlements, stats, comparisons, ratings } = await loadAllData();
+const ranks = rankSettlements(settlements);
+const levels = Math.max(new Set(ranks.values()).size, 1);
+const list = toExplorer(settlements, ratings);
+
+// Convert comparisons Map to a plain object for serialization
+const comparisonsObj = Object.fromEntries(comparisons);
+const dataUrl = withBase('data/explorer.json');
+
+const cards = [...list].sort((a, b) => {
+  const d = b.rating - a.rating;
+  if (d !== 0) return d;
+  return a.short_name.localeCompare(b.short_name, 'ru');
+});
+
+const pageTitle = 'Сравнение тарифов поселков рядом с Шелково';
+const pageDescription = `Сравните ${stats.totalSettlements} поселков по тарифам, инфраструктуре и сервисам. Карточки, карта и сравнение с Шелково в одном месте.`;
+const pageUrl = canon('/');
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: pageTitle,
+  description: pageDescription,
+  url: pageUrl,
+  inLanguage: 'ru-RU',
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: cards.length,
+    itemListElement: cards.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: canon(`/settlements/${item.slug}/`),
+    })),
+  },
+};
+---
+
+<BaseLayout title={pageTitle} description={pageDescription} schema={schema}>
+  <main class="ui-page py-6 md:py-10">
+    <Hero
+      title="Тарифы на содержание поселков"
+      subtitle="Структурированное сравнение поселков по цене, инфраструктуре и сервисам"
+    >
+      <KPIStats stats={stats} embed />
+    </Hero>
+
+    <section
+      id="settlements"
+      aria-labelledby="settlements-title"
+      class="mt-6 space-y-6 md:mt-8"
+    >
+      <h2 id="settlements-title" class="sr-only font-bold">
+        Список поселков для сравнения
+      </h2>
+      <SettlementsExplorer dataUrl={dataUrl} client:only="svelte" />
+
+      <div id="settlements-static">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {
+            cards.map((settlement) => (
+              <SettlementCard
+                settlement={settlement}
+                comparison={comparisonsObj[settlement.slug]}
+                rank={ranks.get(settlement.slug) ?? levels}
+                base={stats.shelkovoRank}
+                total={levels}
+                isBaseline={settlement.is_baseline}
+              />
+            ))
+          }
+        </div>
+      </div>
+
+      <script is:inline>
+        window.addEventListener('explorer:ready', () => {
+          const fallback = document.getElementById('settlements-static');
+          if (fallback) fallback.style.display = 'none';
+        });
+      </script>
+    </section>
+  </main>
+</BaseLayout>

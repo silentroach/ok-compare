@@ -1,0 +1,39 @@
+{
+  "name": "@shelkovo/compare",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node ../../scripts/check-port.mjs 4322 && COMPARE_SITE=https://kpshelkovo.online COMPARE_BASE=/compare COMPARE_CANONICAL_SITE=https://kpshelkovo.online COMPARE_CANONICAL_BASE=/compare COMPARE_DEV_PORT=4322 astro dev --port 4322",
+    "build": "pnpm run build:section",
+    "build:section": "COMPARE_SITE=https://kpshelkovo.online COMPARE_BASE=/compare COMPARE_OUT_DIR=dist/section COMPARE_CANONICAL_SITE=https://kpshelkovo.online COMPARE_CANONICAL_BASE=/compare astro build",
+    "build:legacy": "COMPARE_SITE=https://сравни.шелково.рф COMPARE_BASE=/ COMPARE_OUT_DIR=dist/legacy COMPARE_CANONICAL_SITE=https://kpshelkovo.online COMPARE_CANONICAL_BASE=/compare COMPARE_SITEMAP=false astro build",
+    "preview": "astro preview",
+    "typecheck": "astro sync && tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.2",
+    "@astrojs/svelte": "^8.0.4",
+    "@shelkovo/format": "workspace:*",
+    "@shelkovo/geo": "workspace:*",
+    "@shelkovo/ui": "workspace:*",
+    "@shelkovo/url": "workspace:*",
+    "astro": "^6.1.6",
+    "svelte": "^5.25.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.0.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "@testing-library/svelte": "^5.2.0",
+    "@yandex/ymaps3-types": "^1.0.19072130",
+    "astro-compressor": "^1.3.0",
+    "happy-dom": "^20.8.9",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^6.0.2",
+    "vite": "^7.3.2",
+    "vitest": "^4.1.2"
+  }
+}

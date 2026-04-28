@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Шелково Онлайн';
+const description =
+  'Новый главный сайт kpshelkovo.online. Сравнение тарифов продолжает жить в отдельном разделе /compare.';
+---
+
+<BaseLayout title={title} description={description}>
+  <main class="ui-page py-8 md:py-12">
+    <section class="ui-shell-strong overflow-hidden p-6 md:p-8 lg:p-10">
+      <div class="max-w-3xl space-y-5">
+        <div class="flex flex-wrap gap-2">
+          <span class="ui-chip">kpshelkovo.online</span>
+          <span class="ui-chip">Главный сайт</span>
+          <span class="ui-chip">/compare</span>
+        </div>
+
+        <div class="space-y-3">
+          <h1
+            class="text-4xl font-bold tracking-tight text-foreground md:text-5xl"
+          >
+            Шелково Онлайн
+          </h1>
+          <p class="ui-copy max-w-2xl text-muted-foreground">
+            Корневой сайт уже отделен от compare-приложения. Сравнение тарифов и
+            данных о поселках продолжает публиковаться в отдельном разделе.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-3">
+          <a
+            href="/compare/"
+            class="ui-btn ui-btn-md ui-btn-solid ui-btn-primary"
+          >
+            Открыть compare
+          </a>
+          <a
+            href="/compare/for-agents/"
+            class="ui-btn ui-btn-md ui-btn-outline"
+          >
+            Машинный feed
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

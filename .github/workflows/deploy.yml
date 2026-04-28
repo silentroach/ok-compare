@@ -39,7 +39,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-${{ github.event.workflow_run.head_branch || github.head_ref || github.ref_name }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'turbo.json') }}
+          key: ${{ runner.os }}-turbo-${{ github.event.workflow_run.head_branch || github.head_ref || github.ref_name }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'turbo.json', 'apps/*/package.json', 'packages/*/package.json') }}
           restore-keys: |
             ${{ runner.os }}-turbo-${{ github.event.workflow_run.head_branch || github.head_ref || github.ref_name }}-
             ${{ runner.os }}-turbo-
@@ -66,12 +66,13 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: 'https://сравни.шелково.рф'
+      url: 'https://kpshelkovo.online'
     env:
       DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
       DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
       DEPLOY_USER: ${{ secrets.DEPLOY_USER || 'deploy' }}
-      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+      DEPLOY_WWW_PATH: ${{ secrets.DEPLOY_WWW_PATH }}
+      DEPLOY_COMPARE_PATH: ${{ secrets.DEPLOY_COMPARE_PATH }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -88,7 +89,8 @@ jobs:
         run: |
           host="$(printf '%s' "$DEPLOY_HOST" | tr -d '\r\n' | xargs)"
           user="$(printf '%s' "$DEPLOY_USER" | tr -d '\r\n' | xargs)"
-          path="$(printf '%s' "$DEPLOY_PATH" | tr -d '\r\n')"
+          www_path="$(printf '%s' "$DEPLOY_WWW_PATH" | tr -d '\r\n')"
+          compare_path="$(printf '%s' "$DEPLOY_COMPARE_PATH" | tr -d '\r\n')"
           port="$(printf '%s' "$DEPLOY_PORT" | tr -d '\r\n' | xargs)"
 
           host="${host#http://}"
@@ -97,7 +99,8 @@ jobs:
 
           test -n "$host"
           test -n "$user"
-          test -n "$path"
+          test -n "$www_path"
+          test -n "$compare_path"
 
           case "$host" in
             *[[:space:]]*|*/*|*@*)
@@ -120,15 +123,21 @@ jobs:
               ;;
           esac
 
-          if [ "${path#/}" = "$path" ]; then
-            echo "DEPLOY_PATH must be absolute: $path"
+          if [ "${www_path#/}" = "$www_path" ]; then
+            echo "DEPLOY_WWW_PATH must be absolute: $www_path"
+            exit 1
+          fi
+
+          if [ "${compare_path#/}" = "$compare_path" ]; then
+            echo "DEPLOY_COMPARE_PATH must be absolute: $compare_path"
             exit 1
           fi
 
           {
             echo "DEPLOY_HOST=$host"
             echo "DEPLOY_USER=$user"
-            echo "DEPLOY_PATH=$path"
+            echo "DEPLOY_WWW_PATH=$www_path"
+            echo "DEPLOY_COMPARE_PATH=$compare_path"
             echo "DEPLOY_PORT=$port"
           } >> "$GITHUB_ENV"
 
@@ -157,11 +166,20 @@ jobs:
           rsync -az --delete --mkpath --chmod=D755,F644 \
             --exclude '/static/' \
             -e "$ssh_opts" \
-            dist/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/"
+            dist/www/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_WWW_PATH/"
 
           rsync -az --mkpath --chmod=D755,F644 \
             -e "$ssh_opts" \
-            dist/static/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/static/"
+            dist/www/static/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_WWW_PATH/static/"
+
+          rsync -az --delete --mkpath --chmod=D755,F644 \
+            --exclude '/static/' \
+            -e "$ssh_opts" \
+            dist/legacy/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_COMPARE_PATH/"
+
+          rsync -az --mkpath --chmod=D755,F644 \
+            -e "$ssh_opts" \
+            dist/legacy/static/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_COMPARE_PATH/static/"
 
       - name: Prune stale hashed assets
         run: |
@@ -170,10 +188,12 @@ jobs:
           ssh $ssh_opts "$DEPLOY_USER@$DEPLOY_HOST" '
             set -eu
 
-            if [ -d "'$DEPLOY_PATH'/static" ]; then
-              find "'$DEPLOY_PATH'/static" -type f -mtime +30 -delete
-              find "'$DEPLOY_PATH'/static" -type d -empty -delete
-            fi
+            for dir in "'$DEPLOY_WWW_PATH'/static" "'$DEPLOY_COMPARE_PATH'/static"; do
+              if [ -d "$dir" ]; then
+                find "$dir" -type f -mtime +30 -delete
+                find "$dir" -type d -empty -delete
+              fi
+            done
           '
 
       - name: Deploy nginx config
@@ -181,16 +201,16 @@ jobs:
           ssh_opts="-p $DEPLOY_PORT -o ControlMaster=auto -o ControlPersist=600 -o ControlPath=$HOME/.ssh/cm-%C"
           scp_opts="-P $DEPLOY_PORT -o ControlMaster=auto -o ControlPersist=600 -o ControlPath=$HOME/.ssh/cm-%C"
 
-          scp $scp_opts ops/nginx/deploy-sravni-shelkovo.sh "$DEPLOY_USER@$DEPLOY_HOST:/tmp/deploy-sravni-shelkovo.sh"
+          scp $scp_opts ops/nginx/deploy-nginx-site.sh "$DEPLOY_USER@$DEPLOY_HOST:/tmp/deploy-nginx-site.sh"
+          scp $scp_opts ops/nginx/kpshelkovo-online.conf "$DEPLOY_USER@$DEPLOY_HOST:/tmp/kpshelkovo-online.conf.new"
+          scp $scp_opts ops/nginx/sravni-shelkovo.conf "$DEPLOY_USER@$DEPLOY_HOST:/tmp/sravni-shelkovo.conf.new"
 
           ssh $ssh_opts "$DEPLOY_USER@$DEPLOY_HOST" '
             set -eu
 
-            trap "rm -f /tmp/deploy-sravni-shelkovo.sh /tmp/sravni-shelkovo.conf.new" EXIT
+            trap "rm -f /tmp/deploy-nginx-site.sh /tmp/kpshelkovo-online.conf.new /tmp/sravni-shelkovo.conf.new" EXIT
 
-            sudo -n install -m 755 /tmp/deploy-sravni-shelkovo.sh /usr/local/sbin/deploy-sravni-shelkovo
-
-            tmp="/tmp/sravni-shelkovo.conf.new"
-            cat > "$tmp"
-            sudo -n /usr/local/sbin/deploy-sravni-shelkovo "$tmp"
-          ' < ops/nginx/sravni-shelkovo.conf
+            sudo -n install -m 755 /tmp/deploy-nginx-site.sh /usr/local/sbin/deploy-nginx-site
+            sudo -n /usr/local/sbin/deploy-nginx-site /tmp/kpshelkovo-online.conf.new kpshelkovo-online
+            sudo -n /usr/local/sbin/deploy-nginx-site /tmp/sravni-shelkovo.conf.new sravni-shelkovo
+          '
