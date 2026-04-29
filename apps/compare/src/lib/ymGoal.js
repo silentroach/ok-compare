@@ -5,8 +5,11 @@ activity({
   testPeriod: 10,
   useMultiMode: 0,
   callBack() {
-    if (typeof window.ym === 'function') {
-      window.ym(108465472, 'reachGoal', '60_sec');
+    const raw = document.documentElement.dataset.ymId;
+    const id = Number(raw ?? '108465472');
+
+    if (typeof window.ym === 'function' && Number.isFinite(id)) {
+      window.ym(id, 'reachGoal', '60_sec');
     }
   },
 });

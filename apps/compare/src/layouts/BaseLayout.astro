@@ -41,12 +41,16 @@ const docs = (schema ? (Array.isArray(schema) ? schema : [schema]) : []).map(
   (item) => JSON.stringify(item).replace(/</g, '\\u003c'),
 );
 const prod = import.meta.env.PROD;
-const ymId = 108465472;
-const ym = `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=${ymId}','ym');ym(${ymId},'init',{ssr:true,webvisor:true,clickmap:true,ecommerce:'dataLayer',referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});`;
+const section = import.meta.env.SITE === 'https://kpshelkovo.online';
+const ymId = section ? 108975391 : 108465472;
+const ymInit = section
+  ? '{ssr:true,clickmap:true,referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true}'
+  : "{ssr:true,webvisor:true,clickmap:true,ecommerce:'dataLayer',referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true}";
+const ym = `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=${ymId}','ym');ym(${ymId},'init',${ymInit});`;
 ---
 
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-ym-id={String(ymId)}>
   <head>
     <base href={import.meta.env.BASE_URL} />
     <meta charset="UTF-8" />
@@ -106,9 +110,7 @@ const ym = `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).p
     {docs.map((item) => <script type="application/ld+json" set:html={item} />)}
 
     {prod && <script is:inline type="text/javascript" set:html={ym} />}
-    <script>
-      import '@lib/ymGoal.js';
-    </script>
+    {!section && <script>import '@lib/ymGoal.js';</script>}
   </head>
   <body class="flex min-h-screen flex-col text-foreground">
     {
