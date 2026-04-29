@@ -6,6 +6,7 @@
   "exports": {
     "./theme": "./src/theme.ts",
     "./Link.svelte": "./src/Link.svelte",
+    "./SiteFooter.astro": "./src/SiteFooter.astro",
     "./styles.css": "./styles.css"
   },
   "dependencies": {

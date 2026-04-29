@@ -274,6 +274,48 @@
   margin-inline: auto;
 }
 
+.ui-site-footer {
+  border-top: 1px solid
+    color-mix(in oklab, var(--color-border) 80%, transparent);
+  padding-block: 1rem;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  line-height: 1.3333333333;
+  color: var(--color-muted-foreground);
+}
+
+.ui-site-footer-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ui-site-footer-home {
+  font-weight: 500;
+  color: var(--color-foreground);
+}
+
+.ui-site-footer-side {
+  text-align: left;
+}
+
+@media (min-width: 48rem) {
+  .ui-site-footer {
+    padding-block: 1.25rem;
+  }
+
+  .ui-site-footer-inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .ui-site-footer-side {
+    text-align: right;
+  }
+}
+
 .ui-btn {
   display: inline-flex;
   align-items: center;

@@ -1,5 +1,6 @@
 ---
 import '@shelkovo/ui/styles.css';
+import SiteFooter from '@shelkovo/ui/SiteFooter.astro';
 import { themeColor } from '@shelkovo/ui/theme';
 
 interface Props {
@@ -47,7 +48,10 @@ const canonical = new URL(Astro.url.pathname, root).toString();
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#8a5a36" />
     <title>{title}</title>
   </head>
-  <body class="min-h-screen text-foreground">
-    <slot />
+  <body class="flex min-h-screen flex-col text-foreground">
+    <div class="flex-1">
+      <slot />
+    </div>
+    <SiteFooter />
   </body>
 </html>
