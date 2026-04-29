@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import type { Plugin } from 'vite';
 
 const plugins = [tailwindcss()];
+const site = 'https://kpshelkovo.online';
 const comparePort = Number(process.env.COMPARE_DEV_PROXY_PORT ?? '4322');
 const compareTarget = `http://localhost:${comparePort}`;
 
@@ -75,7 +76,7 @@ function proxy(): Plugin {
 
 export default defineConfig({
   output: 'static',
-  site: 'https://kpshelkovo.online',
+  site,
   cacheDir: '../../node_modules/.astro/www',
   prefetch: {
     prefetchAll: true,
@@ -89,6 +90,7 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
+      customSitemaps: [`${site}/compare/sitemap-index.xml`],
       filter(page) {
         return !/\/404(?:\/|\.html)?$/.test(page);
       },

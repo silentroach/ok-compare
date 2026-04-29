@@ -37,8 +37,3 @@ export function canon(path: string): string {
 export function canonRoot(): string {
   return canon('/').replace(/\/$/, '');
 }
-
-export function sitemap(): string | undefined {
-  if (import.meta.env.COMPARE_SITEMAP === 'false') return;
-  return canon('/sitemap-index.xml');
-}

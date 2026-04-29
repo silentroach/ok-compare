@@ -1,12 +1,12 @@
 import type { APIRoute } from 'astro';
-import { sitemap } from '../lib/site';
 
-const map = sitemap();
+const site = import.meta.env.SITE;
+const sitemap = new URL('/sitemap-index.xml', site).toString();
 const body = [
   'User-agent: *',
   'Allow: /',
   'Content-Signal: ai-train=yes, search=yes, ai-input=yes',
-  ...(map ? [`Sitemap: ${map}`] : []),
+  `Sitemap: ${sitemap}`,
 ].join('\n');
 
 export const GET: APIRoute = () =>
