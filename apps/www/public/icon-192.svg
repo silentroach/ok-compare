@@ -1,56 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" fill="none" role="img" aria-labelledby="title desc">
-  <title id="title">App icon 192 with fence letter Sh</title>
-  <desc id="desc">A medium-detail icon with a bright sky, lawn, and the letter Sh built from euro-fence slats.</desc>
-  <defs>
-    <linearGradient id="bg" x1="28" y1="22" x2="162" y2="174" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#F6FBFF" />
-      <stop offset="0.7" stop-color="#DAECFC" />
-      <stop offset="1" stop-color="#C6DDF2" />
-    </linearGradient>
-    <linearGradient id="wood" x1="96" y1="38" x2="96" y2="148" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#BD7F4C" />
-      <stop offset="0.52" stop-color="#995F36" />
-      <stop offset="1" stop-color="#744524" />
-    </linearGradient>
-    <linearGradient id="rail" x1="30" y1="124" x2="162" y2="148" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#AA6C3D" />
-      <stop offset="1" stop-color="#7B4926" />
-    </linearGradient>
-    <linearGradient id="grass" x1="96" y1="136" x2="96" y2="174" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#80CF68" />
-      <stop offset="1" stop-color="#3E8C3E" />
-    </linearGradient>
-    <filter id="shadow" x="8" y="10" width="176" height="176" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-      <feFlood flood-opacity="0" result="BackgroundImageFix" />
-      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
-      <feOffset dy="10" />
-      <feGaussianBlur stdDeviation="10" />
-      <feColorMatrix type="matrix" values="0 0 0 0 0.0509804 0 0 0 0 0.105882 0 0 0 0 0.160784 0 0 0 0.18 0" />
-      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_1" />
-      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_1" result="shape" />
-    </filter>
-    <clipPath id="tile">
-      <rect x="18" y="18" width="156" height="156" rx="40" />
-    </clipPath>
-  </defs>
-  <g filter="url(#shadow)">
-    <rect x="18" y="18" width="156" height="156" rx="40" fill="url(#bg)" />
-    <rect x="19" y="19" width="154" height="154" rx="39" stroke="#FFFFFF" stroke-opacity="0.36" />
-  </g>
-  <g clip-path="url(#tile)">
-    <circle cx="146" cy="44" r="22" fill="#FFF6C4" fill-opacity="0.78" />
-    <circle cx="146" cy="44" r="34" fill="#FFF6C4" fill-opacity="0.2" />
-    <rect x="44" y="83" width="104" height="9" rx="4.5" fill="#5C351D" fill-opacity="0.24" />
-    <rect x="46" y="38" width="24" height="94" rx="12" fill="url(#wood)" />
-    <rect x="84" y="38" width="24" height="94" rx="12" fill="url(#wood)" />
-    <rect x="122" y="38" width="24" height="94" rx="12" fill="url(#wood)" />
-    <rect x="30" y="124" width="132" height="24" rx="12" fill="url(#rail)" />
-    <rect x="52" y="44" width="4" height="74" rx="2" fill="#DDA470" fill-opacity="0.3" />
-    <rect x="90" y="44" width="4" height="74" rx="2" fill="#DDA470" fill-opacity="0.3" />
-    <rect x="128" y="44" width="4" height="74" rx="2" fill="#DDA470" fill-opacity="0.3" />
-    <rect x="38" y="130" width="116" height="3" rx="1.5" fill="#F1D1AE" fill-opacity="0.16" />
-    <path d="M4 150C20 142 36 143 51 147C67 152 81 154 96 149C111 144 126 143 141 147C157 151 173 153 188 147V174H4V150Z" fill="url(#grass)" />
-    <path d="M10 154C15 147 18 147 22 154C27 146 31 146 35 154C40 145 44 145 49 154C54 147 58 147 62 154C67 145 71 145 76 154C81 147 85 147 89 154C94 145 98 145 103 154C108 147 112 147 116 154C121 145 125 145 130 154C135 147 139 147 143 154C148 145 152 145 157 154C161 148 165 148 170 154V174H10V154Z" fill="#58A94C" fill-opacity="0.92" />
-    <path d="M0 160C18 156 34 157 49 161C66 166 80 167 96 162C112 157 126 156 144 161C159 165 176 166 192 161V174H0V160Z" fill="#2E6F2F" fill-opacity="0.5" />
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Shelkovo icon</title>
+  <desc id="desc">A simplified fence and sun mark derived from the Shelkovo logo.</desc>
+  <rect x="32" y="32" width="448" height="448" rx="112" fill="#FEFBF8" />
+  <rect x="32.5" y="32.5" width="447" height="447" rx="111.5" stroke="#EFE4D1" />
+  <circle cx="384" cy="146" r="50" fill="#F7BC59" />
+  <path d="M384 72V96" stroke="#F7BC59" stroke-width="10" stroke-linecap="round" />
+  <path d="M438 92L422 110" stroke="#F7BC59" stroke-width="10" stroke-linecap="round" />
+  <path d="M458 146H434" stroke="#F7BC59" stroke-width="10" stroke-linecap="round" />
+  <path d="M440 198L422 182" stroke="#F7BC59" stroke-width="10" stroke-linecap="round" />
+  <path d="M384 220V196" stroke="#F7BC59" stroke-width="10" stroke-linecap="round" />
+  <path d="M328 198L344 180" stroke="#F7BC59" stroke-width="10" stroke-linecap="round" />
+  <path d="M308 146H332" stroke="#F7BC59" stroke-width="10" stroke-linecap="round" />
+  <path d="M330 92L348 108" stroke="#F7BC59" stroke-width="10" stroke-linecap="round" />
+  <path d="M56 400C130 384 195 376 256 376C317 376 382 384 456 400V436H56V400Z" fill="#EEE6D4" />
+  <path d="M56 400C130 384 195 376 256 376C317 376 382 384 456 400" stroke="#5F6B39" stroke-width="12" stroke-linecap="round" />
+  <rect x="176" y="220" width="108" height="28" rx="14" fill="#74803E" />
+  <rect x="228" y="220" width="108" height="28" rx="14" fill="#74803E" />
+  <rect x="176" y="308" width="108" height="28" rx="14" fill="#74803E" />
+  <rect x="228" y="308" width="108" height="28" rx="14" fill="#74803E" />
+  <path d="M120 356V176L156 126L192 176V356Z" fill="#889155" stroke="#5F6B39" stroke-width="10" stroke-linejoin="round" />
+  <path d="M221 356V176L256 126L291 176V356Z" fill="#889155" stroke="#5F6B39" stroke-width="10" stroke-linejoin="round" />
+  <path d="M320 356V176L356 126L392 176V356Z" fill="#889155" stroke="#5F6B39" stroke-width="10" stroke-linejoin="round" />
+  <path d="M142 154V336" stroke="#7B8449" stroke-width="6" stroke-linecap="round" />
+  <path d="M160 154V336" stroke="#7B8449" stroke-width="6" stroke-linecap="round" />
+  <path d="M243 154V336" stroke="#7B8449" stroke-width="6" stroke-linecap="round" />
+  <path d="M261 154V336" stroke="#7B8449" stroke-width="6" stroke-linecap="round" />
+  <path d="M342 154V336" stroke="#7B8449" stroke-width="6" stroke-linecap="round" />
+  <path d="M360 154V336" stroke="#7B8449" stroke-width="6" stroke-linecap="round" />
 </svg>

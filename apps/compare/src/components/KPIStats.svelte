@@ -44,14 +44,14 @@
   >
     <article
       class={embed
-        ? 'mx-auto w-[96%] rounded-2xl border border-[#ebd2cc] bg-[linear-gradient(160deg,rgba(255,255,255,0.95),rgba(255,242,239,0.94))] px-3.5 py-3 shadow-[0_14px_32px_-24px_rgba(127,29,29,0.42)] backdrop-blur-[3px] dark:border-white/10 dark:bg-white/10'
-        : 'rounded-xl border border-[#ebd2cc] bg-[linear-gradient(160deg,rgba(255,255,255,0.96),rgba(255,244,241,0.92))] p-4 shadow-[0_18px_34px_-28px_rgba(127,29,29,0.34)] dark:border-white/10 dark:bg-white/10'}
+        ? 'mx-auto w-[96%] rounded-2xl border border-border bg-[color:var(--color-surface-raised)] px-3.5 py-3 shadow-[var(--shadow-1)]'
+        : 'rounded-xl border border-border bg-[color:var(--color-surface-raised)] p-4 shadow-[var(--shadow-1)]'}
       data-testid="kpi-median"
     >
       <div
         class={embed
-          ? 'mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-danger-text/80'
-          : 'mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-danger-text/80'}
+          ? 'mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground'
+          : 'mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground'}
       >
         Похожие по уровню
       </div>
@@ -75,8 +75,8 @@
 
     <article
       class={embed
-        ? 'mx-auto w-[96%] rounded-2xl border border-white/50 bg-white/50 px-3.5 py-3 backdrop-blur-[3px] shadow-[0_12px_28px_-24px_rgba(15,23,42,0.5)] dark:border-white/10 dark:bg-white/8'
-        : 'rounded-xl border border-[color:var(--color-border)] bg-white/70 p-4 shadow-[0_16px_32px_-28px_rgba(15,23,42,0.3)] dark:border-white/10 dark:bg-white/8'}
+        ? 'mx-auto w-[96%] rounded-2xl border border-border bg-card px-3.5 py-3 shadow-[var(--shadow-1)]'
+        : 'rounded-xl border border-border bg-card p-4 shadow-[var(--shadow-1)]'}
       data-testid="kpi-all-median"
     >
       <div

@@ -108,7 +108,7 @@ const light = [
 
           <div class="grid gap-4 md:grid-cols-2">
             <div
-              class="rounded-2xl border border-border bg-white/60 p-5 backdrop-blur-[2px]"
+              class="rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-1)]"
             >
               <p
                 class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
@@ -136,7 +136,7 @@ const light = [
             </div>
 
             <div
-              class="rounded-2xl border border-info-border bg-info-soft/70 p-5"
+              class="rounded-2xl border border-info-border bg-[color:var(--color-surface-raised)] p-5"
             >
               <p
                 class="text-xs font-semibold uppercase tracking-[0.18em] text-info-text/80"
@@ -155,7 +155,7 @@ const light = [
 
         <aside class="space-y-4">
           <div
-            class="rounded-[1.35rem] border border-white/55 bg-white/68 p-5 shadow-[0_18px_40px_-26px_rgba(15,23,42,0.35)] backdrop-blur-md"
+            class="rounded-[1.35rem] border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-raised)] p-5 shadow-[var(--shadow-2)]"
           >
             <p
               class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
@@ -165,7 +165,7 @@ const light = [
             <ul class="mt-4 space-y-3">
               {
                 refs.map((item) => (
-                  <li class="rounded-xl border border-border/70 bg-card/85 px-4 py-3">
+                  <li class="rounded-xl border border-border bg-[color:var(--color-surface-raised)] px-4 py-3">
                     <a href={item.href} class="ui-link text-sm font-semibold">
                       {item.label}
                     </a>

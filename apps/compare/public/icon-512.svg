@@ -1,96 +1,30 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" role="img" aria-labelledby="title desc">
-  <title id="title">App icon 512 with fence letter Sh</title>
-  <desc id="desc">A detailed app icon with blue sky, sun, lawn, and a wooden euro-fence shaped as the letter Sh.</desc>
-  <defs>
-    <linearGradient id="bg" x1="70" y1="54" x2="434" y2="464" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#F7FBFF" />
-      <stop offset="0.68" stop-color="#DCEEFF" />
-      <stop offset="1" stop-color="#C5DCF1" />
-    </linearGradient>
-    <linearGradient id="wood" x1="256" y1="100" x2="256" y2="376" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#C0824E" />
-      <stop offset="0.52" stop-color="#9A6036" />
-      <stop offset="1" stop-color="#724424" />
-    </linearGradient>
-    <linearGradient id="rail" x1="80" y1="332" x2="432" y2="396" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#AD6E3E" />
-      <stop offset="1" stop-color="#7A4926" />
-    </linearGradient>
-    <linearGradient id="grass" x1="256" y1="346" x2="256" y2="464" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#84D36B" />
-      <stop offset="0.54" stop-color="#57A84C" />
-      <stop offset="1" stop-color="#387E39" />
-    </linearGradient>
-    <filter id="shadow" x="24" y="28" width="464" height="460" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-      <feFlood flood-opacity="0" result="BackgroundImageFix" />
-      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
-      <feOffset dy="24" />
-      <feGaussianBlur stdDeviation="24" />
-      <feColorMatrix type="matrix" values="0 0 0 0 0.0392157 0 0 0 0 0.101961 0 0 0 0 0.156863 0 0 0 0.18 0" />
-      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_1" />
-      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_1" result="shape" />
-    </filter>
-    <clipPath id="tile">
-      <rect x="48" y="48" width="416" height="416" rx="104" />
-    </clipPath>
-  </defs>
-  <g filter="url(#shadow)">
-    <rect x="48" y="48" width="416" height="416" rx="104" fill="url(#bg)" />
-    <rect x="50" y="50" width="412" height="412" rx="102" stroke="#FFFFFF" stroke-opacity="0.38" stroke-width="4" />
-  </g>
-  <g clip-path="url(#tile)">
-    <circle cx="386" cy="116" r="58" fill="#FFF6C5" fill-opacity="0.82" />
-    <circle cx="386" cy="116" r="90" fill="#FFF6C5" fill-opacity="0.22" />
-    <circle cx="386" cy="116" r="128" fill="#FFF6C5" fill-opacity="0.08" />
-    <rect x="120" y="218" width="272" height="20" rx="10" fill="#5A341C" fill-opacity="0.22" />
-    <rect x="124" y="100" width="64" height="250" rx="32" fill="url(#wood)" />
-    <rect x="224" y="100" width="64" height="250" rx="32" fill="url(#wood)" />
-    <rect x="324" y="100" width="64" height="250" rx="32" fill="url(#wood)" />
-    <rect x="80" y="330" width="352" height="64" rx="32" fill="url(#rail)" />
-    <rect x="140" y="116" width="10" height="196" rx="5" fill="#DEA571" fill-opacity="0.3" />
-    <rect x="240" y="116" width="10" height="196" rx="5" fill="#DEA571" fill-opacity="0.3" />
-    <rect x="340" y="116" width="10" height="196" rx="5" fill="#DEA571" fill-opacity="0.3" />
-    <path d="M154 140C171 156 166 196 157 234" stroke="#6A3F23" stroke-opacity="0.2" stroke-width="4" stroke-linecap="round" />
-    <path d="M254 136C271 154 266 194 257 232" stroke="#6A3F23" stroke-opacity="0.2" stroke-width="4" stroke-linecap="round" />
-    <path d="M354 142C372 160 366 204 357 244" stroke="#6A3F23" stroke-opacity="0.2" stroke-width="4" stroke-linecap="round" />
-    <rect x="100" y="346" width="312" height="8" rx="4" fill="#F0D0AC" fill-opacity="0.16" />
-    <path d="M0 398C38 378 82 380 124 392C166 404 209 410 256 396C300 383 344 381 388 392C430 403 473 407 512 394V464H0V398Z" fill="url(#grass)" />
-    <path d="M10 412C20 394 28 394 38 412C49 392 58 392 68 412C80 391 89 391 100 412C112 392 122 392 133 412C145 390 155 390 166 412C178 393 188 393 199 412C211 390 221 390 232 412C244 392 255 392 266 412C278 390 289 390 300 412C312 392 323 392 334 412C346 390 357 390 368 412C380 392 391 392 402 412C414 391 425 391 436 412C447 393 456 393 466 412C476 394 484 394 494 412V464H10V412Z" fill="#58A94C" fill-opacity="0.94" />
-    <path d="M0 426C44 416 84 418 124 428C170 441 213 444 256 431C300 418 342 416 388 428C427 438 470 441 512 430V464H0V426Z" fill="#2E6F2F" fill-opacity="0.5" />
-    <path d="M90 378C96 366 100 366 106 378" stroke="#75C965" stroke-width="6" stroke-linecap="round" />
-    <path d="M128 386C135 370 140 370 146 386" stroke="#75C965" stroke-width="6" stroke-linecap="round" />
-    <path d="M180 392C188 374 194 374 202 392" stroke="#75C965" stroke-width="6" stroke-linecap="round" />
-    <path d="M226 390C233 374 238 374 244 390" stroke="#75C965" stroke-width="6" stroke-linecap="round" />
-    <path d="M276 392C284 374 290 374 298 392" stroke="#75C965" stroke-width="6" stroke-linecap="round" />
-    <path d="M324 388C331 372 336 372 342 388" stroke="#75C965" stroke-width="6" stroke-linecap="round" />
-    <path d="M372 384C379 368 384 368 390 384" stroke="#75C965" stroke-width="6" stroke-linecap="round" />
-    <path d="M420 380C426 366 430 366 436 380" stroke="#75C965" stroke-width="6" stroke-linecap="round" />
-    <g>
-      <path d="M146 404C146 394 151 388 156 382" stroke="#4F9348" stroke-width="4" stroke-linecap="round" />
-      <circle cx="150" cy="390" r="6" fill="#FFF8F2" />
-      <circle cx="162" cy="390" r="6" fill="#FFF8F2" />
-      <circle cx="156" cy="382" r="6" fill="#FFF8F2" />
-      <circle cx="151" cy="399" r="6" fill="#FFF8F2" />
-      <circle cx="161" cy="399" r="6" fill="#FFF8F2" />
-      <circle cx="156" cy="391" r="5" fill="#FFD86A" />
-    </g>
-    <g>
-      <path d="M286 414C286 402 292 395 298 388" stroke="#4F9348" stroke-width="4" stroke-linecap="round" />
-      <circle cx="292" cy="396" r="6" fill="#FFF8F2" />
-      <circle cx="304" cy="396" r="6" fill="#FFF8F2" />
-      <circle cx="298" cy="388" r="6" fill="#FFF8F2" />
-      <circle cx="293" cy="405" r="6" fill="#FFF8F2" />
-      <circle cx="303" cy="405" r="6" fill="#FFF8F2" />
-      <circle cx="298" cy="397" r="5" fill="#FFD86A" />
-    </g>
-    <g>
-      <path d="M398 404C398 394 403 387 408 381" stroke="#4F9348" stroke-width="4" stroke-linecap="round" />
-      <circle cx="402" cy="389" r="6" fill="#FFF8F2" />
-      <circle cx="414" cy="389" r="6" fill="#FFF8F2" />
-      <circle cx="408" cy="381" r="6" fill="#FFF8F2" />
-      <circle cx="403" cy="398" r="6" fill="#FFF8F2" />
-      <circle cx="413" cy="398" r="6" fill="#FFF8F2" />
-      <circle cx="408" cy="390" r="5" fill="#FFD86A" />
-    </g>
-  </g>
+  <title id="title">Shelkovo icon</title>
+  <desc id="desc">A simplified fence and sun mark derived from the Shelkovo logo.</desc>
+  <rect x="32" y="32" width="448" height="448" rx="112" fill="#FEFBF8" />
+  <rect x="32.5" y="32.5" width="447" height="447" rx="111.5" stroke="#EFE4D1" />
+  <circle cx="384" cy="146" r="50" fill="#F7BC59" />
+  <path d="M384 72V96" stroke="#F7BC59" stroke-width="10" stroke-linecap="round" />
+  <path d="M438 92L422 110" stroke="#F7BC59" stroke-width="10" stroke-linecap="round" />
+  <path d="M458 146H434" stroke="#F7BC59" stroke-width="10" stroke-linecap="round" />
+  <path d="M440 198L422 182" stroke="#F7BC59" stroke-width="10" stroke-linecap="round" />
+  <path d="M384 220V196" stroke="#F7BC59" stroke-width="10" stroke-linecap="round" />
+  <path d="M328 198L344 180" stroke="#F7BC59" stroke-width="10" stroke-linecap="round" />
+  <path d="M308 146H332" stroke="#F7BC59" stroke-width="10" stroke-linecap="round" />
+  <path d="M330 92L348 108" stroke="#F7BC59" stroke-width="10" stroke-linecap="round" />
+  <path d="M56 400C130 384 195 376 256 376C317 376 382 384 456 400V436H56V400Z" fill="#EEE6D4" />
+  <path d="M56 400C130 384 195 376 256 376C317 376 382 384 456 400" stroke="#5F6B39" stroke-width="12" stroke-linecap="round" />
+  <rect x="176" y="220" width="108" height="28" rx="14" fill="#74803E" />
+  <rect x="228" y="220" width="108" height="28" rx="14" fill="#74803E" />
+  <rect x="176" y="308" width="108" height="28" rx="14" fill="#74803E" />
+  <rect x="228" y="308" width="108" height="28" rx="14" fill="#74803E" />
+  <path d="M120 356V176L156 126L192 176V356Z" fill="#889155" stroke="#5F6B39" stroke-width="10" stroke-linejoin="round" />
+  <path d="M221 356V176L256 126L291 176V356Z" fill="#889155" stroke="#5F6B39" stroke-width="10" stroke-linejoin="round" />
+  <path d="M320 356V176L356 126L392 176V356Z" fill="#889155" stroke="#5F6B39" stroke-width="10" stroke-linejoin="round" />
+  <path d="M142 154V336" stroke="#7B8449" stroke-width="6" stroke-linecap="round" />
+  <path d="M160 154V336" stroke="#7B8449" stroke-width="6" stroke-linecap="round" />
+  <path d="M243 154V336" stroke="#7B8449" stroke-width="6" stroke-linecap="round" />
+  <path d="M261 154V336" stroke="#7B8449" stroke-width="6" stroke-linecap="round" />
+  <path d="M342 154V336" stroke="#7B8449" stroke-width="6" stroke-linecap="round" />
+  <path d="M360 154V336" stroke="#7B8449" stroke-width="6" stroke-linecap="round" />
 </svg>

@@ -147,7 +147,7 @@ const heroMap = hasPoint
       data-testid="settlement-hero"
     >
       <div
-        class={`hero-map-fade absolute inset-0 overflow-hidden ${hasPoint ? '' : 'bg-[radial-gradient(1200px_360px_at_8%_0%,rgba(214,230,239,0.9),transparent_68%),radial-gradient(900px_340px_at_100%_100%,rgba(220,237,233,0.85),transparent_72%),linear-gradient(180deg,#f7fbfd_0%,#edf4f7_100%)]'}`}
+        class={`hero-map-fade absolute inset-0 overflow-hidden ${hasPoint ? '' : 'hero-map-placeholder'}`}
       >
         {
           hasPoint && (
@@ -167,15 +167,11 @@ const heroMap = hasPoint
         }
 
         <div
-          class="absolute inset-0 bg-[linear-gradient(180deg,rgba(244,250,253,0.5)_0%,rgba(244,250,253,0.2)_46%,rgba(244,250,253,0.04)_70%,rgba(244,250,253,0)_84%)]"
+          class="absolute inset-0 bg-[linear-gradient(180deg,oklch(100%_0_0_/_0.80)_0%,oklch(100%_0_0_/_0.42)_46%,oklch(100%_0_0_/_0.08)_70%,transparent_84%)]"
         >
         </div>
         <div
-          class="absolute inset-0 bg-[linear-gradient(180deg,rgba(244,250,253,0)_62%,rgba(244,250,253,0.7)_88%,rgba(244,250,253,1)_100%)]"
-        >
-        </div>
-        <div
-          class="absolute inset-0 bg-[radial-gradient(560px_280px_at_22%_24%,rgba(255,255,255,0.42),transparent_72%)]"
+          class="absolute inset-0 bg-[linear-gradient(180deg,transparent_62%,oklch(99.1%_0.002_125_/_0.74)_88%,oklch(99.1%_0.002_125)_100%)]"
         >
         </div>
       </div>
@@ -187,7 +183,7 @@ const heroMap = hasPoint
           <div>
             <Link
               href="/"
-              class="ui-link inline-flex items-center rounded-full border border-white/65 bg-white/42 px-4 py-2 text-sm font-semibold shadow-[0_6px_18px_-14px_rgba(15,23,42,0.6)] backdrop-blur-md"
+              class="ui-link inline-flex items-center rounded-full border border-white/65 bg-white/42 px-4 py-2 text-sm font-semibold text-[oklch(41%_0.075_238)] shadow-[0_6px_18px_-14px_rgba(15,23,42,0.6)] backdrop-blur-md transition-colors hover:text-[oklch(36%_0.07_238)]"
             >
               ← Назад к списку
             </Link>
@@ -196,7 +192,7 @@ const heroMap = hasPoint
             {
               waterInc && (
                 <span
-                  class="inline-flex items-center rounded-md border border-info-border bg-info-soft px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.06em] text-info-text"
+                  class="inline-flex items-center rounded-md border border-[color:var(--color-water-border)] bg-[color:var(--color-water-soft)] px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.06em] text-[color:var(--color-water)]"
                   title={waterTitle}
                 >
                   Вода в тарифе
@@ -383,7 +379,7 @@ const heroMap = hasPoint
                     <div
                       id={tipDesktopId}
                       role="tooltip"
-                      class="pointer-events-none absolute left-0 top-full z-50 mt-2 hidden w-[min(88vw,25rem)] rounded-xl border border-border bg-background/95 p-3 text-left shadow-xl backdrop-blur-sm group-hover:block group-focus-within:block"
+                      class="pointer-events-none absolute left-0 top-full z-[80] mt-2 hidden w-[min(88vw,25rem)] rounded-xl border border-white/70 bg-white/90 p-3 text-left shadow-[0_18px_40px_-22px_rgba(15,23,42,0.24)] backdrop-blur-md group-hover:block group-focus-within:block"
                     >
                       <p class="text-xs text-muted-foreground">
                         {tariffCalc.intro}
@@ -506,7 +502,7 @@ const heroMap = hasPoint
           {
             waterInc && (
               <span
-                class="inline-flex items-center rounded-md border border-info-border bg-info-soft px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.06em] text-info-text"
+                class="inline-flex items-center rounded-md border border-[color:var(--color-water-border)] bg-[color:var(--color-water-soft)] px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.06em] text-[color:var(--color-water)]"
                 title={waterTitle}
               >
                 Вода в тарифе
@@ -678,7 +674,7 @@ const heroMap = hasPoint
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div
-          class="relative z-20 rounded-xl border border-border bg-muted-soft p-4"
+          class="relative z-20 rounded-xl border border-border bg-[color:var(--color-surface-raised)] p-4"
         >
           <h3
             class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground"
@@ -700,7 +696,7 @@ const heroMap = hasPoint
                 <div
                   id={tipMobileId}
                   role="tooltip"
-                  class="pointer-events-none absolute left-0 top-full z-50 mt-2 hidden w-[min(92vw,25rem)] rounded-xl border border-border bg-background/95 p-3 text-left text-sm shadow-xl backdrop-blur-sm group-hover:block group-focus-within:block"
+                  class="pointer-events-none absolute left-0 top-full z-[80] mt-2 hidden w-[min(92vw,25rem)] rounded-xl border border-white/70 bg-white/92 p-3 text-left text-sm shadow-[0_18px_40px_-22px_rgba(15,23,42,0.24)] backdrop-blur-md group-hover:block group-focus-within:block"
                 >
                   <p class="text-xs text-muted-foreground">
                     {tariffCalc.intro}
@@ -768,7 +764,7 @@ const heroMap = hasPoint
 
         {
           hasDelta && comparison && (
-            <div class="rounded-xl border border-border bg-muted-soft p-4">
+            <div class="rounded-xl border border-border bg-[color:var(--color-surface-raised)] p-4">
               <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Сравнение с Шелково
               </h3>
@@ -789,7 +785,7 @@ const heroMap = hasPoint
         }
 
         <div
-          class="rounded-xl border border-border bg-muted-soft p-4 md:col-span-2"
+          class="rounded-xl border border-border bg-[color:var(--color-surface-raised)] p-4 md:col-span-2"
         >
           <h3
             class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground"
@@ -885,5 +881,13 @@ const heroMap = hasPoint
       rgba(0, 0, 0, 0.12) 90%,
       rgba(0, 0, 0, 0) 100%
     );
+  }
+
+  .hero-map-placeholder {
+    background:
+      linear-gradient(oklch(88% 0.012 135 / 0.35) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(88% 0.012 135 / 0.35) 1px, transparent 1px),
+      oklch(98.8% 0.003 125);
+    background-size: 32px 32px;
   }
 </style>

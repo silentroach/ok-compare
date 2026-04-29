@@ -42,10 +42,6 @@ const weights = [
       class="ui-shell-strong relative overflow-hidden p-6 md:p-8 lg:p-10"
     >
       <div
-        class="absolute inset-x-0 top-0 h-32 bg-[radial-gradient(760px_220px_at_6%_0%,rgba(103,152,185,0.12),transparent_72%),radial-gradient(620px_220px_at_100%_18%,rgba(91,176,190,0.12),transparent_74%)]"
-      >
-      </div>
-      <div
         class="relative grid gap-8 lg:grid-cols-[minmax(0,1.25fr)_20rem] lg:gap-10"
       >
         <div class="max-w-3xl space-y-6">
@@ -83,7 +79,7 @@ const weights = [
 
           <div class="grid gap-4 md:grid-cols-2">
             <div
-              class="rounded-2xl border border-info-border bg-info-soft/70 p-5"
+              class="rounded-2xl border border-info-border bg-[color:var(--color-surface-raised)] p-5"
             >
               <p
                 class="text-xs font-semibold uppercase tracking-[0.18em] text-info-text/80"
@@ -99,7 +95,7 @@ const weights = [
             </div>
 
             <div
-              class="rounded-2xl border border-border bg-white/55 p-5 backdrop-blur-[2px]"
+              class="rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-1)]"
             >
               <p
                 class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
@@ -119,7 +115,7 @@ const weights = [
 
         <aside class="space-y-4">
           <div
-            class="rounded-[1.35rem] border border-white/55 bg-white/68 p-5 shadow-[0_18px_40px_-26px_rgba(15,23,42,0.35)] backdrop-blur-md"
+            class="rounded-[1.35rem] border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-raised)] p-5 shadow-[var(--shadow-2)]"
           >
             <p
               class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
@@ -129,7 +125,7 @@ const weights = [
             <dl class="mt-4 space-y-3">
               {
                 weights.map(([weight, label, note]) => (
-                  <div class="rounded-xl border border-border/70 bg-card/85 px-4 py-3">
+                  <div class="rounded-xl border border-border bg-[color:var(--color-surface-raised)] px-4 py-3">
                     <dt class="flex items-baseline justify-between gap-3">
                       <span class="text-sm font-semibold text-foreground">
                         {label}
@@ -194,7 +190,7 @@ const weights = [
               Как складывается итоговая цифра
             </h2>
             <div
-              class="overflow-x-auto rounded-2xl border border-border bg-muted-soft p-5"
+              class="overflow-x-auto rounded-2xl border border-border bg-[color:var(--color-surface-raised)] p-5"
             >
               <pre
                 class="ui-num text-sm leading-8 text-foreground"><code>условный уровень =
@@ -252,7 +248,7 @@ const weights = [
             </p>
             <div class="grid gap-4 md:grid-cols-2">
               <div
-                class="rounded-2xl border border-success-border bg-success-soft p-5"
+                class="rounded-2xl border border-success-border bg-[color:var(--color-surface-raised)] p-5"
               >
                 <p
                   class="text-xs font-semibold uppercase tracking-[0.18em] text-success-text/80"
@@ -269,7 +265,7 @@ const weights = [
                 </p>
               </div>
               <div
-                class="rounded-2xl border border-danger-border bg-danger-soft p-5"
+                class="rounded-2xl border border-danger-border bg-[color:var(--color-surface-raised)] p-5"
               >
                 <p
                   class="text-xs font-semibold uppercase tracking-[0.18em] text-danger-text/80"
@@ -307,7 +303,9 @@ const weights = [
               концепции, воде рядом или наличии премиальных объектов.
             </p>
             <div class="grid gap-4 md:grid-cols-2">
-              <div class="rounded-2xl border border-border bg-muted-soft p-5">
+              <div
+                class="rounded-2xl border border-border bg-[color:var(--color-surface-raised)] p-5"
+              >
                 <h3 class="text-base font-semibold text-foreground">
                   Максимально влияют
                 </h3>
@@ -323,7 +321,9 @@ const weights = [
                   <li>КПП</li>
                 </ul>
               </div>
-              <div class="rounded-2xl border border-border bg-muted-soft p-5">
+              <div
+                class="rounded-2xl border border-border bg-[color:var(--color-surface-raised)] p-5"
+              >
                 <h3 class="text-base font-semibold text-foreground">
                   Дополняют картину
                 </h3>
@@ -434,7 +434,9 @@ const weights = [
               обслуживания: вывоз мусора, уборка снега и дорог, благоустройство,
               аварийная поддержка и диспетчеризация.
             </p>
-            <div class="rounded-2xl border border-border bg-muted-soft p-5">
+            <div
+              class="rounded-2xl border border-border bg-[color:var(--color-surface-raised)] p-5"
+            >
               <ul
                 class="grid gap-2 text-sm leading-6 text-muted-foreground sm:grid-cols-2"
               >
@@ -480,7 +482,7 @@ const weights = [
               </p>
             </div>
             <div
-              class="rounded-2xl border border-warning-border bg-warning-soft p-5"
+              class="rounded-2xl border border-warning-border bg-[color:var(--color-surface-raised)] p-5"
             >
               <p class="text-sm leading-7 text-warning-text">
                 Важно: здесь не учитываются пробки, качество шоссе, близость к
@@ -512,7 +514,7 @@ const weights = [
               середине шкалы.
             </p>
             <div
-              class="rounded-2xl border border-warning-border bg-warning-soft p-5"
+              class="rounded-2xl border border-warning-border bg-[color:var(--color-surface-raised)] p-5"
             >
               <p class="text-sm leading-7 text-warning-text">
                 Это сознательная консервативная настройка. В нашей базе сильные
@@ -564,21 +566,27 @@ const weights = [
               Что означает высокий или низкий уровень
             </h2>
             <div class="grid gap-4 md:grid-cols-3">
-              <div class="rounded-2xl border border-border bg-muted-soft p-5">
+              <div
+                class="rounded-2xl border border-border bg-[color:var(--color-surface-raised)] p-5"
+              >
                 <h3 class="text-base font-semibold text-foreground">Высокий</h3>
                 <p class="mt-2 text-sm leading-6 text-muted-foreground">
                   Обычно это сильная базовая инфраструктура, понятная среда и
                   неплохая близость к Москве.
                 </p>
               </div>
-              <div class="rounded-2xl border border-border bg-muted-soft p-5">
+              <div
+                class="rounded-2xl border border-border bg-[color:var(--color-surface-raised)] p-5"
+              >
                 <h3 class="text-base font-semibold text-foreground">Средний</h3>
                 <p class="mt-2 text-sm leading-6 text-muted-foreground">
                   Обычно это сочетание сильных и слабых сторон или заметная
                   удаленность при неплохой внутренней среде.
                 </p>
               </div>
-              <div class="rounded-2xl border border-border bg-muted-soft p-5">
+              <div
+                class="rounded-2xl border border-border bg-[color:var(--color-surface-raised)] p-5"
+              >
                 <h3 class="text-base font-semibold text-foreground">Низкий</h3>
                 <p class="mt-2 text-sm leading-6 text-muted-foreground">
                   Чаще всего это не один минус, а комбинация проблем в
@@ -586,7 +594,9 @@ const weights = [
                 </p>
               </div>
             </div>
-            <div class="rounded-2xl border border-primary/20 bg-primary/5 p-5">
+            <div
+              class="rounded-2xl border border-primary/30 bg-[color:var(--color-surface-raised)] p-5"
+            >
               <p class="text-sm leading-7 text-muted-foreground">
                 Самое важное: условный уровень не заменяет тариф, а существует
                 отдельно от него. Поэтому логика страницы сравнения такая:

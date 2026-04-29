@@ -24,9 +24,9 @@
 </script>
 
 <div data-testid="sources-list" class="space-y-3">
-  {#each sources as source}
+  {#each sources as source (source.url)}
     <div
-      class="flex flex-col rounded-xl border border-border bg-muted-soft p-3 sm:flex-row sm:items-center sm:justify-between"
+      class="flex flex-col rounded-xl border border-border bg-[color:var(--color-surface-raised)] p-3 transition-colors hover:bg-primary-soft-2 sm:flex-row sm:items-center sm:justify-between"
     >
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 mb-1">

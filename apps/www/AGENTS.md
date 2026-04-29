@@ -22,6 +22,11 @@ pnpm typecheck
 - Tailwind CSS v4
 - Shared styles from `@shelkovo/ui/styles.css`
 
+## Дизайн
+
+- За визуальными решениями, палитрой и компонентными правилами идти в `../../design/design-code-shelkovo.md`.
+- Этот `AGENTS.md` держать про workflow, архитектуру и ограничения app-а.
+
 ## Правила
 
 - Не копировать compare-страницы в `apps/www`.

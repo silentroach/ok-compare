@@ -63,6 +63,7 @@ export default defineConfig({
   srcDir: 'src',
   publicDir: 'public',
   vite: {
+    envDir: '../..',
     plugins,
     server: {
       hmr: {

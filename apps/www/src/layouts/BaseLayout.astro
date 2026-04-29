@@ -1,7 +1,7 @@
 ---
 import '@shelkovo/ui/styles.css';
 import SiteFooter from '@shelkovo/ui/SiteFooter.astro';
-import { themeColor } from '@shelkovo/ui/theme';
+import { browserColor, themeColor } from '@shelkovo/ui/theme';
 
 interface Props {
   title?: string;
@@ -40,7 +40,8 @@ const ym = `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).p
     <meta name="generator" content={Astro.generator} />
     <meta name="application-name" content="Шелково Онлайн" />
     <meta name="apple-mobile-web-app-title" content="Шелково" />
-    <meta name="msapplication-TileColor" content="#dceeff" />
+    <meta name="msapplication-TileColor" content={browserColor.tile} />
+    <meta name="msapplication-TileImage" content="/mstile-150x150.png" />
     <link rel="canonical" href={canonical} />
     <link rel="preconnect" href="https://mc.yandex.ru" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="any" />
@@ -49,7 +50,11 @@ const ym = `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).p
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#8a5a36" />
+    <link
+      rel="mask-icon"
+      href="/safari-pinned-tab.svg"
+      color={browserColor.mask}
+    />
     {prod && <script is:inline type="text/javascript" set:html={ym} />}
     <title>{title}</title>
   </head>

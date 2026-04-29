@@ -12,13 +12,6 @@
 
 <section class="ui-shell-strong overflow-hidden p-6 md:p-8">
   <div class="relative">
-    <div
-      class="absolute -top-10 right-0 h-28 w-28 rounded-full bg-info-soft/72 blur-2xl"
-    ></div>
-    <div
-      class="absolute -left-6 bottom-0 h-24 w-24 rounded-full bg-success-soft/68 blur-2xl"
-    ></div>
-
     <h1
       class="max-w-3xl text-3xl font-bold leading-tight text-foreground md:text-4xl"
     >

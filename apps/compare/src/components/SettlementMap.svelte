@@ -100,11 +100,11 @@
     range: Range | undefined,
   ): string {
     if (isBaseline) {
-      return '#0369a1';
+      return '#064b08';
     }
 
     if (!range || range.min === range.max) {
-      return 'rgb(205, 165, 101)';
+      return '#6a502e';
     }
 
     const normalized = Math.max(
@@ -408,7 +408,7 @@
 >
   {#if isLoading}
     <div
-      class="absolute inset-0 flex items-center justify-center bg-muted-soft"
+      class="map-placeholder absolute inset-0 flex items-center justify-center"
     >
       <div class="text-center">
         <div
@@ -421,7 +421,7 @@
 
   {#if error}
     <div
-      class="absolute inset-0 flex items-center justify-center bg-muted-soft"
+      class="map-placeholder absolute inset-0 flex items-center justify-center"
     >
       <div class="text-center max-w-md px-4">
         <div class="text-4xl mb-3">🗺️</div>
@@ -517,5 +517,13 @@
   .map-muted {
     opacity: 0.56;
     filter: saturate(0.62) contrast(0.9) brightness(1.02);
+  }
+
+  .map-placeholder {
+    background:
+      linear-gradient(oklch(88% 0.012 135 / 0.35) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(88% 0.012 135 / 0.35) 1px, transparent 1px),
+      oklch(98.8% 0.003 125);
+    background-size: 32px 32px;
   }
 </style>

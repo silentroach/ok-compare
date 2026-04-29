@@ -264,7 +264,7 @@
               {mobile ? 'Дешевле' : 'Дешевле Шелково'}
               {#if stats}
                 <span
-                  class="ml-1 inline-flex min-w-5 items-center justify-center rounded-full bg-white/50 px-1.5 py-0.5 text-[11px] font-semibold text-success-text/80 opacity-60 backdrop-blur-[2px]"
+                  class="ml-1 inline-flex min-w-5 items-center justify-center rounded-full border border-success-border bg-success-soft px-1.5 py-0.5 text-[11px] font-semibold text-success-text"
                   aria-hidden="true"
                   data-testid="price-cheaper-count"
                 >
@@ -291,7 +291,7 @@
               {mobile ? 'Дороже' : 'Дороже Шелково'}
               {#if stats}
                 <span
-                  class="ml-1 inline-flex min-w-5 items-center justify-center rounded-full bg-white/50 px-1.5 py-0.5 text-[11px] font-semibold text-danger-text/80 opacity-60 backdrop-blur-[2px]"
+                  class="ml-1 inline-flex min-w-5 items-center justify-center rounded-full border border-danger-border bg-danger-soft px-1.5 py-0.5 text-[11px] font-semibold text-danger-text"
                   aria-hidden="true"
                   data-testid="price-more-count"
                 >

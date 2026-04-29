@@ -19,6 +19,11 @@ scripts/     # compose/build helper scripts
 - Перед работой в `apps/www` обязательно читать `apps/www/AGENTS.md`.
 - Если меняются shared стили, примитивы ссылок или URL-утилиты, проверить оба app-а.
 
+## Дизайн
+
+- За визуальными решениями, палитрой и UI-правилами идти в `design/design-code-shelkovo.md`.
+- В `AGENTS.md` держать процессные и архитектурные правила, а не подробный дизайн-гайд.
+
 ## Команды workspace
 
 ```bash

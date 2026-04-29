@@ -150,7 +150,7 @@ describe('SettlementMap', () => {
       expect(markers.length).toBe(3);
     });
 
-    expect(markers[0]?.style.background).toBe('#0369a1');
+    expect(markers[0]?.style.background).toBe('#064b08');
     expect(markers[1]?.style.background).not.toBe(markers[2]?.style.background);
   });
 
@@ -193,9 +193,9 @@ describe('SettlementMap', () => {
       expect(markers.length).toBe(3);
     });
 
-    expect(markers[0]?.style.background).toBe('#0369a1');
-    expect(markers[1]?.style.background).toBe('rgb(205, 165, 101)');
-    expect(markers[2]?.style.background).toBe('rgb(205, 165, 101)');
+    expect(markers[0]?.style.background).toBe('#064b08');
+    expect(markers[1]?.style.background).toBe('#6a502e');
+    expect(markers[2]?.style.background).toBe('#6a502e');
   });
 
   it('updates markers and recenters on settlements change', async () => {
