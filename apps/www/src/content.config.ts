@@ -21,8 +21,8 @@ interface DateParts {
   readonly day: string;
 }
 
-function text(name: string) {
-  return z
+const text = (name: string) =>
+  z
     .string()
     .min(1, `${name} is required`)
     .refine((value) => value.trim().length > 0, `${name} must not be blank`)
@@ -30,31 +30,27 @@ function text(name: string) {
       (value) => value === value.trim(),
       `${name} must not start or end with whitespace`,
     );
-}
 
-function absoluteUrl(name: string) {
-  return text(name).refine(
+const absoluteUrl = (name: string) =>
+  text(name).refine(
     (value) => isAbsoluteUrl(value),
     `${name} must be an absolute URL`,
   );
-}
 
-function attachmentUrl(name: string) {
-  return text(name).refine(
+const attachmentUrl = (name: string) =>
+  text(name).refine(
     (value) => isAttachmentUrl(value),
     `${name} must be an absolute URL or a root-relative path`,
   );
-}
 
-function time(name: string) {
-  return text(name).refine(
+const time = (name: string) =>
+  text(name).refine(
     (value) => TIME.test(value),
     `${name} must use HH:MM or HH:MM:SS`,
   );
-}
 
-function tag() {
-  return text('tags[]')
+const tag = () =>
+  text('tags[]')
     .refine(
       (value) => value === value.toLowerCase(),
       'tags[] must be lower-case',
@@ -63,31 +59,26 @@ function tag() {
       (value) => TAG.test(value),
       'tags[] may contain only Cyrillic, digits, spaces, and hyphen',
     );
-}
 
-function attachment() {
-  return z.object({
+const attachment = () =>
+  z.object({
     title: text('attachments[].title'),
     url: attachmentUrl('attachments[].url'),
     type: text('attachments[].type').optional(),
     size: text('attachments[].size').optional(),
   });
-}
 
-function photo(image: SchemaContext['image']) {
-  return z.object({
+const photo = (image: SchemaContext['image']) =>
+  z.object({
     src: image(),
     alt: text('photos[].alt'),
     caption: text('photos[].caption').optional(),
   });
-}
 
-function media(image: SchemaContext['image']) {
-  return {
-    photos: z.array(photo(image)).min(1).optional(),
-    attachments: z.array(attachment()).min(1).optional(),
-  };
-}
+const media = (image: SchemaContext['image']) => ({
+  photos: z.array(photo(image)).min(1).optional(),
+  attachments: z.array(attachment()).min(1).optional(),
+});
 
 function addendum(image: SchemaContext['image']) {
   return z
@@ -120,13 +111,10 @@ function addendum(image: SchemaContext['image']) {
     });
 }
 
-function trimMarkdown(entry: string): string {
-  return entry.replace(/\.md$/i, '');
-}
+const trimMarkdown = (entry: string): string => entry.replace(/\.md$/i, '');
 
-function articleId(entry: string): string {
-  return trimMarkdown(entry).replace(/\/index$/i, '');
-}
+const articleId = (entry: string): string =>
+  trimMarkdown(entry).replace(/\/index$/i, '');
 
 function readDateParts(data: unknown): readonly DateParts[] {
   if (!data || typeof data !== 'object' || !('date' in data)) {

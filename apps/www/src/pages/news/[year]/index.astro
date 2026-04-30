@@ -7,7 +7,7 @@ import NewsList from '../../../components/news/NewsList.astro';
 import { loadNewsArchives, loadNewsYear } from '../../../lib/news/load';
 import { collectionPageSchema } from '../../../lib/news/seo';
 import { formatNewsMonth } from '../../../lib/news/view';
-import { newsUrl, yearUrl } from '../../../lib/news/routes';
+import { monthUrl, newsUrl, yearUrl } from '../../../lib/news/routes';
 
 export const getStaticPaths = (async () => {
   const archives = await loadNewsArchives();
@@ -73,7 +73,7 @@ const schema = collectionPageSchema({
           {
             archive.months.map((item) => (
               <li class="flex flex-wrap items-baseline gap-1.5 text-sm font-semibold">
-                <a href={`#month-${item.month}`} class="ui-link">
+                <a href={monthUrl(item.year, item.month)} class="ui-link">
                   {formatNewsMonth(item.year, item.month, {
                     capitalize: true,
                     includeYear: false,

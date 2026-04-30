@@ -37,11 +37,13 @@ const index = months.findIndex((item) => item.id === archive.id);
 const newer = index > 0 ? months[index - 1] : undefined;
 const older =
   index >= 0 && index < months.length - 1 ? months[index + 1] : undefined;
+const monthLabel = formatNewsMonth(archive.year, archive.month);
 const monthName = formatNewsMonth(archive.year, archive.month, {
   capitalize: true,
 });
-const title = `${monthName} — новости Шелково`;
-const description = `Архив новостей Шелково за ${formatNewsMonth(archive.year, archive.month)}: все публикации месяца в кратком формате без раскрытия полного body и addenda.`;
+const heading = `Новости за ${monthLabel}`;
+const title = `Новости Шелково за ${monthLabel}`;
+const description = `Архив новостей Шелково за ${monthLabel}: все публикации месяца в кратком формате без раскрытия полного body и addenda.`;
 const breadcrumbs = [
   { label: 'Новости', href: newsUrl() },
   { label: String(archive.year), href: yearUrl(archive.year) },
@@ -76,7 +78,7 @@ const schema = collectionPageSchema({
           <h1
             class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
           >
-            {monthName}
+            {heading}
           </h1>
         </div>
 

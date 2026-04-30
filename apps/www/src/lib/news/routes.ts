@@ -38,7 +38,7 @@ export interface NewsArticleRouteInput {
 const pad = (value: number | string, size: number): string =>
   String(value).padStart(size, '0');
 
-function need(value: string, name: string): string {
+const need = (value: string, name: string): string => {
   const text = value.trim();
 
   if (!text) {
@@ -46,9 +46,9 @@ function need(value: string, name: string): string {
   }
 
   return text;
-}
+};
 
-function tagKey(value: string): string {
+const tagKey = (value: string): string => {
   const key = normalizeTagKey(value);
 
   if (!key) {
@@ -56,7 +56,7 @@ function tagKey(value: string): string {
   }
 
   return key;
-}
+};
 
 const yearPath = (year: number | string): string => `/news/${pad(year, 4)}/`;
 

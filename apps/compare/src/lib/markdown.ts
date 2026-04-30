@@ -198,6 +198,18 @@ function map(item: Settlement): string {
   );
 }
 
+function nav(page: 'home' | 'rating'): readonly string[] {
+  return [
+    '## Навигация',
+    ...(page === 'home'
+      ? [`- Методика рейтинга: ${abs('/rating/index.md')}`]
+      : [`- Главная в Markdown: ${abs('/index.md')}`]),
+    `- Полный structured feed: ${abs('/data/settlements.json')}`,
+    `- Explorer feed: ${abs('/data/explorer.json')}`,
+    '',
+  ];
+}
+
 export async function buildHomeMd(): Promise<string> {
   const { settlements, stats, ratings } = await loadAllData();
   const list = toExplorer(settlements, ratings).sort((a, b) => {
@@ -216,6 +228,7 @@ export async function buildHomeMd(): Promise<string> {
     '',
     'Структурированное сравнение коттеджных поселков рядом с Шелково по тарифам, инфраструктуре, общественным пространствам, сервисной модели и условному рейтингу качества среды.',
     '',
+    ...nav('home'),
     '## Что здесь сравнивается',
     `- Поселков в базе: ${stats.totalSettlements}`,
     `- Базовый поселок: ${base ? `${base.name} (${abs(`/settlements/${base.slug}/`)})` : 'не найден'}`,
@@ -249,6 +262,7 @@ export async function buildRatingMd(): Promise<string> {
     '',
     'Markdown-версия страницы с публичным объяснением того, как считается условный уровень поселка.',
     '',
+    ...nav('rating'),
     '## Базовая формула',
     '- `rating = 100 * (infra * 0.50 + spaces * 0.25 + service * 0.10 + distance * 0.15)`',
     '- Тариф не влияет на рейтинг и исключен из формулы специально.',

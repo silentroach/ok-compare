@@ -5,9 +5,7 @@ interface PublishedLike {
   readonly published_at: Date;
 }
 
-function byText(a: string, b: string): number {
-  return a.localeCompare(b, 'ru');
-}
+const byText = (a: string, b: string): number => a.localeCompare(b, 'ru');
 
 export function compareArticlesPublishedDesc(
   a: PublishedLike,
@@ -50,8 +48,7 @@ export function compareTagPages(a: NewsTagPage, b: NewsTagPage): number {
   return byText(a.label, b.label);
 }
 
-export function latestFirst(
+export const latestFirst = (
   items: readonly NewsListArticle[],
-): readonly NewsListArticle[] {
-  return items.slice().sort(compareArticlesPublishedDesc);
-}
+): readonly NewsListArticle[] =>
+  items.slice().sort(compareArticlesPublishedDesc);

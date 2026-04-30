@@ -165,18 +165,14 @@ export interface NewsDataset {
 const SPACE = /\s+/g;
 const SCHEME = /^[a-z][a-z\d+.-]*:/i;
 
-export function normalizeTagLabel(tag: string): string {
-  return tag.trim().replace(SPACE, ' ');
-}
+export const normalizeTagLabel = (tag: string): string =>
+  tag.trim().replace(SPACE, ' ');
 
-export function normalizeTagKey(tag: string): string {
-  return normalizeTagLabel(tag).toLowerCase().replaceAll(' ', '-');
-}
+export const normalizeTagKey = (tag: string): string =>
+  normalizeTagLabel(tag).toLowerCase().replaceAll(' ', '-');
 
-export function isAbsoluteUrl(value: string): boolean {
-  return SCHEME.test(value) || value.startsWith('//');
-}
+export const isAbsoluteUrl = (value: string): boolean =>
+  SCHEME.test(value) || value.startsWith('//');
 
-export function isAttachmentUrl(value: string): boolean {
-  return isAbsoluteUrl(value) || value.startsWith('/');
-}
+export const isAttachmentUrl = (value: string): boolean =>
+  isAbsoluteUrl(value) || value.startsWith('/');

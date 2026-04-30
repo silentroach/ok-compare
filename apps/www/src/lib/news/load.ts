@@ -30,17 +30,18 @@ const MOSCOW_OFFSET = '+03:00';
 
 type ArticleEntry = CollectionEntry<'newsArticles'>;
 type AuthorEntry = CollectionEntry<'newsAuthors'>;
-
-interface AssetLike {
-  readonly src: string;
-}
-
-interface AttachmentLike {
-  readonly title: string;
-  readonly url: string;
-  readonly type?: string;
-  readonly size?: string;
-}
+type ArticleData = ArticleEntry['data'];
+type AddendumData = NonNullable<ArticleData['addenda']>[number];
+type AttachmentInput =
+  | NonNullable<ArticleData['attachments']>[number]
+  | NonNullable<AddendumData['attachments']>[number];
+type AuthorReference =
+  | ArticleData['author']
+  | NonNullable<AddendumData['author']>;
+type CoverInput = NonNullable<ArticleData['cover']>;
+type PhotoInput =
+  | NonNullable<ArticleData['photos']>[number]
+  | NonNullable<AddendumData['photos']>[number];
 
 interface DateBits {
   readonly year: string;
@@ -48,37 +49,22 @@ interface DateBits {
   readonly day: string;
 }
 
-interface PhotoLike {
-  readonly src: AssetLike;
-  readonly alt: string;
-  readonly caption?: string;
-}
-
-interface RefLike {
-  readonly id: string;
-}
-
 let cache: Promise<NewsDataset> | undefined;
 
-function pad(value: number, size: number): string {
-  return String(value).padStart(size, '0');
-}
+const pad = (value: number, size: number): string =>
+  String(value).padStart(size, '0');
 
-function localDateBits(date: Date): DateBits {
-  return {
-    year: pad(date.getFullYear(), 4),
-    month: pad(date.getMonth() + 1, 2),
-    day: pad(date.getDate(), 2),
-  };
-}
+const localDateBits = (date: Date): DateBits => ({
+  year: pad(date.getFullYear(), 4),
+  month: pad(date.getMonth() + 1, 2),
+  day: pad(date.getDate(), 2),
+});
 
-function utcDateBits(date: Date): DateBits {
-  return {
-    year: pad(date.getUTCFullYear(), 4),
-    month: pad(date.getUTCMonth() + 1, 2),
-    day: pad(date.getUTCDate(), 2),
-  };
-}
+const utcDateBits = (date: Date): DateBits => ({
+  year: pad(date.getUTCFullYear(), 4),
+  month: pad(date.getUTCMonth() + 1, 2),
+  day: pad(date.getUTCDate(), 2),
+});
 
 function pickDateBits(
   date: Date,
@@ -119,9 +105,7 @@ function stamp(
   return { at, iso };
 }
 
-function authorId(ref: RefLike): string {
-  return ref.id;
-}
+const authorId = (ref: AuthorReference): string => ref.id;
 
 function authorData(entry: AuthorEntry): NewsAuthor {
   return {
@@ -136,11 +120,10 @@ function authorData(entry: AuthorEntry): NewsAuthor {
   };
 }
 
-function authorMap(
+const authorMap = (
   entries: readonly AuthorEntry[],
-): ReadonlyMap<string, NewsAuthor> {
-  return new Map(entries.map((entry) => [entry.id, authorData(entry)]));
-}
+): ReadonlyMap<string, NewsAuthor> =>
+  new Map(entries.map((entry) => [entry.id, authorData(entry)]));
 
 function needAuthor(
   authors: ReadonlyMap<string, NewsAuthor>,
@@ -156,32 +139,27 @@ function needAuthor(
   return author;
 }
 
-function assetUrl(asset: AssetLike | undefined): string | undefined {
-  return asset ? withBase(asset.src) : undefined;
-}
+const assetUrl = (asset: CoverInput | undefined): string | undefined =>
+  asset ? withBase(asset.src) : undefined;
 
-function photos(items: readonly PhotoLike[] | undefined): readonly NewsPhoto[] {
-  return (
-    items?.map((item) => ({
-      url: withBase(item.src.src),
-      alt: item.alt,
-      ...(item.caption ? { caption: item.caption } : {}),
-    })) ?? []
-  );
-}
+const photos = (
+  items: readonly PhotoInput[] | undefined,
+): readonly NewsPhoto[] =>
+  items?.map((item) => ({
+    url: withBase(item.src.src),
+    alt: item.alt,
+    ...(item.caption ? { caption: item.caption } : {}),
+  })) ?? [];
 
-function attachments(
-  items: readonly AttachmentLike[] | undefined,
-): readonly NewsAttachment[] {
-  return (
-    items?.map((item) => ({
-      title: item.title,
-      url: item.url,
-      ...(item.type ? { type: item.type } : {}),
-      ...(item.size ? { size: item.size } : {}),
-    })) ?? []
-  );
-}
+const attachments = (
+  items: readonly AttachmentInput[] | undefined,
+): readonly NewsAttachment[] =>
+  items?.map((item) => ({
+    title: item.title,
+    url: item.url,
+    ...(item.type ? { type: item.type } : {}),
+    ...(item.size ? { size: item.size } : {}),
+  })) ?? [];
 
 function articleParts(entry: ArticleEntry): {
   readonly year: string;
@@ -215,9 +193,7 @@ function normalizeAddenda(
       const published = stamp(pickDateBits(item.date), item.time);
       const author = needAuthor(
         authors,
-        item.author
-          ? authorId(item.author as RefLike)
-          : NEWS_DEFAULT_ADDENDUM_AUTHOR_ID,
+        item.author ? authorId(item.author) : NEWS_DEFAULT_ADDENDUM_AUTHOR_ID,
         `news article "${entry.id}" addendum #${index + 1}`,
       );
 
@@ -227,10 +203,8 @@ function normalizeAddenda(
         author,
         ...(item.source_url ? { source_url: item.source_url } : {}),
         ...(item.body ? { body: item.body } : {}),
-        photos: photos(item.photos as readonly PhotoLike[] | undefined),
-        attachments: attachments(
-          item.attachments as readonly AttachmentLike[] | undefined,
-        ),
+        photos: photos(item.photos),
+        attachments: attachments(item.attachments),
         published_at: published.at,
         published_iso: published.iso,
       } satisfies NewsAddendum;
@@ -258,10 +232,12 @@ function normalizeAddenda(
   };
 }
 
-function areas(values: readonly NewsArea[] | undefined): {
+const areas = (
+  values: readonly NewsArea[] | undefined,
+): {
   readonly applies_to_all_areas: boolean;
   readonly areas: readonly NewsArea[];
-} {
+} => {
   if (!values?.length) {
     return {
       applies_to_all_areas: true,
@@ -273,7 +249,7 @@ function areas(values: readonly NewsArea[] | undefined): {
     applies_to_all_areas: false,
     areas: [...values],
   };
-}
+};
 
 function normalizeArticle(
   entry: ArticleEntry,
@@ -291,10 +267,10 @@ function normalizeArticle(
   const addenda = normalizeAddenda(entry, authors, published.at);
   const author = needAuthor(
     authors,
-    authorId(entry.data.author as RefLike),
+    authorId(entry.data.author),
     `news article "${entry.id}"`,
   );
-  const coverUrl = assetUrl(entry.data.cover as AssetLike | undefined);
+  const coverUrl = assetUrl(entry.data.cover);
   const article = {
     id: entry.id,
     title: entry.data.title,
@@ -332,10 +308,8 @@ function normalizeArticle(
     ...(entry.data.source_url ? { source_url: entry.data.source_url } : {}),
     ...(coverUrl ? { cover_url: coverUrl } : {}),
     ...(entry.data.cover_alt ? { cover_alt: entry.data.cover_alt } : {}),
-    photos: photos(entry.data.photos as readonly PhotoLike[] | undefined),
-    attachments: attachments(
-      entry.data.attachments as readonly AttachmentLike[] | undefined,
-    ),
+    photos: photos(entry.data.photos),
+    attachments: attachments(entry.data.attachments),
     addenda: addenda.items,
     summary: entry.data.summary,
     body: entry.body?.trimEnd() ?? '',
@@ -354,39 +328,37 @@ function normalizeArticle(
   return article;
 }
 
-function toListArticle(article: NewsArticle): NewsListArticle {
-  return {
-    id: article.id,
-    title: article.title,
-    author: article.author,
-    year: article.year,
-    month: article.month,
-    day: article.day,
-    entry: article.entry,
-    url: article.url,
-    markdown_url: article.markdown_url,
-    canonical: article.canonical,
-    published_at: article.published_at,
-    published_iso: article.published_iso,
-    ...(article.time ? { time: article.time } : {}),
-    ...(article.updated_at
-      ? {
-          updated_at: article.updated_at,
-          updated_iso: article.updated_iso,
-        }
-      : {}),
-    is_official: article.is_official,
-    applies_to_all_areas: article.applies_to_all_areas,
-    areas: article.areas,
-    tags: article.tags,
-    pinned: article.pinned,
-    ...(article.source_url ? { source_url: article.source_url } : {}),
-    ...(article.cover_url ? { cover_url: article.cover_url } : {}),
-    ...(article.cover_alt ? { cover_alt: article.cover_alt } : {}),
-    summary: article.summary,
-    has_addenda: article.has_addenda,
-  };
-}
+const toListArticle = (article: NewsArticle): NewsListArticle => ({
+  id: article.id,
+  title: article.title,
+  author: article.author,
+  year: article.year,
+  month: article.month,
+  day: article.day,
+  entry: article.entry,
+  url: article.url,
+  markdown_url: article.markdown_url,
+  canonical: article.canonical,
+  published_at: article.published_at,
+  published_iso: article.published_iso,
+  ...(article.time ? { time: article.time } : {}),
+  ...(article.updated_at
+    ? {
+        updated_at: article.updated_at,
+        updated_iso: article.updated_iso,
+      }
+    : {}),
+  is_official: article.is_official,
+  applies_to_all_areas: article.applies_to_all_areas,
+  areas: article.areas,
+  tags: article.tags,
+  pinned: article.pinned,
+  ...(article.source_url ? { source_url: article.source_url } : {}),
+  ...(article.cover_url ? { cover_url: article.cover_url } : {}),
+  ...(article.cover_alt ? { cover_alt: article.cover_alt } : {}),
+  summary: article.summary,
+  has_addenda: article.has_addenda,
+});
 
 function validateUniqueIds(items: readonly NewsArticle[]): void {
   const seen = new Set<string>();
@@ -462,54 +434,42 @@ async function buildNewsData(): Promise<NewsDataset> {
   };
 }
 
-export function loadNewsData(): Promise<NewsDataset> {
+export const loadNewsData = (): Promise<NewsDataset> => {
   cache ??= buildNewsData();
   return cache;
-}
+};
 
-export async function loadNewsArticles(): Promise<readonly NewsArticle[]> {
-  return (await loadNewsData()).articles;
-}
+export const loadNewsArticles = async (): Promise<readonly NewsArticle[]> =>
+  (await loadNewsData()).articles;
 
-export async function loadNewsHome(): Promise<NewsHomeData> {
-  return (await loadNewsData()).home;
-}
+export const loadNewsHome = async (): Promise<NewsHomeData> =>
+  (await loadNewsData()).home;
 
-export async function loadNewsArchives(): Promise<NewsArchives> {
-  return (await loadNewsData()).archives;
-}
+export const loadNewsArchives = async (): Promise<NewsArchives> =>
+  (await loadNewsData()).archives;
 
-export async function loadNewsTags(): Promise<readonly NewsTagPage[]> {
-  return (await loadNewsData()).tags;
-}
+export const loadNewsTags = async (): Promise<readonly NewsTagPage[]> =>
+  (await loadNewsData()).tags;
 
-export async function loadNewsArticle(
+export const loadNewsArticle = async (
   id: string,
-): Promise<NewsArticle | undefined> {
-  return (await loadNewsData()).by_id.get(id);
-}
+): Promise<NewsArticle | undefined> => (await loadNewsData()).by_id.get(id);
 
-export async function loadNewsTag(
+export const loadNewsTag = async (
   key: string,
-): Promise<NewsTagPage | undefined> {
-  return (await loadNewsData()).by_tag.get(normalizeTagKey(key));
-}
+): Promise<NewsTagPage | undefined> =>
+  (await loadNewsData()).by_tag.get(normalizeTagKey(key));
 
-export async function loadNewsYear(
+export const loadNewsYear = async (
   year: number,
-): Promise<NewsYearArchive | undefined> {
-  return (await loadNewsData()).archives.by_year.get(year);
-}
+): Promise<NewsYearArchive | undefined> =>
+  (await loadNewsData()).archives.by_year.get(year);
 
-export async function loadNewsMonth(
+export const loadNewsMonth = async (
   year: number,
   month: number,
-): Promise<NewsMonthArchive | undefined> {
-  return (await loadNewsData()).archives.by_month.get(
-    newsMonthKey(year, month),
-  );
-}
+): Promise<NewsMonthArchive | undefined> =>
+  (await loadNewsData()).archives.by_month.get(newsMonthKey(year, month));
 
-export function toNewsListArticle(article: NewsArticle): NewsListArticle {
-  return toListArticle(article);
-}
+export const toNewsListArticle = (article: NewsArticle): NewsListArticle =>
+  toListArticle(article);

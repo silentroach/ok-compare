@@ -127,77 +127,63 @@ export interface NewsDiscoveryPayload {
 
 const NEWS_ARTICLES_PAYLOAD_SCHEMA = 'NewsArticlesPayload';
 
-function abs(root: string, path: string): string {
-  return new URL(path.replace(/^\//, ''), `${root}/`).toString();
-}
+const abs = (root: string, path: string): string =>
+  new URL(path.replace(/^\//, ''), `${root}/`).toString();
 
-function server(root: string): string {
-  return root.replace(/\/$/, '');
-}
+const server = (root: string): string => root.replace(/\/$/, '');
 
-function star(
+const star = (
   value: string,
-): readonly { readonly value: string; readonly language: 'ru' }[] {
-  return [{ value, language: 'ru' }];
-}
+): readonly { readonly value: string; readonly language: 'ru' }[] => [
+  { value, language: 'ru' },
+];
 
-function text(minLength = 0): Record<string, unknown> {
-  return {
-    type: 'string',
-    ...(minLength > 0 ? { minLength } : {}),
-  };
-}
+const text = (minLength = 0): Record<string, unknown> => ({
+  type: 'string',
+  ...(minLength > 0 ? { minLength } : {}),
+});
 
-function uri(): Record<string, unknown> {
-  return {
-    type: 'string',
-    format: 'uri',
-  };
-}
+const uri = (): Record<string, unknown> => ({
+  type: 'string',
+  format: 'uri',
+});
 
-function dateTime(): Record<string, unknown> {
-  return {
-    type: 'string',
-    format: 'date-time',
-  };
-}
+const dateTime = (): Record<string, unknown> => ({
+  type: 'string',
+  format: 'date-time',
+});
 
-function flag(): Record<string, unknown> {
-  return {
-    type: 'boolean',
-  };
-}
+const flag = (): Record<string, unknown> => ({
+  type: 'boolean',
+});
 
-function integer(minimum?: number, maximum?: number): Record<string, unknown> {
-  return {
-    type: 'integer',
-    ...(minimum !== undefined ? { minimum } : {}),
-    ...(maximum !== undefined ? { maximum } : {}),
-  };
-}
+const integer = (
+  minimum?: number,
+  maximum?: number,
+): Record<string, unknown> => ({
+  type: 'integer',
+  ...(minimum !== undefined ? { minimum } : {}),
+  ...(maximum !== undefined ? { maximum } : {}),
+});
 
-function list(
+const list = (
   items: Record<string, unknown>,
   extra?: Record<string, unknown>,
-): Record<string, unknown> {
-  return {
-    type: 'array',
-    items,
-    ...(extra ?? {}),
-  };
-}
+): Record<string, unknown> => ({
+  type: 'array',
+  items,
+  ...(extra ?? {}),
+});
 
-function obj(
+const obj = (
   properties: Record<string, unknown>,
   required: readonly string[],
-): Record<string, unknown> {
-  return {
-    type: 'object',
-    additionalProperties: false,
-    properties,
-    required,
-  };
-}
+): Record<string, unknown> => ({
+  type: 'object',
+  additionalProperties: false,
+  properties,
+  required,
+});
 
 function rewriteSchemaRefs(value: unknown, schemaRef: string): unknown {
   if (Array.isArray(value)) {
@@ -223,43 +209,33 @@ function rewriteSchemaRefs(value: unknown, schemaRef: string): unknown {
   );
 }
 
-function fullUrl(value: string): string {
-  return absoluteUrl(value);
-}
+const fullUrl = (value: string): string => absoluteUrl(value);
 
-function author(author: NewsAuthor): NewsDiscoveryAuthor {
-  return {
-    id: author.id,
-    name: author.name,
-    kind: author.kind,
-    ...(author.url ? { url: fullUrl(author.url) } : {}),
-  };
-}
+const author = (author: NewsAuthor): NewsDiscoveryAuthor => ({
+  id: author.id,
+  name: author.name,
+  kind: author.kind,
+  ...(author.url ? { url: fullUrl(author.url) } : {}),
+});
 
-function tag(tag: NewsTag): NewsDiscoveryTag {
-  return {
-    label: tag.label,
-    key: tag.key,
-    url: fullUrl(tag.url),
-  };
-}
+const tag = (tag: NewsTag): NewsDiscoveryTag => ({
+  label: tag.label,
+  key: tag.key,
+  url: fullUrl(tag.url),
+});
 
-function photo(item: NewsPhoto): NewsDiscoveryPhoto {
-  return {
-    url: fullUrl(item.url),
-    alt: item.alt,
-    ...(item.caption ? { caption: item.caption } : {}),
-  };
-}
+const photo = (item: NewsPhoto): NewsDiscoveryPhoto => ({
+  url: fullUrl(item.url),
+  alt: item.alt,
+  ...(item.caption ? { caption: item.caption } : {}),
+});
 
-function attachment(item: NewsAttachment): NewsDiscoveryAttachment {
-  return {
-    title: item.title,
-    url: fullUrl(item.url),
-    ...(item.type ? { type: item.type } : {}),
-    ...(item.size ? { size: item.size } : {}),
-  };
-}
+const attachment = (item: NewsAttachment): NewsDiscoveryAttachment => ({
+  title: item.title,
+  url: fullUrl(item.url),
+  ...(item.type ? { type: item.type } : {}),
+  ...(item.size ? { size: item.size } : {}),
+});
 
 function cover(article: NewsArticle): NewsDiscoveryCover | undefined {
   if (!article.cover_url) {
@@ -319,35 +295,29 @@ function article(item: NewsArticle): NewsDiscoveryArticle {
   };
 }
 
-function archiveMonth(item: NewsMonthArchive): NewsDiscoveryArchiveMonth {
-  return {
-    year: item.year,
-    month: item.month,
-    count: item.count,
-    url: fullUrl(item.url),
-    markdown_url: fullUrl(item.markdown_url),
-  };
-}
+const archiveMonth = (item: NewsMonthArchive): NewsDiscoveryArchiveMonth => ({
+  year: item.year,
+  month: item.month,
+  count: item.count,
+  url: fullUrl(item.url),
+  markdown_url: fullUrl(item.markdown_url),
+});
 
-function archiveYear(item: NewsYearArchive): NewsDiscoveryArchiveYear {
-  return {
-    year: item.year,
-    count: item.count,
-    url: fullUrl(item.url),
-    markdown_url: fullUrl(item.markdown_url),
-    months: item.months.map(archiveMonth),
-  };
-}
+const archiveYear = (item: NewsYearArchive): NewsDiscoveryArchiveYear => ({
+  year: item.year,
+  count: item.count,
+  url: fullUrl(item.url),
+  markdown_url: fullUrl(item.markdown_url),
+  months: item.months.map(archiveMonth),
+});
 
-function tagPage(item: NewsTagPage): NewsDiscoveryTagPage {
-  return {
-    label: item.label,
-    key: item.key,
-    count: item.count,
-    url: fullUrl(item.url),
-    markdown_url: fullUrl(item.markdown_url),
-  };
-}
+const tagPage = (item: NewsTagPage): NewsDiscoveryTagPage => ({
+  label: item.label,
+  key: item.key,
+  count: item.count,
+  url: fullUrl(item.url),
+  markdown_url: fullUrl(item.markdown_url),
+});
 
 function latestUpdate(items: readonly NewsArticle[]): Date | undefined {
   return items.reduce<Date | undefined>((latest, item) => {
@@ -370,15 +340,13 @@ function xml(value: string): string {
     .replaceAll("'", '&apos;');
 }
 
-export function buildNewsPayload(data: NewsDataset): NewsDiscoveryPayload {
-  return {
-    articles: data.articles.map(article),
-    archives: {
-      years: data.archives.years.map(archiveYear),
-    },
-    tags: data.tags.map(tagPage),
-  };
-}
+export const buildNewsPayload = (data: NewsDataset): NewsDiscoveryPayload => ({
+  articles: data.articles.map(article),
+  archives: {
+    years: data.archives.years.map(archiveYear),
+  },
+  tags: data.tags.map(tagPage),
+});
 
 export function buildNewsRss(data: NewsDataset): string {
   const home = fullUrl(newsPath());
@@ -701,14 +669,12 @@ export function catalog(root: string): Record<string, unknown> {
   };
 }
 
-export function links(root: string): string {
-  return [
+export const links = (root: string): string =>
+  [
     `<${abs(root, articlesSchemaPath())}>; rel="service-desc"; type="application/schema+json"`,
     `<${abs(root, articlesOpenApiPath())}>; rel="service-desc"; type="${OAS}"`,
     `<${abs(root, apiCatalogPath())}>; rel="api-catalog"; type="application/linkset+json"; profile="${PROFILE}"`,
   ].join(', ');
-}
 
-export function self(root: string): string {
-  return `<${abs(root, apiCatalogPath())}>; rel="api-catalog"; type="application/linkset+json"; profile="${PROFILE}"`;
-}
+export const self = (root: string): string =>
+  `<${abs(root, apiCatalogPath())}>; rel="api-catalog"; type="application/linkset+json"; profile="${PROFILE}"`;

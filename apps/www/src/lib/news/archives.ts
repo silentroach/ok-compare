@@ -11,13 +11,10 @@ interface YearBucket {
   readonly months: Map<number, NewsListArticle[]>;
 }
 
-function pad(value: number): string {
-  return String(value).padStart(2, '0');
-}
+const pad = (value: number): string => String(value).padStart(2, '0');
 
-export function newsMonthKey(year: number, month: number): string {
-  return `${year}/${pad(month)}`;
-}
+export const newsMonthKey = (year: number, month: number): string =>
+  `${year}/${pad(month)}`;
 
 export function buildArchives(items: readonly NewsListArticle[]): NewsArchives {
   const years = new Map<number, YearBucket>();

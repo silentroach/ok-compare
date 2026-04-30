@@ -24,17 +24,12 @@ export const NEWS_MARKDOWN_HEADERS = {
   'X-Robots-Tag': 'noindex, follow',
 } as const;
 
-function abs(value: string): string {
-  return absoluteUrl(value);
-}
+const abs = (value: string): string => absoluteUrl(value);
 
-function join(lines: readonly string[]): string {
-  return `${lines.join('\n')}\n`;
-}
+const join = (lines: readonly string[]): string => `${lines.join('\n')}\n`;
 
-function pick<T>(items: readonly (T | undefined)[]): readonly T[] {
-  return items.filter((item): item is T => item !== undefined);
-}
+const pick = <T>(items: readonly (T | undefined)[]): readonly T[] =>
+  items.filter((item): item is T => item !== undefined);
 
 function row(label: string, value?: string): string | undefined {
   if (!value) {
@@ -48,9 +43,7 @@ function section(title: string, rows: readonly string[]): readonly string[] {
   return [`## ${title}`, ...(rows.length > 0 ? rows : ['- Нет данных.']), ''];
 }
 
-function inline(value: string): string {
-  return value.replace(/\s+/g, ' ').trim();
-}
+const inline = (value: string): string => value.replace(/\s+/g, ' ').trim();
 
 function areas(
   item: Pick<NewsArticle, 'applies_to_all_areas' | 'areas'>,
@@ -74,17 +67,15 @@ function tags(
   return items.map((item) => item.label).join(', ');
 }
 
-function when(iso: string, time?: string): string {
-  return time ? `${formatNewsDate(iso)}, ${time}` : formatNewsDate(iso);
-}
+const when = (iso: string, time?: string): string =>
+  time ? `${formatNewsDate(iso)}, ${time}` : formatNewsDate(iso);
 
-function photoLine(label: string, photo: NewsPhoto): string {
-  return `- ${label}: ${pick([
+const photoLine = (label: string, photo: NewsPhoto): string =>
+  `- ${label}: ${pick([
     abs(photo.url),
     `alt: ${inline(photo.alt)}`,
     photo.caption ? `подпись: ${inline(photo.caption)}` : undefined,
   ]).join(' — ')}`;
-}
 
 function photoSection(article: NewsArticle): readonly string[] {
   const rows = pick<string>([
@@ -114,11 +105,8 @@ function addendumPhotoSection(items: readonly NewsPhoto[]): readonly string[] {
   ];
 }
 
-function attachmentLine(item: NewsAttachment): string {
-  return `- ${item.title}: ${pick([abs(item.url), item.type, item.size]).join(
-    ' — ',
-  )}`;
-}
+const attachmentLine = (item: NewsAttachment): string =>
+  `- ${item.title}: ${pick([abs(item.url), item.type, item.size]).join(' — ')}`;
 
 function attachmentSection(
   items: readonly NewsAttachment[],
@@ -230,13 +218,11 @@ function addendaSection(items: readonly NewsAddendum[]): readonly string[] {
   return [...lines, ''];
 }
 
-function monthLine(item: NewsMonthArchive): string {
-  return `- [${formatNewsMonth(item.year, item.month, { capitalize: true })}](${abs(item.markdown_url)}) — ${item.count} ${pluralizeRu(item.count, ['публикация', 'публикации', 'публикаций'])}`;
-}
+const monthLine = (item: NewsMonthArchive): string =>
+  `- [${formatNewsMonth(item.year, item.month, { capitalize: true })}](${abs(item.markdown_url)}) — ${item.count} ${pluralizeRu(item.count, ['публикация', 'публикации', 'публикаций'])}`;
 
-function tagLine(item: NewsTagPage): string {
-  return `- [${item.label}](${abs(item.markdown_url)}) — ${item.count} ${pluralizeRu(item.count, ['публикация', 'публикации', 'публикаций'])}`;
-}
+const tagLine = (item: NewsTagPage): string =>
+  `- [${item.label}](${abs(item.markdown_url)}) — ${item.count} ${pluralizeRu(item.count, ['публикация', 'публикации', 'публикаций'])}`;
 
 export function buildNewsHomeMarkdown(data: NewsDataset): string {
   const latest = [...data.home.pinned, ...data.home.latest];
@@ -296,12 +282,10 @@ export function buildNewsMonthMarkdown(input: {
   readonly archive: NewsMonthArchive;
 }): string {
   const { archive } = input;
-  const monthName = formatNewsMonth(archive.year, archive.month, {
-    capitalize: true,
-  });
+  const monthLabel = formatNewsMonth(archive.year, archive.month);
 
   return join([
-    `# ${monthName}`,
+    `# Новости Шелково за ${monthLabel}`,
     '',
     ...articleBlock({
       title: 'Новости за месяц',

@@ -1,11 +1,18 @@
-import { marked } from 'marked';
-import { formatDynamicHtml } from '../typography';
+import rehypeRaw from 'rehype-raw';
+import rehypeStringify from 'rehype-stringify';
+import remarkGfm from 'remark-gfm';
+import remarkParse from 'remark-parse';
+import remarkRehype from 'remark-rehype';
+import { unified } from 'unified';
+import { rehypeTypograf } from '../typography';
 
-marked.setOptions({
-  gfm: true,
-  breaks: false,
-});
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkRehype, { allowDangerousHtml: true })
+  .use(rehypeRaw)
+  .use(rehypeTypograf)
+  .use(rehypeStringify);
 
-export function renderNewsMarkdown(markdown: string): string {
-  return formatDynamicHtml(marked.parse(markdown, { async: false }) as string);
-}
+export const renderNewsMarkdown = (markdown: string): string =>
+  String(processor.processSync(markdown));

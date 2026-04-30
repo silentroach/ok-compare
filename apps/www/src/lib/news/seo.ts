@@ -41,47 +41,46 @@ export interface NewsArticleInput extends Omit<ArticleInput, 'type'> {}
 
 export interface TechArticleInput extends Omit<ArticleInput, 'type'> {}
 
-function breadcrumbSchema(items: readonly BreadcrumbLink[]): SchemaDoc {
-  return {
-    '@context': CONTEXT,
-    '@type': 'BreadcrumbList',
-    itemListElement: items.map((item, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: item.name,
-      item: absoluteUrl(item.url),
-    })),
-  };
-}
+const breadcrumbSchema = (items: readonly BreadcrumbLink[]): SchemaDoc => ({
+  '@context': CONTEXT,
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: item.name,
+    item: absoluteUrl(item.url),
+  })),
+});
 
-function itemListSchema(url: string, items: readonly ListEntry[]): SchemaDoc {
-  return {
-    '@context': CONTEXT,
-    '@type': 'ItemList',
-    '@id': `${url}#items`,
-    url,
-    numberOfItems: items.length,
-    itemListElement: items.map((item, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: item.name,
-      item: absoluteUrl(item.url),
-    })),
-  };
-}
+const itemListSchema = (
+  url: string,
+  items: readonly ListEntry[],
+): SchemaDoc => ({
+  '@context': CONTEXT,
+  '@type': 'ItemList',
+  '@id': `${url}#items`,
+  url,
+  numberOfItems: items.length,
+  itemListElement: items.map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: item.name,
+    item: absoluteUrl(item.url),
+  })),
+});
 
-function imageValue(
+const imageValue = (
   image: string | readonly string[] | undefined,
-): string | readonly string[] | undefined {
+): string | readonly string[] | undefined => {
   if (!image) return undefined;
   if (typeof image !== 'string') {
     return image.map((item) => absoluteUrl(item));
   }
 
   return absoluteUrl(image);
-}
+};
 
-function articleSchema(input: ArticleInput): readonly SchemaDoc[] {
+const articleSchema = (input: ArticleInput): readonly SchemaDoc[] => {
   const url = absoluteUrl(input.url);
   const image = imageValue(input.image);
   const docs: SchemaDoc[] = [
@@ -106,7 +105,7 @@ function articleSchema(input: ArticleInput): readonly SchemaDoc[] {
   }
 
   return docs;
-}
+};
 
 export function collectionPageSchema(
   input: CollectionPageInput,
@@ -138,14 +137,10 @@ export function collectionPageSchema(
   return docs;
 }
 
-export function newsArticleSchema(
+export const newsArticleSchema = (
   input: NewsArticleInput,
-): readonly SchemaDoc[] {
-  return articleSchema({ ...input, type: 'NewsArticle' });
-}
+): readonly SchemaDoc[] => articleSchema({ ...input, type: 'NewsArticle' });
 
-export function techArticleSchema(
+export const techArticleSchema = (
   input: TechArticleInput,
-): readonly SchemaDoc[] {
-  return articleSchema({ ...input, type: 'TechArticle' });
-}
+): readonly SchemaDoc[] => articleSchema({ ...input, type: 'TechArticle' });

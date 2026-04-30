@@ -9,9 +9,8 @@ interface TagBucket {
   readonly articles: NewsListArticle[];
 }
 
-function byLabel(a: NewsTag, b: NewsTag): number {
-  return a.label.localeCompare(b.label, 'ru');
-}
+const byLabel = (a: NewsTag, b: NewsTag): number =>
+  a.label.localeCompare(b.label, 'ru');
 
 export function buildArticleTags(
   values: readonly string[] | undefined,
