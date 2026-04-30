@@ -1,7 +1,7 @@
-const SCHEME = /^[a-z][a-z\d+.-]*:/i;
+const ABSOLUTE_URL_SCHEME = /^(?:https?:|mailto:|tel:)/i;
 
 export const isAbsoluteUrl = (value: string): boolean =>
-  SCHEME.test(value) || value.startsWith('//');
+  ABSOLUTE_URL_SCHEME.test(value) || value.startsWith('//');
 
 /**
  * Builds URL with base path prepended.

@@ -9,6 +9,11 @@ describe('isAbsoluteUrl package', () => {
     expect(isAbsoluteUrl('//cdn.example.com/app.js')).toBe(true);
   });
 
+  it('rejects unsupported URI schemes', () => {
+    expect(isAbsoluteUrl('javascript:alert(1)')).toBe(false);
+    expect(isAbsoluteUrl('data:text/html;base64,PHNjcmlwdD4=')).toBe(false);
+  });
+
   it('ignores root-relative and relative paths', () => {
     expect(isAbsoluteUrl('/news/')).toBe(false);
     expect(isAbsoluteUrl('news/2026/')).toBe(false);
@@ -33,6 +38,15 @@ describe('withBase package', () => {
   it('prepends normalized base to relative paths', () => {
     expect(withBase('/base/', 'settlements/lesnoe/')).toBe(
       '/base/settlements/lesnoe/',
+    );
+  });
+
+  it('treats unsupported URI schemes as internal paths', () => {
+    expect(withBase('/base/', 'javascript:alert(1)')).toBe(
+      '/base/javascript:alert(1)',
+    );
+    expect(withBase('/base/', 'data:text/plain,hello')).toBe(
+      '/base/data:text/plain,hello',
     );
   });
 

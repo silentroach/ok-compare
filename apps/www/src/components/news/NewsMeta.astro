@@ -44,7 +44,9 @@ const isTelegramSource = sourceUrl
     )
   : false;
 const sourceTarget =
-  sourceUrl && !isTelegramSource ? new URL(sourceUrl) : undefined;
+  sourceUrl && !isTelegramSource
+    ? new URL(sourceUrl.startsWith('//') ? `https:${sourceUrl}` : sourceUrl)
+    : undefined;
 const sourceHost = sourceUrl
   ? isTelegramSource
     ? 'Telegram'
