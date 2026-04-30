@@ -66,6 +66,11 @@ export function formatNewsArea(area: NewsArea): string {
 
 export function formatNewsAuthor(
   author: Pick<NewsAuthor, 'name' | 'short_name'>,
+  opts?: {
+    readonly short?: boolean;
+  },
 ): string {
-  return author.short_name ?? author.name;
+  return opts?.short === false
+    ? author.name
+    : (author.short_name ?? author.name);
 }

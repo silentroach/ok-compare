@@ -24,7 +24,12 @@ const { items, linkLast = false } = Astro.props;
                 {item.label}
               </a>
             ) : (
-              <span class="font-medium text-foreground">{item.label}</span>
+              <span
+                class="font-medium text-foreground"
+                aria-current={index === items.length - 1 ? 'page' : undefined}
+              >
+                {item.label}
+              </span>
             )}
           </li>
         ))}

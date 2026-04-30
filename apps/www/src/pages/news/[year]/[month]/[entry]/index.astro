@@ -98,6 +98,7 @@ const breadcrumbs = [
     label: monthBreadcrumbName,
     href: monthUrl(article.year, article.month),
   },
+  { label: article.title },
 ];
 const author = {
   '@type': article.author.is_official ? 'Organization' : 'Person',
@@ -187,6 +188,9 @@ const schema = newsArticleSchema({
                   updatedIso={article.updated_iso}
                   author={article.author}
                   isOfficial={article.is_official}
+                  fullAuthorName
+                  showOfficial={false}
+                  showUpdated={false}
                   areas={article.areas}
                   appliesToAllAreas={article.applies_to_all_areas}
                   sourceUrl={article.source_url}
@@ -228,6 +232,9 @@ const schema = newsArticleSchema({
               updatedIso={article.updated_iso}
               author={article.author}
               isOfficial={article.is_official}
+              fullAuthorName
+              showOfficial={false}
+              showUpdated={false}
               areas={article.areas}
               appliesToAllAreas={article.applies_to_all_areas}
               sourceUrl={article.source_url}

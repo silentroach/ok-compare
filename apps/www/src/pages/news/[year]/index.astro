@@ -1,4 +1,5 @@
 ---
+import { pluralizeRu } from '@shelkovo/format';
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import NewsBreadcrumbs from '../../../components/news/NewsBreadcrumbs.astro';
@@ -29,6 +30,7 @@ const breadcrumbs = [
   { label: 'Новости', href: newsUrl() },
   { label: String(archive.year) },
 ];
+
 const schema = collectionPageSchema({
   name: title,
   description,
@@ -60,39 +62,26 @@ const schema = collectionPageSchema({
         <NewsBreadcrumbs items={breadcrumbs} />
 
         <div class="space-y-3">
-          <p
-            class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
-          >
-            Годовой архив
-          </p>
           <h1
             class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
           >
             Новости за {archive.year} год
           </h1>
-          <p class="ui-copy max-w-3xl text-muted-foreground">
-            Внутри года публикации сгруппированы по месяцам, но порядок внутри
-            каждой группы остается чисто хронологическим.
-          </p>
         </div>
 
         <ul class="flex flex-wrap gap-x-5 gap-y-2">
           {
             archive.months.map((item) => (
-              <li>
-                <a
-                  href={`#month-${item.month}`}
-                  class="ui-link text-sm font-semibold"
-                >
-                  <span>
-                    {formatNewsMonth(item.year, item.month, {
-                      capitalize: true,
-                    })}
-                  </span>{' '}
-                  <span class="ui-num text-muted-foreground">
-                    ({item.count})
-                  </span>
+              <li class="flex flex-wrap items-baseline gap-1.5 text-sm font-semibold">
+                <a href={`#month-${item.month}`} class="ui-link">
+                  {formatNewsMonth(item.year, item.month, {
+                    capitalize: true,
+                    includeYear: false,
+                  })}
                 </a>
+                <span class="text-muted-foreground">
+                  {`(${item.count} ${pluralizeRu(item.count, ['новость', 'новости', 'новостей'])})`}
+                </span>
               </li>
             ))
           }
@@ -104,19 +93,10 @@ const schema = collectionPageSchema({
       {
         archive.months.map((item) => (
           <section id={`month-${item.month}`} class="space-y-4">
-            <div class="flex flex-wrap items-center justify-between gap-3 px-5 md:px-6">
-              <div>
-                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  {item.count} публикаций
-                </p>
-                <h2 class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]">
-                  {formatNewsMonth(item.year, item.month, { capitalize: true })}
-                </h2>
-              </div>
-
-              <a href={item.url} class="ui-link text-sm font-semibold">
-                Открыть месяц
-              </a>
+            <div class="px-5 md:px-6">
+              <h2 class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]">
+                {formatNewsMonth(item.year, item.month, { capitalize: true })}
+              </h2>
             </div>
 
             <NewsList articles={item.articles} empty="" />

@@ -32,5 +32,6 @@ pnpm typecheck
 - Не копировать compare-страницы в `apps/www`.
 - Compare должен подключаться как готовый section build по пути `/compare`.
 - Любой reusable дизайн, токены и примитивы поднимать в `packages/ui`.
+- Любые UI-подписи с количеством на русском языке обязательно склонять корректно (`1 новость`, `2 новости`, `5 новостей`).
 - Если нужна ссылка на compare, вести на `/compare/`, а не на legacy домен.
 - Если меняется deploy/base/root behavior, синхронно обновлять `ops/nginx/kpshelkovo-online.conf` и compose scripts.

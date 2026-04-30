@@ -13,6 +13,9 @@ interface Props {
   readonly updatedIso?: string;
   readonly author?: Pick<NewsAuthor, 'name' | 'short_name' | 'url'>;
   readonly isOfficial?: boolean;
+  readonly fullAuthorName?: boolean;
+  readonly showOfficial?: boolean;
+  readonly showUpdated?: boolean;
   readonly areas?: readonly NewsArea[];
   readonly appliesToAllAreas?: boolean;
   readonly sourceUrl?: string;
@@ -25,6 +28,9 @@ const {
   updatedIso,
   author,
   isOfficial = false,
+  fullAuthorName = false,
+  showOfficial = true,
+  showUpdated = true,
   areas = [],
   appliesToAllAreas = true,
   sourceUrl,
@@ -57,15 +63,15 @@ const isTelegramSource = sourceUrl
           rel="noreferrer noopener"
           class="ui-link font-medium"
         >
-          {formatNewsAuthor(author)}
+          {formatNewsAuthor(author, { short: !fullAuthorName })}
         </a>
       ) : (
-        <span>{formatNewsAuthor(author)}</span>
+        <span>{formatNewsAuthor(author, { short: !fullAuthorName })}</span>
       ))
   }
-  {isOfficial && <span class="ui-chip">Официально</span>}
+  {showOfficial && isOfficial && <span class="ui-chip">Официально</span>}
   {
-    updatedIso && (
+    showUpdated && updatedIso && (
       <span class="ui-chip">Обновлено {formatNewsDate(updatedIso)}</span>
     )
   }

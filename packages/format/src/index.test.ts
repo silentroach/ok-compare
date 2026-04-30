@@ -6,6 +6,7 @@ import {
   formatDistance,
   formatPercentage,
   formatTariff,
+  pluralizeRu,
 } from './index';
 
 describe('format package', () => {
@@ -86,6 +87,35 @@ describe('format package', () => {
       expect(formatDate('2026-12-31')).toBe('31 декабря 2026');
       expect(formatDate('2026-05-01')).toBe('1 мая 2026');
       expect(formatDate('2024-02-29')).toBe('29 февраля 2024');
+    });
+  });
+
+  describe('pluralizeRu', () => {
+    const forms = ['новость', 'новости', 'новостей'] as const;
+
+    it('uses singular form for one', () => {
+      expect(pluralizeRu(1, forms)).toBe('новость');
+      expect(pluralizeRu(21, forms)).toBe('новость');
+      expect(pluralizeRu(101, forms)).toBe('новость');
+    });
+
+    it('uses few form for two to four', () => {
+      expect(pluralizeRu(2, forms)).toBe('новости');
+      expect(pluralizeRu(4, forms)).toBe('новости');
+      expect(pluralizeRu(22, forms)).toBe('новости');
+    });
+
+    it('uses many form for zero teens and five plus', () => {
+      expect(pluralizeRu(0, forms)).toBe('новостей');
+      expect(pluralizeRu(5, forms)).toBe('новостей');
+      expect(pluralizeRu(11, forms)).toBe('новостей');
+      expect(pluralizeRu(14, forms)).toBe('новостей');
+      expect(pluralizeRu(25, forms)).toBe('новостей');
+    });
+
+    it('ignores sign and fractional part', () => {
+      expect(pluralizeRu(-2, forms)).toBe('новости');
+      expect(pluralizeRu(1.9, forms)).toBe('новость');
     });
   });
 });

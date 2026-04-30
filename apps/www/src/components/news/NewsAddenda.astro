@@ -41,6 +41,9 @@ const addenda = items.map((item) => ({
                   time={item.time}
                   author={item.author}
                   isOfficial={item.author.is_official}
+                  fullAuthorName
+                  showOfficial={false}
+                  showUpdated={false}
                   sourceUrl={item.source_url}
                 />
               </div>
