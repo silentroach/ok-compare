@@ -106,6 +106,8 @@
 
 :root {
   color-scheme: light;
+  --container: 1180px;
+  --page-padding: clamp(1rem, 3vw, 2rem);
   --shadow-1: 0 0.25rem 0.75rem oklch(27% 0.05 142 / 0.055);
   --shadow-2: 0 0.75rem 2rem oklch(27% 0.05 142 / 0.085);
   --hero-glow-a: oklch(83% 0.155 78 / 0.06);
@@ -322,30 +324,41 @@
 }
 
 .ui-shell {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: 1rem;
-  box-shadow: var(--shadow-1);
+  border-top: 1px solid
+    color-mix(in oklab, var(--color-border) 92%, transparent);
+  border-inline: 0;
+  border-bottom: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .ui-shell-strong {
-  background: var(--color-elevated);
-  border: 1px solid var(--color-border-strong);
-  border-radius: 1rem;
-  box-shadow: var(--shadow-2);
+  border-top: 2px solid var(--color-border-strong);
+  border-inline: 0;
+  border-bottom: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .ui-chip {
   display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.25rem 0.65rem;
-  border-radius: 999px;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface-raised);
+  align-items: baseline;
+  gap: 0.45rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   color: var(--color-muted-foreground);
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+a.ui-chip:hover {
+  color: var(--color-foreground);
 }
 
 .ui-link {
@@ -373,12 +386,140 @@
   }
 }
 
+.ui-prose {
+  max-width: 70ch;
+  color: var(--color-foreground);
+  font-size: 1rem;
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+
+.ui-prose p,
+.ui-prose ul,
+.ui-prose ol {
+  margin-block: 1rem;
+}
+
+.ui-prose a {
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+.ui-prose a:hover {
+  color: var(--color-primary-hover);
+}
+
+.ui-prose strong {
+  font-weight: 600;
+}
+
+.ui-prose em {
+  font-style: italic;
+}
+
+.ui-prose ul,
+.ui-prose ol {
+  padding-left: 1.5rem;
+}
+
+.ui-prose ul {
+  list-style: disc;
+}
+
+.ui-prose ol {
+  list-style: decimal;
+}
+
+.ui-prose li {
+  margin-block: 0.5rem;
+}
+
+.ui-prose blockquote {
+  margin-block: 1.5rem;
+  border-left: 2px solid var(--color-border);
+  padding-left: 1rem;
+  color: var(--color-muted-foreground);
+}
+
+.ui-prose hr {
+  margin-block: 2rem;
+  border-color: var(--color-border);
+}
+
+.ui-prose h2 {
+  margin-top: 2rem;
+  color: var(--color-foreground);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.ui-prose h3 {
+  margin-top: 1.5rem;
+  color: var(--color-foreground);
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.ui-prose table {
+  margin-block: 1.5rem;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ui-prose thead th {
+  border-bottom: 1px solid var(--color-border);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.ui-prose tbody td {
+  border-bottom: 1px solid var(--color-border);
+  padding: 0.5rem 0.75rem;
+}
+
+.ui-prose img {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+}
+
+.ui-prose code {
+  background: var(--color-surface-muted);
+  padding: 0.125rem 0.375rem;
+  font-size: 0.95em;
+}
+
+.ui-prose pre {
+  margin-block: 1.5rem;
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  padding: 1rem;
+  font-size: 0.875rem;
+}
+
+.ui-prose pre code {
+  background: transparent;
+  padding: 0;
+}
+
+@media (min-width: 48rem) {
+  .ui-prose {
+    font-size: 1.0625rem;
+  }
+}
+
 .ui-num {
   font-variant-numeric: tabular-nums;
 }
 
 .ui-page {
-  width: min(1200px, 100% - 2rem);
+  width: min(calc(100% - var(--page-padding) * 2), var(--container));
   margin-inline: auto;
 }
 
@@ -430,13 +571,14 @@
   justify-content: center;
   gap: 0.4rem;
   border: 1px solid var(--color-border);
-  border-radius: 0.65rem;
+  border-radius: 0;
   background: var(--color-surface-raised);
   color: var(--color-foreground);
   font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.25;
   cursor: pointer;
+  box-shadow: none;
   transition:
     border-color 0.2s ease,
     background-color 0.2s ease,

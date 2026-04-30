@@ -1,6 +1,24 @@
 import { describe, expect, it } from 'vitest';
 
-import { telegram, withBase } from './index';
+import { isAbsoluteUrl, telegram, withBase } from './index';
+
+describe('isAbsoluteUrl package', () => {
+  it('detects absolute URLs and protocol-relative URLs', () => {
+    expect(isAbsoluteUrl('https://example.com')).toBe(true);
+    expect(isAbsoluteUrl('mailto:test@example.com')).toBe(true);
+    expect(isAbsoluteUrl('//cdn.example.com/app.js')).toBe(true);
+  });
+
+  it('rejects unsupported URI schemes', () => {
+    expect(isAbsoluteUrl('javascript:alert(1)')).toBe(false);
+    expect(isAbsoluteUrl('data:text/html;base64,PHNjcmlwdD4=')).toBe(false);
+  });
+
+  it('ignores root-relative and relative paths', () => {
+    expect(isAbsoluteUrl('/news/')).toBe(false);
+    expect(isAbsoluteUrl('news/2026/')).toBe(false);
+  });
+});
 
 describe('withBase package', () => {
   it('passes through external and special URLs', () => {
@@ -12,11 +30,23 @@ describe('withBase package', () => {
       'mailto:test@example.com',
     );
     expect(withBase('/base/', 'tel:+79990000000')).toBe('tel:+79990000000');
+    expect(withBase('/base/', '//cdn.example.com/app.js')).toBe(
+      '//cdn.example.com/app.js',
+    );
   });
 
   it('prepends normalized base to relative paths', () => {
     expect(withBase('/base/', 'settlements/lesnoe/')).toBe(
       '/base/settlements/lesnoe/',
+    );
+  });
+
+  it('treats unsupported URI schemes as internal paths', () => {
+    expect(withBase('/base/', 'javascript:alert(1)')).toBe(
+      '/base/javascript:alert(1)',
+    );
+    expect(withBase('/base/', 'data:text/plain,hello')).toBe(
+      '/base/data:text/plain,hello',
     );
   });
 

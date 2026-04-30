@@ -1,0 +1,342 @@
+import { pluralizeRu } from '@shelkovo/format';
+
+import { absoluteUrl } from '../site';
+import { NEWS_LATEST_LIMIT } from './config';
+import type {
+  NewsAddendum,
+  NewsArticle,
+  NewsAttachment,
+  NewsDataset,
+  NewsListArticle,
+  NewsMonthArchive,
+  NewsPhoto,
+  NewsTagPage,
+  NewsYearArchive,
+} from './schema';
+import {
+  formatNewsArea,
+  formatNewsAuthor,
+  formatNewsDate,
+  formatNewsMonth,
+} from './view';
+
+export const NEWS_MARKDOWN_HEADERS = {
+  'Content-Type': 'text/markdown; charset=utf-8',
+  'X-Robots-Tag': 'noindex, follow',
+} as const;
+
+const abs = (value: string): string => absoluteUrl(value);
+
+const join = (lines: readonly string[]): string => `${lines.join('\n')}\n`;
+
+const pick = <T>(items: readonly (T | undefined)[]): readonly T[] =>
+  items.filter((item): item is T => item !== undefined);
+
+function row(label: string, value?: string): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  return `- ${label}: ${value}`;
+}
+
+function section(title: string, rows: readonly string[]): readonly string[] {
+  return [`## ${title}`, ...(rows.length > 0 ? rows : ['- Нет данных.']), ''];
+}
+
+const inline = (value: string): string => value.replace(/\s+/g, ' ').trim();
+
+function areas(
+  item: Pick<NewsArticle, 'applies_to_all_areas' | 'areas'>,
+): string {
+  if (item.applies_to_all_areas) {
+    return 'все части поселка';
+  }
+
+  return item.areas.map((area) => formatNewsArea(area)).join(', ');
+}
+
+function tags(
+  items:
+    | Pick<NewsListArticle, 'tags'>['tags']
+    | Pick<NewsArticle, 'tags'>['tags'],
+): string {
+  if (items.length === 0) {
+    return 'нет';
+  }
+
+  return items.map((item) => item.label).join(', ');
+}
+
+const when = (iso: string, time?: string): string =>
+  time ? `${formatNewsDate(iso)}, ${time}` : formatNewsDate(iso);
+
+const photoLine = (label: string, photo: NewsPhoto): string =>
+  `- ${label}: ${pick([
+    abs(photo.url),
+    `alt: ${inline(photo.alt)}`,
+    photo.caption ? `подпись: ${inline(photo.caption)}` : undefined,
+  ]).join(' — ')}`;
+
+function photoSection(article: NewsArticle): readonly string[] {
+  const rows = pick<string>([
+    article.cover_url
+      ? `- Обложка: ${pick([
+          abs(article.cover_url),
+          `alt: ${inline(article.cover_alt ?? article.title)}`,
+        ]).join(' — ')}`
+      : undefined,
+    ...article.photos.map((photo, index) =>
+      photoLine(`Фото ${index + 1}`, photo),
+    ),
+  ]);
+
+  return rows.length > 0 ? section('Фото', rows) : [];
+}
+
+function addendumPhotoSection(items: readonly NewsPhoto[]): readonly string[] {
+  if (items.length === 0) {
+    return [];
+  }
+
+  return [
+    '#### Фото',
+    ...items.map((photo, index) => photoLine(`Фото ${index + 1}`, photo)),
+    '',
+  ];
+}
+
+const attachmentLine = (item: NewsAttachment): string =>
+  `- ${item.title}: ${pick([abs(item.url), item.type, item.size]).join(' — ')}`;
+
+function attachmentSection(
+  items: readonly NewsAttachment[],
+): readonly string[] {
+  return items.length > 0 ? section('Вложения', items.map(attachmentLine)) : [];
+}
+
+function addendumAttachmentSection(
+  items: readonly NewsAttachment[],
+): readonly string[] {
+  if (items.length === 0) {
+    return [];
+  }
+
+  return ['#### Вложения', ...items.map(attachmentLine), ''];
+}
+
+function articleLine(article: NewsListArticle): string {
+  const meta = pick<string>([when(article.published_iso, article.time)]);
+  const summary = inline(article.summary);
+
+  return `- [${article.title}](${abs(article.markdown_url)})${
+    meta.length > 0 ? ` — ${meta.join('; ')}` : ''
+  }${summary ? `\n  ${summary}` : ''}`;
+}
+
+function articleBlock(input: {
+  readonly items: readonly NewsListArticle[];
+  readonly empty: string;
+  readonly title?: string;
+  readonly intro?: string;
+  readonly headingLevel?: 2 | 3;
+}): readonly string[] {
+  const { items, empty, title, intro, headingLevel = 2 } = input;
+
+  return [
+    ...(title ? [`${'#'.repeat(headingLevel)} ${title}`] : []),
+    ...(intro ? [intro, ''] : []),
+    ...(items.length > 0 ? items.map(articleLine) : [`- ${empty}`]),
+    '',
+  ];
+}
+
+function articleMeta(article: NewsArticle): readonly string[] {
+  return section(
+    'Метаданные',
+    pick([
+      row('Дата', formatNewsDate(article.published_iso)),
+      row('Время', article.time),
+      row('Автор', formatNewsAuthor(article.author, { short: false })),
+      row(
+        'Официальность',
+        article.is_official
+          ? 'официальная новость'
+          : 'неофициальная публикация',
+      ),
+      row('Areas', areas(article)),
+      row('Теги', tags(article.tags)),
+      row('Источник', article.source_url ? abs(article.source_url) : undefined),
+      row(
+        'Обновлено',
+        article.updated_iso
+          ? when(article.updated_iso, article.addenda.at(-1)?.time)
+          : undefined,
+      ),
+    ]),
+  );
+}
+
+function addendaSection(items: readonly NewsAddendum[]): readonly string[] {
+  if (items.length === 0) {
+    return [];
+  }
+
+  const lines: string[] = [
+    '## Дополнения',
+    'Исходный текст новости не переписывается: поздние уточнения остаются отдельными блоками.',
+    '',
+  ];
+
+  for (const [index, item] of items.entries()) {
+    lines.push(
+      `### ${item.title ?? `Дополнение ${index + 1} от ${formatNewsDate(item.published_iso)}`}`,
+    );
+    lines.push(
+      ...pick([
+        row('Дата', formatNewsDate(item.published_iso)),
+        row('Время', item.time),
+        row('Автор', formatNewsAuthor(item.author, { short: false })),
+        row(
+          'Официальность',
+          item.author.is_official
+            ? 'официальное дополнение'
+            : 'community/editorial дополнение',
+        ),
+        row('Источник', item.source_url ? abs(item.source_url) : undefined),
+      ]),
+    );
+    lines.push('');
+
+    if (item.body) {
+      lines.push(item.body.trim(), '');
+    }
+
+    lines.push(...addendumPhotoSection(item.photos));
+    lines.push(...addendumAttachmentSection(item.attachments));
+  }
+
+  return [...lines, ''];
+}
+
+const monthLine = (item: NewsMonthArchive): string =>
+  `- [${formatNewsMonth(item.year, item.month, { capitalize: true })}](${abs(item.markdown_url)}) — ${item.count} ${pluralizeRu(item.count, ['публикация', 'публикации', 'публикаций'])}`;
+
+const tagLine = (item: NewsTagPage): string =>
+  `- [${item.label}](${abs(item.markdown_url)}) — ${item.count} ${pluralizeRu(item.count, ['публикация', 'публикации', 'публикаций'])}`;
+
+export function buildNewsHomeMarkdown(data: NewsDataset): string {
+  const latest = [...data.home.pinned, ...data.home.latest];
+  const normalCount = data.articles.length - data.home.pinned.length;
+
+  return join([
+    '# Новости Шелково',
+    '',
+    'Свежие новости поселков Шелково и сервисов ОК Комфорт в текстовом формате.',
+    '',
+    ...articleBlock({
+      title: 'Новости',
+      items: latest,
+      empty: 'Первые публикации для раздела готовятся.',
+      intro:
+        normalCount > data.home.latest.length
+          ? `Закрепленные публикации показаны первыми. Для обычных новостей на главной companion-странице показываем не больше ${NEWS_LATEST_LIMIT}; более старые публикации остаются доступны в архивах.`
+          : undefined,
+    }),
+  ]);
+}
+
+export function buildNewsYearMarkdown(archive: NewsYearArchive): string {
+  const lines: string[] = [
+    `# Новости Шелково за ${archive.year} год`,
+    '',
+    ...section(
+      'Месяцы года',
+      archive.months.length > 0
+        ? archive.months.map(monthLine)
+        : ['- В этом году пока нет публикаций.'],
+    ),
+    '## Публикации по месяцам',
+    '',
+  ];
+
+  if (archive.months.length === 0) {
+    lines.push('- В этом году пока нет публикаций.', '');
+    return join(lines);
+  }
+
+  for (const item of archive.months) {
+    lines.push(
+      ...articleBlock({
+        title: formatNewsMonth(item.year, item.month, { capitalize: true }),
+        headingLevel: 3,
+        items: item.articles,
+        empty: 'В этом месяце пока нет публикаций.',
+      }),
+    );
+  }
+
+  return join(lines);
+}
+
+export function buildNewsMonthMarkdown(input: {
+  readonly archive: NewsMonthArchive;
+}): string {
+  const { archive } = input;
+  const monthLabel = formatNewsMonth(archive.year, archive.month);
+
+  return join([
+    `# Новости Шелково за ${monthLabel}`,
+    '',
+    ...articleBlock({
+      title: 'Новости за месяц',
+      items: archive.articles,
+      empty: 'В этом месяце пока нет публикаций.',
+    }),
+  ]);
+}
+
+export function buildNewsArticleMarkdown(article: NewsArticle): string {
+  return join([
+    `# ${article.title}`,
+    '',
+    ...articleMeta(article),
+    ...(article.body ? ['## Текст новости', '', article.body.trim(), ''] : []),
+    ...photoSection(article),
+    ...attachmentSection(article.attachments),
+    ...addendaSection(article.addenda),
+  ]);
+}
+
+export function buildNewsTagsMarkdown(
+  tagsPage: readonly NewsTagPage[],
+): string {
+  return join([
+    '# Теги новостей Шелково',
+    '',
+    ...section(
+      'Теги',
+      tagsPage.length > 0
+        ? tagsPage.map(tagLine)
+        : ['- Индекс появится автоматически после первых новостей с тегами.'],
+    ),
+  ]);
+}
+
+export function buildNewsTagMarkdown(tag: NewsTagPage): string {
+  const latestPublicationsLabel = `${NEWS_LATEST_LIMIT} ${pluralizeRu(NEWS_LATEST_LIMIT, ['публикация', 'публикации', 'публикаций'])}`;
+
+  return join([
+    `# Тег ${tag.label}`,
+    '',
+    ...articleBlock({
+      title: 'Последние новости по тегу',
+      items: tag.latest,
+      empty: 'По этому тегу пока нет публикаций.',
+      intro:
+        tag.count > tag.latest.length
+          ? `На странице показаны последние ${latestPublicationsLabel} по тегу; более ранние материалы доступны через месячные и годовые архивы.`
+          : undefined,
+    }),
+  ]);
+}

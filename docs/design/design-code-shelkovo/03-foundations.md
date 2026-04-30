@@ -60,6 +60,24 @@ Soft-зеленый использовать только локально:
 - table header;
 - небольшие status/focus зоны.
 
+Для основного сайта `kpshelkovo.online` базовый паттерн еще суше: по умолчанию не собирать страницу из стопки карточек со скруглением. Новости, архивы, текстовые секции и служебные блоки лучше держать как открытые панели с одним верхним разделителем, без радиуса и без тени. Более карточный язык допустим в `compare`, где он помогает читать плотные данные.
+
+```css
+.page-section {
+  border-top: 1px solid var(--color-border);
+  border-inline: 0;
+  border-bottom: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.page-section--strong {
+  border-top-width: 2px;
+  border-top-color: var(--color-border-strong);
+}
+```
+
 ### 5.3. Прозрачность и blur
 
 Blur допустим только в шапке и как осознанное исключение для overlay-элементов поверх карты. В обычном контенте он создает мутность.

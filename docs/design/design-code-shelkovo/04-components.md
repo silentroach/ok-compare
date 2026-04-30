@@ -185,6 +185,24 @@
 }
 ```
 
+## 10.1. Теги новостей
+
+На основном сайте news-теги не должны выглядеть как pill-бейджи или мини-карточки. Нормальный вид тега - обычная текстовая ссылка с `#` в начале.
+
+```css
+.news-tag {
+  color: var(--color-primary);
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.news-tag:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+```
+
 ## 11. Иконки
 
 Иконки в текущем экране лучше сделать темнее и убрать мутные подложки.

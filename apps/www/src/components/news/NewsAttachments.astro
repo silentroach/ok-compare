@@ -1,0 +1,55 @@
+---
+import type { NewsAttachment } from '../../lib/news/schema';
+
+interface Props {
+  readonly items: readonly NewsAttachment[];
+  readonly title?: string;
+  readonly heading?: 'h2' | 'h3' | 'h4';
+  readonly framed?: boolean;
+}
+
+const {
+  items,
+  title = 'Вложения',
+  heading = 'h2',
+  framed = true,
+} = Astro.props;
+
+const Heading = heading;
+
+function external(url: string): boolean {
+  return /^[a-z][a-z\d+.-]*:/i.test(url) || url.startsWith('//');
+}
+---
+
+{
+  items.length > 0 && (
+    <section class:list={framed && ['ui-shell px-5 py-6 md:px-6 md:py-7']}>
+      <div class="space-y-4">
+        <Heading class="text-2xl font-semibold tracking-tight text-foreground">
+          {title}
+        </Heading>
+
+        <ul class="grid gap-3 sm:grid-cols-2">
+          {items.map((item) => (
+            <li>
+              <a
+                href={item.url}
+                target={external(item.url) ? '_blank' : undefined}
+                rel={external(item.url) ? 'noreferrer noopener' : undefined}
+                class="ui-shell flex h-full flex-col gap-2 p-4 transition-colors hover:border-border-strong hover:bg-surface-raised"
+              >
+                <span class="font-semibold text-foreground">{item.title}</span>
+                {(item.type || item.size) && (
+                  <span class="text-sm leading-6 text-muted-foreground">
+                    {[item.type, item.size].filter(Boolean).join(' · ')}
+                  </span>
+                )}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}

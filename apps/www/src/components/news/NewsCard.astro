@@ -1,0 +1,66 @@
+---
+import type { NewsListArticle } from '../../lib/news/schema';
+import NewsMeta from './NewsMeta.astro';
+import NewsTagList from './NewsTagList.astro';
+
+interface Props {
+  readonly article: NewsListArticle;
+  readonly featured?: boolean;
+}
+
+const { article, featured = false } = Astro.props;
+---
+
+<article
+  class:list={[
+    featured ? 'ui-shell-strong' : 'ui-shell',
+    'h-full overflow-hidden',
+  ]}
+>
+  {
+    featured && article.cover_url && (
+      <img
+        src={article.cover_url}
+        alt={article.cover_alt ?? article.title}
+        loading="lazy"
+        width={article.cover_width}
+        height={article.cover_height}
+        class="aspect-video w-full border-b border-border-strong object-cover"
+      />
+    )
+  }
+
+  <div class="space-y-4 px-5 py-5 md:px-6 md:py-6">
+    <div class="flex flex-wrap gap-2">
+      {article.pinned && <span class="ui-chip">Закреплено</span>}
+      {
+        featured && article.has_addenda && article.updated_iso && (
+          <span class="ui-chip">Есть уточнения</span>
+        )
+      }
+    </div>
+
+    <div class="space-y-3">
+      <h3 class="text-2xl font-semibold tracking-tight text-foreground">
+        <a href={article.url} class="ui-link">
+          {article.title}
+        </a>
+      </h3>
+
+      <NewsMeta
+        publishedIso={article.published_iso}
+        time={article.time}
+        updatedIso={article.updated_iso}
+        author={article.author}
+        isOfficial={article.is_official}
+        fullAuthorName
+        showOfficial={false}
+        showUpdated={false}
+      />
+    </div>
+
+    <p class="ui-copy text-muted-foreground">{article.summary}</p>
+
+    <NewsTagList items={article.tags} compact />
+  </div>
+</article>

@@ -1,0 +1,117 @@
+---
+import TelegramIcon from '@shelkovo/ui/TelegramIcon.astro';
+import type { NewsArea, NewsAuthor } from '../../lib/news/schema';
+import {
+  formatNewsArea,
+  formatNewsAuthor,
+  formatNewsDate,
+} from '../../lib/news/view';
+
+interface Props {
+  readonly publishedIso: string;
+  readonly time?: string;
+  readonly updatedIso?: string;
+  readonly author?: Pick<NewsAuthor, 'name' | 'short_name' | 'url'>;
+  readonly isOfficial?: boolean;
+  readonly fullAuthorName?: boolean;
+  readonly showOfficial?: boolean;
+  readonly showUpdated?: boolean;
+  readonly areas?: readonly NewsArea[];
+  readonly appliesToAllAreas?: boolean;
+  readonly sourceUrl?: string;
+  readonly className?: string;
+}
+
+const {
+  publishedIso,
+  time,
+  updatedIso,
+  author,
+  isOfficial = false,
+  fullAuthorName = false,
+  showOfficial = true,
+  showUpdated = true,
+  areas = [],
+  appliesToAllAreas = true,
+  sourceUrl,
+  className,
+} = Astro.props;
+
+const visibleAreas = appliesToAllAreas ? [] : areas;
+const isTelegramSource = sourceUrl
+  ? /^(?:tg:\/\/|(?:https?:\/\/)?(?:www\.)?(?:t\.me|telegram\.me)\/)/i.test(
+      sourceUrl,
+    )
+  : false;
+const sourceTarget =
+  sourceUrl && !isTelegramSource
+    ? new URL(sourceUrl.startsWith('//') ? `https:${sourceUrl}` : sourceUrl)
+    : undefined;
+const sourceHost = sourceUrl
+  ? isTelegramSource
+    ? 'Telegram'
+    : sourceTarget?.hostname.replace(/^www\./i, '') ||
+      sourceTarget?.protocol.replace(/:$/, '')
+  : undefined;
+const sourceLabel = sourceHost ? `Источник: ${sourceHost}` : undefined;
+---
+
+<div
+  class:list={[
+    'flex flex-wrap items-center gap-2.5 text-sm leading-6 text-muted-foreground',
+    className,
+  ]}
+>
+  <time datetime={publishedIso} class="font-medium text-foreground">
+    {formatNewsDate(publishedIso)}
+  </time>
+  {time && <span class="ui-num">{time}</span>}
+  {
+    author &&
+      (author.url ? (
+        <a
+          href={author.url}
+          target="_blank"
+          rel="noreferrer noopener"
+          class="ui-link font-medium"
+        >
+          {formatNewsAuthor(author, { short: !fullAuthorName })}
+        </a>
+      ) : (
+        <span>{formatNewsAuthor(author, { short: !fullAuthorName })}</span>
+      ))
+  }
+  {showOfficial && isOfficial && <span class="ui-chip">Официально</span>}
+  {
+    showUpdated && updatedIso && (
+      <span class="ui-chip">
+        Обновлено{' '}
+        <time datetime={updatedIso}>{formatNewsDate(updatedIso)}</time>
+      </span>
+    )
+  }
+  {
+    visibleAreas.map((area) => (
+      <span class="ui-chip">{formatNewsArea(area)}</span>
+    ))
+  }
+  {
+    sourceUrl && (
+      <a
+        href={sourceUrl}
+        target="_blank"
+        rel="noreferrer noopener"
+        aria-label={sourceLabel}
+        class:list={[
+          'ui-link font-medium',
+          isTelegramSource && 'inline-flex items-center gap-1',
+        ]}
+      >
+        {isTelegramSource && (
+          <TelegramIcon class="size-3.5 shrink-0 text-primary" />
+        )}
+        <span>источник</span>
+      </a>
+    )
+  }
+</div>

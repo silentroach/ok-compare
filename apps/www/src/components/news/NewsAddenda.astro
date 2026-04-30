@@ -1,0 +1,76 @@
+---
+import type { NewsAddendum } from '../../lib/news/schema';
+import { renderNewsMarkdown } from '../../lib/news/html';
+import { NEWS_PROSE } from '../../lib/news/view';
+import NewsAttachments from './NewsAttachments.astro';
+import NewsMeta from './NewsMeta.astro';
+import NewsPhotos from './NewsPhotos.astro';
+
+interface Props {
+  readonly items: readonly NewsAddendum[];
+}
+
+const { items } = Astro.props;
+
+const addenda = items.map((item) => ({
+  ...item,
+  html: item.body ? renderNewsMarkdown(item.body) : undefined,
+}));
+---
+
+{
+  addenda.length > 0 && (
+    <section class="space-y-3 px-5 md:px-6">
+      <h2 class="pt-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+        Уточнения
+      </h2>
+
+      <div class="space-y-4">
+        {addenda.map((item) => {
+          const nestedHeading = item.title ? 'h4' : 'h3';
+
+          return (
+            <article class="ui-shell py-6 md:py-7">
+              <div class="space-y-4">
+                <div class="space-y-3">
+                  {item.title && (
+                    <h3 class="text-xl font-semibold tracking-tight text-foreground">
+                      {item.title}
+                    </h3>
+                  )}
+
+                  <NewsMeta
+                    publishedIso={item.published_iso}
+                    time={item.time}
+                    author={item.author}
+                    isOfficial={item.author.is_official}
+                    fullAuthorName
+                    showOfficial={false}
+                    showUpdated={false}
+                    sourceUrl={item.source_url}
+                  />
+                </div>
+
+                {item.html && <div class={NEWS_PROSE} set:html={item.html} />}
+
+                <NewsPhotos
+                  photos={item.photos}
+                  title="Фото"
+                  heading={nestedHeading}
+                  framed={false}
+                />
+
+                <NewsAttachments
+                  items={item.attachments}
+                  title="Вложения"
+                  heading={nestedHeading}
+                  framed={false}
+                />
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  )
+}

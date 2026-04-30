@@ -110,7 +110,6 @@ public/
 - Explorer payload: `src/pages/data/explorer.json.ts`
 - Full feed: `src/pages/data/settlements.json.ts`
 - Agent docs / discovery:
-  - `src/pages/for-agents.astro`
   - `src/pages/.well-known/api-catalog.ts`
   - `src/pages/openapi/settlements.openapi.json.ts`
   - `src/pages/schemas/settlements.schema.json.ts`

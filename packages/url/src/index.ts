@@ -1,14 +1,14 @@
+const ABSOLUTE_URL_SCHEME = /^(?:https?:|mailto:|tel:)/i;
+
+export const isAbsoluteUrl = (value: string): boolean =>
+  ABSOLUTE_URL_SCHEME.test(value) || value.startsWith('//');
+
 /**
  * Builds URL with base path prepended.
  * Handles external URLs, anchors, and special protocols.
  */
 export function withBase(base: string | undefined, url: string): string {
-  if (
-    url.startsWith('http') ||
-    url.startsWith('#') ||
-    url.startsWith('mailto:') ||
-    url.startsWith('tel:')
-  ) {
+  if (isAbsoluteUrl(url) || url.startsWith('#')) {
     return url;
   }
 

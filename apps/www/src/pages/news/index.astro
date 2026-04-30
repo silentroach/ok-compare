@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NewsList from '../../components/news/NewsList.astro';
+import { loadNewsData } from '../../lib/news/load';
+import { collectionPageSchema } from '../../lib/news/seo';
+import { newsUrl } from '../../lib/news/routes';
+
+const data = await loadNewsData();
+const articles = [...data.home.pinned, ...data.home.latest];
+
+const title = 'Новости Шелково';
+const description =
+  'Короткие новости по Шелково, соседним очередям и сервисным темам.';
+const schema = collectionPageSchema({
+  name: title,
+  description,
+  url: newsUrl(),
+  breadcrumbs: [{ name: 'Новости', url: newsUrl() }],
+  items: articles.map((item) => ({ name: item.title, url: item.url })),
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={newsUrl()}
+  keywords={['новости Шелково', 'новости ОК Комфорт', 'архив новостей Шелково']}
+  schema={schema}
+>
+  <main class="ui-page py-6 md:py-10 lg:py-12">
+    <section class="px-5 py-6 md:px-6 md:py-8 lg:py-10">
+      <h1
+        class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
+      >
+        Новости
+      </h1>
+    </section>
+
+    <section class="mt-8">
+      <h2 class="sr-only">Лента новостей</h2>
+      <NewsList
+        articles={articles}
+        empty="Первые публикации для раздела готовятся. Когда новости появятся, здесь будет основная лента."
+      />
+    </section>
+  </main>
+</BaseLayout>

@@ -1,4 +1,3 @@
-export const DOCS = '/for-agents/';
 export const FEED = '/data/settlements.json';
 export const EXPLORER = '/data/explorer.json';
 export const SCHEMA = '/schemas/settlements.schema.json';
@@ -444,10 +443,6 @@ export function openapi(root: string): Record<string, unknown> {
         url: server(root),
       },
     ],
-    externalDocs: {
-      description: 'Краткая документация для агентов',
-      url: abs(root, DOCS),
-    },
     paths: {
       [FEED]: {
         get: {
@@ -495,13 +490,6 @@ export function catalog(root: string): Record<string, unknown> {
             'title*': star('Облегченный explorer feed для списка и карты'),
           },
         ],
-        'service-doc': [
-          {
-            href: abs(root, DOCS),
-            type: 'text/html',
-            'title*': star('Краткая документация для агентов'),
-          },
-        ],
         'service-desc': [
           {
             href: abs(root, SCHEMA),
@@ -521,7 +509,6 @@ export function catalog(root: string): Record<string, unknown> {
 
 export function links(root: string): string {
   return [
-    `<${abs(root, DOCS)}>; rel="service-doc"; type="text/html"`,
     `<${abs(root, SCHEMA)}>; rel="service-desc"; type="application/schema+json"`,
     `<${abs(root, OPENAPI)}>; rel="service-desc"; type="${OAS}"`,
     `<${abs(root, CATALOG)}>; rel="api-catalog"; type="application/linkset+json"; profile="${PROFILE}"`,

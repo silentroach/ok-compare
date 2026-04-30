@@ -1,7 +1,9 @@
 ---
 import '@styles/global.css';
-import { collectKeywords } from '@shelkovo/seo';
+import { collectKeywords, imageMimeType, serializeSchema } from '@shelkovo/seo';
+import type { SchemaDoc } from '@shelkovo/seo';
 import SiteFooter from '@shelkovo/ui/SiteFooter.astro';
+import TelegramIcon from '@shelkovo/ui/TelegramIcon.astro';
 import { browserColor, themeColor } from '@shelkovo/ui/theme';
 import { COMPARE_KEYWORDS } from '@lib/seo';
 import { canon } from '@lib/site';
@@ -16,7 +18,7 @@ interface Props {
   image?: string;
   imageAlt?: string;
   type?: string;
-  schema?: Record<string, unknown> | Array<Record<string, unknown>>;
+  schema?: SchemaDoc | readonly SchemaDoc[];
 }
 
 const {
@@ -35,16 +37,8 @@ const canonical = canon(href ?? Astro.url.pathname);
 const keywordContent = collectKeywords(keywords, COMPARE_KEYWORDS).join(', ');
 const social = image ? canon(withBase(image)) : undefined;
 const socialAlt = social ? (imageAlt ?? title) : undefined;
-const socialType = !social
-  ? undefined
-  : social.endsWith('.svg')
-    ? 'image/svg+xml'
-    : social.endsWith('.png')
-      ? 'image/png'
-      : undefined;
-const docs = (schema ? (Array.isArray(schema) ? schema : [schema]) : []).map(
-  (item) => JSON.stringify(item).replace(/</g, '\\u003c'),
-);
+const socialType = social ? imageMimeType(social) : undefined;
+const docs = serializeSchema(schema);
 const prod = import.meta.env.PROD;
 const section = import.meta.env.SITE === 'https://kpshelkovo.online';
 const ymId = section ? 108975391 : 108465472;
@@ -152,16 +146,9 @@ const ym = `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).p
           aria-label="Написать в Telegram silentroach"
           class="ui-link whitespace-nowrap font-medium text-foreground"
         >
-          <svg
-            viewBox="0 0 24 24"
+          <TelegramIcon
             class="mr-1 inline-block size-3.5 align-middle text-primary"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              d="M21.5 4.5c.4-.2.9.1.8.6l-3 14.3c-.1.5-.7.8-1.1.5l-4.6-3.4-2.4 2.3c-.3.3-.8.1-.8-.3v-3.2l8.1-7.4c.2-.2 0-.5-.2-.4l-9.8 6.2-4.2-1.4c-.5-.2-.6-.9-.1-1.1l16.3-6.7Z"
-            ></path>
-          </svg>
+          />
           <span>silentroach</span>
         </a>
       </p>

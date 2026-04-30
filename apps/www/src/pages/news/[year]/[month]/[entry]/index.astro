@@ -1,0 +1,257 @@
+---
+import { getImage } from 'astro:assets';
+import { getEntry, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import { padNumber } from '@shelkovo/format';
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import NewsAddenda from '../../../../../components/news/NewsAddenda.astro';
+import NewsAttachments from '../../../../../components/news/NewsAttachments.astro';
+import NewsBreadcrumbs from '../../../../../components/news/NewsBreadcrumbs.astro';
+import NewsMeta from '../../../../../components/news/NewsMeta.astro';
+import NewsPhotos from '../../../../../components/news/NewsPhotos.astro';
+import {
+  loadNewsArticle,
+  loadNewsArticles,
+} from '../../../../../lib/news/load';
+import { newsArticleSchema } from '../../../../../lib/news/seo';
+import { NEWS_PROSE, formatNewsMonth } from '../../../../../lib/news/view';
+import {
+  articleUrl,
+  monthUrl,
+  newsUrl,
+  yearUrl,
+} from '../../../../../lib/news/routes';
+
+export const getStaticPaths = (async () => {
+  const articles = await loadNewsArticles();
+
+  return articles.map((item) => ({
+    params: {
+      year: String(item.year),
+      month: padNumber(item.month),
+      entry: item.entry,
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+const year = Astro.params.year;
+const month = Astro.params.month;
+const entry = Astro.params.entry;
+
+if (!year || !month || !entry) {
+  throw new Error('news article params are required');
+}
+
+const id = `${year}/${month}/${entry}`;
+const article = await loadNewsArticle(id);
+const source = await getEntry('newsArticles', id);
+
+if (!article || !source) {
+  throw new Error(`news article "${id}" not found`);
+}
+
+const { Content } = await render(source);
+const monthName = formatNewsMonth(article.year, article.month, {
+  capitalize: true,
+});
+const monthBreadcrumbName = formatNewsMonth(article.year, article.month, {
+  capitalize: true,
+  includeYear: false,
+});
+const heroCoverWidth = source.data.cover
+  ? Math.min(source.data.cover.width, 2200)
+  : undefined;
+const heroCover =
+  source.data.cover && heroCoverWidth
+    ? await getImage({
+        src: source.data.cover,
+        width: heroCoverWidth,
+        format: 'webp',
+        quality: 82,
+      })
+    : undefined;
+const heroCoverUrl = heroCover?.src;
+const hasHeroCover = Boolean(heroCoverUrl);
+const heroImageStyle = heroCoverUrl
+  ? [
+      'object-position: 50% 64%',
+      '-webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 68%, rgba(0, 0, 0, 0.86) 82%, rgba(0, 0, 0, 0) 100%)',
+      'mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 68%, rgba(0, 0, 0, 0.86) 82%, rgba(0, 0, 0, 0) 100%)',
+    ].join('; ')
+  : undefined;
+const title = article.seo_title ?? `${article.title} — новости Шелково`;
+const description = article.seo_description ?? article.summary;
+const breadcrumbs = [
+  { label: 'Новости', href: newsUrl() },
+  { label: String(article.year), href: yearUrl(article.year) },
+  {
+    label: monthBreadcrumbName,
+    href: monthUrl(article.year, article.month),
+  },
+  { label: article.title },
+];
+const author = {
+  '@type': article.author.is_official ? 'Organization' : 'Person',
+  name: article.author.name,
+  ...(article.author.url ? { url: article.author.url } : {}),
+};
+const schema = newsArticleSchema({
+  name: article.title,
+  description,
+  url: articleUrl(article),
+  breadcrumbs: [
+    { name: 'Новости', url: newsUrl() },
+    { name: String(article.year), url: yearUrl(article.year) },
+    { name: monthBreadcrumbName, url: monthUrl(article.year, article.month) },
+    { name: article.title, url: articleUrl(article) },
+  ],
+  datePublished: article.published_iso,
+  ...(article.updated_iso ? { dateModified: article.updated_iso } : {}),
+  ...(article.cover_url ? { image: article.cover_url } : {}),
+  author,
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={article.url}
+  image={article.cover_url}
+  imageAlt={article.cover_alt}
+  type="article"
+  keywords={[
+    'новости Шелково',
+    article.title,
+    ...article.tags.map((item) => item.label),
+  ]}
+  schema={schema}
+>
+  <main class="pb-6 md:pb-10 lg:pb-12">
+    {
+      hasHeroCover ? (
+        <header class="news-hero relative isolate overflow-hidden bg-background">
+          <img
+            src={heroCoverUrl}
+            alt=""
+            aria-hidden="true"
+            loading="eager"
+            class="absolute inset-0 h-full w-full object-cover brightness-105"
+            style={heroImageStyle}
+          />
+          <div class="news-hero-overlay-top absolute inset-x-0 top-0 h-24 md:h-28 lg:h-32" />
+          <div class="news-hero-overlay-side absolute inset-y-0 left-0 w-[54rem] max-w-full" />
+
+          <div class="ui-page relative flex min-h-[20rem] flex-col pt-4 md:min-h-[24rem] md:pt-5 lg:min-h-[28rem] lg:pt-6">
+            <div class="px-5 md:px-6">
+              <NewsBreadcrumbs items={breadcrumbs} linkLast />
+            </div>
+
+            <div class="mt-auto px-5 pb-4 md:px-6 md:pb-6 lg:pb-8">
+              <div class="max-w-4xl space-y-4">
+                <div class="space-y-3.5">
+                  <h1 class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08] lg:text-[3.5rem]">
+                    {article.title}
+                  </h1>
+
+                  {article.tags.length > 0 && (
+                    <ul class="flex flex-wrap gap-x-3 gap-y-1.5 text-[0.8125rem] font-medium leading-5 text-muted-foreground md:gap-x-4">
+                      {article.tags.map((item) => (
+                        <li>
+                          <a
+                            href={item.url}
+                            aria-label={`Тег ${item.label}`}
+                            class="transition-colors hover:text-foreground"
+                          >
+                            #{item.label}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                <NewsMeta
+                  publishedIso={article.published_iso}
+                  time={article.time}
+                  updatedIso={article.updated_iso}
+                  author={article.author}
+                  isOfficial={article.is_official}
+                  fullAuthorName
+                  showOfficial={false}
+                  showUpdated={false}
+                  areas={article.areas}
+                  appliesToAllAreas={article.applies_to_all_areas}
+                  sourceUrl={article.source_url}
+                  className="gap-x-4 gap-y-1.5 text-[0.9375rem] leading-5"
+                />
+              </div>
+            </div>
+          </div>
+        </header>
+      ) : (
+        <header class="ui-page pt-3 md:pt-5 lg:pt-6">
+          <div class="max-w-4xl space-y-4 px-5 pb-2 md:px-6">
+            <NewsBreadcrumbs items={breadcrumbs} linkLast />
+
+            <div class="space-y-3.5">
+              <h1 class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]">
+                {article.title}
+              </h1>
+
+              {article.tags.length > 0 && (
+                <ul class="flex flex-wrap gap-x-3 gap-y-1.5 text-[0.8125rem] font-medium leading-5 text-muted-foreground md:gap-x-4">
+                  {article.tags.map((item) => (
+                    <li>
+                      <a
+                        href={item.url}
+                        aria-label={`Тег ${item.label}`}
+                        class="transition-colors hover:text-foreground"
+                      >
+                        #{item.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <NewsMeta
+              publishedIso={article.published_iso}
+              time={article.time}
+              updatedIso={article.updated_iso}
+              author={article.author}
+              isOfficial={article.is_official}
+              fullAuthorName
+              showOfficial={false}
+              showUpdated={false}
+              areas={article.areas}
+              appliesToAllAreas={article.applies_to_all_areas}
+              sourceUrl={article.source_url}
+            />
+          </div>
+        </header>
+      )
+    }
+
+    <article
+      class:list={[
+        'ui-page relative z-10 space-y-6',
+        hasHeroCover ? 'pt-0' : 'pt-6 md:pt-8 lg:pt-10',
+      ]}
+    >
+      {
+        article.body && (
+          <section class="px-5 pb-6 md:px-6 md:pb-8 lg:pb-10">
+            <div class={NEWS_PROSE}>
+              <Content />
+            </div>
+          </section>
+        )
+      }
+
+      <NewsPhotos photos={article.photos} />
+      <NewsAttachments items={article.attachments} />
+      <NewsAddenda items={article.addenda} />
+    </article>
+  </main>
+</BaseLayout>
