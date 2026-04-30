@@ -1,6 +1,6 @@
 # Сетка, медиа и быстрый патч
 
-См. точку входа: [`design/design-code-shelkovo.md`](../design-code-shelkovo.md).
+См. точку входа: [`docs/design/design-code-shelkovo.md`](../design-code-shelkovo.md).
 
 ## 14. Сетка и отступы
 

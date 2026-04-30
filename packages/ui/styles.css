@@ -13,7 +13,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* Base palette aligned with design/design-code-shelkovo.md */
+  /* Base palette aligned with docs/design/design-code-shelkovo.md */
   --color-bg: oklch(99.1% 0.002 125);
   --color-bg-soft: oklch(98.8% 0.003 125);
   --color-surface: oklch(100% 0 0);

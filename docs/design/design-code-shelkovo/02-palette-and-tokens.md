@@ -1,6 +1,6 @@
 # Палитра и CSS-токены
 
-См. точку входа: [`design/design-code-shelkovo.md`](../design-code-shelkovo.md).
+См. точку входа: [`docs/design/design-code-shelkovo.md`](../design-code-shelkovo.md).
 
 ## 3. Палитра
 

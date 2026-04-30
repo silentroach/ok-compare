@@ -13,6 +13,7 @@ packages/
   url/
   format/
   geo/
+docs/        # документация и дизайн-гайды
 ops/         # nginx и deploy-конфиги
 ```
 
@@ -54,3 +55,4 @@ pnpm build:legacy
 
 - compare-specific правила: `apps/compare/AGENTS.md`
 - www-specific правила: `apps/www/AGENTS.md`
+- дизайн-гайд и визуальные правила: `docs/design/design-code-shelkovo.md`

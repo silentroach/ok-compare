@@ -14,13 +14,6 @@ export const BRAND_KEYWORDS = [
   'Shelkovo Village',
 ];
 
-export const COMPARE_KEYWORDS = [
-  ...BRAND_KEYWORDS,
-  'сравнение тарифов поселков',
-  'тарифы на обслуживание поселков',
-  'коттеджные поселки Московская область',
-];
-
 type KeywordInput = string | string[] | undefined;
 
 export function collectKeywords(...groups: KeywordInput[]): string[] {

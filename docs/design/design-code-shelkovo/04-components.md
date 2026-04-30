@@ -1,6 +1,6 @@
 # Компонентные паттерны
 
-См. точку входа: [`design/design-code-shelkovo.md`](../design-code-shelkovo.md).
+См. точку входа: [`docs/design/design-code-shelkovo.md`](../design-code-shelkovo.md).
 
 ## 7. Карточки статистики
 

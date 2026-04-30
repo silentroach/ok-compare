@@ -1,6 +1,6 @@
 # Базовые правила интерфейса
 
-См. точку входа: [`design/design-code-shelkovo.md`](../design-code-shelkovo.md).
+См. точку входа: [`docs/design/design-code-shelkovo.md`](../design-code-shelkovo.md).
 
 ## 5. Главные правила против "пыли"
 

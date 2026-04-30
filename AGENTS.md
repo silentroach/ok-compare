@@ -9,6 +9,7 @@ apps/
   compare/   # compare-приложение: standalone legacy + section build для /compare
   www/       # корневой сайт kpshelkovo.online
 packages/    # shared утилиты и UI
+docs/        # документация и дизайн-гайды
 ops/         # nginx и deploy-инфраструктура
 scripts/     # compose/build helper scripts
 ```
@@ -21,7 +22,7 @@ scripts/     # compose/build helper scripts
 
 ## Дизайн
 
-- За визуальными решениями, палитрой и UI-правилами идти в `design/design-code-shelkovo.md`.
+- За визуальными решениями, палитрой и UI-правилами идти в `docs/design/design-code-shelkovo.md`.
 - В `AGENTS.md` держать процессные и архитектурные правила, а не подробный дизайн-гайд.
 
 ## Команды workspace
@@ -53,6 +54,10 @@ pnpm build:legacy   # dist/legacy
 - `pnpm dev` поднимает интегрированный dev-стек на `http://localhost:4321`.
 - compare в этом режиме живет за прокси по `http://localhost:4321/compare`.
 - внутренний compare dev-server слушает `http://localhost:4322/compare`.
+
+## Правила Typescript
+
+- по максимуму используй `readonly` для иммутабельности там, где она уместна
 
 ## Правила workspace
 

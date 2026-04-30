@@ -100,7 +100,7 @@ public/
 
 ## Shared UI
 
-- За визуальными решениями, палитрой и компонентными правилами идти в `../../design/design-code-shelkovo.md`.
+- За визуальными решениями, палитрой и компонентными правилами идти в `../../docs/design/design-code-shelkovo.md`.
 - Shared implementation base лежит в `@shelkovo/ui/styles.css`.
 - Новые общие токены, `ui-*` примитивы и reusable стиль — сначала в `packages/ui`.
 - Не тащить compare-specific верстку в shared пакет без явной переиспользуемости.
