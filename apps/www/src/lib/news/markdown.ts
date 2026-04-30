@@ -6,7 +6,6 @@ import {
   feedUrl,
   llmsFullUrl,
   llmsUrl,
-  newsMarkdownUrl,
   newsUrl,
   tagsMarkdownUrl,
   tagsUrl,
@@ -163,14 +162,12 @@ function addendumAttachmentSection(
 }
 
 function articleLine(article: NewsListArticle): string {
-  return `- ${article.title} — ${pick([
-    `HTML: ${abs(article.url)}`,
-    `Markdown: ${abs(article.markdown_url)}`,
-    `дата: ${when(article.published_iso, article.time)}`,
-    `summary: ${inline(article.summary)}`,
-    article.is_official ? 'официально: да' : undefined,
-    article.updated_iso ? `обновлено: ${when(article.updated_iso)}` : undefined,
-  ]).join('; ')}`;
+  const meta = pick<string>([when(article.published_iso, article.time)]);
+  const summary = inline(article.summary);
+
+  return `- [${article.title}](${abs(article.markdown_url)})${
+    meta.length > 0 ? ` — ${meta.join('; ')}` : ''
+  }${summary ? `\n  ${summary}` : ''}`;
 }
 
 function articleSection(
@@ -295,72 +292,25 @@ function monthLine(item: NewsMonthArchive): string {
 }
 
 function tagLine(item: NewsTagPage): string {
-  return `- ${item.label} — ${pick([
-    `HTML: ${abs(item.url)}`,
-    `Markdown: ${abs(item.markdown_url)}`,
-    `${item.count} ${pluralizeRu(item.count, ['публикация', 'публикации', 'публикаций'])}`,
-  ]).join('; ')}`;
+  return `- [${item.label}](${abs(item.markdown_url)}) — ${item.count} ${pluralizeRu(item.count, ['публикация', 'публикации', 'публикаций'])}`;
 }
 
 export function buildNewsHomeMarkdown(data: NewsDataset): string {
+  const latest = [...data.home.pinned, ...data.home.latest];
   const normalCount = data.articles.length - data.home.pinned.length;
-  const recentMonths = data.archives.years
-    .flatMap((item) => item.months)
-    .slice(0, 6);
-  const topTags = data.tags.slice(0, 12);
 
   return join([
     '# Новости Шелково',
     '',
-    'Новости поселков Шелково и сервисов ОК Комфорт: краткие сводки, pinned-публикации, архивы по годам и месяцам и навигация по редакционным тегам.',
+    'Свежие новости поселков Шелково и сервисов ОК Комфорт в текстовом формате.',
     '',
-    ...keyLinks([
-      { label: 'HTML', href: abs(newsUrl()) },
-      { label: 'Markdown', href: abs(newsMarkdownUrl()) },
-      { label: 'Теги', href: abs(tagsUrl()) },
-      ...discoveryLinks(),
-    ]),
-    ...section('Сводка', [
-      `- Всего новостей: ${data.articles.length} ${pluralizeRu(data.articles.length, ['новость', 'новости', 'новостей'])}`,
-      `- Закреплено: ${data.home.pinned.length} ${pluralizeRu(data.home.pinned.length, ['публикация', 'публикации', 'публикаций'])}`,
-      `- Тегов: ${data.tags.length} ${pluralizeRu(data.tags.length, ['тег', 'тега', 'тегов'])}`,
-      `- Лет в архиве: ${data.archives.years.length} ${pluralizeRu(data.archives.years.length, ['год', 'года', 'лет'])}`,
-    ]),
     ...articleSection(
-      'Закреплено',
-      data.home.pinned,
-      'Сейчас закрепленных публикаций нет.',
-    ),
-    ...articleSection(
-      'Последние новости',
-      data.home.latest,
+      'Новости',
+      latest,
       'Первые публикации для раздела готовятся.',
       normalCount > data.home.latest.length
-        ? 'На главной companion-странице показываем только последние 10 обычных новостей; более старые публикации остаются в архивах.'
+        ? 'Закрепленные публикации показаны первыми. Для обычных новостей на главной companion-странице показываем только последние 10 материалов; более старые публикации остаются доступны в архивах.'
         : undefined,
-    ),
-    ...section(
-      'Архивы по годам',
-      data.archives.years.length > 0
-        ? data.archives.years.map(
-            (item) =>
-              `- ${item.year} — HTML: ${abs(item.url)}; Markdown: ${abs(item.markdown_url)}; ${item.count} ${pluralizeRu(item.count, ['публикация', 'публикации', 'публикаций'])}`,
-          )
-        : ['- Архивы появятся вместе с первыми публикациями.'],
-    ),
-    ...section(
-      'Последние месяцы',
-      recentMonths.length > 0
-        ? recentMonths.map(monthLine)
-        : ['- Пока нет месячных архивов.'],
-    ),
-    ...section(
-      'Теги',
-      topTags.length > 0
-        ? topTags.map(tagLine)
-        : [
-            '- Теги появятся автоматически после первых тематических публикаций.',
-          ],
     ),
   ]);
 }
@@ -469,17 +419,6 @@ export function buildNewsTagsMarkdown(
   return join([
     '# Теги новостей Шелково',
     '',
-    'Навигация по редакционным тегам news-section: темы, события и локальные сюжеты. Внутри каждого тега в v1 показываем только последние 10 новостей без пагинации.',
-    '',
-    ...keyLinks([
-      { label: 'HTML', href: abs(tagsUrl()) },
-      { label: 'Markdown', href: abs(tagsMarkdownUrl()) },
-      { label: 'Главная news-section', href: abs(newsUrl()) },
-      ...discoveryLinks(),
-    ]),
-    ...section('Сводка', [
-      `- Всего тегов: ${tagsPage.length} ${pluralizeRu(tagsPage.length, ['тег', 'тега', 'тегов'])}`,
-    ]),
     ...section(
       'Теги',
       tagsPage.length > 0
