@@ -7,8 +7,6 @@ import {
   llmsFullUrl,
   llmsUrl,
   newsUrl,
-  tagsMarkdownUrl,
-  tagsUrl,
   yearUrl,
 } from './routes';
 import type {
@@ -170,14 +168,17 @@ function articleLine(article: NewsListArticle): string {
   }${summary ? `\n  ${summary}` : ''}`;
 }
 
-function articleSection(
-  title: string,
-  items: readonly NewsListArticle[],
-  empty: string,
-  intro?: string,
-): readonly string[] {
+function articleBlock(input: {
+  readonly items: readonly NewsListArticle[];
+  readonly empty: string;
+  readonly title?: string;
+  readonly intro?: string;
+  readonly headingLevel?: 2 | 3;
+}): readonly string[] {
+  const { items, empty, title, intro, headingLevel = 2 } = input;
+
   return [
-    `## ${title}`,
+    ...(title ? [`${'#'.repeat(headingLevel)} ${title}`] : []),
     ...(intro ? [intro, ''] : []),
     ...(items.length > 0 ? items.map(articleLine) : [`- ${empty}`]),
     '',
@@ -304,14 +305,15 @@ export function buildNewsHomeMarkdown(data: NewsDataset): string {
     '',
     'Свежие новости поселков Шелково и сервисов ОК Комфорт в текстовом формате.',
     '',
-    ...articleSection(
-      'Новости',
-      latest,
-      'Первые публикации для раздела готовятся.',
-      normalCount > data.home.latest.length
-        ? 'Закрепленные публикации показаны первыми. Для обычных новостей на главной companion-странице показываем только последние 10 материалов; более старые публикации остаются доступны в архивах.'
-        : undefined,
-    ),
+    ...articleBlock({
+      title: 'Новости',
+      items: latest,
+      empty: 'Первые публикации для раздела готовятся.',
+      intro:
+        normalCount > data.home.latest.length
+          ? 'Закрепленные публикации показаны первыми. Для обычных новостей на главной companion-странице показываем только последние 10 материалов; более старые публикации остаются доступны в архивах.'
+          : undefined,
+    }),
   ]);
 }
 
@@ -349,9 +351,13 @@ export function buildNewsYearMarkdown(archive: NewsYearArchive): string {
 
   for (const item of archive.months) {
     lines.push(
-      `### ${formatNewsMonth(item.year, item.month, { capitalize: true })}`,
+      ...articleBlock({
+        title: formatNewsMonth(item.year, item.month, { capitalize: true }),
+        headingLevel: 3,
+        items: item.articles,
+        empty: 'В этом месяце пока нет публикаций.',
+      }),
     );
-    lines.push(...item.articles.map(articleLine), '');
   }
 
   return join(lines);
@@ -393,11 +399,11 @@ export function buildNewsMonthMarkdown(input: {
           : undefined,
       ]),
     ),
-    ...articleSection(
-      'Публикации месяца',
-      archive.articles,
-      'В этом месяце пока нет публикаций.',
-    ),
+    ...articleBlock({
+      title: 'Публикации месяца',
+      items: archive.articles,
+      empty: 'В этом месяце пока нет публикаций.',
+    }),
   ]);
 }
 
@@ -430,29 +436,16 @@ export function buildNewsTagsMarkdown(
 
 export function buildNewsTagMarkdown(tag: NewsTagPage): string {
   return join([
-    `# Тег «${tag.label}»`,
+    `# Тег ${tag.label}`,
     '',
-    `Последние новости Шелково по тегу «${tag.label}». В v1 страница тега показывает до 10 последних публикаций без пагинации.`,
-    '',
-    ...keyLinks([
-      { label: 'HTML', href: abs(tag.url) },
-      { label: 'Markdown', href: abs(tag.markdown_url) },
-      { label: 'Индекс тегов', href: abs(tagsUrl()) },
-      { label: 'Markdown-индекс тегов', href: abs(tagsMarkdownUrl()) },
-      ...discoveryLinks(),
-    ]),
-    ...section('Сводка', [
-      `- Тег: ${tag.label}`,
-      `- Всего публикаций по тегу: ${tag.count} ${pluralizeRu(tag.count, ['публикация', 'публикации', 'публикаций'])}`,
-      `- В companion-странице показано: ${tag.latest.length} ${pluralizeRu(tag.latest.length, ['публикация', 'публикации', 'публикаций'])}`,
-    ]),
-    ...articleSection(
-      'Последние новости',
-      tag.latest,
-      'По этому тегу пока нет публикаций.',
-      tag.count > tag.latest.length
-        ? 'В v1 страница тега честно показывает только последние 10 публикаций; более старые материалы остаются доступны через месячные и годовые архивы.'
-        : undefined,
-    ),
+    ...articleBlock({
+      title: 'Последние новости по тегу',
+      items: tag.latest,
+      empty: 'По этому тегу пока нет публикаций.',
+      intro:
+        tag.count > tag.latest.length
+          ? 'В v1 страница тега честно показывает только последние 10 публикаций; более старые материалы остаются доступны через месячные и годовые архивы.'
+          : undefined,
+    }),
   ]);
 }
