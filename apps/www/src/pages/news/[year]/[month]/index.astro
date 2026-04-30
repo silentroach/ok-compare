@@ -1,4 +1,5 @@
 ---
+import { pluralizeRu } from '@shelkovo/format';
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import NewsBreadcrumbs from '../../../../components/news/NewsBreadcrumbs.astro';
@@ -123,7 +124,8 @@ const schema = collectionPageSchema({
           Публикации месяца
         </h2>
         <p class="text-sm font-semibold text-muted-foreground">
-          <span class="ui-num text-foreground">{archive.count}</span> новостей
+          <span class="ui-num text-foreground">{archive.count}</span>{' '}
+          {pluralizeRu(archive.count, ['новость', 'новости', 'новостей'])}
         </p>
       </div>
 
