@@ -58,6 +58,7 @@ pnpm build:legacy   # dist/legacy
 ## Правила Typescript
 
 - по максимуму используй `readonly` для иммутабельности там, где она уместна
+- Для тривиальных helper-ов с единственным `return` предпочитай однострочные `const`-стрелки (`const fn = (): T => expr`) вместо `function fn() { return expr; }`
 
 ## Правила workspace
 

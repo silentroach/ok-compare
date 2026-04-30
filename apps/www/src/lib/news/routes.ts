@@ -13,37 +13,21 @@ const API_CATALOG = '/news/.well-known/api-catalog';
 const ARTICLES_SCHEMA = '/news/schemas/articles.schema.json';
 const ARTICLES_OPENAPI = '/news/openapi/articles.openapi.json';
 
-export function newsPath(): string {
-  return NEWS_ROOT;
-}
+export const newsPath = (): string => NEWS_ROOT;
 
-export function articlesDataPath(): string {
-  return DATA_ARTICLES;
-}
+export const articlesDataPath = (): string => DATA_ARTICLES;
 
-export function feedPath(): string {
-  return FEED;
-}
+export const feedPath = (): string => FEED;
 
-export function llmsPath(): string {
-  return LLMS;
-}
+export const llmsPath = (): string => LLMS;
 
-export function llmsFullPath(): string {
-  return LLMS_FULL;
-}
+export const llmsFullPath = (): string => LLMS_FULL;
 
-export function apiCatalogPath(): string {
-  return API_CATALOG;
-}
+export const apiCatalogPath = (): string => API_CATALOG;
 
-export function articlesSchemaPath(): string {
-  return ARTICLES_SCHEMA;
-}
+export const articlesSchemaPath = (): string => ARTICLES_SCHEMA;
 
-export function articlesOpenApiPath(): string {
-  return ARTICLES_OPENAPI;
-}
+export const articlesOpenApiPath = (): string => ARTICLES_OPENAPI;
 
 export interface NewsArticleRouteInput {
   readonly year: number | string;
@@ -51,9 +35,8 @@ export interface NewsArticleRouteInput {
   readonly entry: string;
 }
 
-function pad(value: number | string, size: number): string {
-  return String(value).padStart(size, '0');
-}
+const pad = (value: number | string, size: number): string =>
+  String(value).padStart(size, '0');
 
 function need(value: string, name: string): string {
   const text = value.trim();
@@ -75,108 +58,66 @@ function tagKey(value: string): string {
   return key;
 }
 
-function yearPath(year: number | string): string {
-  return `/news/${pad(year, 4)}/`;
-}
+const yearPath = (year: number | string): string => `/news/${pad(year, 4)}/`;
 
-function monthPath(year: number | string, month: number | string): string {
-  return `/news/${pad(year, 4)}/${pad(month, 2)}/`;
-}
+const monthPath = (year: number | string, month: number | string): string =>
+  `/news/${pad(year, 4)}/${pad(month, 2)}/`;
 
-function articlePath(input: NewsArticleRouteInput): string {
-  return `${monthPath(input.year, input.month)}${need(input.entry, 'entry')}/`;
-}
+const articlePath = (input: NewsArticleRouteInput): string =>
+  `${monthPath(input.year, input.month)}${need(input.entry, 'entry')}/`;
 
-function tagPath(value: string): string {
-  return `/news/tags/${tagKey(value)}/`;
-}
+const tagPath = (value: string): string => `/news/tags/${tagKey(value)}/`;
 
-export function newsUrl(): string {
-  return withBase(NEWS_ROOT);
-}
+export const newsUrl = (): string => withBase(NEWS_ROOT);
 
-export function newsMarkdownUrl(): string {
-  return withBase(NEWS_MARKDOWN);
-}
+export const newsMarkdownUrl = (): string => withBase(NEWS_MARKDOWN);
 
-export function newsCanonical(): string {
-  return canon(NEWS_ROOT);
-}
+export const newsCanonical = (): string => canon(NEWS_ROOT);
 
-export function yearUrl(year: number | string): string {
-  return withBase(yearPath(year));
-}
+export const yearUrl = (year: number | string): string =>
+  withBase(yearPath(year));
 
-export function yearMarkdownUrl(year: number | string): string {
-  return withBase(`${yearPath(year)}index.md`);
-}
+export const yearMarkdownUrl = (year: number | string): string =>
+  withBase(`${yearPath(year)}index.md`);
 
-export function monthUrl(
+export const monthUrl = (
   year: number | string,
   month: number | string,
-): string {
-  return withBase(monthPath(year, month));
-}
+): string => withBase(monthPath(year, month));
 
-export function monthMarkdownUrl(
+export const monthMarkdownUrl = (
   year: number | string,
   month: number | string,
-): string {
-  return withBase(`${monthPath(year, month)}index.md`);
-}
+): string => withBase(`${monthPath(year, month)}index.md`);
 
-export function articleUrl(input: NewsArticleRouteInput): string {
-  return withBase(articlePath(input));
-}
+export const articleUrl = (input: NewsArticleRouteInput): string =>
+  withBase(articlePath(input));
 
-export function articleMarkdownUrl(input: NewsArticleRouteInput): string {
-  return withBase(`${articlePath(input)}index.md`);
-}
+export const articleMarkdownUrl = (input: NewsArticleRouteInput): string =>
+  withBase(`${articlePath(input)}index.md`);
 
-export function articleCanonical(input: NewsArticleRouteInput): string {
-  return canon(articlePath(input));
-}
+export const articleCanonical = (input: NewsArticleRouteInput): string =>
+  canon(articlePath(input));
 
-export function tagsUrl(): string {
-  return withBase(TAGS_ROOT);
-}
+export const tagsUrl = (): string => withBase(TAGS_ROOT);
 
-export function tagsMarkdownUrl(): string {
-  return withBase(TAGS_MARKDOWN);
-}
+export const tagsMarkdownUrl = (): string => withBase(TAGS_MARKDOWN);
 
-export function tagUrl(value: string): string {
-  return withBase(tagPath(value));
-}
+export const tagUrl = (value: string): string => withBase(tagPath(value));
 
-export function tagMarkdownUrl(value: string): string {
-  return withBase(`${tagPath(value)}index.md`);
-}
+export const tagMarkdownUrl = (value: string): string =>
+  withBase(`${tagPath(value)}index.md`);
 
-export function articlesDataUrl(): string {
-  return withBase(DATA_ARTICLES);
-}
+export const articlesDataUrl = (): string => withBase(DATA_ARTICLES);
 
-export function feedUrl(): string {
-  return withBase(FEED);
-}
+export const feedUrl = (): string => withBase(FEED);
 
-export function llmsUrl(): string {
-  return withBase(LLMS);
-}
+export const llmsUrl = (): string => withBase(LLMS);
 
-export function llmsFullUrl(): string {
-  return withBase(LLMS_FULL);
-}
+export const llmsFullUrl = (): string => withBase(LLMS_FULL);
 
-export function apiCatalogUrl(): string {
-  return withBase(API_CATALOG);
-}
+export const apiCatalogUrl = (): string => withBase(API_CATALOG);
 
-export function articlesSchemaUrl(): string {
-  return withBase(ARTICLES_SCHEMA);
-}
+export const articlesSchemaUrl = (): string => withBase(ARTICLES_SCHEMA);
 
-export function articlesOpenApiUrl(): string {
-  return withBase(ARTICLES_OPENAPI);
-}
+export const articlesOpenApiUrl = (): string => withBase(ARTICLES_OPENAPI);
