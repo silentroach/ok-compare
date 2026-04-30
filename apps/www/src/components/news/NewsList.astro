@@ -1,0 +1,30 @@
+---
+import type { NewsListArticle } from '../../lib/news/schema';
+import NewsCard from './NewsCard.astro';
+
+interface Props {
+  readonly articles: readonly NewsListArticle[];
+  readonly featured?: boolean;
+  readonly empty?: string;
+}
+
+const { articles, featured = false, empty } = Astro.props;
+---
+
+{
+  articles.length > 0 ? (
+    <ul class:list={[featured ? 'grid gap-4 lg:grid-cols-2' : 'space-y-4']}>
+      {articles.map((article) => (
+        <li>
+          <NewsCard article={article} featured={featured} />
+        </li>
+      ))}
+    </ul>
+  ) : (
+    empty && (
+      <div class="ui-shell p-6 md:p-7">
+        <p class="ui-copy text-muted-foreground">{empty}</p>
+      </div>
+    )
+  )
+}

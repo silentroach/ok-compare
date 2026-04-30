@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import NewsBreadcrumbs from '../../../components/news/NewsBreadcrumbs.astro';
+import NewsTagList from '../../../components/news/NewsTagList.astro';
+import { loadNewsTags } from '../../../lib/news/load';
+import { collectionPageSchema } from '../../../lib/news/seo';
+import { newsUrl, tagsUrl } from '../../../lib/news/routes';
+
+const tags = await loadNewsTags();
+const title = 'Теги новостей Шелково';
+const description =
+  'Навигация по редакционным тегам news-section: темы, события и локальные сюжеты без client-side фильтров и без пагинации в v1.';
+const breadcrumbs = [{ label: 'Новости', href: newsUrl() }, { label: 'Теги' }];
+const schema = collectionPageSchema({
+  name: title,
+  description,
+  url: tagsUrl(),
+  breadcrumbs: [
+    { name: 'Новости', url: newsUrl() },
+    { name: 'Теги', url: tagsUrl() },
+  ],
+  items: tags.map((item) => ({ name: item.label, url: item.url })),
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={tagsUrl()}
+  keywords={['теги новостей', 'Шелково', 'темы новостей Шелково']}
+  schema={schema}
+>
+  <main class="ui-page py-6 md:py-10 lg:py-12">
+    <section class="ui-shell-strong p-6 md:p-8 lg:p-10">
+      <div class="space-y-5">
+        <NewsBreadcrumbs items={breadcrumbs} />
+
+        <div class="space-y-3">
+          <p
+            class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+          >
+            Навигация по темам
+          </p>
+          <h1
+            class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
+          >
+            Теги новостей
+          </h1>
+          <p class="ui-copy max-w-3xl text-muted-foreground">
+            Теги собирают публикации по редакционным темам. Внутри каждого тега
+            в v1 показываем только последние 10 новостей без пагинации.
+          </p>
+        </div>
+
+        <span class="ui-chip">
+          <span class="ui-num">{tags.length}</span>
+          <span>тегов</span>
+        </span>
+      </div>
+    </section>
+
+    <section class="mt-8 space-y-4">
+      <NewsTagList
+        items={tags.map((item) => ({
+          label: item.label,
+          url: item.url,
+          count: item.count,
+        }))}
+      />
+
+      {
+        tags.length === 0 && (
+          <div class="ui-shell p-6 md:p-7">
+            <p class="ui-copy text-muted-foreground">
+              Пока ни одна публикация не получила редакционный тег. Индекс
+              появится автоматически после первых новостей.
+            </p>
+          </div>
+        )
+      }
+    </section>
+  </main>
+</BaseLayout>

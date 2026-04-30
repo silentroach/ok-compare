@@ -1,0 +1,106 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import NewsBreadcrumbs from '../../../../components/news/NewsBreadcrumbs.astro';
+import NewsList from '../../../../components/news/NewsList.astro';
+import { loadNewsTag, loadNewsTags } from '../../../../lib/news/load';
+import { collectionPageSchema } from '../../../../lib/news/seo';
+import { newsUrl, tagUrl, tagsUrl } from '../../../../lib/news/routes';
+
+export const getStaticPaths = (async () => {
+  const tags = await loadNewsTags();
+
+  return tags.map((item) => ({
+    params: { tag: item.key },
+  }));
+}) satisfies GetStaticPaths;
+
+const key = Astro.params.tag;
+
+if (!key) {
+  throw new Error('news tag key is required');
+}
+
+const tag = await loadNewsTag(key);
+
+if (!tag) {
+  throw new Error(`news tag page "${key}" not found`);
+}
+
+const title = `Тег «${tag.label}» — новости Шелково`;
+const description = `Последние новости Шелково по тегу «${tag.label}». В v1 страница тега показывает до 10 последних публикаций без пагинации.`;
+const breadcrumbs = [
+  { label: 'Новости', href: newsUrl() },
+  { label: 'Теги', href: tagsUrl() },
+  { label: tag.label },
+];
+const schema = collectionPageSchema({
+  name: title,
+  description,
+  url: tagUrl(tag.key),
+  breadcrumbs: [
+    { name: 'Новости', url: newsUrl() },
+    { name: 'Теги', url: tagsUrl() },
+    { name: tag.label, url: tagUrl(tag.key) },
+  ],
+  items: tag.latest.map((item) => ({ name: item.title, url: item.url })),
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={tag.url}
+  keywords={['тег новостей', tag.label, 'Шелково']}
+  schema={schema}
+>
+  <main class="ui-page py-6 md:py-10 lg:py-12">
+    <section class="ui-shell-strong p-6 md:p-8 lg:p-10">
+      <div class="space-y-5">
+        <NewsBreadcrumbs items={breadcrumbs} />
+
+        <div class="space-y-3">
+          <p
+            class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+          >
+            Тег
+          </p>
+          <h1
+            class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
+          >
+            {tag.label}
+          </h1>
+          <p class="ui-copy max-w-3xl text-muted-foreground">
+            Здесь собраны только последние публикации по тегу. Более старые
+            материалы остаются доступны через месячные и годовые архивы.
+          </p>
+        </div>
+
+        <div
+          class="flex flex-wrap gap-3 text-sm leading-6 text-muted-foreground"
+        >
+          <span class="ui-chip">
+            <span class="ui-num">{tag.count}</span>
+            <span>всего</span>
+          </span>
+          <a href={tagsUrl()} class="ui-link font-semibold">
+            Назад в индекс тегов
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-8 space-y-4">
+      {
+        tag.count > tag.latest.length && (
+          <p class="text-sm leading-7 text-muted-foreground">
+            В v1 страница честно показывает только последние 10 публикаций по
+            тегу без пагинации.
+          </p>
+        )
+      }
+
+      <NewsList articles={tag.latest} empty="" />
+    </section>
+  </main>
+</BaseLayout>

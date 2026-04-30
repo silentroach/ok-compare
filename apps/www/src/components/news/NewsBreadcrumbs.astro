@@ -1,0 +1,33 @@
+---
+interface Item {
+  readonly label: string;
+  readonly href?: string;
+}
+
+interface Props {
+  readonly items: readonly Item[];
+}
+
+const { items } = Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <nav aria-label="Хлебные крошки">
+      <ol class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+        {items.map((item, index) => (
+          <li class="flex items-center gap-3">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href && index < items.length - 1 ? (
+              <a href={item.href} class="ui-link font-medium">
+                {item.label}
+              </a>
+            ) : (
+              <span class="font-medium text-foreground">{item.label}</span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}

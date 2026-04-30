@@ -1,0 +1,132 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import NewsBreadcrumbs from '../../../../components/news/NewsBreadcrumbs.astro';
+import NewsList from '../../../../components/news/NewsList.astro';
+import { loadNewsArchives, loadNewsMonth } from '../../../../lib/news/load';
+import { collectionPageSchema } from '../../../../lib/news/seo';
+import { formatNewsMonth } from '../../../../lib/news/view';
+import { monthUrl, newsUrl, yearUrl } from '../../../../lib/news/routes';
+
+export const getStaticPaths = (async () => {
+  const archives = await loadNewsArchives();
+
+  return archives.years.flatMap((item) =>
+    item.months.map((month) => ({
+      params: {
+        year: String(month.year),
+        month: String(month.month).padStart(2, '0'),
+      },
+    })),
+  );
+}) satisfies GetStaticPaths;
+
+const year = Number(Astro.params.year);
+const month = Number(Astro.params.month);
+const archive = await loadNewsMonth(year, month);
+const allArchives = await loadNewsArchives();
+
+if (!archive) {
+  throw new Error(
+    `news month archive "${Astro.params.year}/${Astro.params.month}" not found`,
+  );
+}
+
+const months = allArchives.years.flatMap((item) => item.months);
+const index = months.findIndex((item) => item.id === archive.id);
+const newer = index > 0 ? months[index - 1] : undefined;
+const older =
+  index >= 0 && index < months.length - 1 ? months[index + 1] : undefined;
+const monthName = formatNewsMonth(archive.year, archive.month, {
+  capitalize: true,
+});
+const title = `${monthName} — новости Шелково`;
+const description = `Архив новостей Шелково за ${formatNewsMonth(archive.year, archive.month)}: все публикации месяца в кратком формате без раскрытия полного body и addenda.`;
+const breadcrumbs = [
+  { label: 'Новости', href: newsUrl() },
+  { label: String(archive.year), href: yearUrl(archive.year) },
+  { label: monthName },
+];
+const schema = collectionPageSchema({
+  name: title,
+  description,
+  url: monthUrl(archive.year, archive.month),
+  breadcrumbs: [
+    { name: 'Новости', url: newsUrl() },
+    { name: String(archive.year), url: yearUrl(archive.year) },
+    { name: monthName, url: monthUrl(archive.year, archive.month) },
+  ],
+  items: archive.articles.map((item) => ({ name: item.title, url: item.url })),
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={monthUrl(archive.year, archive.month)}
+  keywords={['месячный архив новостей', monthName, String(archive.year)]}
+  schema={schema}
+>
+  <main class="ui-page py-6 md:py-10 lg:py-12">
+    <section class="ui-shell-strong p-6 md:p-8 lg:p-10">
+      <div class="space-y-5">
+        <NewsBreadcrumbs items={breadcrumbs} />
+
+        <div class="space-y-3">
+          <p
+            class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+          >
+            Месячный архив
+          </p>
+          <h1
+            class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
+          >
+            {monthName}
+          </h1>
+          <p class="ui-copy max-w-3xl text-muted-foreground">
+            Все публикации за месяц идут одной лентой без раскрытия полного
+            текста и без встраивания addenda в список.
+          </p>
+        </div>
+
+        <div
+          class="flex flex-wrap gap-3 text-sm leading-6 text-muted-foreground"
+        >
+          <a href={yearUrl(archive.year)} class="ui-link font-semibold">
+            Годовой архив {archive.year}
+          </a>
+          {
+            newer && (
+              <a href={newer.url} class="ui-link font-semibold">
+                Более новый месяц
+              </a>
+            )
+          }
+          {
+            older && (
+              <a href={older.url} class="ui-link font-semibold">
+                Более ранний месяц
+              </a>
+            )
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-8 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2
+          class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]"
+        >
+          Публикации месяца
+        </h2>
+        <span class="ui-chip">
+          <span class="ui-num">{archive.count}</span>
+          <span>новостей</span>
+        </span>
+      </div>
+
+      <NewsList articles={archive.articles} empty="" />
+    </section>
+  </main>
+</BaseLayout>

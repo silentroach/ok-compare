@@ -1,0 +1,174 @@
+---
+import { getEntry, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import NewsAddenda from '../../../../../components/news/NewsAddenda.astro';
+import NewsAttachments from '../../../../../components/news/NewsAttachments.astro';
+import NewsBreadcrumbs from '../../../../../components/news/NewsBreadcrumbs.astro';
+import NewsMeta from '../../../../../components/news/NewsMeta.astro';
+import NewsPhotos from '../../../../../components/news/NewsPhotos.astro';
+import NewsTagList from '../../../../../components/news/NewsTagList.astro';
+import {
+  loadNewsArticle,
+  loadNewsArticles,
+} from '../../../../../lib/news/load';
+import { newsArticleSchema } from '../../../../../lib/news/seo';
+import { NEWS_PROSE, formatNewsMonth } from '../../../../../lib/news/view';
+import {
+  articleUrl,
+  monthUrl,
+  newsUrl,
+  yearUrl,
+} from '../../../../../lib/news/routes';
+
+export const getStaticPaths = (async () => {
+  const articles = await loadNewsArticles();
+
+  return articles.map((item) => ({
+    params: {
+      year: String(item.year),
+      month: String(item.month).padStart(2, '0'),
+      entry: item.entry,
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+const year = Astro.params.year;
+const month = Astro.params.month;
+const entry = Astro.params.entry;
+
+if (!year || !month || !entry) {
+  throw new Error('news article params are required');
+}
+
+const id = `${year}/${month}/${entry}`;
+const article = await loadNewsArticle(id);
+const source = await getEntry('newsArticles', id);
+
+if (!article || !source) {
+  throw new Error(`news article "${id}" not found`);
+}
+
+const { Content } = await render(source);
+const monthName = formatNewsMonth(article.year, article.month, {
+  capitalize: true,
+});
+const title = article.seo_title ?? `${article.title} — новости Шелково`;
+const description = article.seo_description ?? article.summary;
+const breadcrumbs = [
+  { label: 'Новости', href: newsUrl() },
+  { label: String(article.year), href: yearUrl(article.year) },
+  {
+    label: monthName,
+    href: monthUrl(article.year, article.month),
+  },
+  { label: article.title },
+];
+const author = {
+  '@type': article.author.is_official ? 'Organization' : 'Person',
+  name: article.author.name,
+  ...(article.author.url ? { url: article.author.url } : {}),
+};
+const schema = newsArticleSchema({
+  name: article.title,
+  description,
+  url: articleUrl(article),
+  breadcrumbs: [
+    { name: 'Новости', url: newsUrl() },
+    { name: String(article.year), url: yearUrl(article.year) },
+    { name: monthName, url: monthUrl(article.year, article.month) },
+    { name: article.title, url: articleUrl(article) },
+  ],
+  datePublished: article.published_iso,
+  ...(article.updated_iso ? { dateModified: article.updated_iso } : {}),
+  ...(article.cover_url ? { image: article.cover_url } : {}),
+  author,
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={article.url}
+  image={article.cover_url}
+  imageAlt={article.cover_alt}
+  type="article"
+  keywords={[
+    'новости Шелково',
+    article.title,
+    ...article.tags.map((item) => item.label),
+  ]}
+  schema={schema}
+>
+  <main class="ui-page py-6 md:py-10 lg:py-12">
+    <article class="space-y-6">
+      <header class="ui-shell-strong p-6 md:p-8 lg:p-10">
+        <div class="space-y-5">
+          <NewsBreadcrumbs items={breadcrumbs} />
+
+          <div class="space-y-3">
+            <h1
+              class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
+            >
+              {article.title}
+            </h1>
+            <p class="ui-copy max-w-3xl text-muted-foreground">
+              {article.summary}
+            </p>
+          </div>
+
+          <NewsMeta
+            publishedIso={article.published_iso}
+            time={article.time}
+            updatedIso={article.updated_iso}
+            author={article.author}
+            isOfficial={article.is_official}
+            areas={article.areas}
+            appliesToAllAreas={article.applies_to_all_areas}
+            sourceUrl={article.source_url}
+          />
+        </div>
+      </header>
+
+      {
+        article.cover_url && (
+          <div class="ui-shell overflow-hidden">
+            <img
+              src={article.cover_url}
+              alt={article.cover_alt ?? article.title}
+              loading="eager"
+              class="max-h-[40rem] w-full object-cover"
+            />
+          </div>
+        )
+      }
+
+      {
+        article.body && (
+          <section class="ui-shell p-6 md:p-8 lg:p-10">
+            <div class={NEWS_PROSE}>
+              <Content />
+            </div>
+          </section>
+        )
+      }
+
+      <NewsPhotos photos={article.photos} />
+      <NewsAttachments items={article.attachments} />
+      <NewsAddenda items={article.addenda} />
+
+      {
+        article.tags.length > 0 && (
+          <section class="ui-shell p-6 md:p-7">
+            <div class="space-y-4">
+              <h2 class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]">
+                Теги
+              </h2>
+              <NewsTagList items={article.tags} compact />
+            </div>
+          </section>
+        )
+      }
+    </article>
+  </main>
+</BaseLayout>

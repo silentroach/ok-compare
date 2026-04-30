@@ -1,0 +1,83 @@
+---
+import type { NewsArea, NewsAuthor } from '../../lib/news/schema';
+import {
+  formatNewsArea,
+  formatNewsAuthor,
+  formatNewsDate,
+} from '../../lib/news/view';
+
+interface Props {
+  readonly publishedIso: string;
+  readonly time?: string;
+  readonly updatedIso?: string;
+  readonly author?: Pick<NewsAuthor, 'name' | 'short_name' | 'url'>;
+  readonly isOfficial?: boolean;
+  readonly areas?: readonly NewsArea[];
+  readonly appliesToAllAreas?: boolean;
+  readonly sourceUrl?: string;
+  readonly className?: string;
+}
+
+const {
+  publishedIso,
+  time,
+  updatedIso,
+  author,
+  isOfficial = false,
+  areas = [],
+  appliesToAllAreas = true,
+  sourceUrl,
+  className,
+} = Astro.props;
+
+const visibleAreas = appliesToAllAreas ? [] : areas;
+---
+
+<div
+  class:list={[
+    'flex flex-wrap items-center gap-2.5 text-sm leading-6 text-muted-foreground',
+    className,
+  ]}
+>
+  <span class="font-medium text-foreground">{formatNewsDate(publishedIso)}</span
+  >
+  {time && <span class="ui-num">{time}</span>}
+  {
+    author &&
+      (author.url ? (
+        <a
+          href={author.url}
+          target="_blank"
+          rel="noreferrer noopener"
+          class="ui-link font-medium"
+        >
+          {formatNewsAuthor(author)}
+        </a>
+      ) : (
+        <span>{formatNewsAuthor(author)}</span>
+      ))
+  }
+  {isOfficial && <span class="ui-chip">Официально</span>}
+  {
+    updatedIso && (
+      <span class="ui-chip">Обновлено {formatNewsDate(updatedIso)}</span>
+    )
+  }
+  {
+    visibleAreas.map((area) => (
+      <span class="ui-chip">{formatNewsArea(area)}</span>
+    ))
+  }
+  {
+    sourceUrl && (
+      <a
+        href={sourceUrl}
+        target="_blank"
+        rel="noreferrer noopener"
+        class="ui-link font-medium"
+      >
+        Источник
+      </a>
+    )
+  }
+</div>

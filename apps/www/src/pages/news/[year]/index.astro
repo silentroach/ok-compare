@@ -1,0 +1,123 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import NewsBreadcrumbs from '../../../components/news/NewsBreadcrumbs.astro';
+import NewsList from '../../../components/news/NewsList.astro';
+import { loadNewsArchives, loadNewsYear } from '../../../lib/news/load';
+import { collectionPageSchema } from '../../../lib/news/seo';
+import { formatNewsMonth } from '../../../lib/news/view';
+import { newsUrl, yearUrl } from '../../../lib/news/routes';
+
+export const getStaticPaths = (async () => {
+  const archives = await loadNewsArchives();
+
+  return archives.years.map((item) => ({
+    params: { year: String(item.year) },
+  }));
+}) satisfies GetStaticPaths;
+
+const year = Number(Astro.params.year);
+const archive = await loadNewsYear(year);
+
+if (!archive) {
+  throw new Error(`news year archive "${Astro.params.year}" not found`);
+}
+
+const title = `Новости Шелково за ${archive.year} год`;
+const description = `Архив новостей Шелково за ${archive.year} год: все публикации по месяцам в хронологическом порядке без reshuffle pinned-материалов.`;
+const breadcrumbs = [
+  { label: 'Новости', href: newsUrl() },
+  { label: String(archive.year) },
+];
+const schema = collectionPageSchema({
+  name: title,
+  description,
+  url: yearUrl(archive.year),
+  breadcrumbs: [
+    { name: 'Новости', url: newsUrl() },
+    { name: String(archive.year), url: yearUrl(archive.year) },
+  ],
+  items: archive.months.flatMap((item) =>
+    item.articles.map((article) => ({ name: article.title, url: article.url })),
+  ),
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={yearUrl(archive.year)}
+  keywords={[
+    'архив новостей Шелково',
+    String(archive.year),
+    'новости по месяцам',
+  ]}
+  schema={schema}
+>
+  <main class="ui-page py-6 md:py-10 lg:py-12">
+    <section class="ui-shell-strong p-6 md:p-8 lg:p-10">
+      <div class="space-y-5">
+        <NewsBreadcrumbs items={breadcrumbs} />
+
+        <div class="space-y-3">
+          <p
+            class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+          >
+            Годовой архив
+          </p>
+          <h1
+            class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
+          >
+            Новости за {archive.year} год
+          </h1>
+          <p class="ui-copy max-w-3xl text-muted-foreground">
+            Внутри года публикации сгруппированы по месяцам, но порядок внутри
+            каждой группы остается чисто хронологическим.
+          </p>
+        </div>
+
+        <ul class="flex flex-wrap gap-2">
+          {
+            archive.months.map((item) => (
+              <li>
+                <a href={`#month-${item.month}`} class="ui-chip">
+                  <span>
+                    {formatNewsMonth(item.year, item.month, {
+                      capitalize: true,
+                    })}
+                  </span>
+                  <span class="ui-num text-[0.72rem]">{item.count}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <div class="mt-8 space-y-8">
+      {
+        archive.months.map((item) => (
+          <section id={`month-${item.month}`} class="space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  {item.count} публикаций
+                </p>
+                <h2 class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]">
+                  {formatNewsMonth(item.year, item.month, { capitalize: true })}
+                </h2>
+              </div>
+
+              <a href={item.url} class="ui-link text-sm font-semibold">
+                Открыть месяц
+              </a>
+            </div>
+
+            <NewsList articles={item.articles} empty="" />
+          </section>
+        ))
+      }
+    </div>
+  </main>
+</BaseLayout>
