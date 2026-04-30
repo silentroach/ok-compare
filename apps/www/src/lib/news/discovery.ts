@@ -1,6 +1,5 @@
 import { absoluteUrl } from '../site';
 import {
-  agentsPath,
   apiCatalogPath,
   articlesDataPath,
   articlesOpenApiPath,
@@ -126,6 +125,8 @@ export interface NewsDiscoveryPayload {
   readonly tags: readonly NewsDiscoveryTagPage[];
 }
 
+const NEWS_ARTICLES_PAYLOAD_SCHEMA = 'NewsArticlesPayload';
+
 function abs(root: string, path: string): string {
   return new URL(path.replace(/^\//, ''), `${root}/`).toString();
 }
@@ -196,6 +197,30 @@ function obj(
     properties,
     required,
   };
+}
+
+function rewriteSchemaRefs(value: unknown, schemaRef: string): unknown {
+  if (Array.isArray(value)) {
+    return value.map((item) => rewriteSchemaRefs(item, schemaRef));
+  }
+
+  if (!value || typeof value !== 'object') {
+    return value;
+  }
+
+  return Object.fromEntries(
+    Object.entries(value).map(([key, entry]) => {
+      if (
+        key === '$ref' &&
+        typeof entry === 'string' &&
+        entry.startsWith('#/')
+      ) {
+        return [key, `${schemaRef}${entry.slice(1)}`];
+      }
+
+      return [key, rewriteSchemaRefs(entry, schemaRef)];
+    }),
+  );
 }
 
 function fullUrl(value: string): string {
@@ -580,11 +605,13 @@ export function schema(root: string): Record<string, unknown> {
 }
 
 export function openapi(root: string): Record<string, unknown> {
+  const schemaRef = `#/components/schemas/${NEWS_ARTICLES_PAYLOAD_SCHEMA}`;
   const body = Object.fromEntries(
     Object.entries(schema(root)).filter(
       ([key]) => key !== '$schema' && key !== '$id',
     ),
   );
+  const componentBody = rewriteSchemaRefs(body, schemaRef);
 
   return {
     openapi: '3.1.0',
@@ -600,10 +627,6 @@ export function openapi(root: string): Record<string, unknown> {
         url: server(root),
       },
     ],
-    externalDocs: {
-      description: 'Документация для агентов',
-      url: abs(root, agentsPath()),
-    },
     paths: {
       [articlesDataPath()]: {
         get: {
@@ -617,7 +640,7 @@ export function openapi(root: string): Record<string, unknown> {
               content: {
                 'application/json': {
                   schema: {
-                    $ref: '#/components/schemas/NewsArticlesPayload',
+                    $ref: schemaRef,
                   },
                 },
               },
@@ -628,7 +651,7 @@ export function openapi(root: string): Record<string, unknown> {
     },
     components: {
       schemas: {
-        NewsArticlesPayload: body,
+        [NEWS_ARTICLES_PAYLOAD_SCHEMA]: componentBody,
       },
     },
   };
@@ -661,13 +684,6 @@ export function catalog(root: string): Record<string, unknown> {
             'title*': star('Расширенный агентный обзор llms-full.txt'),
           },
         ],
-        'service-doc': [
-          {
-            href: abs(root, agentsPath()),
-            type: 'text/html',
-            'title*': star('Документация для агентов'),
-          },
-        ],
         'service-desc': [
           {
             href: abs(root, articlesSchemaPath()),
@@ -687,7 +703,6 @@ export function catalog(root: string): Record<string, unknown> {
 
 export function links(root: string): string {
   return [
-    `<${abs(root, agentsPath())}>; rel="service-doc"; type="text/html"`,
     `<${abs(root, articlesSchemaPath())}>; rel="service-desc"; type="application/schema+json"`,
     `<${abs(root, articlesOpenApiPath())}>; rel="service-desc"; type="${OAS}"`,
     `<${abs(root, apiCatalogPath())}>; rel="api-catalog"; type="application/linkset+json"; profile="${PROFILE}"`,

@@ -1,11 +1,6 @@
 import { absoluteUrl } from '../site';
 import {
-  agentsMarkdownUrl,
-  agentsUrl,
-  apiCatalogUrl,
   articlesDataUrl,
-  articlesOpenApiUrl,
-  articlesSchemaUrl,
   feedUrl,
   llmsFullUrl,
   llmsUrl,
@@ -324,8 +319,6 @@ export function buildNewsHomeMarkdown(data: NewsDataset): string {
     ...keyLinks([
       { label: 'HTML', href: abs(newsUrl()) },
       { label: 'Markdown', href: abs(newsMarkdownUrl()) },
-      { label: 'Для агентов', href: abs(agentsUrl()) },
-      { label: 'Markdown for agents', href: abs(agentsMarkdownUrl()) },
       { label: 'Теги', href: abs(tagsUrl()) },
       ...discoveryLinks(),
     ]),
@@ -384,7 +377,6 @@ export function buildNewsYearMarkdown(archive: NewsYearArchive): string {
       { label: 'HTML', href: abs(archive.url) },
       { label: 'Markdown', href: abs(archive.markdown_url) },
       { label: 'Главная news-section', href: abs(newsUrl()) },
-      { label: 'Для агентов', href: abs(agentsUrl()) },
       ...discoveryLinks(),
     ]),
     ...section('Сводка', [
@@ -439,7 +431,6 @@ export function buildNewsMonthMarkdown(input: {
         label: `Годовой архив ${archive.year}`,
         href: abs(yearUrl(archive.year)),
       },
-      { label: 'Для агентов', href: abs(agentsUrl()) },
       ...discoveryLinks(),
     ]),
     ...section(
@@ -501,7 +492,6 @@ export function buildNewsTagsMarkdown(
       { label: 'HTML', href: abs(tagsUrl()) },
       { label: 'Markdown', href: abs(tagsMarkdownUrl()) },
       { label: 'Главная news-section', href: abs(newsUrl()) },
-      { label: 'Для агентов', href: abs(agentsUrl()) },
       ...discoveryLinks(),
     ]),
     ...section('Сводка', [`- Всего тегов: ${tagsPage.length}`]),
@@ -525,7 +515,6 @@ export function buildNewsTagMarkdown(tag: NewsTagPage): string {
       { label: 'Markdown', href: abs(tag.markdown_url) },
       { label: 'Индекс тегов', href: abs(tagsUrl()) },
       { label: 'Markdown-индекс тегов', href: abs(tagsMarkdownUrl()) },
-      { label: 'Для агентов', href: abs(agentsUrl()) },
       ...discoveryLinks(),
     ]),
     ...section('Сводка', [
@@ -541,166 +530,5 @@ export function buildNewsTagMarkdown(tag: NewsTagPage): string {
         ? 'В v1 страница тега честно показывает только последние 10 публикаций; более старые материалы остаются доступны через месячные и годовые архивы.'
         : undefined,
     ),
-  ]);
-}
-
-export function buildNewsAgentsMarkdown(data: NewsDataset): string {
-  const exampleArticle = data.articles[0];
-  const exampleYear = data.archives.years[0];
-  const exampleMonth = exampleYear?.months[0];
-  const exampleTag = data.tags[0];
-
-  return join([
-    '# Для агентов: news-section',
-    '',
-    'Text-first обзор HTML-страниц, markdown companions и discovery-роутов news-section. HTML detail pages остаются каноническими, markdown companions дают прямой текстовый слой, а JSON/RSS/schema/openapi routes собираются из того же derive-слоя без SSR.',
-    '',
-    ...keyLinks([
-      { label: 'HTML', href: abs(agentsUrl()) },
-      { label: 'Markdown', href: abs(agentsMarkdownUrl()) },
-      { label: 'Главная news-section', href: abs(newsUrl()) },
-      { label: 'Markdown news home', href: abs(newsMarkdownUrl()) },
-    ]),
-    ...section('Сводка', [
-      `- Статей: ${data.articles.length}`,
-      `- Тегов: ${data.tags.length}`,
-      `- Лет в архиве: ${data.archives.years.length}`,
-    ]),
-    ...section('HTML pages', [
-      ref({
-        label: '/news/',
-        href: abs(newsUrl()),
-        note: 'главная лента с pinned-блоком, последними обычными новостями, архивами и тегами',
-      }),
-      ref({
-        label: exampleYear?.url ?? '/news/YYYY/',
-        href: exampleYear ? abs(exampleYear.url) : '/news/YYYY/',
-        note: 'годовой архив: месяцы с количеством новостей и лента по месяцам',
-      }),
-      ref({
-        label: exampleMonth?.url ?? '/news/YYYY/MM/',
-        href: exampleMonth ? abs(exampleMonth.url) : '/news/YYYY/MM/',
-        note: 'месячный архив: все новости конкретного месяца в кратком формате',
-      }),
-      ref({
-        label: exampleArticle?.url ?? '/news/YYYY/MM/[entry]/',
-        href: exampleArticle
-          ? exampleArticle.canonical
-          : '/news/YYYY/MM/[entry]/',
-        note: 'каноническая detail-страница новости с body, фото, вложениями и addenda',
-      }),
-      ref({
-        label: '/news/tags/',
-        href: abs(tagsUrl()),
-        note: 'индекс всех тегов news-section',
-      }),
-      ref({
-        label: exampleTag?.url ?? '/news/tags/[tag]/',
-        href: exampleTag ? abs(exampleTag.url) : '/news/tags/[tag]/',
-        note: 'последние 10 новостей по тегу без пагинации в v1',
-      }),
-      ref({
-        label: '/news/for-agents/',
-        href: abs(agentsUrl()),
-        note: 'человекочитаемая документация по surface и discovery маршрутам',
-      }),
-    ]),
-    ...section('Markdown companions', [
-      ref({
-        label: '/news/index.md',
-        href: abs(newsMarkdownUrl()),
-        note: 'text-first companion для главной news-страницы',
-      }),
-      ref({
-        label: exampleYear?.markdown_url ?? '/news/YYYY/index.md',
-        href: exampleYear
-          ? abs(exampleYear.markdown_url)
-          : '/news/YYYY/index.md',
-        note: 'markdown-версия годового архива',
-      }),
-      ref({
-        label: exampleMonth?.markdown_url ?? '/news/YYYY/MM/index.md',
-        href: exampleMonth
-          ? abs(exampleMonth.markdown_url)
-          : '/news/YYYY/MM/index.md',
-        note: 'markdown-версия месячного архива',
-      }),
-      ref({
-        label: exampleArticle?.markdown_url ?? '/news/YYYY/MM/[entry]/index.md',
-        href: exampleArticle
-          ? abs(exampleArticle.markdown_url)
-          : '/news/YYYY/MM/[entry]/index.md',
-        note: 'markdown detail page с метаданными, summary, full body и addenda',
-      }),
-      ref({
-        label: '/news/tags/index.md',
-        href: abs(tagsMarkdownUrl()),
-        note: 'markdown-индекс всех тегов',
-      }),
-      ref({
-        label: exampleTag?.markdown_url ?? '/news/tags/[tag]/index.md',
-        href: exampleTag
-          ? abs(exampleTag.markdown_url)
-          : '/news/tags/[tag]/index.md',
-        note: 'markdown-версия страницы тега с последними 10 новостями',
-      }),
-      ref({
-        label: '/news/for-agents/index.md',
-        href: abs(agentsMarkdownUrl()),
-        note: 'text-first overview discovery surface для агентов',
-      }),
-    ]),
-    ...section('Feed и discovery', [
-      ref({
-        label: '/news/data/articles.json',
-        href: abs(articlesDataUrl()),
-        note: 'основной structured feed для агентов и машинного обхода',
-      }),
-      ref({
-        label: '/news/feed.xml',
-        href: abs(feedUrl()),
-        note: 'RSS с summary-based описаниями без разворачивания full body',
-      }),
-      ref({
-        label: '/news/llms.txt',
-        href: abs(llmsUrl()),
-        note: 'короткая текстовая сводка по маршрутам и правилам чтения раздела',
-      }),
-      ref({
-        label: '/news/llms-full.txt',
-        href: abs(llmsFullUrl()),
-        note: 'расширенная версия llms.txt с описанием payload, tags, archives и addenda',
-      }),
-      ref({
-        label: '/news/.well-known/api-catalog',
-        href: abs(apiCatalogUrl()),
-        note: 'linkset JSON для автоматического discovery feed/schema/docs',
-      }),
-      ref({
-        label: '/news/schemas/articles.schema.json',
-        href: abs(articlesSchemaUrl()),
-        note: 'JSON Schema для полного news feed',
-      }),
-      ref({
-        label: '/news/openapi/articles.openapi.json',
-        href: abs(articlesOpenApiUrl()),
-        note: 'read-only OpenAPI 3.1-обертка вокруг основного feed route',
-      }),
-    ]),
-    ...section('Что значит addenda', [
-      '- `addenda` — это поздние уточнения, редакторские комментарии или новые подтвержденные факты, которые не переписывают исходный текст новости.',
-      '- `addenda` хранятся внутри того же article source file, что и исходная новость, а не в отдельной collection.',
-      '- На list/archive/tag pages показывается только summary новости и, при необходимости, пометка `обновлено`; текст addenda там не раскрывается.',
-      '- На detail HTML/Markdown page addenda идут отдельным блоком `Дополнено` и сортируются по возрастанию даты.',
-    ]),
-    ...section('Official news vs community addenda', [
-      '- Официальность определяется author entry, а не отдельным boolean в статье.',
-      '- Официальная новость может получить community/editorial addenda без переписывания исходного body.',
-      '- Поздние addenda не поднимают новость вверх в списках; меняется только `updated_at` и пометка `Обновлено ...`.',
-    ]),
-    ...section('Media caveat', [
-      '- Для machine-readable media полагайтесь на `cover`, `photos` и `attachments`: в companion-страницах они отдаются абсолютными URL.',
-      '- Inline markdown images с локальными относительными путями внутри raw body companion route автоматически не переписывает.',
-    ]),
   ]);
 }

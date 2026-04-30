@@ -5,8 +5,6 @@ const NEWS_ROOT = '/news/';
 const NEWS_MARKDOWN = '/news/index.md';
 const TAGS_ROOT = '/news/tags/';
 const TAGS_MARKDOWN = '/news/tags/index.md';
-const AGENTS_ROOT = '/news/for-agents/';
-const AGENTS_MARKDOWN = '/news/for-agents/index.md';
 const DATA_ARTICLES = '/news/data/articles.json';
 const FEED = '/news/feed.xml';
 const LLMS = '/news/llms.txt';
@@ -17,10 +15,6 @@ const ARTICLES_OPENAPI = '/news/openapi/articles.openapi.json';
 
 export function newsPath(): string {
   return NEWS_ROOT;
-}
-
-export function agentsPath(): string {
-  return AGENTS_ROOT;
 }
 
 export function articlesDataPath(): string {
@@ -157,14 +151,6 @@ export function tagUrl(value: string): string {
 
 export function tagMarkdownUrl(value: string): string {
   return withBase(`${tagPath(value)}index.md`);
-}
-
-export function agentsUrl(): string {
-  return withBase(AGENTS_ROOT);
-}
-
-export function agentsMarkdownUrl(): string {
-  return withBase(AGENTS_MARKDOWN);
 }
 
 export function articlesDataUrl(): string {

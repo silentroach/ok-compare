@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
   CATALOG,
-  DOCS,
   EXPLORER,
   FEED,
   OPENAPI,
@@ -35,11 +34,10 @@ describe('schema', () => {
 });
 
 describe('catalog', () => {
-  it('links both feeds, docs, schema and openapi from the site root', () => {
+  it('links both feeds, schema and openapi from the site root', () => {
     const body = catalog(root);
     const [item] = body.linkset as Array<Record<string, unknown>>;
     const list = item.item as Array<Record<string, unknown>>;
-    const docs = item['service-doc'] as Array<Record<string, unknown>>;
     const desc = item['service-desc'] as Array<Record<string, unknown>>;
 
     expect(item.anchor).toBe(`${root}/`);
@@ -47,7 +45,6 @@ describe('catalog', () => {
       `${root}${FEED}`,
       `${root}${EXPLORER}`,
     ]);
-    expect(docs[0]?.href).toBe(`${root}${DOCS}`);
     expect(desc.map((row) => row.href)).toEqual([
       `${root}${SCHEMA}`,
       `${root}${OPENAPI}`,
@@ -59,7 +56,6 @@ describe('links', () => {
   it('emits discovery link headers for the full settlements feed', () => {
     const body = links(root);
 
-    expect(body).toContain(`${root}${DOCS}`);
     expect(body).toContain(`${root}${SCHEMA}`);
     expect(body).toContain(`${root}${OPENAPI}`);
     expect(body).toContain(`${root}${CATALOG}`);

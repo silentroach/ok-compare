@@ -1,8 +1,6 @@
 import { absoluteUrl } from '../site';
 import { loadNewsData } from './load';
 import {
-  agentsMarkdownUrl,
-  agentsUrl,
   apiCatalogUrl,
   articlesDataUrl,
   articlesOpenApiUrl,
@@ -45,8 +43,6 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
 
   const home = abs(newsUrl());
   const homeMarkdown = abs(newsMarkdownUrl());
-  const docs = abs(agentsUrl());
-  const docsMarkdown = abs(agentsMarkdownUrl());
   const feed = abs(articlesDataUrl());
   const rss = abs(feedUrl());
   const short = abs(llmsUrl());
@@ -78,8 +74,6 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           '',
           'Главные URL',
           `- Главная news-section: ${home}`,
-          `- Для агентов: ${docs}`,
-          `- Markdown-обзор для агентов: ${docsMarkdown}`,
           `- Основной JSON feed: ${feed}`,
           `- RSS: ${rss}`,
           `- API catalog: ${catalog}`,
@@ -113,8 +107,6 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           `- Markdown news home: ${homeMarkdown}`,
           `- Короткий агентный обзор: ${short}`,
           `- Расширенный агентный обзор: ${full}`,
-          `- Для агентов: ${docs}`,
-          `- Markdown для агентов: ${docsMarkdown}`,
           `- Основной JSON feed: ${feed}`,
           `- RSS: ${rss}`,
           `- API catalog: ${catalog}`,
