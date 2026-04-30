@@ -1,0 +1,43 @@
+.ui-root-site {
+  background: var(--color-bg);
+}
+
+.ui-root-site .news-tag-link {
+  color: color-mix(
+    in oklab,
+    var(--color-primary) 38%,
+    var(--color-muted-foreground) 62%
+  );
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.ui-root-site .news-tag-link:hover {
+  color: color-mix(
+    in oklab,
+    var(--color-primary-hover) 52%,
+    var(--color-muted-foreground) 48%
+  );
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+  text-underline-offset: 0.18em;
+}
+
+.ui-root-site .news-tag-link-compact {
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+}
+
+.ui-root-site .news-tag-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ui-root-site .news-tag-count {
+  color: var(--color-muted-foreground);
+  font-size: 0.75rem;
+}

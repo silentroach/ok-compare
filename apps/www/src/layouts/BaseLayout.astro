@@ -1,5 +1,6 @@
 ---
 import '@shelkovo/ui/styles.css';
+import '../styles/site.css';
 import {
   BRAND_KEYWORDS,
   collectKeywords,
@@ -107,7 +108,7 @@ const ym = `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).p
     {prod && <script is:inline type="text/javascript" set:html={ym} />}
     <title>{title}</title>
   </head>
-  <body class="flex min-h-screen flex-col text-foreground">
+  <body class="ui-root-site flex min-h-screen flex-col text-foreground">
     {
       prod && (
         <noscript>

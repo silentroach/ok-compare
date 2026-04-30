@@ -7,6 +7,11 @@ const MONTH = new Intl.DateTimeFormat('ru-RU', {
   timeZone: 'Europe/Moscow',
 });
 
+const MONTH_ONLY = new Intl.DateTimeFormat('ru-RU', {
+  month: 'long',
+  timeZone: 'Europe/Moscow',
+});
+
 const AREA_LABELS: Record<NewsArea, string> = {
   river: 'Шелково Ривер',
   forest: 'Шелково Форест',
@@ -24,9 +29,9 @@ export const NEWS_PROSE =
   '[&_h2]:mt-8 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-foreground ' +
   '[&_h3]:mt-6 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:tracking-tight [&_h3]:text-foreground ' +
   '[&_table]:my-6 [&_table]:w-full [&_table]:border-collapse [&_thead_th]:border-b [&_thead_th]:border-border [&_thead_th]:px-3 [&_thead_th]:py-2 [&_thead_th]:text-left [&_thead_th]:text-xs [&_thead_th]:font-semibold [&_thead_th]:uppercase [&_thead_th]:tracking-[0.18em] [&_tbody_td]:border-b [&_tbody_td]:border-border [&_tbody_td]:px-3 [&_tbody_td]:py-2 ' +
-  '[&_img]:rounded-[1.25rem] [&_img]:border [&_img]:border-border [&_img]:bg-[color:var(--color-surface-muted)] [&_img]:shadow-[var(--shadow-1)] ' +
-  '[&_code]:rounded-md [&_code]:bg-[color:var(--color-surface-muted)] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-[0.95em] ' +
-  '[&_pre]:my-6 [&_pre]:overflow-x-auto [&_pre]:rounded-[1.25rem] [&_pre]:border [&_pre]:border-border [&_pre]:bg-[color:var(--color-surface-muted)] [&_pre]:p-4 [&_pre]:text-sm ' +
+  '[&_img]:border [&_img]:border-border [&_img]:bg-[color:var(--color-surface-muted)] ' +
+  '[&_code]:bg-[color:var(--color-surface-muted)] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-[0.95em] ' +
+  '[&_pre]:my-6 [&_pre]:overflow-x-auto [&_pre]:border [&_pre]:border-border [&_pre]:bg-[color:var(--color-surface-muted)] [&_pre]:p-4 [&_pre]:text-sm ' +
   '[&_pre_code]:bg-transparent [&_pre_code]:p-0';
 
 function capitalize(value: string): string {
@@ -44,9 +49,14 @@ export function formatNewsDate(value: string): string {
 export function formatNewsMonth(
   year: number,
   month: number,
-  opts?: { readonly capitalize?: boolean },
+  opts?: {
+    readonly capitalize?: boolean;
+    readonly includeYear?: boolean;
+  },
 ): string {
-  const label = MONTH.format(new Date(Date.UTC(year, month - 1, 1)));
+  const label = ((opts?.includeYear ?? true) ? MONTH : MONTH_ONLY).format(
+    new Date(Date.UTC(year, month - 1, 1)),
+  );
   return opts?.capitalize ? capitalize(label) : label;
 }
 

@@ -1,4 +1,5 @@
 ---
+import TelegramIcon from '@shelkovo/ui/TelegramIcon.astro';
 import type { NewsArea, NewsAuthor } from '../../lib/news/schema';
 import {
   formatNewsArea,
@@ -31,6 +32,11 @@ const {
 } = Astro.props;
 
 const visibleAreas = appliesToAllAreas ? [] : areas;
+const isTelegramSource = sourceUrl
+  ? /^(?:tg:\/\/|(?:https?:\/\/)?(?:www\.)?(?:t\.me|telegram\.me)\/)/i.test(
+      sourceUrl,
+    )
+  : false;
 ---
 
 <div
@@ -74,9 +80,15 @@ const visibleAreas = appliesToAllAreas ? [] : areas;
         href={sourceUrl}
         target="_blank"
         rel="noreferrer noopener"
-        class="ui-link font-medium"
+        class:list={[
+          'ui-link font-medium',
+          isTelegramSource && 'inline-flex items-center gap-1',
+        ]}
       >
-        Источник
+        {isTelegramSource && (
+          <TelegramIcon class="size-3.5 shrink-0 text-primary" />
+        )}
+        <span>источник</span>
       </a>
     )
   }

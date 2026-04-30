@@ -28,33 +28,15 @@ const schema = collectionPageSchema({
   schema={schema}
 >
   <main class="ui-page py-6 md:py-10 lg:py-12">
-    <section class="ui-shell-strong overflow-hidden p-6 md:p-8 lg:p-10">
-      <div class="space-y-3">
-        <h1
-          class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
-        >
-          Новости
-        </h1>
-        <p class="ui-copy max-w-3xl text-muted-foreground">
-          Короткие новости по Шелково, соседним очередям и сервисным темам.
-        </p>
-      </div>
+    <section class="px-5 py-6 md:px-6 md:py-8 lg:py-10">
+      <h1
+        class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
+      >
+        Новости
+      </h1>
     </section>
 
-    <section class="mt-8 space-y-4">
-      <div class="space-y-2">
-        <p
-          class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
-        >
-          Лента
-        </p>
-        <h2
-          class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]"
-        >
-          Последние новости
-        </h2>
-      </div>
-
+    <section class="mt-8">
       <NewsList
         articles={articles}
         empty="Первые публикации для раздела готовятся. Когда новости появятся, здесь будет основная лента."

@@ -15,7 +15,7 @@ const Heading = heading;
 
 {
   photos.length > 0 && (
-    <section class:list={framed && ['ui-shell p-6 md:p-7']}>
+    <section class:list={framed && ['ui-shell px-5 py-6 md:px-6 md:py-7']}>
       <div class="space-y-4">
         <Heading class="text-2xl font-semibold tracking-tight text-foreground">
           {title}
@@ -28,7 +28,7 @@ const Heading = heading;
                 src={photo.url}
                 alt={photo.alt}
                 loading="lazy"
-                class="w-full rounded-[1.25rem] border border-border bg-[color:var(--color-surface-muted)] object-cover shadow-[var(--shadow-1)]"
+                class="w-full border border-border bg-[color:var(--color-surface-muted)] object-cover"
               />
               {photo.caption && (
                 <figcaption class="text-sm leading-6 text-muted-foreground">
