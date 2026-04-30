@@ -1,5 +1,6 @@
 @import '@shelkovo/ui/styles.css';
 
+/* Compare keeps local overrides for shared ui primitives so site redesigns do not leak here. Sync these with packages/ui/styles.css when shared shape or variables change. */
 .ui-shell {
   background: var(--color-card);
   border: 1px solid var(--color-border);

@@ -1,4 +1,4 @@
-import { withBase as join } from '@shelkovo/url';
+import { isAbsoluteUrl, withBase as join } from '@shelkovo/url';
 
 const site = import.meta.env.SITE;
 const base = import.meta.env.BASE_URL;
@@ -24,10 +24,6 @@ function trim(path: string, root: string): string {
   return url;
 }
 
-function absolute(path: string): boolean {
-  return /^[a-z][a-z\d+.-]*:/i.test(path) || path.startsWith('//');
-}
-
 export function withBase(path: string): string {
   return join(base, path);
 }
@@ -35,7 +31,7 @@ export function withBase(path: string): string {
 export function absoluteUrl(path: string): string {
   const root = need(site, 'SITE');
 
-  if (absolute(path)) {
+  if (isAbsoluteUrl(path)) {
     return new URL(path, root).toString();
   }
 

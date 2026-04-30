@@ -1,4 +1,5 @@
 import type { NewsListArticle, NewsTag, NewsTagPage } from './schema';
+import { NEWS_LATEST_LIMIT } from './config';
 import { tagMarkdownUrl, tagUrl } from './routes';
 import { compareTagPages, latestFirst } from './sort';
 import { normalizeTagKey, normalizeTagLabel } from './schema';
@@ -63,7 +64,7 @@ export function buildTagIndex(
       url: tagUrl(tag.key),
       markdown_url: tagMarkdownUrl(tag.key),
       count: tag.articles.length,
-      latest: latestFirst(tag.articles).slice(0, 10),
+      latest: latestFirst(tag.articles).slice(0, NEWS_LATEST_LIMIT),
     }))
     .sort(compareTagPages);
 }

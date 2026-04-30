@@ -1,4 +1,3 @@
-import rehypeRaw from 'rehype-raw';
 import rehypeStringify from 'rehype-stringify';
 import remarkGfm from 'remark-gfm';
 import remarkParse from 'remark-parse';
@@ -9,8 +8,8 @@ import { rehypeTypograf } from '../typography';
 const processor = unified()
   .use(remarkParse)
   .use(remarkGfm)
-  .use(remarkRehype, { allowDangerousHtml: true })
-  .use(rehypeRaw)
+  // Raw HTML stays inert text so markdown content cannot inject executable markup.
+  .use(remarkRehype)
   .use(rehypeTypograf)
   .use(rehypeStringify);
 

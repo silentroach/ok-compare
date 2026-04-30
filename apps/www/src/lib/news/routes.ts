@@ -1,3 +1,5 @@
+import { padNumber } from '@shelkovo/format';
+
 import { canon, withBase } from '../site';
 import { normalizeTagKey } from './schema';
 
@@ -35,9 +37,6 @@ export interface NewsArticleRouteInput {
   readonly entry: string;
 }
 
-const pad = (value: number | string, size: number): string =>
-  String(value).padStart(size, '0');
-
 const need = (value: string, name: string): string => {
   const text = value.trim();
 
@@ -58,10 +57,11 @@ const tagKey = (value: string): string => {
   return key;
 };
 
-const yearPath = (year: number | string): string => `/news/${pad(year, 4)}/`;
+const yearPath = (year: number | string): string =>
+  `/news/${padNumber(year, 4)}/`;
 
 const monthPath = (year: number | string, month: number | string): string =>
-  `/news/${pad(year, 4)}/${pad(month, 2)}/`;
+  `/news/${padNumber(year, 4)}/${padNumber(month, 2)}/`;
 
 const articlePath = (input: NewsArticleRouteInput): string =>
   `${monthPath(input.year, input.month)}${need(input.entry, 'entry')}/`;

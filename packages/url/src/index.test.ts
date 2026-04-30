@@ -1,6 +1,19 @@
 import { describe, expect, it } from 'vitest';
 
-import { telegram, withBase } from './index';
+import { isAbsoluteUrl, telegram, withBase } from './index';
+
+describe('isAbsoluteUrl package', () => {
+  it('detects absolute URLs and protocol-relative URLs', () => {
+    expect(isAbsoluteUrl('https://example.com')).toBe(true);
+    expect(isAbsoluteUrl('mailto:test@example.com')).toBe(true);
+    expect(isAbsoluteUrl('//cdn.example.com/app.js')).toBe(true);
+  });
+
+  it('ignores root-relative and relative paths', () => {
+    expect(isAbsoluteUrl('/news/')).toBe(false);
+    expect(isAbsoluteUrl('news/2026/')).toBe(false);
+  });
+});
 
 describe('withBase package', () => {
   it('passes through external and special URLs', () => {
@@ -12,6 +25,9 @@ describe('withBase package', () => {
       'mailto:test@example.com',
     );
     expect(withBase('/base/', 'tel:+79990000000')).toBe('tel:+79990000000');
+    expect(withBase('/base/', '//cdn.example.com/app.js')).toBe(
+      '//cdn.example.com/app.js',
+    );
   });
 
   it('prepends normalized base to relative paths', () => {

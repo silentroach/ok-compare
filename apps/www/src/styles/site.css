@@ -2,6 +2,46 @@
   background: var(--color-bg);
 }
 
+.ui-root-site .news-hero {
+  --news-hero-foreground: oklch(97.2% 0.004 130);
+  --news-hero-muted-foreground: oklch(88.8% 0.012 130);
+  --news-hero-primary: oklch(90.5% 0.022 142);
+  --news-hero-primary-hover: oklch(96.4% 0.01 140);
+  --news-hero-border: color-mix(in oklab, white 24%, transparent);
+  --news-hero-border-strong: color-mix(in oklab, white 52%, transparent);
+  --news-hero-ring: oklch(97% 0.01 140);
+  --news-hero-overlay-top: oklch(24% 0.04 145 / 0.14);
+  --news-hero-overlay-side-strong: oklch(24% 0.04 145 / 0.36);
+  --news-hero-overlay-side-mid: oklch(24% 0.04 145 / 0.18);
+  --news-hero-overlay-side-soft: oklch(24% 0.04 145 / 0.06);
+
+  --color-foreground: var(--news-hero-foreground);
+  --color-muted-foreground: var(--news-hero-muted-foreground);
+  --color-primary: var(--news-hero-primary);
+  --color-primary-hover: var(--news-hero-primary-hover);
+  --color-border: var(--news-hero-border);
+  --color-border-strong: var(--news-hero-border-strong);
+  --color-ring: var(--news-hero-ring);
+}
+
+.ui-root-site .news-hero-overlay-top {
+  background: linear-gradient(
+    to bottom,
+    var(--news-hero-overlay-top),
+    transparent
+  );
+}
+
+.ui-root-site .news-hero-overlay-side {
+  background: linear-gradient(
+    90deg,
+    var(--news-hero-overlay-side-strong) 0%,
+    var(--news-hero-overlay-side-mid) 52%,
+    var(--news-hero-overlay-side-soft) 78%,
+    transparent 100%
+  );
+}
+
 .ui-root-site .news-tag-link {
   color: color-mix(
     in oklab,

@@ -43,6 +43,15 @@ const isTelegramSource = sourceUrl
       sourceUrl,
     )
   : false;
+const sourceTarget =
+  sourceUrl && !isTelegramSource ? new URL(sourceUrl) : undefined;
+const sourceHost = sourceUrl
+  ? isTelegramSource
+    ? 'Telegram'
+    : sourceTarget?.hostname.replace(/^www\./i, '') ||
+      sourceTarget?.protocol.replace(/:$/, '')
+  : undefined;
+const sourceLabel = sourceHost ? `Источник: ${sourceHost}` : undefined;
 ---
 
 <div
@@ -51,8 +60,9 @@ const isTelegramSource = sourceUrl
     className,
   ]}
 >
-  <span class="font-medium text-foreground">{formatNewsDate(publishedIso)}</span
-  >
+  <time datetime={publishedIso} class="font-medium text-foreground">
+    {formatNewsDate(publishedIso)}
+  </time>
   {time && <span class="ui-num">{time}</span>}
   {
     author &&
@@ -72,7 +82,10 @@ const isTelegramSource = sourceUrl
   {showOfficial && isOfficial && <span class="ui-chip">Официально</span>}
   {
     showUpdated && updatedIso && (
-      <span class="ui-chip">Обновлено {formatNewsDate(updatedIso)}</span>
+      <span class="ui-chip">
+        Обновлено{' '}
+        <time datetime={updatedIso}>{formatNewsDate(updatedIso)}</time>
+      </span>
     )
   }
   {
@@ -86,6 +99,7 @@ const isTelegramSource = sourceUrl
         href={sourceUrl}
         target="_blank"
         rel="noreferrer noopener"
+        aria-label={sourceLabel}
         class:list={[
           'ui-link font-medium',
           isTelegramSource && 'inline-flex items-center gap-1',

@@ -1,3 +1,7 @@
+import { isAbsoluteUrl } from '@shelkovo/url';
+
+export { isAbsoluteUrl };
+
 export const NEWS_AREAS = ['river', 'forest', 'park', 'village'] as const;
 export type NewsArea = (typeof NEWS_AREAS)[number];
 
@@ -78,6 +82,8 @@ export interface NewsArticle {
   readonly source_url?: string;
   readonly cover_url?: string;
   readonly cover_alt?: string;
+  readonly cover_width?: number;
+  readonly cover_height?: number;
   readonly photos: readonly NewsPhoto[];
   readonly attachments: readonly NewsAttachment[];
   readonly addenda: readonly NewsAddendum[];
@@ -110,6 +116,8 @@ export interface NewsListArticle {
   readonly source_url?: string;
   readonly cover_url?: string;
   readonly cover_alt?: string;
+  readonly cover_width?: number;
+  readonly cover_height?: number;
   readonly summary: string;
   readonly has_addenda: boolean;
 }
@@ -163,16 +171,12 @@ export interface NewsDataset {
 }
 
 const SPACE = /\s+/g;
-const SCHEME = /^[a-z][a-z\d+.-]*:/i;
 
 export const normalizeTagLabel = (tag: string): string =>
   tag.trim().replace(SPACE, ' ');
 
 export const normalizeTagKey = (tag: string): string =>
   normalizeTagLabel(tag).toLowerCase().replaceAll(' ', '-');
-
-export const isAbsoluteUrl = (value: string): boolean =>
-  SCHEME.test(value) || value.startsWith('//');
 
 export const isAttachmentUrl = (value: string): boolean =>
   isAbsoluteUrl(value) || value.startsWith('/');

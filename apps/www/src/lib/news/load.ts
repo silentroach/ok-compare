@@ -1,6 +1,8 @@
+import { dateTimeFromParts, padNumber } from '@shelkovo/format';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { withBase } from '../site';
 import { buildArchives, newsMonthKey } from './archives';
+import { NEWS_LATEST_LIMIT } from './config';
 import { articleCanonical, articleMarkdownUrl, articleUrl } from './routes';
 import {
   compareAddendaPublishedAsc,
@@ -26,8 +28,6 @@ import {
 } from './schema';
 import { buildArticleTags, buildTagIndex } from './tags';
 
-const MOSCOW_OFFSET = '+03:00';
-
 type ArticleEntry = CollectionEntry<'newsArticles'>;
 type AuthorEntry = CollectionEntry<'newsAuthors'>;
 type ArticleData = ArticleEntry['data'];
@@ -49,22 +49,37 @@ interface DateBits {
   readonly day: string;
 }
 
+interface TimeBits {
+  readonly hour: number;
+  readonly minute: number;
+  readonly second: number;
+}
+
 let cache: Promise<NewsDataset> | undefined;
 
-const pad = (value: number, size: number): string =>
-  String(value).padStart(size, '0');
-
 const localDateBits = (date: Date): DateBits => ({
-  year: pad(date.getFullYear(), 4),
-  month: pad(date.getMonth() + 1, 2),
-  day: pad(date.getDate(), 2),
+  year: padNumber(date.getFullYear(), 4),
+  month: padNumber(date.getMonth() + 1, 2),
+  day: padNumber(date.getDate(), 2),
 });
 
 const utcDateBits = (date: Date): DateBits => ({
-  year: pad(date.getUTCFullYear(), 4),
-  month: pad(date.getUTCMonth() + 1, 2),
-  day: pad(date.getUTCDate(), 2),
+  year: padNumber(date.getUTCFullYear(), 4),
+  month: padNumber(date.getUTCMonth() + 1, 2),
+  day: padNumber(date.getUTCDate(), 2),
 });
+
+const timeBits = (time?: string): TimeBits => {
+  const [hour = '00', minute = '00', second = '00'] = (
+    time ?? '00:00:00'
+  ).split(':');
+
+  return {
+    hour: Number(hour),
+    minute: Number(minute),
+    second: Number(second),
+  };
+};
 
 function pickDateBits(
   date: Date,
@@ -94,13 +109,28 @@ function stamp(
   bits: DateBits,
   time?: string,
 ): { readonly at: Date; readonly iso: string } {
-  const clock = time ? (time.length === 5 ? `${time}:00` : time) : '00:00:00';
-  const iso = `${bits.year}-${bits.month}-${bits.day}T${clock}${MOSCOW_OFFSET}`;
-  const at = new Date(iso);
+  const zoned = dateTimeFromParts({
+    year: Number(bits.year),
+    month: Number(bits.month),
+    day: Number(bits.day),
+    ...timeBits(time),
+  });
 
-  if (Number.isNaN(at.valueOf())) {
-    throw new Error(`invalid news timestamp ${iso}`);
+  if (!zoned.isValid) {
+    throw new Error(
+      `invalid news timestamp ${bits.year}-${bits.month}-${bits.day} ${time ?? '00:00:00'}`,
+    );
   }
+
+  const iso = zoned.toISO({ suppressMilliseconds: true });
+
+  if (!iso) {
+    throw new Error(
+      `invalid news timestamp ${bits.year}-${bits.month}-${bits.day} ${time ?? '00:00:00'}`,
+    );
+  }
+
+  const at = zoned.toJSDate();
 
   return { at, iso };
 }
@@ -270,7 +300,8 @@ function normalizeArticle(
     authorId(entry.data.author),
     `news article "${entry.id}"`,
   );
-  const coverUrl = assetUrl(entry.data.cover);
+  const cover = entry.data.cover;
+  const coverUrl = assetUrl(cover);
   const article = {
     id: entry.id,
     title: entry.data.title,
@@ -307,6 +338,12 @@ function normalizeArticle(
     pinned: entry.data.pinned ?? false,
     ...(entry.data.source_url ? { source_url: entry.data.source_url } : {}),
     ...(coverUrl ? { cover_url: coverUrl } : {}),
+    ...(cover
+      ? {
+          cover_width: cover.width,
+          cover_height: cover.height,
+        }
+      : {}),
     ...(entry.data.cover_alt ? { cover_alt: entry.data.cover_alt } : {}),
     photos: photos(entry.data.photos),
     attachments: attachments(entry.data.attachments),
@@ -355,6 +392,12 @@ const toListArticle = (article: NewsArticle): NewsListArticle => ({
   pinned: article.pinned,
   ...(article.source_url ? { source_url: article.source_url } : {}),
   ...(article.cover_url ? { cover_url: article.cover_url } : {}),
+  ...(article.cover_width && article.cover_height
+    ? {
+        cover_width: article.cover_width,
+        cover_height: article.cover_height,
+      }
+    : {}),
   ...(article.cover_alt ? { cover_alt: article.cover_alt } : {}),
   summary: article.summary,
   has_addenda: article.has_addenda,
@@ -376,7 +419,7 @@ function validateDayKeyConflicts(items: readonly NewsArticle[]): void {
   const days = new Map<string, NewsArticle[]>();
 
   for (const item of items) {
-    const key = `${item.year}/${pad(item.month, 2)}/${pad(item.day, 2)}`;
+    const key = `${item.year}/${padNumber(item.month, 2)}/${padNumber(item.day, 2)}`;
     const list = days.get(key) ?? [];
 
     list.push(item);
@@ -419,7 +462,7 @@ async function buildNewsData(): Promise<NewsDataset> {
   const list = articles.map(toListArticle);
   const home: NewsHomeData = {
     pinned: list.filter((item) => item.pinned),
-    latest: list.filter((item) => !item.pinned).slice(0, 10),
+    latest: list.filter((item) => !item.pinned).slice(0, NEWS_LATEST_LIMIT),
   };
   const archives = buildArchives(list);
   const tags = buildTagIndex(list);

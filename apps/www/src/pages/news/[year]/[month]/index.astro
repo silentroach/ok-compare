@@ -1,5 +1,6 @@
 ---
 import type { GetStaticPaths } from 'astro';
+import { padNumber } from '@shelkovo/format';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import NewsBreadcrumbs from '../../../../components/news/NewsBreadcrumbs.astro';
 import NewsList from '../../../../components/news/NewsList.astro';
@@ -15,7 +16,7 @@ export const getStaticPaths = (async () => {
     item.months.map((month) => ({
       params: {
         year: String(month.year),
-        month: String(month.month).padStart(2, '0'),
+        month: padNumber(month.month),
       },
     })),
   );

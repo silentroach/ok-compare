@@ -9,7 +9,7 @@ import { newsUrl, tagsUrl } from '../../../lib/news/routes';
 const tags = await loadNewsTags();
 const title = 'Теги новостей Шелково';
 const description =
-  'Навигация по редакционным тегам news-section: темы, события и локальные сюжеты без client-side фильтров и без пагинации в v1.';
+  'Теги новостей Шелково: темы, события и локальные сюжеты. Откройте нужный тег, чтобы посмотреть последние публикации по теме.';
 const breadcrumbs = [{ label: 'Новости', href: newsUrl() }, { label: 'Теги' }];
 const schema = collectionPageSchema({
   name: title,

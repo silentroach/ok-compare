@@ -1,3 +1,4 @@
+import { padNumber } from '@shelkovo/format';
 import { defineCollection, reference, type SchemaContext } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
@@ -116,12 +117,15 @@ const trimMarkdown = (entry: string): string => entry.replace(/\.md$/i, '');
 const articleId = (entry: string): string =>
   trimMarkdown(entry).replace(/\/index$/i, '');
 
+const hasDate = (data: unknown): data is { readonly date: unknown } =>
+  typeof data === 'object' && data !== null && 'date' in data;
+
 function readDateParts(data: unknown): readonly DateParts[] {
-  if (!data || typeof data !== 'object' || !('date' in data)) {
+  if (!hasDate(data)) {
     return [];
   }
 
-  const value = (data as { date?: unknown }).date;
+  const value = data.date;
 
   if (typeof value === 'string') {
     const match = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
@@ -149,14 +153,14 @@ function readDateParts(data: unknown): readonly DateParts[] {
 
 function dateParts(date: Date): readonly DateParts[] {
   const local = {
-    year: String(date.getFullYear()).padStart(4, '0'),
-    month: String(date.getMonth() + 1).padStart(2, '0'),
-    day: String(date.getDate()).padStart(2, '0'),
+    year: padNumber(date.getFullYear(), 4),
+    month: padNumber(date.getMonth() + 1, 2),
+    day: padNumber(date.getDate(), 2),
   } satisfies DateParts;
   const utc = {
-    year: String(date.getUTCFullYear()).padStart(4, '0'),
-    month: String(date.getUTCMonth() + 1).padStart(2, '0'),
-    day: String(date.getUTCDate()).padStart(2, '0'),
+    year: padNumber(date.getUTCFullYear(), 4),
+    month: padNumber(date.getUTCMonth() + 1, 2),
+    day: padNumber(date.getUTCDate(), 2),
   } satisfies DateParts;
 
   return local.year === utc.year &&

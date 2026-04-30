@@ -23,7 +23,9 @@ const { article, featured = false } = Astro.props;
         src={article.cover_url}
         alt={article.cover_alt ?? article.title}
         loading="lazy"
-        class="aspect-[16/9] w-full border-b border-[color:var(--color-border-strong)] object-cover"
+        width={article.cover_width}
+        height={article.cover_height}
+        class="aspect-video w-full border-b border-border-strong object-cover"
       />
     )
   }

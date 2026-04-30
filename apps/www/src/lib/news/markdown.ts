@@ -1,6 +1,7 @@
 import { pluralizeRu } from '@shelkovo/format';
 
 import { absoluteUrl } from '../site';
+import { NEWS_LATEST_LIMIT } from './config';
 import type {
   NewsAddendum,
   NewsArticle,
@@ -239,7 +240,7 @@ export function buildNewsHomeMarkdown(data: NewsDataset): string {
       empty: 'Первые публикации для раздела готовятся.',
       intro:
         normalCount > data.home.latest.length
-          ? 'Закрепленные публикации показаны первыми. Для обычных новостей на главной companion-странице показываем только последние 10 материалов; более старые публикации остаются доступны в архивах.'
+          ? `Закрепленные публикации показаны первыми. Для обычных новостей на главной companion-странице показываем не больше ${NEWS_LATEST_LIMIT}; более старые публикации остаются доступны в архивах.`
           : undefined,
     }),
   ]);
@@ -323,6 +324,8 @@ export function buildNewsTagsMarkdown(
 }
 
 export function buildNewsTagMarkdown(tag: NewsTagPage): string {
+  const latestPublicationsLabel = `${NEWS_LATEST_LIMIT} ${pluralizeRu(NEWS_LATEST_LIMIT, ['публикация', 'публикации', 'публикаций'])}`;
+
   return join([
     `# Тег ${tag.label}`,
     '',
@@ -332,7 +335,7 @@ export function buildNewsTagMarkdown(tag: NewsTagPage): string {
       empty: 'По этому тегу пока нет публикаций.',
       intro:
         tag.count > tag.latest.length
-          ? 'В v1 страница тега честно показывает только последние 10 публикаций; более старые материалы остаются доступны через месячные и годовые архивы.'
+          ? `На странице показаны последние ${latestPublicationsLabel} по тегу; более ранние материалы доступны через месячные и годовые архивы.`
           : undefined,
     }),
   ]);

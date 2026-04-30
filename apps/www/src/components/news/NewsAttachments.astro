@@ -37,7 +37,7 @@ function external(url: string): boolean {
                 href={item.url}
                 target={external(item.url) ? '_blank' : undefined}
                 rel={external(item.url) ? 'noreferrer noopener' : undefined}
-                class="ui-shell flex h-full flex-col gap-2 p-4 transition-colors hover:border-[color:var(--color-border-strong)] hover:bg-[color:var(--color-surface-raised)]"
+                class="ui-shell flex h-full flex-col gap-2 p-4 transition-colors hover:border-border-strong hover:bg-surface-raised"
               >
                 <span class="font-semibold text-foreground">{item.title}</span>
                 {(item.type || item.size) && (

@@ -26,46 +26,50 @@ const addenda = items.map((item) => ({
       </h2>
 
       <div class="space-y-4">
-        {addenda.map((item) => (
-          <article class="ui-shell py-6 md:py-7">
-            <div class="space-y-4">
-              <div class="space-y-3">
-                {item.title && (
-                  <h3 class="text-xl font-semibold tracking-tight text-foreground">
-                    {item.title}
-                  </h3>
-                )}
+        {addenda.map((item) => {
+          const nestedHeading = item.title ? 'h4' : 'h3';
 
-                <NewsMeta
-                  publishedIso={item.published_iso}
-                  time={item.time}
-                  author={item.author}
-                  isOfficial={item.author.is_official}
-                  fullAuthorName
-                  showOfficial={false}
-                  showUpdated={false}
-                  sourceUrl={item.source_url}
+          return (
+            <article class="ui-shell py-6 md:py-7">
+              <div class="space-y-4">
+                <div class="space-y-3">
+                  {item.title && (
+                    <h3 class="text-xl font-semibold tracking-tight text-foreground">
+                      {item.title}
+                    </h3>
+                  )}
+
+                  <NewsMeta
+                    publishedIso={item.published_iso}
+                    time={item.time}
+                    author={item.author}
+                    isOfficial={item.author.is_official}
+                    fullAuthorName
+                    showOfficial={false}
+                    showUpdated={false}
+                    sourceUrl={item.source_url}
+                  />
+                </div>
+
+                {item.html && <div class={NEWS_PROSE} set:html={item.html} />}
+
+                <NewsPhotos
+                  photos={item.photos}
+                  title="Фото"
+                  heading={nestedHeading}
+                  framed={false}
+                />
+
+                <NewsAttachments
+                  items={item.attachments}
+                  title="Вложения"
+                  heading={nestedHeading}
+                  framed={false}
                 />
               </div>
-
-              {item.html && <div class={NEWS_PROSE} set:html={item.html} />}
-
-              <NewsPhotos
-                photos={item.photos}
-                title="Фото"
-                heading="h3"
-                framed={false}
-              />
-
-              <NewsAttachments
-                items={item.attachments}
-                title="Вложения"
-                heading="h3"
-                framed={false}
-              />
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
     </section>
   )

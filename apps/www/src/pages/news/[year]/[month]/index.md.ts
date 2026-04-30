@@ -1,4 +1,5 @@
 import type { APIRoute, GetStaticPaths } from 'astro';
+import { padNumber } from '@shelkovo/format';
 
 import { loadNewsArchives, loadNewsMonth } from '../../../../lib/news/load';
 import {
@@ -15,7 +16,7 @@ export const getStaticPaths = (async () => {
     item.months.map((month) => ({
       params: {
         year: String(month.year),
-        month: String(month.month).padStart(2, '0'),
+        month: padNumber(month.month),
       },
     })),
   );

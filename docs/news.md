@@ -10,10 +10,10 @@
 ## Seed Authors
 
 - `ok-comfort`
-  - `official`
+  - `kind: official`
   - отображается как официальный источник новостей ОК Комфорт
 - `ig`
-  - `community`
+  - `kind: community`
   - используется для инициативной группы и fallback-автора addenda
 
 ## First Seed Article
@@ -23,7 +23,7 @@
 - author: `ok-comfort`
 - date: `2026-04-30`
 - pinned: `true`
-- source: `https://okkomfort.domyland.app/news?targetId=109569&entityName=news&t=okkomfort`
+- source_url: `https://okkomfort.domyland.app/news?targetId=109569&entityName=news&t=okkomfort`
 - tags: `мост`, `дамба`, `река`, `ограничение`
 
 ## Editorial Rules
@@ -38,7 +38,7 @@
    Marker-синтаксис внутри markdown body не используется.
 
 4. Официальность определяется author entry.
-   Если автор статьи или addendum имеет `is_official: true`, это должно отражаться в карточках, detail page, markdown companions и machine-readable outputs.
+   Канонический признак официального источника - `kind: official`. Дополнительный флаг `is_official: true` допустим как явное дублирование/override. Рендер считает автора официальным, если у него `kind: official` или `is_official: true`; это должно отражаться в карточках, detail page, markdown companions и machine-readable outputs.
 
 5. `cover`, `photos` и `attachments` имеют разные роли.
    `cover` отвечает за карточку, detail hero и social preview. `photos` идут отдельным photo block. `attachments` должны вести на стабильные public URL.

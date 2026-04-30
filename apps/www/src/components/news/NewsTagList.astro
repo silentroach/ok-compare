@@ -12,6 +12,8 @@ interface Props {
 }
 
 const { items, compact = false, className } = Astro.props;
+
+const tagAriaLabel = (label: string): string => `Тег ${label}`;
 ---
 
 {
@@ -20,7 +22,11 @@ const { items, compact = false, className } = Astro.props;
       <ul class:list={['flex flex-wrap gap-x-4 gap-y-1.5', className]}>
         {items.map((item) => (
           <li>
-            <a href={item.url} class="news-tag-link news-tag-link-compact">
+            <a
+              href={item.url}
+              aria-label={tagAriaLabel(item.label)}
+              class="news-tag-link news-tag-link-compact"
+            >
               <span>#{item.label}</span>
               {typeof item.count === 'number' && (
                 <span class="news-tag-count ui-num">{item.count}</span>
@@ -31,6 +37,7 @@ const { items, compact = false, className } = Astro.props;
       </ul>
     ) : (
       <ul
+        role="list"
         class:list={[
           'grid gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-3',
           className,
@@ -38,7 +45,11 @@ const { items, compact = false, className } = Astro.props;
       >
         {items.map((item) => (
           <li class="border-t border-border py-3">
-            <a href={item.url} class="news-tag-row">
+            <a
+              href={item.url}
+              aria-label={tagAriaLabel(item.label)}
+              class="news-tag-row"
+            >
               <span class="news-tag-link">#{item.label}</span>
               {typeof item.count === 'number' && (
                 <span class="news-tag-count ui-num">{item.count}</span>

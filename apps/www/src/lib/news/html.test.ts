@@ -9,12 +9,13 @@ describe('renderNewsMarkdown', () => {
     );
   });
 
-  it('keeps raw html attributes unchanged', () => {
+  it('does not render raw html from markdown', () => {
     const html = renderNewsMarkdown(
       '<span data-title="Шелково Парк">Шелково Парк</span>',
     );
 
-    expect(html).toContain('data-title="Шелково Парк"');
-    expect(html).toContain('Шелково\u00A0Парк');
+    expect(html).not.toContain('<span');
+    expect(html).not.toContain('data-title=');
+    expect(html).toBe('<p>Шелково\u00A0Парк</p>');
   });
 });

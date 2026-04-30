@@ -1,14 +1,14 @@
+const SCHEME = /^[a-z][a-z\d+.-]*:/i;
+
+export const isAbsoluteUrl = (value: string): boolean =>
+  SCHEME.test(value) || value.startsWith('//');
+
 /**
  * Builds URL with base path prepended.
  * Handles external URLs, anchors, and special protocols.
  */
 export function withBase(base: string | undefined, url: string): string {
-  if (
-    url.startsWith('http') ||
-    url.startsWith('#') ||
-    url.startsWith('mailto:') ||
-    url.startsWith('tel:')
-  ) {
+  if (isAbsoluteUrl(url) || url.startsWith('#')) {
     return url;
   }
 

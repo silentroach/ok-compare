@@ -1,8 +1,10 @@
 ---
 import type { GetStaticPaths } from 'astro';
+import { pluralizeRu } from '@shelkovo/format';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import NewsBreadcrumbs from '../../../../components/news/NewsBreadcrumbs.astro';
 import NewsList from '../../../../components/news/NewsList.astro';
+import { NEWS_LATEST_LIMIT } from '../../../../lib/news/config';
 import { loadNewsTag, loadNewsTags } from '../../../../lib/news/load';
 import { collectionPageSchema } from '../../../../lib/news/seo';
 import { newsUrl, tagUrl, tagsUrl } from '../../../../lib/news/routes';
@@ -28,7 +30,8 @@ if (!tag) {
 }
 
 const title = `Тег «${tag.label}» — новости Шелково`;
-const description = `Последние новости Шелково по тегу «${tag.label}». В v1 страница тега показывает до 10 последних публикаций без пагинации.`;
+const latestPublicationsLabel = `${NEWS_LATEST_LIMIT} ${pluralizeRu(NEWS_LATEST_LIMIT, ['публикация', 'публикации', 'публикаций'])}`;
+const description = `Последние новости Шелково по тегу «${tag.label}». На странице собраны последние ${latestPublicationsLabel} по теме, а более ранние материалы доступны в архивах.`;
 const breadcrumbs = [
   { label: 'Новости', href: newsUrl() },
   { label: 'Теги', href: tagsUrl() },
@@ -73,11 +76,12 @@ const schema = collectionPageSchema({
     </section>
 
     <section class="mt-8 space-y-4">
+      <h2 class="sr-only">Публикации по тегу {tag.label}</h2>
       {
         tag.count > tag.latest.length && (
           <p class="px-5 text-sm leading-7 text-muted-foreground md:px-6">
-            В v1 страница честно показывает только последние 10 публикаций по
-            тегу без пагинации.
+            На этой странице показаны последние {latestPublicationsLabel} по
+            тегу. Более ранние материалы доступны в месячных и годовых архивах.
           </p>
         )
       }

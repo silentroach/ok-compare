@@ -1,3 +1,5 @@
+import { padNumber } from '@shelkovo/format';
+
 import type {
   NewsArchives,
   NewsListArticle,
@@ -11,10 +13,8 @@ interface YearBucket {
   readonly months: Map<number, NewsListArticle[]>;
 }
 
-const pad = (value: number): string => String(value).padStart(2, '0');
-
 export const newsMonthKey = (year: number, month: number): string =>
-  `${year}/${pad(month)}`;
+  `${year}/${padNumber(month)}`;
 
 export function buildArchives(items: readonly NewsListArticle[]): NewsArchives {
   const years = new Map<number, YearBucket>();

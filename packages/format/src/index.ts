@@ -1,127 +1,14 @@
-import { DateTime } from 'luxon';
-
-const DATE_LOCALE = 'ru';
-const DATE_ZONE = 'Europe/Moscow';
-
-function rub(value: number, suffix: string): string {
-  const rounded = Math.round(value);
-  const text = rounded.toLocaleString('ru-RU', {
-    style: 'decimal',
-    maximumFractionDigits: 0,
-  });
-
-  return `${text} ₽${suffix}`;
-}
-
-function dateTimeFromISO(iso: string): DateTime {
-  return DateTime.fromISO(iso, {
-    locale: DATE_LOCALE,
-    zone: DATE_ZONE,
-  });
-}
-
-function monthDateTime(year: number, month: number): DateTime {
-  return DateTime.fromObject(
-    { year, month, day: 1 },
-    {
-      locale: DATE_LOCALE,
-      zone: DATE_ZONE,
-    },
-  );
-}
-
-/**
- * Formats a number as Russian rubles.
- */
-export function formatCurrency(value: number): string {
-  return rub(value, '');
-}
-
-/**
- * Formats distance in kilometers.
- */
-export function formatDistance(value: number): string {
-  if (value < 10) {
-    return `${Math.round(value)} км`;
-  }
-
-  const rounded = Math.round(value / 10) * 10;
-  return `~${rounded} км`;
-}
-
-/**
- * Formats a decimal as a percentage.
- */
-export function formatPercentage(
-  value: number,
-  opts?: { signed?: boolean },
-): string {
-  const pct = value * 100;
-  const factor = 10;
-  const rounded =
-    pct >= 0
-      ? Math.floor(pct * factor + 0.5) / factor
-      : Math.ceil(pct * factor - 0.5) / factor;
-
-  if (rounded === 0) {
-    return '0%';
-  }
-
-  const signed = opts?.signed ?? true;
-  const sign = rounded > 0 ? '+' : '−';
-  const abs = Math.abs(rounded);
-  const text = Number.isInteger(abs) ? abs.toString() : abs.toFixed(1);
-
-  return `${signed ? sign : ''}${text}%`;
-}
-
-/**
- * Formats tariff per sotka.
- */
-export function formatTariff(value: number): string {
-  return rub(value, '/сотка');
-}
-
-/**
- * Formats ISO date into Russian human-readable form.
- */
-export function formatDate(iso: string): string {
-  return dateTimeFromISO(iso).toFormat('d MMMM yyyy');
-}
-
-/**
- * Formats year and month in Russian.
- */
-export function formatMonth(
-  year: number,
-  month: number,
-  opts?: {
-    readonly includeYear?: boolean;
-  },
-): string {
-  return monthDateTime(year, month).toFormat(
-    opts?.includeYear === false ? 'LLLL' : 'LLLL yyyy г.',
-  );
-}
-
-/**
- * Picks the correct Russian plural form for a count.
- */
-export function pluralizeRu(
-  value: number,
-  forms: readonly [one: string, few: string, many: string],
-): string {
-  const count = Math.abs(Math.trunc(value));
-  const mod10 = count % 10;
-  const mod100 = count % 100;
-
-  if (mod10 === 1 && mod100 !== 11) {
-    return forms[0];
-  }
-
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
-    return forms[1];
-  }
-
-  return forms[2];
-}
+export {
+  dateTimeFromISO,
+  dateTimeFromParts,
+  formatDate,
+  formatMonth,
+} from './date';
+export {
+  formatCurrency,
+  formatDistance,
+  formatPercentage,
+  formatTariff,
+} from './currency';
+export { padNumber } from './number';
+export { pluralizeRu } from './plural';
