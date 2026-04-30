@@ -1,16 +1,5 @@
-import { formatDate } from '@shelkovo/format';
+import { formatDate, formatMonth } from '@shelkovo/format';
 import type { NewsArea, NewsAuthor } from './schema';
-
-const MONTH = new Intl.DateTimeFormat('ru-RU', {
-  month: 'long',
-  year: 'numeric',
-  timeZone: 'Europe/Moscow',
-});
-
-const MONTH_ONLY = new Intl.DateTimeFormat('ru-RU', {
-  month: 'long',
-  timeZone: 'Europe/Moscow',
-});
 
 const AREA_LABELS: Record<NewsArea, string> = {
   river: 'Шелково Ривер',
@@ -54,9 +43,9 @@ export function formatNewsMonth(
     readonly includeYear?: boolean;
   },
 ): string {
-  const label = ((opts?.includeYear ?? true) ? MONTH : MONTH_ONLY).format(
-    new Date(Date.UTC(year, month - 1, 1)),
-  );
+  const label = formatMonth(year, month, {
+    includeYear: opts?.includeYear,
+  });
   return opts?.capitalize ? capitalize(label) : label;
 }
 

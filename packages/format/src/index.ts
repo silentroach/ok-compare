@@ -1,5 +1,8 @@
 import { DateTime } from 'luxon';
 
+const DATE_LOCALE = 'ru';
+const DATE_ZONE = 'Europe/Moscow';
+
 function rub(value: number, suffix: string): string {
   const rounded = Math.round(value);
   const text = rounded.toLocaleString('ru-RU', {
@@ -8,6 +11,23 @@ function rub(value: number, suffix: string): string {
   });
 
   return `${text} ₽${suffix}`;
+}
+
+function dateTimeFromISO(iso: string): DateTime {
+  return DateTime.fromISO(iso, {
+    locale: DATE_LOCALE,
+    zone: DATE_ZONE,
+  });
+}
+
+function monthDateTime(year: number, month: number): DateTime {
+  return DateTime.fromObject(
+    { year, month, day: 1 },
+    {
+      locale: DATE_LOCALE,
+      zone: DATE_ZONE,
+    },
+  );
 }
 
 /**
@@ -66,7 +86,22 @@ export function formatTariff(value: number): string {
  * Formats ISO date into Russian human-readable form.
  */
 export function formatDate(iso: string): string {
-  return DateTime.fromISO(iso, { locale: 'ru' }).toFormat('d MMMM yyyy');
+  return dateTimeFromISO(iso).toFormat('d MMMM yyyy');
+}
+
+/**
+ * Formats year and month in Russian.
+ */
+export function formatMonth(
+  year: number,
+  month: number,
+  opts?: {
+    readonly includeYear?: boolean;
+  },
+): string {
+  return monthDateTime(year, month).toFormat(
+    opts?.includeYear === false ? 'LLLL' : 'LLLL yyyy г.',
+  );
 }
 
 /**

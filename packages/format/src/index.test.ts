@@ -4,6 +4,7 @@ import {
   formatCurrency,
   formatDate,
   formatDistance,
+  formatMonth,
   formatPercentage,
   formatTariff,
   pluralizeRu,
@@ -87,6 +88,23 @@ describe('format package', () => {
       expect(formatDate('2026-12-31')).toBe('31 декабря 2026');
       expect(formatDate('2026-05-01')).toBe('1 мая 2026');
       expect(formatDate('2024-02-29')).toBe('29 февраля 2024');
+    });
+
+    it('formats datetimes in Moscow timezone', () => {
+      expect(formatDate('2026-03-31T22:30:00Z')).toBe('1 апреля 2026');
+    });
+  });
+
+  describe('formatMonth', () => {
+    it('formats month with year in Russian', () => {
+      expect(formatMonth(2026, 4)).toBe('апрель 2026 г.');
+      expect(formatMonth(2026, 1)).toBe('январь 2026 г.');
+      expect(formatMonth(2024, 2)).toBe('февраль 2024 г.');
+    });
+
+    it('can format month without year', () => {
+      expect(formatMonth(2026, 4, { includeYear: false })).toBe('апрель');
+      expect(formatMonth(2026, 12, { includeYear: false })).toBe('декабрь');
     });
   });
 
