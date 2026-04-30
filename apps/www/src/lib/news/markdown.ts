@@ -203,22 +203,22 @@ function discoveryLinks(): readonly MarkdownLink[] {
     {
       label: 'JSON feed раздела',
       href: abs(articlesDataUrl()),
-      status: 'следующий шаг',
+      note: 'основной structured feed news-section с full body_markdown и addenda',
     },
     {
       label: 'RSS раздела',
       href: abs(feedUrl()),
-      status: 'следующий шаг',
+      note: 'summary-first RSS без раскрытия полного body и текста addenda',
     },
     {
       label: 'llms.txt',
       href: abs(llmsUrl()),
-      status: 'следующий шаг',
+      note: 'короткий агентный обзор по маршрутам и правилам чтения раздела',
     },
     {
       label: 'llms-full.txt',
       href: abs(llmsFullUrl()),
-      status: 'следующий шаг',
+      note: 'расширенное описание feed, archives, tags и addenda',
     },
   ];
 }
@@ -472,9 +472,13 @@ export function buildNewsArticleMarkdown(article: NewsArticle): string {
       {
         label: 'JSON feed раздела',
         href: abs(articlesDataUrl()),
-        status: 'следующий шаг',
+        note: 'полный machine-readable feed с body_markdown и addenda',
       },
-      { label: 'RSS раздела', href: abs(feedUrl()), status: 'следующий шаг' },
+      {
+        label: 'RSS раздела',
+        href: abs(feedUrl()),
+        note: 'summary-first RSS для подписки и машинного обхода',
+      },
     ]),
     ...articleMeta(article),
     ...text('Кратко', [article.summary]),
@@ -549,7 +553,7 @@ export function buildNewsAgentsMarkdown(data: NewsDataset): string {
   return join([
     '# Для агентов: news-section',
     '',
-    'Text-first обзор HTML-страниц, markdown companions и discovery-роутов news-section. HTML detail pages остаются каноническими, а markdown companions дают прямой текстовый слой для терминалов, агентов и ссылок на machine-readable представление.',
+    'Text-first обзор HTML-страниц, markdown companions и discovery-роутов news-section. HTML detail pages остаются каноническими, markdown companions дают прямой текстовый слой, а JSON/RSS/schema/openapi routes собираются из того же derive-слоя без SSR.',
     '',
     ...keyLinks([
       { label: 'HTML', href: abs(agentsUrl()) },
@@ -651,43 +655,36 @@ export function buildNewsAgentsMarkdown(data: NewsDataset): string {
         label: '/news/data/articles.json',
         href: abs(articlesDataUrl()),
         note: 'основной structured feed для агентов и машинного обхода',
-        status: 'следующий шаг',
       }),
       ref({
         label: '/news/feed.xml',
         href: abs(feedUrl()),
         note: 'RSS с summary-based описаниями без разворачивания full body',
-        status: 'следующий шаг',
       }),
       ref({
         label: '/news/llms.txt',
         href: abs(llmsUrl()),
         note: 'короткая текстовая сводка по маршрутам и правилам чтения раздела',
-        status: 'следующий шаг',
       }),
       ref({
         label: '/news/llms-full.txt',
         href: abs(llmsFullUrl()),
         note: 'расширенная версия llms.txt с описанием payload, tags, archives и addenda',
-        status: 'следующий шаг',
       }),
       ref({
         label: '/news/.well-known/api-catalog',
         href: abs(apiCatalogUrl()),
         note: 'linkset JSON для автоматического discovery feed/schema/docs',
-        status: 'следующий шаг',
       }),
       ref({
         label: '/news/schemas/articles.schema.json',
         href: abs(articlesSchemaUrl()),
         note: 'JSON Schema для полного news feed',
-        status: 'следующий шаг',
       }),
       ref({
         label: '/news/openapi/articles.openapi.json',
         href: abs(articlesOpenApiUrl()),
         note: 'read-only OpenAPI 3.1-обертка вокруг основного feed route',
-        status: 'следующий шаг',
       }),
     ]),
     ...section('Что значит addenda', [

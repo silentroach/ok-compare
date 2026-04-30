@@ -23,7 +23,6 @@ interface Ref {
   readonly label: string;
   readonly note: string;
   readonly href?: string;
-  readonly status?: string;
 }
 
 const data = await loadNewsData();
@@ -34,7 +33,7 @@ const exampleTag = data.tags[0];
 
 const title = 'Для агентов: маршруты и discovery news-section';
 const description =
-  'Краткая документация по HTML-представлениям news-section, markdown companions и запланированным discovery-маршрутам feed/schema/OpenAPI.';
+  'Краткая документация по HTML, Markdown, JSON feed, RSS и discovery-маршрутам news-section.';
 const breadcrumbs = [
   { label: 'Новости', href: newsUrl() },
   { label: 'Для агентов' },
@@ -123,38 +122,38 @@ const markdownRefs: readonly Ref[] = [
 const discoveryRefs: readonly Ref[] = [
   {
     label: articlesDataUrl(),
+    href: articlesDataUrl(),
     note: 'Основной structured feed для агентов и машинного обхода раздела.',
-    status: 'Следующий шаг',
   },
   {
     label: feedUrl(),
+    href: feedUrl(),
     note: 'RSS с summary-based описаниями без разворачивания full body.',
-    status: 'Следующий шаг',
   },
   {
     label: llmsUrl(),
+    href: llmsUrl(),
     note: 'Короткая текстовая сводка по маршрутам и правилам чтения раздела.',
-    status: 'Следующий шаг',
   },
   {
     label: llmsFullUrl(),
+    href: llmsFullUrl(),
     note: 'Расширенная версия llms.txt с описанием payload, tags, archives и addenda.',
-    status: 'Следующий шаг',
   },
   {
     label: apiCatalogUrl(),
+    href: apiCatalogUrl(),
     note: 'Linkset JSON для автоматического discovery маршрутов feed/schema/docs.',
-    status: 'Следующий шаг',
   },
   {
     label: articlesSchemaUrl(),
+    href: articlesSchemaUrl(),
     note: 'JSON Schema для полного news feed.',
-    status: 'Следующий шаг',
   },
   {
     label: articlesOpenApiUrl(),
+    href: articlesOpenApiUrl(),
     note: 'Минимальная read-only OpenAPI 3.1-обертка вокруг основного feed route.',
-    status: 'Следующий шаг',
   },
 ];
 
@@ -201,9 +200,9 @@ const authorRules = [
             </h1>
             <p class="ui-copy max-w-3xl text-muted-foreground">
               HTML detail pages остаются каноническим человекочитаемым
-              представлением, markdown companions уже доступны как отдельный
-              text-first слой, а feed, llms.txt и schema/openapi discovery layer
-              приходят следующими пакетами плана.
+              представлением, markdown companions дают отдельный text-first
+              слой, а feed, RSS, llms.txt, schema и OpenAPI уже собираются из
+              того же статического derive-слоя.
             </p>
           </div>
 
@@ -330,7 +329,7 @@ const authorRules = [
             <p
               class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
             >
-              Что добавляется дальше
+              Agent surfaces
             </p>
             <h2
               class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]"
@@ -338,10 +337,10 @@ const authorRules = [
               Markdown и discovery routes
             </h2>
             <p class="ui-copy text-muted-foreground">
-              Markdown companions уже собраны как отдельные статические routes,
-              а discovery-слой остается следующим шагом, чтобы feed/schema/API
-              продолжали опираться на тот же derive-слой без расхождения с HTML
-              и Markdown surface.
+              HTML, Markdown и discovery-маршруты теперь уже собраны как один
+              согласованный static surface: feed/schema/API используют те же
+              вычисленные article, archive и tag структуры, что и
+              человекочитаемые страницы раздела.
             </p>
 
             <div class="grid gap-4 xl:grid-cols-2">
@@ -385,11 +384,14 @@ const authorRules = [
                     discoveryRefs.map((item) => (
                       <li class="rounded-xl border border-border bg-[color:var(--color-surface-raised)] px-4 py-3">
                         <div class="flex flex-wrap items-center gap-2">
-                          <code class="font-semibold text-foreground">
-                            {item.label}
-                          </code>
-                          {item.status && (
-                            <span class="ui-chip">{item.status}</span>
+                          {item.href ? (
+                            <a href={item.href} class="ui-link font-semibold">
+                              <code>{item.label}</code>
+                            </a>
+                          ) : (
+                            <code class="font-semibold text-foreground">
+                              {item.label}
+                            </code>
                           )}
                         </div>
                         <p class="mt-1 text-sm leading-7 text-muted-foreground">

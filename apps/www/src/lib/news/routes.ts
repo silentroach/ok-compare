@@ -15,6 +15,42 @@ const API_CATALOG = '/news/.well-known/api-catalog';
 const ARTICLES_SCHEMA = '/news/schemas/articles.schema.json';
 const ARTICLES_OPENAPI = '/news/openapi/articles.openapi.json';
 
+export function newsPath(): string {
+  return NEWS_ROOT;
+}
+
+export function agentsPath(): string {
+  return AGENTS_ROOT;
+}
+
+export function articlesDataPath(): string {
+  return DATA_ARTICLES;
+}
+
+export function feedPath(): string {
+  return FEED;
+}
+
+export function llmsPath(): string {
+  return LLMS;
+}
+
+export function llmsFullPath(): string {
+  return LLMS_FULL;
+}
+
+export function apiCatalogPath(): string {
+  return API_CATALOG;
+}
+
+export function articlesSchemaPath(): string {
+  return ARTICLES_SCHEMA;
+}
+
+export function articlesOpenApiPath(): string {
+  return ARTICLES_OPENAPI;
+}
+
 export interface NewsArticleRouteInput {
   readonly year: number | string;
   readonly month: number | string;
