@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node ../../scripts/check-port.mjs 4322 && COMPARE_SITE=https://kpshelkovo.online COMPARE_BASE=/compare COMPARE_CANONICAL_SITE=https://kpshelkovo.online COMPARE_CANONICAL_BASE=/compare COMPARE_DEV_PORT=4322 astro dev --port 4322",
     "build": "pnpm run build:section",
-    "build:section": "COMPARE_SITE=https://kpshelkovo.online COMPARE_BASE=/compare COMPARE_OUT_DIR=dist/section COMPARE_CANONICAL_SITE=https://kpshelkovo.online COMPARE_CANONICAL_BASE=/compare astro build",
+    "build:section": "COMPARE_SITE=https://kpshelkovo.online COMPARE_BASE=/compare COMPARE_OUT_DIR=dist/section COMPARE_CANONICAL_SITE=https://kpshelkovo.online COMPARE_CANONICAL_BASE=/compare astro build && node ../../scripts/flatten-compare-sitemap.mjs dist/section",
     "build:legacy": "COMPARE_SITE=https://сравни.шелково.рф COMPARE_BASE=/ COMPARE_OUT_DIR=dist/legacy COMPARE_CANONICAL_SITE=https://kpshelkovo.online COMPARE_CANONICAL_BASE=/compare COMPARE_SITEMAP=false astro build",
     "preview": "astro preview",
     "typecheck": "astro sync && tsc --noEmit",

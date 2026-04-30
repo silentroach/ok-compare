@@ -90,7 +90,7 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      customSitemaps: [`${site}/compare/sitemap-index.xml`],
+      customSitemaps: [`${site}/compare/sitemap.xml`],
       filter(page) {
         return !/\/404(?:\/|\.html)?$/.test(page);
       },
