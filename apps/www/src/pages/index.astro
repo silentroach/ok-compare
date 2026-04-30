@@ -1,47 +1,45 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import logo from '../../../../design/logo.png';
 
 const title = 'Шелково Онлайн';
 const description =
-  'Новый главный сайт kpshelkovo.online. Сравнение тарифов продолжает жить в отдельном разделе /compare.';
+  'Главный сайт Шелково находится в разработке. Уже доступен раздел со сравнением тарифов в поселках.';
 ---
 
 <BaseLayout title={title} description={description}>
-  <main class="ui-page py-8 md:py-12">
-    <section class="ui-shell-strong overflow-hidden p-6 md:p-8 lg:p-10">
-      <div class="max-w-3xl space-y-5">
-        <div class="flex flex-wrap gap-2">
-          <span class="ui-chip">kpshelkovo.online</span>
-          <span class="ui-chip">Главный сайт</span>
-          <span class="ui-chip">/compare</span>
-        </div>
+  <main class="ui-page flex min-h-[70svh] items-center py-12 md:py-16">
+    <section
+      class="mx-auto flex max-w-3xl flex-col items-center gap-6 text-center md:gap-8"
+    >
+      <Image
+        src={logo}
+        alt="Логотип Шелково"
+        width={960}
+        height={640}
+        format="webp"
+        loading="eager"
+        class="w-full max-w-[34rem]"
+      />
 
-        <div class="space-y-3">
-          <h1
-            class="text-4xl font-bold tracking-tight text-foreground md:text-5xl"
-          >
-            Шелково Онлайн
-          </h1>
-          <p class="ui-copy max-w-2xl text-muted-foreground">
-            Корневой сайт уже отделен от compare-приложения. Сравнение тарифов и
-            данных о поселках продолжает публиковаться в отдельном разделе.
-          </p>
-        </div>
-
-        <div class="flex flex-wrap gap-3">
+      <div class="space-y-4">
+        <h1
+          class="text-4xl font-bold tracking-tight text-foreground md:text-5xl"
+        >
+          Сайт находится в разработке
+        </h1>
+        <p class="ui-copy mx-auto max-w-2xl text-muted-foreground">
+          Основной сайт Шелково сейчас собираем и наполняем. Пока уже доступен
+          раздел со
           <a
             href="/compare/"
-            class="ui-btn ui-btn-md ui-btn-solid ui-btn-primary"
+            class="font-medium text-foreground underline underline-offset-4"
           >
-            Открыть compare
+            сравнением тарифов
           </a>
-          <a
-            href="/compare/for-agents/"
-            class="ui-btn ui-btn-md ui-btn-outline"
-          >
-            Машинный feed
-          </a>
-        </div>
+          и данных по поселкам.
+        </p>
       </div>
     </section>
   </main>
