@@ -1,6 +1,7 @@
 ---
 import '@styles/global.css';
-import { collectKeywords } from '@shelkovo/seo';
+import { collectKeywords, imageMimeType, serializeSchema } from '@shelkovo/seo';
+import type { SchemaDoc } from '@shelkovo/seo';
 import SiteFooter from '@shelkovo/ui/SiteFooter.astro';
 import { browserColor, themeColor } from '@shelkovo/ui/theme';
 import { COMPARE_KEYWORDS } from '@lib/seo';
@@ -16,7 +17,7 @@ interface Props {
   image?: string;
   imageAlt?: string;
   type?: string;
-  schema?: Record<string, unknown> | Array<Record<string, unknown>>;
+  schema?: SchemaDoc | readonly SchemaDoc[];
 }
 
 const {
@@ -35,16 +36,8 @@ const canonical = canon(href ?? Astro.url.pathname);
 const keywordContent = collectKeywords(keywords, COMPARE_KEYWORDS).join(', ');
 const social = image ? canon(withBase(image)) : undefined;
 const socialAlt = social ? (imageAlt ?? title) : undefined;
-const socialType = !social
-  ? undefined
-  : social.endsWith('.svg')
-    ? 'image/svg+xml'
-    : social.endsWith('.png')
-      ? 'image/png'
-      : undefined;
-const docs = (schema ? (Array.isArray(schema) ? schema : [schema]) : []).map(
-  (item) => JSON.stringify(item).replace(/</g, '\\u003c'),
-);
+const socialType = social ? imageMimeType(social) : undefined;
+const docs = serializeSchema(schema);
 const prod = import.meta.env.PROD;
 const section = import.meta.env.SITE === 'https://kpshelkovo.online';
 const ymId = section ? 108975391 : 108465472;

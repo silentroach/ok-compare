@@ -13,6 +13,7 @@
     "@astrojs/sitemap": "^3.7.2",
     "@shelkovo/seo": "workspace:*",
     "@shelkovo/ui": "workspace:*",
+    "@shelkovo/url": "workspace:*",
     "astro": "^6.1.6"
   },
   "devDependencies": {
