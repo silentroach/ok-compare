@@ -4,6 +4,7 @@ import NewsBreadcrumbs from '../../components/news/NewsBreadcrumbs.astro';
 import { loadNewsData } from '../../lib/news/load';
 import { techArticleSchema } from '../../lib/news/seo';
 import {
+  agentsMarkdownUrl,
   agentsUrl,
   apiCatalogUrl,
   articlesDataUrl,
@@ -33,7 +34,7 @@ const exampleTag = data.tags[0];
 
 const title = 'Для агентов: маршруты и discovery news-section';
 const description =
-  'Краткая документация по HTML-представлениям news-section, будущим markdown companions и запланированным discovery-маршрутам feed/schema/OpenAPI.';
+  'Краткая документация по HTML-представлениям news-section, markdown companions и запланированным discovery-маршрутам feed/schema/OpenAPI.';
 const breadcrumbs = [
   { label: 'Новости', href: newsUrl() },
   { label: 'Для агентов' },
@@ -84,28 +85,38 @@ const htmlRefs: readonly Ref[] = [
 const markdownRefs: readonly Ref[] = [
   {
     label: newsMarkdownUrl(),
+    href: newsMarkdownUrl(),
     note: 'Text-first companion для главной news-страницы.',
-    status: 'Следующий шаг',
   },
   {
-    label: '/news/YYYY/index.md',
+    label: exampleYear?.markdown_url ?? '/news/YYYY/index.md',
+    href: exampleYear?.markdown_url,
     note: 'Markdown-версия годового архива.',
-    status: 'Следующий шаг',
   },
   {
-    label: '/news/YYYY/MM/index.md',
+    label: exampleMonth?.markdown_url ?? '/news/YYYY/MM/index.md',
+    href: exampleMonth?.markdown_url,
     note: 'Markdown-версия месячного архива.',
-    status: 'Следующий шаг',
   },
   {
-    label: '/news/YYYY/MM/[entry]/index.md',
+    label: exampleArticle?.markdown_url ?? '/news/YYYY/MM/[entry]/index.md',
+    href: exampleArticle?.markdown_url,
     note: 'Markdown detail page с метаданными, summary, full body и addenda.',
-    status: 'Следующий шаг',
   },
   {
     label: tagsMarkdownUrl(),
+    href: tagsMarkdownUrl(),
     note: 'Markdown-индекс всех тегов и их detail companions.',
-    status: 'Следующий шаг',
+  },
+  {
+    label: exampleTag?.markdown_url ?? '/news/tags/[tag]/index.md',
+    href: exampleTag?.markdown_url,
+    note: 'Markdown-версия страницы тега с последними 10 публикациями.',
+  },
+  {
+    label: agentsMarkdownUrl(),
+    href: agentsMarkdownUrl(),
+    note: 'Text-first overview всего markdown/discovery surface для агентов.',
   },
 ];
 
@@ -190,10 +201,9 @@ const authorRules = [
             </h1>
             <p class="ui-copy max-w-3xl text-muted-foreground">
               HTML detail pages остаются каноническим человекочитаемым
-              представлением, а рядом закрепляем контракт на markdown
-              companions, feed, llms.txt и schema/openapi discovery layer.
-              Сейчас этот шаг закрывает HTML-поверхность и фиксирует точки входа
-              для следующих пакетов плана.
+              представлением, markdown companions уже доступны как отдельный
+              text-first слой, а feed, llms.txt и schema/openapi discovery layer
+              приходят следующими пакетами плана.
             </p>
           </div>
 
@@ -328,9 +338,10 @@ const authorRules = [
               Markdown и discovery routes
             </h2>
             <p class="ui-copy text-muted-foreground">
-              Эти маршруты уже зафиксированы в контракте news-section, но
-              приходят следующими шагами плана, чтобы не размазывать HTML-,
-              Markdown- и machine-readable логику по разным источникам правды.
+              Markdown companions уже собраны как отдельные статические routes,
+              а discovery-слой остается следующим шагом, чтобы feed/schema/API
+              продолжали опираться на тот же derive-слой без расхождения с HTML
+              и Markdown surface.
             </p>
 
             <div class="grid gap-4 xl:grid-cols-2">
@@ -343,9 +354,15 @@ const authorRules = [
                     markdownRefs.map((item) => (
                       <li class="rounded-xl border border-border bg-[color:var(--color-surface-raised)] px-4 py-3">
                         <div class="flex flex-wrap items-center gap-2">
-                          <code class="font-semibold text-foreground">
-                            {item.label}
-                          </code>
+                          {item.href ? (
+                            <a href={item.href} class="ui-link font-semibold">
+                              <code>{item.label}</code>
+                            </a>
+                          ) : (
+                            <code class="font-semibold text-foreground">
+                              {item.label}
+                            </code>
+                          )}
                           {item.status && (
                             <span class="ui-chip">{item.status}</span>
                           )}
