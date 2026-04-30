@@ -74,10 +74,6 @@ function section(title: string, rows: readonly string[]): readonly string[] {
   return [`## ${title}`, ...(rows.length > 0 ? rows : ['- Нет данных.']), ''];
 }
 
-function text(title: string, body: readonly string[]): readonly string[] {
-  return [`## ${title}`, ...body, ''];
-}
-
 function inline(value: string): string {
   return value.replace(/\s+/g, ' ').trim();
 }
@@ -101,7 +97,7 @@ function tags(
     return 'нет';
   }
 
-  return items.map((item) => `${item.label} (${abs(item.url)})`).join('; ');
+  return items.map((item) => item.label).join(', ');
 }
 
 function when(iso: string, time?: string): string {
@@ -226,7 +222,7 @@ function articleMeta(article: NewsArticle): readonly string[] {
     pick([
       row('Дата', formatNewsDate(article.published_iso)),
       row('Время', article.time),
-      row('Автор', formatNewsAuthor(article.author)),
+      row('Автор', formatNewsAuthor(article.author, { short: false })),
       row(
         'Официальность',
         article.is_official
@@ -252,7 +248,7 @@ function addendaSection(items: readonly NewsAddendum[]): readonly string[] {
   }
 
   const lines: string[] = [
-    '## Дополнено',
+    '## Дополнения',
     'Исходный текст новости не переписывается: поздние уточнения остаются отдельными блоками.',
     '',
   ];
@@ -265,7 +261,7 @@ function addendaSection(items: readonly NewsAddendum[]): readonly string[] {
       ...pick([
         row('Дата', formatNewsDate(item.published_iso)),
         row('Время', item.time),
-        row('Автор', formatNewsAuthor(item.author)),
+        row('Автор', formatNewsAuthor(item.author, { short: false })),
         row(
           'Официальность',
           item.author.is_official
@@ -459,23 +455,8 @@ export function buildNewsArticleMarkdown(article: NewsArticle): string {
   return join([
     `# ${article.title}`,
     '',
-    ...keyLinks([
-      { label: 'HTML', href: article.canonical },
-      { label: 'Markdown', href: abs(article.markdown_url) },
-      {
-        label: 'JSON feed раздела',
-        href: abs(articlesDataUrl()),
-        note: 'полный machine-readable feed с body_markdown и addenda',
-      },
-      {
-        label: 'RSS раздела',
-        href: abs(feedUrl()),
-        note: 'summary-first RSS для подписки и машинного обхода',
-      },
-    ]),
     ...articleMeta(article),
-    ...text('Кратко', [article.summary]),
-    ...(article.body ? ['## Основной текст', '', article.body.trim(), ''] : []),
+    ...(article.body ? ['## Текст новости', '', article.body.trim(), ''] : []),
     ...photoSection(article),
     ...attachmentSection(article.attachments),
     ...addendaSection(article.addenda),
