@@ -14,10 +14,6 @@ import {
   tagsUrl,
 } from './routes';
 
-function abs(path: string): string {
-  return absoluteUrl(path);
-}
-
 function plural(count: number, one: string, few: string, many: string): string {
   const mod10 = count % 10;
   const mod100 = count % 100;
@@ -41,24 +37,24 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
   const tag = data.tags[0];
   const counts = `${data.articles.length} ${plural(data.articles.length, 'статья', 'статьи', 'статей')}, ${data.tags.length} ${plural(data.tags.length, 'тег', 'тега', 'тегов')} и ${data.archives.years.length} ${plural(data.archives.years.length, 'архивный год', 'архивных года', 'архивных лет')}`;
 
-  const home = abs(newsUrl());
-  const homeMarkdown = abs(newsMarkdownUrl());
-  const feed = abs(articlesDataUrl());
-  const rss = abs(feedUrl());
-  const short = abs(llmsUrl());
-  const full = abs(llmsFullUrl());
-  const catalog = abs(apiCatalogUrl());
-  const schema = abs(articlesSchemaUrl());
-  const openapi = abs(articlesOpenApiUrl());
-  const tags = abs(tagsUrl());
-  const tagsMarkdown = abs(tagsMarkdownUrl());
+  const home = absoluteUrl(newsUrl());
+  const homeMarkdown = absoluteUrl(newsMarkdownUrl());
+  const feed = absoluteUrl(articlesDataUrl());
+  const rss = absoluteUrl(feedUrl());
+  const short = absoluteUrl(llmsUrl());
+  const full = absoluteUrl(llmsFullUrl());
+  const catalog = absoluteUrl(apiCatalogUrl());
+  const schema = absoluteUrl(articlesSchemaUrl());
+  const openapi = absoluteUrl(articlesOpenApiUrl());
+  const tags = absoluteUrl(tagsUrl());
+  const tagsMarkdown = absoluteUrl(tagsMarkdownUrl());
   const articleHtml = article?.canonical ?? '/news/YYYY/MM/[entry]/';
   const articleMarkdown = article
-    ? abs(article.markdown_url)
+    ? absoluteUrl(article.markdown_url)
     : '/news/YYYY/MM/[entry]/index.md';
-  const yearUrl = year ? abs(year.url) : '/news/YYYY/';
-  const monthUrl = month ? abs(month.url) : '/news/YYYY/MM/';
-  const tagUrl = tag ? abs(tag.url) : '/news/tags/[tag]/';
+  const yearUrl = year ? absoluteUrl(year.url) : '/news/YYYY/';
+  const monthUrl = month ? absoluteUrl(month.url) : '/news/YYYY/MM/';
+  const tagUrl = tag ? absoluteUrl(tag.url) : '/news/tags/[tag]/';
 
   const body =
     kind === 'short'
