@@ -1,14 +1,6 @@
 import { pluralizeRu } from '@shelkovo/format';
 
 import { absoluteUrl } from '../site';
-import {
-  articlesDataUrl,
-  feedUrl,
-  llmsFullUrl,
-  llmsUrl,
-  newsUrl,
-  yearUrl,
-} from './routes';
 import type {
   NewsAddendum,
   NewsArticle,
@@ -32,13 +24,6 @@ export const NEWS_MARKDOWN_HEADERS = {
   'X-Robots-Tag': 'noindex, follow',
 } as const;
 
-interface MarkdownLink {
-  readonly label: string;
-  readonly href: string;
-  readonly note?: string;
-  readonly status?: string;
-}
-
 function abs(value: string): string {
   return absoluteUrl(value);
 }
@@ -57,14 +42,6 @@ function row(label: string, value?: string): string | undefined {
   }
 
   return `- ${label}: ${value}`;
-}
-
-function ref(item: MarkdownLink): string {
-  return `- ${item.label}: ${pick([
-    item.href,
-    item.note,
-    item.status ? `статус: ${item.status}` : undefined,
-  ]).join(' — ')}`;
 }
 
 function section(title: string, rows: readonly string[]): readonly string[] {
@@ -185,35 +162,6 @@ function articleBlock(input: {
   ];
 }
 
-function keyLinks(items: readonly MarkdownLink[]): readonly string[] {
-  return section('Ключевые ссылки', items.map(ref));
-}
-
-function discoveryLinks(): readonly MarkdownLink[] {
-  return [
-    {
-      label: 'JSON feed раздела',
-      href: abs(articlesDataUrl()),
-      note: 'основной structured feed news-section с full body_markdown и addenda',
-    },
-    {
-      label: 'RSS раздела',
-      href: abs(feedUrl()),
-      note: 'summary-first RSS без раскрытия полного body и текста addenda',
-    },
-    {
-      label: 'llms.txt',
-      href: abs(llmsUrl()),
-      note: 'короткий агентный обзор по маршрутам и правилам чтения раздела',
-    },
-    {
-      label: 'llms-full.txt',
-      href: abs(llmsFullUrl()),
-      note: 'расширенное описание feed, archives, tags и addenda',
-    },
-  ];
-}
-
 function articleMeta(article: NewsArticle): readonly string[] {
   return section(
     'Метаданные',
@@ -323,12 +271,6 @@ export function buildNewsYearMarkdown(archive: NewsYearArchive): string {
     '',
     `Годовой архив новостей Шелково за ${archive.year} год: месяцы с количеством публикаций и краткая хронологическая лента без reshuffle pinned-материалов.`,
     '',
-    ...keyLinks([
-      { label: 'HTML', href: abs(archive.url) },
-      { label: 'Markdown', href: abs(archive.markdown_url) },
-      { label: 'Главная news-section', href: abs(newsUrl()) },
-      ...discoveryLinks(),
-    ]),
     ...section('Сводка', [
       `- Год: ${archive.year}`,
       `- Месяцев с публикациями: ${archive.months.length} ${pluralizeRu(archive.months.length, ['месяц', 'месяца', 'месяцев'])}`,
@@ -365,10 +307,8 @@ export function buildNewsYearMarkdown(archive: NewsYearArchive): string {
 
 export function buildNewsMonthMarkdown(input: {
   readonly archive: NewsMonthArchive;
-  readonly newer?: NewsMonthArchive;
-  readonly older?: NewsMonthArchive;
 }): string {
-  const { archive, newer, older } = input;
+  const { archive } = input;
   const monthName = formatNewsMonth(archive.year, archive.month, {
     capitalize: true,
   });
@@ -376,31 +316,8 @@ export function buildNewsMonthMarkdown(input: {
   return join([
     `# ${monthName}`,
     '',
-    `Месячный архив новостей Шелково за ${formatNewsMonth(archive.year, archive.month)}: все публикации месяца в кратком формате без раскрытия полного body и текста addenda.`,
-    '',
-    ...keyLinks([
-      { label: 'HTML', href: abs(archive.url) },
-      { label: 'Markdown', href: abs(archive.markdown_url) },
-      {
-        label: `Годовой архив ${archive.year}`,
-        href: abs(yearUrl(archive.year)),
-      },
-      ...discoveryLinks(),
-    ]),
-    ...section(
-      'Навигация',
-      pick([
-        `- Годовой архив: ${abs(yearUrl(archive.year))}`,
-        newer
-          ? `- Более новый месяц: ${abs(newer.url)} (${formatNewsMonth(newer.year, newer.month, { capitalize: true })})`
-          : undefined,
-        older
-          ? `- Более ранний месяц: ${abs(older.url)} (${formatNewsMonth(older.year, older.month, { capitalize: true })})`
-          : undefined,
-      ]),
-    ),
     ...articleBlock({
-      title: 'Публикации месяца',
+      title: 'Новости за месяц',
       items: archive.articles,
       empty: 'В этом месяце пока нет публикаций.',
     }),

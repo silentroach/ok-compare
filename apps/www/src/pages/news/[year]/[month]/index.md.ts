@@ -25,7 +25,6 @@ export const GET: APIRoute = async ({ params }) => {
   const year = Number(params.year);
   const month = Number(params.month);
   const archive = await loadNewsMonth(year, month);
-  const allArchives = await loadNewsArchives();
 
   if (!archive) {
     throw new Error(
@@ -33,13 +32,7 @@ export const GET: APIRoute = async ({ params }) => {
     );
   }
 
-  const months = allArchives.years.flatMap((item) => item.months);
-  const index = months.findIndex((item) => item.id === archive.id);
-  const newer = index > 0 ? months[index - 1] : undefined;
-  const older =
-    index >= 0 && index < months.length - 1 ? months[index + 1] : undefined;
-
-  return new Response(buildNewsMonthMarkdown({ archive, newer, older }), {
+  return new Response(buildNewsMonthMarkdown({ archive }), {
     headers: NEWS_MARKDOWN_HEADERS,
   });
 };
