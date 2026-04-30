@@ -3,9 +3,9 @@ import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import logo from '../../../../design/logo.png';
 
-const title = 'Шелково Онлайн';
+const title = 'Шелково Онлайн — сайт поселка Шелково от застройщика Земля МО';
 const description =
-  'Главный сайт Шелково находится в разработке. Уже доступен раздел со сравнением тарифов в поселках.';
+  'Сайт поселка Шелково от застройщика Земля МО. Здесь собираем информацию о Шелково, Шелково Ривер, Шелково Форест, Шелково Парк и Шелково Вилладж, а также об обслуживающей компании ОК Комфорт.';
 ---
 
 <BaseLayout title={title} description={description}>
@@ -27,11 +27,29 @@ const description =
         <h1
           class="text-4xl font-bold tracking-tight text-foreground md:text-5xl"
         >
-          Сайт находится в разработке
+          Сайт в разработке
         </h1>
         <p class="ui-copy mx-auto max-w-2xl text-muted-foreground">
-          Основной сайт Шелково сейчас собираем и наполняем. Пока уже доступен
-          раздел со
+          Собираем сайт поселка Шелково от застройщика
+          <a
+            href="https://zemlyamo.ru/"
+            target="_blank"
+            rel="noreferrer noopener"
+            class="font-medium text-foreground underline underline-offset-4"
+          >
+            Земля МО
+          </a>
+          . Здесь будет информация о Шелково, Шелково Ривер, Шелково Форест, Шелково
+          Парк и Шелково Вилладж, а также об обслуживающей компании
+          <a
+            href="https://ok-komfort.ru/"
+            target="_blank"
+            rel="noreferrer noopener"
+            class="font-medium text-foreground underline underline-offset-4"
+          >
+            ОК Комфорт
+          </a>
+          . Пока уже доступен раздел со
           <a
             href="/compare/"
             class="font-medium text-foreground underline underline-offset-4"

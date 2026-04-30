@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import Link from '@components/Link.astro';
+import { collectKeywords } from '@shelkovo/seo';
 import { loadAllData, findBaseline } from '@lib/data';
 import {
   formatCurrency,
@@ -67,6 +68,14 @@ const hasPoint =
 const company = settlement.management_company;
 const companyTitle =
   typeof company === 'string' ? company : (company?.title ?? '');
+const companyKeywords = companyTitle
+  ? Array.from(
+      new Set([
+        companyTitle,
+        companyTitle.replaceAll('"', '').replace(/\s+/g, ' ').trim(),
+      ]),
+    )
+  : [];
 const companyUrl = typeof company === 'object' ? company.url : '';
 const tg = settlement.telegram ? telegram(settlement.telegram) : undefined;
 const waterInc = settlement.water_in_tariff === true;
@@ -77,20 +86,32 @@ const waterTitle =
 const hasDelta =
   !settlement.is_baseline && !!comparison && comparison.tariffDelta !== 0;
 const pageUrl = canon(`/settlements/${settlement.slug}/`);
-const pageTitle = `${settlement.name} — ${settlement.location.district}`;
+const pageTitle = `${settlement.name} — тариф и инфраструктура`;
 const delta =
   hasDelta && comparison
     ? `${comparison.isCheaper ? 'Дешевле' : 'Дороже'} Шелково на ${formatCurrency(Math.abs(comparison.tariffDelta))}.`
     : settlement.is_baseline
       ? 'Базовый поселок для сравнения.'
       : '';
+const companyDescription = companyTitle
+  ? `Обслуживающая компания: ${companyTitle.replaceAll('"', '').trim()}.`
+  : '';
 const pageDescription = [
+  `${settlement.name}, ${settlement.location.district}.`,
+  companyDescription,
   `Тариф ${formatTariffAuto(settlement.tariff)}.`,
   delta,
   'Инфраструктура, общие пространства, сервисы и источники данных.',
 ]
   .filter(Boolean)
   .join(' ');
+const pageKeywords = collectKeywords(
+  settlement.name,
+  settlement.short_name,
+  `коттеджный поселок ${settlement.short_name}`,
+  settlement.location.district,
+  companyKeywords,
+);
 const same = [settlement.website, ...(tg ? [tg] : [])];
 const schema = {
   '@context': 'https://schema.org',
@@ -98,6 +119,7 @@ const schema = {
   name: settlement.name,
   url: pageUrl,
   description: pageDescription,
+  keywords: pageKeywords.join(', '),
   address: settlement.location.address_text,
   mainEntityOfPage: pageUrl,
   ...(same.length ? { sameAs: same } : {}),
@@ -140,7 +162,12 @@ const heroMap = hasPoint
   : [];
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription} schema={schema}>
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  keywords={pageKeywords}
+  schema={schema}
+>
   <main class="ui-page py-6 md:py-10 lg:pt-0">
     <section
       class="hero-bleed relative hidden min-h-[430px] lg:block"

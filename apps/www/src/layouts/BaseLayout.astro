@@ -1,20 +1,24 @@
 ---
 import '@shelkovo/ui/styles.css';
+import { BRAND_KEYWORDS, collectKeywords } from '@shelkovo/seo';
 import SiteFooter from '@shelkovo/ui/SiteFooter.astro';
 import { browserColor, themeColor } from '@shelkovo/ui/theme';
 
 interface Props {
   title?: string;
   description?: string;
+  keywords?: string | string[];
 }
 
 const {
   title = 'Шелково Онлайн',
-  description = 'Главный сайт поселка Шелково и связанных проектов.',
+  description = 'Главный сайт поселков Шелково и связанных проектов.',
+  keywords,
 } = Astro.props;
 
 const root = Astro.site ?? Astro.url.origin;
 const canonical = new URL(Astro.url.pathname, root).toString();
+const keywordContent = collectKeywords(keywords, BRAND_KEYWORDS).join(', ');
 const prod = import.meta.env.PROD;
 const ymId = 108975391;
 const ym = `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=${ymId}','ym');ym(${ymId},'init',{ssr:true,clickmap:true,referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});`;
@@ -37,12 +41,25 @@ const ym = `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).p
       media="(prefers-color-scheme: dark)"
     />
     <meta name="description" content={description} />
+    {keywordContent && <meta name="keywords" content={keywordContent} />}
     <meta name="generator" content={Astro.generator} />
     <meta name="application-name" content="Шелково Онлайн" />
     <meta name="apple-mobile-web-app-title" content="Шелково" />
     <meta name="msapplication-TileColor" content={browserColor.tile} />
     <meta name="msapplication-TileImage" content="/mstile-150x150.png" />
     <link rel="canonical" href={canonical} />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Шелково Онлайн" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
     <link rel="preconnect" href="https://mc.yandex.ru" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="any" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />

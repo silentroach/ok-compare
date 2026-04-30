@@ -1,5 +1,6 @@
 ---
 import '@styles/global.css';
+import { COMPARE_KEYWORDS, collectKeywords } from '@shelkovo/seo';
 import SiteFooter from '@shelkovo/ui/SiteFooter.astro';
 import { browserColor, themeColor } from '@shelkovo/ui/theme';
 import { canon } from '@lib/site';
@@ -8,6 +9,7 @@ import { withBase } from '@lib/url';
 interface Props {
   title?: string;
   description?: string;
+  keywords?: string | string[];
   robots?: string;
   canonical?: string;
   image?: string;
@@ -17,8 +19,9 @@ interface Props {
 }
 
 const {
-  title = 'Шелково Сравнение — Сравнение тарифов на обслуживание коттеджных поселков',
-  description = 'Сравнение тарифов на обслуживание коттеджных поселков в Истринском районе. Прозрачные данные о стоимости услуг управляющих компаний.',
+  title = 'Шелково Сравнение — тарифы, инфраструктура и обслуживание поселков',
+  description = 'Сравнение тарифов, инфраструктуры и сервисов коттеджных поселков рядом с Шелково в Московской области.',
+  keywords,
   robots,
   canonical: href,
   image,
@@ -28,6 +31,7 @@ const {
 } = Astro.props;
 
 const canonical = canon(href ?? Astro.url.pathname);
+const keywordContent = collectKeywords(keywords, COMPARE_KEYWORDS).join(', ');
 const social = image ? canon(withBase(image)) : undefined;
 const socialAlt = social ? (imageAlt ?? title) : undefined;
 const socialType = !social
@@ -66,6 +70,7 @@ const ym = `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).p
       media="(prefers-color-scheme: dark)"
     />
     <meta name="description" content={description} />
+    {keywordContent && <meta name="keywords" content={keywordContent} />}
     <meta name="generator" content={Astro.generator} />
     <meta name="application-name" content="Сравни с Шелково" />
     <meta name="apple-mobile-web-app-title" content="Шелково" />

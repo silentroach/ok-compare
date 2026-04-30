@@ -105,6 +105,9 @@ importers:
       '@shelkovo/geo':
         specifier: workspace:*
         version: link:../../packages/geo
+      '@shelkovo/seo':
+        specifier: workspace:*
+        version: link:../../packages/seo
       '@shelkovo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -157,6 +160,9 @@ importers:
       '@astrojs/sitemap':
         specifier: ^3.7.2
         version: 3.7.2
+      '@shelkovo/seo':
+        specifier: workspace:*
+        version: link:../../packages/seo
       '@shelkovo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -195,6 +201,8 @@ importers:
       '@turf/distance':
         specifier: ^7.3.5
         version: 7.3.5
+
+  packages/seo: {}
 
   packages/ui:
     dependencies:
