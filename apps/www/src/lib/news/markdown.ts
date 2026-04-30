@@ -231,13 +231,7 @@ function addendaSection(items: readonly NewsAddendum[]): readonly string[] {
 }
 
 function monthLine(item: NewsMonthArchive): string {
-  return `- ${formatNewsMonth(item.year, item.month, { capitalize: true })}: ${pick(
-    [
-      `HTML: ${abs(item.url)}`,
-      `Markdown: ${abs(item.markdown_url)}`,
-      `${item.count} ${pluralizeRu(item.count, ['публикация', 'публикации', 'публикаций'])}`,
-    ],
-  ).join('; ')}`;
+  return `- [${formatNewsMonth(item.year, item.month, { capitalize: true })}](${abs(item.markdown_url)}) — ${item.count} ${pluralizeRu(item.count, ['публикация', 'публикации', 'публикаций'])}`;
 }
 
 function tagLine(item: NewsTagPage): string {
@@ -269,13 +263,6 @@ export function buildNewsYearMarkdown(archive: NewsYearArchive): string {
   const lines: string[] = [
     `# Новости Шелково за ${archive.year} год`,
     '',
-    `Годовой архив новостей Шелково за ${archive.year} год: месяцы с количеством публикаций и краткая хронологическая лента без reshuffle pinned-материалов.`,
-    '',
-    ...section('Сводка', [
-      `- Год: ${archive.year}`,
-      `- Месяцев с публикациями: ${archive.months.length} ${pluralizeRu(archive.months.length, ['месяц', 'месяца', 'месяцев'])}`,
-      `- Всего публикаций: ${archive.count} ${pluralizeRu(archive.count, ['публикация', 'публикации', 'публикаций'])}`,
-    ]),
     ...section(
       'Месяцы года',
       archive.months.length > 0
