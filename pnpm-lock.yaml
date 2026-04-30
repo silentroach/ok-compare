@@ -191,6 +191,9 @@ importers:
       typescript:
         specifier: ^6.0.2
         version: 6.0.2
+      typograf:
+        specifier: ^7.7.0
+        version: 7.7.0
       vite:
         specifier: ^7
         version: 7.3.2(@types/node@25.6.0)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.3)
@@ -2213,6 +2216,10 @@ packages:
     resolution: {integrity: sha512-bGdAIrZ0wiGDo5l8c++HWtbaNCWTS4UTv7RaTH/ThVIgjkveJt83m74bBHMJkuCbslY8ixgLBVZJIOiQlQTjfQ==}
     engines: {node: '>=14.17'}
     hasBin: true
+
+  typograf@7.7.0:
+    resolution: {integrity: sha512-VaUj5T5KjAeXVsGdSJsaKaxiPq/dC1WB+xo+Y0aclUQ+omBQvCejqCk3t5QEY8n0OnTRYvUiPd2/rod1KAQzxA==}
+    engines: {node: '>= 4'}
 
   ufo@1.6.3:
     resolution: {integrity: sha512-yDJTmhydvl5lJzBmy/hyOAA0d+aqCBuwl818haVdYCRrWV84o7YyeVm4QlVHStqNrrJSTb6jKuFAVqAFsr+K3Q==}
@@ -4738,6 +4745,8 @@ snapshots:
       '@turbo/windows-arm64': 2.9.6
 
   typescript@6.0.2: {}
+
+  typograf@7.7.0: {}
 
   ufo@1.6.3: {}
 

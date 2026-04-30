@@ -1,3 +1,5 @@
+import { pluralizeRu } from '@shelkovo/format';
+
 import { absoluteUrl } from '../site';
 import { loadNewsData } from './load';
 import {
@@ -14,28 +16,13 @@ import {
   tagsUrl,
 } from './routes';
 
-function plural(count: number, one: string, few: string, many: string): string {
-  const mod10 = count % 10;
-  const mod100 = count % 100;
-
-  if (mod10 === 1 && mod100 !== 11) {
-    return one;
-  }
-
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
-    return few;
-  }
-
-  return many;
-}
-
 export async function build(kind: 'short' | 'full'): Promise<string> {
   const data = await loadNewsData();
   const article = data.articles[0];
   const year = data.archives.years[0];
   const month = year?.months[0];
   const tag = data.tags[0];
-  const counts = `${data.articles.length} ${plural(data.articles.length, 'статья', 'статьи', 'статей')}, ${data.tags.length} ${plural(data.tags.length, 'тег', 'тега', 'тегов')} и ${data.archives.years.length} ${plural(data.archives.years.length, 'архивный год', 'архивных года', 'архивных лет')}`;
+  const counts = `${data.articles.length} ${pluralizeRu(data.articles.length, ['статья', 'статьи', 'статей'])}, ${data.tags.length} ${pluralizeRu(data.tags.length, ['тег', 'тега', 'тегов'])} и ${data.archives.years.length} ${pluralizeRu(data.archives.years.length, ['архивный год', 'архивных года', 'архивных лет'])}`;
 
   const home = absoluteUrl(newsUrl());
   const homeMarkdown = absoluteUrl(newsMarkdownUrl());

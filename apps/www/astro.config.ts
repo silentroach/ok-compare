@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import type { Plugin } from 'vite';
+import { rehypeTypograf } from './src/lib/typography';
 
 const plugins = [tailwindcss()];
 const site = 'https://kpshelkovo.online';
@@ -78,6 +79,9 @@ export default defineConfig({
   output: 'static',
   site,
   cacheDir: '../../node_modules/.astro/www',
+  markdown: {
+    rehypePlugins: [rehypeTypograf],
+  },
   prefetch: {
     prefetchAll: true,
     defaultStrategy: 'hover',

@@ -1,4 +1,5 @@
 import { marked } from 'marked';
+import { formatDynamicHtml } from '../typography';
 
 marked.setOptions({
   gfm: true,
@@ -6,5 +7,5 @@ marked.setOptions({
 });
 
 export function renderNewsMarkdown(markdown: string): string {
-  return marked.parse(markdown, { async: false }) as string;
+  return formatDynamicHtml(marked.parse(markdown, { async: false }) as string);
 }

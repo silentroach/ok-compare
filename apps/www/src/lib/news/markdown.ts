@@ -1,3 +1,5 @@
+import { pluralizeRu } from '@shelkovo/format';
+
 import { absoluteUrl } from '../site';
 import {
   articlesDataUrl,
@@ -291,7 +293,7 @@ function monthLine(item: NewsMonthArchive): string {
     [
       `HTML: ${abs(item.url)}`,
       `Markdown: ${abs(item.markdown_url)}`,
-      `${item.count} публикаций`,
+      `${item.count} ${pluralizeRu(item.count, ['публикация', 'публикации', 'публикаций'])}`,
     ],
   ).join('; ')}`;
 }
@@ -300,7 +302,7 @@ function tagLine(item: NewsTagPage): string {
   return `- ${item.label} — ${pick([
     `HTML: ${abs(item.url)}`,
     `Markdown: ${abs(item.markdown_url)}`,
-    `${item.count} публикаций`,
+    `${item.count} ${pluralizeRu(item.count, ['публикация', 'публикации', 'публикаций'])}`,
   ]).join('; ')}`;
 }
 
@@ -323,10 +325,10 @@ export function buildNewsHomeMarkdown(data: NewsDataset): string {
       ...discoveryLinks(),
     ]),
     ...section('Сводка', [
-      `- Всего новостей: ${data.articles.length}`,
-      `- Закреплено: ${data.home.pinned.length}`,
-      `- Тегов: ${data.tags.length}`,
-      `- Лет в архиве: ${data.archives.years.length}`,
+      `- Всего новостей: ${data.articles.length} ${pluralizeRu(data.articles.length, ['новость', 'новости', 'новостей'])}`,
+      `- Закреплено: ${data.home.pinned.length} ${pluralizeRu(data.home.pinned.length, ['публикация', 'публикации', 'публикаций'])}`,
+      `- Тегов: ${data.tags.length} ${pluralizeRu(data.tags.length, ['тег', 'тега', 'тегов'])}`,
+      `- Лет в архиве: ${data.archives.years.length} ${pluralizeRu(data.archives.years.length, ['год', 'года', 'лет'])}`,
     ]),
     ...articleSection(
       'Закреплено',
@@ -346,7 +348,7 @@ export function buildNewsHomeMarkdown(data: NewsDataset): string {
       data.archives.years.length > 0
         ? data.archives.years.map(
             (item) =>
-              `- ${item.year} — HTML: ${abs(item.url)}; Markdown: ${abs(item.markdown_url)}; ${item.count} публикаций`,
+              `- ${item.year} — HTML: ${abs(item.url)}; Markdown: ${abs(item.markdown_url)}; ${item.count} ${pluralizeRu(item.count, ['публикация', 'публикации', 'публикаций'])}`,
           )
         : ['- Архивы появятся вместе с первыми публикациями.'],
     ),
@@ -381,8 +383,8 @@ export function buildNewsYearMarkdown(archive: NewsYearArchive): string {
     ]),
     ...section('Сводка', [
       `- Год: ${archive.year}`,
-      `- Месяцев с публикациями: ${archive.months.length}`,
-      `- Всего публикаций: ${archive.count}`,
+      `- Месяцев с публикациями: ${archive.months.length} ${pluralizeRu(archive.months.length, ['месяц', 'месяца', 'месяцев'])}`,
+      `- Всего публикаций: ${archive.count} ${pluralizeRu(archive.count, ['публикация', 'публикации', 'публикаций'])}`,
     ]),
     ...section(
       'Месяцы года',
@@ -494,7 +496,9 @@ export function buildNewsTagsMarkdown(
       { label: 'Главная news-section', href: abs(newsUrl()) },
       ...discoveryLinks(),
     ]),
-    ...section('Сводка', [`- Всего тегов: ${tagsPage.length}`]),
+    ...section('Сводка', [
+      `- Всего тегов: ${tagsPage.length} ${pluralizeRu(tagsPage.length, ['тег', 'тега', 'тегов'])}`,
+    ]),
     ...section(
       'Теги',
       tagsPage.length > 0
@@ -519,8 +523,8 @@ export function buildNewsTagMarkdown(tag: NewsTagPage): string {
     ]),
     ...section('Сводка', [
       `- Тег: ${tag.label}`,
-      `- Всего публикаций по тегу: ${tag.count}`,
-      `- В companion-странице показано: ${tag.latest.length}`,
+      `- Всего публикаций по тегу: ${tag.count} ${pluralizeRu(tag.count, ['публикация', 'публикации', 'публикаций'])}`,
+      `- В companion-странице показано: ${tag.latest.length} ${pluralizeRu(tag.latest.length, ['публикация', 'публикации', 'публикаций'])}`,
     ]),
     ...articleSection(
       'Последние новости',
