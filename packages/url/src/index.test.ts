@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { isAbsoluteUrl, telegram, withBase } from './index';
+import { isAbsoluteUrl, isTelegramUrl, telegram, withBase } from './index';
 
 describe('isAbsoluteUrl package', () => {
   it('detects absolute URLs and protocol-relative URLs', () => {
@@ -64,6 +64,13 @@ describe('withBase package', () => {
 });
 
 describe('telegram package', () => {
+  it('detects Telegram URLs and tg:// links', () => {
+    expect(isTelegramUrl('https://t.me/shelkovoecoclub')).toBe(true);
+    expect(isTelegramUrl('https://telegram.me/shelkovoecoclub')).toBe(true);
+    expect(isTelegramUrl('tg://resolve?domain=shelkovoecoclub')).toBe(true);
+    expect(isTelegramUrl('https://example.com/shelkovoecoclub')).toBe(false);
+  });
+
   it('builds URL from plain channel name', () => {
     expect(telegram('shelkovoecoclub')).toBe('https://t.me/shelkovoecoclub');
   });

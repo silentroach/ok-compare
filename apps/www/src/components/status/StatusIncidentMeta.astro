@@ -1,6 +1,7 @@
 ---
 import ShelkovoAreaIcon from '../ShelkovoAreaIcon.astro';
 import TelegramIcon from '@shelkovo/ui/icons/system/Telegram.astro';
+import { isTelegramUrl } from '@shelkovo/url';
 
 import type { StatusIncident } from '../../lib/status/schema';
 import {
@@ -26,11 +27,7 @@ const {
 
 const phase = getStatusIncidentPhase(incident);
 const sourceUrl = incident.source_url;
-const isTelegramSource = sourceUrl
-  ? /^(?:tg:\/\/|(?:https?:\/\/)?(?:www\.)?(?:t\.me|telegram\.me)\/)/i.test(
-      sourceUrl,
-    )
-  : false;
+const isTelegramSource = sourceUrl ? isTelegramUrl(sourceUrl) : false;
 const sourceTarget =
   sourceUrl && !isTelegramSource
     ? new URL(sourceUrl.startsWith('//') ? `https:${sourceUrl}` : sourceUrl)

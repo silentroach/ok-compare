@@ -1,6 +1,7 @@
 ---
 import ShelkovoAreaIcon from '../ShelkovoAreaIcon.astro';
 import TelegramIcon from '@shelkovo/ui/icons/system/Telegram.astro';
+import { isTelegramUrl } from '@shelkovo/url';
 import type { NewsArea, NewsAuthor } from '../../lib/news/schema';
 import { formatNewsAuthor, formatNewsDate } from '../../lib/news/view';
 
@@ -35,11 +36,7 @@ const {
 } = Astro.props;
 
 const visibleAreas = appliesToAllAreas ? [] : areas;
-const isTelegramSource = sourceUrl
-  ? /^(?:tg:\/\/|(?:https?:\/\/)?(?:www\.)?(?:t\.me|telegram\.me)\/)/i.test(
-      sourceUrl,
-    )
-  : false;
+const isTelegramSource = sourceUrl ? isTelegramUrl(sourceUrl) : false;
 const sourceTarget =
   sourceUrl && !isTelegramSource
     ? new URL(sourceUrl.startsWith('//') ? `https:${sourceUrl}` : sourceUrl)
