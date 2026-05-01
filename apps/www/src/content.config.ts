@@ -1,7 +1,10 @@
-import { padNumber } from '@shelkovo/format';
 import { defineCollection, reference, type SchemaContext } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import {
+  normalizeNewsTimestampInput,
+  parseNewsTimestampInput,
+} from './lib/news/date';
 import {
   NEWS_AREAS,
   NEWS_AUTHOR_KINDS,
@@ -13,7 +16,6 @@ import {
 const YEAR = /^\d{4}$/;
 const MONTH = /^(0[1-9]|1[0-2])$/;
 const DAY_KEY = /^(?:0?[1-9]|[12]\d|3[01])$/;
-const TIME = /^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/;
 const TAG = /^[а-яё0-9 -]+$/u;
 
 interface DateParts {
@@ -44,10 +46,26 @@ const attachmentUrl = (name: string) =>
     `${name} must be an absolute URL or a root-relative path`,
   );
 
-const time = (name: string) =>
+const newsDate = (name: string) =>
+  z.union([text(name), z.date()]).transform((value, ctx) => {
+    const normalized = normalizeNewsTimestampInput(value);
+
+    if (normalized && parseNewsTimestampInput(value)) {
+      return normalized;
+    }
+
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `${name} must use dd.mm.yyyy, dd.mm.yyyy hh:mm, or YYYY-MM-DD`,
+    });
+
+    return z.NEVER;
+  });
+
+const forbiddenTime = (name: string) =>
   text(name).refine(
-    (value) => TIME.test(value),
-    `${name} must use HH:MM or HH:MM:SS`,
+    () => false,
+    `${name} is not supported; include time in date as dd.mm.yyyy hh:mm`,
   );
 
 const tag = () =>
@@ -84,8 +102,8 @@ const media = (image: SchemaContext['image']) => ({
 function addendum(image: SchemaContext['image']) {
   return z
     .object({
-      date: z.coerce.date(),
-      time: time('addenda[].time').optional(),
+      date: newsDate('addenda[].date'),
+      time: forbiddenTime('addenda[].time').optional(),
       title: text('addenda[].title').optional(),
       author: reference('newsAuthors').optional(),
       source_url: absoluteUrl('addenda[].source_url').optional(),
@@ -125,49 +143,17 @@ function readDateParts(data: unknown): readonly DateParts[] {
     return [];
   }
 
-  const value = data.date;
+  const parsed = parseNewsTimestampInput(data.date);
 
-  if (typeof value === 'string') {
-    const match = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
-
-    if (match) {
-      return [
+  return parsed
+    ? [
         {
-          year: match[1],
-          month: match[2],
-          day: match[3],
+          year: parsed.year,
+          month: parsed.month,
+          day: parsed.day,
         },
-      ];
-    }
-
-    const date = new Date(value);
-    return Number.isNaN(date.valueOf()) ? [] : dateParts(date);
-  }
-
-  if (value instanceof Date) {
-    return Number.isNaN(value.valueOf()) ? [] : dateParts(value);
-  }
-
-  return [];
-}
-
-function dateParts(date: Date): readonly DateParts[] {
-  const local = {
-    year: padNumber(date.getFullYear(), 4),
-    month: padNumber(date.getMonth() + 1, 2),
-    day: padNumber(date.getDate(), 2),
-  } satisfies DateParts;
-  const utc = {
-    year: padNumber(date.getUTCFullYear(), 4),
-    month: padNumber(date.getUTCMonth() + 1, 2),
-    day: padNumber(date.getUTCDate(), 2),
-  } satisfies DateParts;
-
-  return local.year === utc.year &&
-    local.month === utc.month &&
-    local.day === utc.day
-    ? [local]
-    : [local, utc];
+      ]
+    : [];
 }
 
 function fail(
@@ -284,8 +270,8 @@ const newsArticles = defineCollection({
       .object({
         title: text('title'),
         summary: text('summary'),
-        date: z.coerce.date(),
-        time: time('time').optional(),
+        date: newsDate('date'),
+        time: forbiddenTime('time').optional(),
         author: reference('newsAuthors'),
         pinned: z.boolean().optional(),
         areas: z.array(z.enum(NEWS_AREAS)).min(1).optional(),

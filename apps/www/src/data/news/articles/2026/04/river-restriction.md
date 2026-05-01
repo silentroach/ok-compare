@@ -1,7 +1,7 @@
 ---
 title: Проезд через дамбу временно закрыт
 summary: Из-за погодных условий проезд через КПП Шелково Ривер по дамбе временно ограничен до 10 мая. Для доступа рекомендован объезд через КПП Шелково Форест и Шелково Вилладж.
-date: 2026-04-30
+date: 30.04.2026
 author: ok-comfort
 pinned: true
 tags:
@@ -13,8 +13,7 @@ source_url: https://okkomfort.domyland.app/news?targetId=109569&entityName=news&
 cover: ./cover-16x9.jpeg
 cover_alt: Подтопленная дамба у КПП Шелково Ривер
 addenda:
-  - date: 2026-04-30
-    time: 13:30
+  - date: 30.04.2026 13:30
     title: ОК уточнил причину ограничения
     author: ok-comfort
     source_url: https://t.me/shelkovoecoclub/20423/44764

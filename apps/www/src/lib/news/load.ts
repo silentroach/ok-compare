@@ -1,8 +1,9 @@
-import { dateTimeFromParts, padNumber } from '@shelkovo/format';
+import { padNumber } from '@shelkovo/format';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { withBase } from '../site';
 import { buildArchives, newsMonthKey } from './archives';
 import { NEWS_LATEST_LIMIT } from './config';
+import { parseNewsTimestamp } from './date';
 import { articleCanonical, articleMarkdownUrl, articleUrl } from './routes';
 import {
   compareAddendaPublishedAsc,
@@ -43,96 +44,31 @@ type PhotoInput =
   | NonNullable<ArticleData['photos']>[number]
   | NonNullable<AddendumData['photos']>[number];
 
-interface DateBits {
-  readonly year: string;
-  readonly month: string;
-  readonly day: string;
-}
-
-interface TimeBits {
-  readonly hour: number;
-  readonly minute: number;
-  readonly second: number;
-}
-
 let cache: Promise<NewsDataset> | undefined;
-
-const localDateBits = (date: Date): DateBits => ({
-  year: padNumber(date.getFullYear(), 4),
-  month: padNumber(date.getMonth() + 1, 2),
-  day: padNumber(date.getDate(), 2),
-});
-
-const utcDateBits = (date: Date): DateBits => ({
-  year: padNumber(date.getUTCFullYear(), 4),
-  month: padNumber(date.getUTCMonth() + 1, 2),
-  day: padNumber(date.getUTCDate(), 2),
-});
-
-const timeBits = (time?: string): TimeBits => {
-  const [hour = '00', minute = '00', second = '00'] = (
-    time ?? '00:00:00'
-  ).split(':');
-
-  return {
-    hour: Number(hour),
-    minute: Number(minute),
-    second: Number(second),
-  };
-};
-
-function pickDateBits(
-  date: Date,
+function parseEntryTimestamp(
+  value: string,
+  context: string,
   expected?: { readonly year: string; readonly month: string },
-): DateBits {
-  const local = localDateBits(date);
-  const utc = utcDateBits(date);
+): NonNullable<ReturnType<typeof parseNewsTimestamp>> {
+  const timestamp = parseNewsTimestamp(value);
+
+  if (!timestamp) {
+    throw new Error(
+      `${context} date must use dd.mm.yyyy, dd.mm.yyyy hh:mm, or YYYY-MM-DD`,
+    );
+  }
 
   if (!expected) {
-    return utc;
+    return timestamp;
   }
 
-  if (local.year === expected.year && local.month === expected.month) {
-    return local;
-  }
-
-  if (utc.year === expected.year && utc.month === expected.month) {
-    return utc;
-  }
-
-  throw new Error(
-    `news article date ${date.toISOString()} must match ${expected.year}/${expected.month}`,
-  );
-}
-
-function stamp(
-  bits: DateBits,
-  time?: string,
-): { readonly at: Date; readonly iso: string } {
-  const zoned = dateTimeFromParts({
-    year: Number(bits.year),
-    month: Number(bits.month),
-    day: Number(bits.day),
-    ...timeBits(time),
-  });
-
-  if (!zoned.isValid) {
+  if (timestamp.year !== expected.year || timestamp.month !== expected.month) {
     throw new Error(
-      `invalid news timestamp ${bits.year}-${bits.month}-${bits.day} ${time ?? '00:00:00'}`,
+      `${context} date ${timestamp.iso} must match ${expected.year}/${expected.month}`,
     );
   }
 
-  const iso = zoned.toISO({ suppressMilliseconds: true });
-
-  if (!iso) {
-    throw new Error(
-      `invalid news timestamp ${bits.year}-${bits.month}-${bits.day} ${time ?? '00:00:00'}`,
-    );
-  }
-
-  const at = zoned.toJSDate();
-
-  return { at, iso };
+  return timestamp;
 }
 
 const authorId = (ref: AuthorReference): string => ref.id;
@@ -220,7 +156,10 @@ function normalizeAddenda(
 } {
   const items = (entry.data.addenda ?? [])
     .map((item, index) => {
-      const published = stamp(pickDateBits(item.date), item.time);
+      const published = parseEntryTimestamp(
+        item.date,
+        `news article "${entry.id}" addendum #${index + 1}`,
+      );
       const author = needAuthor(
         authors,
         item.author ? authorId(item.author) : NEWS_DEFAULT_ADDENDUM_AUTHOR_ID,
@@ -229,7 +168,7 @@ function normalizeAddenda(
 
       return {
         ...(item.title ? { title: item.title } : {}),
-        ...(item.time ? { time: item.time } : {}),
+        ...(published.time ? { time: published.time } : {}),
         author,
         ...(item.source_url ? { source_url: item.source_url } : {}),
         ...(item.body ? { body: item.body } : {}),
@@ -286,12 +225,13 @@ function normalizeArticle(
   authors: ReadonlyMap<string, NewsAuthor>,
 ): NewsArticle {
   const parts = articleParts(entry);
-  const published = stamp(
-    pickDateBits(entry.data.date, {
+  const published = parseEntryTimestamp(
+    entry.data.date,
+    `news article "${entry.id}"`,
+    {
       year: parts.year,
       month: parts.month,
-    }),
-    entry.data.time,
+    },
   );
   const area = areas(entry.data.areas);
   const addenda = normalizeAddenda(entry, authors, published.at);
@@ -312,19 +252,14 @@ function normalizeArticle(
     author,
     year: Number(parts.year),
     month: Number(parts.month),
-    day: Number(
-      pickDateBits(entry.data.date, {
-        year: parts.year,
-        month: parts.month,
-      }).day,
-    ),
+    day: Number(published.day),
     entry: parts.entry,
     url: articleUrl(parts),
     markdown_url: articleMarkdownUrl(parts),
     canonical: articleCanonical(parts),
     published_at: published.at,
     published_iso: published.iso,
-    ...(entry.data.time ? { time: entry.data.time } : {}),
+    ...(published.time ? { time: published.time } : {}),
     ...(addenda.updated_at
       ? {
           updated_at: addenda.updated_at,
