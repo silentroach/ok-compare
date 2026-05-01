@@ -1,11 +1,11 @@
 import type { APIRoute, GetStaticPaths } from 'astro';
 import { padNumber } from '@shelkovo/format';
 
-import { loadNewsArchives, loadNewsMonth } from '../../../../lib/news/load';
+import { loadNewsArchives, loadNewsMonth } from '@/lib/news/load';
 import {
   buildNewsMonthMarkdown,
   NEWS_MARKDOWN_HEADERS,
-} from '../../../../lib/news/markdown';
+} from '@/lib/news/markdown';
 
 export const prerender = true;
 

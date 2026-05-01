@@ -1,11 +1,9 @@
 ---
-import TelegramIcon from '@shelkovo/ui/TelegramIcon.astro';
+import ShelkovoAreaIcon from '../ShelkovoAreaIcon.astro';
+import TelegramIcon from '@shelkovo/ui/icons/system/Telegram.astro';
+import { isTelegramUrl } from '@shelkovo/url';
 import type { NewsArea, NewsAuthor } from '../../lib/news/schema';
-import {
-  formatNewsArea,
-  formatNewsAuthor,
-  formatNewsDate,
-} from '../../lib/news/view';
+import { formatNewsAuthor, formatNewsDate } from '../../lib/news/view';
 
 interface Props {
   readonly publishedIso: string;
@@ -38,11 +36,7 @@ const {
 } = Astro.props;
 
 const visibleAreas = appliesToAllAreas ? [] : areas;
-const isTelegramSource = sourceUrl
-  ? /^(?:tg:\/\/|(?:https?:\/\/)?(?:www\.)?(?:t\.me|telegram\.me)\/)/i.test(
-      sourceUrl,
-    )
-  : false;
+const isTelegramSource = sourceUrl ? isTelegramUrl(sourceUrl) : false;
 const sourceTarget =
   sourceUrl && !isTelegramSource
     ? new URL(sourceUrl.startsWith('//') ? `https:${sourceUrl}` : sourceUrl)
@@ -50,8 +44,7 @@ const sourceTarget =
 const sourceHost = sourceUrl
   ? isTelegramSource
     ? 'Telegram'
-    : sourceTarget?.hostname.replace(/^www\./i, '') ||
-      sourceTarget?.protocol.replace(/:$/, '')
+    : sourceTarget?.hostname.replace(/^www\./i, '') || undefined
   : undefined;
 const sourceLabel = sourceHost ? `Источник: ${sourceHost}` : undefined;
 ---
@@ -90,11 +83,7 @@ const sourceLabel = sourceHost ? `Источник: ${sourceHost}` : undefined;
       </span>
     )
   }
-  {
-    visibleAreas.map((area) => (
-      <span class="ui-chip">{formatNewsArea(area)}</span>
-    ))
-  }
+  {visibleAreas.map((area) => <ShelkovoAreaIcon area={area} />)}
   {
     sourceUrl && (
       <a

@@ -1,0 +1,149 @@
+---
+import StatusIncidentRow from '@/components/status/StatusIncidentRow.astro';
+import StatusServiceCard from '@/components/status/StatusServiceCard.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { collectionPageSchema } from '@/lib/news/seo';
+import { loadStatusData } from '@/lib/status/load';
+import { statusServiceUrl, statusUrl } from '@/lib/status/routes';
+
+const data = await loadStatusData();
+const now = Date.now();
+const activeIncidents = data.active.filter((item) => item.kind === 'incident');
+const plannedWorks = data.incidents.filter(
+  (item) =>
+    item.kind === 'maintenance' &&
+    (item.is_active || item.started_at.valueOf() > now),
+);
+const title = 'Статус поселка Шелково';
+const description =
+  'Статус поселка Шелково: инциденты, плановые работы и история сервисов.';
+const schemaItems = data.incidents
+  .filter((item) => item.has_page)
+  .map((item) => ({ name: item.title, url: item.url }));
+const schema = collectionPageSchema({
+  name: title,
+  description,
+  url: statusUrl(),
+  breadcrumbs: [{ name: 'Статус', url: statusUrl() }],
+  items: schemaItems,
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={statusUrl()}
+  keywords={['статус Шелково', 'инциденты Шелково', 'отключения Шелково']}
+  schema={schema}
+>
+  <main class="ui-page py-6 md:py-10 lg:py-12">
+    <section class="px-5 py-6 md:px-6 md:py-8 lg:py-10">
+      <div class="max-w-4xl space-y-4">
+        <div>
+          <h1
+            class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
+          >
+            Статус поселка
+          </h1>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-8 px-5 md:px-6">
+      <div class="max-w-6xl">
+        <div class="overflow-hidden">
+          <div
+            class="hidden lg:grid lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)_minmax(0,11rem)_minmax(0,21rem)] lg:gap-6 lg:px-6 lg:py-3"
+          >
+            <p class="text-[0.875rem] font-semibold text-muted-foreground">
+              Сервис
+            </p>
+            <p class="text-[0.875rem] font-semibold text-muted-foreground">
+              Последние 90 дней
+            </p>
+            <p class="text-[0.875rem] font-semibold text-muted-foreground">
+              Статус
+            </p>
+            <p class="text-[0.875rem] font-semibold text-muted-foreground">
+              Последняя запись
+            </p>
+          </div>
+
+          <div>
+            {
+              data.services.map((summary) => (
+                <StatusServiceCard
+                  summary={summary}
+                  serviceHref={statusServiceUrl(summary.service)}
+                />
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {
+      activeIncidents.length > 0 && (
+        <section class="mt-12 px-5 md:mt-14 md:px-6">
+          <div class="space-y-4">
+            <div class="space-y-1.5">
+              <h2 class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]">
+                Актуальные проблемы
+              </h2>
+              <p class="text-sm leading-6 text-muted-foreground md:text-[0.9375rem]">
+                То, что влияет на сервисы прямо сейчас.
+              </p>
+            </div>
+
+            <div class="-mx-5 md:-mx-6">
+              {activeIncidents.map((incident) => (
+                <StatusIncidentRow incident={incident} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      plannedWorks.length > 0 && (
+        <section class="mt-12 px-5 md:mt-14 md:px-6">
+          <div class="space-y-4">
+            <div>
+              <h2 class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]">
+                Плановые работы
+              </h2>
+            </div>
+
+            <div class="-mx-5 md:-mx-6">
+              {plannedWorks.map((incident) => (
+                <StatusIncidentRow incident={incident} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    <section class="mt-12 px-5 md:mt-14 md:px-6">
+      <div class="space-y-4">
+        <div>
+          <h2
+            class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]"
+          >
+            История
+          </h2>
+        </div>
+
+        <div class="-mx-5 md:-mx-6">
+          {
+            data.incidents.map((incident) => (
+              <StatusIncidentRow incident={incident} />
+            ))
+          }
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

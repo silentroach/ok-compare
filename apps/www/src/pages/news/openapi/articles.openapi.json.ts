@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 
-import { OAS, links, openapi } from '../../../lib/news/discovery';
-import { canonRoot } from '../../../lib/site';
+import { OAS, links, openapi } from '@/lib/news/discovery';
+import { canonRoot } from '@/lib/site';
 
 export const prerender = true;
 

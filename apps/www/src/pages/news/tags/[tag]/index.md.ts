@@ -1,10 +1,10 @@
 import type { APIRoute, GetStaticPaths } from 'astro';
 
-import { loadNewsTag, loadNewsTags } from '../../../../lib/news/load';
+import { loadNewsTag, loadNewsTags } from '@/lib/news/load';
 import {
   buildNewsTagMarkdown,
   NEWS_MARKDOWN_HEADERS,
-} from '../../../../lib/news/markdown';
+} from '@/lib/news/markdown';
 
 export const prerender = true;
 

@@ -1,0 +1,81 @@
+---
+import AlertCircleIcon from '@shelkovo/ui/icons/system/AlertCircle.astro';
+import CheckCircleIcon from '@shelkovo/ui/icons/system/CheckCircle.astro';
+
+import type { StatusIncident } from '../../lib/status/schema';
+import { renderNewsMarkdown } from '../../lib/news/html';
+import StatusIncidentMeta from './StatusIncidentMeta.astro';
+
+interface Props {
+  readonly incident: StatusIncident;
+}
+
+const { incident } = Astro.props;
+
+const excerptHtml = incident.excerpt
+  ? renderNewsMarkdown(incident.excerpt)
+  : undefined;
+const titleIcon =
+  incident.kind !== 'incident'
+    ? undefined
+    : incident.is_active
+      ? {
+          Icon: AlertCircleIcon,
+          toneClass: 'text-[color:var(--color-danger)]',
+        }
+      : incident.ended_iso
+        ? {
+            Icon: CheckCircleIcon,
+            toneClass: 'text-[color:var(--color-success)]',
+          }
+        : undefined;
+const TitleIcon = titleIcon?.Icon;
+---
+
+<article class="ui-shell px-5 py-5 md:px-6 md:py-6">
+  <div class="max-w-4xl space-y-3">
+    <div class="space-y-2">
+      <h3 class="text-2xl font-semibold tracking-tight text-foreground">
+        {
+          incident.has_page ? (
+            <a
+              href={incident.url}
+              class="ui-link inline-flex items-start gap-2"
+            >
+              {titleIcon && TitleIcon && (
+                <span class:list={['mt-1.5 shrink-0', titleIcon.toneClass]}>
+                  <TitleIcon class="size-5" />
+                </span>
+              )}
+              <span>{incident.title}</span>
+            </a>
+          ) : (
+            <span class="inline-flex items-start gap-2">
+              {titleIcon && TitleIcon && (
+                <span class:list={['mt-1.5 shrink-0', titleIcon.toneClass]}>
+                  <TitleIcon class="size-5" />
+                </span>
+              )}
+              <span>{incident.title}</span>
+            </span>
+          )
+        }
+      </h3>
+
+      <StatusIncidentMeta
+        incident={incident}
+        hideIncidentKind
+        hideIncidentPhase
+      />
+    </div>
+
+    {
+      excerptHtml && (
+        <div
+          class="ui-copy max-w-3xl text-muted-foreground [&_p]:my-0"
+          set:html={excerptHtml}
+        />
+      )
+    }
+  </div>
+</article>

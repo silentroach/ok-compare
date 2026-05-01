@@ -1,0 +1,171 @@
+---
+import DamIcon from '@shelkovo/ui/icons/services/Dam.astro';
+import LightningIcon from '@shelkovo/ui/icons/services/Lightning.astro';
+import WaterDropIcon from '@shelkovo/ui/icons/services/WaterDrop.astro';
+
+import StatusServiceTimeline from './StatusServiceTimeline.astro';
+import type { StatusServiceSummary } from '../../lib/status/schema';
+import {
+  formatStatusDate,
+  formatStatusService,
+  formatStatusServiceState,
+} from '../../lib/status/view';
+
+interface Props {
+  readonly summary: StatusServiceSummary;
+  readonly timelineDays?: number;
+  readonly serviceHref?: string;
+}
+
+const { summary, timelineDays = 90, serviceHref } = Astro.props;
+
+const serviceLabel = formatStatusService(summary.service);
+const stateLabel = formatStatusServiceState(summary.service_status);
+const latestRecord = summary.incidents[0];
+const latestMoment = latestRecord
+  ? formatStatusDate(latestRecord.started_iso, {
+      hasTime: latestRecord.started_has_time,
+    })
+  : undefined;
+const stateClass = {
+  green: 'text-[color:var(--color-success)]',
+  amber: 'text-[color:var(--color-warning-text)]',
+  red: 'text-[color:var(--color-danger)]',
+} as const;
+const serviceMeta = {
+  electricity: {
+    Icon: LightningIcon,
+    iconWrapClass:
+      'bg-[color:var(--color-primary-soft)] text-[color:var(--color-primary)]',
+  },
+  water: {
+    Icon: WaterDropIcon,
+    iconWrapClass:
+      'bg-[color:var(--color-water-soft)] text-[color:var(--color-water)]',
+  },
+  dam: {
+    Icon: DamIcon,
+    iconWrapClass:
+      'bg-[color:var(--color-surface-muted)] text-[color:var(--color-earth)]',
+  },
+} as const;
+const ServiceIcon = serviceMeta[summary.service].Icon;
+---
+
+<article class="status-service-row px-5 py-5 md:px-6 md:py-6">
+  <div
+    class="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)_minmax(0,11rem)_minmax(0,21rem)] lg:items-center lg:gap-6"
+  >
+    {
+      serviceHref ? (
+        <a
+          href={serviceHref}
+          class="group inline-flex items-center gap-4 self-start lg:self-auto"
+        >
+          <span
+            class:list={[
+              'inline-flex size-10 shrink-0 items-center justify-center rounded-full md:size-12',
+              serviceMeta[summary.service].iconWrapClass,
+            ]}
+          >
+            <ServiceIcon class="size-5 md:size-6" />
+          </span>
+
+          <div class="flex flex-col gap-1.5 lg:gap-0">
+            <p class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden">
+              Сервис
+            </p>
+            <h3 class="text-xl font-semibold tracking-tight text-foreground transition-colors group-hover:text-primary">
+              {serviceLabel}
+            </h3>
+          </div>
+        </a>
+      ) : (
+        <div class="flex items-center gap-4">
+          <span
+            class:list={[
+              'inline-flex size-10 shrink-0 items-center justify-center rounded-full md:size-12',
+              serviceMeta[summary.service].iconWrapClass,
+            ]}
+          >
+            <ServiceIcon class="size-5 md:size-6" />
+          </span>
+
+          <div class="flex flex-col gap-1.5 lg:gap-0">
+            <p class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden">
+              Сервис
+            </p>
+            <h3 class="text-xl font-semibold tracking-tight text-foreground">
+              {serviceLabel}
+            </h3>
+          </div>
+        </div>
+      )
+    }
+
+    <div class="flex flex-col gap-2.5 lg:gap-0">
+      <p
+        class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden"
+      >
+        Последние {timelineDays} дней
+      </p>
+
+      <StatusServiceTimeline summary={summary} timelineDays={timelineDays} />
+    </div>
+
+    <div class="flex flex-col gap-1 lg:gap-0">
+      <p
+        class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden"
+      >
+        Статус
+      </p>
+      <p
+        class:list={[
+          'text-base font-medium',
+          stateClass[summary.service_status],
+        ]}
+      >
+        {stateLabel}
+      </p>
+    </div>
+
+    <div class="flex flex-col gap-1.5 lg:gap-0">
+      <p
+        class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden"
+      >
+        Последняя запись
+      </p>
+
+      {
+        latestRecord ? (
+          <div class="space-y-1.5">
+            {latestRecord.has_page ? (
+              <a
+                href={latestRecord.url}
+                class="site-inline-link block text-base font-medium leading-snug text-foreground"
+              >
+                {latestRecord.title}
+              </a>
+            ) : (
+              <p class="text-base font-medium leading-snug text-foreground">
+                {latestRecord.title}
+              </p>
+            )}
+            {latestMoment && (
+              <p class="text-[0.875rem] leading-6 text-muted-foreground">
+                {latestMoment}
+              </p>
+            )}
+          </div>
+        ) : (
+          <div class="space-y-1.5">
+            <p class="text-base leading-snug text-foreground">
+              Пока без записей по этому сервису
+            </p>
+            <p class="text-[0.875rem] leading-6 text-muted-foreground">-</p>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</article>

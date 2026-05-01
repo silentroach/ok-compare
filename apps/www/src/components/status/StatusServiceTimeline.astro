@@ -1,0 +1,261 @@
+---
+import type { StatusServiceSummary } from '../../lib/status/schema';
+import {
+  formatStatusDate,
+  formatStatusIncidentPeriodText,
+  formatStatusService,
+} from '../../lib/status/view';
+
+interface Props {
+  readonly summary: StatusServiceSummary;
+  readonly timelineDays?: number;
+}
+
+const { summary, timelineDays = 90 } = Astro.props;
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+const buildNowValue = Date.now();
+const buildRangeStartValue = buildNowValue - timelineDays * DAY_MS;
+const serviceLabel = formatStatusService(summary.service);
+const timelineItems = [...summary.incidents]
+  .sort((a, b) => a.started_at.valueOf() - b.started_at.valueOf())
+  .map((item) => {
+    const itemStartValue = item.started_at.valueOf();
+    const itemEndValue = item.ended_at?.valueOf() ?? buildNowValue;
+    const visibleAtBuild =
+      itemEndValue > buildRangeStartValue && itemStartValue < buildNowValue;
+    const clippedStart = Math.max(buildRangeStartValue, itemStartValue);
+    const clippedEnd = Math.min(buildNowValue, itemEndValue);
+    const left =
+      ((clippedStart - buildRangeStartValue) / (timelineDays * DAY_MS)) * 100;
+    const width = visibleAtBuild
+      ? Math.max(
+          ((clippedEnd - clippedStart) / (timelineDays * DAY_MS)) * 100,
+          0.75,
+        )
+      : 0;
+    const kindLabel =
+      item.kind === 'maintenance' ? 'Плановые работы' : 'Инцидент';
+    const rangeLabel = formatStatusIncidentPeriodText(item);
+
+    return {
+      item,
+      tone: item.kind === 'maintenance' ? 'amber' : 'red',
+      left,
+      width,
+      visibleAtBuild,
+      tooltip: `${serviceLabel}. ${kindLabel}. ${item.title}. ${rangeLabel}. Открыть запись.`,
+    };
+  });
+---
+
+<div
+  class="js-status-service-timeline status-service-timeline"
+  data-range-days={String(timelineDays)}
+>
+  <div class="status-service-timeline__track">
+    <div class="status-service-timeline__segments" data-status-timeline-track>
+      {
+        timelineItems.map(
+          ({ item, left, tone, tooltip, visibleAtBuild, width }) => (
+            <a
+              href={item.url}
+              title={tooltip}
+              aria-label={tooltip}
+              data-status-problem
+              data-start={item.started_iso}
+              data-end={item.ended_iso}
+              class:list={[
+                'status-service-timeline__segment status-service-timeline__segment--problem',
+                tone === 'amber'
+                  ? 'status-service-timeline__segment--amber'
+                  : 'status-service-timeline__segment--red',
+                !visibleAtBuild && 'hidden',
+              ]}
+              style={`--segment-left: ${left}; --segment-width: ${width};`}
+            />
+          ),
+        )
+      }
+    </div>
+  </div>
+</div>
+
+<style>
+  .status-service-timeline {
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .status-service-timeline__track {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid color-mix(in oklab, var(--color-border) 92%, white 8%);
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--color-success) 14%, white 86%);
+    box-shadow: inset 0 1px 2px oklch(24% 0.04 145 / 0.05);
+    height: 1rem;
+  }
+
+  .status-service-timeline__segments {
+    position: absolute;
+    inset: 0 0.2rem;
+    height: 100%;
+  }
+
+  .status-service-timeline__segment {
+    position: absolute;
+    top: 50%;
+    left: calc(var(--segment-left) * 1%);
+    width: max(calc(var(--segment-width) * 1%), 0.45rem);
+    height: 0.62rem;
+    border-radius: 999px;
+    transform: translateY(-50%) scaleY(var(--segment-scale, 1));
+    transform-origin: center;
+  }
+
+  .status-service-timeline__segment--green {
+    background: color-mix(in oklab, var(--color-success) 82%, white 18%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .status-service-timeline__segment--amber {
+    background: var(--color-warning);
+    z-index: 2;
+  }
+
+  .status-service-timeline__segment--red {
+    background: var(--color-danger);
+    z-index: 3;
+  }
+
+  .status-service-timeline__segment--problem {
+    transition:
+      filter 160ms ease,
+      transform 160ms ease;
+  }
+
+  .status-service-timeline__segment--problem:hover,
+  .status-service-timeline__segment--problem:focus-visible {
+    --segment-scale: 1.16;
+    filter: saturate(1.15) brightness(0.97);
+  }
+
+  .status-service-timeline__segment--problem:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 2px;
+  }
+</style>
+
+<script>
+  const DAY_MS = 24 * 60 * 60 * 1000;
+
+  const positionTimelineSegment = (
+    element,
+    start,
+    end,
+    rangeStart,
+    rangeMs,
+  ) => {
+    const left = ((start - rangeStart) / rangeMs) * 100;
+    const width = Math.max(((end - start) / rangeMs) * 100, 0.45);
+
+    element.style.setProperty('--segment-left', String(left));
+    element.style.setProperty('--segment-width', String(width));
+    element.classList.remove('hidden');
+  };
+
+  const appendGreenSegment = (track, start, end, rangeStart, rangeMs) => {
+    if (end <= start) {
+      return;
+    }
+
+    const segment = document.createElement('span');
+
+    segment.dataset.statusSegment = 'green';
+    segment.className =
+      'status-service-timeline__segment status-service-timeline__segment--green';
+    segment.title = 'Без инцидентов';
+    positionTimelineSegment(segment, start, end, rangeStart, rangeMs);
+    track.insertBefore(segment, track.firstChild);
+  };
+
+  const renderServiceTimeline = (timeline) => {
+    const rangeDays = Number(timeline.dataset.rangeDays || '90');
+
+    if (!Number.isFinite(rangeDays) || rangeDays <= 0) {
+      return;
+    }
+
+    const track = timeline.querySelector('[data-status-timeline-track]');
+
+    if (!(track instanceof HTMLElement)) {
+      return;
+    }
+
+    track
+      .querySelectorAll('[data-status-segment="green"]')
+      .forEach((node) => node.remove());
+
+    const now = Date.now();
+    const rangeMs = rangeDays * DAY_MS;
+    const rangeStart = now - rangeMs;
+    const occupied = [];
+
+    track.querySelectorAll('[data-status-problem]').forEach((node) => {
+      if (!(node instanceof HTMLElement)) {
+        return;
+      }
+
+      const start = Date.parse(node.dataset.start || '');
+      const rawEnd = node.dataset.end;
+      const end = rawEnd ? Date.parse(rawEnd) : now;
+
+      if (!Number.isFinite(start) || !Number.isFinite(end)) {
+        node.classList.add('hidden');
+        return;
+      }
+
+      if (end <= rangeStart || start >= now) {
+        node.classList.add('hidden');
+        return;
+      }
+
+      const clippedStart = Math.max(rangeStart, start);
+      const clippedEnd = Math.min(now, end);
+
+      if (clippedEnd <= clippedStart) {
+        node.classList.add('hidden');
+        return;
+      }
+
+      positionTimelineSegment(
+        node,
+        clippedStart,
+        clippedEnd,
+        rangeStart,
+        rangeMs,
+      );
+      occupied.push({ start: clippedStart, end: clippedEnd });
+    });
+
+    occupied.sort((a, b) => a.start - b.start || a.end - b.end);
+
+    let cursor = rangeStart;
+
+    occupied.forEach((segment) => {
+      if (segment.start > cursor) {
+        appendGreenSegment(track, cursor, segment.start, rangeStart, rangeMs);
+      }
+
+      cursor = Math.max(cursor, segment.end);
+    });
+
+    appendGreenSegment(track, cursor, now, rangeStart, rangeMs);
+  };
+
+  document
+    .querySelectorAll('.js-status-service-timeline')
+    .forEach((timeline) => renderServiceTimeline(timeline));
+</script>

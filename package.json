@@ -25,7 +25,7 @@
     "typecheck": "turbo run typecheck --filter=@shelkovo/www --filter=@shelkovo/compare",
     "format": "prettier --write .",
     "format:changed": "lint-staged",
-    "test": "turbo run test --filter=@shelkovo/compare",
+    "test": "turbo run test --filter=@shelkovo/www --filter=@shelkovo/compare",
     "test:watch": "pnpm --dir apps/compare exec vitest",
     "postinstall": "node scripts/hooks.mjs"
   },

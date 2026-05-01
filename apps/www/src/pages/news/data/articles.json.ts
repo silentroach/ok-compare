@@ -1,8 +1,8 @@
 import type { APIRoute } from 'astro';
 
-import { buildNewsPayload, links } from '../../../lib/news/discovery';
-import { loadNewsData } from '../../../lib/news/load';
-import { canonRoot } from '../../../lib/site';
+import { buildNewsPayload, links } from '@/lib/news/discovery';
+import { loadNewsData } from '@/lib/news/load';
+import { canonRoot } from '@/lib/site';
 
 export const prerender = true;
 

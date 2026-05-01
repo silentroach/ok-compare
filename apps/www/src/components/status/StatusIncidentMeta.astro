@@ -1,0 +1,110 @@
+---
+import ShelkovoAreaIcon from '../ShelkovoAreaIcon.astro';
+import TelegramIcon from '@shelkovo/ui/icons/system/Telegram.astro';
+import { isTelegramUrl } from '@shelkovo/url';
+
+import type { StatusIncident } from '../../lib/status/schema';
+import {
+  formatStatusKind,
+  formatStatusService,
+  getStatusIncidentPhase,
+} from '../../lib/status/view';
+import StatusIncidentPeriod from './StatusIncidentPeriod.astro';
+
+interface Props {
+  readonly incident: StatusIncident;
+  readonly className?: string;
+  readonly hideIncidentKind?: boolean;
+  readonly hideIncidentPhase?: boolean;
+}
+
+const {
+  incident,
+  className,
+  hideIncidentKind = false,
+  hideIncidentPhase = false,
+} = Astro.props;
+
+const phase = getStatusIncidentPhase(incident);
+const sourceUrl = incident.source_url;
+const isTelegramSource = sourceUrl ? isTelegramUrl(sourceUrl) : false;
+const sourceTarget =
+  sourceUrl && !isTelegramSource
+    ? new URL(sourceUrl.startsWith('//') ? `https:${sourceUrl}` : sourceUrl)
+    : undefined;
+const sourceHost = isTelegramSource
+  ? 'Telegram'
+  : sourceTarget?.hostname.replace(/^www\./i, '') || undefined;
+const sourceLabel = sourceHost ? `Источник: ${sourceHost}` : 'Источник';
+const showPhase =
+  !incident.is_active && !(hideIncidentPhase && incident.kind === 'incident');
+const phaseClass = {
+  danger: 'ui-badge-danger',
+  warning: 'ui-badge-warning',
+  success: 'ui-badge-success',
+  muted: 'ui-badge-muted',
+  info: 'ui-badge-info',
+} as const;
+const serviceClass =
+  incident.service === 'water' ? 'ui-badge-water' : 'ui-badge-muted';
+const showKindBadge = !(hideIncidentKind && incident.kind === 'incident');
+---
+
+<div
+  class:list={[
+    'flex flex-wrap items-center gap-x-2.5 gap-y-2 text-sm leading-6 text-muted-foreground',
+    className,
+  ]}
+>
+  <span class:list={['ui-badge', serviceClass]}>
+    {formatStatusService(incident.service)}
+  </span>
+  {
+    showKindBadge && (
+      <span
+        class:list={[
+          'ui-badge',
+          incident.kind === 'maintenance'
+            ? 'ui-badge-warning'
+            : 'ui-badge-muted',
+        ]}
+      >
+        {formatStatusKind(incident.kind)}
+      </span>
+    )
+  }
+  {
+    showPhase && (
+      <span class:list={['ui-badge', phaseClass[phase.tone]]}>
+        {phase.label}
+      </span>
+    )
+  }
+
+  <StatusIncidentPeriod incident={incident} />
+
+  {
+    !incident.applies_to_all_areas &&
+      incident.areas.map((area) => <ShelkovoAreaIcon area={area} />)
+  }
+
+  {
+    sourceUrl && (
+      <a
+        href={sourceUrl}
+        target="_blank"
+        rel="noreferrer noopener"
+        aria-label={sourceLabel}
+        class:list={[
+          'ui-link font-medium',
+          isTelegramSource && 'inline-flex items-center gap-1',
+        ]}
+      >
+        {isTelegramSource && (
+          <TelegramIcon class="size-3.5 shrink-0 text-primary" />
+        )}
+        <span>источник</span>
+      </a>
+    )
+  }
+</div>

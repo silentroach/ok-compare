@@ -1,0 +1,37 @@
+---
+import type { StatusIncident } from '../../lib/status/schema';
+import { getStatusIncidentPeriod } from '../../lib/status/view';
+
+interface Props {
+  readonly incident: Pick<
+    StatusIncident,
+    | 'is_active'
+    | 'started_iso'
+    | 'started_has_time'
+    | 'ended_iso'
+    | 'ended_has_time'
+    | 'duration'
+  >;
+}
+
+const { incident } = Astro.props;
+const period = getStatusIncidentPeriod(incident);
+---
+
+<span>
+  {period.prefix && `${period.prefix} `}
+  <time datetime={period.start.iso} class="font-medium text-foreground">
+    {period.start.text}
+  </time>
+  {
+    period.end && (
+      <>
+        {' - '}
+        <time datetime={period.end.iso} class="font-medium text-foreground">
+          {period.end.text}
+        </time>
+      </>
+    )
+  }
+  {period.duration && ` (${period.duration})`}
+</span>

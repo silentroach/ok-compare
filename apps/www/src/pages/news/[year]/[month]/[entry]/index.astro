@@ -3,24 +3,16 @@ import { getImage } from 'astro:assets';
 import { getEntry, render } from 'astro:content';
 import type { GetStaticPaths } from 'astro';
 import { padNumber } from '@shelkovo/format';
-import BaseLayout from '../../../../../layouts/BaseLayout.astro';
-import NewsAddenda from '../../../../../components/news/NewsAddenda.astro';
-import NewsAttachments from '../../../../../components/news/NewsAttachments.astro';
-import NewsBreadcrumbs from '../../../../../components/news/NewsBreadcrumbs.astro';
-import NewsMeta from '../../../../../components/news/NewsMeta.astro';
-import NewsPhotos from '../../../../../components/news/NewsPhotos.astro';
-import {
-  loadNewsArticle,
-  loadNewsArticles,
-} from '../../../../../lib/news/load';
-import { newsArticleSchema } from '../../../../../lib/news/seo';
-import { NEWS_PROSE, formatNewsMonth } from '../../../../../lib/news/view';
-import {
-  articleUrl,
-  monthUrl,
-  newsUrl,
-  yearUrl,
-} from '../../../../../lib/news/routes';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import NewsAddenda from '@/components/news/NewsAddenda.astro';
+import NewsAttachments from '@/components/news/NewsAttachments.astro';
+import NewsBreadcrumbs from '@/components/news/NewsBreadcrumbs.astro';
+import NewsMeta from '@/components/news/NewsMeta.astro';
+import NewsPhotos from '@/components/news/NewsPhotos.astro';
+import { loadNewsArticle, loadNewsArticles } from '@/lib/news/load';
+import { newsArticleSchema } from '@/lib/news/seo';
+import { NEWS_PROSE, formatNewsMonth } from '@/lib/news/view';
+import { articleUrl, monthUrl, newsUrl, yearUrl } from '@/lib/news/routes';
 
 export const getStaticPaths = (async () => {
   const articles = await loadNewsArticles();
@@ -160,7 +152,7 @@ const schema = newsArticleSchema({
                           <a
                             href={item.url}
                             aria-label={`Тег ${item.label}`}
-                            class="transition-colors hover:text-foreground"
+                            class="news-tag-inline-link"
                           >
                             #{item.label}
                           </a>
@@ -205,7 +197,7 @@ const schema = newsArticleSchema({
                       <a
                         href={item.url}
                         aria-label={`Тег ${item.label}`}
-                        class="transition-colors hover:text-foreground"
+                        class="news-tag-inline-link"
                       >
                         #{item.label}
                       </a>

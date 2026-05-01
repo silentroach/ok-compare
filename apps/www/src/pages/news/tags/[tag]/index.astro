@@ -1,13 +1,13 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import { pluralizeRu } from '@shelkovo/format';
-import BaseLayout from '../../../../layouts/BaseLayout.astro';
-import NewsBreadcrumbs from '../../../../components/news/NewsBreadcrumbs.astro';
-import NewsList from '../../../../components/news/NewsList.astro';
-import { NEWS_LATEST_LIMIT } from '../../../../lib/news/config';
-import { loadNewsTag, loadNewsTags } from '../../../../lib/news/load';
-import { collectionPageSchema } from '../../../../lib/news/seo';
-import { newsUrl, tagUrl, tagsUrl } from '../../../../lib/news/routes';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import NewsBreadcrumbs from '@/components/news/NewsBreadcrumbs.astro';
+import NewsList from '@/components/news/NewsList.astro';
+import { NEWS_LATEST_LIMIT } from '@/lib/news/config';
+import { loadNewsTag, loadNewsTags } from '@/lib/news/load';
+import { collectionPageSchema } from '@/lib/news/seo';
+import { newsUrl, tagUrl, tagsUrl } from '@/lib/news/routes';
 
 export const getStaticPaths = (async () => {
   const tags = await loadNewsTags();

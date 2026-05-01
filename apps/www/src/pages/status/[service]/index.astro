@@ -1,0 +1,137 @@
+---
+import type { GetStaticPaths } from 'astro';
+
+import NewsBreadcrumbs from '@/components/news/NewsBreadcrumbs.astro';
+import StatusIncidentRow from '@/components/status/StatusIncidentRow.astro';
+import StatusServiceTimeline from '@/components/status/StatusServiceTimeline.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { collectionPageSchema } from '@/lib/news/seo';
+import { loadStatusService } from '@/lib/status/load';
+import { STATUS_SERVICES, type StatusService } from '@/lib/status/schema';
+import {
+  statusServiceCanonical,
+  statusServiceUrl,
+  statusUrl,
+} from '@/lib/status/routes';
+import {
+  formatStatusService,
+  formatStatusServiceState,
+} from '@/lib/status/view';
+
+export const getStaticPaths = (async () =>
+  STATUS_SERVICES.map((service) => ({
+    params: { service },
+  }))) satisfies GetStaticPaths;
+
+const serviceParam = Astro.params.service;
+
+if (!serviceParam) {
+  throw new Error('status service param is required');
+}
+
+const service = STATUS_SERVICES.find((item) => item === serviceParam) as
+  | StatusService
+  | undefined;
+
+if (!service) {
+  throw new Error(`status service "${serviceParam}" not found`);
+}
+
+const summary = await loadStatusService(service);
+
+if (!summary) {
+  throw new Error(`status service "${service}" not found`);
+}
+
+const serviceLabel = formatStatusService(service);
+const stateLabel = formatStatusServiceState(summary.service_status);
+const stateClass = {
+  green: 'text-[color:var(--color-success)]',
+  amber: 'text-[color:var(--color-warning-text)]',
+  red: 'text-[color:var(--color-danger)]',
+} as const;
+const latestIncidents = summary.incidents.slice(0, 10);
+const schemaItems = latestIncidents
+  .filter((item) => item.has_page)
+  .map((item) => ({ name: item.title, url: item.url }));
+const title = `${serviceLabel} — статус Шелково`;
+const description = `Статус сервиса ${serviceLabel.toLowerCase()} в Шелково: последний год и последние записи.`;
+const breadcrumbs = [
+  { label: 'Статус', href: statusUrl() },
+  { label: serviceLabel },
+];
+const schema = collectionPageSchema({
+  name: title,
+  description,
+  url: statusServiceUrl(service),
+  breadcrumbs: [
+    { name: 'Статус', url: statusUrl() },
+    { name: serviceLabel, url: statusServiceUrl(service) },
+  ],
+  items: schemaItems,
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={statusServiceCanonical(service)}
+  keywords={['статус Шелково', serviceLabel, `${serviceLabel} Шелково`]}
+  schema={schema}
+>
+  <main class="ui-page pb-6 md:pb-10 lg:pb-12">
+    <header class="px-5 pb-6 pt-3 md:px-6 md:pb-8 md:pt-5 lg:pb-10 lg:pt-6">
+      <div class="max-w-4xl space-y-5">
+        <NewsBreadcrumbs items={breadcrumbs} />
+
+        <div>
+          <h1
+            class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08] lg:text-[3.5rem]"
+          >
+            {serviceLabel}
+          </h1>
+        </div>
+      </div>
+    </header>
+
+    <section class="mt-8 px-5 md:px-6">
+      <div class="max-w-6xl space-y-3">
+        <p
+          class:list={[
+            'text-base font-medium',
+            stateClass[summary.service_status],
+          ]}
+        >
+          {stateLabel}
+        </p>
+        <StatusServiceTimeline summary={summary} timelineDays={365} />
+      </div>
+    </section>
+
+    <section class="mt-12 px-5 md:mt-14 md:px-6">
+      <div class="max-w-6xl space-y-4">
+        <div>
+          <h2
+            class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]"
+          >
+            История
+          </h2>
+        </div>
+
+        {
+          latestIncidents.length > 0 ? (
+            <div class="-mx-5 md:-mx-6">
+              {latestIncidents.map((incident) => (
+                <StatusIncidentRow incident={incident} />
+              ))}
+            </div>
+          ) : (
+            <p class="text-sm leading-6 text-muted-foreground md:text-[0.9375rem]">
+              Пока без записей по этому сервису.
+            </p>
+          )
+        }
+      </div>
+    </section>
+  </main>
+</BaseLayout>
