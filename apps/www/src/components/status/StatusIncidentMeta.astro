@@ -26,17 +26,16 @@ const {
 } = Astro.props;
 
 const phase = getStatusIncidentPhase(incident);
-const isTelegramSource =
-  /^(?:tg:\/\/|(?:https?:\/\/)?(?:www\.)?(?:t\.me|telegram\.me)\/)/i.test(
-    incident.source_url,
-  );
-const sourceTarget = isTelegramSource
-  ? undefined
-  : new URL(
-      incident.source_url.startsWith('//')
-        ? `https:${incident.source_url}`
-        : incident.source_url,
-    );
+const sourceUrl = incident.source_url;
+const isTelegramSource = sourceUrl
+  ? /^(?:tg:\/\/|(?:https?:\/\/)?(?:www\.)?(?:t\.me|telegram\.me)\/)/i.test(
+      sourceUrl,
+    )
+  : false;
+const sourceTarget =
+  sourceUrl && !isTelegramSource
+    ? new URL(sourceUrl.startsWith('//') ? `https:${sourceUrl}` : sourceUrl)
+    : undefined;
 const sourceHost = isTelegramSource
   ? 'Telegram'
   : sourceTarget?.hostname.replace(/^www\./i, '') ||
@@ -131,21 +130,23 @@ const showKindBadge = !(hideIncidentKind && incident.kind === 'incident');
       ))
   }
 
-  <a
-    href={incident.source_url}
-    target="_blank"
-    rel="noreferrer noopener"
-    aria-label={sourceLabel}
-    class:list={[
-      'ui-link font-medium',
-      isTelegramSource && 'inline-flex items-center gap-1',
-    ]}
-  >
-    {
-      isTelegramSource && (
-        <TelegramIcon class="size-3.5 shrink-0 text-primary" />
-      )
-    }
-    <span>источник</span>
-  </a>
+  {
+    sourceUrl && (
+      <a
+        href={sourceUrl}
+        target="_blank"
+        rel="noreferrer noopener"
+        aria-label={sourceLabel}
+        class:list={[
+          'ui-link font-medium',
+          isTelegramSource && 'inline-flex items-center gap-1',
+        ]}
+      >
+        {isTelegramSource && (
+          <TelegramIcon class="size-3.5 shrink-0 text-primary" />
+        )}
+        <span>источник</span>
+      </a>
+    )
+  }
 </div>

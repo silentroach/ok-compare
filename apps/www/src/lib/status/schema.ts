@@ -49,7 +49,7 @@ export interface StatusIncident {
   readonly is_active: boolean;
   readonly applies_to_all_areas: boolean;
   readonly areas: readonly StatusArea[];
-  readonly source_url: string;
+  readonly source_url?: string;
   readonly excerpt?: string;
   readonly body: string;
   readonly sort_started_at: number;

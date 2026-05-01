@@ -15,11 +15,6 @@ const { incident } = Astro.props;
 const excerptHtml = incident.excerpt
   ? renderNewsMarkdown(incident.excerpt)
   : undefined;
-const rowStyle = incident.is_active
-  ? incident.kind === 'maintenance'
-    ? 'border-top-color: var(--color-warning-border); background: var(--color-warning-soft);'
-    : 'border-top-color: var(--color-danger-border); background: var(--color-danger-soft);'
-  : undefined;
 const titleIcon =
   incident.kind !== 'incident'
     ? undefined
@@ -37,22 +32,14 @@ const titleIcon =
 const TitleIcon = titleIcon?.Icon;
 ---
 
-<article
-  class="border-t border-border px-4 py-5 md:px-5 md:py-6"
-  style={rowStyle}
->
+<article class="ui-shell px-5 py-5 md:px-6 md:py-6">
   <div class="max-w-4xl space-y-3">
     <div class="space-y-2">
-      <h3
-        class="text-xl font-semibold tracking-tight text-foreground md:text-[1.55rem] md:leading-[1.15]"
-      >
-        <a
-          href={incident.url}
-          class="inline-flex items-start gap-2 site-inline-link"
-        >
+      <h3 class="text-2xl font-semibold tracking-tight text-foreground">
+        <a href={incident.url} class="ui-link inline-flex items-start gap-2">
           {
             titleIcon && TitleIcon && (
-              <span class:list={['mt-0.5 shrink-0', titleIcon.toneClass]}>
+              <span class:list={['mt-1.5 shrink-0', titleIcon.toneClass]}>
                 <TitleIcon class="size-5" />
               </span>
             )
@@ -71,7 +58,7 @@ const TitleIcon = titleIcon?.Icon;
     {
       excerptHtml && (
         <div
-          class="ui-copy max-w-3xl text-[0.975rem] text-muted-foreground [&_p]:my-0"
+          class="ui-copy max-w-3xl text-muted-foreground [&_p]:my-0"
           set:html={excerptHtml}
         />
       )

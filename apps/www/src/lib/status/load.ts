@@ -154,7 +154,7 @@ function normalizeIncident(
     is_active: isActive(now, started.at, ended?.at),
     applies_to_all_areas: area.applies_to_all_areas,
     areas: area.areas,
-    source_url: entry.data.source_url,
+    ...(entry.data.source_url ? { source_url: entry.data.source_url } : {}),
     ...(content ? { excerpt: extractStatusExcerpt(content) } : {}),
     body: content,
     sort_started_at: started.at.valueOf(),

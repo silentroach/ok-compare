@@ -393,7 +393,7 @@ const statusIncidents = defineCollection({
       started_at: statusDate('started_at'),
       ended_at: statusDate('ended_at').optional(),
       areas: z.array(z.enum(STATUS_AREAS)).min(1).optional(),
-      source_url: absoluteUrl('source_url'),
+      source_url: absoluteUrl('source_url').optional(),
     })
     .superRefine((data, ctx) => {
       const started = parseStatusTimestampInput(data.started_at);

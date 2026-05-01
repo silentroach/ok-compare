@@ -52,7 +52,7 @@ const serviceMeta = {
 const ServiceIcon = serviceMeta[summary.service].Icon;
 ---
 
-<article class="status-service-row py-4 lg:py-5">
+<article class="status-service-row px-5 py-5 md:px-6 md:py-6">
   <div
     class="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)_minmax(0,11rem)_minmax(0,21rem)] lg:items-center lg:gap-6"
   >
@@ -60,7 +60,7 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
       serviceHref ? (
         <a
           href={serviceHref}
-          class="inline-flex items-center gap-4 self-start lg:self-auto"
+          class="group inline-flex items-center gap-4 self-start lg:self-auto"
         >
           <span
             class:list={[
@@ -71,11 +71,11 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
             <ServiceIcon class="size-5 md:size-6" />
           </span>
 
-          <div class="space-y-1">
+          <div class="space-y-1.5">
             <p class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden">
               Сервис
             </p>
-            <h3 class="text-base font-medium text-foreground transition-colors hover:text-primary">
+            <h3 class="text-xl font-semibold tracking-tight text-foreground transition-colors group-hover:text-primary">
               {serviceLabel}
             </h3>
           </div>
@@ -91,11 +91,11 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
             <ServiceIcon class="size-5 md:size-6" />
           </span>
 
-          <div class="space-y-1">
+          <div class="space-y-1.5">
             <p class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden">
               Сервис
             </p>
-            <h3 class="text-base font-medium text-foreground">
+            <h3 class="text-xl font-semibold tracking-tight text-foreground">
               {serviceLabel}
             </h3>
           </div>
