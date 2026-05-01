@@ -9,6 +9,7 @@ import {
   newsUrl,
 } from './news/routes';
 import { absoluteUrl, withBase } from './site';
+import { siteSkillsUrl } from './skills';
 import { loadStatusData } from './status/load';
 import {
   statusApiCatalogUrl,
@@ -74,7 +75,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
   const compareSkills = absoluteUrl(
     '/compare/.well-known/agent-skills/index.json',
   );
-  const skills = absoluteUrl('/.well-known/agent-skills/index.json');
+  const skills = absoluteUrl(siteSkillsUrl());
 
   return kind === 'short'
     ? join([
@@ -177,7 +178,7 @@ export async function buildHomeMarkdown(): Promise<string> {
     `- API catalog сайта: ${absoluteUrl(siteApiCatalogUrl())}`,
     `- llms.txt: ${absoluteUrl(siteLlmsUrl())}`,
     `- llms-full.txt: ${absoluteUrl(siteLlmsFullUrl())}`,
-    `- Public agent skills: ${absoluteUrl('/.well-known/agent-skills/index.json')}`,
+    `- Public agent skills: ${absoluteUrl(siteSkillsUrl())}`,
     '',
     '## Section Discovery',
     `- Новости: ${absoluteUrl(newsLlmsUrl())}, ${absoluteUrl(newsApiCatalogUrl())}`,

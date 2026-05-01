@@ -38,3 +38,31 @@ pnpm typecheck
 - Типограф применять точечно к самому динамическому контенту, а не к целому layout или полной HTML-странице.
 - Если нужна ссылка на compare, вести на `/compare/`, а не на legacy домен.
 - Если меняется deploy/base/root behavior, синхронно обновлять `ops/nginx/kpshelkovo-online.conf` и compose scripts.
+
+## Agent-Facing Surfaces
+
+- Root discovery:
+  - `src/pages/index.md.ts`
+  - `src/pages/llms.txt.ts`
+  - `src/pages/llms-full.txt.ts`
+  - `src/pages/.well-known/api-catalog.ts`
+  - `src/pages/.well-known/agent-skills/index.json.ts`
+  - `public/.well-known/agent-skills/*/SKILL.md`
+- News discovery:
+  - `src/pages/news/index.md.ts`
+  - `src/pages/news/llms.txt.ts`
+  - `src/pages/news/llms-full.txt.ts`
+  - `src/pages/news/data/articles.json.ts`
+  - `src/pages/news/.well-known/api-catalog.ts`
+  - `src/pages/news/schemas/articles.schema.json.ts`
+  - `src/pages/news/openapi/articles.openapi.json.ts`
+- Status discovery:
+  - `src/pages/status/index.md.ts`
+  - `src/pages/status/llms.txt.ts`
+  - `src/pages/status/llms-full.txt.ts`
+  - `src/pages/status/data/status.json.ts`
+  - `src/pages/status/.well-known/api-catalog.ts`
+  - `src/pages/status/schemas/status.schema.json.ts`
+  - `src/pages/status/openapi/status.openapi.json.ts`
+
+Если меняются section routes, markdown companions, JSON feeds, `llms.txt`, skills или discovery docs для `news`/`status`, эти поверхности нужно синхронно пересматривать.

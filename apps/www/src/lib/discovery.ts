@@ -10,6 +10,7 @@ import {
   siteLlmsUrl,
   siteMarkdownUrl,
 } from './llms';
+import { siteSkillsUrl } from './skills';
 import {
   statusApiCatalogPath,
   statusDataPath,
@@ -24,8 +25,6 @@ const COMPARE_DATA = '/compare/data/settlements.json';
 const COMPARE_LLMS = '/compare/llms.txt';
 const COMPARE_CATALOG = '/compare/.well-known/api-catalog';
 const COMPARE_SKILLS = '/compare/.well-known/agent-skills/index.json';
-const SITE_SKILLS = '/.well-known/agent-skills/index.json';
-
 const abs = (root: string, path: string): string =>
   new URL(path.replace(/^\//, ''), `${root}/`).toString();
 
@@ -62,7 +61,7 @@ export function catalog(root: string): Record<string, unknown> {
             'title*': star('Расширенный агентный обзор корневого сайта'),
           },
           {
-            href: abs(root, SITE_SKILLS),
+            href: abs(root, siteSkillsUrl()),
             type: 'application/json',
             'title*': star('Индекс public agent skills корневого сайта'),
           },
