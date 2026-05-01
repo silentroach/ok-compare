@@ -1,0 +1,104 @@
+---
+import type { StatusServiceSummary } from '../../lib/status/schema';
+import {
+  formatStatusArea,
+  formatStatusDate,
+  formatStatusDaysWithoutIncidents,
+  formatStatusService,
+  formatStatusServiceState,
+  getStatusIncidentPhase,
+} from '../../lib/status/view';
+
+interface Props {
+  readonly summary: StatusServiceSummary;
+}
+
+const { summary } = Astro.props;
+
+const latestIncident = summary.incidents.find(
+  (item) => item.kind === 'incident',
+);
+const stateClass = {
+  green: 'ui-badge-success',
+  amber: 'ui-badge-warning',
+  red: 'ui-badge-danger',
+} as const;
+const borderStyle = {
+  green: 'border-top-color: var(--color-success-border);',
+  amber: 'border-top-color: var(--color-warning-border);',
+  red: 'border-top-color: var(--color-danger-border);',
+} as const;
+const latestPhase = latestIncident
+  ? getStatusIncidentPhase(latestIncident)
+  : undefined;
+const latestDate = latestIncident?.ended_iso
+  ? formatStatusDate(latestIncident.ended_iso, {
+      hasTime: latestIncident.ended_has_time,
+    })
+  : latestIncident
+    ? formatStatusDate(latestIncident.started_iso, {
+        hasTime: latestIncident.started_has_time,
+      })
+    : undefined;
+---
+
+<article
+  class="ui-shell-strong pt-4 md:pt-5"
+  style={borderStyle[summary.service_status]}
+>
+  <div class="space-y-4">
+    <div class="flex items-start justify-between gap-3">
+      <h2
+        class="text-[1.15rem] font-semibold tracking-tight text-foreground md:text-[1.28rem]"
+      >
+        {formatStatusService(summary.service)}
+      </h2>
+      <span class:list={['ui-badge', stateClass[summary.service_status]]}>
+        {formatStatusServiceState(summary.service_status)}
+      </span>
+    </div>
+
+    <p
+      class="text-sm font-medium leading-6 text-foreground md:text-[0.9375rem]"
+    >
+      {formatStatusDaysWithoutIncidents(summary.days_without_incidents)}
+    </p>
+
+    {
+      latestIncident ? (
+        <div class="space-y-2.5 text-sm leading-6 text-muted-foreground md:text-[0.9375rem]">
+          <p class="ui-chip">Последний значимый инцидент</p>
+          <p>
+            <a
+              href={latestIncident.url}
+              class="site-inline-link font-medium text-foreground"
+            >
+              {latestIncident.title}
+            </a>
+          </p>
+
+          <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+            {latestPhase && (
+              <span class="font-medium text-foreground">
+                {latestPhase.label}
+              </span>
+            )}
+            {latestDate && <span>{latestDate}</span>}
+          </div>
+
+          {!latestIncident.applies_to_all_areas && (
+            <div class="flex flex-wrap gap-2">
+              {latestIncident.areas.map((area) => (
+                <span class="ui-chip">{formatStatusArea(area)}</span>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <p class="text-sm leading-6 text-muted-foreground md:text-[0.9375rem]">
+          Пока без записанных инцидентов по этому сервису.
+        </p>
+      )
+    }
+  </div>
+</article>

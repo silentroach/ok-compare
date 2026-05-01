@@ -1,9 +1,11 @@
-import { dateTimeFromISO, formatDate } from '@shelkovo/format';
+import { dateTimeFromISO, formatDate, pluralizeRu } from '@shelkovo/format';
 
 import { formatNewsArea } from '../news/view';
 import type {
   StatusArea,
+  StatusDaysWithoutIncidents,
   StatusDuration,
+  StatusIncident,
   StatusKind,
   StatusService,
   StatusServiceState,
@@ -21,10 +23,15 @@ const KIND_LABELS: Record<StatusKind, string> = {
 };
 
 const SERVICE_STATE_LABELS: Record<StatusServiceState, string> = {
-  green: 'Работает штатно',
+  green: 'В норме',
   amber: 'Плановые работы',
   red: 'Есть инцидент',
 };
+
+interface StatusIncidentPhase {
+  readonly label: string;
+  readonly tone: 'danger' | 'warning' | 'success' | 'muted' | 'info';
+}
 
 const SPACE = /\s+/gu;
 
@@ -68,6 +75,45 @@ export const formatStatusDuration = (duration: StatusDuration): string => {
   }
 
   return parts.join(' ');
+};
+
+export const formatStatusDaysWithoutIncidents = (
+  value: StatusDaysWithoutIncidents,
+): string => {
+  switch (value.mode) {
+    case 'active_incident':
+      return 'идет инцидент';
+    case 'no_incidents':
+      return 'пока без инцидентов в истории';
+    case 'count': {
+      const days = value.days ?? 0;
+
+      return `${days} ${pluralizeRu(days, ['день', 'дня', 'дней'])} без проблем`;
+    }
+  }
+};
+
+export const getStatusIncidentPhase = (
+  incident: Pick<StatusIncident, 'kind' | 'is_active' | 'ended_iso'>,
+): StatusIncidentPhase => {
+  if (incident.is_active) {
+    return {
+      label: 'идет',
+      tone: incident.kind === 'maintenance' ? 'warning' : 'danger',
+    };
+  }
+
+  if (incident.ended_iso) {
+    return {
+      label: incident.kind === 'maintenance' ? 'завершено' : 'восстановлено',
+      tone: incident.kind === 'maintenance' ? 'muted' : 'success',
+    };
+  }
+
+  return {
+    label: incident.kind === 'maintenance' ? 'запланировано' : 'ожидается',
+    tone: incident.kind === 'maintenance' ? 'warning' : 'info',
+  };
 };
 
 export const formatStatusArea = (area: StatusArea): string =>

@@ -1,0 +1,48 @@
+---
+import type { StatusIncident } from '../../lib/status/schema';
+import { renderNewsMarkdown } from '../../lib/news/html';
+import StatusIncidentMeta from './StatusIncidentMeta.astro';
+
+interface Props {
+  readonly incident: StatusIncident;
+}
+
+const { incident } = Astro.props;
+
+const excerptHtml = incident.excerpt
+  ? renderNewsMarkdown(incident.excerpt)
+  : undefined;
+const rowStyle = incident.is_active
+  ? incident.kind === 'maintenance'
+    ? 'border-top-color: var(--color-warning-border); background: var(--color-warning-soft);'
+    : 'border-top-color: var(--color-danger-border); background: var(--color-danger-soft);'
+  : undefined;
+---
+
+<article
+  class="border-t border-border px-4 py-5 md:px-5 md:py-6"
+  style={rowStyle}
+>
+  <div class="max-w-4xl space-y-3">
+    <div class="space-y-2">
+      <h3
+        class="text-xl font-semibold tracking-tight text-foreground md:text-[1.55rem] md:leading-[1.15]"
+      >
+        <a href={incident.url} class="site-inline-link">
+          {incident.title}
+        </a>
+      </h3>
+
+      <StatusIncidentMeta incident={incident} />
+    </div>
+
+    {
+      excerptHtml && (
+        <div
+          class="ui-copy max-w-3xl text-[0.975rem] text-muted-foreground [&_p]:my-0"
+          set:html={excerptHtml}
+        />
+      )
+    }
+  </div>
+</article>
