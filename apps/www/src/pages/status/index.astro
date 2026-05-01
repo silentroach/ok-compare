@@ -50,7 +50,7 @@ const schema = collectionPageSchema({
       <div class="max-w-6xl">
         <div class="overflow-hidden">
           <div
-            class="hidden lg:grid lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)_minmax(0,11rem)_minmax(0,21rem)] lg:gap-6 lg:border-b lg:border-border lg:px-6 lg:py-3"
+            class="hidden lg:grid lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)_minmax(0,11rem)_minmax(0,21rem)] lg:gap-6 lg:px-6 lg:py-3"
           >
             <p class="text-[0.875rem] font-semibold text-muted-foreground">
               Сервис
@@ -66,7 +66,7 @@ const schema = collectionPageSchema({
             </p>
           </div>
 
-          <div class="divide-y divide-border">
+          <div>
             {
               data.services.map((summary) => (
                 <StatusServiceCard

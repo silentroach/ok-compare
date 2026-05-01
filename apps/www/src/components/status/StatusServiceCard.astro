@@ -71,7 +71,7 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
             <ServiceIcon class="size-5 md:size-6" />
           </span>
 
-          <div class="space-y-1.5">
+          <div class="flex flex-col gap-1.5 lg:gap-0">
             <p class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden">
               Сервис
             </p>
@@ -91,7 +91,7 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
             <ServiceIcon class="size-5 md:size-6" />
           </span>
 
-          <div class="space-y-1.5">
+          <div class="flex flex-col gap-1.5 lg:gap-0">
             <p class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden">
               Сервис
             </p>
@@ -103,7 +103,7 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
       )
     }
 
-    <div class="space-y-2.5">
+    <div class="flex flex-col gap-2.5 lg:gap-0">
       <p
         class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden"
       >
@@ -113,7 +113,7 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
       <StatusServiceTimeline summary={summary} timelineDays={timelineDays} />
     </div>
 
-    <div class="space-y-1">
+    <div class="flex flex-col gap-1 lg:gap-0">
       <p
         class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden"
       >
@@ -129,7 +129,7 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
       </p>
     </div>
 
-    <div class="space-y-1.5">
+    <div class="flex flex-col gap-1.5 lg:gap-0">
       <p
         class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden"
       >
@@ -138,7 +138,7 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
 
       {
         latestRecord ? (
-          <>
+          <div class="space-y-1.5">
             <a
               href={latestRecord.url}
               class="site-inline-link block text-base font-medium leading-snug text-foreground"
@@ -150,14 +150,14 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
                 {latestMoment}
               </p>
             )}
-          </>
+          </div>
         ) : (
-          <>
+          <div class="space-y-1.5">
             <p class="text-base leading-snug text-foreground">
               Пока без записей по этому сервису
             </p>
             <p class="text-[0.875rem] leading-6 text-muted-foreground">-</p>
-          </>
+          </div>
         )
       }
     </div>
