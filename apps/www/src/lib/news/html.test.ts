@@ -9,6 +9,12 @@ describe('renderNewsMarkdown', () => {
     );
   });
 
+  it('keeps spaces around inline links', () => {
+    expect(
+      renderNewsMarkdown('Встреча по обсуждению [регламента](/docs).'),
+    ).toBe('<p>Встреча по\u00A0обсуждению <a href="/docs">регламента</a>.</p>');
+  });
+
   it('does not render raw html from markdown', () => {
     const html = renderNewsMarkdown(
       '<span data-title="Шелково Парк">Шелково Парк</span>',
