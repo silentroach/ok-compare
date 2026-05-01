@@ -15,14 +15,14 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.2",
-    "@astrojs/svelte": "^8.0.4",
+    "@astrojs/svelte": "^8.0.5",
     "@shelkovo/format": "workspace:*",
     "@shelkovo/geo": "workspace:*",
     "@shelkovo/seo": "workspace:*",
     "@shelkovo/ui": "workspace:*",
     "@shelkovo/url": "workspace:*",
-    "astro": "^6.1.6",
-    "svelte": "^5.25.0",
+    "astro": "^6.1.7",
+    "svelte": "^5.55.4",
     "zod": "^4.3.6"
   },
   "devDependencies": {

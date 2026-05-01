@@ -17,7 +17,7 @@
     "@shelkovo/seo": "workspace:*",
     "@shelkovo/ui": "workspace:*",
     "@shelkovo/url": "workspace:*",
-    "astro": "^6.1.6"
+    "astro": "^6.1.7"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",
