@@ -1,15 +1,14 @@
 ---
-import TelegramIcon from '@shelkovo/ui/TelegramIcon.astro';
+import ShelkovoAreaIcon from '../ShelkovoAreaIcon.astro';
+import TelegramIcon from '@shelkovo/ui/icons/system/Telegram.astro';
 
 import type { StatusIncident } from '../../lib/status/schema';
 import {
-  formatStatusArea,
-  formatStatusDate,
-  formatStatusDuration,
   formatStatusKind,
   formatStatusService,
   getStatusIncidentPhase,
 } from '../../lib/status/view';
+import StatusIncidentPeriod from './StatusIncidentPeriod.astro';
 
 interface Props {
   readonly incident: StatusIncident;
@@ -86,48 +85,11 @@ const showKindBadge = !(hideIncidentKind && incident.kind === 'incident');
     )
   }
 
-  <span>
-    Начало{' '}
-    <time datetime={incident.started_iso} class="font-medium text-foreground">
-      {
-        formatStatusDate(incident.started_iso, {
-          hasTime: incident.started_has_time,
-        })
-      }
-    </time>
-  </span>
-
-  {
-    incident.ended_iso ? (
-      <span>
-        Завершение{' '}
-        <time datetime={incident.ended_iso} class="font-medium text-foreground">
-          {formatStatusDate(incident.ended_iso, {
-            hasTime: incident.ended_has_time,
-          })}
-        </time>
-      </span>
-    ) : !incident.is_active ? (
-      <span>Завершение не указано</span>
-    ) : null
-  }
-
-  {
-    incident.duration && (
-      <span>
-        Длительность{' '}
-        <span class="font-medium text-foreground">
-          {formatStatusDuration(incident.duration)}
-        </span>
-      </span>
-    )
-  }
+  <StatusIncidentPeriod incident={incident} />
 
   {
     !incident.applies_to_all_areas &&
-      incident.areas.map((area) => (
-        <span class="ui-chip">{formatStatusArea(area)}</span>
-      ))
+      incident.areas.map((area) => <ShelkovoAreaIcon area={area} />)
   }
 
   {

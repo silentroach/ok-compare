@@ -1,11 +1,8 @@
 ---
-import TelegramIcon from '@shelkovo/ui/TelegramIcon.astro';
+import ShelkovoAreaIcon from '../ShelkovoAreaIcon.astro';
+import TelegramIcon from '@shelkovo/ui/icons/system/Telegram.astro';
 import type { NewsArea, NewsAuthor } from '../../lib/news/schema';
-import {
-  formatNewsArea,
-  formatNewsAuthor,
-  formatNewsDate,
-} from '../../lib/news/view';
+import { formatNewsAuthor, formatNewsDate } from '../../lib/news/view';
 
 interface Props {
   readonly publishedIso: string;
@@ -90,11 +87,7 @@ const sourceLabel = sourceHost ? `Источник: ${sourceHost}` : undefined;
       </span>
     )
   }
-  {
-    visibleAreas.map((area) => (
-      <span class="ui-chip">{formatNewsArea(area)}</span>
-    ))
-  }
+  {visibleAreas.map((area) => <ShelkovoAreaIcon area={area} />)}
   {
     sourceUrl && (
       <a

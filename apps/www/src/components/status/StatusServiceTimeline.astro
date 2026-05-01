@@ -1,6 +1,10 @@
 ---
 import type { StatusServiceSummary } from '../../lib/status/schema';
-import { formatStatusDate, formatStatusService } from '../../lib/status/view';
+import {
+  formatStatusDate,
+  formatStatusIncidentPeriodText,
+  formatStatusService,
+} from '../../lib/status/view';
 
 interface Props {
   readonly summary: StatusServiceSummary;
@@ -32,13 +36,7 @@ const timelineItems = [...summary.incidents]
       : 0;
     const kindLabel =
       item.kind === 'maintenance' ? 'Плановые работы' : 'Инцидент';
-    const rangeLabel = item.ended_iso
-      ? `${formatStatusDate(item.started_iso, { hasTime: item.started_has_time })} - ${formatStatusDate(item.ended_iso, { hasTime: item.ended_has_time })}`
-      : item.is_active
-        ? `${formatStatusDate(item.started_iso, { hasTime: item.started_has_time })} - сейчас`
-        : formatStatusDate(item.started_iso, {
-            hasTime: item.started_has_time,
-          });
+    const rangeLabel = formatStatusIncidentPeriodText(item);
 
     return {
       item,
