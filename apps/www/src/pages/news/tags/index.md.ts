@@ -1,10 +1,10 @@
 import type { APIRoute } from 'astro';
 
-import { loadNewsTags } from '../../../lib/news/load';
+import { loadNewsTags } from '@/lib/news/load';
 import {
   buildNewsTagsMarkdown,
   NEWS_MARKDOWN_HEADERS,
-} from '../../../lib/news/markdown';
+} from '@/lib/news/markdown';
 
 export const prerender = true;
 

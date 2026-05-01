@@ -1,25 +1,22 @@
 ---
 import type { GetStaticPaths } from 'astro';
 
-import NewsBreadcrumbs from '../../../components/news/NewsBreadcrumbs.astro';
-import StatusIncidentRow from '../../../components/status/StatusIncidentRow.astro';
-import StatusServiceTimeline from '../../../components/status/StatusServiceTimeline.astro';
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { collectionPageSchema } from '../../../lib/news/seo';
-import { loadStatusService } from '../../../lib/status/load';
-import {
-  STATUS_SERVICES,
-  type StatusService,
-} from '../../../lib/status/schema';
+import NewsBreadcrumbs from '@/components/news/NewsBreadcrumbs.astro';
+import StatusIncidentRow from '@/components/status/StatusIncidentRow.astro';
+import StatusServiceTimeline from '@/components/status/StatusServiceTimeline.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { collectionPageSchema } from '@/lib/news/seo';
+import { loadStatusService } from '@/lib/status/load';
+import { STATUS_SERVICES, type StatusService } from '@/lib/status/schema';
 import {
   statusServiceCanonical,
   statusServiceUrl,
   statusUrl,
-} from '../../../lib/status/routes';
+} from '@/lib/status/routes';
 import {
   formatStatusService,
   formatStatusServiceState,
-} from '../../../lib/status/view';
+} from '@/lib/status/view';
 
 export const getStaticPaths = (async () =>
   STATUS_SERVICES.map((service) => ({

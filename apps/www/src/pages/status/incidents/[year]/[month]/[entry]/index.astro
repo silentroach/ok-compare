@@ -3,16 +3,13 @@ import { getEntry, render } from 'astro:content';
 import type { GetStaticPaths } from 'astro';
 import { padNumber } from '@shelkovo/format';
 
-import NewsBreadcrumbs from '../../../../../../components/news/NewsBreadcrumbs.astro';
-import StatusIncidentMeta from '../../../../../../components/status/StatusIncidentMeta.astro';
-import BaseLayout from '../../../../../../layouts/BaseLayout.astro';
-import {
-  loadStatusIncident,
-  loadStatusIncidents,
-} from '../../../../../../lib/status/load';
-import { statusUrl } from '../../../../../../lib/status/routes';
-import { techArticleSchema } from '../../../../../../lib/news/seo';
-import { NEWS_PROSE } from '../../../../../../lib/news/view';
+import NewsBreadcrumbs from '@/components/news/NewsBreadcrumbs.astro';
+import StatusIncidentMeta from '@/components/status/StatusIncidentMeta.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { loadStatusIncident, loadStatusIncidents } from '@/lib/status/load';
+import { statusUrl } from '@/lib/status/routes';
+import { techArticleSchema } from '@/lib/news/seo';
+import { NEWS_PROSE } from '@/lib/news/view';
 
 export const getStaticPaths = (async () => {
   const incidents = await loadStatusIncidents();

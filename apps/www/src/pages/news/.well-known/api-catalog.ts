@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 
-import { PROFILE, catalog, self } from '../../../lib/news/discovery';
-import { canonRoot } from '../../../lib/site';
+import { PROFILE, catalog, self } from '@/lib/news/discovery';
+import { canonRoot } from '@/lib/site';
 
 export const prerender = true;
 

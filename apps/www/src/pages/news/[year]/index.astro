@@ -1,13 +1,13 @@
 ---
 import { pluralizeRu } from '@shelkovo/format';
 import type { GetStaticPaths } from 'astro';
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import NewsBreadcrumbs from '../../../components/news/NewsBreadcrumbs.astro';
-import NewsList from '../../../components/news/NewsList.astro';
-import { loadNewsArchives, loadNewsYear } from '../../../lib/news/load';
-import { collectionPageSchema } from '../../../lib/news/seo';
-import { formatNewsMonth } from '../../../lib/news/view';
-import { monthUrl, newsUrl, yearUrl } from '../../../lib/news/routes';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import NewsBreadcrumbs from '@/components/news/NewsBreadcrumbs.astro';
+import NewsList from '@/components/news/NewsList.astro';
+import { loadNewsArchives, loadNewsYear } from '@/lib/news/load';
+import { collectionPageSchema } from '@/lib/news/seo';
+import { formatNewsMonth } from '@/lib/news/view';
+import { monthUrl, newsUrl, yearUrl } from '@/lib/news/routes';
 
 export const getStaticPaths = (async () => {
   const archives = await loadNewsArchives();

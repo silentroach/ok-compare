@@ -1,10 +1,10 @@
 ---
-import StatusIncidentRow from '../../components/status/StatusIncidentRow.astro';
-import StatusServiceCard from '../../components/status/StatusServiceCard.astro';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { collectionPageSchema } from '../../lib/news/seo';
-import { loadStatusData } from '../../lib/status/load';
-import { statusServiceUrl, statusUrl } from '../../lib/status/routes';
+import StatusIncidentRow from '@/components/status/StatusIncidentRow.astro';
+import StatusServiceCard from '@/components/status/StatusServiceCard.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { collectionPageSchema } from '@/lib/news/seo';
+import { loadStatusData } from '@/lib/status/load';
+import { statusServiceUrl, statusUrl } from '@/lib/status/routes';
 
 const data = await loadStatusData();
 const now = Date.now();

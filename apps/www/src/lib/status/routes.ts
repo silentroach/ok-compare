@@ -4,6 +4,7 @@ import type { StatusService } from './schema';
 import { canon, withBase } from '../site';
 
 const STATUS_ROOT = '/status/';
+const STATUS_MARKDOWN = '/status/index.md';
 const STATUS_INCIDENTS_ROOT = '/status/incidents/';
 
 export interface StatusIncidentRouteInput {
@@ -32,8 +33,13 @@ export const statusIncidentPath = (input: StatusIncidentRouteInput): string =>
 
 export const statusUrl = (): string => withBase(STATUS_ROOT);
 
+export const statusMarkdownUrl = (): string => withBase(STATUS_MARKDOWN);
+
 export const statusServiceUrl = (service: StatusService): string =>
   withBase(statusServicePath(service));
+
+export const statusServiceMarkdownUrl = (service: StatusService): string =>
+  withBase(`${statusServicePath(service)}index.md`);
 
 export const statusCanonical = (): string => canon(STATUS_ROOT);
 
@@ -42,6 +48,10 @@ export const statusServiceCanonical = (service: StatusService): string =>
 
 export const statusIncidentUrl = (input: StatusIncidentRouteInput): string =>
   withBase(statusIncidentPath(input));
+
+export const statusIncidentMarkdownUrl = (
+  input: StatusIncidentRouteInput,
+): string => withBase(`${statusIncidentPath(input)}index.md`);
 
 export const statusIncidentCanonical = (
   input: StatusIncidentRouteInput,

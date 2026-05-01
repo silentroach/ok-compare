@@ -1,10 +1,10 @@
 ---
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import NewsBreadcrumbs from '../../../components/news/NewsBreadcrumbs.astro';
-import NewsTagList from '../../../components/news/NewsTagList.astro';
-import { loadNewsTags } from '../../../lib/news/load';
-import { collectionPageSchema } from '../../../lib/news/seo';
-import { newsUrl, tagsUrl } from '../../../lib/news/routes';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import NewsBreadcrumbs from '@/components/news/NewsBreadcrumbs.astro';
+import NewsTagList from '@/components/news/NewsTagList.astro';
+import { loadNewsTags } from '@/lib/news/load';
+import { collectionPageSchema } from '@/lib/news/seo';
+import { newsUrl, tagsUrl } from '@/lib/news/routes';
 
 const tags = await loadNewsTags();
 const title = 'Теги новостей Шелково';
