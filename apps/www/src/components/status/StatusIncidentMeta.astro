@@ -35,6 +35,7 @@ const sourceHost = isTelegramSource
   : sourceTarget?.hostname.replace(/^www\./i, '') ||
     sourceTarget?.protocol.replace(/:$/, '');
 const sourceLabel = sourceHost ? `Источник: ${sourceHost}` : 'Источник';
+const showPhase = !incident.is_active;
 const phaseClass = {
   danger: 'ui-badge-danger',
   warning: 'ui-badge-warning',
@@ -63,7 +64,13 @@ const serviceClass =
   >
     {formatStatusKind(incident.kind)}
   </span>
-  <span class:list={['ui-badge', phaseClass[phase.tone]]}>{phase.label}</span>
+  {
+    showPhase && (
+      <span class:list={['ui-badge', phaseClass[phase.tone]]}>
+        {phase.label}
+      </span>
+    )
+  }
 
   <span>
     Начало{' '}
@@ -86,11 +93,9 @@ const serviceClass =
           })}
         </time>
       </span>
-    ) : incident.is_active ? (
-      <span>Завершение: идет сейчас</span>
-    ) : (
+    ) : !incident.is_active ? (
       <span>Завершение не указано</span>
-    )
+    ) : null
   }
 
   {

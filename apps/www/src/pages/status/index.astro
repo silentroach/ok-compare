@@ -1,6 +1,4 @@
 ---
-import { pluralizeRu } from '@shelkovo/format';
-
 import StatusEmptyState from '../../components/status/StatusEmptyState.astro';
 import StatusIncidentRow from '../../components/status/StatusIncidentRow.astro';
 import StatusServiceCard from '../../components/status/StatusServiceCard.astro';
@@ -19,13 +17,7 @@ const plannedWorks = data.incidents.filter(
 );
 const title = 'Статус поселка Шелково';
 const description =
-  'Текущий статус поселка Шелково: активные инциденты, плановые работы и история по электричеству, воде и дамбе.';
-const globalStatus =
-  activeIncidents.length === 0
-    ? 'Сейчас без активных инцидентов'
-    : activeIncidents.length === 1
-      ? 'Сейчас есть активный инцидент'
-      : `Сейчас есть ${activeIncidents.length} ${pluralizeRu(activeIncidents.length, ['активный инцидент', 'активных инцидента', 'активных инцидентов'])}`;
+  'Статус поселка Шелково: инциденты, плановые работы и история сервисов.';
 const schema = collectionPageSchema({
   name: title,
   description,
@@ -44,38 +36,38 @@ const schema = collectionPageSchema({
 >
   <main class="ui-page pb-8 pt-5 md:pb-12 md:pt-7 lg:pb-14 lg:pt-8">
     <section class="px-5 pb-10 md:px-6 md:pb-12">
-      <div class="max-w-4xl space-y-5">
+      <div class="max-w-4xl space-y-4">
         <div class="space-y-3">
-          <p class="ui-chip">Электричество, вода, дамба</p>
           <h1
             class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08] lg:text-[3.5rem]"
           >
             Статус поселка
           </h1>
-          <p class="ui-copy max-w-3xl text-muted-foreground">
-            Здесь собраны текущие инциденты, плановые работы и короткая история
-            по сервисам поселка.
-          </p>
-        </div>
-
-        <div class="border-t border-border pt-4 md:pt-5">
-          <p
-            class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem] md:leading-tight"
-          >
-            {globalStatus}
+          <p class="ui-copy max-w-2xl text-muted-foreground">
+            Инциденты, работы и история сервисов поселка.
           </p>
         </div>
       </div>
     </section>
 
     <section class="px-5 md:px-6">
-      <h2 class="sr-only">Сводка по сервисам</h2>
-      <div class="grid gap-x-8 gap-y-8 md:grid-cols-3">
-        {
-          data.services.map((summary) => (
-            <StatusServiceCard summary={summary} />
-          ))
-        }
+      <div class="max-w-4xl space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="text-lg font-semibold tracking-tight text-foreground">
+            Сервисы
+          </h2>
+          <p class="text-sm leading-6 text-muted-foreground">
+            Таймлайн за последние 90 дней
+          </p>
+        </div>
+
+        <div class="space-y-4">
+          {
+            data.services.map((summary) => (
+              <StatusServiceCard summary={summary} />
+            ))
+          }
+        </div>
       </div>
     </section>
 
@@ -113,17 +105,12 @@ const schema = collectionPageSchema({
 
     <section class="mt-12 px-5 md:mt-14 md:px-6">
       <div class="space-y-4">
-        <div class="space-y-1.5">
+        <div>
           <h2
             class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]"
           >
             Плановые работы
           </h2>
-          <p
-            class="text-sm leading-6 text-muted-foreground md:text-[0.9375rem]"
-          >
-            Работы, которые уже идут или заранее заведены в статус-истории.
-          </p>
         </div>
 
         {
