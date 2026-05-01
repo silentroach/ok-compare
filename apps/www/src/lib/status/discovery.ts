@@ -51,16 +51,19 @@ export interface StatusDiscoveryDaysWithoutIncidents {
   readonly last_ended_iso?: string;
 }
 
-export interface StatusDiscoveryIncidentRef {
+interface StatusDiscoveryIncidentLinks {
+  readonly html_url?: string;
+  readonly markdown_url?: string;
+}
+
+export interface StatusDiscoveryIncidentRef extends StatusDiscoveryIncidentLinks {
   readonly id: string;
   readonly title: string;
-  readonly html_url: string;
-  readonly markdown_url: string;
   readonly phase: StatusDiscoveryIncidentPhase;
   readonly phase_label: string;
 }
 
-export interface StatusDiscoveryIncident {
+export interface StatusDiscoveryIncident extends StatusDiscoveryIncidentLinks {
   readonly id: string;
   readonly title: string;
   readonly service: StatusIncident['service'];
@@ -70,8 +73,6 @@ export interface StatusDiscoveryIncident {
   readonly year: number;
   readonly month: number;
   readonly slug: string;
-  readonly html_url: string;
-  readonly markdown_url: string;
   readonly started_at: string;
   readonly started_has_time: boolean;
   readonly ended_at?: string;
@@ -207,14 +208,21 @@ const duration = (item: StatusDuration): StatusDiscoveryDuration => ({
   human: formatStatusDuration(item),
 });
 
+const incidentLinks = (item: StatusIncident): StatusDiscoveryIncidentLinks =>
+  item.has_page
+    ? {
+        html_url: item.canonical,
+        markdown_url: fullUrl(statusIncidentMarkdownUrl(item)),
+      }
+    : {};
+
 function incidentRef(item: StatusIncident): StatusDiscoveryIncidentRef {
   const current = getStatusIncidentPhase(item);
 
   return {
     id: item.id,
     title: item.title,
-    html_url: item.canonical,
-    markdown_url: fullUrl(statusIncidentMarkdownUrl(item)),
+    ...incidentLinks(item),
     phase: phase(item),
     phase_label: current.label,
   };
@@ -244,8 +252,7 @@ function incident(item: StatusIncident): StatusDiscoveryIncident {
     year: item.year,
     month: item.month,
     slug: item.slug,
-    html_url: item.canonical,
-    markdown_url: fullUrl(`${item.url}index.md`),
+    ...incidentLinks(item),
     started_at: item.started_iso,
     started_has_time: item.started_has_time,
     ...(item.ended_iso ? { ended_at: item.ended_iso } : {}),
@@ -379,7 +386,7 @@ export function schema(root: string): Record<string, unknown> {
           },
           phase_label: text(1),
         },
-        ['id', 'title', 'html_url', 'markdown_url', 'phase', 'phase_label'],
+        ['id', 'title', 'phase', 'phase_label'],
       ),
       incident: obj(
         {
@@ -432,8 +439,6 @@ export function schema(root: string): Record<string, unknown> {
           'year',
           'month',
           'slug',
-          'html_url',
-          'markdown_url',
           'started_at',
           'started_has_time',
           'ended_has_time',

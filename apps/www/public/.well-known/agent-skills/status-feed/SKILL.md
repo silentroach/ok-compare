@@ -1,6 +1,6 @@
 ---
 name: status-feed
-description: Используй для чтения status-section через status.json и перехода к service или incident pages.
+description: Используй для чтения status-section через status.json и перехода к service pages или к опубликованным incident pages.
 ---
 
 # status-feed
@@ -9,7 +9,7 @@ description: Используй для чтения status-section через st
 
 - Когда нужно текущее состояние электричества, воды или дамбы.
 - Когда нужно прочитать историю инцидентов и плановых работ в structured виде.
-- Когда нужен derive-статус сервиса и ссылки на одну конкретную incident page.
+- Когда нужен derive-статус сервиса и ссылки на одну конкретную incident page, если она опубликована.
 
 ## Что открыть
 
@@ -22,7 +22,11 @@ description: Используй для чтения status-section через st
 
 - Сначала читай `/status/data/status.json`.
 - Для одной линии переходи на `/status/[service]/` или `/status/[service]/index.md`.
-- Для одной записи переходи на `/status/incidents/YYYY/MM/[entry]/` или `/status/incidents/YYYY/MM/[entry]/index.md`.
+- Для одной записи переходи на `/status/incidents/YYYY/MM/[entry]/` или `/status/incidents/YYYY/MM/[entry]/index.md`, только если в feed есть `html_url` или `markdown_url`.
+
+## Что важно в feed
+
+- У incident-записей `html_url` и `markdown_url` опциональны: они есть только если для записи сгенерирована detail page.
 
 ## Что важно помнить
 

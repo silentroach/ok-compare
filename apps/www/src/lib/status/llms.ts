@@ -117,7 +117,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         'Описание status.json',
         '- Это основной read-only structured feed для агентов и машинного обхода status-section.',
         '- Корневой объект содержит `stats`, `active`, `incidents` и `services`.',
-        '- `incidents[]` включает `id`, `title`, `service`, `kind`, `year`, `month`, `slug`, canonical `html_url`, companion `markdown_url`, `started_at`, опциональный `ended_at`, флаг `is_active`, фазы `phase`, затронутые `areas`, опциональный `source_url`, `excerpt`, полный `body_markdown` и опциональную `duration`.',
+        '- `incidents[]` включает `id`, `title`, `service`, `kind`, `year`, `month`, `slug`, опциональные `html_url` и `markdown_url` только для записей с опубликованной detail page, `started_at`, опциональный `ended_at`, флаг `is_active`, фазы `phase`, затронутые `areas`, опциональный `source_url`, `excerpt`, полный `body_markdown` и опциональную `duration`.',
         '- `active[]` содержит только активные на момент сборки incidents/maintenance записи в том же формате, что и `incidents[]`.',
         '- `services[]` содержит derive-сводки по сервисам с `service_status`, URL сервиса, массивами `incident_ids`, `active_incident_ids`, `active_maintenance_ids`, а также `days_without_incidents` и опциональной `latest_incident`.',
         '- `stats` дает агрегированные counts по сервисам, активным инцидентам и активным работам.',
@@ -126,7 +126,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         '- HTML home `/status/` остается каноническим человекочитаемым представлением сводки по поселку.',
         '- Markdown companion `/status/index.md` дает text-first слой для терминалов и агентов.',
         '- Страницы сервисов `/status/[service]/` и их companions `/status/[service]/index.md` удобны для фокусного чтения одной линии: электричество, вода или дамба.',
-        '- Страницы incidents `/status/incidents/YYYY/MM/[entry]/` и их companions `/status/incidents/.../index.md` остаются каноническим представлением одной записи.',
+        '- Страницы incidents `/status/incidents/YYYY/MM/[entry]/` и их companions `/status/incidents/.../index.md` публикуются только для записей с body и тогда же появляются в `html_url`/`markdown_url`.',
         '',
         'Семантика полей',
         `- ` +
