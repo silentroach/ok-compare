@@ -44,8 +44,7 @@ const sourceTarget =
 const sourceHost = sourceUrl
   ? isTelegramSource
     ? 'Telegram'
-    : sourceTarget?.hostname.replace(/^www\./i, '') ||
-      sourceTarget?.protocol.replace(/:$/, '')
+    : sourceTarget?.hostname.replace(/^www\./i, '') || undefined
   : undefined;
 const sourceLabel = sourceHost ? `Источник: ${sourceHost}` : undefined;
 ---

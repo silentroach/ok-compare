@@ -34,8 +34,7 @@ const sourceTarget =
     : undefined;
 const sourceHost = isTelegramSource
   ? 'Telegram'
-  : sourceTarget?.hostname.replace(/^www\./i, '') ||
-    sourceTarget?.protocol.replace(/:$/, '');
+  : sourceTarget?.hostname.replace(/^www\./i, '') || undefined;
 const sourceLabel = sourceHost ? `Источник: ${sourceHost}` : 'Источник';
 const showPhase =
   !incident.is_active && !(hideIncidentPhase && incident.kind === 'incident');
