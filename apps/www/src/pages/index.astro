@@ -1,7 +1,6 @@
 ---
 import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import StatusHomepageWidget from '../components/status/StatusHomepageWidget.astro';
 import logo from '../../../../docs/design/logo.png';
 
 const title = 'Шелково Онлайн — сайт поселка Шелково от застройщика Земля МО';
@@ -48,12 +47,12 @@ const description =
             >{' и данными по поселкам, а еще потихоньку наполняем '}<a
               href="/news/"
               class="site-inline-link">раздел новостей</a
-            >.
+            >{' и ведем '}<a href="/status/" class="site-inline-link"
+              >статусную страницу</a
+            >{'.'}
           </p>
         </div>
       </div>
-
-      <StatusHomepageWidget />
     </section>
   </main>
 </BaseLayout>
