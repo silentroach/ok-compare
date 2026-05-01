@@ -7,7 +7,6 @@ import type {
 import { statusIncidentMarkdownUrl, statusServiceMarkdownUrl } from './routes';
 import {
   formatStatusArea,
-  formatStatusDaysWithoutIncidents,
   formatStatusIncidentPeriodText,
   formatStatusKind,
   formatStatusService,
@@ -52,11 +51,18 @@ const areas = (
     ? 'все части поселка'
     : incident.areas.map((area) => formatStatusArea(area)).join(', ');
 
-function incidentLine(incident: StatusIncident): string {
+function incidentLine(
+  incident: StatusIncident,
+  opts?: {
+    readonly hideIncidentPhase?: boolean;
+  },
+): string {
   const meta = pick([
     formatStatusService(incident.service),
     formatStatusKind(incident.kind),
-    getStatusIncidentPhase(incident).label,
+    opts?.hideIncidentPhase
+      ? undefined
+      : getStatusIncidentPhase(incident).label,
     formatStatusIncidentPeriodText(incident),
   ]);
   const excerpt = incident.excerpt ? inline(incident.excerpt) : undefined;
@@ -71,13 +77,16 @@ function incidentSection(input: {
   readonly items: readonly StatusIncident[];
   readonly empty: string;
   readonly intro?: string;
+  readonly hideIncidentPhase?: boolean;
 }): readonly string[] {
-  const { title, items, empty, intro } = input;
+  const { title, items, empty, intro, hideIncidentPhase } = input;
 
   return [
     `## ${title}`,
     ...(intro ? [intro, ''] : []),
-    ...(items.length > 0 ? items.map(incidentLine) : [`- ${empty}`]),
+    ...(items.length > 0
+      ? items.map((incident) => incidentLine(incident, { hideIncidentPhase }))
+      : [`- ${empty}`]),
     '',
   ];
 }
@@ -88,7 +97,7 @@ const serviceLine = (summary: StatusServiceSummary): string => {
     ? `[${latest.title}](${incidentMarkdownHref(latest)})`
     : 'пока без записей';
 
-  return `- [${formatStatusService(summary.service)}](${abs(statusServiceMarkdownUrl(summary.service))}) — ${formatStatusServiceState(summary.service_status)}; ${formatStatusDaysWithoutIncidents(summary.days_without_incidents)}; последняя запись: ${latestLabel}`;
+  return `- [${formatStatusService(summary.service)}](${abs(statusServiceMarkdownUrl(summary.service))}) — ${formatStatusServiceState(summary.service_status)}; последняя запись: ${latestLabel}`;
 };
 
 export function buildStatusHomeMarkdown(
@@ -110,13 +119,14 @@ export function buildStatusHomeMarkdown(
   return join([
     '# Статус поселка Шелково',
     '',
-    'Текстовое представление статуса сервисов, активных инцидентов и истории поселка.',
+    'Текстовое представление статуса сервисов, актуальных проблем, плановых работ и истории поселка.',
     '',
     ...section('Сервисы', data.services.map(serviceLine)),
     ...incidentSection({
-      title: 'Активные инциденты',
+      title: 'Актуальные проблемы',
       items: activeIncidents,
-      empty: 'Сейчас нет активных инцидентов.',
+      empty: 'Сейчас нет актуальных проблем.',
+      hideIncidentPhase: true,
     }),
     ...incidentSection({
       title: 'Плановые работы',
@@ -155,10 +165,6 @@ export function buildStatusServiceMarkdown(
         row('Сервис', serviceLabel),
         row('Текущий статус', formatStatusServiceState(summary.service_status)),
         row(
-          'Без инцидентов',
-          formatStatusDaysWithoutIncidents(summary.days_without_incidents),
-        ),
-        row(
           'Последняя запись',
           latest
             ? `[${latest.title}](${incidentMarkdownHref(latest)})`
@@ -167,9 +173,10 @@ export function buildStatusServiceMarkdown(
       ]),
     ),
     ...incidentSection({
-      title: 'Активные инциденты',
+      title: 'Актуальные проблемы',
       items: summary.active_incidents,
-      empty: 'Сейчас нет активных инцидентов по этому сервису.',
+      empty: 'Сейчас нет актуальных проблем по этому сервису.',
+      hideIncidentPhase: true,
     }),
     ...incidentSection({
       title: 'Плановые работы',
