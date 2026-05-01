@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineCollection, reference, type SchemaContext } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
@@ -12,11 +15,23 @@ import {
   isAttachmentUrl,
   normalizeTagKey,
 } from './lib/news/schema';
+import {
+  normalizeStatusTimestampInput,
+  parseStatusTimestampInput,
+  STATUS_AREAS,
+  STATUS_KINDS,
+  STATUS_SERVICES,
+} from './lib/status/schema';
 
 const YEAR = /^\d{4}$/;
 const MONTH = /^(0[1-9]|1[0-2])$/;
 const DAY_KEY = /^(?:0?[1-9]|[12]\d|3[01])$/;
 const TAG = /^[а-яё0-9 -]+$/u;
+const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const MARKDOWN_FRONTMATTER = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n)?/u;
+const STATUS_INCIDENTS_DIR = fileURLToPath(
+  new URL('./data/status/incidents/', import.meta.url),
+);
 
 interface DateParts {
   readonly year: string;
@@ -51,6 +66,22 @@ const newsDate = (name: string) =>
     const normalized = normalizeNewsTimestampInput(value);
 
     if (normalized && parseNewsTimestampInput(value)) {
+      return normalized;
+    }
+
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `${name} must use dd.mm.yyyy, dd.mm.yyyy hh:mm, or YYYY-MM-DD`,
+    });
+
+    return z.NEVER;
+  });
+
+const statusDate = (name: string) =>
+  z.union([text(name), z.date()]).transform((value, ctx) => {
+    const normalized = normalizeStatusTimestampInput(value);
+
+    if (normalized && parseStatusTimestampInput(value)) {
       return normalized;
     }
 
@@ -132,6 +163,9 @@ function addendum(image: SchemaContext['image']) {
 
 const trimMarkdown = (entry: string): string => entry.replace(/\.md$/i, '');
 
+const rawMarkdownBody = (root: string, entry: string): string =>
+  readFileSync(join(root, entry), 'utf8').replace(MARKDOWN_FRONTMATTER, '');
+
 const articleId = (entry: string): string =>
   trimMarkdown(entry).replace(/\/index$/i, '');
 
@@ -162,6 +196,10 @@ function fail(
   reason: string,
 ): never {
   throw new Error(`news ${kind} path \"${entry}\" ${reason}`);
+}
+
+function failStatus(entry: string, reason: string): never {
+  throw new Error(`status incident path \"${entry}\" ${reason}`);
 }
 
 function validateArticleEntry(entry: string, data: unknown): void {
@@ -208,6 +246,47 @@ function validateArticleEntry(entry: string, data: unknown): void {
       entry,
       'numeric day keys must match the frontmatter date day',
     );
+  }
+}
+
+const hasStartedAt = (
+  data: unknown,
+): data is { readonly started_at: unknown } =>
+  typeof data === 'object' && data !== null && 'started_at' in data;
+
+function validateStatusEntry(entry: string, data: unknown): void {
+  const id = trimMarkdown(entry);
+  const parts = id.split('/');
+
+  if (parts.length !== 3) {
+    failStatus(entry, 'must resolve to YYYY/MM/[slug]');
+  }
+
+  const [year, month, slug] = parts;
+
+  if (!YEAR.test(year) || !MONTH.test(month) || slug.length === 0) {
+    failStatus(entry, 'must use YYYY/MM/[slug] with numeric year and month');
+  }
+
+  if (!SLUG.test(slug)) {
+    failStatus(
+      entry,
+      'slug must use lower-case Latin letters, digits, and hyphen',
+    );
+  }
+
+  const started = hasStartedAt(data)
+    ? parseStatusTimestampInput(data.started_at)
+    : undefined;
+
+  if (started && (started.year !== year || started.month !== month)) {
+    failStatus(entry, 'must match the frontmatter started_at year and month');
+  }
+
+  const body = rawMarkdownBody(STATUS_INCIDENTS_DIR, entry);
+
+  if (body.length > 0 && body.trim().length === 0) {
+    failStatus(entry, 'body must not be blank');
   }
 }
 
@@ -297,7 +376,43 @@ const newsArticles = defineCollection({
       }),
 });
 
+const statusIncidents = defineCollection({
+  loader: glob({
+    pattern: '**/*.md',
+    base: './src/data/status/incidents',
+    generateId: ({ entry, data }) => {
+      validateStatusEntry(entry, data);
+      return trimMarkdown(entry);
+    },
+  }),
+  schema: z
+    .object({
+      title: text('title'),
+      service: z.enum(STATUS_SERVICES),
+      kind: z.enum(STATUS_KINDS),
+      started_at: statusDate('started_at'),
+      ended_at: statusDate('ended_at').optional(),
+      areas: z.array(z.enum(STATUS_AREAS)).min(1).optional(),
+      source_url: absoluteUrl('source_url'),
+    })
+    .superRefine((data, ctx) => {
+      const started = parseStatusTimestampInput(data.started_at);
+      const ended = data.ended_at
+        ? parseStatusTimestampInput(data.ended_at)
+        : undefined;
+
+      if (started && ended && ended.at.valueOf() < started.at.valueOf()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['ended_at'],
+          message: 'ended_at must be later than or equal to started_at',
+        });
+      }
+    }),
+});
+
 export const collections = {
   newsAuthors,
   newsArticles,
+  statusIncidents,
 };
