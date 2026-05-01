@@ -28,7 +28,7 @@ const MONTH = /^(0[1-9]|1[0-2])$/;
 const DAY_KEY = /^(?:0?[1-9]|[12]\d|3[01])$/;
 const TAG = /^[а-яё0-9 -]+$/u;
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const MARKDOWN_FRONTMATTER = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n)?/u;
+const MARKDOWN_FRONTMATTER = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n)*/u;
 const STATUS_INCIDENTS_DIR = fileURLToPath(
   new URL('./data/status/incidents/', import.meta.url),
 );
