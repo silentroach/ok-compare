@@ -1,11 +1,10 @@
 ---
-import StatusEmptyState from '../../components/status/StatusEmptyState.astro';
 import StatusIncidentRow from '../../components/status/StatusIncidentRow.astro';
 import StatusServiceCard from '../../components/status/StatusServiceCard.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { collectionPageSchema } from '../../lib/news/seo';
 import { loadStatusData } from '../../lib/status/load';
-import { statusUrl } from '../../lib/status/routes';
+import { statusServiceUrl, statusUrl } from '../../lib/status/routes';
 
 const data = await loadStatusData();
 const now = Date.now();
@@ -37,71 +36,92 @@ const schema = collectionPageSchema({
   <main class="ui-page pb-8 pt-5 md:pb-12 md:pt-7 lg:pb-14 lg:pt-8">
     <section class="px-5 pb-10 md:px-6 md:pb-12">
       <div class="max-w-4xl space-y-4">
-        <div class="space-y-3">
+        <div>
           <h1
             class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08] lg:text-[3.5rem]"
           >
             Статус поселка
           </h1>
-          <p class="ui-copy max-w-2xl text-muted-foreground">
-            Инциденты, работы и история сервисов поселка.
-          </p>
         </div>
       </div>
     </section>
 
     <section class="px-5 md:px-6">
-      <div class="max-w-4xl space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <h2 class="text-lg font-semibold tracking-tight text-foreground">
-            Сервисы
-          </h2>
-          <p class="text-sm leading-6 text-muted-foreground">
-            Таймлайн за последние 90 дней
-          </p>
-        </div>
+      <div class="max-w-6xl">
+        <div class="overflow-hidden">
+          <div
+            class="hidden lg:grid lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)_minmax(0,11rem)_minmax(0,21rem)] lg:gap-6 lg:border-b lg:border-border lg:px-6 lg:py-3"
+          >
+            <p class="text-[0.875rem] font-semibold text-muted-foreground">
+              Сервис
+            </p>
+            <p class="text-[0.875rem] font-semibold text-muted-foreground">
+              Последние 90 дней
+            </p>
+            <p class="text-[0.875rem] font-semibold text-muted-foreground">
+              Статус
+            </p>
+            <p class="text-[0.875rem] font-semibold text-muted-foreground">
+              Последняя запись
+            </p>
+          </div>
 
-        <div class="space-y-4">
-          {
-            data.services.map((summary) => (
-              <StatusServiceCard summary={summary} />
-            ))
-          }
+          <div class="px-4 md:px-6">
+            {
+              data.services.map((summary) => (
+                <StatusServiceCard
+                  summary={summary}
+                  serviceHref={statusServiceUrl(summary.service)}
+                />
+              ))
+            }
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="mt-12 px-5 md:mt-14 md:px-6">
-      <div class="space-y-4">
-        <div class="space-y-1.5">
-          <h2
-            class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]"
-          >
-            Активные инциденты
-          </h2>
-          <p
-            class="text-sm leading-6 text-muted-foreground md:text-[0.9375rem]"
-          >
-            То, что влияет на сервисы прямо сейчас.
-          </p>
-        </div>
+    {
+      activeIncidents.length > 0 && (
+        <section class="mt-12 px-5 md:mt-14 md:px-6">
+          <div class="space-y-4">
+            <div class="space-y-1.5">
+              <h2 class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]">
+                Активные инциденты
+              </h2>
+              <p class="text-sm leading-6 text-muted-foreground md:text-[0.9375rem]">
+                То, что влияет на сервисы прямо сейчас.
+              </p>
+            </div>
 
-        {
-          activeIncidents.length > 0 ? (
             <div>
               {activeIncidents.map((incident) => (
                 <StatusIncidentRow incident={incident} />
               ))}
             </div>
-          ) : (
-            <StatusEmptyState
-              title="Сейчас спокойно"
-              description="На момент сборки в статус-ленте нет активных аварийных инцидентов."
-            />
-          )
-        }
-      </div>
-    </section>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      plannedWorks.length > 0 && (
+        <section class="mt-12 px-5 md:mt-14 md:px-6">
+          <div class="space-y-4">
+            <div>
+              <h2 class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]">
+                Плановые работы
+              </h2>
+            </div>
+
+            <div>
+              {plannedWorks.map((incident) => (
+                <StatusIncidentRow incident={incident} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )
+    }
 
     <section class="mt-12 px-5 md:mt-14 md:px-6">
       <div class="space-y-4">
@@ -109,40 +129,8 @@ const schema = collectionPageSchema({
           <h2
             class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]"
           >
-            Плановые работы
-          </h2>
-        </div>
-
-        {
-          plannedWorks.length > 0 ? (
-            <div>
-              {plannedWorks.map((incident) => (
-                <StatusIncidentRow incident={incident} />
-              ))}
-            </div>
-          ) : (
-            <StatusEmptyState
-              title="Плановых работ сейчас нет"
-              description="Когда появится новая запись о профилактике или переключениях, она отобразится здесь отдельно от аварийной ленты."
-            />
-          )
-        }
-      </div>
-    </section>
-
-    <section class="mt-12 px-5 md:mt-14 md:px-6">
-      <div class="space-y-4">
-        <div class="space-y-1.5">
-          <h2
-            class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]"
-          >
             История
           </h2>
-          <p
-            class="text-sm leading-6 text-muted-foreground md:text-[0.9375rem]"
-          >
-            Единая лента инцидентов и работ, свежие записи сверху.
-          </p>
         </div>
 
         <div>

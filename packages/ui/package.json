@@ -4,11 +4,16 @@
   "type": "module",
   "private": true,
   "exports": {
+    "./AlertCircleIcon.astro": "./src/AlertCircleIcon.astro",
+    "./CheckCircleIcon.astro": "./src/CheckCircleIcon.astro",
+    "./DamIcon.astro": "./src/DamIcon.astro",
+    "./LightningIcon.astro": "./src/LightningIcon.astro",
     "./theme": "./src/theme.ts",
     "./Link.svelte": "./src/Link.svelte",
     "./SiteFooter.astro": "./src/SiteFooter.astro",
     "./StarIcon.astro": "./src/StarIcon.astro",
     "./TelegramIcon.astro": "./src/TelegramIcon.astro",
+    "./WaterDropIcon.astro": "./src/WaterDropIcon.astro",
     "./styles.css": "./styles.css"
   },
   "dependencies": {

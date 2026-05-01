@@ -14,9 +14,16 @@ import {
 interface Props {
   readonly incident: StatusIncident;
   readonly className?: string;
+  readonly hideIncidentKind?: boolean;
+  readonly hideIncidentPhase?: boolean;
 }
 
-const { incident, className } = Astro.props;
+const {
+  incident,
+  className,
+  hideIncidentKind = false,
+  hideIncidentPhase = false,
+} = Astro.props;
 
 const phase = getStatusIncidentPhase(incident);
 const isTelegramSource =
@@ -35,7 +42,8 @@ const sourceHost = isTelegramSource
   : sourceTarget?.hostname.replace(/^www\./i, '') ||
     sourceTarget?.protocol.replace(/:$/, '');
 const sourceLabel = sourceHost ? `Источник: ${sourceHost}` : 'Источник';
-const showPhase = !incident.is_active;
+const showPhase =
+  !incident.is_active && !(hideIncidentPhase && incident.kind === 'incident');
 const phaseClass = {
   danger: 'ui-badge-danger',
   warning: 'ui-badge-warning',
@@ -45,6 +53,7 @@ const phaseClass = {
 } as const;
 const serviceClass =
   incident.service === 'water' ? 'ui-badge-water' : 'ui-badge-muted';
+const showKindBadge = !(hideIncidentKind && incident.kind === 'incident');
 ---
 
 <div
@@ -56,14 +65,20 @@ const serviceClass =
   <span class:list={['ui-badge', serviceClass]}>
     {formatStatusService(incident.service)}
   </span>
-  <span
-    class:list={[
-      'ui-badge',
-      incident.kind === 'maintenance' ? 'ui-badge-warning' : 'ui-badge-muted',
-    ]}
-  >
-    {formatStatusKind(incident.kind)}
-  </span>
+  {
+    showKindBadge && (
+      <span
+        class:list={[
+          'ui-badge',
+          incident.kind === 'maintenance'
+            ? 'ui-badge-warning'
+            : 'ui-badge-muted',
+        ]}
+      >
+        {formatStatusKind(incident.kind)}
+      </span>
+    )
+  }
   {
     showPhase && (
       <span class:list={['ui-badge', phaseClass[phase.tone]]}>

@@ -1,4 +1,7 @@
 ---
+import AlertCircleIcon from '@shelkovo/ui/AlertCircleIcon.astro';
+import CheckCircleIcon from '@shelkovo/ui/CheckCircleIcon.astro';
+
 import type { StatusIncident } from '../../lib/status/schema';
 import { renderNewsMarkdown } from '../../lib/news/html';
 import StatusIncidentMeta from './StatusIncidentMeta.astro';
@@ -17,6 +20,21 @@ const rowStyle = incident.is_active
     ? 'border-top-color: var(--color-warning-border); background: var(--color-warning-soft);'
     : 'border-top-color: var(--color-danger-border); background: var(--color-danger-soft);'
   : undefined;
+const titleIcon =
+  incident.kind !== 'incident'
+    ? undefined
+    : incident.is_active
+      ? {
+          Icon: AlertCircleIcon,
+          toneClass: 'text-[color:var(--color-danger)]',
+        }
+      : incident.ended_iso
+        ? {
+            Icon: CheckCircleIcon,
+            toneClass: 'text-[color:var(--color-success)]',
+          }
+        : undefined;
+const TitleIcon = titleIcon?.Icon;
 ---
 
 <article
@@ -28,12 +46,26 @@ const rowStyle = incident.is_active
       <h3
         class="text-xl font-semibold tracking-tight text-foreground md:text-[1.55rem] md:leading-[1.15]"
       >
-        <a href={incident.url} class="site-inline-link">
-          {incident.title}
+        <a
+          href={incident.url}
+          class="inline-flex items-start gap-2 site-inline-link"
+        >
+          {
+            titleIcon && TitleIcon && (
+              <span class:list={['mt-0.5 shrink-0', titleIcon.toneClass]}>
+                <TitleIcon class="size-5" />
+              </span>
+            )
+          }
+          <span>{incident.title}</span>
         </a>
       </h3>
 
-      <StatusIncidentMeta incident={incident} />
+      <StatusIncidentMeta
+        incident={incident}
+        hideIncidentKind
+        hideIncidentPhase
+      />
     </div>
 
     {

@@ -1,4 +1,9 @@
 ---
+import DamIcon from '@shelkovo/ui/DamIcon.astro';
+import LightningIcon from '@shelkovo/ui/LightningIcon.astro';
+import WaterDropIcon from '@shelkovo/ui/WaterDropIcon.astro';
+
+import StatusServiceTimeline from './StatusServiceTimeline.astro';
 import type { StatusServiceSummary } from '../../lib/status/schema';
 import {
   formatStatusDate,
@@ -8,344 +13,153 @@ import {
 
 interface Props {
   readonly summary: StatusServiceSummary;
+  readonly timelineDays?: number;
+  readonly serviceHref?: string;
 }
 
-const { summary } = Astro.props;
+const { summary, timelineDays = 90, serviceHref } = Astro.props;
 
-const TIMELINE_DAYS = 90;
-const DAY_MS = 24 * 60 * 60 * 1000;
-const buildNow = new Date();
-const buildNowValue = buildNow.valueOf();
-const buildRangeStartValue = buildNowValue - TIMELINE_DAYS * DAY_MS;
 const serviceLabel = formatStatusService(summary.service);
 const stateLabel = formatStatusServiceState(summary.service_status);
+const latestRecord = summary.incidents[0];
+const latestMoment = latestRecord
+  ? formatStatusDate(latestRecord.started_iso, {
+      hasTime: latestRecord.started_has_time,
+    })
+  : undefined;
 const stateClass = {
   green: 'text-[color:var(--color-success)]',
-  amber: 'text-[color:var(--color-warning)]',
+  amber: 'text-[color:var(--color-warning-text)]',
   red: 'text-[color:var(--color-danger)]',
 } as const;
-const activeRecord =
-  summary.active_incidents[0] ?? summary.active_maintenance[0];
-const nextRecord = [...summary.incidents]
-  .filter((item) => item.started_at.valueOf() > buildNowValue)
-  .sort((a, b) => a.started_at.valueOf() - b.started_at.valueOf())[0];
-const lastRecord = summary.incidents.find(
-  (item) => item.started_at.valueOf() <= buildNowValue,
-);
-const detailRecord = activeRecord ?? nextRecord ?? lastRecord;
-const detailLabel = activeRecord
-  ? activeRecord.kind === 'maintenance'
-    ? 'Текущие работы'
-    : 'Активный инцидент'
-  : nextRecord
-    ? nextRecord.kind === 'maintenance'
-      ? 'Ближайшие работы'
-      : 'Следующий инцидент'
-    : lastRecord
-      ? 'Последняя запись'
-      : undefined;
-const detailMoment = detailRecord
-  ? activeRecord || nextRecord || !detailRecord.ended_iso
-    ? formatStatusDate(detailRecord.started_iso, {
-        hasTime: detailRecord.started_has_time,
-      })
-    : formatStatusDate(detailRecord.ended_iso, {
-        hasTime: detailRecord.ended_has_time,
-      })
-  : undefined;
-const detailMomentLabel = activeRecord
-  ? 'с'
-  : nextRecord
-    ? 'начало'
-    : 'обновлено';
-const timelineItems = [...summary.incidents]
-  .sort((a, b) => a.started_at.valueOf() - b.started_at.valueOf())
-  .map((item) => {
-    const itemStartValue = item.started_at.valueOf();
-    const itemEndValue = item.ended_at?.valueOf() ?? buildNowValue;
-    const visibleAtBuild =
-      itemEndValue > buildRangeStartValue && itemStartValue < buildNowValue;
-    const clippedStart = Math.max(buildRangeStartValue, itemStartValue);
-    const clippedEnd = Math.min(buildNowValue, itemEndValue);
-    const left =
-      ((clippedStart - buildRangeStartValue) / (TIMELINE_DAYS * DAY_MS)) * 100;
-    const width = visibleAtBuild
-      ? Math.max(
-          ((clippedEnd - clippedStart) / (TIMELINE_DAYS * DAY_MS)) * 100,
-          0.75,
-        )
-      : 0;
-    const kindLabel =
-      item.kind === 'maintenance' ? 'Плановые работы' : 'Инцидент';
-    const rangeLabel = item.ended_iso
-      ? `${formatStatusDate(item.started_iso, { hasTime: item.started_has_time })} - ${formatStatusDate(item.ended_iso, { hasTime: item.ended_has_time })}`
-      : item.is_active
-        ? `${formatStatusDate(item.started_iso, { hasTime: item.started_has_time })} - сейчас`
-        : formatStatusDate(item.started_iso, {
-            hasTime: item.started_has_time,
-          });
-
-    return {
-      item,
-      tone: item.kind === 'maintenance' ? 'amber' : 'red',
-      left,
-      width,
-      visibleAtBuild,
-      tooltip: `${serviceLabel}. ${kindLabel}. ${item.title}. ${rangeLabel}. Открыть запись.`,
-    };
-  });
+const serviceMeta = {
+  electricity: {
+    Icon: LightningIcon,
+    iconWrapClass:
+      'bg-[color:var(--color-primary-soft)] text-[color:var(--color-primary)]',
+  },
+  water: {
+    Icon: WaterDropIcon,
+    iconWrapClass:
+      'bg-[color:var(--color-water-soft)] text-[color:var(--color-water)]',
+  },
+  dam: {
+    Icon: DamIcon,
+    iconWrapClass:
+      'bg-[color:var(--color-surface-muted)] text-[color:var(--color-earth)]',
+  },
+} as const;
+const ServiceIcon = serviceMeta[summary.service].Icon;
 ---
 
-<article class="ui-shell-strong overflow-hidden px-4 py-4 md:px-5 md:py-5">
-  <div class="space-y-4">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <h2
-        class="text-[1.05rem] font-semibold tracking-tight text-foreground md:text-[1.15rem]"
+<article class="status-service-row py-4 lg:py-5">
+  <div
+    class="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)_minmax(0,11rem)_minmax(0,21rem)] lg:items-center lg:gap-6"
+  >
+    {
+      serviceHref ? (
+        <a
+          href={serviceHref}
+          class="inline-flex items-center gap-4 self-start lg:self-auto"
+        >
+          <span
+            class:list={[
+              'inline-flex size-10 shrink-0 items-center justify-center rounded-full md:size-12',
+              serviceMeta[summary.service].iconWrapClass,
+            ]}
+          >
+            <ServiceIcon class="size-5 md:size-6" />
+          </span>
+
+          <div class="space-y-1">
+            <p class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden">
+              Сервис
+            </p>
+            <h3 class="text-base font-medium text-foreground transition-colors hover:text-primary">
+              {serviceLabel}
+            </h3>
+          </div>
+        </a>
+      ) : (
+        <div class="flex items-center gap-4">
+          <span
+            class:list={[
+              'inline-flex size-10 shrink-0 items-center justify-center rounded-full md:size-12',
+              serviceMeta[summary.service].iconWrapClass,
+            ]}
+          >
+            <ServiceIcon class="size-5 md:size-6" />
+          </span>
+
+          <div class="space-y-1">
+            <p class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden">
+              Сервис
+            </p>
+            <h3 class="text-base font-medium text-foreground">
+              {serviceLabel}
+            </h3>
+          </div>
+        </div>
+      )
+    }
+
+    <div class="space-y-2.5">
+      <p
+        class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden"
       >
-        {serviceLabel}
-      </h2>
-      <span
+        Последние {timelineDays} дней
+      </p>
+
+      <StatusServiceTimeline summary={summary} timelineDays={timelineDays} />
+    </div>
+
+    <div class="space-y-1">
+      <p
+        class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden"
+      >
+        Статус
+      </p>
+      <p
         class:list={[
-          'text-sm font-semibold',
+          'text-base font-medium',
           stateClass[summary.service_status],
         ]}
       >
         {stateLabel}
-      </span>
+      </p>
     </div>
 
-    <div
-      class="js-status-service-timeline status-service-timeline"
-      data-range-days={String(TIMELINE_DAYS)}
-    >
-      <div class="status-service-timeline__track">
-        <div
-          class="status-service-timeline__segments"
-          data-status-timeline-track
-        >
-          {
-            timelineItems.map(
-              ({ item, left, tone, tooltip, visibleAtBuild, width }) => (
-                <a
-                  href={item.url}
-                  title={tooltip}
-                  aria-label={tooltip}
-                  data-status-problem
-                  data-start={item.started_iso}
-                  data-end={item.ended_iso}
-                  class:list={[
-                    'status-service-timeline__segment status-service-timeline__segment--problem',
-                    tone === 'amber'
-                      ? 'status-service-timeline__segment--amber'
-                      : 'status-service-timeline__segment--red',
-                    !visibleAtBuild && 'hidden',
-                  ]}
-                  style={`--segment-left: ${left}; --segment-width: ${width};`}
-                />
-              ),
-            )
-          }
-        </div>
-      </div>
-
-      <div
-        class="mt-2 flex items-center justify-between text-[0.75rem] font-medium uppercase tracking-[0.12em] text-muted-foreground"
+    <div class="space-y-1.5">
+      <p
+        class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden"
       >
-        <span>{TIMELINE_DAYS} дней назад</span>
-        <span>сегодня</span>
-      </div>
-    </div>
+        Последняя запись
+      </p>
 
-    {
-      detailRecord && detailLabel ? (
-        <p class="text-sm leading-6 text-muted-foreground md:text-[0.9375rem]">
-          <span>{detailLabel}: </span>
-          <a
-            href={detailRecord.url}
-            class="site-inline-link font-medium text-foreground"
-          >
-            {detailRecord.title}
-          </a>
-          {detailMoment && (
-            <span>
-              {' '}
-              · {detailMomentLabel} {detailMoment}
-            </span>
-          )}
-        </p>
-      ) : (
-        <p class="text-sm leading-6 text-muted-foreground md:text-[0.9375rem]">
-          Пока без записей по этому сервису.
-        </p>
-      )
-    }
+      {
+        latestRecord ? (
+          <>
+            <a
+              href={latestRecord.url}
+              class="site-inline-link block text-base font-medium leading-snug text-foreground"
+            >
+              {latestRecord.title}
+            </a>
+            {latestMoment && (
+              <p class="text-[0.875rem] leading-6 text-muted-foreground">
+                {latestMoment}
+              </p>
+            )}
+          </>
+        ) : (
+          <>
+            <p class="text-base leading-snug text-foreground">
+              Пока без записей по этому сервису
+            </p>
+            <p class="text-[0.875rem] leading-6 text-muted-foreground">-</p>
+          </>
+        )
+      }
+    </div>
   </div>
 </article>
-
-<style>
-  .status-service-timeline__track {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid var(--color-border);
-    border-radius: 999px;
-    background: var(--color-surface-muted);
-    height: 0.875rem;
-  }
-
-  .status-service-timeline__segments {
-    position: relative;
-    height: 100%;
-  }
-
-  .status-service-timeline__segment {
-    position: absolute;
-    inset-block: 0;
-    left: calc(var(--segment-left) * 1%);
-    width: max(calc(var(--segment-width) * 1%), 0.45rem);
-    border-radius: 999px;
-  }
-
-  .status-service-timeline__segment--green {
-    background: var(--color-success-border);
-    pointer-events: none;
-  }
-
-  .status-service-timeline__segment--amber {
-    background: var(--color-warning-border);
-    z-index: 2;
-  }
-
-  .status-service-timeline__segment--red {
-    background: var(--color-danger-border);
-    z-index: 3;
-  }
-
-  .status-service-timeline__segment--problem {
-    transition:
-      transform 160ms ease,
-      filter 160ms ease;
-  }
-
-  .status-service-timeline__segment--problem:hover,
-  .status-service-timeline__segment--problem:focus-visible {
-    filter: saturate(1.2) brightness(0.96);
-    transform: scaleY(1.18);
-  }
-
-  .status-service-timeline__segment--problem:focus-visible {
-    outline: 2px solid var(--color-text);
-    outline-offset: 2px;
-  }
-</style>
-
-<script>
-  const DAY_MS = 24 * 60 * 60 * 1000;
-
-  const positionTimelineSegment = (
-    element,
-    start,
-    end,
-    rangeStart,
-    rangeMs,
-  ) => {
-    const left = ((start - rangeStart) / rangeMs) * 100;
-    const width = Math.max(((end - start) / rangeMs) * 100, 0.45);
-
-    element.style.setProperty('--segment-left', String(left));
-    element.style.setProperty('--segment-width', String(width));
-    element.classList.remove('hidden');
-  };
-
-  const appendGreenSegment = (track, start, end, rangeStart, rangeMs) => {
-    if (end <= start) {
-      return;
-    }
-
-    const segment = document.createElement('span');
-
-    segment.dataset.statusSegment = 'green';
-    segment.className =
-      'status-service-timeline__segment status-service-timeline__segment--green';
-    segment.title = 'Без инцидентов';
-    positionTimelineSegment(segment, start, end, rangeStart, rangeMs);
-    track.insertBefore(segment, track.firstChild);
-  };
-
-  const renderServiceTimeline = (timeline) => {
-    const rangeDays = Number(timeline.dataset.rangeDays || '90');
-
-    if (!Number.isFinite(rangeDays) || rangeDays <= 0) {
-      return;
-    }
-
-    const track = timeline.querySelector('[data-status-timeline-track]');
-
-    if (!(track instanceof HTMLElement)) {
-      return;
-    }
-
-    track
-      .querySelectorAll('[data-status-segment="green"]')
-      .forEach((node) => node.remove());
-
-    const now = Date.now();
-    const rangeMs = rangeDays * DAY_MS;
-    const rangeStart = now - rangeMs;
-    const occupied = [];
-
-    track.querySelectorAll('[data-status-problem]').forEach((node) => {
-      if (!(node instanceof HTMLElement)) {
-        return;
-      }
-
-      const start = Date.parse(node.dataset.start || '');
-      const rawEnd = node.dataset.end;
-      const end = rawEnd ? Date.parse(rawEnd) : now;
-
-      if (!Number.isFinite(start) || !Number.isFinite(end)) {
-        node.classList.add('hidden');
-        return;
-      }
-
-      if (end <= rangeStart || start >= now) {
-        node.classList.add('hidden');
-        return;
-      }
-
-      const clippedStart = Math.max(rangeStart, start);
-      const clippedEnd = Math.min(now, end);
-
-      if (clippedEnd <= clippedStart) {
-        node.classList.add('hidden');
-        return;
-      }
-
-      positionTimelineSegment(
-        node,
-        clippedStart,
-        clippedEnd,
-        rangeStart,
-        rangeMs,
-      );
-      occupied.push({ start: clippedStart, end: clippedEnd });
-    });
-
-    occupied.sort((a, b) => a.start - b.start || a.end - b.end);
-
-    let cursor = rangeStart;
-
-    occupied.forEach((segment) => {
-      if (segment.start > cursor) {
-        appendGreenSegment(track, cursor, segment.start, rangeStart, rangeMs);
-      }
-
-      cursor = Math.max(cursor, segment.end);
-    });
-
-    appendGreenSegment(track, cursor, now, rangeStart, rangeMs);
-  };
-
-  document
-    .querySelectorAll('.js-status-service-timeline')
-    .forEach((timeline) => renderServiceTimeline(timeline));
-</script>

@@ -25,7 +25,7 @@ const KIND_LABELS: Record<StatusKind, string> = {
 const SERVICE_STATE_LABELS: Record<StatusServiceState, string> = {
   green: 'В норме',
   amber: 'Плановые работы',
-  red: 'Есть инцидент',
+  red: 'Есть проблемы',
 };
 
 interface StatusIncidentPhase {
