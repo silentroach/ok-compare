@@ -387,7 +387,7 @@ const statusIncidents = defineCollection({
   }),
   schema: z
     .object({
-      title: text('title'),
+      title: text('title').optional(),
       service: z.enum(STATUS_SERVICES),
       kind: z.enum(STATUS_KINDS),
       started_at: statusDate('started_at'),

@@ -14,13 +14,15 @@ import { NEWS_PROSE } from '@/lib/news/view';
 export const getStaticPaths = (async () => {
   const incidents = await loadStatusIncidents();
 
-  return incidents.map((item) => ({
-    params: {
-      year: String(item.year),
-      month: padNumber(item.month),
-      entry: item.slug,
-    },
-  }));
+  return incidents
+    .filter((item) => item.has_page)
+    .map((item) => ({
+      params: {
+        year: String(item.year),
+        month: padNumber(item.month),
+        entry: item.slug,
+      },
+    }));
 }) satisfies GetStaticPaths;
 
 const year = Astro.params.year;
@@ -35,7 +37,7 @@ const id = `${year}/${month}/${entry}`;
 const incident = await loadStatusIncident(id);
 const source = await getEntry('statusIncidents', id);
 
-if (!incident || !source) {
+if (!incident || !incident.has_page || !source) {
   throw new Error(`status incident "${id}" not found`);
 }
 

@@ -139,12 +139,18 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
       {
         latestRecord ? (
           <div class="space-y-1.5">
-            <a
-              href={latestRecord.url}
-              class="site-inline-link block text-base font-medium leading-snug text-foreground"
-            >
-              {latestRecord.title}
-            </a>
+            {latestRecord.has_page ? (
+              <a
+                href={latestRecord.url}
+                class="site-inline-link block text-base font-medium leading-snug text-foreground"
+              >
+                {latestRecord.title}
+              </a>
+            ) : (
+              <p class="text-base font-medium leading-snug text-foreground">
+                {latestRecord.title}
+              </p>
+            )}
             {latestMoment && (
               <p class="text-[0.875rem] leading-6 text-muted-foreground">
                 {latestMoment}

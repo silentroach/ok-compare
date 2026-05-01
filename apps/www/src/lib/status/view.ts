@@ -22,6 +22,18 @@ const KIND_LABELS: Record<StatusKind, string> = {
   maintenance: 'Плановые работы',
 };
 
+const INCIDENT_TITLE_LABELS: Record<StatusService, string> = {
+  electricity: 'Нет электричества',
+  water: 'Нет воды',
+  dam: 'Проезд через дамбу закрыт',
+};
+
+const MAINTENANCE_TITLE_LABELS: Record<StatusService, string> = {
+  electricity: 'Плановые работы: электричество',
+  water: 'Плановые работы: вода',
+  dam: 'Плановые работы: дамба',
+};
+
 const SERVICE_STATE_LABELS: Record<StatusServiceState, string> = {
   green: 'В норме',
   amber: 'Плановые работы',
@@ -231,6 +243,14 @@ export const getStatusIncidentPhase = (
 
 export const formatStatusArea = (area: StatusArea): string =>
   formatNewsArea(area);
+
+export const deriveStatusIncidentTitle = (input: {
+  readonly kind: StatusKind;
+  readonly service: StatusService;
+}): string =>
+  input.kind === 'maintenance'
+    ? MAINTENANCE_TITLE_LABELS[input.service]
+    : INCIDENT_TITLE_LABELS[input.service];
 
 export const formatStatusService = (service: StatusService): string =>
   SERVICE_LABELS[service];

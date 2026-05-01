@@ -6,6 +6,12 @@ import { canon, withBase } from '../site';
 const STATUS_ROOT = '/status/';
 const STATUS_MARKDOWN = '/status/index.md';
 const STATUS_INCIDENTS_ROOT = '/status/incidents/';
+const STATUS_DATA = '/status/data/status.json';
+const STATUS_LLMS = '/status/llms.txt';
+const STATUS_LLMS_FULL = '/status/llms-full.txt';
+const STATUS_API_CATALOG = '/status/.well-known/api-catalog';
+const STATUS_SCHEMA = '/status/schemas/status.schema.json';
+const STATUS_OPENAPI = '/status/openapi/status.openapi.json';
 
 export interface StatusIncidentRouteInput {
   readonly year: number | string;
@@ -25,6 +31,18 @@ const need = (value: string, name: string): string => {
 
 export const statusPath = (): string => STATUS_ROOT;
 
+export const statusDataPath = (): string => STATUS_DATA;
+
+export const statusLlmsPath = (): string => STATUS_LLMS;
+
+export const statusLlmsFullPath = (): string => STATUS_LLMS_FULL;
+
+export const statusApiCatalogPath = (): string => STATUS_API_CATALOG;
+
+export const statusSchemaPath = (): string => STATUS_SCHEMA;
+
+export const statusOpenApiPath = (): string => STATUS_OPENAPI;
+
 export const statusServicePath = (service: StatusService): string =>
   `${STATUS_ROOT}${service}/`;
 
@@ -34,6 +52,18 @@ export const statusIncidentPath = (input: StatusIncidentRouteInput): string =>
 export const statusUrl = (): string => withBase(STATUS_ROOT);
 
 export const statusMarkdownUrl = (): string => withBase(STATUS_MARKDOWN);
+
+export const statusDataUrl = (): string => withBase(STATUS_DATA);
+
+export const statusLlmsUrl = (): string => withBase(STATUS_LLMS);
+
+export const statusLlmsFullUrl = (): string => withBase(STATUS_LLMS_FULL);
+
+export const statusApiCatalogUrl = (): string => withBase(STATUS_API_CATALOG);
+
+export const statusSchemaUrl = (): string => withBase(STATUS_SCHEMA);
+
+export const statusOpenApiUrl = (): string => withBase(STATUS_OPENAPI);
 
 export const statusServiceUrl = (service: StatusService): string =>
   withBase(statusServicePath(service));

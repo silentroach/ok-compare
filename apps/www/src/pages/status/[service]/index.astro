@@ -51,6 +51,9 @@ const stateClass = {
   red: 'text-[color:var(--color-danger)]',
 } as const;
 const latestIncidents = summary.incidents.slice(0, 10);
+const schemaItems = latestIncidents
+  .filter((item) => item.has_page)
+  .map((item) => ({ name: item.title, url: item.url }));
 const title = `${serviceLabel} — статус Шелково`;
 const description = `Статус сервиса ${serviceLabel.toLowerCase()} в Шелково: последний год и последние записи.`;
 const breadcrumbs = [
@@ -65,7 +68,7 @@ const schema = collectionPageSchema({
     { name: 'Статус', url: statusUrl() },
     { name: serviceLabel, url: statusServiceUrl(service) },
   ],
-  items: latestIncidents.map((item) => ({ name: item.title, url: item.url })),
+  items: schemaItems,
 });
 ---
 

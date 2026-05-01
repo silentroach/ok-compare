@@ -51,6 +51,7 @@ export interface StatusIncident {
   readonly areas: readonly StatusArea[];
   readonly source_url?: string;
   readonly excerpt?: string;
+  readonly has_page: boolean;
   readonly body: string;
   readonly sort_started_at: number;
   readonly sort_last_change_at: number;

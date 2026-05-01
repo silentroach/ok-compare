@@ -17,12 +17,15 @@ const plannedWorks = data.incidents.filter(
 const title = 'Статус поселка Шелково';
 const description =
   'Статус поселка Шелково: инциденты, плановые работы и история сервисов.';
+const schemaItems = data.incidents
+  .filter((item) => item.has_page)
+  .map((item) => ({ name: item.title, url: item.url }));
 const schema = collectionPageSchema({
   name: title,
   description,
   url: statusUrl(),
   breadcrumbs: [{ name: 'Статус', url: statusUrl() }],
-  items: data.incidents.map((item) => ({ name: item.title, url: item.url })),
+  items: schemaItems,
 });
 ---
 

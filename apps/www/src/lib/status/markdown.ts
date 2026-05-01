@@ -40,6 +40,13 @@ function section(title: string, rows: readonly string[]): readonly string[] {
 
 const inline = (value: string): string => value.replace(/\s+/gu, ' ').trim();
 
+const sourceMarkdownLink = (url: string): string => `[источник](${abs(url)})`;
+
+const incidentMarkdownLabel = (incident: StatusIncident): string =>
+  incident.has_page
+    ? `[${incident.title}](${incidentMarkdownHref(incident)})`
+    : incident.title;
+
 const incidentMarkdownHref = (
   incident: Pick<StatusIncident, 'year' | 'month' | 'slug'>,
 ): string => abs(statusIncidentMarkdownUrl(incident));
@@ -64,10 +71,13 @@ function incidentLine(
       ? undefined
       : getStatusIncidentPhase(incident).label,
     formatStatusIncidentPeriodText(incident),
+    !incident.has_page && incident.source_url
+      ? sourceMarkdownLink(incident.source_url)
+      : undefined,
   ]);
   const excerpt = incident.excerpt ? inline(incident.excerpt) : undefined;
 
-  return `- [${incident.title}](${incidentMarkdownHref(incident)})${
+  return `- ${incidentMarkdownLabel(incident)}${
     meta.length > 0 ? ` — ${meta.join('; ')}` : ''
   }${excerpt ? `\n  ${excerpt}` : ''}`;
 }
@@ -94,7 +104,7 @@ function incidentSection(input: {
 const serviceLine = (summary: StatusServiceSummary): string => {
   const latest = summary.incidents[0];
   const latestLabel = latest
-    ? `[${latest.title}](${incidentMarkdownHref(latest)})`
+    ? incidentMarkdownLabel(latest)
     : 'пока без записей';
 
   return `- [${formatStatusService(summary.service)}](${abs(statusServiceMarkdownUrl(summary.service))}) — ${formatStatusServiceState(summary.service_status)}; последняя запись: ${latestLabel}`;
@@ -170,9 +180,7 @@ export function buildStatusServiceMarkdown(
         row('Текущий статус', formatStatusServiceState(summary.service_status)),
         row(
           'Последняя запись',
-          latest
-            ? `[${latest.title}](${incidentMarkdownHref(latest)})`
-            : 'нет записей',
+          latest ? incidentMarkdownLabel(latest) : 'нет записей',
         ),
       ]),
     ),

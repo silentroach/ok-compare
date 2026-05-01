@@ -14,7 +14,7 @@ import {
   type StatusService,
   type StatusServiceSummary,
 } from './schema';
-import { extractStatusExcerpt } from './view';
+import { deriveStatusIncidentTitle, extractStatusExcerpt } from './view';
 
 export type StatusIncidentEntry = Pick<
   CollectionEntry<'statusIncidents'>,
@@ -133,7 +133,12 @@ function normalizeIncident(
 
   return {
     id: entry.id,
-    title: entry.data.title,
+    title:
+      entry.data.title ??
+      deriveStatusIncidentTitle({
+        kind: entry.data.kind,
+        service: entry.data.service,
+      }),
     service: entry.data.service,
     kind: entry.data.kind,
     year: Number(parts.year),
@@ -156,6 +161,7 @@ function normalizeIncident(
     areas: area.areas,
     ...(entry.data.source_url ? { source_url: entry.data.source_url } : {}),
     ...(content ? { excerpt: extractStatusExcerpt(content) } : {}),
+    has_page: content.length > 0,
     body: content,
     sort_started_at: started.at.valueOf(),
     sort_last_change_at: changeAt.valueOf(),

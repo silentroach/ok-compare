@@ -12,13 +12,15 @@ export const prerender = true;
 export const getStaticPaths = (async () => {
   const incidents = await loadStatusIncidents();
 
-  return incidents.map((item) => ({
-    params: {
-      year: String(item.year),
-      month: padNumber(item.month),
-      entry: item.slug,
-    },
-  }));
+  return incidents
+    .filter((item) => item.has_page)
+    .map((item) => ({
+      params: {
+        year: String(item.year),
+        month: padNumber(item.month),
+        entry: item.slug,
+      },
+    }));
 }) satisfies GetStaticPaths;
 
 export const GET: APIRoute = async ({ params }) => {
@@ -32,7 +34,7 @@ export const GET: APIRoute = async ({ params }) => {
 
   const incident = await loadStatusIncident(`${year}/${month}/${entry}`);
 
-  if (!incident) {
+  if (!incident || !incident.has_page) {
     throw new Error(`status incident "${year}/${month}/${entry}" not found`);
   }
 
