@@ -1,0 +1,188 @@
+---
+import { dateTimeFromISO, pluralizeRu } from '@shelkovo/format';
+
+import { loadStatusData } from '../../lib/status/load';
+import { statusUrl } from '../../lib/status/routes';
+import type {
+  StatusArea,
+  StatusDuration,
+  StatusIncident,
+  StatusServiceState,
+} from '../../lib/status/schema';
+import {
+  formatStatusArea,
+  formatStatusDuration,
+  formatStatusService,
+} from '../../lib/status/view';
+
+const data = await loadStatusData();
+const electricity = data.by_service.get('electricity');
+
+if (!electricity) {
+  throw new Error('status summary for electricity is required');
+}
+
+const stateLabel: Record<StatusServiceState, string> = {
+  green: 'в норме',
+  amber: 'работы',
+  red: 'инцидент',
+};
+const borderStyle: Record<StatusServiceState, string> = {
+  green: 'border-color: var(--color-success-border);',
+  amber: 'border-color: var(--color-warning-border);',
+  red: 'border-color: var(--color-danger-border);',
+};
+const dotStyle: Record<StatusServiceState, string> = {
+  green: 'background: var(--color-success);',
+  amber: 'background: var(--color-warning);',
+  red: 'background: var(--color-danger);',
+};
+const latestElectricityIncident = electricity.incidents.find(
+  (item) => item.kind === 'incident',
+);
+const currentElectricityIncident = electricity.active_incidents[0];
+
+const shortArea = (area: StatusArea): string =>
+  formatStatusArea(area).replace(/^Шелково\s+/u, '');
+
+const formatShortDate = (iso: string): string =>
+  dateTimeFromISO(iso).toFormat('d MMMM');
+
+const formatCompactDuration = (value: StatusDuration): string => {
+  const total = Math.max(0, value.total_minutes);
+  const days = Math.floor(total / (24 * 60));
+  const hours = Math.floor((total % (24 * 60)) / 60);
+  const minutes = total % 60;
+
+  if (days > 0) {
+    return formatStatusDuration(value);
+  }
+
+  if (hours > 0) {
+    return `${hours} ч ${String(minutes).padStart(2, '0')} мин`;
+  }
+
+  return `${minutes} мин`;
+};
+
+const describeIncident = (incident: StatusIncident): string => {
+  const parts = [formatShortDate(incident.started_iso)];
+
+  if (!incident.applies_to_all_areas) {
+    parts.push(incident.areas.map(shortArea).join(', '));
+  }
+
+  if (incident.duration) {
+    parts.push(formatCompactDuration(incident.duration));
+  }
+
+  return parts.join(', ');
+};
+
+const quietDaysTitle =
+  electricity.days_without_incidents.mode === 'active_incident'
+    ? 'Сейчас есть инцидент с электричеством'
+    : electricity.days_without_incidents.mode === 'count'
+      ? `${electricity.days_without_incidents.days ?? 0} ${pluralizeRu(electricity.days_without_incidents.days ?? 0, ['день', 'дня', 'дней'])} без проблем с электричеством`
+      : 'Пока без инцидентов с электричеством';
+
+const quietDaysDetail = currentElectricityIncident
+  ? `Текущий инцидент: ${describeIncident(currentElectricityIncident)}`
+  : latestElectricityIncident
+    ? `Последний инцидент: ${describeIncident(latestElectricityIncident)}`
+    : 'Пока в статус-ленте нет зафиксированных инцидентов по электричеству.';
+const focusIncidentUrl =
+  currentElectricityIncident?.url ?? latestElectricityIncident?.url;
+---
+
+<section class="w-full border-t border-border pt-5 md:pt-6">
+  <div class="space-y-5 md:space-y-6">
+    <div
+      class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between"
+    >
+      <div class="space-y-2">
+        <p class="ui-chip">Статус поселка</p>
+        <h2
+          class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]"
+        >
+          Электричество, вода и дамба
+        </h2>
+        <p class="text-sm leading-6 text-muted-foreground md:text-[0.9375rem]">
+          Короткая сводка по ключевым сервисам поселка и ссылка на полную
+          статус-ленту.
+        </p>
+      </div>
+
+      <a href={statusUrl()} class="ui-link text-sm font-medium">
+        Открыть весь статус
+      </a>
+    </div>
+
+    <div class="grid gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+      <div class="grid gap-3 sm:grid-cols-3">
+        {
+          data.services.map((summary) => (
+            <article
+              class="rounded-2xl border bg-surface-muted px-4 py-3.5"
+              style={borderStyle[summary.service_status]}
+            >
+              <div class="space-y-2.5">
+                <div class="flex items-center gap-2.5">
+                  <span
+                    class="size-2.5 shrink-0 rounded-full"
+                    style={dotStyle[summary.service_status]}
+                  />
+                  <h3 class="text-[0.975rem] font-semibold tracking-tight text-foreground">
+                    {formatStatusService(summary.service)}
+                  </h3>
+                </div>
+
+                <p class="text-sm leading-6 text-muted-foreground">
+                  {stateLabel[summary.service_status]}
+                </p>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <article
+        class="rounded-3xl border bg-surface-raised px-5 py-5 md:px-6 md:py-6"
+        style={borderStyle[electricity.service_status]}
+      >
+        <div class="space-y-3">
+          <p class="ui-chip">Тихие дни по электричеству</p>
+          <p
+            class="text-2xl font-semibold tracking-tight text-foreground md:text-[1.8rem] md:leading-tight"
+          >
+            {quietDaysTitle}
+          </p>
+          <p
+            class="text-sm leading-6 text-muted-foreground md:text-[0.9375rem]"
+          >
+            {quietDaysDetail}
+          </p>
+
+          {
+            focusIncidentUrl && (
+              <p>
+                <a href={focusIncidentUrl} class="ui-link text-sm font-medium">
+                  {currentElectricityIncident
+                    ? 'Открыть текущий инцидент'
+                    : 'Открыть последний инцидент'}
+                </a>
+              </p>
+            )
+          }
+        </div>
+      </article>
+    </div>
+
+    <div
+      class="flex flex-col gap-2 border-t border-border pt-3 text-sm leading-6 text-muted-foreground md:flex-row md:items-center md:justify-between"
+    >
+      <p>Сводка обновляется при публикации сайта и ночной пересборке.</p>
+      <a href={statusUrl()} class="ui-link font-medium">История и детали</a>
+    </div>
+  </div>
+</section>

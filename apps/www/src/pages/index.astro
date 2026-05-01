@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import StatusHomepageWidget from '../components/status/StatusHomepageWidget.astro';
 import logo from '../../../../docs/design/logo.png';
 
 const title = 'Шелково Онлайн — сайт поселка Шелково от застройщика Земля МО';
@@ -9,48 +10,50 @@ const description =
 ---
 
 <BaseLayout title={title} description={description}>
-  <main class="ui-page flex min-h-[70svh] items-center py-12 md:py-16">
-    <section
-      class="mx-auto flex max-w-3xl flex-col items-center gap-6 text-center md:gap-8"
-    >
-      <Image
-        src={logo}
-        alt="Логотип Шелково"
-        width={960}
-        height={640}
-        format="webp"
-        loading="eager"
-        class="w-full max-w-[34rem]"
-      />
+  <main class="ui-page py-12 md:py-16">
+    <section class="mx-auto flex w-full max-w-5xl flex-col gap-10 md:gap-12">
+      <div class="flex flex-col items-center gap-6 text-center md:gap-8">
+        <Image
+          src={logo}
+          alt="Логотип Шелково"
+          width={960}
+          height={640}
+          format="webp"
+          loading="eager"
+          class="w-full max-w-[34rem]"
+        />
 
-      <div class="space-y-4">
-        <h1
-          class="text-4xl font-bold tracking-tight text-foreground md:text-5xl"
-        >
-          Сайт в разработке
-        </h1>
-        <p class="ui-copy mx-auto max-w-2xl text-muted-foreground">
-          {'Собираем сайт поселка Шелково от застройщика '}<a
-            href="https://zemlyamo.ru/"
-            target="_blank"
-            rel="noreferrer noopener"
-            class="site-inline-link">Земля МО</a
-          >{
-            '. Здесь будет информация о Шелково, Шелково Ривер, Шелково Форест, Шелково Парк и Шелково Вилладж, а также об обслуживающей компании '
-          }<a
-            href="https://ok-komfort.ru/"
-            target="_blank"
-            rel="noreferrer noopener"
-            class="site-inline-link">ОК Комфорт</a
-          >{'. Пока уже доступен раздел со '}<a
-            href="/compare/"
-            class="site-inline-link">сравнением тарифов</a
-          >{' и данными по поселкам, а еще потихоньку наполняем '}<a
-            href="/news/"
-            class="site-inline-link">раздел новостей</a
-          >.
-        </p>
+        <div class="space-y-4">
+          <h1
+            class="text-4xl font-bold tracking-tight text-foreground md:text-5xl"
+          >
+            Сайт в разработке
+          </h1>
+          <p class="ui-copy mx-auto max-w-2xl text-muted-foreground">
+            {'Собираем сайт поселка Шелково от застройщика '}<a
+              href="https://zemlyamo.ru/"
+              target="_blank"
+              rel="noreferrer noopener"
+              class="site-inline-link">Земля МО</a
+            >{
+              '. Здесь будет информация о Шелково, Шелково Ривер, Шелково Форест, Шелково Парк и Шелково Вилладж, а также об обслуживающей компании '
+            }<a
+              href="https://ok-komfort.ru/"
+              target="_blank"
+              rel="noreferrer noopener"
+              class="site-inline-link">ОК Комфорт</a
+            >{'. Пока уже доступен раздел со '}<a
+              href="/compare/"
+              class="site-inline-link">сравнением тарифов</a
+            >{' и данными по поселкам, а еще потихоньку наполняем '}<a
+              href="/news/"
+              class="site-inline-link">раздел новостей</a
+            >.
+          </p>
+        </div>
       </div>
+
+      <StatusHomepageWidget />
     </section>
   </main>
 </BaseLayout>

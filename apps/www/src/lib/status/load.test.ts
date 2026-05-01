@@ -41,6 +41,50 @@ beforeAll(async () => {
 });
 
 describe('buildStatusDataset', () => {
+  it('accepts supported status timestamp formats', () => {
+    const data = buildStatusDataset(
+      [
+        entry({
+          id: '2026/05/day-only',
+          title: 'Дата без времени',
+          service: 'water',
+          kind: 'maintenance',
+          started_at: '01.05.2026',
+        }),
+        entry({
+          id: '2026/05/day-time',
+          title: 'Дата со временем',
+          service: 'dam',
+          kind: 'incident',
+          started_at: '02.05.2026 14:05',
+        }),
+        entry({
+          id: '2026/05/iso-day',
+          title: 'ISO-дата',
+          service: 'electricity',
+          kind: 'incident',
+          started_at: '2026-05-03',
+        }),
+      ],
+      {
+        now: new Date('2026-05-04T09:00:00+03:00'),
+      },
+    );
+
+    expect(data.by_id.get('2026/05/day-only')).toMatchObject({
+      started_iso: '2026-05-01T00:00:00+03:00',
+      started_has_time: false,
+    });
+    expect(data.by_id.get('2026/05/day-time')).toMatchObject({
+      started_iso: '2026-05-02T14:05:00+03:00',
+      started_has_time: true,
+    });
+    expect(data.by_id.get('2026/05/iso-day')).toMatchObject({
+      started_iso: '2026-05-03T00:00:00+03:00',
+      started_has_time: false,
+    });
+  });
+
   it('derives incidents and service summaries', () => {
     const data = buildStatusDataset(
       [
@@ -137,6 +181,48 @@ describe('buildStatusDataset', () => {
     });
   });
 
+  it('marks active incident, active maintenance, and closed incident separately', () => {
+    const data = buildStatusDataset(
+      [
+        entry({
+          id: '2026/05/electricity-active-incident',
+          title: 'Активный инцидент по электричеству',
+          service: 'electricity',
+          kind: 'incident',
+          started_at: '03.05.2026 07:30',
+        }),
+        entry({
+          id: '2026/05/water-active-maintenance',
+          title: 'Активные работы по воде',
+          service: 'water',
+          kind: 'maintenance',
+          started_at: '03.05.2026 09:00',
+        }),
+        entry({
+          id: '2026/05/dam-closed-incident',
+          title: 'Закрытый инцидент по дамбе',
+          service: 'dam',
+          kind: 'incident',
+          started_at: '01.05.2026',
+          ended_at: '02.05.2026',
+        }),
+      ],
+      {
+        now: new Date('2026-05-03T12:00:00+03:00'),
+      },
+    );
+
+    expect(
+      data.by_id.get('2026/05/electricity-active-incident')?.is_active,
+    ).toBe(true);
+    expect(data.by_id.get('2026/05/water-active-maintenance')?.is_active).toBe(
+      true,
+    );
+    expect(data.by_id.get('2026/05/dam-closed-incident')?.is_active).toBe(
+      false,
+    );
+  });
+
   it('does not mark future events as active before they start', () => {
     const data = buildStatusDataset(
       [
@@ -159,6 +245,86 @@ describe('buildStatusDataset', () => {
       days_without_incidents: {
         mode: 'no_incidents',
       },
+    });
+  });
+
+  it('resets quiet days only on incidents', () => {
+    const data = buildStatusDataset(
+      [
+        entry({
+          id: '2026/05/electricity-restored',
+          title: 'Электричество восстановлено',
+          service: 'electricity',
+          kind: 'incident',
+          started_at: '01.05.2026 01:00',
+          ended_at: '01.05.2026 05:00',
+        }),
+        entry({
+          id: '2026/05/electricity-maintenance',
+          title: 'Плановые работы по электричеству',
+          service: 'electricity',
+          kind: 'maintenance',
+          started_at: '03.05.2026 12:00',
+        }),
+      ],
+      {
+        now: new Date('2026-05-04T09:00:00+03:00'),
+      },
+    );
+
+    expect(data.by_service.get('electricity')).toMatchObject({
+      service_status: 'amber',
+      days_without_incidents: {
+        mode: 'count',
+        days: 3,
+        last_ended_iso: '2026-05-01T05:00:00+03:00',
+      },
+    });
+  });
+
+  it('extracts excerpt from the first paragraph only', () => {
+    const data = buildStatusDataset([
+      entry({
+        id: '2026/05/electricity-excerpt',
+        title: 'Инцидент с описанием',
+        service: 'electricity',
+        kind: 'incident',
+        started_at: '01.05.2026 07:32',
+        ended_at: '01.05.2026 16:38',
+        body: 'Первый абзац.\nСо второй строкой.\n\nВторой абзац останется за пределами excerpt.',
+      }),
+    ]);
+
+    expect(data.by_id.get('2026/05/electricity-excerpt')?.excerpt).toBe(
+      'Первый абзац. Со второй строкой.',
+    );
+  });
+
+  it('prefers incidents over maintenance when deriving service status', () => {
+    const data = buildStatusDataset(
+      [
+        entry({
+          id: '2026/05/water-maintenance',
+          title: 'Плановые работы по воде',
+          service: 'water',
+          kind: 'maintenance',
+          started_at: '03.05.2026 08:00',
+        }),
+        entry({
+          id: '2026/05/water-incident',
+          title: 'Авария по воде',
+          service: 'water',
+          kind: 'incident',
+          started_at: '03.05.2026 09:00',
+        }),
+      ],
+      {
+        now: new Date('2026-05-03T12:00:00+03:00'),
+      },
+    );
+
+    expect(data.by_service.get('water')).toMatchObject({
+      service_status: 'red',
     });
   });
 
