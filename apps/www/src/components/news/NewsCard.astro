@@ -1,4 +1,5 @@
 ---
+import StarIcon from '@shelkovo/ui/StarIcon.astro';
 import type { NewsListArticle } from '../../lib/news/schema';
 import NewsMeta from './NewsMeta.astro';
 import NewsTagList from './NewsTagList.astro';
@@ -31,20 +32,32 @@ const { article, featured = false } = Astro.props;
   }
 
   <div class="space-y-4 px-5 py-5 md:px-6 md:py-6">
-    <div class="flex flex-wrap gap-2">
-      {article.pinned && <span class="ui-chip">Закреплено</span>}
-      {
-        featured && article.has_addenda && article.updated_iso && (
+    {
+      featured && article.has_addenda && article.updated_iso && (
+        <div class="flex flex-wrap gap-2">
           <span class="ui-chip">Есть уточнения</span>
-        )
-      }
-    </div>
+        </div>
+      )
+    }
 
     <div class="space-y-3">
-      <h3 class="text-2xl font-semibold tracking-tight text-foreground">
+      <h3
+        class="flex items-start gap-2 text-2xl font-semibold tracking-tight text-foreground"
+      >
         <a href={article.url} class="ui-link">
           {article.title}
         </a>
+        {
+          article.pinned && (
+            <span
+              class="mt-1 inline-flex shrink-0 text-muted-foreground opacity-50"
+              title="закреплено сверху"
+              aria-label="закреплено сверху"
+            >
+              <StarIcon class="size-4" />
+            </span>
+          )
+        }
       </h3>
 
       <NewsMeta
