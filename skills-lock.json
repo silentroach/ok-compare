@@ -17,6 +17,12 @@
       "skillPath": "skills/github-actions-docs/SKILL.md",
       "computedHash": "e9ac24e79715ef3060bd4ae376052f8d863b830604e69cb513b39764bf47ee53"
     },
+    "improve-codebase-architecture": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/improve-codebase-architecture/SKILL.md",
+      "computedHash": "c77b86b4332919499608f9af1880074e1fec65a59b95c70c27a9f39cd137865e"
+    },
     "nginx-expert": {
       "source": "personamanagmentlayer/pcl",
       "sourceType": "github",

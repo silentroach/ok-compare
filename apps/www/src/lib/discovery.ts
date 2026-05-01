@@ -25,8 +25,12 @@ const COMPARE_DATA = '/compare/data/settlements.json';
 const COMPARE_LLMS = '/compare/llms.txt';
 const COMPARE_CATALOG = '/compare/.well-known/api-catalog';
 const COMPARE_SKILLS = '/compare/.well-known/agent-skills/index.json';
+
 const abs = (root: string, path: string): string =>
   new URL(path.replace(/^\//, ''), `${root}/`).toString();
+
+const full = (root: string, path: string): string =>
+  new URL(path, `${root}/`).toString();
 
 const star = (
   value: string,
@@ -46,22 +50,22 @@ export function catalog(root: string): Record<string, unknown> {
             'title*': star('Главная страница сайта'),
           },
           {
-            href: abs(root, siteMarkdownUrl()),
+            href: full(root, siteMarkdownUrl()),
             type: 'text/markdown',
             'title*': star('Markdown companion корневой страницы'),
           },
           {
-            href: abs(root, siteLlmsUrl()),
+            href: full(root, siteLlmsUrl()),
             type: 'text/plain',
             'title*': star('Короткий агентный обзор корневого сайта'),
           },
           {
-            href: abs(root, siteLlmsFullUrl()),
+            href: full(root, siteLlmsFullUrl()),
             type: 'text/plain',
             'title*': star('Расширенный агентный обзор корневого сайта'),
           },
           {
-            href: abs(root, siteSkillsUrl()),
+            href: full(root, siteSkillsUrl()),
             type: 'application/json',
             'title*': star('Индекс public agent skills корневого сайта'),
           },
@@ -143,4 +147,4 @@ export function catalog(root: string): Record<string, unknown> {
 }
 
 export const self = (root: string): string =>
-  `<${abs(root, siteApiCatalogUrl())}>; rel="api-catalog"; type="application/linkset+json"; profile="${PROFILE}"`;
+  `<${full(root, siteApiCatalogUrl())}>; rel="api-catalog"; type="application/linkset+json"; profile="${PROFILE}"`;
