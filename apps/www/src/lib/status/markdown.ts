@@ -122,17 +122,21 @@ export function buildStatusHomeMarkdown(
     'Текстовое представление статуса сервисов, актуальных проблем, плановых работ и истории поселка.',
     '',
     ...section('Сервисы', data.services.map(serviceLine)),
-    ...incidentSection({
-      title: 'Актуальные проблемы',
-      items: activeIncidents,
-      empty: 'Сейчас нет актуальных проблем.',
-      hideIncidentPhase: true,
-    }),
-    ...incidentSection({
-      title: 'Плановые работы',
-      items: plannedWorks,
-      empty: 'Сейчас нет активных или запланированных работ.',
-    }),
+    ...(activeIncidents.length > 0
+      ? incidentSection({
+          title: 'Актуальные проблемы',
+          items: activeIncidents,
+          empty: 'Сейчас нет актуальных проблем.',
+          hideIncidentPhase: true,
+        })
+      : []),
+    ...(plannedWorks.length > 0
+      ? incidentSection({
+          title: 'Плановые работы',
+          items: plannedWorks,
+          empty: 'Сейчас нет активных или запланированных работ.',
+        })
+      : []),
     ...incidentSection({
       title: 'История',
       items: data.incidents,
@@ -172,17 +176,22 @@ export function buildStatusServiceMarkdown(
         ),
       ]),
     ),
-    ...incidentSection({
-      title: 'Актуальные проблемы',
-      items: summary.active_incidents,
-      empty: 'Сейчас нет актуальных проблем по этому сервису.',
-      hideIncidentPhase: true,
-    }),
-    ...incidentSection({
-      title: 'Плановые работы',
-      items: plannedWorks,
-      empty: 'Сейчас нет активных или запланированных работ по этому сервису.',
-    }),
+    ...(summary.active_incidents.length > 0
+      ? incidentSection({
+          title: 'Актуальные проблемы',
+          items: summary.active_incidents,
+          empty: 'Сейчас нет актуальных проблем по этому сервису.',
+          hideIncidentPhase: true,
+        })
+      : []),
+    ...(plannedWorks.length > 0
+      ? incidentSection({
+          title: 'Плановые работы',
+          items: plannedWorks,
+          empty:
+            'Сейчас нет активных или запланированных работ по этому сервису.',
+        })
+      : []),
     ...incidentSection({
       title: 'История',
       items: summary.incidents.slice(0, 10),
