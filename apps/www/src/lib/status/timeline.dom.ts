@@ -12,6 +12,7 @@ export interface StatusTimelineHydrationOptions {
 
 interface StatusTimelineProblemNode {
   readonly element: HTMLElement;
+  readonly kind?: 'incident' | 'maintenance';
   readonly startMs: number;
   readonly endMs?: number;
 }
@@ -111,6 +112,66 @@ const readStatusTimelineTooltipData = (
     ...(phaseIcon === 'alert' || phaseIcon === 'check' ? { phaseIcon } : {}),
     periodLabel,
   };
+};
+
+const setStatusTimelineProblemAriaLabel = (element: HTMLElement): void => {
+  const serviceLabel = element.dataset.tooltipServiceLabel;
+  const kindLabel = element.dataset.tooltipKindLabel;
+  const title = element.dataset.tooltipTitle;
+  const phaseLabel = element.dataset.tooltipPhaseLabel;
+  const periodLabel = element.dataset.tooltipPeriodLabel;
+
+  if (!serviceLabel || !kindLabel || !title || !phaseLabel || !periodLabel) {
+    return;
+  }
+
+  element.setAttribute(
+    'aria-label',
+    [serviceLabel, kindLabel, title, `Статус: ${phaseLabel}`, periodLabel].join(
+      '. ',
+    ),
+  );
+};
+
+const syncStatusTimelineProblemPhase = (
+  problemNode: StatusTimelineProblemNode,
+  nowMs: number,
+): void => {
+  if (problemNode.kind !== 'incident' && problemNode.kind !== 'maintenance') {
+    return;
+  }
+
+  if (problemNode.startMs > nowMs) {
+    problemNode.element.dataset.tooltipPhaseLabel =
+      problemNode.kind === 'maintenance' ? 'запланировано' : 'ожидается';
+    delete problemNode.element.dataset.tooltipPhaseIcon;
+    setStatusTimelineProblemAriaLabel(problemNode.element);
+    return;
+  }
+
+  if (problemNode.endMs === undefined || problemNode.endMs > nowMs) {
+    problemNode.element.dataset.tooltipPhaseLabel = 'идет';
+
+    if (problemNode.kind === 'incident') {
+      problemNode.element.dataset.tooltipPhaseIcon = 'alert';
+    } else {
+      delete problemNode.element.dataset.tooltipPhaseIcon;
+    }
+
+    setStatusTimelineProblemAriaLabel(problemNode.element);
+    return;
+  }
+
+  problemNode.element.dataset.tooltipPhaseLabel =
+    problemNode.kind === 'maintenance' ? 'завершено' : 'восстановлено';
+
+  if (problemNode.kind === 'incident') {
+    problemNode.element.dataset.tooltipPhaseIcon = 'check';
+  } else {
+    delete problemNode.element.dataset.tooltipPhaseIcon;
+  }
+
+  setStatusTimelineProblemAriaLabel(problemNode.element);
 };
 
 const closeStatusTimelineTooltip = (
@@ -241,6 +302,11 @@ const parseStatusTimelineProblemNode = (
   if (!rawEnd) {
     return {
       element,
+      kind:
+        element.dataset.statusKind === 'incident' ||
+        element.dataset.statusKind === 'maintenance'
+          ? element.dataset.statusKind
+          : undefined,
       startMs,
     };
   }
@@ -253,6 +319,11 @@ const parseStatusTimelineProblemNode = (
 
   return {
     element,
+    kind:
+      element.dataset.statusKind === 'incident' ||
+      element.dataset.statusKind === 'maintenance'
+        ? element.dataset.statusKind
+        : undefined,
     startMs,
     endMs,
   };
@@ -341,6 +412,8 @@ export const hydrateStatusTimeline = (
     if (!problemNode) {
       return;
     }
+
+    syncStatusTimelineProblemPhase(problemNode, range.endMs);
 
     const span = clipStatusTimelineSpan(problemNode, range);
 

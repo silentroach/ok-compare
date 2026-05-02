@@ -232,6 +232,29 @@ describe('buildStatusTimelineTooltipData', () => {
     });
   });
 
+  it('keeps future maintenance with an end date in planned phase', () => {
+    expect(
+      buildStatusTimelineTooltipData({
+        service: 'electricity',
+        incident: {
+          kind: 'maintenance',
+          title: 'Плановая профилактика сети',
+          is_active: false,
+          started_iso: `${nextYear}-05-03T00:00:00+03:00`,
+          started_has_time: false,
+          ended_iso: `${nextYear}-05-04T00:00:00+03:00`,
+          ended_has_time: false,
+        },
+      }),
+    ).toEqual({
+      serviceLabel: 'Электричество',
+      kindLabel: 'Плановые работы',
+      title: 'Плановая профилактика сети',
+      phaseLabel: 'запланировано',
+      periodLabel: `3 мая ${nextYear} - 4 мая ${nextYear}`,
+    });
+  });
+
   it('can emit non-breaking spaces for timeline UI labels', () => {
     const tooltip = buildStatusTimelineTooltipData({
       service: 'water',

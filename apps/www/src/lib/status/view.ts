@@ -303,12 +303,22 @@ export const formatStatusDaysWithoutIncidents = (
 };
 
 export const getStatusIncidentPhase = (
-  incident: Pick<StatusIncident, 'kind' | 'is_active' | 'ended_iso'>,
+  incident: Pick<
+    StatusIncident,
+    'kind' | 'is_active' | 'started_iso' | 'ended_iso'
+  >,
 ): StatusIncidentPhase => {
   if (incident.is_active) {
     return {
       label: 'идет',
       tone: incident.kind === 'maintenance' ? 'warning' : 'danger',
+    };
+  }
+
+  if (Date.parse(incident.started_iso) > Date.now()) {
+    return {
+      label: incident.kind === 'maintenance' ? 'запланировано' : 'ожидается',
+      tone: incident.kind === 'maintenance' ? 'warning' : 'info',
     };
   }
 

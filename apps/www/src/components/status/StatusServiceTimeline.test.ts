@@ -57,7 +57,7 @@ afterEach(() => {
 });
 
 describe('StatusServiceTimeline', () => {
-  it('renders only visible problem segments in SSR HTML', async () => {
+  it('renders visible segments plus hidden future incidents in SSR HTML', async () => {
     const html = await renderTimeline([
       incident({
         id: 'old-past',
@@ -77,13 +77,23 @@ describe('StatusServiceTimeline', () => {
         started_iso: '2026-05-09T00:00:00Z',
         is_active: true,
       }),
+      incident({
+        id: 'maintenance-future',
+        kind: 'maintenance',
+        started_iso: '2026-05-12T00:00:00Z',
+        ended_iso: '2026-05-13T00:00:00Z',
+        is_active: false,
+      }),
     ]);
 
-    expect(html.match(/data-status-problem/g)?.length ?? 0).toBe(2);
+    expect(html.match(/data-status-problem/g)?.length ?? 0).toBe(3);
     expect(html).not.toContain('data-status-segment="green"');
     expect(html).not.toContain('data-incident-id="old-past"');
     expect(html).toContain('data-incident-id="maintenance-visible"');
     expect(html).toContain('data-incident-id="incident-active"');
+    expect(html).toMatch(
+      /data-incident-id="maintenance-future"[^>]*data-status-problem[^>]*hidden/,
+    );
   });
 
   it('keeps data attributes needed for later client hydration', async () => {
@@ -100,6 +110,13 @@ describe('StatusServiceTimeline', () => {
         started_iso: '2026-05-09T00:00:00Z',
         is_active: true,
       }),
+      incident({
+        id: 'maintenance-future',
+        kind: 'maintenance',
+        started_iso: '2026-05-12T00:00:00Z',
+        ended_iso: '2026-05-13T00:00:00Z',
+        is_active: false,
+      }),
     ]);
 
     expect(html).toMatch(
@@ -113,6 +130,9 @@ describe('StatusServiceTimeline', () => {
     );
     expect(html).not.toMatch(
       /data-incident-id="incident-active"[^>]*data-end=/,
+    );
+    expect(html).toMatch(
+      /data-incident-id="maintenance-future"[^>]*data-status-problem[^>]*data-start="2026-05-12T00:00:00Z"[^>]*data-end="2026-05-13T00:00:00Z"[^>]*data-tooltip-phase-label="запланировано"[^>]*hidden/,
     );
   });
 

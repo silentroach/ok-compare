@@ -15,8 +15,10 @@ interface TooltipInput {
 
 interface ProblemNodeInput {
   readonly id: string;
+  readonly kind?: 'incident' | 'maintenance';
   readonly start: string;
   readonly end?: string;
+  readonly hidden?: boolean;
   readonly tone?: 'amber' | 'red';
   readonly tooltip?: Partial<TooltipInput>;
 }
@@ -58,15 +60,25 @@ const renderTimeline = (
     <div data-status-timeline data-range-days="${String(rangeDays)}">
       <div data-status-timeline-track>
         ${nodes
-          .map(({ end, id, start, tone = 'red', tooltip: rawTooltip }) => {
-            const tooltip = buildTooltip(id, rawTooltip);
+          .map(
+            ({
+              end,
+              hidden = false,
+              id,
+              kind = 'incident',
+              start,
+              tone = 'red',
+              tooltip: rawTooltip,
+            }) => {
+              const tooltip = buildTooltip(id, rawTooltip);
 
-            return `
+              return `
               <a
                 href="/status/incidents/${id}"
                 title="${escapeAttribute(buildTooltipLabel(tooltip))}"
                 data-incident-id="${id}"
                 data-status-problem
+                data-status-kind="${kind}"
                 data-start="${start}"
                 ${end ? `data-end="${end}"` : ''}
                 data-tooltip-service-label="${escapeAttribute(tooltip.serviceLabel)}"
@@ -76,9 +88,11 @@ const renderTimeline = (
                 ${tooltip.phaseIcon ? `data-tooltip-phase-icon="${tooltip.phaseIcon}"` : ''}
                 data-tooltip-period-label="${escapeAttribute(tooltip.periodLabel)}"
                 class="status-service-timeline__segment status-service-timeline__segment--problem status-service-timeline__segment--${tone}"
+                ${hidden ? 'hidden' : ''}
               ></a>
             `;
-          })
+            },
+          )
           .join('')}
       </div>
       <div
@@ -209,6 +223,37 @@ describe('hydrateStatusTimeline', () => {
     expect(readSegmentMetric(node, '--segment-width')).toBeCloseTo(20);
   });
 
+  it('shows a hidden future problem node once it enters the client-side window', () => {
+    const root = renderTimeline([
+      {
+        id: 'future',
+        kind: 'maintenance',
+        start: '2026-05-12T00:00:00Z',
+        end: '2026-05-13T00:00:00Z',
+        tone: 'amber',
+        hidden: true,
+        tooltip: {
+          kindLabel: 'Плановые работы',
+          phaseLabel: 'запланировано',
+        },
+      },
+    ]);
+
+    expect(getProblemNode('future').hidden).toBe(true);
+
+    hydrateStatusTimeline(root, {
+      nowMs: Date.parse('2026-05-15T00:00:00Z'),
+    });
+
+    const node = getProblemNode('future');
+
+    expect(node.hidden).toBe(false);
+    expect(node.dataset.tooltipPhaseLabel).toBe('завершено');
+    expect(node.getAttribute('aria-label')).toContain('Статус: завершено');
+    expect(readSegmentMetric(node, '--segment-left')).toBeCloseTo(70);
+    expect(readSegmentMetric(node, '--segment-width')).toBeCloseTo(10);
+  });
+
   it('adds green stable gaps before, between, and after problem segments', () => {
     const root = renderTimeline([
       {
@@ -288,6 +333,7 @@ describe('hydrateStatusTimeline', () => {
       {
         id: 'hover',
         start: '2026-05-08T00:00:00Z',
+        end: '2026-05-09T00:00:00Z',
         tooltip: {
           serviceLabel: 'Электричество',
           kindLabel: 'Инцидент',

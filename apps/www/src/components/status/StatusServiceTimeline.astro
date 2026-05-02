@@ -21,17 +21,38 @@ interface Props {
 
 const { service, incidents, timelineDays = 90 } = Astro.props;
 
-const incidentsById = new Map(incidents.map((item) => [item.id, item]));
 const range = getStatusTimelineRange(Date.now(), timelineDays);
 const tooltipId = `status-service-timeline-tooltip-${service}-${timelineDays}`;
-const timelineItems = buildStatusTimelineProblemSegments({ incidents, range })
-  .map((segment) => {
-    const item = incidentsById.get(segment.id);
+const visibleSegmentsById = new Map(
+  buildStatusTimelineProblemSegments({ incidents, range }).map((segment) => [
+    segment.id,
+    segment,
+  ]),
+);
 
-    if (!item) {
-      return undefined;
-    }
+const toTimelineSortMs = (value?: string): number => {
+  const parsed = Date.parse(value ?? '');
 
+  return Number.isFinite(parsed) ? parsed : Number.POSITIVE_INFINITY;
+};
+
+const timelineItems = incidents
+  .filter((item) => {
+    const visibleSegment = visibleSegmentsById.get(item.id);
+
+    return (
+      visibleSegment !== undefined ||
+      toTimelineSortMs(item.started_iso) >= range.endMs
+    );
+  })
+  .toSorted(
+    (a, b) =>
+      toTimelineSortMs(a.started_iso) - toTimelineSortMs(b.started_iso) ||
+      toTimelineSortMs(a.ended_iso) - toTimelineSortMs(b.ended_iso) ||
+      a.id.localeCompare(b.id),
+  )
+  .map((item) => {
+    const visibleSegment = visibleSegmentsById.get(item.id);
     const tooltip = buildStatusTimelineTooltipData({
       service,
       incident: item,
@@ -48,15 +69,15 @@ const timelineItems = buildStatusTimelineProblemSegments({ incidents, range })
 
     return {
       item,
-      tone: segment.tone,
-      left: segment.leftPercent,
-      width: segment.widthPercent,
+      hidden: visibleSegment === undefined,
+      tone: item.kind === 'maintenance' ? 'amber' : 'red',
+      left: visibleSegment?.leftPercent,
+      width: visibleSegment?.widthPercent,
       phaseIcon,
       tooltip,
       tooltipLabel: formatStatusTimelineTooltipLabel(tooltip),
     };
-  })
-  .filter((item) => item !== undefined);
+  });
 ---
 
 <div
@@ -68,13 +89,23 @@ const timelineItems = buildStatusTimelineProblemSegments({ incidents, range })
     <div class="status-service-timeline__segments" data-status-timeline-track>
       {
         timelineItems.map(
-          ({ item, left, phaseIcon, tone, tooltip, tooltipLabel, width }) => (
+          ({
+            hidden,
+            item,
+            left,
+            phaseIcon,
+            tone,
+            tooltip,
+            tooltipLabel,
+            width,
+          }) => (
             <a
               href={item.url}
               title={tooltipLabel}
               aria-label={tooltipLabel}
               data-incident-id={item.id}
               data-status-problem
+              data-status-kind={item.kind}
               data-start={item.started_iso}
               data-end={item.ended_iso}
               data-tooltip-service-label={tooltip.serviceLabel}
@@ -89,7 +120,12 @@ const timelineItems = buildStatusTimelineProblemSegments({ incidents, range })
                   ? 'status-service-timeline__segment--amber'
                   : 'status-service-timeline__segment--red',
               ]}
-              style={`--segment-left: ${left}; --segment-width: ${width};`}
+              hidden={hidden}
+              style={
+                hidden || left === undefined || width === undefined
+                  ? undefined
+                  : `--segment-left: ${left}; --segment-width: ${width};`
+              }
             />
           ),
         )
