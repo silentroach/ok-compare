@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { dateTimeFromISO } from '@shelkovo/format';
 
 import {
+  buildStatusTimelineTooltipData,
   formatStatusDate,
   formatStatusIncidentPeriodText,
+  formatStatusTimelineTooltipLabel,
   getStatusIncidentPeriod,
 } from './view';
 
@@ -153,5 +155,54 @@ describe('formatStatusIncidentPeriodText', () => {
         ended_has_time: false,
       }),
     ).toBe('Начиная с 1 мая, 07:32');
+  });
+});
+
+describe('buildStatusTimelineTooltipData', () => {
+  it('builds timeline tooltip labels for an active incident', () => {
+    const tooltip = buildStatusTimelineTooltipData({
+      service: 'water',
+      incident: {
+        kind: 'incident',
+        title: 'Нет воды на Центральной',
+        is_active: true,
+        started_iso: `${currentYear}-05-01T07:32:00+03:00`,
+        started_has_time: true,
+        ended_has_time: false,
+      },
+    });
+
+    expect(tooltip).toEqual({
+      serviceLabel: 'Вода',
+      kindLabel: 'Инцидент',
+      title: 'Нет воды на Центральной',
+      phaseLabel: 'идет',
+      periodLabel: 'Начиная с 1 мая, 07:32',
+    });
+    expect(formatStatusTimelineTooltipLabel(tooltip)).toBe(
+      'Вода. Инцидент. Нет воды на Центральной. Статус: идет. Начиная с 1 мая, 07:32',
+    );
+  });
+
+  it('builds timeline tooltip labels for planned maintenance', () => {
+    expect(
+      buildStatusTimelineTooltipData({
+        service: 'electricity',
+        incident: {
+          kind: 'maintenance',
+          title: 'Плановая профилактика сети',
+          is_active: false,
+          started_iso: `${currentYear}-05-03T00:00:00+03:00`,
+          started_has_time: false,
+          ended_has_time: false,
+        },
+      }),
+    ).toEqual({
+      serviceLabel: 'Электричество',
+      kindLabel: 'Плановые работы',
+      title: 'Плановая профилактика сети',
+      phaseLabel: 'запланировано',
+      periodLabel: 'Начало 3 мая',
+    });
   });
 });

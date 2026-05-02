@@ -104,11 +104,30 @@ describe('StatusServiceTimeline', () => {
       /data-incident-id="maintenance-visible"[^>]*data-status-problem[^>]*data-start="2026-05-02T00:00:00Z"[^>]*data-end="2026-05-03T00:00:00Z"/,
     );
     expect(html).toMatch(
-      /data-incident-id="incident-active"[^>]*data-status-problem[^>]*data-start="2026-05-09T00:00:00Z"/,
+      /data-incident-id="maintenance-visible"[^>]*data-tooltip-service-label="Вода"[^>]*data-tooltip-kind-label="Плановые работы"[^>]*data-tooltip-phase-label="завершено"/,
+    );
+    expect(html).toMatch(
+      /data-incident-id="incident-active"[^>]*data-status-problem[^>]*data-start="2026-05-09T00:00:00Z"[^>]*data-tooltip-phase-icon="alert"/,
     );
     expect(html).not.toMatch(
       /data-incident-id="incident-active"[^>]*data-end=/,
     );
+  });
+
+  it('renders a shared tooltip shell in SSR HTML', async () => {
+    const html = await renderTimeline([
+      incident({
+        id: 'incident-active',
+        started_iso: '2026-05-09T00:00:00Z',
+        is_active: true,
+      }),
+    ]);
+
+    expect(html).toContain('data-status-timeline-tooltip');
+    expect(html).toContain('role="tooltip"');
+    expect(html).toContain('data-status-tooltip-title');
+    expect(html).toContain('data-status-tooltip-phase-icon-alert');
+    expect(html).toContain('data-status-tooltip-phase-icon-check');
   });
 
   it('uses different tone classes for maintenance and incident entries', async () => {

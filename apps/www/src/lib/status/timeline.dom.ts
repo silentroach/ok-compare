@@ -16,6 +16,20 @@ interface StatusTimelineProblemNode {
   readonly endMs?: number;
 }
 
+interface StatusTimelineTooltipData {
+  readonly title: string;
+  readonly phaseIcon?: 'alert' | 'check';
+  readonly periodLabel: string;
+}
+
+interface StatusTimelineTooltipElements {
+  readonly shell: HTMLElement;
+  readonly title: HTMLElement;
+  readonly phaseAlertIcon: HTMLElement;
+  readonly phaseCheckIcon: HTMLElement;
+  readonly period: HTMLElement;
+}
+
 declare global {
   interface Window {
     __STATUS_TIMELINE_NOW__?: unknown;
@@ -26,6 +40,8 @@ const STATUS_TIMELINE_SELECTOR = '[data-status-timeline]';
 const STATUS_TIMELINE_TRACK_SELECTOR = '[data-status-timeline-track]';
 const STATUS_TIMELINE_PROBLEM_SELECTOR = '[data-status-problem]';
 const STATUS_TIMELINE_GREEN_SELECTOR = '[data-status-segment="green"]';
+const STATUS_TIMELINE_TOOLTIP_SELECTOR = '[data-status-timeline-tooltip]';
+const STATUS_TIMELINE_TOOLTIP_MARGIN_PX = 8;
 
 const isFiniteNumber = (value: unknown): value is number =>
   typeof value === 'number' && Number.isFinite(value);
@@ -41,6 +57,174 @@ const showStatusTimelineSegment = (
   element.style.setProperty('--segment-left', String(geometry.leftPercent));
   element.style.setProperty('--segment-width', String(geometry.widthPercent));
   element.hidden = false;
+};
+
+const getStatusTimelineTooltip = (
+  root: HTMLElement,
+): StatusTimelineTooltipElements | undefined => {
+  const shell = root.querySelector(STATUS_TIMELINE_TOOLTIP_SELECTOR);
+
+  if (!(shell instanceof HTMLElement)) {
+    return undefined;
+  }
+
+  const title = shell.querySelector('[data-status-tooltip-title]');
+  const phaseAlertIcon = shell.querySelector(
+    '[data-status-tooltip-phase-icon-alert]',
+  );
+  const phaseCheckIcon = shell.querySelector(
+    '[data-status-tooltip-phase-icon-check]',
+  );
+  const period = shell.querySelector('[data-status-tooltip-period]');
+
+  if (
+    !(title instanceof HTMLElement) ||
+    !(phaseAlertIcon instanceof HTMLElement) ||
+    !(phaseCheckIcon instanceof HTMLElement) ||
+    !(period instanceof HTMLElement)
+  ) {
+    return undefined;
+  }
+
+  return {
+    shell,
+    title,
+    phaseAlertIcon,
+    phaseCheckIcon,
+    period,
+  };
+};
+
+const readStatusTimelineTooltipData = (
+  trigger: HTMLElement,
+): StatusTimelineTooltipData | undefined => {
+  const title = trigger.dataset.tooltipTitle;
+  const phaseIcon = trigger.dataset.tooltipPhaseIcon;
+  const periodLabel = trigger.dataset.tooltipPeriodLabel;
+
+  if (!title || !periodLabel) {
+    return undefined;
+  }
+
+  return {
+    title,
+    ...(phaseIcon === 'alert' || phaseIcon === 'check' ? { phaseIcon } : {}),
+    periodLabel,
+  };
+};
+
+const closeStatusTimelineTooltip = (
+  root: HTMLElement,
+  tooltip: StatusTimelineTooltipElements,
+): void => {
+  root.querySelectorAll(STATUS_TIMELINE_PROBLEM_SELECTOR).forEach((node) => {
+    if (
+      node instanceof HTMLElement &&
+      node.getAttribute('aria-describedby') === tooltip.shell.id
+    ) {
+      node.removeAttribute('aria-describedby');
+    }
+  });
+
+  tooltip.shell.hidden = true;
+  tooltip.shell.setAttribute('aria-hidden', 'true');
+  delete root.dataset.statusTooltipOpen;
+};
+
+const positionStatusTimelineTooltip = (
+  root: HTMLElement,
+  trigger: HTMLElement,
+  tooltip: HTMLElement,
+): void => {
+  const rootRect = root.getBoundingClientRect();
+  const triggerRect = trigger.getBoundingClientRect();
+  const tooltipHeight = tooltip.offsetHeight;
+  const center = triggerRect.left - rootRect.left + triggerRect.width / 2;
+  const minLeft = tooltip.offsetWidth / 2 + STATUS_TIMELINE_TOOLTIP_MARGIN_PX;
+  const maxLeft = Math.max(
+    minLeft,
+    rootRect.width -
+      tooltip.offsetWidth / 2 -
+      STATUS_TIMELINE_TOOLTIP_MARGIN_PX,
+  );
+  const left = Math.min(Math.max(center, minLeft), maxLeft);
+  const spaceBelow = window.innerHeight - rootRect.bottom;
+  const spaceAbove = rootRect.top;
+  const side =
+    spaceBelow >= tooltipHeight + STATUS_TIMELINE_TOOLTIP_MARGIN_PX ||
+    spaceBelow >= spaceAbove
+      ? 'below'
+      : 'above';
+
+  tooltip.dataset.side = side;
+  tooltip.style.left = `${left}px`;
+};
+
+const openStatusTimelineTooltip = (
+  root: HTMLElement,
+  trigger: HTMLElement,
+  tooltip: StatusTimelineTooltipElements,
+): void => {
+  const data = readStatusTimelineTooltipData(trigger);
+
+  if (!data || !tooltip.shell.id) {
+    closeStatusTimelineTooltip(root, tooltip);
+    return;
+  }
+
+  root.querySelectorAll(STATUS_TIMELINE_PROBLEM_SELECTOR).forEach((node) => {
+    if (node instanceof HTMLElement && node !== trigger) {
+      node.removeAttribute('aria-describedby');
+    }
+  });
+
+  tooltip.title.textContent = data.title;
+  tooltip.phaseAlertIcon.hidden = data.phaseIcon !== 'alert';
+  tooltip.phaseCheckIcon.hidden = data.phaseIcon !== 'check';
+  tooltip.period.textContent = data.periodLabel;
+  tooltip.shell.hidden = false;
+  tooltip.shell.setAttribute('aria-hidden', 'false');
+  root.dataset.statusTooltipOpen = 'true';
+  positionStatusTimelineTooltip(root, trigger, tooltip.shell);
+  trigger.setAttribute('aria-describedby', tooltip.shell.id);
+};
+
+const bindStatusTimelineTooltipTrigger = (
+  root: HTMLElement,
+  trigger: HTMLElement,
+  tooltip: StatusTimelineTooltipElements,
+): void => {
+  if (trigger.dataset.statusTooltipBound === 'true') {
+    trigger.removeAttribute('title');
+    return;
+  }
+
+  trigger.dataset.statusTooltipBound = 'true';
+  trigger.removeAttribute('title');
+  trigger.addEventListener('mouseenter', () => {
+    openStatusTimelineTooltip(root, trigger, tooltip);
+  });
+  trigger.addEventListener('focusin', () => {
+    openStatusTimelineTooltip(root, trigger, tooltip);
+  });
+  trigger.addEventListener('mouseleave', () => {
+    closeStatusTimelineTooltip(root, tooltip);
+  });
+  trigger.addEventListener('focusout', (event) => {
+    if (
+      event.relatedTarget instanceof Node &&
+      trigger.contains(event.relatedTarget)
+    ) {
+      return;
+    }
+
+    closeStatusTimelineTooltip(root, tooltip);
+  });
+  trigger.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeStatusTimelineTooltip(root, tooltip);
+    }
+  });
 };
 
 const parseStatusTimelineProblemNode = (
@@ -123,6 +307,12 @@ export const hydrateStatusTimeline = (
     return;
   }
 
+  const tooltip = getStatusTimelineTooltip(root);
+
+  if (tooltip) {
+    closeStatusTimelineTooltip(root, tooltip);
+  }
+
   track
     .querySelectorAll(STATUS_TIMELINE_GREEN_SELECTOR)
     .forEach((node) => node.remove());
@@ -138,6 +328,10 @@ export const hydrateStatusTimeline = (
   track.querySelectorAll(STATUS_TIMELINE_PROBLEM_SELECTOR).forEach((node) => {
     if (!(node instanceof HTMLElement)) {
       return;
+    }
+
+    if (tooltip) {
+      bindStatusTimelineTooltipTrigger(root, node, tooltip);
     }
 
     hideStatusTimelineSegment(node);

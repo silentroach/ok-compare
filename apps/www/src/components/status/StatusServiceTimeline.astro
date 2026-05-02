@@ -1,4 +1,7 @@
 ---
+import AlertCircleIcon from '@shelkovo/ui/icons/system/AlertCircle.astro';
+import CheckCircleIcon from '@shelkovo/ui/icons/system/CheckCircle.astro';
+
 import type { StatusService } from '@/lib/status/schema';
 import {
   buildStatusTimelineProblemSegments,
@@ -6,9 +9,8 @@ import {
   type StatusTimelineIncidentInput,
 } from '@/lib/status/timeline';
 import {
-  formatStatusIncidentPeriodText,
-  formatStatusKind,
-  formatStatusService,
+  buildStatusTimelineTooltipData,
+  formatStatusTimelineTooltipLabel,
 } from '@/lib/status/view';
 
 interface Props {
@@ -19,9 +21,9 @@ interface Props {
 
 const { service, incidents, timelineDays = 90 } = Astro.props;
 
-const serviceLabel = formatStatusService(service);
 const incidentsById = new Map(incidents.map((item) => [item.id, item]));
 const range = getStatusTimelineRange(Date.now(), timelineDays);
+const tooltipId = `status-service-timeline-tooltip-${service}-${timelineDays}`;
 const timelineItems = buildStatusTimelineProblemSegments({ incidents, range })
   .map((segment) => {
     const item = incidentsById.get(segment.id);
@@ -30,12 +32,27 @@ const timelineItems = buildStatusTimelineProblemSegments({ incidents, range })
       return undefined;
     }
 
+    const tooltip = buildStatusTimelineTooltipData({
+      service,
+      incident: item,
+    });
+    const phaseIcon =
+      item.kind !== 'incident'
+        ? undefined
+        : item.is_active
+          ? 'alert'
+          : item.ended_iso
+            ? 'check'
+            : undefined;
+
     return {
       item,
       tone: segment.tone,
       left: segment.leftPercent,
       width: segment.widthPercent,
-      tooltip: `${serviceLabel}. ${formatStatusKind(item.kind)}. ${item.title}. ${formatStatusIncidentPeriodText(item)}. Открыть запись.`,
+      phaseIcon,
+      tooltip,
+      tooltipLabel: formatStatusTimelineTooltipLabel(tooltip),
     };
   })
   .filter((item) => item !== undefined);
@@ -49,33 +66,79 @@ const timelineItems = buildStatusTimelineProblemSegments({ incidents, range })
   <div class="status-service-timeline__track">
     <div class="status-service-timeline__segments" data-status-timeline-track>
       {
-        timelineItems.map(({ item, left, tone, tooltip, width }) => (
-          <a
-            href={item.url}
-            title={tooltip}
-            aria-label={tooltip}
-            data-incident-id={item.id}
-            data-status-problem
-            data-start={item.started_iso}
-            data-end={item.ended_iso}
-            class:list={[
-              'status-service-timeline__segment status-service-timeline__segment--problem',
-              tone === 'amber'
-                ? 'status-service-timeline__segment--amber'
-                : 'status-service-timeline__segment--red',
-            ]}
-            style={`--segment-left: ${left}; --segment-width: ${width};`}
-          />
-        ))
+        timelineItems.map(
+          ({ item, left, phaseIcon, tone, tooltip, tooltipLabel, width }) => (
+            <a
+              href={item.url}
+              title={tooltipLabel}
+              aria-label={tooltipLabel}
+              data-incident-id={item.id}
+              data-status-problem
+              data-start={item.started_iso}
+              data-end={item.ended_iso}
+              data-tooltip-service-label={tooltip.serviceLabel}
+              data-tooltip-kind-label={tooltip.kindLabel}
+              data-tooltip-title={tooltip.title}
+              data-tooltip-phase-label={tooltip.phaseLabel}
+              data-tooltip-phase-icon={phaseIcon}
+              data-tooltip-period-label={tooltip.periodLabel}
+              class:list={[
+                'status-service-timeline__segment status-service-timeline__segment--problem',
+                tone === 'amber'
+                  ? 'status-service-timeline__segment--amber'
+                  : 'status-service-timeline__segment--red',
+              ]}
+              style={`--segment-left: ${left}; --segment-width: ${width};`}
+            />
+          ),
+        )
       }
     </div>
+  </div>
+
+  <div
+    id={tooltipId}
+    class="status-service-timeline__tooltip tooltip-glass"
+    data-status-timeline-tooltip
+    role="tooltip"
+    aria-hidden="true"
+    hidden
+  >
+    <p class="status-service-timeline__tooltip-title">
+      <span
+        class="status-service-timeline__tooltip-phase-icon status-service-timeline__tooltip-phase-icon--alert"
+        data-status-tooltip-phase-icon-alert
+        aria-hidden="true"
+        hidden
+      >
+        <AlertCircleIcon class="size-4" />
+      </span>
+      <span
+        class="status-service-timeline__tooltip-phase-icon status-service-timeline__tooltip-phase-icon--check"
+        data-status-tooltip-phase-icon-check
+        aria-hidden="true"
+        hidden
+      >
+        <CheckCircleIcon class="size-4" />
+      </span>
+      <span data-status-tooltip-title></span>
+    </p>
+    <p class="status-service-timeline__tooltip-row" data-status-tooltip-period>
+    </p>
   </div>
 </div>
 
 <style>
   .status-service-timeline {
+    position: relative;
+    z-index: 0;
     display: grid;
     gap: 0.45rem;
+    isolation: isolate;
+  }
+
+  .status-service-timeline[data-status-tooltip-open='true'] {
+    z-index: 30;
   }
 
   .status-service-timeline__track {
@@ -136,6 +199,60 @@ const timelineItems = buildStatusTimelineProblemSegments({ incidents, range })
   .status-service-timeline__segment--problem:focus-visible {
     outline: 2px solid var(--color-text);
     outline-offset: 2px;
+  }
+
+  .status-service-timeline__tooltip {
+    position: absolute;
+    top: calc(100% + 0.6rem);
+    left: 50%;
+    z-index: 20;
+    display: grid;
+    gap: 0.4rem;
+    width: min(22rem, calc(100% - 0.5rem));
+    max-width: calc(100vw - 1.5rem);
+    padding: 0.75rem 0.85rem;
+    border: 1px solid oklch(100% 0 0 / 0.44);
+    border-radius: 1rem;
+    background: oklch(100% 0 0 / 0.9);
+    color: var(--color-text);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 1.1rem 2.5rem oklch(24% 0.03 230 / 0.18);
+    pointer-events: none;
+    transform: translateX(-50%);
+  }
+
+  .status-service-timeline__tooltip[data-side='above'] {
+    top: auto;
+    bottom: calc(100% + 0.6rem);
+  }
+
+  .status-service-timeline__tooltip-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--color-text);
+  }
+
+  .status-service-timeline__tooltip-row {
+    margin: 0;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--color-text-muted);
+  }
+
+  .status-service-timeline__tooltip-phase-icon {
+    display: inline-block;
+    margin-right: 0.22rem;
+    vertical-align: -0.17em;
+  }
+
+  .status-service-timeline__tooltip-phase-icon--alert {
+    color: var(--color-danger);
+  }
+
+  .status-service-timeline__tooltip-phase-icon--check {
+    color: var(--color-success);
   }
 </style>
 

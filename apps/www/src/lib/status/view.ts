@@ -57,6 +57,26 @@ export interface StatusIncidentPeriod {
   readonly duration?: string;
 }
 
+export interface StatusTimelineTooltipData {
+  readonly serviceLabel: string;
+  readonly kindLabel: string;
+  readonly title: string;
+  readonly phaseLabel: string;
+  readonly periodLabel: string;
+}
+
+type StatusTimelineTooltipIncident = Pick<
+  StatusIncident,
+  | 'kind'
+  | 'title'
+  | 'is_active'
+  | 'ended_iso'
+  | 'started_iso'
+  | 'started_has_time'
+  | 'ended_has_time'
+  | 'duration'
+>;
+
 const SPACE = /\s+/gu;
 const CURRENT_STATUS_YEAR = dateTimeFromISO(new Date().toISOString()).year;
 
@@ -201,6 +221,28 @@ export const formatStatusIncidentPeriodText = (
     .filter((item) => item !== undefined)
     .join(' ');
 };
+
+export const buildStatusTimelineTooltipData = (input: {
+  readonly service: StatusService;
+  readonly incident: StatusTimelineTooltipIncident;
+}): StatusTimelineTooltipData => ({
+  serviceLabel: formatStatusService(input.service),
+  kindLabel: formatStatusKind(input.incident.kind),
+  title: input.incident.title,
+  phaseLabel: getStatusIncidentPhase(input.incident).label,
+  periodLabel: formatStatusIncidentPeriodText(input.incident),
+});
+
+export const formatStatusTimelineTooltipLabel = (
+  tooltip: StatusTimelineTooltipData,
+): string =>
+  [
+    tooltip.serviceLabel,
+    tooltip.kindLabel,
+    tooltip.title,
+    `Статус: ${tooltip.phaseLabel}`,
+    tooltip.periodLabel,
+  ].join('. ');
 
 export const formatStatusDaysWithoutIncidents = (
   value: StatusDaysWithoutIncidents,
