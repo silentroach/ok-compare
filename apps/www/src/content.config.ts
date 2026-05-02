@@ -378,7 +378,7 @@ const newsArticles = defineCollection({
 
 const statusIncidents = defineCollection({
   loader: glob({
-    pattern: '**/*.md',
+    pattern: ['**/*.md', '!**/AGENTS.md'],
     base: './src/data/status/incidents',
     generateId: ({ entry, data }) => {
       validateStatusEntry(entry, data);
