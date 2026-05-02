@@ -7,6 +7,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import StatusServiceTimeline from './StatusServiceTimeline.astro';
 import type { StatusTimelineIncidentInput } from '@/lib/status/timeline';
 
+const NBSP = '\u00A0';
+
 interface IncidentInput {
   readonly id: string;
   readonly kind?: StatusTimelineIncidentInput['kind'];
@@ -111,6 +113,23 @@ describe('StatusServiceTimeline', () => {
     );
     expect(html).not.toMatch(
       /data-incident-id="incident-active"[^>]*data-end=/,
+    );
+  });
+
+  it('renders typographic non-breaking spaces in tooltip date labels', async () => {
+    const html = await renderTimeline([
+      incident({
+        id: 'incident-active',
+        started_iso: '2026-05-09T00:00:00Z',
+        is_active: true,
+      }),
+    ]);
+
+    expect(html).toContain(
+      `data-tooltip-period-label="Начиная с${NBSP}9${NBSP}мая, 03:00"`,
+    );
+    expect(html).toContain(
+      `aria-label="Вода. Инцидент. Запись incident-active. Статус: идет. Начиная с${NBSP}9${NBSP}мая, 03:00"`,
     );
   });
 

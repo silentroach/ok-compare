@@ -25,6 +25,7 @@ const latestRecord = summary.incidents[0];
 const latestMoment = latestRecord
   ? formatStatusDate(latestRecord.started_iso, {
       hasTime: latestRecord.started_has_time,
+      nonBreaking: true,
     })
   : undefined;
 const stateClass = {

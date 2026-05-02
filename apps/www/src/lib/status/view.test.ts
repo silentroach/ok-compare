@@ -9,6 +9,7 @@ import {
   getStatusIncidentPeriod,
 } from './view';
 
+const NBSP = '\u00A0';
 const currentYear = dateTimeFromISO(new Date().toISOString()).year;
 const nextYear = currentYear + 1;
 
@@ -143,6 +144,15 @@ describe('formatStatusDate', () => {
       }),
     ).toBe(`1 мая ${nextYear}, 07:32`);
   });
+
+  it('supports non-breaking spaces for UI dates', () => {
+    expect(
+      formatStatusDate(`${nextYear}-05-01T07:32:00+03:00`, {
+        hasTime: true,
+        nonBreaking: true,
+      }),
+    ).toBe(`1${NBSP}мая${NBSP}${nextYear}, 07:32`);
+  });
 });
 
 describe('formatStatusIncidentPeriodText', () => {
@@ -155,6 +165,22 @@ describe('formatStatusIncidentPeriodText', () => {
         ended_has_time: false,
       }),
     ).toBe('Начиная с 1 мая, 07:32');
+  });
+
+  it('supports non-breaking spaces for UI period labels', () => {
+    expect(
+      formatStatusIncidentPeriodText(
+        {
+          is_active: false,
+          started_iso: `${currentYear}-05-01T07:32:00+03:00`,
+          started_has_time: true,
+          ended_iso: `${currentYear}-05-01T16:38:00+03:00`,
+          ended_has_time: true,
+          duration: { total_minutes: 9 * 60 + 6 },
+        },
+        { nonBreaking: true },
+      ),
+    ).toBe(`1${NBSP}мая, 07:32 -${NBSP}16:38 (9${NBSP}ч. 6${NBSP}мин.)`);
   });
 });
 
@@ -204,5 +230,25 @@ describe('buildStatusTimelineTooltipData', () => {
       phaseLabel: 'запланировано',
       periodLabel: 'Начало 3 мая',
     });
+  });
+
+  it('can emit non-breaking spaces for timeline UI labels', () => {
+    const tooltip = buildStatusTimelineTooltipData({
+      service: 'water',
+      incident: {
+        kind: 'incident',
+        title: 'Нет воды на Центральной',
+        is_active: true,
+        started_iso: `${currentYear}-05-01T07:32:00+03:00`,
+        started_has_time: true,
+        ended_has_time: false,
+      },
+      nonBreaking: true,
+    });
+
+    expect(tooltip.periodLabel).toBe(`Начиная с${NBSP}1${NBSP}мая, 07:32`);
+    expect(formatStatusTimelineTooltipLabel(tooltip)).toBe(
+      `Вода. Инцидент. Нет воды на Центральной. Статус: идет. Начиная с${NBSP}1${NBSP}мая, 07:32`,
+    );
   });
 });

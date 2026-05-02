@@ -35,6 +35,7 @@ const timelineItems = buildStatusTimelineProblemSegments({ incidents, range })
     const tooltip = buildStatusTimelineTooltipData({
       service,
       incident: item,
+      nonBreaking: true,
     });
     const phaseIcon =
       item.kind !== 'incident'
@@ -242,9 +243,19 @@ const timelineItems = buildStatusTimelineProblemSegments({ incidents, range })
   }
 
   .status-service-timeline__tooltip-phase-icon {
-    display: inline-block;
-    margin-right: 0.22rem;
+    display: inline-flex;
+    inline-size: 1rem;
+    block-size: 1rem;
+    flex: none;
+    margin-right: 0.18rem;
+    align-items: center;
+    justify-content: center;
     vertical-align: -0.17em;
+  }
+
+  .status-service-timeline__tooltip-phase-icon :global(svg) {
+    width: 100%;
+    height: 100%;
   }
 
   .status-service-timeline__tooltip-phase-icon--alert {

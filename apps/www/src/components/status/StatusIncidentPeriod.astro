@@ -15,18 +15,18 @@ interface Props {
 }
 
 const { incident } = Astro.props;
-const period = getStatusIncidentPeriod(incident);
+const period = getStatusIncidentPeriod(incident, { nonBreaking: true });
 ---
 
 <span>
-  {period.prefix && `${period.prefix} `}
+  {period.prefix && `${period.prefix}\u00A0`}
   <time datetime={period.start.iso} class="font-medium text-foreground">
     {period.start.text}
   </time>
   {
     period.end && (
       <>
-        {' - '}
+        {' -\u00A0'}
         <time datetime={period.end.iso} class="font-medium text-foreground">
           {period.end.text}
         </time>

@@ -9,7 +9,10 @@
     "preview": "astro preview",
     "typecheck": "astro sync && tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:visual:status": "playwright test -c playwright.status-visual.local.config.ts",
+    "test:visual:status:update": "playwright test -c playwright.status-visual.local.config.ts --update-snapshots",
+    "test:visual:status:serve": "node ../../scripts/check-port.mjs 4324 && astro build --root tests/status-timeline-visual && astro preview --root tests/status-timeline-visual --host 127.0.0.1 --port 4324"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.2",
@@ -20,6 +23,7 @@
     "astro": "^6.1.7"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/vite": "^4.0.0",
     "rehype-raw": "^7.0.0",
     "rehype-stringify": "^10.0.1",
