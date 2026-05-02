@@ -1,0 +1,138 @@
+/// <reference types="astro/client" />
+
+import { experimental_AstroContainer as AstroContainer } from 'astro/container';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+// @ts-expect-error Astro component modules are resolved by Astro/Vitest at test time.
+import StatusServiceTimeline from './StatusServiceTimeline.astro';
+import type { StatusTimelineIncidentInput } from '@/lib/status/timeline';
+
+interface IncidentInput {
+  readonly id: string;
+  readonly kind?: StatusTimelineIncidentInput['kind'];
+  readonly title?: string;
+  readonly started_iso: string;
+  readonly started_has_time?: boolean;
+  readonly ended_iso?: string;
+  readonly ended_has_time?: boolean;
+  readonly is_active?: boolean;
+}
+
+const incident = (input: IncidentInput): StatusTimelineIncidentInput => ({
+  id: input.id,
+  url: `/status/incidents/${input.id}`,
+  title: input.title ?? `Запись ${input.id}`,
+  kind: input.kind ?? 'incident',
+  started_iso: input.started_iso,
+  started_has_time: input.started_has_time ?? true,
+  ...(input.ended_iso ? { ended_iso: input.ended_iso } : {}),
+  ended_has_time: input.ended_has_time ?? true,
+  is_active: input.is_active ?? !input.ended_iso,
+});
+
+const renderTimeline = async (
+  incidents: readonly StatusTimelineIncidentInput[],
+): Promise<string> => {
+  const container = await AstroContainer.create();
+
+  return container.renderToString(StatusServiceTimeline, {
+    props: {
+      service: 'water',
+      incidents,
+      timelineDays: 10,
+    },
+  });
+};
+
+beforeEach(() => {
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2026-05-10T00:00:00Z'));
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+  vi.restoreAllMocks();
+});
+
+describe('StatusServiceTimeline', () => {
+  it('renders only visible problem segments in SSR HTML', async () => {
+    const html = await renderTimeline([
+      incident({
+        id: 'old-past',
+        started_iso: '2026-04-20T00:00:00Z',
+        ended_iso: '2026-04-22T00:00:00Z',
+        is_active: false,
+      }),
+      incident({
+        id: 'maintenance-visible',
+        kind: 'maintenance',
+        started_iso: '2026-05-02T00:00:00Z',
+        ended_iso: '2026-05-03T00:00:00Z',
+        is_active: false,
+      }),
+      incident({
+        id: 'incident-active',
+        started_iso: '2026-05-09T00:00:00Z',
+        is_active: true,
+      }),
+    ]);
+
+    expect(html.match(/data-status-problem/g)?.length ?? 0).toBe(2);
+    expect(html).not.toContain('data-status-segment="green"');
+    expect(html).not.toContain('data-incident-id="old-past"');
+    expect(html).toContain('data-incident-id="maintenance-visible"');
+    expect(html).toContain('data-incident-id="incident-active"');
+  });
+
+  it('keeps data attributes needed for later client hydration', async () => {
+    const html = await renderTimeline([
+      incident({
+        id: 'maintenance-visible',
+        kind: 'maintenance',
+        started_iso: '2026-05-02T00:00:00Z',
+        ended_iso: '2026-05-03T00:00:00Z',
+        is_active: false,
+      }),
+      incident({
+        id: 'incident-active',
+        started_iso: '2026-05-09T00:00:00Z',
+        is_active: true,
+      }),
+    ]);
+
+    expect(html).toMatch(
+      /data-incident-id="maintenance-visible"[^>]*data-status-problem[^>]*data-start="2026-05-02T00:00:00Z"[^>]*data-end="2026-05-03T00:00:00Z"/,
+    );
+    expect(html).toMatch(
+      /data-incident-id="incident-active"[^>]*data-status-problem[^>]*data-start="2026-05-09T00:00:00Z"/,
+    );
+    expect(html).not.toMatch(
+      /data-incident-id="incident-active"[^>]*data-end=/,
+    );
+  });
+
+  it('uses different tone classes for maintenance and incident entries', async () => {
+    const html = await renderTimeline([
+      incident({
+        id: 'maintenance-visible',
+        kind: 'maintenance',
+        started_iso: '2026-05-02T00:00:00Z',
+        ended_iso: '2026-05-03T00:00:00Z',
+        is_active: false,
+      }),
+      incident({
+        id: 'incident-visible',
+        started_iso: '2026-05-05T00:00:00Z',
+        ended_iso: '2026-05-06T00:00:00Z',
+        is_active: false,
+      }),
+    ]);
+
+    expect(html).toMatch(
+      /data-incident-id="maintenance-visible"[^>]*status-service-timeline__segment--amber/,
+    );
+    expect(html).toMatch(
+      /data-incident-id="incident-visible"[^>]*status-service-timeline__segment--red/,
+    );
+  });
+});

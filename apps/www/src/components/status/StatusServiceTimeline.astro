@@ -1,52 +1,44 @@
 ---
-import type { StatusServiceSummary } from '../../lib/status/schema';
+import type { StatusService } from '@/lib/status/schema';
 import {
-  formatStatusDate,
+  buildStatusTimelineProblemSegments,
+  getStatusTimelineRange,
+  type StatusTimelineIncidentInput,
+} from '@/lib/status/timeline';
+import {
   formatStatusIncidentPeriodText,
+  formatStatusKind,
   formatStatusService,
-} from '../../lib/status/view';
+} from '@/lib/status/view';
 
 interface Props {
-  readonly summary: StatusServiceSummary;
+  readonly service: StatusService;
+  readonly incidents: readonly StatusTimelineIncidentInput[];
   readonly timelineDays?: number;
 }
 
-const { summary, timelineDays = 90 } = Astro.props;
+const { service, incidents, timelineDays = 90 } = Astro.props;
 
-const DAY_MS = 24 * 60 * 60 * 1000;
-const buildNowValue = Date.now();
-const buildRangeStartValue = buildNowValue - timelineDays * DAY_MS;
-const serviceLabel = formatStatusService(summary.service);
-const timelineItems = [...summary.incidents]
-  .sort((a, b) => a.started_at.valueOf() - b.started_at.valueOf())
-  .map((item) => {
-    const itemStartValue = item.started_at.valueOf();
-    const itemEndValue = item.ended_at?.valueOf() ?? buildNowValue;
-    const visibleAtBuild =
-      itemEndValue > buildRangeStartValue && itemStartValue < buildNowValue;
-    const clippedStart = Math.max(buildRangeStartValue, itemStartValue);
-    const clippedEnd = Math.min(buildNowValue, itemEndValue);
-    const left =
-      ((clippedStart - buildRangeStartValue) / (timelineDays * DAY_MS)) * 100;
-    const width = visibleAtBuild
-      ? Math.max(
-          ((clippedEnd - clippedStart) / (timelineDays * DAY_MS)) * 100,
-          0.75,
-        )
-      : 0;
-    const kindLabel =
-      item.kind === 'maintenance' ? 'Плановые работы' : 'Инцидент';
-    const rangeLabel = formatStatusIncidentPeriodText(item);
+const serviceLabel = formatStatusService(service);
+const incidentsById = new Map(incidents.map((item) => [item.id, item]));
+const range = getStatusTimelineRange(Date.now(), timelineDays);
+const timelineItems = buildStatusTimelineProblemSegments({ incidents, range })
+  .map((segment) => {
+    const item = incidentsById.get(segment.id);
+
+    if (!item) {
+      return undefined;
+    }
 
     return {
       item,
-      tone: item.kind === 'maintenance' ? 'amber' : 'red',
-      left,
-      width,
-      visibleAtBuild,
-      tooltip: `${serviceLabel}. ${kindLabel}. ${item.title}. ${rangeLabel}. Открыть запись.`,
+      tone: segment.tone,
+      left: segment.leftPercent,
+      width: segment.widthPercent,
+      tooltip: `${serviceLabel}. ${formatStatusKind(item.kind)}. ${item.title}. ${formatStatusIncidentPeriodText(item)}. Открыть запись.`,
     };
-  });
+  })
+  .filter((item) => item !== undefined);
 ---
 
 <div
@@ -56,26 +48,24 @@ const timelineItems = [...summary.incidents]
   <div class="status-service-timeline__track">
     <div class="status-service-timeline__segments" data-status-timeline-track>
       {
-        timelineItems.map(
-          ({ item, left, tone, tooltip, visibleAtBuild, width }) => (
-            <a
-              href={item.url}
-              title={tooltip}
-              aria-label={tooltip}
-              data-status-problem
-              data-start={item.started_iso}
-              data-end={item.ended_iso}
-              class:list={[
-                'status-service-timeline__segment status-service-timeline__segment--problem',
-                tone === 'amber'
-                  ? 'status-service-timeline__segment--amber'
-                  : 'status-service-timeline__segment--red',
-                !visibleAtBuild && 'hidden',
-              ]}
-              style={`--segment-left: ${left}; --segment-width: ${width};`}
-            />
-          ),
-        )
+        timelineItems.map(({ item, left, tone, tooltip, width }) => (
+          <a
+            href={item.url}
+            title={tooltip}
+            aria-label={tooltip}
+            data-incident-id={item.id}
+            data-status-problem
+            data-start={item.started_iso}
+            data-end={item.ended_iso}
+            class:list={[
+              'status-service-timeline__segment status-service-timeline__segment--problem',
+              tone === 'amber'
+                ? 'status-service-timeline__segment--amber'
+                : 'status-service-timeline__segment--red',
+            ]}
+            style={`--segment-left: ${left}; --segment-width: ${width};`}
+          />
+        ))
       }
     </div>
   </div>

@@ -110,7 +110,11 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
         Последние {timelineDays} дней
       </p>
 
-      <StatusServiceTimeline summary={summary} timelineDays={timelineDays} />
+      <StatusServiceTimeline
+        service={summary.service}
+        incidents={summary.incidents}
+        timelineDays={timelineDays}
+      />
     </div>
 
     <div class="flex flex-col gap-1 lg:gap-0">
