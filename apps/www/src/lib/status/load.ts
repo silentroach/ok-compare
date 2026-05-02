@@ -268,8 +268,8 @@ export const buildStatusDataset = (
 
 export const loadStatusData = (): Promise<StatusDataset> => {
   cache ??= import('astro:content').then(({ getCollection }) =>
-    getCollection('statusIncidents').then((entries) =>
-      buildStatusDataset(entries),
+    getCollection('statusIncidents').then(
+      (entries: readonly StatusIncidentEntry[]) => buildStatusDataset(entries),
     ),
   );
 
