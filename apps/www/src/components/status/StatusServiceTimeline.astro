@@ -1,90 +1,181 @@
 ---
-import type { StatusServiceSummary } from '../../lib/status/schema';
+import AlertCircleIcon from '@shelkovo/ui/icons/system/AlertCircle.astro';
+import CheckCircleIcon from '@shelkovo/ui/icons/system/CheckCircle.astro';
+
+import type { StatusService } from '@/lib/status/schema';
 import {
-  formatStatusDate,
-  formatStatusIncidentPeriodText,
-  formatStatusService,
-} from '../../lib/status/view';
+  buildStatusTimelineProblemSegments,
+  getStatusTimelineRange,
+  type StatusTimelineIncidentInput,
+} from '@/lib/status/timeline';
+import {
+  buildStatusTimelineTooltipData,
+  formatStatusTimelineTooltipLabel,
+} from '@/lib/status/view';
 
 interface Props {
-  readonly summary: StatusServiceSummary;
+  readonly service: StatusService;
+  readonly incidents: readonly StatusTimelineIncidentInput[];
   readonly timelineDays?: number;
 }
 
-const { summary, timelineDays = 90 } = Astro.props;
+const { service, incidents, timelineDays = 90 } = Astro.props;
 
-const DAY_MS = 24 * 60 * 60 * 1000;
-const buildNowValue = Date.now();
-const buildRangeStartValue = buildNowValue - timelineDays * DAY_MS;
-const serviceLabel = formatStatusService(summary.service);
-const timelineItems = [...summary.incidents]
-  .sort((a, b) => a.started_at.valueOf() - b.started_at.valueOf())
+const range = getStatusTimelineRange(Date.now(), timelineDays);
+const tooltipId = `status-service-timeline-tooltip-${service}-${timelineDays}`;
+const visibleSegmentsById = new Map(
+  buildStatusTimelineProblemSegments({ incidents, range }).map((segment) => [
+    segment.id,
+    segment,
+  ]),
+);
+
+const toTimelineSortMs = (value?: string): number => {
+  const parsed = Date.parse(value ?? '');
+
+  return Number.isFinite(parsed) ? parsed : Number.POSITIVE_INFINITY;
+};
+
+const timelineItems = incidents
+  .filter((item) => {
+    const visibleSegment = visibleSegmentsById.get(item.id);
+
+    return (
+      visibleSegment !== undefined ||
+      toTimelineSortMs(item.started_iso) >= range.endMs
+    );
+  })
+  .toSorted(
+    (a, b) =>
+      toTimelineSortMs(a.started_iso) - toTimelineSortMs(b.started_iso) ||
+      toTimelineSortMs(a.ended_iso) - toTimelineSortMs(b.ended_iso) ||
+      a.id.localeCompare(b.id),
+  )
   .map((item) => {
-    const itemStartValue = item.started_at.valueOf();
-    const itemEndValue = item.ended_at?.valueOf() ?? buildNowValue;
-    const visibleAtBuild =
-      itemEndValue > buildRangeStartValue && itemStartValue < buildNowValue;
-    const clippedStart = Math.max(buildRangeStartValue, itemStartValue);
-    const clippedEnd = Math.min(buildNowValue, itemEndValue);
-    const left =
-      ((clippedStart - buildRangeStartValue) / (timelineDays * DAY_MS)) * 100;
-    const width = visibleAtBuild
-      ? Math.max(
-          ((clippedEnd - clippedStart) / (timelineDays * DAY_MS)) * 100,
-          0.75,
-        )
-      : 0;
-    const kindLabel =
-      item.kind === 'maintenance' ? 'Плановые работы' : 'Инцидент';
-    const rangeLabel = formatStatusIncidentPeriodText(item);
+    const visibleSegment = visibleSegmentsById.get(item.id);
+    const tooltip = buildStatusTimelineTooltipData({
+      service,
+      incident: item,
+      nonBreaking: true,
+    });
+    const phaseIcon =
+      item.kind !== 'incident'
+        ? undefined
+        : item.is_active
+          ? 'alert'
+          : item.ended_iso
+            ? 'check'
+            : undefined;
 
     return {
       item,
+      hidden: visibleSegment === undefined,
       tone: item.kind === 'maintenance' ? 'amber' : 'red',
-      left,
-      width,
-      visibleAtBuild,
-      tooltip: `${serviceLabel}. ${kindLabel}. ${item.title}. ${rangeLabel}. Открыть запись.`,
+      left: visibleSegment?.leftPercent,
+      width: visibleSegment?.widthPercent,
+      phaseIcon,
+      tooltip,
+      tooltipLabel: formatStatusTimelineTooltipLabel(tooltip),
     };
   });
 ---
 
 <div
   class="js-status-service-timeline status-service-timeline"
+  data-status-timeline
   data-range-days={String(timelineDays)}
 >
   <div class="status-service-timeline__track">
     <div class="status-service-timeline__segments" data-status-timeline-track>
       {
         timelineItems.map(
-          ({ item, left, tone, tooltip, visibleAtBuild, width }) => (
+          ({
+            hidden,
+            item,
+            left,
+            phaseIcon,
+            tone,
+            tooltip,
+            tooltipLabel,
+            width,
+          }) => (
             <a
               href={item.url}
-              title={tooltip}
-              aria-label={tooltip}
+              title={tooltipLabel}
+              aria-label={tooltipLabel}
+              data-incident-id={item.id}
               data-status-problem
+              data-status-kind={item.kind}
               data-start={item.started_iso}
               data-end={item.ended_iso}
+              data-tooltip-service-label={tooltip.serviceLabel}
+              data-tooltip-kind-label={tooltip.kindLabel}
+              data-tooltip-title={tooltip.title}
+              data-tooltip-phase-label={tooltip.phaseLabel}
+              data-tooltip-phase-icon={phaseIcon}
+              data-tooltip-period-label={tooltip.periodLabel}
               class:list={[
                 'status-service-timeline__segment status-service-timeline__segment--problem',
                 tone === 'amber'
                   ? 'status-service-timeline__segment--amber'
                   : 'status-service-timeline__segment--red',
-                !visibleAtBuild && 'hidden',
               ]}
-              style={`--segment-left: ${left}; --segment-width: ${width};`}
+              hidden={hidden}
+              style={
+                hidden || left === undefined || width === undefined
+                  ? undefined
+                  : `--segment-left: ${left}; --segment-width: ${width};`
+              }
             />
           ),
         )
       }
     </div>
   </div>
+
+  <div
+    id={tooltipId}
+    class="status-service-timeline__tooltip tooltip-glass"
+    data-status-timeline-tooltip
+    role="tooltip"
+    aria-hidden="true"
+    hidden
+  >
+    <p class="status-service-timeline__tooltip-title">
+      <span
+        class="status-service-timeline__tooltip-phase-icon status-service-timeline__tooltip-phase-icon--alert"
+        data-status-tooltip-phase-icon-alert
+        aria-hidden="true"
+        hidden
+      >
+        <AlertCircleIcon class="size-4" />
+      </span>
+      <span
+        class="status-service-timeline__tooltip-phase-icon status-service-timeline__tooltip-phase-icon--check"
+        data-status-tooltip-phase-icon-check
+        aria-hidden="true"
+        hidden
+      >
+        <CheckCircleIcon class="size-4" />
+      </span>
+      <span data-status-tooltip-title></span>
+    </p>
+    <p class="status-service-timeline__tooltip-row" data-status-tooltip-period>
+    </p>
+  </div>
 </div>
 
 <style>
   .status-service-timeline {
+    position: relative;
+    z-index: 0;
     display: grid;
     gap: 0.45rem;
+    isolation: isolate;
+  }
+
+  .status-service-timeline[data-status-tooltip-open='true'] {
+    z-index: 30;
   }
 
   .status-service-timeline__track {
@@ -146,116 +237,74 @@ const timelineItems = [...summary.incidents]
     outline: 2px solid var(--color-text);
     outline-offset: 2px;
   }
+
+  .status-service-timeline__tooltip {
+    position: absolute;
+    top: calc(100% + 0.6rem);
+    left: 50%;
+    z-index: 20;
+    display: grid;
+    gap: 0.4rem;
+    width: min(22rem, calc(100% - 0.5rem));
+    max-width: calc(100vw - 1.5rem);
+    padding: 0.75rem 0.85rem;
+    border: 1px solid oklch(100% 0 0 / 0.44);
+    border-radius: 1rem;
+    background: oklch(100% 0 0 / 0.9);
+    color: var(--color-text);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 1.1rem 2.5rem oklch(24% 0.03 230 / 0.18);
+    pointer-events: none;
+    transform: translateX(-50%);
+  }
+
+  .status-service-timeline__tooltip[data-side='above'] {
+    top: auto;
+    bottom: calc(100% + 0.6rem);
+  }
+
+  .status-service-timeline__tooltip-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--color-text);
+  }
+
+  .status-service-timeline__tooltip-row {
+    margin: 0;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--color-text-muted);
+  }
+
+  .status-service-timeline__tooltip-phase-icon {
+    display: inline-flex;
+    inline-size: 1rem;
+    block-size: 1rem;
+    flex: none;
+    margin-right: 0.18rem;
+    align-items: center;
+    justify-content: center;
+    vertical-align: -0.17em;
+  }
+
+  .status-service-timeline__tooltip-phase-icon :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .status-service-timeline__tooltip-phase-icon--alert {
+    color: var(--color-danger);
+  }
+
+  .status-service-timeline__tooltip-phase-icon--check {
+    color: var(--color-success);
+  }
 </style>
 
 <script>
-  const DAY_MS = 24 * 60 * 60 * 1000;
+  import { hydrateStatusTimelines } from '@/lib/status/timeline.dom';
 
-  const positionTimelineSegment = (
-    element,
-    start,
-    end,
-    rangeStart,
-    rangeMs,
-  ) => {
-    const left = ((start - rangeStart) / rangeMs) * 100;
-    const width = Math.max(((end - start) / rangeMs) * 100, 0.45);
-
-    element.style.setProperty('--segment-left', String(left));
-    element.style.setProperty('--segment-width', String(width));
-    element.classList.remove('hidden');
-  };
-
-  const appendGreenSegment = (track, start, end, rangeStart, rangeMs) => {
-    if (end <= start) {
-      return;
-    }
-
-    const segment = document.createElement('span');
-
-    segment.dataset.statusSegment = 'green';
-    segment.className =
-      'status-service-timeline__segment status-service-timeline__segment--green';
-    segment.title = 'Без инцидентов';
-    positionTimelineSegment(segment, start, end, rangeStart, rangeMs);
-    track.insertBefore(segment, track.firstChild);
-  };
-
-  const renderServiceTimeline = (timeline) => {
-    const rangeDays = Number(timeline.dataset.rangeDays || '90');
-
-    if (!Number.isFinite(rangeDays) || rangeDays <= 0) {
-      return;
-    }
-
-    const track = timeline.querySelector('[data-status-timeline-track]');
-
-    if (!(track instanceof HTMLElement)) {
-      return;
-    }
-
-    track
-      .querySelectorAll('[data-status-segment="green"]')
-      .forEach((node) => node.remove());
-
-    const now = Date.now();
-    const rangeMs = rangeDays * DAY_MS;
-    const rangeStart = now - rangeMs;
-    const occupied = [];
-
-    track.querySelectorAll('[data-status-problem]').forEach((node) => {
-      if (!(node instanceof HTMLElement)) {
-        return;
-      }
-
-      const start = Date.parse(node.dataset.start || '');
-      const rawEnd = node.dataset.end;
-      const end = rawEnd ? Date.parse(rawEnd) : now;
-
-      if (!Number.isFinite(start) || !Number.isFinite(end)) {
-        node.classList.add('hidden');
-        return;
-      }
-
-      if (end <= rangeStart || start >= now) {
-        node.classList.add('hidden');
-        return;
-      }
-
-      const clippedStart = Math.max(rangeStart, start);
-      const clippedEnd = Math.min(now, end);
-
-      if (clippedEnd <= clippedStart) {
-        node.classList.add('hidden');
-        return;
-      }
-
-      positionTimelineSegment(
-        node,
-        clippedStart,
-        clippedEnd,
-        rangeStart,
-        rangeMs,
-      );
-      occupied.push({ start: clippedStart, end: clippedEnd });
-    });
-
-    occupied.sort((a, b) => a.start - b.start || a.end - b.end);
-
-    let cursor = rangeStart;
-
-    occupied.forEach((segment) => {
-      if (segment.start > cursor) {
-        appendGreenSegment(track, cursor, segment.start, rangeStart, rangeMs);
-      }
-
-      cursor = Math.max(cursor, segment.end);
-    });
-
-    appendGreenSegment(track, cursor, now, rangeStart, rangeMs);
-  };
-
-  document
-    .querySelectorAll('.js-status-service-timeline')
-    .forEach((timeline) => renderServiceTimeline(timeline));
+  hydrateStatusTimelines();
 </script>

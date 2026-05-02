@@ -57,15 +57,56 @@ export interface StatusIncidentPeriod {
   readonly duration?: string;
 }
 
+export interface StatusTimelineTooltipData {
+  readonly serviceLabel: string;
+  readonly kindLabel: string;
+  readonly title: string;
+  readonly phaseLabel: string;
+  readonly periodLabel: string;
+}
+
+type StatusTimelineTooltipIncident = Pick<
+  StatusIncident,
+  | 'kind'
+  | 'title'
+  | 'is_active'
+  | 'ended_iso'
+  | 'started_iso'
+  | 'started_has_time'
+  | 'ended_has_time'
+  | 'duration'
+>;
+
+interface StatusTypographyOptions {
+  readonly nonBreaking?: boolean;
+}
+
+interface StatusDateFormatOptions extends StatusTypographyOptions {
+  readonly hasTime?: boolean;
+}
+
 const SPACE = /\s+/gu;
+const NBSP = '\u00A0';
 const CURRENT_STATUS_YEAR = dateTimeFromISO(new Date().toISOString()).year;
 
-const formatStatusCalendarDate = (iso: string): string => {
-  const value = dateTimeFromISO(iso);
+const formatStatusNbsp = (value: string): string => value.replaceAll(' ', NBSP);
 
-  return value.toFormat(
+const joinStatusValueAndUnit = (
+  value: number,
+  unit: string,
+  opts?: StatusTypographyOptions,
+): string => `${value}${opts?.nonBreaking ? NBSP : ' '}${unit}`;
+
+const formatStatusCalendarDate = (
+  iso: string,
+  opts?: StatusTypographyOptions,
+): string => {
+  const value = dateTimeFromISO(iso);
+  const text = value.toFormat(
     value.year === CURRENT_STATUS_YEAR ? 'd MMMM' : 'd MMMM yyyy',
   );
+
+  return opts?.nonBreaking ? formatStatusNbsp(text) : text;
 };
 
 const formatStatusTime = (iso: string): string =>
@@ -86,15 +127,17 @@ export const extractStatusExcerpt = (markdown: string): string | undefined => {
 
 export const formatStatusDate = (
   iso: string,
-  opts?: {
-    readonly hasTime?: boolean;
-  },
-): string =>
-  opts?.hasTime
-    ? `${formatStatusCalendarDate(iso)}, ${formatStatusTime(iso)}`
-    : formatStatusCalendarDate(iso);
+  opts?: StatusDateFormatOptions,
+): string => {
+  const date = formatStatusCalendarDate(iso, opts);
 
-export const formatStatusDuration = (duration: StatusDuration): string => {
+  return opts?.hasTime ? `${date}, ${formatStatusTime(iso)}` : date;
+};
+
+export const formatStatusDuration = (
+  duration: StatusDuration,
+  opts?: StatusTypographyOptions,
+): string => {
   const total = Math.max(0, duration.total_minutes);
   const days = Math.floor(total / (24 * 60));
   const hours = Math.floor((total % (24 * 60)) / 60);
@@ -102,15 +145,15 @@ export const formatStatusDuration = (duration: StatusDuration): string => {
   const parts: string[] = [];
 
   if (days > 0) {
-    parts.push(`${days} дн.`);
+    parts.push(joinStatusValueAndUnit(days, 'дн.', opts));
   }
 
   if (hours > 0) {
-    parts.push(`${hours} ч.`);
+    parts.push(joinStatusValueAndUnit(hours, 'ч.', opts));
   }
 
   if (minutes > 0 || parts.length === 0) {
-    parts.push(`${minutes} мин.`);
+    parts.push(joinStatusValueAndUnit(minutes, 'мин.', opts));
   }
 
   return parts.join(' ');
@@ -126,11 +169,13 @@ export const getStatusIncidentPeriod = (
     | 'ended_has_time'
     | 'duration'
   >,
+  opts?: StatusTypographyOptions,
 ): StatusIncidentPeriod => {
   const start = {
     iso: incident.started_iso,
     text: formatStatusDate(incident.started_iso, {
       hasTime: incident.started_has_time,
+      nonBreaking: opts?.nonBreaking,
     }),
   };
   const endedIso = incident.ended_iso;
@@ -151,7 +196,7 @@ export const getStatusIncidentPeriod = (
     return {
       start: {
         iso: incident.started_iso,
-        text: formatStatusCalendarDate(incident.started_iso),
+        text: formatStatusCalendarDate(incident.started_iso, opts),
       },
     };
   }
@@ -165,17 +210,23 @@ export const getStatusIncidentPeriod = (
     start: hasSameDayTimeRange
       ? {
           iso: incident.started_iso,
-          text: `${formatStatusCalendarDate(incident.started_iso)}, ${formatStatusTime(incident.started_iso)}`,
+          text: formatStatusDate(incident.started_iso, {
+            hasTime: true,
+            nonBreaking: opts?.nonBreaking,
+          }),
         }
       : start,
     end: {
       iso: endedIso,
       text: hasSameDayTimeRange
         ? formatStatusTime(endedIso)
-        : formatStatusDate(endedIso, { hasTime: incident.ended_has_time }),
+        : formatStatusDate(endedIso, {
+            hasTime: incident.ended_has_time,
+            nonBreaking: opts?.nonBreaking,
+          }),
     },
     ...(incident.duration
-      ? { duration: formatStatusDuration(incident.duration) }
+      ? { duration: formatStatusDuration(incident.duration, opts) }
       : {}),
   };
 };
@@ -190,17 +241,50 @@ export const formatStatusIncidentPeriodText = (
     | 'ended_has_time'
     | 'duration'
   >,
+  opts?: StatusTypographyOptions,
 ): string => {
-  const period = getStatusIncidentPeriod(incident);
+  const period = getStatusIncidentPeriod(incident, opts);
+  let text = period.prefix
+    ? `${period.prefix}${opts?.nonBreaking ? NBSP : ' '}${period.start.text}`
+    : period.start.text;
 
-  return [
-    period.prefix ? `${period.prefix} ${period.start.text}` : period.start.text,
-    period.end ? `- ${period.end.text}` : undefined,
-    period.duration ? `(${period.duration})` : undefined,
-  ]
-    .filter((item) => item !== undefined)
-    .join(' ');
+  if (period.end) {
+    text += opts?.nonBreaking
+      ? ` -${NBSP}${period.end.text}`
+      : ` - ${period.end.text}`;
+  }
+
+  if (period.duration) {
+    text += ` (${period.duration})`;
+  }
+
+  return text;
 };
+
+export const buildStatusTimelineTooltipData = (input: {
+  readonly service: StatusService;
+  readonly incident: StatusTimelineTooltipIncident;
+  readonly nonBreaking?: boolean;
+}): StatusTimelineTooltipData => ({
+  serviceLabel: formatStatusService(input.service),
+  kindLabel: formatStatusKind(input.incident.kind),
+  title: input.incident.title,
+  phaseLabel: getStatusIncidentPhase(input.incident).label,
+  periodLabel: formatStatusIncidentPeriodText(input.incident, {
+    nonBreaking: input.nonBreaking,
+  }),
+});
+
+export const formatStatusTimelineTooltipLabel = (
+  tooltip: StatusTimelineTooltipData,
+): string =>
+  [
+    tooltip.serviceLabel,
+    tooltip.kindLabel,
+    tooltip.title,
+    `Статус: ${tooltip.phaseLabel}`,
+    tooltip.periodLabel,
+  ].join('. ');
 
 export const formatStatusDaysWithoutIncidents = (
   value: StatusDaysWithoutIncidents,
@@ -219,12 +303,22 @@ export const formatStatusDaysWithoutIncidents = (
 };
 
 export const getStatusIncidentPhase = (
-  incident: Pick<StatusIncident, 'kind' | 'is_active' | 'ended_iso'>,
+  incident: Pick<
+    StatusIncident,
+    'kind' | 'is_active' | 'started_iso' | 'ended_iso'
+  >,
 ): StatusIncidentPhase => {
   if (incident.is_active) {
     return {
       label: 'идет',
       tone: incident.kind === 'maintenance' ? 'warning' : 'danger',
+    };
+  }
+
+  if (Date.parse(incident.started_iso) > Date.now()) {
+    return {
+      label: incident.kind === 'maintenance' ? 'запланировано' : 'ожидается',
+      tone: incident.kind === 'maintenance' ? 'warning' : 'info',
     };
   }
 

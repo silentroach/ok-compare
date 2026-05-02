@@ -7,3 +7,5 @@ apps/*/.astro/
 .agents/
 logs/
 .env
+apps/www/test-results/
+apps/www/playwright-report/

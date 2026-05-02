@@ -155,7 +155,7 @@ function normalizeAddenda(
   readonly updated_iso?: string;
 } {
   const items = (entry.data.addenda ?? [])
-    .map((item, index) => {
+    .map((item: AddendumData, index: number) => {
       const published = parseEntryTimestamp(
         item.date,
         `news article "${entry.id}" addendum #${index + 1}`,
@@ -387,14 +387,14 @@ async function buildNewsData(): Promise<NewsDataset> {
     );
   }
 
-  const articles = articlesData
-    .map((item) => normalizeArticle(item, authors))
+  const articles: readonly NewsArticle[] = articlesData
+    .map((item: ArticleEntry) => normalizeArticle(item, authors))
     .sort(compareArticlesPublishedDesc);
 
   validateUniqueIds(articles);
   validateDayKeyConflicts(articles);
 
-  const list = articles.map(toListArticle);
+  const list: readonly NewsListArticle[] = articles.map(toListArticle);
   const home: NewsHomeData = {
     pinned: list.filter((item) => item.pinned),
     latest: list.filter((item) => !item.pinned).slice(0, NEWS_LATEST_LIMIT),

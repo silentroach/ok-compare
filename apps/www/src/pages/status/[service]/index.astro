@@ -104,7 +104,11 @@ const schema = collectionPageSchema({
         >
           {stateLabel}
         </p>
-        <StatusServiceTimeline summary={summary} timelineDays={365} />
+        <StatusServiceTimeline
+          service={summary.service}
+          incidents={summary.incidents}
+          timelineDays={365}
+        />
       </div>
     </section>
 
