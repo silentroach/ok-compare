@@ -43,6 +43,7 @@ const timelineItems = buildStatusTimelineProblemSegments({ incidents, range })
 
 <div
   class="js-status-service-timeline status-service-timeline"
+  data-status-timeline
   data-range-days={String(timelineDays)}
 >
   <div class="status-service-timeline__track">
@@ -139,113 +140,7 @@ const timelineItems = buildStatusTimelineProblemSegments({ incidents, range })
 </style>
 
 <script>
-  const DAY_MS = 24 * 60 * 60 * 1000;
+  import { hydrateStatusTimelines } from '@/lib/status/timeline.dom';
 
-  const positionTimelineSegment = (
-    element,
-    start,
-    end,
-    rangeStart,
-    rangeMs,
-  ) => {
-    const left = ((start - rangeStart) / rangeMs) * 100;
-    const width = Math.max(((end - start) / rangeMs) * 100, 0.45);
-
-    element.style.setProperty('--segment-left', String(left));
-    element.style.setProperty('--segment-width', String(width));
-    element.classList.remove('hidden');
-  };
-
-  const appendGreenSegment = (track, start, end, rangeStart, rangeMs) => {
-    if (end <= start) {
-      return;
-    }
-
-    const segment = document.createElement('span');
-
-    segment.dataset.statusSegment = 'green';
-    segment.className =
-      'status-service-timeline__segment status-service-timeline__segment--green';
-    segment.title = 'Без инцидентов';
-    positionTimelineSegment(segment, start, end, rangeStart, rangeMs);
-    track.insertBefore(segment, track.firstChild);
-  };
-
-  const renderServiceTimeline = (timeline) => {
-    const rangeDays = Number(timeline.dataset.rangeDays || '90');
-
-    if (!Number.isFinite(rangeDays) || rangeDays <= 0) {
-      return;
-    }
-
-    const track = timeline.querySelector('[data-status-timeline-track]');
-
-    if (!(track instanceof HTMLElement)) {
-      return;
-    }
-
-    track
-      .querySelectorAll('[data-status-segment="green"]')
-      .forEach((node) => node.remove());
-
-    const now = Date.now();
-    const rangeMs = rangeDays * DAY_MS;
-    const rangeStart = now - rangeMs;
-    const occupied = [];
-
-    track.querySelectorAll('[data-status-problem]').forEach((node) => {
-      if (!(node instanceof HTMLElement)) {
-        return;
-      }
-
-      const start = Date.parse(node.dataset.start || '');
-      const rawEnd = node.dataset.end;
-      const end = rawEnd ? Date.parse(rawEnd) : now;
-
-      if (!Number.isFinite(start) || !Number.isFinite(end)) {
-        node.classList.add('hidden');
-        return;
-      }
-
-      if (end <= rangeStart || start >= now) {
-        node.classList.add('hidden');
-        return;
-      }
-
-      const clippedStart = Math.max(rangeStart, start);
-      const clippedEnd = Math.min(now, end);
-
-      if (clippedEnd <= clippedStart) {
-        node.classList.add('hidden');
-        return;
-      }
-
-      positionTimelineSegment(
-        node,
-        clippedStart,
-        clippedEnd,
-        rangeStart,
-        rangeMs,
-      );
-      occupied.push({ start: clippedStart, end: clippedEnd });
-    });
-
-    occupied.sort((a, b) => a.start - b.start || a.end - b.end);
-
-    let cursor = rangeStart;
-
-    occupied.forEach((segment) => {
-      if (segment.start > cursor) {
-        appendGreenSegment(track, cursor, segment.start, rangeStart, rangeMs);
-      }
-
-      cursor = Math.max(cursor, segment.end);
-    });
-
-    appendGreenSegment(track, cursor, now, rangeStart, rangeMs);
-  };
-
-  document
-    .querySelectorAll('.js-status-service-timeline')
-    .forEach((timeline) => renderServiceTimeline(timeline));
+  hydrateStatusTimelines();
 </script>

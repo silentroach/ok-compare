@@ -42,6 +42,11 @@ export interface StatusTimelineStableSegment extends StatusTimelineSpan {
   readonly widthPercent: number;
 }
 
+export interface StatusTimelineSegmentGeometry {
+  readonly leftPercent: number;
+  readonly widthPercent: number;
+}
+
 interface BuildStatusTimelineProblemSegmentsInput {
   readonly incidents: readonly StatusTimelineIncidentInput[];
   readonly range: StatusTimelineRange;
@@ -63,13 +68,20 @@ const toStatusTimelinePercent = (
   range: StatusTimelineRange,
 ): number => ((valueMs - range.startMs) / range.spanMs) * 100;
 
+export const getStatusTimelineSegmentGeometry = (
+  span: StatusTimelineSpan,
+  range: StatusTimelineRange,
+): StatusTimelineSegmentGeometry => ({
+  leftPercent: toStatusTimelinePercent(span.startMs, range),
+  widthPercent: ((span.endMs - span.startMs) / range.spanMs) * 100,
+});
+
 const toStatusTimelineSegment = <T extends StatusTimelineSpan>(
   span: T,
   range: StatusTimelineRange,
-): T & { readonly leftPercent: number; readonly widthPercent: number } => ({
+): T & StatusTimelineSegmentGeometry => ({
   ...span,
-  leftPercent: toStatusTimelinePercent(span.startMs, range),
-  widthPercent: ((span.endMs - span.startMs) / range.spanMs) * 100,
+  ...getStatusTimelineSegmentGeometry(span, range),
 });
 
 export const getStatusTimelineRange = (
