@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
+import { createPersonMentionTarget } from '../people/mentions';
 import type { StatusIncidentEntry } from './load';
 import type { StatusArea, StatusKind, StatusService } from './schema';
 
@@ -297,6 +298,36 @@ describe('buildStatusDataset', () => {
 
     expect(data.by_id.get('2026/05/electricity-excerpt')?.excerpt).toBe(
       'Первый абзац. Со второй строкой.',
+    );
+  });
+
+  it('keeps excerpts plain-text after mention expansion', () => {
+    const data = buildStatusDataset(
+      [
+        entry({
+          id: '2026/05/electricity-mention-excerpt',
+          title: 'Инцидент с комментарием',
+          service: 'electricity',
+          kind: 'incident',
+          started_at: '01.05.2026 07:32',
+          body: 'Как отметил @kschemelinin, повреждение было редким.\n\nВторой абзац.',
+        }),
+      ],
+      {
+        people_registry: new Map([
+          [
+            'kschemelinin',
+            createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),
+          ],
+        ]),
+      },
+    );
+
+    expect(data.by_id.get('2026/05/electricity-mention-excerpt')).toMatchObject(
+      {
+        body: 'Как отметил [Кирилл Щемелинин](/people/kschemelinin/), повреждение было редким.\n\nВторой абзац.',
+        excerpt: 'Как отметил Кирилл Щемелинин, повреждение было редким.',
+      },
     );
   });
 

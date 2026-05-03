@@ -70,6 +70,15 @@ describe('describePersonProfile', () => {
       }),
     ).toBe('Первый абзац с ссылкой.');
   });
+
+  it('keeps person names after mention links are expanded', () => {
+    expect(
+      describePersonProfile({
+        name: 'Андрей Петров',
+        body: 'Как отметил [Кирилл Щемелинин](/people/kschemelinin/), проблема редкая.',
+      }),
+    ).toBe('Как отметил Кирилл Щемелинин, проблема редкая.');
+  });
 });
 
 describe('buildPersonMarkdown', () => {

@@ -1,5 +1,6 @@
 import { dateTimeFromISO, pluralizeRu } from '@shelkovo/format';
 
+import { extractFirstMarkdownText } from '../markdown/plain-text';
 import { formatNewsArea } from '../news/view';
 import type {
   StatusArea,
@@ -116,11 +117,7 @@ const isSameStatusDay = (startIso: string, endIso: string): boolean =>
   dateTimeFromISO(startIso).hasSame(dateTimeFromISO(endIso), 'day');
 
 export const extractStatusExcerpt = (markdown: string): string | undefined => {
-  const first = markdown
-    .trim()
-    .split(/\n\s*\n/u)
-    .map((item) => item.replace(/\s*\n\s*/gu, ' ').trim())
-    .find((item) => item.length > 0);
+  const first = extractFirstMarkdownText(markdown);
 
   return first ? first.replace(SPACE, ' ') : undefined;
 };

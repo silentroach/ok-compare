@@ -1,6 +1,11 @@
 import { dateTimeFromISO } from '@shelkovo/format';
 import type { CollectionEntry } from 'astro:content';
 
+import {
+  normalizePeopleMentions,
+  type PeopleMentionRegistry,
+} from '../people/mentions';
+import { loadPeopleMentionRegistry } from '../people/load';
 import { statusIncidentCanonical, statusIncidentUrl } from './routes';
 import {
   parseStatusTimestamp,
@@ -22,6 +27,7 @@ export type StatusIncidentEntry = Pick<
 >;
 
 let cache: Promise<StatusDataset> | undefined;
+const EMPTY_MENTION_REGISTRY: PeopleMentionRegistry = new Map();
 
 interface EntryParts {
   readonly year: string;
@@ -103,6 +109,7 @@ const duration = (start: Date, end: Date): StatusDuration => ({
 function normalizeIncident(
   entry: StatusIncidentEntry,
   now: Date,
+  peopleRegistry: PeopleMentionRegistry,
 ): StatusIncident {
   const parts = incidentParts(entry);
   const started = parseEntryTimestamp(
@@ -128,7 +135,14 @@ function normalizeIncident(
 
   const area = areas(entry.data.areas);
   const body = entry.body?.trimEnd() ?? '';
-  const content = body.trim().length > 0 ? body : '';
+  const content =
+    body.trim().length > 0
+      ? normalizePeopleMentions({
+          markdown: body,
+          context: `status incident "${entry.id}" body`,
+          registry: peopleRegistry,
+        }).markdown
+      : '';
   const changeAt = ended?.at ?? started.at;
 
   return {
@@ -247,11 +261,13 @@ export const buildStatusDataset = (
   entries: readonly StatusIncidentEntry[],
   opts?: {
     readonly now?: Date;
+    readonly people_registry?: PeopleMentionRegistry;
   },
 ): StatusDataset => {
   const now = opts?.now ?? new Date();
+  const peopleRegistry = opts?.people_registry ?? EMPTY_MENTION_REGISTRY;
   const incidents = entries
-    .map((entry) => normalizeIncident(entry, now))
+    .map((entry) => normalizeIncident(entry, now, peopleRegistry))
     .sort(compareIncidentsDesc);
   const services = STATUS_SERVICES.map((service) =>
     serviceSummary(service, incidents, now),
@@ -267,10 +283,16 @@ export const buildStatusDataset = (
 };
 
 export const loadStatusData = (): Promise<StatusDataset> => {
-  cache ??= import('astro:content').then(({ getCollection }) =>
-    getCollection('statusIncidents').then(
-      (entries: readonly StatusIncidentEntry[]) => buildStatusDataset(entries),
+  cache ??= Promise.all([
+    import('astro:content').then(
+      ({ getCollection }) =>
+        getCollection('statusIncidents') as Promise<
+          readonly StatusIncidentEntry[]
+        >,
     ),
+    loadPeopleMentionRegistry(),
+  ]).then(([entries, people_registry]) =>
+    buildStatusDataset(entries, { people_registry }),
   );
 
   return cache;

@@ -1,8 +1,8 @@
+import { extractFirstMarkdownText } from '../markdown/plain-text';
 import { MARKDOWN_ROBOTS } from '../news/seo';
 import { NEWS_PROSE } from '../news/view';
 import type { PersonContact, PersonContactType, PersonProfile } from './schema';
 
-const SPACE = /\s+/gu;
 const TELEGRAM_HANDLE = /^@?([A-Za-z0-9_]+)$/u;
 
 const CONTACT_LABELS: Record<PersonContactType, string> = {
@@ -18,8 +18,6 @@ export const PEOPLE_MARKDOWN_HEADERS = {
 } as const;
 
 const join = (lines: readonly string[]): string => `${lines.join('\n')}\n`;
-
-const inline = (value: string): string => value.replace(SPACE, ' ').trim();
 
 const section = (title: string, rows: readonly string[]): readonly string[] => [
   `## ${title}`,
@@ -102,21 +100,10 @@ export const normalizePersonContact = (
   };
 };
 
-const stripMarkdownInline = (value: string): string =>
-  value
-    .replace(/^\s*[-*+]\s+/u, '')
-    .replace(/!\[([^\]]*)\]\([^\)]+\)/gu, '$1')
-    .replace(/\[([^\]]+)\]\([^\)]+\)/gu, '$1')
-    .replace(/[>#*_`~]/gu, '');
-
 export const describePersonProfile = (
   profile: Pick<PersonProfile, 'body' | 'name'>,
 ): string => {
-  const first = profile.body
-    .trim()
-    .split(/\n\s*\n/gu)
-    .map((item) => inline(stripMarkdownInline(item)))
-    .find((item) => item.length > 0);
+  const first = extractFirstMarkdownText(profile.body);
 
   return (
     first ??

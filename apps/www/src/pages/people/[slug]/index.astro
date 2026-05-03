@@ -1,9 +1,9 @@
 ---
-import { getEntry, render } from 'astro:content';
 import type { GetStaticPaths } from 'astro';
 
 import NewsBreadcrumbs from '@/components/news/NewsBreadcrumbs.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import { renderMarkdown } from '@/lib/markdown/render';
 import { loadPeopleProfiles, loadPersonProfile } from '@/lib/people/load';
 import { personProfilePageSchema } from '@/lib/people/seo';
 import {
@@ -29,13 +29,12 @@ if (!slug) {
 }
 
 const profile = await loadPersonProfile(slug);
-const source = await getEntry('peopleProfiles', slug);
 
-if (!profile || !source) {
+if (!profile) {
   throw new Error(`person profile "${slug}" not found`);
 }
 
-const { Content } = await render(source);
+const bodyHtml = profile.body ? renderMarkdown(profile.body) : undefined;
 const description = describePersonProfile(profile);
 const title = `${profile.name} — люди Шелково`;
 const breadcrumbs = [{ label: 'Люди' }, { label: profile.name }];
@@ -115,9 +114,7 @@ const schema = personProfilePageSchema({
     {
       profile.body && (
         <article class="px-5 md:px-6">
-          <div class={`max-w-4xl ${PEOPLE_PROSE}`}>
-            <Content />
-          </div>
+          <div class={`max-w-4xl ${PEOPLE_PROSE}`} set:html={bodyHtml} />
         </article>
       )
     }

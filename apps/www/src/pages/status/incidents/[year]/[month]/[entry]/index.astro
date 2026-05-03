@@ -1,11 +1,11 @@
 ---
-import { getEntry, render } from 'astro:content';
 import type { GetStaticPaths } from 'astro';
 import { padNumber } from '@shelkovo/format';
 
 import NewsBreadcrumbs from '@/components/news/NewsBreadcrumbs.astro';
 import StatusIncidentMeta from '@/components/status/StatusIncidentMeta.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import { renderMarkdown } from '@/lib/markdown/render';
 import { loadStatusIncident, loadStatusIncidents } from '@/lib/status/load';
 import { statusUrl } from '@/lib/status/routes';
 import { techArticleSchema } from '@/lib/news/seo';
@@ -35,13 +35,12 @@ if (!year || !month || !entry) {
 
 const id = `${year}/${month}/${entry}`;
 const incident = await loadStatusIncident(id);
-const source = await getEntry('statusIncidents', id);
 
-if (!incident || !incident.has_page || !source) {
+if (!incident || !incident.has_page) {
   throw new Error(`status incident "${id}" not found`);
 }
 
-const { Content } = await render(source);
+const bodyHtml = incident.body ? renderMarkdown(incident.body) : undefined;
 const title = `${incident.kind === 'maintenance' ? 'Плановые работы' : 'Инцидент'} ${incident.title} — статус Шелково`;
 const description =
   incident.excerpt ??
@@ -94,9 +93,7 @@ const schema = techArticleSchema({
     {
       incident.body && (
         <article class="px-5 md:px-6">
-          <div class={NEWS_PROSE}>
-            <Content />
-          </div>
+          <div class={NEWS_PROSE} set:html={bodyHtml} />
         </article>
       )
     }
