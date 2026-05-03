@@ -139,6 +139,13 @@ const telegramParts = (
 export const formatPersonContactType = (type: PersonContactType): string =>
   CONTACT_LABELS[type];
 
+export const formatPersonContactCompactDisplay = (
+  contact: Pick<PersonContact, 'type' | 'display'>,
+): string =>
+  contact.type === 'telegram'
+    ? contact.display.replace(/^@/u, '')
+    : contact.display;
+
 export const formatPersonBacklinkSection = (
   section: PersonMentionSection,
 ): string => BACKLINK_SECTION_LABELS[section];

@@ -4,6 +4,7 @@ import type { PersonProfile } from './schema';
 
 let buildPersonMarkdown: typeof import('./view').buildPersonMarkdown;
 let describePersonProfile: typeof import('./view').describePersonProfile;
+let formatPersonContactCompactDisplay: typeof import('./view').formatPersonContactCompactDisplay;
 let normalizePersonContact: typeof import('./view').normalizePersonContact;
 
 beforeAll(async () => {
@@ -12,8 +13,12 @@ beforeAll(async () => {
     BASE_URL: '/',
   });
 
-  ({ buildPersonMarkdown, describePersonProfile, normalizePersonContact } =
-    await import('./view'));
+  ({
+    buildPersonMarkdown,
+    describePersonProfile,
+    formatPersonContactCompactDisplay,
+    normalizePersonContact,
+  } = await import('./view'));
 });
 
 describe('normalizePersonContact', () => {
@@ -78,6 +83,24 @@ describe('describePersonProfile', () => {
         body: 'Как отметил [Кирилл Щемелинин](/people/kschemelinin/), проблема редкая.',
       }),
     ).toBe('Как отметил Кирилл Щемелинин, проблема редкая.');
+  });
+});
+
+describe('formatPersonContactCompactDisplay', () => {
+  it('omits the at-sign for telegram when the icon already conveys the type', () => {
+    expect(
+      formatPersonContactCompactDisplay({
+        type: 'telegram',
+        display: '@Kirill_ZemlyaMO',
+      }),
+    ).toBe('Kirill_ZemlyaMO');
+
+    expect(
+      formatPersonContactCompactDisplay({
+        type: 'phone',
+        display: '+7 (916) 555-12-34',
+      }),
+    ).toBe('+7 (916) 555-12-34');
   });
 });
 
