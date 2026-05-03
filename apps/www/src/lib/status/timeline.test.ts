@@ -17,6 +17,7 @@ interface IncidentInput {
   readonly id: string;
   readonly kind?: StatusTimelineIncidentInput['kind'];
   readonly url?: string;
+  readonly has_page?: boolean;
   readonly title?: string;
   readonly started_iso: string;
   readonly started_has_time?: boolean;
@@ -28,6 +29,7 @@ interface IncidentInput {
 const incident = (input: IncidentInput): StatusTimelineIncidentInput => ({
   id: input.id,
   url: input.url ?? `/status/incidents/${input.id}`,
+  has_page: input.has_page ?? true,
   title: input.title ?? `Incident ${input.id}`,
   kind: input.kind ?? 'incident',
   started_iso: input.started_iso,
@@ -88,6 +90,22 @@ describe('buildStatusTimelineProblemSegments', () => {
     });
     expect(segment.leftPercent).toBeCloseTo(20);
     expect(segment.widthPercent).toBeCloseTo(20);
+  });
+
+  it('omits href for incidents without detail pages', () => {
+    const [segment] = buildStatusTimelineProblemSegments({
+      incidents: [
+        incident({
+          id: 'no-page',
+          has_page: false,
+          started_iso: '2026-05-02T00:00:00Z',
+          ended_iso: '2026-05-04T00:00:00Z',
+        }),
+      ],
+      range: RANGE,
+    });
+
+    expect(segment.href).toBeUndefined();
   });
 
   it('clips entries that end after now', () => {

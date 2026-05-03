@@ -242,7 +242,7 @@ const timelineGroups = incidents
               : undefined;
 
       return {
-        href: firstItem.url,
+        href: firstItem.has_page ? firstItem.url : undefined,
         hidden: !hasVisibleSpan,
         id: firstItem.id,
         left: geometry?.leftPercent,
@@ -263,7 +263,7 @@ const timelineGroups = incidents
     }
 
     return {
-      href: lastItem.url,
+      href: undefined,
       hidden: !hasVisibleSpan,
       id: firstItem.id,
       left: geometry?.leftPercent,
@@ -321,46 +321,51 @@ const timelineGroups = incidents
             tooltipTitle,
             startIso,
             width,
-          }) => (
-            <a
-              href={href}
-              title={tooltipLabel}
-              aria-label={tooltipLabel}
-              data-incident-id={id}
-              data-status-problem
-              data-status-kind={statusKind}
-              data-start={startIso}
-              data-end={endIso}
-              data-geometry-start={geometryStartIso}
-              data-geometry-end={geometryEndIso}
-              data-tooltip-service-label={
-                tooltip?.serviceLabel ?? tooltipServiceLabel
-              }
-              data-tooltip-kind-label={tooltip?.kindLabel}
-              data-tooltip-title={tooltip?.title}
-              data-tooltip-phase-label={tooltip?.phaseLabel}
-              data-tooltip-phase-icon={tooltip ? phaseIcon : undefined}
-              data-tooltip-period-label={tooltip?.periodLabel}
-              data-tooltip-group-title={tooltip ? undefined : tooltipTitle}
-              data-tooltip-items={tooltipItems}
-              class:list={[
-                'status-service-timeline__segment status-service-timeline__segment--problem',
-                compactMarker &&
-                  'status-service-timeline__segment--compact-marker',
-                reachesRangeEnd &&
-                  'status-service-timeline__segment--problem-active-end',
-                tone === 'amber'
-                  ? 'status-service-timeline__segment--amber'
-                  : 'status-service-timeline__segment--red',
-              ]}
-              hidden={hidden}
-              style={
-                hidden || left === undefined || width === undefined
-                  ? undefined
-                  : `--segment-left: ${left}; --segment-width: ${width};`
-              }
-            />
-          ),
+          }) => {
+            const TimelineSegment = href ? 'a' : 'span';
+
+            return (
+              <TimelineSegment
+                href={href}
+                tabindex={href ? undefined : '0'}
+                title={tooltipLabel}
+                aria-label={tooltipLabel}
+                data-incident-id={id}
+                data-status-problem
+                data-status-kind={statusKind}
+                data-start={startIso}
+                data-end={endIso}
+                data-geometry-start={geometryStartIso}
+                data-geometry-end={geometryEndIso}
+                data-tooltip-service-label={
+                  tooltip?.serviceLabel ?? tooltipServiceLabel
+                }
+                data-tooltip-kind-label={tooltip?.kindLabel}
+                data-tooltip-title={tooltip?.title}
+                data-tooltip-phase-label={tooltip?.phaseLabel}
+                data-tooltip-phase-icon={tooltip ? phaseIcon : undefined}
+                data-tooltip-period-label={tooltip?.periodLabel}
+                data-tooltip-group-title={tooltip ? undefined : tooltipTitle}
+                data-tooltip-items={tooltipItems}
+                class:list={[
+                  'status-service-timeline__segment status-service-timeline__segment--problem',
+                  compactMarker &&
+                    'status-service-timeline__segment--compact-marker',
+                  reachesRangeEnd &&
+                    'status-service-timeline__segment--problem-active-end',
+                  tone === 'amber'
+                    ? 'status-service-timeline__segment--amber'
+                    : 'status-service-timeline__segment--red',
+                ]}
+                hidden={hidden}
+                style={
+                  hidden || left === undefined || width === undefined
+                    ? undefined
+                    : `--segment-left: ${left}; --segment-width: ${width};`
+                }
+              />
+            );
+          },
         )
       }
     </div>
@@ -453,6 +458,11 @@ const timelineGroups = incidents
     border-radius: 999px;
     transform: translateY(-50%) scaleY(var(--segment-scale, 1));
     transform-origin: center;
+    margin: 0;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    appearance: none;
   }
 
   .status-service-timeline__segment--green {

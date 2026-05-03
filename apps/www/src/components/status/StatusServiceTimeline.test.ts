@@ -12,6 +12,7 @@ const NBSP = '\u00A0';
 interface IncidentInput {
   readonly id: string;
   readonly kind?: StatusTimelineIncidentInput['kind'];
+  readonly has_page?: boolean;
   readonly title?: string;
   readonly started_iso: string;
   readonly started_has_time?: boolean;
@@ -23,6 +24,7 @@ interface IncidentInput {
 const incident = (input: IncidentInput): StatusTimelineIncidentInput => ({
   id: input.id,
   url: `/status/incidents/${input.id}`,
+  has_page: input.has_page ?? true,
   title: input.title ?? `Запись ${input.id}`,
   kind: input.kind ?? 'incident',
   started_iso: input.started_iso,
@@ -179,6 +181,45 @@ describe('StatusServiceTimeline', () => {
     expect(html).toContain(
       `aria-label="Вода. Инцидент. Запись incident-active. Статус: идет. Начиная с${NBSP}9${NBSP}мая, 03:00"`,
     );
+  });
+
+  it('renders tooltip-only markers for incidents without detail pages', async () => {
+    const html = await renderTimeline([
+      incident({
+        id: 'no-page',
+        has_page: false,
+        started_iso: '2026-05-09T00:00:00Z',
+        ended_iso: '2026-05-09T01:00:00Z',
+        is_active: false,
+      }),
+    ]);
+
+    expect(html).toMatch(/<span[^>]*data-incident-id="no-page"/);
+    expect(html).toContain('tabindex="0"');
+    expect(html).toContain('data-status-problem');
+    expect(html).toContain('data-tooltip-title="Запись no-page"');
+    expect(html).not.toContain('href="/status/incidents/no-page"');
+  });
+
+  it('keeps compact grouped markers tooltip-only', async () => {
+    const html = await renderTimeline([
+      incident({
+        id: 'same-day-a',
+        started_iso: '2026-05-09T03:00:00Z',
+        ended_iso: '2026-05-09T03:40:00Z',
+        is_active: false,
+      }),
+      incident({
+        id: 'same-day-b',
+        started_iso: '2026-05-09T08:10:00Z',
+        ended_iso: '2026-05-09T08:45:00Z',
+        is_active: false,
+      }),
+    ]);
+
+    expect(html).toMatch(/<span[^>]*data-incident-id="same-day-a"/);
+    expect(html).toContain('data-tooltip-group-title="2');
+    expect(html).not.toContain('href="/status/incidents/same-day-b"');
   });
 
   it('renders a shared tooltip shell in SSR HTML', async () => {

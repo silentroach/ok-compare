@@ -5,6 +5,7 @@ export const STATUS_TIMELINE_DAY_MS = 24 * 60 * 60 * 1000;
 export interface StatusTimelineIncidentInput {
   readonly id: string;
   readonly url: string;
+  readonly has_page: boolean;
   readonly title: string;
   readonly kind: StatusKind;
   readonly started_iso: string;
@@ -29,7 +30,7 @@ export interface StatusTimelineSpan {
 
 export interface StatusTimelineProblemSegment extends StatusTimelineSpan {
   readonly id: string;
-  readonly href: string;
+  readonly href?: string;
   readonly tone: 'amber' | 'red';
   readonly leftPercent: number;
   readonly widthPercent: number;
@@ -167,7 +168,7 @@ export const buildStatusTimelineProblemSegments = ({
       return toStatusTimelineSegment(
         {
           id: incident.id,
-          href: incident.url,
+          ...(incident.has_page ? { href: incident.url } : {}),
           tone: incident.kind === 'maintenance' ? 'amber' : 'red',
           startedIso: incident.started_iso,
           ...(incident.ended_iso ? { endedIso: incident.ended_iso } : {}),
