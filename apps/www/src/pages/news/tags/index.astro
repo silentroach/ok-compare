@@ -1,7 +1,11 @@
 ---
+import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import NewsBreadcrumbs from '@/components/news/NewsBreadcrumbs.astro';
 import NewsTagList from '@/components/news/NewsTagList.astro';
+import {
+  withHomeBreadcrumbs,
+  withHomeSchemaBreadcrumbs,
+} from '@/lib/breadcrumbs';
 import { loadNewsTags } from '@/lib/news/load';
 import { collectionPageSchema } from '@/lib/news/seo';
 import { newsUrl, tagsUrl } from '@/lib/news/routes';
@@ -10,15 +14,18 @@ const tags = await loadNewsTags();
 const title = 'Теги новостей Шелково';
 const description =
   'Теги новостей Шелково: темы, события и локальные сюжеты. Откройте нужный тег, чтобы посмотреть последние публикации по теме.';
-const breadcrumbs = [{ label: 'Новости', href: newsUrl() }, { label: 'Теги' }];
+const breadcrumbs = withHomeBreadcrumbs([
+  { label: 'Новости', href: newsUrl() },
+  { label: 'Теги' },
+]);
 const schema = collectionPageSchema({
   name: title,
   description,
   url: tagsUrl(),
-  breadcrumbs: [
+  breadcrumbs: withHomeSchemaBreadcrumbs([
     { name: 'Новости', url: newsUrl() },
     { name: 'Теги', url: tagsUrl() },
-  ],
+  ]),
   items: tags.map((item) => ({ name: item.label, url: item.url })),
 });
 ---
@@ -33,7 +40,7 @@ const schema = collectionPageSchema({
   <main class="ui-page pb-6 md:pb-10 lg:pb-12">
     <section class="px-5 pb-6 pt-3 md:px-6 md:pb-8 md:pt-5 lg:pb-10 lg:pt-6">
       <div class="space-y-5">
-        <NewsBreadcrumbs items={breadcrumbs} />
+        <Breadcrumbs items={breadcrumbs} />
 
         <div class="space-y-3">
           <h1

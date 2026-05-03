@@ -1,4 +1,8 @@
 @import 'tailwindcss';
+
+/* Include utilities used inside workspace package components. */
+@source './src/**/*.{astro,svelte,js,ts}';
+
 @import '@fontsource/pt-sans-caption/cyrillic-700.css';
 @import '@fontsource/pt-sans-caption/latin-700.css';
 @import '@fontsource/fira-sans/cyrillic-400.css';

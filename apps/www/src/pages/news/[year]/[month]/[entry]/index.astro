@@ -3,12 +3,16 @@ import { getImage } from 'astro:assets';
 import { getEntry } from 'astro:content';
 import type { GetStaticPaths } from 'astro';
 import { padNumber } from '@shelkovo/format';
+import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import NewsAddenda from '@/components/news/NewsAddenda.astro';
 import NewsAttachments from '@/components/news/NewsAttachments.astro';
-import NewsBreadcrumbs from '@/components/news/NewsBreadcrumbs.astro';
 import NewsMeta from '@/components/news/NewsMeta.astro';
 import NewsPhotos from '@/components/news/NewsPhotos.astro';
+import {
+  withHomeBreadcrumbs,
+  withHomeSchemaBreadcrumbs,
+} from '@/lib/breadcrumbs';
 import { renderMarkdown } from '@/lib/markdown/render';
 import { loadNewsArticle, loadNewsArticles } from '@/lib/news/load';
 import { newsArticleSchema } from '@/lib/news/seo';
@@ -74,7 +78,7 @@ const heroImageStyle = heroCoverUrl
   : undefined;
 const title = article.seo_title ?? `${article.title} — новости Шелково`;
 const description = article.seo_description ?? article.summary;
-const breadcrumbs = [
+const breadcrumbs = withHomeBreadcrumbs([
   { label: 'Новости', href: newsUrl() },
   { label: String(article.year), href: yearUrl(article.year) },
   {
@@ -82,7 +86,7 @@ const breadcrumbs = [
     href: monthUrl(article.year, article.month),
   },
   { label: article.title },
-];
+]);
 const author = {
   '@type': article.author.is_official ? 'Organization' : 'Person',
   name: article.author.name,
@@ -92,12 +96,12 @@ const schema = newsArticleSchema({
   name: article.title,
   description,
   url: articleUrl(article),
-  breadcrumbs: [
+  breadcrumbs: withHomeSchemaBreadcrumbs([
     { name: 'Новости', url: newsUrl() },
     { name: String(article.year), url: yearUrl(article.year) },
     { name: monthBreadcrumbName, url: monthUrl(article.year, article.month) },
     { name: article.title, url: articleUrl(article) },
-  ],
+  ]),
   datePublished: article.published_iso,
   ...(article.updated_iso ? { dateModified: article.updated_iso } : {}),
   ...(article.cover_url ? { image: article.cover_url } : {}),
@@ -136,7 +140,7 @@ const schema = newsArticleSchema({
 
           <div class="ui-page relative flex min-h-[20rem] flex-col pt-4 md:min-h-[24rem] md:pt-5 lg:min-h-[28rem] lg:pt-6">
             <div class="px-5 md:px-6">
-              <NewsBreadcrumbs items={breadcrumbs} linkLast />
+              <Breadcrumbs items={breadcrumbs} linkLast />
             </div>
 
             <div class="mt-auto px-5 pb-4 md:px-6 md:pb-6 lg:pb-8">
@@ -184,7 +188,7 @@ const schema = newsArticleSchema({
       ) : (
         <header class="ui-page pt-3 md:pt-5 lg:pt-6">
           <div class="max-w-4xl space-y-4 px-5 pb-2 md:px-6">
-            <NewsBreadcrumbs items={breadcrumbs} linkLast />
+            <Breadcrumbs items={breadcrumbs} linkLast />
 
             <div class="space-y-3.5">
               <h1 class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]">

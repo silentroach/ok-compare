@@ -1,8 +1,12 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import { pluralizeRu } from '@shelkovo/format';
+import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import NewsBreadcrumbs from '@/components/news/NewsBreadcrumbs.astro';
+import {
+  withHomeBreadcrumbs,
+  withHomeSchemaBreadcrumbs,
+} from '@/lib/breadcrumbs';
 import NewsList from '@/components/news/NewsList.astro';
 import { NEWS_LATEST_LIMIT } from '@/lib/news/config';
 import { loadNewsTag, loadNewsTags } from '@/lib/news/load';
@@ -32,20 +36,20 @@ if (!tag) {
 const title = `Тег «${tag.label}» — новости Шелково`;
 const latestPublicationsLabel = `${NEWS_LATEST_LIMIT} ${pluralizeRu(NEWS_LATEST_LIMIT, ['публикация', 'публикации', 'публикаций'])}`;
 const description = `Последние новости Шелково по тегу «${tag.label}». На странице собраны последние ${latestPublicationsLabel} по теме, а более ранние материалы доступны в архивах.`;
-const breadcrumbs = [
+const breadcrumbs = withHomeBreadcrumbs([
   { label: 'Новости', href: newsUrl() },
   { label: 'Теги', href: tagsUrl() },
   { label: tag.label },
-];
+]);
 const schema = collectionPageSchema({
   name: title,
   description,
   url: tagUrl(tag.key),
-  breadcrumbs: [
+  breadcrumbs: withHomeSchemaBreadcrumbs([
     { name: 'Новости', url: newsUrl() },
     { name: 'Теги', url: tagsUrl() },
     { name: tag.label, url: tagUrl(tag.key) },
-  ],
+  ]),
   items: tag.latest.map((item) => ({ name: item.title, url: item.url })),
 });
 ---
@@ -60,7 +64,7 @@ const schema = collectionPageSchema({
   <main class="ui-page pb-6 md:pb-10 lg:pb-12">
     <section class="px-5 pb-6 pt-3 md:px-6 md:pb-8 md:pt-5 lg:pb-10 lg:pt-6">
       <div class="space-y-5">
-        <NewsBreadcrumbs items={breadcrumbs} />
+        <Breadcrumbs items={breadcrumbs} />
 
         <div class="space-y-3">
           <h1

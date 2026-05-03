@@ -1,0 +1,101 @@
+---
+import '../../../../styles.css';
+import Breadcrumbs from '../../../../src/Breadcrumbs.astro';
+
+const sectionBreadcrumbs = [
+  { label: 'Главная', href: '/' },
+  { label: 'Новости' },
+];
+
+const articleBreadcrumbs = [
+  { label: 'Главная', href: '/' },
+  { label: 'Новости', href: '/news/' },
+  { label: '2026', href: '/news/2026/' },
+  { label: 'Май', href: '/news/2026/05/' },
+  {
+    label: 'Запуск уличного освещения',
+    href: '/news/2026/05/launch-street-lighting/',
+  },
+];
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Breadcrumbs visual fixture</title>
+  </head>
+  <body class="ui-root-site breadcrumbs-visual-page">
+    <main class="breadcrumbs-visual-shell">
+      <section class="breadcrumbs-visual-card">
+        <p class="breadcrumbs-visual-label">Section trail</p>
+        <div
+          class="breadcrumbs-visual-target"
+          data-testid="breadcrumbs-section"
+        >
+          <Breadcrumbs items={sectionBreadcrumbs} />
+        </div>
+      </section>
+
+      <section class="breadcrumbs-visual-card">
+        <p class="breadcrumbs-visual-label">
+          Article trail with linked last item
+        </p>
+        <div
+          class="breadcrumbs-visual-target breadcrumbs-visual-target--wide"
+          data-testid="breadcrumbs-article"
+        >
+          <Breadcrumbs items={articleBreadcrumbs} linkLast />
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style>
+  .breadcrumbs-visual-page {
+    min-height: 100vh;
+    margin: 0;
+    background:
+      radial-gradient(circle at top, oklch(97% 0.012 145) 0, transparent 44%),
+      linear-gradient(180deg, oklch(98% 0.008 140), oklch(95% 0.012 140));
+    color: var(--color-text);
+  }
+
+  .breadcrumbs-visual-shell {
+    display: grid;
+    gap: 1.5rem;
+    width: min(100%, 72rem);
+    margin: 0 auto;
+    padding: 3rem;
+  }
+
+  .breadcrumbs-visual-card {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .breadcrumbs-visual-label {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .breadcrumbs-visual-target {
+    width: 24rem;
+    max-width: 100%;
+    padding: 1rem 1.25rem;
+    border: 1px solid color-mix(in oklab, var(--color-border) 88%, white 12%);
+    border-radius: 1.5rem;
+    background: color-mix(in oklab, white 82%, var(--color-bg) 18%);
+    box-shadow: 0 1.2rem 2.6rem oklch(22% 0.03 145 / 0.08);
+  }
+
+  .breadcrumbs-visual-target--wide {
+    width: 46rem;
+  }
+</style>

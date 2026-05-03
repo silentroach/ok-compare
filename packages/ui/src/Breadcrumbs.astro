@@ -15,10 +15,10 @@ const { items, linkLast = false } = Astro.props;
 {
   items.length > 0 && (
     <nav aria-label="Хлебные крошки">
-      <ol class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+      <ol class="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-muted-foreground md:gap-x-2">
         {items.map((item, index) => (
-          <li class="flex items-center gap-3">
-            {index > 0 && <span aria-hidden="true">/</span>}
+          <li class="flex items-center gap-1.5 md:gap-2">
+            {index > 0 && <span aria-hidden="true">›</span>}
             {item.href && (linkLast || index < items.length - 1) ? (
               <a href={item.href} class="ui-link font-medium">
                 {item.label}

@@ -9,3 +9,5 @@ logs/
 .env
 apps/www/test-results/
 apps/www/playwright-report/
+packages/ui/test-results/
+packages/ui/playwright-report/
