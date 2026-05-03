@@ -4,6 +4,8 @@ export type PersonContactType = (typeof PERSON_CONTACT_TYPES)[number];
 export interface PersonContact {
   readonly type: PersonContactType;
   readonly value: string;
+  readonly display: string;
+  readonly href: string;
 }
 
 export const PERSON_MENTION_SECTIONS = ['news', 'status', 'people'] as const;

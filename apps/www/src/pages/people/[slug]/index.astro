@@ -1,0 +1,137 @@
+---
+import { getEntry, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+
+import NewsBreadcrumbs from '@/components/news/NewsBreadcrumbs.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { loadPeopleProfiles, loadPersonProfile } from '@/lib/people/load';
+import { personProfilePageSchema } from '@/lib/people/seo';
+import {
+  describePersonProfile,
+  formatPersonContactType,
+  PEOPLE_PROSE,
+} from '@/lib/people/view';
+
+export const getStaticPaths = (async () => {
+  const profiles = await loadPeopleProfiles();
+
+  return profiles.map((profile) => ({
+    params: {
+      slug: profile.slug,
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+const slug = Astro.params.slug;
+
+if (!slug) {
+  throw new Error('person slug is required');
+}
+
+const profile = await loadPersonProfile(slug);
+const source = await getEntry('peopleProfiles', slug);
+
+if (!profile || !source) {
+  throw new Error(`person profile "${slug}" not found`);
+}
+
+const { Content } = await render(source);
+const description = describePersonProfile(profile);
+const title = `${profile.name} — люди Шелково`;
+const breadcrumbs = [{ label: 'Люди' }, { label: profile.name }];
+const schema = personProfilePageSchema({
+  name: profile.name,
+  description,
+  url: profile.url,
+  contacts: profile.contacts,
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={profile.url}
+  type="profile"
+  keywords={['люди Шелково', profile.name]}
+  schema={schema}
+>
+  <main class="ui-page pb-8 pt-3 md:pb-12 md:pt-5 lg:pb-14 lg:pt-6">
+    <header class="px-5 pb-6 md:px-6 md:pb-8 lg:pb-10">
+      <div class="max-w-4xl space-y-5">
+        <NewsBreadcrumbs items={breadcrumbs} />
+
+        <div class="space-y-4">
+          <div class="space-y-2.5">
+            <p
+              class="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground"
+            >
+              Люди
+            </p>
+            <h1
+              class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
+            >
+              {profile.name}
+            </h1>
+          </div>
+
+          <section aria-labelledby="person-contacts" class="space-y-3">
+            <h2
+              id="person-contacts"
+              class="text-sm font-semibold text-foreground"
+            >
+              Контакты
+            </h2>
+
+            {
+              profile.contacts.length > 0 ? (
+                <ul class="grid gap-3 sm:grid-cols-2">
+                  {profile.contacts.map((contact) => (
+                    <li>
+                      <a
+                        href={contact.href}
+                        class="group flex h-full flex-col gap-1.5 rounded-2xl border border-border/80 bg-card/70 px-4 py-3 transition-colors hover:border-foreground/20 hover:bg-card"
+                      >
+                        <span class="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                          {formatPersonContactType(contact.type)}
+                        </span>
+                        <span class="text-base font-medium text-foreground transition-colors group-hover:text-primary">
+                          {contact.display}
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div class="rounded-2xl border border-dashed border-border/80 px-4 py-3 text-sm leading-6 text-muted-foreground">
+                  Контакты пока не опубликованы.
+                </div>
+              )
+            }
+          </section>
+        </div>
+      </div>
+    </header>
+
+    {
+      profile.body && (
+        <article class="px-5 md:px-6">
+          <div class={`max-w-4xl ${PEOPLE_PROSE}`}>
+            <Content />
+          </div>
+        </article>
+      )
+    }
+
+    <section class="px-5 pt-8 md:px-6 md:pt-10">
+      <div
+        class="max-w-4xl rounded-2xl border border-dashed border-border/80 px-4 py-4 text-sm leading-6 text-muted-foreground md:px-5"
+      >
+        <h2 class="text-sm font-semibold text-foreground">Где упоминается</h2>
+        <p class="mt-2">
+          Этот блок появится вместе с автоматическими backlinks в следующем
+          шаге.
+        </p>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
