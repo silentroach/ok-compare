@@ -1,14 +1,17 @@
 {
-  "$schema": "https://v2-9-8.turborepo.dev/schema.json",
+  "$schema": "https://turborepo.com/schema.json",
   "globalDependencies": [".env*", "apps/*/.env*"],
   "tasks": {
     "build": {
+      "dependsOn": ["^build"],
       "outputs": ["dist/site/**"]
     },
     "build:section": {
+      "dependsOn": ["^build"],
       "outputs": ["dist/section/**"]
     },
     "build:legacy": {
+      "dependsOn": ["^build"],
       "outputs": ["dist/legacy/**"]
     },
     "dev": {
@@ -16,9 +19,11 @@
       "persistent": true
     },
     "test": {
+      "dependsOn": ["^build"],
       "outputs": []
     },
     "typecheck": {
+      "dependsOn": ["^typecheck"],
       "outputs": []
     }
   }
