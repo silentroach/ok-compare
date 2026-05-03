@@ -2,6 +2,7 @@
 import '@styles/global.css';
 import { collectKeywords, imageMimeType, serializeSchema } from '@shelkovo/seo';
 import type { SchemaDoc } from '@shelkovo/seo';
+import FontPreloads from '@shelkovo/ui/FontPreloads.astro';
 import SiteFooter from '@shelkovo/ui/SiteFooter.astro';
 import TelegramIcon from '@shelkovo/ui/icons/system/Telegram.astro';
 import { browserColor, themeColor } from '@shelkovo/ui/theme';
@@ -54,6 +55,7 @@ const ym = `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).p
     <base href={import.meta.env.BASE_URL} />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <FontPreloads />
     <meta
       name="theme-color"
       content={themeColor.light}

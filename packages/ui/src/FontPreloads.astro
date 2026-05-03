@@ -1,0 +1,25 @@
+---
+import firaSansCyrillic400 from '@fontsource/fira-sans/files/fira-sans-cyrillic-400-normal.woff2';
+import firaSansLatin400 from '@fontsource/fira-sans/files/fira-sans-latin-400-normal.woff2';
+import ptSansCaptionCyrillic700 from '@fontsource/pt-sans-caption/files/pt-sans-caption-cyrillic-700-normal.woff2';
+import ptSansCaptionLatin700 from '@fontsource/pt-sans-caption/files/pt-sans-caption-latin-700-normal.woff2';
+
+const fonts = [
+  firaSansCyrillic400,
+  firaSansLatin400,
+  ptSansCaptionCyrillic700,
+  ptSansCaptionLatin700,
+] as const;
+---
+
+{
+  fonts.map((href) => (
+    <link
+      rel="preload"
+      href={href}
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+  ))
+}

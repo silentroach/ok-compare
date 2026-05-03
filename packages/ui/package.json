@@ -10,6 +10,7 @@
   },
   "exports": {
     "./Breadcrumbs.astro": "./src/Breadcrumbs.astro",
+    "./FontPreloads.astro": "./src/FontPreloads.astro",
     "./icons/areas/Forest.astro": "./src/icons/areas/Forest.astro",
     "./icons/areas/Park.astro": "./src/icons/areas/Park.astro",
     "./icons/areas/River.astro": "./src/icons/areas/River.astro",
