@@ -13,6 +13,7 @@
     "./icons/services/WaterDrop.astro": "./src/icons/services/WaterDrop.astro",
     "./icons/system/AlertCircle.astro": "./src/icons/system/AlertCircle.astro",
     "./icons/system/CheckCircle.astro": "./src/icons/system/CheckCircle.astro",
+    "./icons/system/Phone.astro": "./src/icons/system/Phone.astro",
     "./icons/system/Star.astro": "./src/icons/system/Star.astro",
     "./icons/system/Telegram.astro": "./src/icons/system/Telegram.astro",
     "./theme": "./src/theme.ts",

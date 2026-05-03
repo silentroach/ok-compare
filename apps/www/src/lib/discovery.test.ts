@@ -23,7 +23,10 @@ describe('root api catalog', () => {
   it('keeps base-prefixed site links valid in non-root deployments', () => {
     const root = 'https://example.com/sub';
     const payload = catalog(root) as {
-      readonly linkset: readonly [{ readonly item?: readonly unknown[] }];
+      readonly linkset: readonly {
+        readonly anchor?: string;
+        readonly item?: readonly { readonly href: string }[];
+      }[];
     };
     const items = payload.linkset[0]?.item ?? [];
 
@@ -36,6 +39,24 @@ describe('root api catalog', () => {
         }),
         expect.objectContaining({
           href: 'https://example.com/sub/.well-known/agent-skills/index.json',
+        }),
+      ]),
+    );
+
+    const peopleEntry = payload.linkset.find(
+      (entry) => entry.anchor === 'https://example.com/sub/people/index.md',
+    );
+
+    expect(peopleEntry?.item).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          href: 'https://example.com/sub/people/index.md',
+        }),
+        expect.objectContaining({
+          href: 'https://example.com/sub/people/data/people.json',
+        }),
+        expect.objectContaining({
+          href: 'https://example.com/sub/people/llms.txt',
         }),
       ]),
     );

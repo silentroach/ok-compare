@@ -1,5 +1,12 @@
 import { padNumber } from '@shelkovo/format';
 import { getCollection, type CollectionEntry } from 'astro:content';
+
+import {
+  normalizePeopleMentions,
+  type NormalizedPeopleMentions,
+  type PeopleMentionRegistry,
+} from '../people/mentions';
+import { loadPeopleMentionRegistry } from '../people/load';
 import { withBase } from '../site';
 import { buildArchives, newsMonthKey } from './archives';
 import { NEWS_LATEST_LIMIT } from './config';
@@ -29,8 +36,16 @@ import {
 } from './schema';
 import { buildArticleTags, buildTagIndex } from './tags';
 
-type ArticleEntry = CollectionEntry<'newsArticles'>;
-type AuthorEntry = CollectionEntry<'newsAuthors'>;
+export type NewsArticleEntry = Pick<
+  CollectionEntry<'newsArticles'>,
+  'id' | 'data' | 'body'
+>;
+export type NewsAuthorEntry = Pick<
+  CollectionEntry<'newsAuthors'>,
+  'id' | 'data'
+>;
+type ArticleEntry = NewsArticleEntry;
+type AuthorEntry = NewsAuthorEntry;
 type ArticleData = ArticleEntry['data'];
 type AddendumData = NonNullable<ArticleData['addenda']>[number];
 type AttachmentInput =
@@ -45,6 +60,27 @@ type PhotoInput =
   | NonNullable<AddendumData['photos']>[number];
 
 let cache: Promise<NewsDataset> | undefined;
+const EMPTY_MENTION_REGISTRY: PeopleMentionRegistry = new Map();
+
+const content = (
+  value: string | undefined,
+  registry: PeopleMentionRegistry,
+  context: string,
+): NormalizedPeopleMentions => {
+  const body = value?.trimEnd() ?? '';
+
+  return body.trim().length > 0
+    ? normalizePeopleMentions({
+        markdown: body,
+        context,
+        registry,
+      })
+    : {
+        markdown: '',
+        mentions: [],
+      };
+};
+
 function parseEntryTimestamp(
   value: string,
   context: string,
@@ -149,6 +185,7 @@ function normalizeAddenda(
   entry: ArticleEntry,
   authors: ReadonlyMap<string, NewsAuthor>,
   publishedAt: Date,
+  peopleRegistry: PeopleMentionRegistry,
 ): {
   readonly items: readonly NewsAddendum[];
   readonly updated_at?: Date;
@@ -165,17 +202,23 @@ function normalizeAddenda(
         item.author ? authorId(item.author) : NEWS_DEFAULT_ADDENDUM_AUTHOR_ID,
         `news article "${entry.id}" addendum #${index + 1}`,
       );
+      const body = content(
+        item.body,
+        peopleRegistry,
+        `news article "${entry.id}" addendum #${index + 1} body`,
+      );
 
       return {
         ...(item.title ? { title: item.title } : {}),
         ...(published.time ? { time: published.time } : {}),
         author,
         ...(item.source_url ? { source_url: item.source_url } : {}),
-        ...(item.body ? { body: item.body } : {}),
+        ...(body.markdown ? { body: body.markdown } : {}),
         photos: photos(item.photos),
         attachments: attachments(item.attachments),
         published_at: published.at,
         published_iso: published.iso,
+        mentions: body.mentions,
       } satisfies NewsAddendum;
     })
     .sort(compareAddendaPublishedAsc);
@@ -223,6 +266,7 @@ const areas = (
 function normalizeArticle(
   entry: ArticleEntry,
   authors: ReadonlyMap<string, NewsAuthor>,
+  peopleRegistry: PeopleMentionRegistry,
 ): NewsArticle {
   const parts = articleParts(entry);
   const published = parseEntryTimestamp(
@@ -234,7 +278,12 @@ function normalizeArticle(
     },
   );
   const area = areas(entry.data.areas);
-  const addenda = normalizeAddenda(entry, authors, published.at);
+  const addenda = normalizeAddenda(
+    entry,
+    authors,
+    published.at,
+    peopleRegistry,
+  );
   const author = needAuthor(
     authors,
     authorId(entry.data.author),
@@ -242,6 +291,11 @@ function normalizeArticle(
   );
   const cover = entry.data.cover;
   const coverUrl = assetUrl(cover);
+  const body = content(
+    entry.body,
+    peopleRegistry,
+    `news article "${entry.id}" body`,
+  );
   const article = {
     id: entry.id,
     title: entry.data.title,
@@ -284,8 +338,9 @@ function normalizeArticle(
     attachments: attachments(entry.data.attachments),
     addenda: addenda.items,
     summary: entry.data.summary,
-    body: entry.body?.trimEnd() ?? '',
+    body: body.markdown,
     has_addenda: addenda.items.length > 0,
+    mentions: body.mentions,
   } satisfies NewsArticle;
 
   if (
@@ -374,11 +429,14 @@ function validateDayKeyConflicts(items: readonly NewsArticle[]): void {
   }
 }
 
-async function buildNewsData(): Promise<NewsDataset> {
-  const [authorsData, articlesData] = await Promise.all([
-    getCollection('newsAuthors'),
-    getCollection('newsArticles'),
-  ]);
+export function buildNewsDataset(
+  authorsData: readonly NewsAuthorEntry[],
+  articlesData: readonly NewsArticleEntry[],
+  opts?: {
+    readonly people_registry?: PeopleMentionRegistry;
+  },
+): NewsDataset {
+  const peopleRegistry = opts?.people_registry ?? EMPTY_MENTION_REGISTRY;
   const authors = authorMap(authorsData);
 
   if (!authors.has(NEWS_DEFAULT_ADDENDUM_AUTHOR_ID)) {
@@ -388,7 +446,9 @@ async function buildNewsData(): Promise<NewsDataset> {
   }
 
   const articles: readonly NewsArticle[] = articlesData
-    .map((item: ArticleEntry) => normalizeArticle(item, authors))
+    .map((item: ArticleEntry) =>
+      normalizeArticle(item, authors, peopleRegistry),
+    )
     .sort(compareArticlesPublishedDesc);
 
   validateUniqueIds(articles);
@@ -410,6 +470,16 @@ async function buildNewsData(): Promise<NewsDataset> {
     by_id: new Map(articles.map((item) => [item.id, item])),
     by_tag: new Map(tags.map((item) => [item.key, item])),
   };
+}
+
+async function buildNewsData(): Promise<NewsDataset> {
+  const [authorsData, articlesData, people_registry] = await Promise.all([
+    getCollection('newsAuthors') as Promise<readonly NewsAuthorEntry[]>,
+    getCollection('newsArticles') as Promise<readonly NewsArticleEntry[]>,
+    loadPeopleMentionRegistry(),
+  ]);
+
+  return buildNewsDataset(authorsData, articlesData, { people_registry });
 }
 
 export const loadNewsData = (): Promise<NewsDataset> => {

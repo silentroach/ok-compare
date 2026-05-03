@@ -1,6 +1,12 @@
 import { dateTimeFromISO } from '@shelkovo/format';
 import type { CollectionEntry } from 'astro:content';
 
+import {
+  normalizePeopleMentions,
+  type NormalizedPeopleMentions,
+  type PeopleMentionRegistry,
+} from '../people/mentions';
+import { loadPeopleMentionRegistry } from '../people/load';
 import { statusIncidentCanonical, statusIncidentUrl } from './routes';
 import {
   parseStatusTimestamp,
@@ -22,6 +28,26 @@ export type StatusIncidentEntry = Pick<
 >;
 
 let cache: Promise<StatusDataset> | undefined;
+const EMPTY_MENTION_REGISTRY: PeopleMentionRegistry = new Map();
+
+const content = (
+  value: string | undefined,
+  registry: PeopleMentionRegistry,
+  context: string,
+): NormalizedPeopleMentions => {
+  const body = value?.trimEnd() ?? '';
+
+  return body.trim().length > 0
+    ? normalizePeopleMentions({
+        markdown: body,
+        context,
+        registry,
+      })
+    : {
+        markdown: '',
+        mentions: [],
+      };
+};
 
 interface EntryParts {
   readonly year: string;
@@ -103,6 +129,7 @@ const duration = (start: Date, end: Date): StatusDuration => ({
 function normalizeIncident(
   entry: StatusIncidentEntry,
   now: Date,
+  peopleRegistry: PeopleMentionRegistry,
 ): StatusIncident {
   const parts = incidentParts(entry);
   const started = parseEntryTimestamp(
@@ -127,8 +154,11 @@ function normalizeIncident(
   }
 
   const area = areas(entry.data.areas);
-  const body = entry.body?.trimEnd() ?? '';
-  const content = body.trim().length > 0 ? body : '';
+  const body = content(
+    entry.body,
+    peopleRegistry,
+    `status incident "${entry.id}" body`,
+  );
   const changeAt = ended?.at ?? started.at;
 
   return {
@@ -160,9 +190,10 @@ function normalizeIncident(
     applies_to_all_areas: area.applies_to_all_areas,
     areas: area.areas,
     ...(entry.data.source_url ? { source_url: entry.data.source_url } : {}),
-    ...(content ? { excerpt: extractStatusExcerpt(content) } : {}),
-    has_page: content.length > 0,
-    body: content,
+    ...(body.markdown ? { excerpt: extractStatusExcerpt(body.markdown) } : {}),
+    has_page: body.markdown.length > 0,
+    body: body.markdown,
+    mentions: body.mentions,
     sort_started_at: started.at.valueOf(),
     sort_last_change_at: changeAt.valueOf(),
     ...(ended ? { duration: duration(started.at, ended.at) } : {}),
@@ -247,11 +278,13 @@ export const buildStatusDataset = (
   entries: readonly StatusIncidentEntry[],
   opts?: {
     readonly now?: Date;
+    readonly people_registry?: PeopleMentionRegistry;
   },
 ): StatusDataset => {
   const now = opts?.now ?? new Date();
+  const peopleRegistry = opts?.people_registry ?? EMPTY_MENTION_REGISTRY;
   const incidents = entries
-    .map((entry) => normalizeIncident(entry, now))
+    .map((entry) => normalizeIncident(entry, now, peopleRegistry))
     .sort(compareIncidentsDesc);
   const services = STATUS_SERVICES.map((service) =>
     serviceSummary(service, incidents, now),
@@ -267,10 +300,16 @@ export const buildStatusDataset = (
 };
 
 export const loadStatusData = (): Promise<StatusDataset> => {
-  cache ??= import('astro:content').then(({ getCollection }) =>
-    getCollection('statusIncidents').then(
-      (entries: readonly StatusIncidentEntry[]) => buildStatusDataset(entries),
+  cache ??= Promise.all([
+    import('astro:content').then(
+      ({ getCollection }) =>
+        getCollection('statusIncidents') as Promise<
+          readonly StatusIncidentEntry[]
+        >,
     ),
+    loadPeopleMentionRegistry(),
+  ]).then(([entries, people_registry]) =>
+    buildStatusDataset(entries, { people_registry }),
   );
 
   return cache;

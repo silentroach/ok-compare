@@ -1,0 +1,222 @@
+---
+import type { GetStaticPaths } from 'astro';
+
+import NewsBreadcrumbs from '@/components/news/NewsBreadcrumbs.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { renderMarkdown } from '@/lib/markdown/render';
+import { formatDynamicHtml } from '@/lib/typography';
+import PhoneIcon from '@shelkovo/ui/icons/system/Phone.astro';
+import TelegramIcon from '@shelkovo/ui/icons/system/Telegram.astro';
+import {
+  loadPeopleProfiles,
+  loadPersonProfileWithBacklinks,
+} from '@/lib/people/load';
+import { personProfilePageSchema } from '@/lib/people/seo';
+import {
+  describePersonProfile,
+  formatPersonBacklinkDate,
+  formatPersonBacklinkKind,
+  formatPersonBacklinkSection,
+  formatPersonContactCompactDisplay,
+  formatPersonContactType,
+  formatPersonHeadline,
+  personBacklinkGroups,
+  PEOPLE_PROSE,
+} from '@/lib/people/view';
+
+export const getStaticPaths = (async () => {
+  const profiles = await loadPeopleProfiles();
+
+  return profiles.map((profile) => ({
+    params: {
+      slug: profile.slug,
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+const slug = Astro.params.slug;
+
+if (!slug) {
+  throw new Error('person slug is required');
+}
+
+const profile = await loadPersonProfileWithBacklinks(slug);
+
+if (!profile) {
+  throw new Error(`person profile "${slug}" not found`);
+}
+
+const bodyHtml = profile.body ? renderMarkdown(profile.body) : undefined;
+const description = describePersonProfile(profile);
+const headline = formatPersonHeadline(profile);
+const headlineHtml = headline ? formatDynamicHtml(headline) : undefined;
+const title = `${profile.name} — люди Шелково`;
+const breadcrumbs = [{ label: 'Люди' }, { label: profile.name }];
+// Future: reopen public backlinks on person pages once editorial rules are finalized.
+const showBacklinks = false;
+const backlinkGroups = personBacklinkGroups(profile.backlinks);
+const schema = personProfilePageSchema({
+  name: profile.name,
+  description,
+  company: profile.company,
+  position: profile.position,
+  url: profile.url,
+  contacts: profile.contacts,
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={profile.url}
+  type="profile"
+  keywords={['люди Шелково', profile.name]}
+  schema={schema}
+>
+  <main class="ui-page pb-8 pt-3 md:pb-12 md:pt-5 lg:pb-14 lg:pt-6">
+    <header class="px-5 pb-6 md:px-6 md:pb-8 lg:pb-10">
+      <div class="max-w-4xl space-y-5">
+        <NewsBreadcrumbs items={breadcrumbs} />
+
+        <div class="space-y-4">
+          <div class="space-y-2.5">
+            <h1
+              class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
+            >
+              {profile.name}
+            </h1>
+
+            {
+              headlineHtml && (
+                <p
+                  class="max-w-3xl text-sm leading-6 text-muted-foreground md:text-base"
+                  set:html={headlineHtml}
+                />
+              )
+            }
+          </div>
+
+          <section aria-labelledby="person-contacts" class="space-y-3">
+            <h2
+              id="person-contacts"
+              class="text-sm font-semibold text-foreground"
+            >
+              Контакты
+            </h2>
+
+            {
+              profile.contacts.length > 0 ? (
+                <ul class="space-y-2.5 text-sm leading-6">
+                  {profile.contacts.map((contact) => (
+                    <li class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                      {contact.type === 'telegram' ? (
+                        <TelegramIcon class="size-4 shrink-0 text-primary" />
+                      ) : contact.type === 'phone' ? (
+                        <PhoneIcon class="size-4 shrink-0 text-primary" />
+                      ) : (
+                        <span class="text-sm font-medium text-muted-foreground">
+                          {formatPersonContactType(contact.type)}
+                        </span>
+                      )}
+
+                      <a
+                        href={contact.href}
+                        class="text-base font-medium text-foreground transition-colors hover:text-primary"
+                      >
+                        {formatPersonContactCompactDisplay(contact)}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div class="rounded-2xl border border-dashed border-border/80 px-4 py-3 text-sm leading-6 text-muted-foreground">
+                  Контакты пока не опубликованы.
+                </div>
+              )
+            }
+          </section>
+        </div>
+      </div>
+    </header>
+
+    {
+      profile.body && (
+        <article class="px-5 md:px-6">
+          <div class={`max-w-4xl ${PEOPLE_PROSE}`} set:html={bodyHtml} />
+        </article>
+      )
+    }
+
+    {
+      showBacklinks && (
+        <section class="px-5 pt-8 md:px-6 md:pt-10">
+          <div class="max-w-4xl space-y-5">
+            <div class="space-y-1.5">
+              <h2 class="text-sm font-semibold text-foreground">
+                Где упоминается
+              </h2>
+              <p class="text-sm leading-6 text-muted-foreground">
+                Упоминания в новостях, статусе поселка и других публичных
+                профилях.
+              </p>
+            </div>
+
+            {backlinkGroups.length > 0 ? (
+              <div class="space-y-6">
+                {backlinkGroups.map((group) => (
+                  <section
+                    aria-labelledby={`person-backlinks-${group.section}`}
+                    class="space-y-3"
+                  >
+                    <h3
+                      id={`person-backlinks-${group.section}`}
+                      class="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                    >
+                      {formatPersonBacklinkSection(group.section)}
+                    </h3>
+
+                    <ul class="grid gap-3">
+                      {group.items.map((backlink) => (
+                        <li>
+                          <a
+                            href={backlink.html_url}
+                            class="group flex h-full flex-col gap-2 rounded-2xl border border-border/80 bg-card/70 px-4 py-3 transition-colors hover:border-foreground/20 hover:bg-card"
+                          >
+                            <div class="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                              <span class="inline-flex rounded-full border border-border/70 bg-muted/40 px-2.5 py-1 font-semibold uppercase tracking-[0.14em]">
+                                {formatPersonBacklinkKind(backlink.kind)}
+                              </span>
+                              {backlink.mentioned_at && (
+                                <time datetime={backlink.mentioned_at}>
+                                  {formatPersonBacklinkDate(backlink)}
+                                </time>
+                              )}
+                            </div>
+
+                            <h4 class="text-base font-medium leading-6 text-foreground transition-colors group-hover:text-primary">
+                              {backlink.title}
+                            </h4>
+
+                            {backlink.excerpt && (
+                              <p class="text-sm leading-6 text-muted-foreground">
+                                {backlink.excerpt}
+                              </p>
+                            )}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                ))}
+              </div>
+            ) : (
+              <div class="rounded-2xl border border-dashed border-border/80 px-4 py-4 text-sm leading-6 text-muted-foreground md:px-5">
+                Публичных упоминаний пока не найдено.
+              </div>
+            )}
+          </div>
+        </section>
+      )
+    }
+  </main>
+</BaseLayout>

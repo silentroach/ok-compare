@@ -19,7 +19,12 @@ export interface SkillsIndex {
   readonly skills: readonly SkillEntry[];
 }
 
-export const names = ['site-sections', 'news-feed', 'status-feed'] as const;
+export const names = [
+  'site-sections',
+  'news-feed',
+  'status-feed',
+  'people-profiles',
+] as const;
 
 const schema = 'https://schemas.agentskills.io/discovery/0.2.0/schema.json';
 const root = join(process.cwd(), 'public', '.well-known', 'agent-skills');
