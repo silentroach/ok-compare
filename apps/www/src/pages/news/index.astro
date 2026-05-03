@@ -1,9 +1,14 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import NewsList from '../../components/news/NewsList.astro';
-import { loadNewsData } from '../../lib/news/load';
-import { collectionPageSchema } from '../../lib/news/seo';
-import { newsUrl } from '../../lib/news/routes';
+import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+import NewsList from '@/components/news/NewsList.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import {
+  withHomeBreadcrumbs,
+  withHomeSchemaBreadcrumbs,
+} from '@/lib/breadcrumbs';
+import { loadNewsData } from '@/lib/news/load';
+import { newsUrl } from '@/lib/news/routes';
+import { collectionPageSchema } from '@/lib/news/seo';
 
 const data = await loadNewsData();
 const articles = [...data.home.pinned, ...data.home.latest];
@@ -11,11 +16,12 @@ const articles = [...data.home.pinned, ...data.home.latest];
 const title = 'Новости Шелково';
 const description =
   'Короткие новости по Шелково, соседним очередям и сервисным темам.';
+const breadcrumbs = withHomeBreadcrumbs([{ label: 'Новости' }]);
 const schema = collectionPageSchema({
   name: title,
   description,
   url: newsUrl(),
-  breadcrumbs: [{ name: 'Новости', url: newsUrl() }],
+  breadcrumbs: withHomeSchemaBreadcrumbs([{ name: 'Новости', url: newsUrl() }]),
   items: articles.map((item) => ({ name: item.title, url: item.url })),
 });
 ---
@@ -27,13 +33,17 @@ const schema = collectionPageSchema({
   keywords={['новости Шелково', 'новости ОК Комфорт', 'архив новостей Шелково']}
   schema={schema}
 >
-  <main class="ui-page py-6 md:py-10 lg:py-12">
-    <section class="px-5 py-6 md:px-6 md:py-8 lg:py-10">
-      <h1
-        class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
-      >
-        Новости
-      </h1>
+  <main class="ui-page pb-6 md:pb-10 lg:pb-12">
+    <section class="px-5 pb-6 pt-3 md:px-6 md:pb-8 md:pt-5 lg:pb-10 lg:pt-6">
+      <div class="space-y-5">
+        <Breadcrumbs items={breadcrumbs} />
+
+        <h1
+          class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
+        >
+          Новости
+        </h1>
+      </div>
     </section>
 
     <section class="mt-8">

@@ -1,8 +1,12 @@
 ---
 import { pluralizeRu } from '@shelkovo/format';
 import type { GetStaticPaths } from 'astro';
+import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import NewsBreadcrumbs from '@/components/news/NewsBreadcrumbs.astro';
+import {
+  withHomeBreadcrumbs,
+  withHomeSchemaBreadcrumbs,
+} from '@/lib/breadcrumbs';
 import NewsList from '@/components/news/NewsList.astro';
 import { loadNewsArchives, loadNewsYear } from '@/lib/news/load';
 import { collectionPageSchema } from '@/lib/news/seo';
@@ -26,19 +30,19 @@ if (!archive) {
 
 const title = `Новости Шелково за ${archive.year} год`;
 const description = `Архив новостей Шелково за ${archive.year} год: все публикации по месяцам в хронологическом порядке без reshuffle pinned-материалов.`;
-const breadcrumbs = [
+const breadcrumbs = withHomeBreadcrumbs([
   { label: 'Новости', href: newsUrl() },
   { label: String(archive.year) },
-];
+]);
 
 const schema = collectionPageSchema({
   name: title,
   description,
   url: yearUrl(archive.year),
-  breadcrumbs: [
+  breadcrumbs: withHomeSchemaBreadcrumbs([
     { name: 'Новости', url: newsUrl() },
     { name: String(archive.year), url: yearUrl(archive.year) },
-  ],
+  ]),
   items: archive.months.flatMap((item) =>
     item.articles.map((article) => ({ name: article.title, url: article.url })),
   ),
@@ -59,7 +63,7 @@ const schema = collectionPageSchema({
   <main class="ui-page pb-6 md:pb-10 lg:pb-12">
     <section class="px-5 pb-6 pt-3 md:px-6 md:pb-8 md:pt-5 lg:pb-10 lg:pt-6">
       <div class="space-y-5">
-        <NewsBreadcrumbs items={breadcrumbs} />
+        <Breadcrumbs items={breadcrumbs} />
 
         <div class="space-y-3">
           <h1
