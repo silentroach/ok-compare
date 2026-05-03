@@ -14,7 +14,7 @@ export default defineConfig({
     globals: true,
     include: [
       'src/**/*.{test,spec}.{js,ts}',
-      '../../packages/**/*.{test,spec}.{js,ts}',
+      '../../packages/**/src/**/*.{test,spec}.{js,ts}',
     ],
     alias: {
       '@/*': './src/*',

@@ -338,7 +338,7 @@
     tip = { item, x, y, up };
   }
 
-  onMount(async () => {
+  onMount(() => {
     let dead = false;
 
     const onDown = (evt: PointerEvent): void => {
@@ -353,16 +353,18 @@
 
     document.addEventListener('pointerdown', onDown);
 
-    try {
-      await loadYandexMaps();
-      if (!dead) ymapsLoaded = true;
-    } catch (err) {
-      if (!dead) {
-        console.error('Map setup error:', err);
-        error = err instanceof Error ? err.message : 'Карта недоступна';
-        isLoading = false;
+    void (async () => {
+      try {
+        await loadYandexMaps();
+        if (!dead) ymapsLoaded = true;
+      } catch (err) {
+        if (!dead) {
+          console.error('Map setup error:', err);
+          error = err instanceof Error ? err.message : 'Карта недоступна';
+          isLoading = false;
+        }
       }
-    }
+    })();
 
     return () => {
       dead = true;
