@@ -1,4 +1,34 @@
-import { beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
+
+const fixtures = vi.hoisted(() => ({
+  news: {
+    articles: [{ id: 'news-1' }, { id: 'news-2' }, { id: 'news-3' }],
+  },
+  people: {
+    profiles: [
+      {
+        canonical: 'https://example.com/people/kschemelinin/',
+        markdown_url: '/people/kschemelinin/index.md',
+      },
+    ],
+  },
+  status: {
+    incidents: [{ id: 'status-1' }, { id: 'status-2' }],
+    active: [{ kind: 'incident' }, { kind: 'maintenance' }],
+  },
+}));
+
+vi.mock('./news/load', () => ({
+  loadNewsData: async () => fixtures.news,
+}));
+
+vi.mock('./people/load', () => ({
+  loadPeopleDataWithBacklinks: async () => fixtures.people,
+}));
+
+vi.mock('./status/load', () => ({
+  loadStatusData: async () => fixtures.status,
+}));
 
 let build: typeof import('./llms').build;
 let buildHomeMarkdown: typeof import('./llms').buildHomeMarkdown;
