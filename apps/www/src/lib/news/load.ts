@@ -3,6 +3,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 
 import {
   normalizePeopleMentions,
+  type NormalizedPeopleMentions,
   type PeopleMentionRegistry,
 } from '../people/mentions';
 import { loadPeopleMentionRegistry } from '../people/load';
@@ -60,6 +61,25 @@ type PhotoInput =
 
 let cache: Promise<NewsDataset> | undefined;
 const EMPTY_MENTION_REGISTRY: PeopleMentionRegistry = new Map();
+
+const content = (
+  value: string | undefined,
+  registry: PeopleMentionRegistry,
+  context: string,
+): NormalizedPeopleMentions => {
+  const body = value?.trimEnd() ?? '';
+
+  return body.trim().length > 0
+    ? normalizePeopleMentions({
+        markdown: body,
+        context,
+        registry,
+      })
+    : {
+        markdown: '',
+        mentions: [],
+      };
+};
 
 function parseEntryTimestamp(
   value: string,
@@ -182,25 +202,23 @@ function normalizeAddenda(
         item.author ? authorId(item.author) : NEWS_DEFAULT_ADDENDUM_AUTHOR_ID,
         `news article "${entry.id}" addendum #${index + 1}`,
       );
+      const body = content(
+        item.body,
+        peopleRegistry,
+        `news article "${entry.id}" addendum #${index + 1} body`,
+      );
 
       return {
         ...(item.title ? { title: item.title } : {}),
         ...(published.time ? { time: published.time } : {}),
         author,
         ...(item.source_url ? { source_url: item.source_url } : {}),
-        ...(item.body
-          ? {
-              body: normalizePeopleMentions({
-                markdown: item.body,
-                context: `news article "${entry.id}" addendum #${index + 1} body`,
-                registry: peopleRegistry,
-              }).markdown,
-            }
-          : {}),
+        ...(body.markdown ? { body: body.markdown } : {}),
         photos: photos(item.photos),
         attachments: attachments(item.attachments),
         published_at: published.at,
         published_iso: published.iso,
+        mentions: body.mentions,
       } satisfies NewsAddendum;
     })
     .sort(compareAddendaPublishedAsc);
@@ -273,7 +291,11 @@ function normalizeArticle(
   );
   const cover = entry.data.cover;
   const coverUrl = assetUrl(cover);
-  const body = entry.body?.trimEnd() ?? '';
+  const body = content(
+    entry.body,
+    peopleRegistry,
+    `news article "${entry.id}" body`,
+  );
   const article = {
     id: entry.id,
     title: entry.data.title,
@@ -316,15 +338,9 @@ function normalizeArticle(
     attachments: attachments(entry.data.attachments),
     addenda: addenda.items,
     summary: entry.data.summary,
-    body:
-      body.trim().length > 0
-        ? normalizePeopleMentions({
-            markdown: body,
-            context: `news article "${entry.id}" body`,
-            registry: peopleRegistry,
-          }).markdown
-        : '',
+    body: body.markdown,
     has_addenda: addenda.items.length > 0,
+    mentions: body.mentions,
   } satisfies NewsArticle;
 
   if (

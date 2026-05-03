@@ -1,5 +1,7 @@
 import { isAbsoluteUrl } from '@shelkovo/url';
 
+import type { PersonMentionTarget } from '../people/mentions';
+
 export { isAbsoluteUrl };
 
 export const NEWS_AREAS = ['river', 'forest', 'park', 'village'] as const;
@@ -54,6 +56,7 @@ export interface NewsAddendum {
   readonly attachments: readonly NewsAttachment[];
   readonly published_at: Date;
   readonly published_iso: string;
+  readonly mentions: readonly PersonMentionTarget[];
 }
 
 export interface NewsArticle {
@@ -90,6 +93,7 @@ export interface NewsArticle {
   readonly summary: string;
   readonly body: string;
   readonly has_addenda: boolean;
+  readonly mentions: readonly PersonMentionTarget[];
 }
 
 export interface NewsListArticle {

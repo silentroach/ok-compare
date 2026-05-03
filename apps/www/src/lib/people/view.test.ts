@@ -82,7 +82,7 @@ describe('describePersonProfile', () => {
 });
 
 describe('buildPersonMarkdown', () => {
-  it('renders contacts and body into the markdown companion', () => {
+  it('renders contacts, body, and backlinks into the markdown companion', () => {
     const profile: PersonProfile = {
       id: 'kschemelinin',
       slug: 'kschemelinin',
@@ -99,6 +99,38 @@ describe('buildPersonMarkdown', () => {
         },
       ],
       body: 'Публичный профиль с контекстом.',
+      mentions: [],
+      backlinks: {
+        news: [
+          {
+            section: 'news',
+            kind: 'article',
+            source_id: '2026/05/electricity',
+            title: 'Авария на линии',
+            html_url: '/news/2026/05/electricity/',
+            markdown_url: '/news/2026/05/electricity/index.md',
+            excerpt: 'Основной текст про Кирилла Щемелинина.',
+            mentioned_at: '2026-05-03T09:00:00+03:00',
+            sort_key: 1,
+          },
+        ],
+        status: [
+          {
+            section: 'status',
+            kind: 'incident',
+            source_id: '2026/04/electricity-river-10kv-line-damage',
+            title: 'Отключение электричества в Шелково Ривер',
+            html_url:
+              '/status/incidents/2026/04/electricity-river-10kv-line-damage/',
+            markdown_url:
+              '/status/incidents/2026/04/electricity-river-10kv-line-damage/index.md',
+            excerpt: 'Как отметил Кирилл Щемелинин, повреждение было редким.',
+            mentioned_at: '2026-04-22T11:30:00+03:00',
+            sort_key: 2,
+          },
+        ],
+        people: [],
+      },
     };
 
     expect(buildPersonMarkdown(profile)).toContain(
@@ -107,6 +139,15 @@ describe('buildPersonMarkdown', () => {
     expect(buildPersonMarkdown(profile)).toContain('## Профиль');
     expect(buildPersonMarkdown(profile)).toContain(
       'Публичный профиль с контекстом.',
+    );
+    expect(buildPersonMarkdown(profile)).toContain('## Где упоминается');
+    expect(buildPersonMarkdown(profile)).toContain('### Новости');
+    expect(buildPersonMarkdown(profile)).toContain('### Статус');
+    expect(buildPersonMarkdown(profile)).toContain(
+      '[Авария на линии](https://example.com/news/2026/05/electricity/index.md) — Новость; 3 мая 2026',
+    );
+    expect(buildPersonMarkdown(profile)).toContain(
+      '[Отключение электричества в Шелково Ривер](https://example.com/status/incidents/2026/04/electricity-river-10kv-line-damage/index.md) — Инцидент; 22 апреля',
     );
   });
 });

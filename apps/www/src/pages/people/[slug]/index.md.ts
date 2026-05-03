@@ -1,6 +1,9 @@
 import type { APIRoute, GetStaticPaths } from 'astro';
 
-import { loadPeopleProfiles, loadPersonProfile } from '@/lib/people/load';
+import {
+  loadPeopleProfiles,
+  loadPersonProfileWithBacklinks,
+} from '@/lib/people/load';
 import {
   buildPersonMarkdown,
   PEOPLE_MARKDOWN_HEADERS,
@@ -25,7 +28,7 @@ export const GET: APIRoute = async ({ params }) => {
     throw new Error('person slug is required');
   }
 
-  const profile = await loadPersonProfile(slug);
+  const profile = await loadPersonProfileWithBacklinks(slug);
 
   if (!profile) {
     throw new Error(`person profile "${slug}" not found`);
