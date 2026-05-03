@@ -25,12 +25,16 @@ const entry = (input: {
   readonly id: string;
   readonly name: string;
   readonly body?: string;
+  readonly contacts?: readonly {
+    readonly type: 'phone' | 'telegram';
+    readonly value: string;
+  }[];
 }): PersonProfileEntry => ({
   id: input.id,
   body: input.body ?? '',
   data: {
     name: input.name,
-    contacts: [],
+    contacts: [...(input.contacts ?? [])],
   },
 });
 
@@ -101,12 +105,22 @@ const incident = (input: {
 });
 
 describe('buildPeopleDataset', () => {
-  it('normalizes person body mentions against the shared registry', () => {
+  it('accepts a valid person entry with normalized contacts and body mentions', () => {
     const data = buildPeopleDataset([
       entry({
         id: 'kschemelinin',
         name: 'Кирилл Щемелинин',
         body: 'Профиль Кирилла.',
+        contacts: [
+          {
+            type: 'telegram',
+            value: 'Kirill_ZemlyaMO',
+          },
+          {
+            type: 'phone',
+            value: '+7 (916) 555-12-34',
+          },
+        ],
       }),
       entry({
         id: 'apetrov',
@@ -121,6 +135,35 @@ describe('buildPeopleDataset', () => {
     expect(
       data.by_slug.get('apetrov')?.mentions.map((item) => item.slug),
     ).toEqual(['kschemelinin']);
+    expect(data.by_slug.get('kschemelinin')?.contacts).toEqual([
+      {
+        type: 'telegram',
+        value: 'Kirill_ZemlyaMO',
+        display: '@Kirill_ZemlyaMO',
+        href: 'https://t.me/Kirill_ZemlyaMO',
+      },
+      {
+        type: 'phone',
+        value: '+7 (916) 555-12-34',
+        display: '+7 (916) 555-12-34',
+        href: 'tel:+79165551234',
+      },
+    ]);
+  });
+
+  it('fails on duplicate person slugs', () => {
+    expect(() =>
+      buildPeopleDataset([
+        entry({
+          id: 'kschemelinin',
+          name: 'Кирилл Щемелинин',
+        }),
+        entry({
+          id: 'kschemelinin',
+          name: 'Другой Кирилл',
+        }),
+      ]),
+    ).toThrow('duplicate person profile slug in mention registry');
   });
 
   it('builds grouped backlinks from news, status, and people mentions', () => {

@@ -44,7 +44,7 @@ describe('normalizePeopleMentions', () => {
 
   it('skips inline code, existing links, and autolink-like urls', () => {
     const markdown =
-      'Код `@kschemelinin`, ссылка [@kschemelinin](/docs) и https://example.com/@kschemelinin.';
+      'Код `@kschemelinin`, ссылка [@kschemelinin](/docs) и https://example.com/@kschemelinin.\n\n```txt\n@kschemelinin\n```';
 
     expect(
       normalizePeopleMentions({
@@ -68,5 +68,20 @@ describe('normalizePeopleMentions', () => {
     ).toThrow(
       'people profile "test" body contains unknown person mention "@unknown"',
     );
+  });
+
+  it('keeps repeated links in markdown but dedupes mentions in metadata', () => {
+    expect(
+      normalizePeopleMentions({
+        markdown:
+          '@kschemelinin согласовал работы, а позже @kschemelinin подтвердил вывод.',
+        context: 'news article "2026/05/test" body',
+        registry,
+      }),
+    ).toEqual({
+      markdown:
+        '[Кирилл Щемелинин](/people/kschemelinin/) согласовал работы, а позже [Кирилл Щемелинин](/people/kschemelinin/) подтвердил вывод.',
+      mentions: [registry.get('kschemelinin')],
+    });
   });
 });
