@@ -1,17 +1,38 @@
 {
-  "$schema": "https://turborepo.com/schema.json",
+  "$schema": "https://v2-9-8.turborepo.dev/schema.json",
   "globalDependencies": [".env*", "apps/*/.env*"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!**/*.md",
+        "!docs/**",
+        "!dist/**",
+        "!**/.astro/**"
+      ],
       "outputs": ["dist/site/**"]
     },
     "build:section": {
       "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!**/*.md",
+        "!docs/**",
+        "!dist/**",
+        "!**/.astro/**"
+      ],
       "outputs": ["dist/section/**"]
     },
     "build:legacy": {
       "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!**/*.md",
+        "!docs/**",
+        "!dist/**",
+        "!**/.astro/**"
+      ],
       "outputs": ["dist/legacy/**"]
     },
     "dev": {
@@ -20,10 +41,12 @@
     },
     "test": {
       "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "!dist/**", "!**/.astro/**"],
       "outputs": []
     },
     "typecheck": {
       "dependsOn": ["^typecheck"],
+      "inputs": ["$TURBO_DEFAULT$", "!dist/**", "!**/.astro/**"],
       "outputs": []
     }
   }

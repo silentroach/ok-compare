@@ -60,6 +60,12 @@ pnpm build:legacy   # dist/legacy
 - по максимуму используй `readonly` для иммутабельности там, где она уместна
 - Для тривиальных helper-ов с единственным `return` предпочитай однострочные `const`-стрелки (`const fn = (): T => expr`) вместо `function fn() { return expr; }`
 
+## Turborepo cache policy
+
+- Для задач `build*` в `turbo.json` используем `inputs` с исключениями для `docs/**`, `**/*.md`, `dist/**` и `**/.astro/**`, чтобы документация и артефакты не инвалидировали build-кэш.
+- Для `test` и `typecheck` в `turbo.json` исключаем `dist/**` и `**/.astro/**` из `inputs`.
+- `$schema` в `turbo.json` оставляем version-pinned (как генерирует Turborepo для текущей версии), если нет явной причины менять формат.
+
 ## Правила workspace
 
 - Не дублировать compare-логику в `apps/www`; compare должен приезжать туда как отдельный section build.
