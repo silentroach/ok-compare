@@ -55,6 +55,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         '- Это статический people-section внутри kpshelkovo.online с публичными профилями людей, контактами и графом упоминаний между `news`, `status` и `people`.',
         `- Сейчас в разделе ${count(data.profiles.length, ['профиль', 'профиля', 'профилей'])}, ${count(mentionCount, ['исходящее упоминание', 'исходящих упоминания', 'исходящих упоминаний'])} и ${count(backlinkCount, ['обратная ссылка', 'обратные ссылки', 'обратных ссылок'])}.`,
         '- Публичного HTML-индекса `/people/` нет: для массового обхода используйте people.json и markdown overview.',
+        '- У профиля могут быть `company` и `position`; `body_markdown` может быть пустым, если базовый контекст уже есть во frontmatter.',
         '',
         'Главные URL',
         `- Markdown overview people-section: ${overview}`,
@@ -67,7 +68,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         'Как читать раздел',
         `- Для массового обхода начинайте с ${feed}.`,
         `- Для одной персоны переходите на ${detailHtml} или ${detailMarkdown}.`,
-        '- В `mentions` лежат исходящие упоминания из body профиля, а в `backlinks` - входящие ссылки из news, status и других people profiles.',
+        '- В `mentions` лежат исходящие упоминания из body профиля, если body заполнен; в `backlinks` - входящие ссылки из news, status и других people profiles.',
         '- Контакты публикуются открыто и не маскируются в feed или markdown companions.',
       ])
     : join([
@@ -95,8 +96,8 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         '- Это основной read-only structured feed для массового обхода people-section.',
         '- Корневой объект содержит `stats` и `profiles`.',
         '- `stats` дает агрегированные counts по профилям, исходящим mentions и публичным backlinks.',
-        '- `profiles[]` включает `id`, `slug`, `name`, `html_url`, `markdown_url`, `contacts`, `body_markdown`, `mentions`, `mention_count`, `backlinks` и `backlink_count`.',
-        '- `mentions[]` раскрывают `@slug` из body профиля в канонические имя и ссылки на detail surfaces.',
+        '- `profiles[]` включает `id`, `slug`, `name`, опциональные `company` и `position`, `html_url`, `markdown_url`, `contacts`, `body_markdown`, `mentions`, `mention_count`, `backlinks` и `backlink_count`.',
+        '- `mentions[]` раскрывают `@slug` из body профиля в канонические имя и ссылки на detail surfaces; если body пустой, массив будет пустым.',
         '- `backlinks` группируются по `news`, `status` и `people`, чтобы отвечать на вопрос, где человек уже фигурирует на сайте.',
         '',
         'HTML и Markdown surfaces',

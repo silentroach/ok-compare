@@ -49,6 +49,8 @@ export interface PersonProfile {
   readonly id: string;
   readonly slug: string;
   readonly name: string;
+  readonly company?: string;
+  readonly position?: string;
   readonly url: string;
   readonly markdown_url: string;
   readonly canonical: string;

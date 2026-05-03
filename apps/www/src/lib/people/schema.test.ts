@@ -19,6 +19,8 @@ describe('peopleProfiles collection schema', () => {
     expect(
       schema.safeParse({
         name: 'Кирилл Щемелинин',
+        company: 'ОК "Комфорт"',
+        position: 'Исполняющий обязанности директора по эксплуатации',
         contacts: [
           {
             type: 'telegram',

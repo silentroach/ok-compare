@@ -4,6 +4,8 @@ import type { GetStaticPaths } from 'astro';
 import NewsBreadcrumbs from '@/components/news/NewsBreadcrumbs.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { renderMarkdown } from '@/lib/markdown/render';
+import { formatDynamicHtml } from '@/lib/typography';
+import PhoneIcon from '@shelkovo/ui/icons/system/Phone.astro';
 import TelegramIcon from '@shelkovo/ui/icons/system/Telegram.astro';
 import {
   loadPeopleProfiles,
@@ -17,6 +19,7 @@ import {
   formatPersonBacklinkSection,
   formatPersonContactCompactDisplay,
   formatPersonContactType,
+  formatPersonHeadline,
   personBacklinkGroups,
   PEOPLE_PROSE,
 } from '@/lib/people/view';
@@ -45,6 +48,8 @@ if (!profile) {
 
 const bodyHtml = profile.body ? renderMarkdown(profile.body) : undefined;
 const description = describePersonProfile(profile);
+const headline = formatPersonHeadline(profile);
+const headlineHtml = headline ? formatDynamicHtml(headline) : undefined;
 const title = `${profile.name} — люди Шелково`;
 const breadcrumbs = [{ label: 'Люди' }, { label: profile.name }];
 // Future: reopen public backlinks on person pages once editorial rules are finalized.
@@ -53,6 +58,8 @@ const backlinkGroups = personBacklinkGroups(profile.backlinks);
 const schema = personProfilePageSchema({
   name: profile.name,
   description,
+  company: profile.company,
+  position: profile.position,
   url: profile.url,
   contacts: profile.contacts,
 });
@@ -78,6 +85,15 @@ const schema = personProfilePageSchema({
             >
               {profile.name}
             </h1>
+
+            {
+              headlineHtml && (
+                <p
+                  class="max-w-3xl text-sm leading-6 text-muted-foreground md:text-base"
+                  set:html={headlineHtml}
+                />
+              )
+            }
           </div>
 
           <section aria-labelledby="person-contacts" class="space-y-3">
@@ -95,6 +111,8 @@ const schema = personProfilePageSchema({
                     <li class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
                       {contact.type === 'telegram' ? (
                         <TelegramIcon class="size-4 shrink-0 text-primary" />
+                      ) : contact.type === 'phone' ? (
+                        <PhoneIcon class="size-4 shrink-0 text-primary" />
                       ) : (
                         <span class="text-sm font-medium text-muted-foreground">
                           {formatPersonContactType(contact.type)}

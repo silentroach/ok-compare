@@ -9,6 +9,8 @@ const LANG = 'ru-RU';
 interface PersonProfilePageInput {
   readonly name: string;
   readonly description: string;
+  readonly company?: string;
+  readonly position?: string;
   readonly url: string;
   readonly contacts: readonly PersonContact[];
 }
@@ -30,6 +32,15 @@ const personEntity = (input: PersonProfilePageInput): SchemaDoc => {
     description: input.description,
     url,
     mainEntityOfPage: url,
+    ...(input.position ? { jobTitle: input.position } : {}),
+    ...(input.company
+      ? {
+          worksFor: {
+            '@type': 'Organization',
+            name: input.company,
+          },
+        }
+      : {}),
     ...(telephones.length === 1
       ? { telephone: telephones[0] }
       : telephones.length > 1

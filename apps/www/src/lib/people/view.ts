@@ -146,6 +146,16 @@ export const formatPersonContactCompactDisplay = (
     ? contact.display.replace(/^@/u, '')
     : contact.display;
 
+export const formatPersonHeadline = (
+  profile: Pick<PersonProfile, 'company' | 'position'>,
+): string | undefined => {
+  const parts = [profile.position, profile.company].filter(
+    (value): value is string => Boolean(value),
+  );
+
+  return parts.length > 0 ? parts.join(', ') : undefined;
+};
+
 export const formatPersonBacklinkSection = (
   section: PersonMentionSection,
 ): string => BACKLINK_SECTION_LABELS[section];
@@ -203,20 +213,25 @@ export const normalizePersonContact = (
 };
 
 export const describePersonProfile = (
-  profile: Pick<PersonProfile, 'body' | 'name'>,
+  profile: Pick<PersonProfile, 'body' | 'company' | 'name' | 'position'>,
 ): string => {
   const first = extractFirstMarkdownText(profile.body);
+  const headline = formatPersonHeadline(profile);
 
   return (
     first ??
+    (headline ? `${profile.name} — ${headline}.` : undefined) ??
     `${profile.name} — публичный профиль человека из раздела people на сайте Шелково Онлайн.`
   );
 };
 
-export const buildPersonMarkdown = (profile: PersonProfile): string =>
-  join([
+export const buildPersonMarkdown = (profile: PersonProfile): string => {
+  const headline = formatPersonHeadline(profile);
+
+  return join([
     `# ${profile.name}`,
     '',
+    ...(headline ? [headline, ''] : []),
     ...section(
       'Контакты',
       profile.contacts.length > 0
@@ -226,3 +241,4 @@ export const buildPersonMarkdown = (profile: PersonProfile): string =>
     ...(profile.body ? ['## Профиль', '', profile.body.trim(), ''] : []),
     ...backlinksSection(profile.backlinks),
   ]);
+};

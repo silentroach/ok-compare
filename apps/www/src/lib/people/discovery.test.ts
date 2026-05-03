@@ -12,6 +12,8 @@ const profile = (): PersonProfile => ({
   id: 'kschemelinin',
   slug: 'kschemelinin',
   name: 'Кирилл Щемелинин',
+  company: 'ОК "Комфорт"',
+  position: 'Исполняющий обязанности директора по эксплуатации',
   url: '/people/kschemelinin/',
   markdown_url: '/people/kschemelinin/index.md',
   canonical: 'https://example.com/people/kschemelinin/',
@@ -85,6 +87,8 @@ describe('people discovery payload', () => {
     expect(payload.profiles[0]).toMatchObject({
       id: 'kschemelinin',
       slug: 'kschemelinin',
+      company: 'ОК "Комфорт"',
+      position: 'Исполняющий обязанности директора по эксплуатации',
       html_url: 'https://example.com/people/kschemelinin/',
       markdown_url: 'https://example.com/people/kschemelinin/index.md',
       mention_count: 1,

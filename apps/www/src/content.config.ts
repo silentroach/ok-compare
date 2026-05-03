@@ -442,6 +442,8 @@ const peopleProfiles = defineCollection({
   }),
   schema: z.object({
     name: text('name'),
+    company: text('company').optional(),
+    position: text('position').optional(),
     contacts: z.array(
       z.object({
         type: z.enum(PERSON_CONTACT_TYPES),

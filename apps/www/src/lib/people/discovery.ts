@@ -54,6 +54,8 @@ export interface PeopleDiscoveryProfile {
   readonly id: string;
   readonly slug: string;
   readonly name: string;
+  readonly company?: string;
+  readonly position?: string;
   readonly html_url: string;
   readonly markdown_url: string;
   readonly contacts: readonly PeopleDiscoveryContact[];
@@ -189,6 +191,8 @@ const profile = (item: PersonProfile): PeopleDiscoveryProfile => ({
   id: item.id,
   slug: item.slug,
   name: item.name,
+  ...(item.company ? { company: item.company } : {}),
+  ...(item.position ? { position: item.position } : {}),
   html_url: item.canonical,
   markdown_url: fullUrl(item.markdown_url),
   contacts: item.contacts.map(contact),
@@ -304,6 +308,8 @@ export function schema(root: string): Record<string, unknown> {
           id: text(1),
           slug: text(1),
           name: text(1),
+          company: text(1),
+          position: text(1),
           html_url: uri(),
           markdown_url: uri(),
           contacts: list({

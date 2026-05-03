@@ -24,6 +24,8 @@ beforeAll(async () => {
 const entry = (input: {
   readonly id: string;
   readonly name: string;
+  readonly company?: string;
+  readonly position?: string;
   readonly body?: string;
   readonly contacts?: readonly {
     readonly type: 'phone' | 'telegram';
@@ -34,6 +36,8 @@ const entry = (input: {
   body: input.body ?? '',
   data: {
     name: input.name,
+    ...(input.company ? { company: input.company } : {}),
+    ...(input.position ? { position: input.position } : {}),
     contacts: [...(input.contacts ?? [])],
   },
 });
@@ -110,6 +114,8 @@ describe('buildPeopleDataset', () => {
       entry({
         id: 'kschemelinin',
         name: 'Кирилл Щемелинин',
+        company: 'ОК "Комфорт"',
+        position: 'Исполняющий обязанности директора по эксплуатации',
         body: 'Профиль Кирилла.',
         contacts: [
           {
@@ -149,6 +155,33 @@ describe('buildPeopleDataset', () => {
         href: 'tel:+79165551234',
       },
     ]);
+    expect(data.by_slug.get('kschemelinin')?.company).toBe('ОК "Комфорт"');
+    expect(data.by_slug.get('kschemelinin')?.position).toBe(
+      'Исполняющий обязанности директора по эксплуатации',
+    );
+  });
+
+  it('supports profiles without markdown body when frontmatter already carries context', () => {
+    const data = buildPeopleDataset([
+      entry({
+        id: 'kschemelinin',
+        name: 'Кирилл Щемелинин',
+        company: 'ОК "Комфорт"',
+        position: 'Исполняющий обязанности директора по эксплуатации',
+        contacts: [
+          {
+            type: 'phone',
+            value: '+7 (967) 246-37-49',
+          },
+        ],
+      }),
+    ]);
+
+    expect(data.by_slug.get('kschemelinin')).toMatchObject({
+      body: '',
+      company: 'ОК "Комфорт"',
+      position: 'Исполняющий обязанности директора по эксплуатации',
+    });
   });
 
   it('fails on duplicate person slugs', () => {

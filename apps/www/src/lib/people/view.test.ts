@@ -5,6 +5,7 @@ import type { PersonProfile } from './schema';
 let buildPersonMarkdown: typeof import('./view').buildPersonMarkdown;
 let describePersonProfile: typeof import('./view').describePersonProfile;
 let formatPersonContactCompactDisplay: typeof import('./view').formatPersonContactCompactDisplay;
+let formatPersonHeadline: typeof import('./view').formatPersonHeadline;
 let normalizePersonContact: typeof import('./view').normalizePersonContact;
 
 beforeAll(async () => {
@@ -17,6 +18,7 @@ beforeAll(async () => {
     buildPersonMarkdown,
     describePersonProfile,
     formatPersonContactCompactDisplay,
+    formatPersonHeadline,
     normalizePersonContact,
   } = await import('./view'));
 });
@@ -84,6 +86,30 @@ describe('describePersonProfile', () => {
       }),
     ).toBe('Как отметил Кирилл Щемелинин, проблема редкая.');
   });
+
+  it('falls back to position and company when body is empty', () => {
+    expect(
+      describePersonProfile({
+        name: 'Кирилл Щемелинин',
+        company: 'ОК "Комфорт"',
+        position: 'Исполняющий обязанности директора по эксплуатации',
+        body: '',
+      }),
+    ).toBe(
+      'Кирилл Щемелинин — Исполняющий обязанности директора по эксплуатации, ОК "Комфорт".',
+    );
+  });
+});
+
+describe('formatPersonHeadline', () => {
+  it('joins position and company into a single line', () => {
+    expect(
+      formatPersonHeadline({
+        company: 'ОК "Комфорт"',
+        position: 'Исполняющий обязанности директора по эксплуатации',
+      }),
+    ).toBe('Исполняющий обязанности директора по эксплуатации, ОК "Комфорт"');
+  });
 });
 
 describe('formatPersonContactCompactDisplay', () => {
@@ -110,6 +136,8 @@ describe('buildPersonMarkdown', () => {
       id: 'kschemelinin',
       slug: 'kschemelinin',
       name: 'Кирилл Щемелинин',
+      company: 'ОК "Комфорт"',
+      position: 'Исполняющий обязанности директора по эксплуатации',
       url: '/people/kschemelinin/',
       markdown_url: '/people/kschemelinin/index.md',
       canonical: 'https://example.com/people/kschemelinin/',
@@ -157,6 +185,9 @@ describe('buildPersonMarkdown', () => {
     };
 
     expect(buildPersonMarkdown(profile)).toContain(
+      'Исполняющий обязанности директора по эксплуатации, ОК "Комфорт"',
+    );
+    expect(buildPersonMarkdown(profile)).toContain(
       '- Telegram: [@Kirill_ZemlyaMO](https://t.me/Kirill_ZemlyaMO)',
     );
     expect(buildPersonMarkdown(profile)).toContain('## Профиль');
@@ -172,5 +203,38 @@ describe('buildPersonMarkdown', () => {
     expect(buildPersonMarkdown(profile)).toContain(
       '[Отключение электричества в Шелково Ривер](https://example.com/status/incidents/2026/04/electricity-river-10kv-line-damage/index.md) — Инцидент; 22 апреля',
     );
+  });
+
+  it('omits profile section when markdown body is empty', () => {
+    const profile: PersonProfile = {
+      id: 'kschemelinin',
+      slug: 'kschemelinin',
+      name: 'Кирилл Щемелинин',
+      company: 'ОК "Комфорт"',
+      position: 'Исполняющий обязанности директора по эксплуатации',
+      url: '/people/kschemelinin/',
+      markdown_url: '/people/kschemelinin/index.md',
+      canonical: 'https://example.com/people/kschemelinin/',
+      contacts: [
+        {
+          type: 'phone',
+          value: '+7 (967) 246-37-49',
+          display: '+7 (967) 246-37-49',
+          href: 'tel:+79672463749',
+        },
+      ],
+      body: '',
+      mentions: [],
+      backlinks: {
+        news: [],
+        status: [],
+        people: [],
+      },
+    };
+
+    expect(buildPersonMarkdown(profile)).toContain(
+      'Исполняющий обязанности директора по эксплуатации, ОК "Комфорт"',
+    );
+    expect(buildPersonMarkdown(profile)).not.toContain('## Профиль');
   });
 });

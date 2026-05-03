@@ -6,6 +6,7 @@ import {
   buildPersonMarkdown,
   describePersonProfile,
   formatPersonContactType,
+  formatPersonHeadline,
 } from './view';
 
 export const PEOPLE_MARKDOWN_HEADERS = {
@@ -24,8 +25,11 @@ const backlinksCount = (backlinks: PersonBacklinks): number =>
   backlinks.news.length + backlinks.status.length + backlinks.people.length;
 
 const profileLine = (profile: PersonProfile): string => {
-  const summary = inline(describePersonProfile(profile));
+  const summary = profile.body
+    ? inline(describePersonProfile(profile))
+    : undefined;
   const meta = [
+    formatPersonHeadline(profile),
     profile.contacts.length > 0
       ? profile.contacts
           .map(
@@ -44,7 +48,7 @@ const profileLine = (profile: PersonProfile): string => {
       'обратные ссылки',
       'обратных ссылок',
     ]),
-  ];
+  ].filter((value): value is string => Boolean(value));
 
   return `- [${profile.name}](${absoluteUrl(profile.markdown_url)}) — ${meta.join('; ')}${summary ? `\n  ${summary}` : ''}`;
 };
@@ -69,7 +73,7 @@ export const buildPeopleHomeMarkdown = (
     '',
     '## Сводка',
     `- Опубликовано ${count(profiles.length, ['профиль', 'профиля', 'профилей'])}.`,
-    `- В source body сейчас ${count(mentionCount, ['исходящее упоминание', 'исходящих упоминания', 'исходящих упоминаний'])}.`,
+    `- В source body сейчас ${count(mentionCount, ['исходящее упоминание', 'исходящих упоминания', 'исходящих упоминаний'])}. Пустой body допустим для профилей, где контекст уже есть во frontmatter.`,
     `- В публичном графе сейчас ${count(backlinkCount, ['обратная ссылка', 'обратные ссылки', 'обратных ссылок'])}.`,
     '',
     '## Профили',

@@ -222,6 +222,8 @@ const normalizePerson = (
     id: entry.id,
     slug: entry.id,
     name: entry.data.name,
+    ...(entry.data.company ? { company: entry.data.company } : {}),
+    ...(entry.data.position ? { position: entry.data.position } : {}),
     url: personUrl(entry.id),
     markdown_url: personMarkdownUrl(entry.id),
     canonical: personCanonical(entry.id),
