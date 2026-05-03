@@ -2,6 +2,7 @@ import { absoluteUrl } from '../site';
 import {
   statusApiCatalogPath,
   statusDataPath,
+  statusFeedPath,
   statusIncidentMarkdownUrl,
   statusLlmsFullPath,
   statusLlmsPath,
@@ -569,6 +570,11 @@ export function catalog(root: string): Record<string, unknown> {
             href: abs(root, statusDataPath()),
             type: 'application/json',
             'title*': star('Основной машиночитаемый feed status-section'),
+          },
+          {
+            href: abs(root, statusFeedPath()),
+            type: 'application/rss+xml',
+            'title*': star('RSS-лента статуса'),
           },
           {
             href: fullUrl(statusMarkdownUrl()),

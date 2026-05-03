@@ -103,11 +103,20 @@ const renderTimeline = (
         hidden
       >
         <p>
-          <span data-status-tooltip-phase-icon-alert hidden></span>
-          <span data-status-tooltip-phase-icon-check hidden></span>
+          <span
+            class="status-service-timeline__tooltip-phase-icon status-service-timeline__tooltip-phase-icon--alert"
+            data-status-tooltip-phase-icon-alert
+            hidden
+          ></span>
+          <span
+            class="status-service-timeline__tooltip-phase-icon status-service-timeline__tooltip-phase-icon--check"
+            data-status-tooltip-phase-icon-check
+            hidden
+          ></span>
           <span data-status-tooltip-title></span>
         </p>
         <p data-status-tooltip-period></p>
+        <div data-status-tooltip-list hidden></div>
       </div>
     </div>
   `;
@@ -437,6 +446,93 @@ describe('hydrateStatusTimeline', () => {
     );
   });
 
+  it('renders grouped tooltip entries as stacked single-record blocks', () => {
+    document.body.innerHTML = `
+      <div data-status-timeline data-range-days="10">
+        <div data-status-timeline-track>
+          <a
+            href="/status/incidents/grouped"
+            title="Электричество. 3 события за 9 мая"
+            aria-label="Электричество. 3 события за 9 мая"
+            data-incident-id="grouped"
+            data-status-problem
+            data-start="2026-05-09T03:00:00Z"
+            data-end="2026-05-09T20:05:00Z"
+            data-tooltip-service-label="Электричество"
+            data-tooltip-group-title="3 события за 9 мая"
+            data-tooltip-items='[{"kind":"incident","title":"Отключение 1","is_active":false,"started_iso":"2026-05-09T03:00:00Z","started_has_time":true,"ended_iso":"2026-05-09T03:40:00Z","ended_has_time":true,"duration":{"total_minutes":40}},{"kind":"incident","title":"Отключение 2","is_active":false,"started_iso":"2026-05-09T08:10:00Z","started_has_time":true,"ended_iso":"2026-05-09T08:45:00Z","ended_has_time":true,"duration":{"total_minutes":35}},{"kind":"incident","title":"Отключение 3","is_active":true,"started_iso":"2026-05-09T19:20:00Z","started_has_time":true,"ended_has_time":false}]'
+            class="status-service-timeline__segment status-service-timeline__segment--problem status-service-timeline__segment--red"
+          ></a>
+        </div>
+        <div
+          id="status-service-timeline-tooltip-grouped"
+          data-status-timeline-tooltip
+          role="tooltip"
+          aria-hidden="true"
+          hidden
+        >
+          <p>
+            <span
+              class="status-service-timeline__tooltip-phase-icon status-service-timeline__tooltip-phase-icon--alert"
+              data-status-tooltip-phase-icon-alert
+              hidden
+            ></span>
+            <span
+              class="status-service-timeline__tooltip-phase-icon status-service-timeline__tooltip-phase-icon--check"
+              data-status-tooltip-phase-icon-check
+              hidden
+            ></span>
+            <span data-status-tooltip-title></span>
+          </p>
+          <p data-status-tooltip-period></p>
+          <div data-status-tooltip-list hidden></div>
+        </div>
+      </div>
+    `;
+
+    const root = document.querySelector(
+      '[data-status-timeline]',
+    ) as HTMLElement;
+
+    hydrateStatusTimeline(root, {
+      nowMs: Date.parse('2026-05-10T00:00:00Z'),
+    });
+
+    getProblemNode('grouped').dispatchEvent(new Event('mouseenter'));
+
+    expect(getTooltipField('[data-status-tooltip-title]').hidden).toBe(true);
+    expect(getTooltipField('[data-status-tooltip-period]').hidden).toBe(true);
+    expect(getTooltipField('[data-status-tooltip-list]').textContent).toContain(
+      'Отключение 1',
+    );
+    const firstTitleText = getTooltipField('[data-status-tooltip-list]')
+      .firstElementChild?.firstElementChild?.lastElementChild as
+      | HTMLElement
+      | undefined;
+
+    expect(firstTitleText?.textContent).toBe('Отключение 1');
+    expect(firstTitleText?.hidden).toBe(false);
+    expect(getTooltipField('[data-status-tooltip-list]').textContent).toContain(
+      '06:00',
+    );
+    expect(getTooltipField('[data-status-tooltip-list]').textContent).toContain(
+      'Отключение 3',
+    );
+    expect(getTooltipField('[data-status-tooltip-list]').textContent).toContain(
+      '22:20',
+    );
+    expect(
+      getTooltipField('[data-status-tooltip-list]').querySelectorAll(
+        '.status-service-timeline__tooltip-phase-icon--check:not([hidden])',
+      ),
+    ).toHaveLength(2);
+    expect(
+      getTooltipField('[data-status-tooltip-list]').querySelectorAll(
+        '.status-service-timeline__tooltip-phase-icon--alert:not([hidden])',
+      ),
+    ).toHaveLength(1);
+  });
+
   it('clamps tooltip position within the component width', () => {
     const root = renderTimeline([
       {
@@ -521,17 +617,26 @@ describe('hydrateStatusTimeline', () => {
             aria-hidden="true"
             hidden
           >
-            <p>
-              <span data-status-tooltip-phase-icon-alert hidden></span>
-              <span data-status-tooltip-phase-icon-check hidden></span>
-              <span data-status-tooltip-title></span>
-            </p>
-            <p data-status-tooltip-period></p>
-          </div>
-        </div>
-        <div data-status-timeline data-range-days="10"></div>
-      </section>
-    `;
+             <p>
+               <span
+                 class="status-service-timeline__tooltip-phase-icon status-service-timeline__tooltip-phase-icon--alert"
+                 data-status-tooltip-phase-icon-alert
+                 hidden
+               ></span>
+               <span
+                 class="status-service-timeline__tooltip-phase-icon status-service-timeline__tooltip-phase-icon--check"
+                 data-status-tooltip-phase-icon-check
+                 hidden
+               ></span>
+               <span data-status-tooltip-title></span>
+             </p>
+             <p data-status-tooltip-period></p>
+             <div data-status-tooltip-list hidden></div>
+           </div>
+         </div>
+         <div data-status-timeline data-range-days="10"></div>
+       </section>
+     `;
 
     window.__STATUS_TIMELINE_NOW__ = Date.parse('2026-05-10T00:00:00Z');
 

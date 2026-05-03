@@ -66,6 +66,12 @@ export interface StatusTimelineTooltipData {
   readonly periodLabel: string;
 }
 
+export interface StatusTimelineTooltipListItemData {
+  readonly title: string;
+  readonly periodLabel: string;
+  readonly phaseIcon?: 'alert' | 'check';
+}
+
 type StatusTimelineTooltipIncident = Pick<
   StatusIncident,
   | 'kind'
@@ -281,6 +287,42 @@ export const formatStatusTimelineTooltipLabel = (
     tooltip.title,
     `Статус: ${tooltip.phaseLabel}`,
     tooltip.periodLabel,
+  ].join('. ');
+
+export const buildStatusTimelineTooltipListItemData = (
+  incident: StatusTimelineTooltipIncident,
+  opts?: StatusTypographyOptions,
+): StatusTimelineTooltipListItemData => ({
+  title: incident.title,
+  periodLabel: formatStatusIncidentPeriodText(incident, opts),
+  ...(incident.kind !== 'incident'
+    ? {}
+    : incident.is_active
+      ? { phaseIcon: 'alert' as const }
+      : incident.ended_iso
+        ? { phaseIcon: 'check' as const }
+        : {}),
+});
+
+export const formatStatusTimelineGroupTitle = (input: {
+  readonly count: number;
+  readonly startedIso: string;
+  readonly nonBreaking?: boolean;
+}): string => {
+  const spacer = input.nonBreaking ? NBSP : ' ';
+
+  return `${input.count}${spacer}${pluralizeRu(input.count, ['событие', 'события', 'событий'])} за${spacer}${formatStatusCalendarDate(input.startedIso, { nonBreaking: input.nonBreaking })}`;
+};
+
+export const formatStatusTimelineTooltipGroupLabel = (input: {
+  readonly serviceLabel: string;
+  readonly title: string;
+  readonly items: readonly StatusTimelineTooltipListItemData[];
+}): string =>
+  [
+    input.serviceLabel,
+    input.title,
+    ...input.items.map((item) => `${item.title}. ${item.periodLabel}`),
   ].join('. ');
 
 export const formatStatusDaysWithoutIncidents = (

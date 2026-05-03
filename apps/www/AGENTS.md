@@ -52,6 +52,7 @@ pnpm typecheck
   - `src/pages/news/index.md.ts`
   - `src/pages/news/llms.txt.ts`
   - `src/pages/news/llms-full.txt.ts`
+  - `src/pages/news/feed.xml.ts`
   - `src/pages/news/data/articles.json.ts`
   - `src/pages/news/.well-known/api-catalog.ts`
   - `src/pages/news/schemas/articles.schema.json.ts`
@@ -60,6 +61,7 @@ pnpm typecheck
   - `src/pages/status/index.md.ts`
   - `src/pages/status/llms.txt.ts`
   - `src/pages/status/llms-full.txt.ts`
+  - `src/pages/status/feed.xml.ts`
   - `src/pages/status/data/status.json.ts`
   - `src/pages/status/.well-known/api-catalog.ts`
   - `src/pages/status/schemas/status.schema.json.ts`

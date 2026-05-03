@@ -5,6 +5,7 @@ import { loadStatusData } from './load';
 import {
   statusApiCatalogUrl,
   statusDataUrl,
+  statusFeedUrl,
   statusIncidentMarkdownUrl,
   statusIncidentUrl,
   statusLlmsFullUrl,
@@ -38,6 +39,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
   const home = absoluteUrl(statusUrl());
   const homeMarkdown = absoluteUrl(statusMarkdownUrl());
   const feed = absoluteUrl(statusDataUrl());
+  const rss = absoluteUrl(statusFeedUrl());
   const short = absoluteUrl(statusLlmsUrl());
   const full = absoluteUrl(statusLlmsFullUrl());
   const catalog = absoluteUrl(statusApiCatalogUrl());
@@ -74,6 +76,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         'Главные URL',
         `- Главная status-section: ${home}`,
         `- Основной JSON feed: ${feed}`,
+        `- RSS: ${rss}`,
         `- API catalog: ${catalog}`,
         `- JSON Schema: ${schema}`,
         `- OpenAPI: ${openapi}`,
@@ -106,6 +109,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         `- Короткий агентный обзор: ${short}`,
         `- Расширенный агентный обзор: ${full}`,
         `- Основной JSON feed: ${feed}`,
+        `- RSS: ${rss}`,
         `- API catalog: ${catalog}`,
         `- JSON Schema: ${schema}`,
         `- OpenAPI: ${openapi}`,
@@ -127,6 +131,11 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         '- Markdown companion `/status/index.md` дает text-first слой для терминалов и агентов.',
         '- Страницы сервисов `/status/[service]/` и их companions `/status/[service]/index.md` удобны для фокусного чтения одной линии: электричество, вода или дамба.',
         '- Страницы incidents `/status/incidents/YYYY/MM/[entry]/` и их companions `/status/incidents/.../index.md` публикуются только для записей с body и тогда же появляются в `html_url`/`markdown_url`.',
+        '',
+        'RSS',
+        '- `/status/feed.xml` остается summary-first RSS.',
+        '- В RSS description сериализуются текущий статус записи, период, зоны воздействия и короткий excerpt, если он есть.',
+        '- Источником правды для полного machine-readable контента остается status.json.',
         '',
         'Семантика полей',
         `- ` +

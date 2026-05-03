@@ -3,8 +3,11 @@ import { dateTimeFromISO } from '@shelkovo/format';
 
 import {
   buildStatusTimelineTooltipData,
+  buildStatusTimelineTooltipListItemData,
   formatStatusDate,
   formatStatusIncidentPeriodText,
+  formatStatusTimelineGroupTitle,
+  formatStatusTimelineTooltipGroupLabel,
   formatStatusTimelineTooltipLabel,
   getStatusIncidentPeriod,
 } from './view';
@@ -272,6 +275,57 @@ describe('buildStatusTimelineTooltipData', () => {
     expect(tooltip.periodLabel).toBe(`Начиная с${NBSP}1${NBSP}мая, 07:32`);
     expect(formatStatusTimelineTooltipLabel(tooltip)).toBe(
       `Вода. Инцидент. Нет воды на Центральной. Статус: идет. Начиная с${NBSP}1${NBSP}мая, 07:32`,
+    );
+  });
+});
+
+describe('grouped timeline tooltip text', () => {
+  it('builds a compact day group title', () => {
+    expect(
+      formatStatusTimelineGroupTitle({
+        count: 3,
+        startedIso: `${currentYear}-05-09T07:32:00+03:00`,
+      }),
+    ).toBe('3 события за 9 мая');
+  });
+
+  it('formats grouped tooltip list items and summary labels', () => {
+    const items = [
+      buildStatusTimelineTooltipListItemData({
+        kind: 'incident',
+        title: 'Отключение 1',
+        is_active: false,
+        started_iso: `${currentYear}-05-09T07:32:00+03:00`,
+        started_has_time: true,
+        ended_iso: `${currentYear}-05-09T08:10:00+03:00`,
+        ended_has_time: true,
+        duration: {
+          total_minutes: 38,
+        },
+      }),
+      buildStatusTimelineTooltipListItemData({
+        kind: 'incident',
+        title: 'Отключение 2',
+        is_active: true,
+        started_iso: `${currentYear}-05-09T12:15:00+03:00`,
+        started_has_time: true,
+        ended_has_time: false,
+      }),
+    ];
+
+    expect(items[0]).toEqual({
+      title: 'Отключение 1',
+      periodLabel: '9 мая, 07:32 - 08:10 (38 мин.)',
+      phaseIcon: 'check',
+    });
+    expect(
+      formatStatusTimelineTooltipGroupLabel({
+        serviceLabel: 'Электричество',
+        title: '2 события за 9 мая',
+        items,
+      }),
+    ).toBe(
+      'Электричество. 2 события за 9 мая. Отключение 1. 9 мая, 07:32 - 08:10 (38 мин.). Отключение 2. Начиная с 9 мая, 12:15',
     );
   });
 });

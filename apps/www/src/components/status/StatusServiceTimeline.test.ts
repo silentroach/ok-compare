@@ -136,6 +136,34 @@ describe('StatusServiceTimeline', () => {
     );
   });
 
+  it('collapses multiple same-day incidents into one timeline marker with grouped tooltip data', async () => {
+    const html = await renderTimeline([
+      incident({
+        id: 'same-day-a',
+        started_iso: '2026-05-09T03:00:00Z',
+        ended_iso: '2026-05-09T03:40:00Z',
+        is_active: false,
+      }),
+      incident({
+        id: 'same-day-b',
+        started_iso: '2026-05-09T08:10:00Z',
+        ended_iso: '2026-05-09T08:45:00Z',
+        is_active: false,
+      }),
+      incident({
+        id: 'same-day-c',
+        started_iso: '2026-05-09T19:20:00Z',
+        ended_iso: '2026-05-09T20:05:00Z',
+        is_active: false,
+      }),
+    ]);
+
+    expect(html.match(/data-status-problem/g)?.length ?? 0).toBe(1);
+    expect(html).toContain('data-tooltip-group-title="3');
+    expect(html).toContain('data-tooltip-items="[');
+    expect(html).not.toContain('data-tooltip-kind-label="Инцидент"');
+  });
+
   it('renders typographic non-breaking spaces in tooltip date labels', async () => {
     const html = await renderTimeline([
       incident({
@@ -191,6 +219,20 @@ describe('StatusServiceTimeline', () => {
     );
     expect(html).toMatch(
       /data-incident-id="incident-visible"[^>]*status-service-timeline__segment--red/,
+    );
+  });
+
+  it('marks active incidents that reach now so they can visually touch the right edge', async () => {
+    const html = await renderTimeline([
+      incident({
+        id: 'incident-active',
+        started_iso: '2026-05-09T23:40:00Z',
+        is_active: true,
+      }),
+    ]);
+
+    expect(html).toMatch(
+      /data-incident-id="incident-active"[^>]*status-service-timeline__segment--problem-active-end/,
     );
   });
 });

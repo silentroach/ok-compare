@@ -1,15 +1,22 @@
 ---
+import { dateTimeFromISO } from '@shelkovo/format';
 import AlertCircleIcon from '@shelkovo/ui/icons/system/AlertCircle.astro';
 import CheckCircleIcon from '@shelkovo/ui/icons/system/CheckCircle.astro';
 
 import type { StatusService } from '@/lib/status/schema';
 import {
   buildStatusTimelineProblemSegments,
+  getStatusTimelineSegmentGeometry,
   getStatusTimelineRange,
   type StatusTimelineIncidentInput,
+  type StatusTimelineSpan,
 } from '@/lib/status/timeline';
 import {
   buildStatusTimelineTooltipData,
+  buildStatusTimelineTooltipListItemData,
+  formatStatusService,
+  formatStatusTimelineGroupTitle,
+  formatStatusTimelineTooltipGroupLabel,
   formatStatusTimelineTooltipLabel,
 } from '@/lib/status/view';
 
@@ -23,6 +30,7 @@ const { service, incidents, timelineDays = 90 } = Astro.props;
 
 const range = getStatusTimelineRange(Date.now(), timelineDays);
 const tooltipId = `status-service-timeline-tooltip-${service}-${timelineDays}`;
+const serviceLabel = formatStatusService(service);
 const visibleSegmentsById = new Map(
   buildStatusTimelineProblemSegments({ incidents, range }).map((segment) => [
     segment.id,
@@ -30,13 +38,96 @@ const visibleSegmentsById = new Map(
   ]),
 );
 
+interface TimelineTooltipSerializedItem {
+  readonly kind: StatusTimelineIncidentInput['kind'];
+  readonly title: string;
+  readonly is_active: boolean;
+  readonly started_iso: string;
+  readonly started_has_time: boolean;
+  readonly ended_iso?: string;
+  readonly ended_has_time: boolean;
+  readonly duration?: StatusTimelineIncidentInput['duration'];
+}
+
+interface TimelineGroup {
+  readonly dayKey: string;
+  readonly compact: boolean;
+  readonly isFuture: boolean;
+  readonly items: StatusTimelineIncidentInput[];
+  readonly visibleSegments: StatusTimelineSpan[];
+}
+
+const STATUS_TIMELINE_COMPACT_MARKER_MS = 60 * 60 * 1000;
+
 const toTimelineSortMs = (value?: string): number => {
   const parsed = Date.parse(value ?? '');
 
   return Number.isFinite(parsed) ? parsed : Number.POSITIVE_INFINITY;
 };
 
-const timelineItems = incidents
+const getTimelineDayKey = (value: string): string =>
+  dateTimeFromISO(value).toISODate() ?? value.slice(0, 10);
+
+const isCompactTimelineCandidate = (
+  item: StatusTimelineIncidentInput,
+  visibleSegment?: StatusTimelineSpan,
+): boolean =>
+  visibleSegment !== undefined &&
+  !item.is_active &&
+  !!item.ended_iso &&
+  getTimelineDayKey(item.started_iso) === getTimelineDayKey(item.ended_iso);
+
+const buildCompactTimelineMarkerSpan = (
+  span: StatusTimelineSpan,
+): StatusTimelineSpan | undefined => {
+  if (span.endMs <= span.startMs) {
+    return undefined;
+  }
+
+  const centerMs = span.startMs + (span.endMs - span.startMs) / 2;
+  const halfMarkerMs = STATUS_TIMELINE_COMPACT_MARKER_MS / 2;
+  const startMs = Math.max(range.startMs, centerMs - halfMarkerMs);
+  const endMs = Math.min(range.endMs, centerMs + halfMarkerMs);
+
+  if (endMs <= startMs) {
+    return { startMs, endMs };
+  }
+
+  return {
+    startMs,
+    endMs,
+  };
+};
+
+const serializeTimelineTooltipItems = (
+  items: readonly StatusTimelineIncidentInput[],
+): string =>
+  JSON.stringify(
+    items.map(
+      ({
+        duration,
+        ended_has_time,
+        ended_iso,
+        is_active,
+        kind,
+        started_has_time,
+        started_iso,
+        title,
+      }) =>
+        ({
+          kind,
+          title,
+          is_active,
+          started_iso,
+          started_has_time,
+          ...(ended_iso ? { ended_iso } : {}),
+          ended_has_time,
+          ...(duration ? { duration } : {}),
+        }) satisfies TimelineTooltipSerializedItem,
+    ),
+  );
+
+const timelineGroups = incidents
   .filter((item) => {
     const visibleSegment = visibleSegmentsById.get(item.id);
 
@@ -51,31 +142,152 @@ const timelineItems = incidents
       toTimelineSortMs(a.ended_iso) - toTimelineSortMs(b.ended_iso) ||
       a.id.localeCompare(b.id),
   )
-  .map((item) => {
+  .reduce<TimelineGroup[]>((groups, item) => {
     const visibleSegment = visibleSegmentsById.get(item.id);
-    const tooltip = buildStatusTimelineTooltipData({
-      service,
-      incident: item,
-      nonBreaking: true,
+    const isCompactCandidate = isCompactTimelineCandidate(item, visibleSegment);
+    const last = groups.at(-1);
+    const dayKey = getTimelineDayKey(item.started_iso);
+    const isFuture = visibleSegment === undefined;
+
+    if (
+      last &&
+      last.compact &&
+      isCompactCandidate &&
+      last.dayKey === dayKey &&
+      last.isFuture === isFuture
+    ) {
+      last.items.push(item);
+
+      if (visibleSegment) {
+        last.visibleSegments.push(visibleSegment);
+      }
+
+      return groups;
+    }
+
+    groups.push({
+      dayKey,
+      compact: isCompactCandidate,
+      isFuture,
+      items: [item],
+      visibleSegments: visibleSegment ? [visibleSegment] : [],
     });
-    const phaseIcon =
-      item.kind !== 'incident'
-        ? undefined
-        : item.is_active
-          ? 'alert'
-          : item.ended_iso
-            ? 'check'
-            : undefined;
+
+    return groups;
+  }, [])
+  .map((group) => {
+    const [firstItem] = group.items;
+    const lastItem = group.items.at(-1) ?? firstItem;
+    const hasVisibleSpan = group.visibleSegments.length > 0;
+    const tooltipItems = group.items.map((item) =>
+      buildStatusTimelineTooltipListItemData(item, { nonBreaking: true }),
+    );
+    const tooltipTitle =
+      group.items.length === 1
+        ? firstItem.title
+        : formatStatusTimelineGroupTitle({
+            count: group.items.length,
+            startedIso: firstItem.started_iso,
+            nonBreaking: true,
+          });
+    const reachesRangeEnd = group.visibleSegments.some(
+      (item) => item.endMs === range.endMs,
+    );
+    const actualSpan = hasVisibleSpan
+      ? {
+          startMs: Math.min(
+            ...group.visibleSegments.map((item) => item.startMs),
+          ),
+          endMs: Math.max(...group.visibleSegments.map((item) => item.endMs)),
+        }
+      : undefined;
+    const useCompactMarker = group.compact && group.items.length > 1;
+    const geometrySpan =
+      useCompactMarker && actualSpan
+        ? buildCompactTimelineMarkerSpan(actualSpan)
+        : actualSpan;
+    const geometry = geometrySpan
+      ? getStatusTimelineSegmentGeometry(geometrySpan, range)
+      : undefined;
+    const geometryStartIso =
+      useCompactMarker && geometrySpan
+        ? new Date(geometrySpan.startMs).toISOString()
+        : undefined;
+    const geometryEndIso =
+      useCompactMarker && geometrySpan
+        ? new Date(geometrySpan.endMs).toISOString()
+        : undefined;
+    const latestEndedIso = group.items
+      .map((item) => item.ended_iso)
+      .filter((item) => item !== undefined)
+      .toSorted((a, b) => toTimelineSortMs(a) - toTimelineSortMs(b))
+      .at(-1);
+    const groupEndIso = group.items.some((item) => !item.ended_iso)
+      ? undefined
+      : latestEndedIso;
+
+    if (group.items.length === 1) {
+      const tooltip = buildStatusTimelineTooltipData({
+        service,
+        incident: firstItem,
+        nonBreaking: true,
+      });
+      const phaseIcon =
+        firstItem.kind !== 'incident'
+          ? undefined
+          : firstItem.is_active
+            ? 'alert'
+            : firstItem.ended_iso
+              ? 'check'
+              : undefined;
+
+      return {
+        href: firstItem.url,
+        hidden: !hasVisibleSpan,
+        id: firstItem.id,
+        left: geometry?.leftPercent,
+        compactMarker: useCompactMarker,
+        ...(geometryStartIso ? { geometryStartIso } : {}),
+        ...(geometryEndIso ? { geometryEndIso } : {}),
+        reachesRangeEnd,
+        startIso: firstItem.started_iso,
+        ...(groupEndIso ? { endIso: groupEndIso } : {}),
+        statusKind: firstItem.kind,
+        tone: firstItem.kind === 'maintenance' ? 'amber' : 'red',
+        tooltip,
+        tooltipLabel: formatStatusTimelineTooltipLabel(tooltip),
+        tooltipTitle,
+        phaseIcon,
+        width: geometry?.widthPercent,
+      };
+    }
 
     return {
-      item,
-      hidden: visibleSegment === undefined,
-      tone: item.kind === 'maintenance' ? 'amber' : 'red',
-      left: visibleSegment?.leftPercent,
-      width: visibleSegment?.widthPercent,
-      phaseIcon,
-      tooltip,
-      tooltipLabel: formatStatusTimelineTooltipLabel(tooltip),
+      href: lastItem.url,
+      hidden: !hasVisibleSpan,
+      id: firstItem.id,
+      left: geometry?.leftPercent,
+      compactMarker: useCompactMarker,
+      ...(geometryStartIso ? { geometryStartIso } : {}),
+      ...(geometryEndIso ? { geometryEndIso } : {}),
+      reachesRangeEnd,
+      startIso: firstItem.started_iso,
+      ...(groupEndIso ? { endIso: groupEndIso } : {}),
+      statusKind: group.items.some((item) => item.kind === 'incident')
+        ? 'incident'
+        : 'maintenance',
+      tone: group.items.some((item) => item.kind === 'incident')
+        ? 'red'
+        : 'amber',
+      tooltipItems: serializeTimelineTooltipItems(group.items),
+      tooltipLabel: formatStatusTimelineTooltipGroupLabel({
+        serviceLabel,
+        title: tooltipTitle,
+        items: tooltipItems,
+      }),
+      tooltipServiceLabel: serviceLabel,
+      tooltipTitle,
+      width: geometry?.widthPercent,
     };
   });
 ---
@@ -88,34 +300,55 @@ const timelineItems = incidents
   <div class="status-service-timeline__track">
     <div class="status-service-timeline__segments" data-status-timeline-track>
       {
-        timelineItems.map(
+        timelineGroups.map(
           ({
+            compactMarker,
+            endIso,
+            geometryEndIso,
+            geometryStartIso,
+            href,
             hidden,
-            item,
+            id,
             left,
             phaseIcon,
+            reachesRangeEnd,
+            statusKind,
             tone,
             tooltip,
             tooltipLabel,
+            tooltipItems,
+            tooltipServiceLabel,
+            tooltipTitle,
+            startIso,
             width,
           }) => (
             <a
-              href={item.url}
+              href={href}
               title={tooltipLabel}
               aria-label={tooltipLabel}
-              data-incident-id={item.id}
+              data-incident-id={id}
               data-status-problem
-              data-status-kind={item.kind}
-              data-start={item.started_iso}
-              data-end={item.ended_iso}
-              data-tooltip-service-label={tooltip.serviceLabel}
-              data-tooltip-kind-label={tooltip.kindLabel}
-              data-tooltip-title={tooltip.title}
-              data-tooltip-phase-label={tooltip.phaseLabel}
-              data-tooltip-phase-icon={phaseIcon}
-              data-tooltip-period-label={tooltip.periodLabel}
+              data-status-kind={statusKind}
+              data-start={startIso}
+              data-end={endIso}
+              data-geometry-start={geometryStartIso}
+              data-geometry-end={geometryEndIso}
+              data-tooltip-service-label={
+                tooltip?.serviceLabel ?? tooltipServiceLabel
+              }
+              data-tooltip-kind-label={tooltip?.kindLabel}
+              data-tooltip-title={tooltip?.title}
+              data-tooltip-phase-label={tooltip?.phaseLabel}
+              data-tooltip-phase-icon={tooltip ? phaseIcon : undefined}
+              data-tooltip-period-label={tooltip?.periodLabel}
+              data-tooltip-group-title={tooltip ? undefined : tooltipTitle}
+              data-tooltip-items={tooltipItems}
               class:list={[
                 'status-service-timeline__segment status-service-timeline__segment--problem',
+                compactMarker &&
+                  'status-service-timeline__segment--compact-marker',
+                reachesRangeEnd &&
+                  'status-service-timeline__segment--problem-active-end',
                 tone === 'amber'
                   ? 'status-service-timeline__segment--amber'
                   : 'status-service-timeline__segment--red',
@@ -162,6 +395,12 @@ const timelineItems = incidents
     </p>
     <p class="status-service-timeline__tooltip-row" data-status-tooltip-period>
     </p>
+    <div
+      class="status-service-timeline__tooltip-list"
+      data-status-tooltip-list
+      hidden
+    >
+    </div>
   </div>
 </div>
 
@@ -195,10 +434,21 @@ const timelineItems = incidents
   }
 
   .status-service-timeline__segment {
+    --segment-resolved-width: max(
+      calc(var(--segment-width) * 1%),
+      var(--segment-min-width, 0.45rem)
+    );
+    --segment-bleed-end: 0px;
     position: absolute;
     top: 50%;
-    left: calc(var(--segment-left) * 1%);
-    width: max(calc(var(--segment-width) * 1%), 0.45rem);
+    left: max(
+      0px,
+      min(
+        calc(var(--segment-left) * 1%),
+        calc(100% - var(--segment-resolved-width))
+      )
+    );
+    width: calc(var(--segment-resolved-width) + var(--segment-bleed-end));
     height: 0.62rem;
     border-radius: 999px;
     transform: translateY(-50%) scaleY(var(--segment-scale, 1));
@@ -222,6 +472,8 @@ const timelineItems = incidents
   }
 
   .status-service-timeline__segment--problem {
+    box-shadow: 0 0 0 1px
+      color-mix(in oklab, var(--color-success) 14%, white 86%);
     transition:
       filter 160ms ease,
       transform 160ms ease;
@@ -236,6 +488,14 @@ const timelineItems = incidents
   .status-service-timeline__segment--problem:focus-visible {
     outline: 2px solid var(--color-text);
     outline-offset: 2px;
+  }
+
+  .status-service-timeline__segment--problem-active-end {
+    --segment-bleed-end: 0.2rem;
+  }
+
+  .status-service-timeline__segment--compact-marker {
+    --segment-min-width: 0.3rem;
   }
 
   .status-service-timeline__tooltip {
@@ -276,6 +536,23 @@ const timelineItems = incidents
     font-size: 0.78rem;
     line-height: 1.45;
     color: var(--color-text-muted);
+  }
+
+  .status-service-timeline__tooltip-list {
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .status-service-timeline__tooltip-item {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .status-service-timeline__tooltip-item
+    + .status-service-timeline__tooltip-item {
+    padding-top: 0.7rem;
+    border-top: 1px solid
+      color-mix(in oklab, var(--color-border) 76%, white 24%);
   }
 
   .status-service-timeline__tooltip-phase-icon {

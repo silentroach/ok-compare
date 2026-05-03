@@ -7,6 +7,7 @@ const STATUS_ROOT = '/status/';
 const STATUS_MARKDOWN = '/status/index.md';
 const STATUS_INCIDENTS_ROOT = '/status/incidents/';
 const STATUS_DATA = '/status/data/status.json';
+const STATUS_FEED = '/status/feed.xml';
 const STATUS_LLMS = '/status/llms.txt';
 const STATUS_LLMS_FULL = '/status/llms-full.txt';
 const STATUS_API_CATALOG = '/status/.well-known/api-catalog';
@@ -33,6 +34,8 @@ export const statusPath = (): string => STATUS_ROOT;
 
 export const statusDataPath = (): string => STATUS_DATA;
 
+export const statusFeedPath = (): string => STATUS_FEED;
+
 export const statusLlmsPath = (): string => STATUS_LLMS;
 
 export const statusLlmsFullPath = (): string => STATUS_LLMS_FULL;
@@ -54,6 +57,8 @@ export const statusUrl = (): string => withBase(STATUS_ROOT);
 export const statusMarkdownUrl = (): string => withBase(STATUS_MARKDOWN);
 
 export const statusDataUrl = (): string => withBase(STATUS_DATA);
+
+export const statusFeedUrl = (): string => withBase(STATUS_FEED);
 
 export const statusLlmsUrl = (): string => withBase(STATUS_LLMS);
 

@@ -7,6 +7,7 @@ import StatusServiceTimeline from './StatusServiceTimeline.astro';
 import type { StatusServiceSummary } from '../../lib/status/schema';
 import {
   formatStatusDate,
+  formatStatusDuration,
   formatStatusService,
   formatStatusServiceState,
 } from '../../lib/status/view';
@@ -28,6 +29,10 @@ const latestMoment = latestRecord
       nonBreaking: true,
     })
   : undefined;
+const latestDuration =
+  latestRecord && !latestRecord.is_active && latestRecord.duration
+    ? formatStatusDuration(latestRecord.duration, { nonBreaking: true })
+    : undefined;
 const stateClass = {
   green: 'text-[color:var(--color-success)]',
   amber: 'text-[color:var(--color-warning-text)]',
@@ -142,6 +147,11 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
             {latestMoment && (
               <p class="text-[0.8125rem] leading-5 text-muted-foreground">
                 {latestMoment}
+              </p>
+            )}
+            {latestDuration && (
+              <p class="text-[0.8125rem] leading-5 text-muted-foreground">
+                Длительность: {latestDuration}
               </p>
             )}
           </div>

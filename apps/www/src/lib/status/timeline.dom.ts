@@ -5,6 +5,11 @@ import {
   getStatusTimelineRange,
   type StatusTimelineSpan,
 } from './timeline';
+import {
+  buildStatusTimelineTooltipListItemData,
+  formatStatusTimelineTooltipGroupLabel,
+  type StatusTimelineTooltipListItemData,
+} from './view';
 
 export interface StatusTimelineHydrationOptions {
   readonly nowMs?: number;
@@ -15,20 +20,39 @@ interface StatusTimelineProblemNode {
   readonly kind?: 'incident' | 'maintenance';
   readonly startMs: number;
   readonly endMs?: number;
+  readonly geometryStartMs?: number;
+  readonly geometryEndMs?: number;
+}
+
+interface StatusTimelineTooltipSerializedItem {
+  readonly kind: 'incident' | 'maintenance';
+  readonly title: string;
+  readonly is_active: boolean;
+  readonly started_iso: string;
+  readonly started_has_time: boolean;
+  readonly ended_iso?: string;
+  readonly ended_has_time: boolean;
+  readonly duration?: {
+    readonly total_minutes: number;
+  };
 }
 
 interface StatusTimelineTooltipData {
   readonly title: string;
+  readonly ariaLabel: string;
   readonly phaseIcon?: 'alert' | 'check';
-  readonly periodLabel: string;
+  readonly periodLabel?: string;
+  readonly items?: readonly StatusTimelineTooltipListItemData[];
 }
 
 interface StatusTimelineTooltipElements {
   readonly shell: HTMLElement;
+  readonly titleRow: HTMLElement;
   readonly title: HTMLElement;
   readonly phaseAlertIcon: HTMLElement;
   readonly phaseCheckIcon: HTMLElement;
   readonly period: HTMLElement;
+  readonly list: HTMLElement;
 }
 
 declare global {
@@ -77,60 +101,198 @@ const getStatusTimelineTooltip = (
     '[data-status-tooltip-phase-icon-check]',
   );
   const period = shell.querySelector('[data-status-tooltip-period]');
+  const list = shell.querySelector('[data-status-tooltip-list]');
+  const titleRow = title?.parentElement;
 
   if (
+    !(titleRow instanceof HTMLElement) ||
     !(title instanceof HTMLElement) ||
     !(phaseAlertIcon instanceof HTMLElement) ||
     !(phaseCheckIcon instanceof HTMLElement) ||
-    !(period instanceof HTMLElement)
+    !(period instanceof HTMLElement) ||
+    !(list instanceof HTMLElement)
   ) {
     return undefined;
   }
 
   return {
     shell,
+    titleRow,
     title,
     phaseAlertIcon,
     phaseCheckIcon,
     period,
+    list,
   };
+};
+
+const isTimelineTooltipSerializedItem = (
+  value: unknown,
+): value is StatusTimelineTooltipSerializedItem => {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const candidate = value as Partial<StatusTimelineTooltipSerializedItem>;
+
+  return (
+    (candidate.kind === 'incident' || candidate.kind === 'maintenance') &&
+    typeof candidate.title === 'string' &&
+    typeof candidate.is_active === 'boolean' &&
+    typeof candidate.started_iso === 'string' &&
+    Number.isFinite(Date.parse(candidate.started_iso)) &&
+    typeof candidate.started_has_time === 'boolean' &&
+    typeof candidate.ended_has_time === 'boolean' &&
+    (candidate.ended_iso === undefined ||
+      (typeof candidate.ended_iso === 'string' &&
+        Number.isFinite(Date.parse(candidate.ended_iso)))) &&
+    (candidate.duration === undefined ||
+      (typeof candidate.duration === 'object' &&
+        candidate.duration !== null &&
+        typeof candidate.duration.total_minutes === 'number' &&
+        Number.isFinite(candidate.duration.total_minutes)))
+  );
+};
+
+const parseStatusTimelineTooltipItems = (
+  value?: string,
+): readonly StatusTimelineTooltipSerializedItem[] | undefined => {
+  if (!value) {
+    return undefined;
+  }
+
+  try {
+    const parsed = JSON.parse(value) as unknown;
+
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      return undefined;
+    }
+
+    return parsed.every(isTimelineTooltipSerializedItem) ? parsed : undefined;
+  } catch {
+    return undefined;
+  }
 };
 
 const readStatusTimelineTooltipData = (
   trigger: HTMLElement,
 ): StatusTimelineTooltipData | undefined => {
+  const serviceLabel = trigger.dataset.tooltipServiceLabel;
+  const groupTitle = trigger.dataset.tooltipGroupTitle;
+  const tooltipItems = parseStatusTimelineTooltipItems(
+    trigger.dataset.tooltipItems,
+  );
+
+  if (serviceLabel && groupTitle && tooltipItems) {
+    const items = tooltipItems.map((item) =>
+      buildStatusTimelineTooltipListItemData(item, { nonBreaking: true }),
+    );
+
+    return {
+      title: groupTitle,
+      ariaLabel: formatStatusTimelineTooltipGroupLabel({
+        serviceLabel,
+        title: groupTitle,
+        items,
+      }),
+      items,
+    };
+  }
+
   const title = trigger.dataset.tooltipTitle;
   const phaseIcon = trigger.dataset.tooltipPhaseIcon;
   const periodLabel = trigger.dataset.tooltipPeriodLabel;
+  const kindLabel = trigger.dataset.tooltipKindLabel;
+  const phaseLabel = trigger.dataset.tooltipPhaseLabel;
 
-  if (!title || !periodLabel) {
+  if (!serviceLabel || !kindLabel || !title || !phaseLabel || !periodLabel) {
     return undefined;
   }
 
   return {
     title,
+    ariaLabel: [
+      serviceLabel,
+      kindLabel,
+      title,
+      `Статус: ${phaseLabel}`,
+      periodLabel,
+    ].join('. '),
     ...(phaseIcon === 'alert' || phaseIcon === 'check' ? { phaseIcon } : {}),
     periodLabel,
   };
 };
 
 const setStatusTimelineProblemAriaLabel = (element: HTMLElement): void => {
-  const serviceLabel = element.dataset.tooltipServiceLabel;
-  const kindLabel = element.dataset.tooltipKindLabel;
-  const title = element.dataset.tooltipTitle;
-  const phaseLabel = element.dataset.tooltipPhaseLabel;
-  const periodLabel = element.dataset.tooltipPeriodLabel;
+  const tooltip = readStatusTimelineTooltipData(element);
 
-  if (!serviceLabel || !kindLabel || !title || !phaseLabel || !periodLabel) {
+  if (!tooltip) {
     return;
   }
 
-  element.setAttribute(
-    'aria-label',
-    [serviceLabel, kindLabel, title, `Статус: ${phaseLabel}`, periodLabel].join(
-      '. ',
-    ),
-  );
+  element.setAttribute('aria-label', tooltip.ariaLabel);
+};
+
+const renderStatusTimelineTooltipItems = (
+  tooltip: StatusTimelineTooltipElements,
+  items?: readonly StatusTimelineTooltipListItemData[],
+): void => {
+  tooltip.list.replaceChildren();
+
+  if (!items?.length) {
+    tooltip.list.hidden = true;
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+  items.forEach((item, index) => {
+    const shell = document.createElement('div');
+    const title = tooltip.titleRow.cloneNode(true) as HTMLElement;
+    const titleText = title.querySelector('[data-status-tooltip-title]');
+    const phaseAlertIcon = title.querySelector(
+      '[data-status-tooltip-phase-icon-alert]',
+    );
+    const phaseCheckIcon = title.querySelector(
+      '[data-status-tooltip-phase-icon-check]',
+    );
+    const period = tooltip.period.cloneNode(true) as HTMLElement;
+
+    shell.style.display = 'grid';
+    shell.style.gap = '0.4rem';
+
+    if (index > 0) {
+      shell.style.paddingTop = '0.7rem';
+      shell.style.borderTop =
+        '1px solid color-mix(in oklab, var(--color-border) 76%, white 24%)';
+    }
+
+    title.hidden = false;
+    period.hidden = false;
+
+    if (titleText instanceof HTMLElement) {
+      titleText.hidden = false;
+      titleText.textContent = item.title;
+      titleText.removeAttribute('data-status-tooltip-title');
+    }
+
+    if (phaseAlertIcon instanceof HTMLElement) {
+      phaseAlertIcon.hidden = item.phaseIcon !== 'alert';
+      phaseAlertIcon.removeAttribute('data-status-tooltip-phase-icon-alert');
+    }
+
+    if (phaseCheckIcon instanceof HTMLElement) {
+      phaseCheckIcon.hidden = item.phaseIcon !== 'check';
+      phaseCheckIcon.removeAttribute('data-status-tooltip-phase-icon-check');
+    }
+
+    period.textContent = item.periodLabel;
+    period.removeAttribute('data-status-tooltip-period');
+    shell.append(title, period);
+    fragment.append(shell);
+  });
+
+  tooltip.list.append(fragment);
+  tooltip.list.hidden = false;
 };
 
 const syncStatusTimelineProblemPhase = (
@@ -240,9 +402,15 @@ const openStatusTimelineTooltip = (
   });
 
   tooltip.title.textContent = data.title;
-  tooltip.phaseAlertIcon.hidden = data.phaseIcon !== 'alert';
-  tooltip.phaseCheckIcon.hidden = data.phaseIcon !== 'check';
-  tooltip.period.textContent = data.periodLabel;
+  tooltip.titleRow.hidden = !!data.items?.length;
+  tooltip.title.hidden = !!data.items?.length;
+  tooltip.phaseAlertIcon.hidden =
+    data.phaseIcon !== 'alert' || !!data.items?.length;
+  tooltip.phaseCheckIcon.hidden =
+    data.phaseIcon !== 'check' || !!data.items?.length;
+  tooltip.period.hidden = !data.periodLabel;
+  tooltip.period.textContent = data.periodLabel ?? '';
+  renderStatusTimelineTooltipItems(tooltip, data.items);
   tooltip.shell.hidden = false;
   tooltip.shell.setAttribute('aria-hidden', 'false');
   root.dataset.statusTooltipOpen = 'true';
@@ -292,6 +460,8 @@ const parseStatusTimelineProblemNode = (
   element: HTMLElement,
 ): StatusTimelineProblemNode | undefined => {
   const startMs = Date.parse(element.dataset.start ?? '');
+  const geometryStartMs = Date.parse(element.dataset.geometryStart ?? '');
+  const geometryEndMs = Date.parse(element.dataset.geometryEnd ?? '');
 
   if (!Number.isFinite(startMs)) {
     return undefined;
@@ -308,6 +478,8 @@ const parseStatusTimelineProblemNode = (
           ? element.dataset.statusKind
           : undefined,
       startMs,
+      ...(Number.isFinite(geometryStartMs) ? { geometryStartMs } : {}),
+      ...(Number.isFinite(geometryEndMs) ? { geometryEndMs } : {}),
     };
   }
 
@@ -326,6 +498,8 @@ const parseStatusTimelineProblemNode = (
         : undefined,
     startMs,
     endMs,
+    ...(Number.isFinite(geometryStartMs) ? { geometryStartMs } : {}),
+    ...(Number.isFinite(geometryEndMs) ? { geometryEndMs } : {}),
   };
 };
 
@@ -414,8 +588,19 @@ export const hydrateStatusTimeline = (
     }
 
     syncStatusTimelineProblemPhase(problemNode, range.endMs);
+    setStatusTimelineProblemAriaLabel(problemNode.element);
 
-    const span = clipStatusTimelineSpan(problemNode, range);
+    const span = clipStatusTimelineSpan(
+      {
+        startMs: problemNode.geometryStartMs ?? problemNode.startMs,
+        ...(problemNode.geometryEndMs !== undefined
+          ? { endMs: problemNode.geometryEndMs }
+          : problemNode.endMs !== undefined
+            ? { endMs: problemNode.endMs }
+            : {}),
+      },
+      range,
+    );
 
     if (!span) {
       return;

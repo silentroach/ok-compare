@@ -319,27 +319,6 @@ const tagPage = (item: NewsTagPage): NewsDiscoveryTagPage => ({
   markdown_url: fullUrl(item.markdown_url),
 });
 
-function latestUpdate(items: readonly NewsArticle[]): Date | undefined {
-  return items.reduce<Date | undefined>((latest, item) => {
-    const current = item.updated_at ?? item.published_at;
-
-    if (!latest || current.valueOf() > latest.valueOf()) {
-      return current;
-    }
-
-    return latest;
-  }, undefined);
-}
-
-function xml(value: string): string {
-  return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&apos;');
-}
-
 export const buildNewsPayload = (data: NewsDataset): NewsDiscoveryPayload => ({
   articles: data.articles.map(article),
   archives: {
@@ -347,36 +326,6 @@ export const buildNewsPayload = (data: NewsDataset): NewsDiscoveryPayload => ({
   },
   tags: data.tags.map(tagPage),
 });
-
-export function buildNewsRss(data: NewsDataset): string {
-  const home = fullUrl(newsPath());
-  const self = fullUrl(feedPath());
-  const updated = latestUpdate(data.articles);
-  const items = data.articles.map(
-    (item) =>
-      `    <item>\n      <title>${xml(item.title)}</title>\n      <link>${xml(item.canonical)}</link>\n      <guid isPermaLink="true">${xml(item.canonical)}</guid>\n      <pubDate>${item.published_at.toUTCString()}</pubDate>\n      <description>${xml(item.summary)}</description>\n${item.tags
-        .map((entry) => `      <category>${xml(entry.label)}</category>`)
-        .join('\n')}\n    </item>`,
-  );
-
-  return [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">',
-    '  <channel>',
-    '    <title>Новости Шелково</title>',
-    `    <link>${xml(home)}</link>`,
-    '    <description>Статическая лента новостей Шелково: summary-first RSS, полный machine-readable контракт живет в /news/data/articles.json.</description>',
-    '    <language>ru-RU</language>',
-    `    <atom:link href="${xml(self)}" rel="self" type="application/rss+xml" />`,
-    ...(updated
-      ? [`    <lastBuildDate>${updated.toUTCString()}</lastBuildDate>`]
-      : []),
-    ...items,
-    '  </channel>',
-    '</rss>',
-    '',
-  ].join('\n');
-}
 
 export function schema(root: string): Record<string, unknown> {
   return {

@@ -4,6 +4,7 @@ import { loadNewsData } from './news/load';
 import {
   apiCatalogUrl as newsApiCatalogUrl,
   articlesDataUrl,
+  feedUrl as newsFeedUrl,
   llmsUrl as newsLlmsUrl,
   newsMarkdownUrl,
   newsUrl,
@@ -24,6 +25,7 @@ import { loadStatusData } from './status/load';
 import {
   statusApiCatalogUrl,
   statusDataUrl,
+  statusFeedUrl,
   statusLlmsUrl,
   statusMarkdownUrl,
   statusUrl,
@@ -78,10 +80,12 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
   const newsHome = absoluteUrl(newsUrl());
   const newsMarkdown = absoluteUrl(newsMarkdownUrl());
   const newsFeed = absoluteUrl(articlesDataUrl());
+  const newsRss = absoluteUrl(newsFeedUrl());
   const newsCatalog = absoluteUrl(newsApiCatalogUrl());
   const statusHome = absoluteUrl(statusUrl());
   const statusMarkdown = absoluteUrl(statusMarkdownUrl());
   const statusFeed = absoluteUrl(statusDataUrl());
+  const statusRss = absoluteUrl(statusFeedUrl());
   const statusCatalog = absoluteUrl(statusApiCatalogUrl());
   const peopleMarkdown = absoluteUrl(peopleMarkdownUrl());
   const peopleFeed = absoluteUrl(peopleDataUrl());
@@ -158,6 +162,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         `- Markdown home: ${newsMarkdown}`,
         `- llms.txt: ${absoluteUrl(newsLlmsUrl())}`,
         `- JSON feed: ${newsFeed}`,
+        `- RSS: ${newsRss}`,
         `- API catalog: ${newsCatalog}`,
         `- Сейчас в news-section ${count(news.articles.length, ['статья', 'статьи', 'статей'])}.`,
         '',
@@ -166,6 +171,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         `- Markdown home: ${statusMarkdown}`,
         `- llms.txt: ${absoluteUrl(statusLlmsUrl())}`,
         `- JSON feed: ${statusFeed}`,
+        `- RSS: ${statusRss}`,
         `- API catalog: ${statusCatalog}`,
         `- Сейчас в status-section ${count(status.incidents.length, ['запись', 'записи', 'записей'])} и ${count(activeStatus.length, ['активный инцидент', 'активных инцидента', 'активных инцидентов'])}.`,
         '',
@@ -214,8 +220,8 @@ export async function buildHomeMarkdown(): Promise<string> {
     'Текстовое представление корневого сайта и его основных разделов для терминалов и агентов.',
     '',
     '## Разделы',
-    `- [Новости](${absoluteUrl(newsUrl())}) — ${count(news.articles.length, ['статья', 'статьи', 'статей'])}; structured feed: ${absoluteUrl(articlesDataUrl())}`,
-    `- [Статус](${absoluteUrl(statusUrl())}) — ${count(status.incidents.length, ['запись', 'записи', 'записей'])}, ${count(activeStatus.length, ['активный инцидент', 'активных инцидента', 'активных инцидентов'])}; structured feed: ${absoluteUrl(statusDataUrl())}`,
+    `- [Новости](${absoluteUrl(newsUrl())}) — ${count(news.articles.length, ['статья', 'статьи', 'статей'])}; structured feed: ${absoluteUrl(articlesDataUrl())}; RSS: ${absoluteUrl(newsFeedUrl())}`,
+    `- [Статус](${absoluteUrl(statusUrl())}) — ${count(status.incidents.length, ['запись', 'записи', 'записей'])}, ${count(activeStatus.length, ['активный инцидент', 'активных инцидента', 'активных инцидентов'])}; structured feed: ${absoluteUrl(statusDataUrl())}; RSS: ${absoluteUrl(statusFeedUrl())}`,
     `- Люди — ${count(people.profiles.length, ['профиль', 'профиля', 'профилей'])}; markdown overview: ${absoluteUrl(peopleMarkdownUrl())}; structured feed: ${absoluteUrl(peopleDataUrl())}; публичного HTML-индекса нет`,
     `- [Compare](${absoluteUrl('/compare/')}) — сравнение поселков, тарифов и рейтинга; structured feed: ${absoluteUrl('/compare/data/settlements.json')}`,
     '',
