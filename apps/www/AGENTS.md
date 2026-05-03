@@ -64,5 +64,15 @@ pnpm typecheck
   - `src/pages/status/.well-known/api-catalog.ts`
   - `src/pages/status/schemas/status.schema.json.ts`
   - `src/pages/status/openapi/status.openapi.json.ts`
+- People discovery:
+  - `src/pages/people/[slug]/index.md.ts`
+  - `src/pages/people/index.md.ts`
+  - `src/pages/people/llms.txt.ts`
+  - `src/pages/people/llms-full.txt.ts`
+  - `src/pages/people/data/people.json.ts`
+  - `src/pages/people/.well-known/api-catalog.ts`
+  - `src/pages/people/schemas/people.schema.json.ts`
+  - `src/pages/people/openapi/people.openapi.json.ts`
+  - `public/.well-known/agent-skills/people-profiles/SKILL.md`
 
-Если меняются section routes, markdown companions, JSON feeds, `llms.txt`, skills или discovery docs для `news`/`status`, эти поверхности нужно синхронно пересматривать.
+Если меняются section routes, markdown companions, JSON feeds, `llms.txt`, skills или discovery docs для `news`/`status`/`people`, эти поверхности нужно синхронно пересматривать.

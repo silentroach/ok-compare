@@ -1,13 +1,13 @@
 import type { APIRoute, GetStaticPaths } from 'astro';
 
 import {
+  PEOPLE_MARKDOWN_HEADERS,
+  buildPersonMarkdown,
+} from '@/lib/people/markdown';
+import {
   loadPeopleProfiles,
   loadPersonProfileWithBacklinks,
 } from '@/lib/people/load';
-import {
-  buildPersonMarkdown,
-  PEOPLE_MARKDOWN_HEADERS,
-} from '@/lib/people/view';
 
 export const prerender = true;
 

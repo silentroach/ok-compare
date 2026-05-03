@@ -5,6 +5,13 @@ import {
   newsPath,
 } from './news/routes';
 import {
+  peopleApiCatalogPath,
+  peopleDataPath,
+  peopleLlmsFullPath,
+  peopleLlmsPath,
+  peopleMarkdownPath,
+} from './people/routes';
+import {
   siteApiCatalogUrl,
   siteLlmsFullUrl,
   siteLlmsUrl,
@@ -112,6 +119,40 @@ export function catalog(root: string): Record<string, unknown> {
             href: abs(root, statusApiCatalogPath()),
             type: 'application/linkset+json',
             'title*': star('API catalog status-section'),
+          },
+        ],
+      },
+      {
+        anchor: abs(root, peopleMarkdownPath()),
+        item: [
+          {
+            href: abs(root, peopleMarkdownPath()),
+            type: 'text/markdown',
+            'title*': star(
+              'Markdown overview people-section без публичного HTML index',
+            ),
+          },
+          {
+            href: abs(root, peopleDataPath()),
+            type: 'application/json',
+            'title*': star('Основной машиночитаемый feed people-section'),
+          },
+          {
+            href: abs(root, peopleLlmsPath()),
+            type: 'text/plain',
+            'title*': star('Агентный обзор people-section'),
+          },
+          {
+            href: abs(root, peopleLlmsFullPath()),
+            type: 'text/plain',
+            'title*': star('Расширенный агентный обзор people-section'),
+          },
+        ],
+        'service-desc': [
+          {
+            href: abs(root, peopleApiCatalogPath()),
+            type: 'application/linkset+json',
+            'title*': star('API catalog people-section'),
           },
         ],
       },
