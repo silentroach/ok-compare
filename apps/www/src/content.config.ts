@@ -15,6 +15,7 @@ import {
   isAttachmentUrl,
   normalizeTagKey,
 } from './lib/news/schema';
+import { PERSON_CONTACT_TYPES } from './lib/people/schema';
 import {
   normalizeStatusTimestampInput,
   parseStatusTimestampInput,
@@ -202,6 +203,10 @@ function failStatus(entry: string, reason: string): never {
   throw new Error(`status incident path \"${entry}\" ${reason}`);
 }
 
+function failPerson(entry: string, reason: string): never {
+  throw new Error(`person profile path \"${entry}\" ${reason}`);
+}
+
 function validateArticleEntry(entry: string, data: unknown): void {
   const id = articleId(entry);
   const parts = id.split('/');
@@ -287,6 +292,21 @@ function validateStatusEntry(entry: string, data: unknown): void {
 
   if (body.length > 0 && body.trim().length === 0) {
     failStatus(entry, 'body must not be blank');
+  }
+}
+
+function validatePersonEntry(entry: string): void {
+  if (entry.includes('/')) {
+    failPerson(entry, 'must live directly under src/data/people');
+  }
+
+  const slug = trimMarkdown(entry);
+
+  if (!SLUG.test(slug)) {
+    failPerson(
+      entry,
+      'slug must use lower-case Latin letters, digits, and hyphen',
+    );
   }
 }
 
@@ -411,8 +431,29 @@ const statusIncidents = defineCollection({
     }),
 });
 
+const peopleProfiles = defineCollection({
+  loader: glob({
+    pattern: ['*.md', '!AGENTS.md'],
+    base: './src/data/people',
+    generateId: ({ entry }) => {
+      validatePersonEntry(entry);
+      return trimMarkdown(entry);
+    },
+  }),
+  schema: z.object({
+    name: text('name'),
+    contacts: z.array(
+      z.object({
+        type: z.enum(PERSON_CONTACT_TYPES),
+        value: text('contacts[].value'),
+      }),
+    ),
+  }),
+});
+
 export const collections = {
   newsAuthors,
   newsArticles,
   statusIncidents,
+  peopleProfiles,
 };
