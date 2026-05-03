@@ -53,50 +53,44 @@ const serviceMeta = {
 const ServiceIcon = serviceMeta[summary.service].Icon;
 ---
 
-<article class="status-service-row px-5 py-5 md:px-6 md:py-6">
+<article class="status-service-row ui-shell px-5 py-4 md:px-6 md:py-5">
   <div
-    class="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)_minmax(0,11rem)_minmax(0,21rem)] lg:items-center lg:gap-6"
+    class="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)_minmax(0,11rem)_minmax(0,21rem)] lg:items-center lg:gap-5"
   >
     {
       serviceHref ? (
         <a
           href={serviceHref}
-          class="group inline-flex items-center gap-4 self-start lg:self-auto"
+          class="group inline-flex items-center gap-3 self-start lg:self-auto"
         >
           <span
             class:list={[
-              'inline-flex size-10 shrink-0 items-center justify-center rounded-full md:size-12',
+              'inline-flex size-9 shrink-0 items-center justify-center rounded-full md:size-10',
               serviceMeta[summary.service].iconWrapClass,
             ]}
           >
-            <ServiceIcon class="size-5 md:size-6" />
+            <ServiceIcon class="size-4 md:size-5" />
           </span>
 
-          <div class="flex flex-col gap-1.5 lg:gap-0">
-            <p class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden">
-              Сервис
-            </p>
-            <h3 class="text-xl font-semibold tracking-tight text-foreground transition-colors group-hover:text-primary">
+          <div class="flex flex-col gap-1 lg:gap-0">
+            <h3 class="text-lg font-semibold leading-tight tracking-tight text-foreground transition-colors group-hover:text-primary md:text-[1.1875rem]">
               {serviceLabel}
             </h3>
           </div>
         </a>
       ) : (
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3">
           <span
             class:list={[
-              'inline-flex size-10 shrink-0 items-center justify-center rounded-full md:size-12',
+              'inline-flex size-9 shrink-0 items-center justify-center rounded-full md:size-10',
               serviceMeta[summary.service].iconWrapClass,
             ]}
           >
-            <ServiceIcon class="size-5 md:size-6" />
+            <ServiceIcon class="size-4 md:size-5" />
           </span>
 
-          <div class="flex flex-col gap-1.5 lg:gap-0">
-            <p class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden">
-              Сервис
-            </p>
-            <h3 class="text-xl font-semibold tracking-tight text-foreground">
+          <div class="flex flex-col gap-1 lg:gap-0">
+            <h3 class="text-lg font-semibold leading-tight tracking-tight text-foreground md:text-[1.1875rem]">
               {serviceLabel}
             </h3>
           </div>
@@ -104,13 +98,7 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
       )
     }
 
-    <div class="flex flex-col gap-2.5 lg:gap-0">
-      <p
-        class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden"
-      >
-        Последние {timelineDays} дней
-      </p>
-
+    <div class="flex flex-col gap-2 lg:gap-0">
       <StatusServiceTimeline
         service={summary.service}
         incidents={summary.incidents}
@@ -118,15 +106,10 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
       />
     </div>
 
-    <div class="flex flex-col gap-1 lg:gap-0">
-      <p
-        class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden"
-      >
-        Статус
-      </p>
+    <div>
       <p
         class:list={[
-          'text-base font-medium',
+          'text-[0.9375rem] font-semibold leading-5',
           stateClass[summary.service_status],
         ]}
       >
@@ -134,7 +117,7 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
       </p>
     </div>
 
-    <div class="flex flex-col gap-1.5 lg:gap-0">
+    <div class="hidden lg:block">
       <p
         class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:hidden"
       >
@@ -143,31 +126,31 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
 
       {
         latestRecord ? (
-          <div class="space-y-1.5">
+          <div class="space-y-1">
             {latestRecord.has_page ? (
               <a
                 href={latestRecord.url}
-                class="site-inline-link block text-base font-medium leading-snug text-foreground"
+                class="site-inline-link block text-[0.9375rem] font-medium leading-[1.35] text-foreground"
               >
                 {latestRecord.title}
               </a>
             ) : (
-              <p class="text-base font-medium leading-snug text-foreground">
+              <p class="text-[0.9375rem] font-medium leading-[1.35] text-foreground">
                 {latestRecord.title}
               </p>
             )}
             {latestMoment && (
-              <p class="text-[0.875rem] leading-6 text-muted-foreground">
+              <p class="text-[0.8125rem] leading-5 text-muted-foreground">
                 {latestMoment}
               </p>
             )}
           </div>
         ) : (
-          <div class="space-y-1.5">
-            <p class="text-base leading-snug text-foreground">
+          <div class="space-y-1">
+            <p class="text-[0.9375rem] leading-[1.35] text-foreground">
               Пока без записей по этому сервису
             </p>
-            <p class="text-[0.875rem] leading-6 text-muted-foreground">-</p>
+            <p class="text-[0.8125rem] leading-5 text-muted-foreground">-</p>
           </div>
         )
       }
