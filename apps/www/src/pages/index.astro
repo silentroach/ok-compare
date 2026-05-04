@@ -1,58 +1,234 @@
 ---
-import { Image } from 'astro:assets';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import logo from '../../../../docs/design/logo.png';
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import dayHero from '@/assets/home/home-hero-day.png';
+import nightHero from '@/assets/home/home-hero-night.png';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { loadNewsArticles } from '@/lib/news/load';
+import { articleUrl } from '@/lib/news/routes';
+import { formatNewsDate } from '@/lib/news/view';
+import { loadStatusData } from '@/lib/status/load';
 
 const title = 'Шелково Онлайн — сайт поселка Шелково от застройщика Земля МО';
 const description =
   'Сайт поселка Шелково от застройщика Земля МО. Здесь собираем информацию о Шелково, Шелково Ривер, Шелково Форест, Шелково Парк и Шелково Вилладж, а также об обслуживающей компании ОК Комфорт.';
+
+const [news, status] = await Promise.all([
+  loadNewsArticles(),
+  loadStatusData(),
+]);
+const latestNews = news[0];
+const hasActiveIncidents = status.active.some(
+  (item) => item.kind === 'incident',
+);
+const statusDotClass = hasActiveIncidents
+  ? 'bg-[color:var(--color-danger)]'
+  : 'bg-[color:var(--color-success)]';
+const statusLabel = hasActiveIncidents
+  ? 'есть активные проблемы'
+  : 'все сервисы работают';
+
+const hourInMoscow = Number(
+  new Intl.DateTimeFormat('en-GB', {
+    hour: '2-digit',
+    hour12: false,
+    timeZone: 'Europe/Moscow',
+  }).format(new Date()),
+);
+const isDaytime = hourInMoscow >= 6 && hourInMoscow < 22;
+const heroWidths = [960, 1280, 1536, 1916, 2172] as const;
+const heroSizes = '100vw';
+const buildHeroImage = async (src: ImageMetadata) => {
+  const images = await Promise.all(
+    heroWidths.map((width) =>
+      getImage({ src, width, format: 'webp', quality: 90 }),
+    ),
+  );
+
+  return {
+    src: images[images.length - 1]?.src ?? src.src,
+    srcset: images
+      .map((image, index) => `${image.src} ${heroWidths[index]}w`)
+      .join(', '),
+  };
+};
+const [dayHeroImage, nightHeroImage] = await Promise.all([
+  buildHeroImage(dayHero),
+  buildHeroImage(nightHero),
+]);
+const heroMode = isDaytime ? 'day' : 'night';
+const heroImage = isDaytime ? dayHeroImage : nightHeroImage;
 ---
 
 <BaseLayout title={title} description={description}>
-  <main class="ui-page py-12 md:py-16">
-    <section class="mx-auto flex w-full max-w-5xl flex-col gap-10 md:gap-12">
-      <div class="flex flex-col items-center gap-6 text-center md:gap-8">
-        <Image
-          src={logo}
-          alt="Логотип Шелково"
-          width={960}
-          height={640}
-          format="webp"
+  <main class="pb-2 md:pb-3 lg:pb-4">
+    <section
+      class="home-hero relative overflow-hidden border-b border-border bg-muted"
+      data-home-hero-mode={heroMode}
+    >
+      <div class="h-[clamp(20rem,37vw,36rem)] w-full overflow-hidden">
+        <img
+          src={heroImage.src}
+          srcset={heroImage.srcset}
+          sizes={heroSizes}
+          alt="Панорама поселка Шелково"
+          width={dayHero.width}
+          height={dayHero.height}
+          class="h-full w-full object-cover object-left md:object-center"
           loading="eager"
-          class="w-full max-w-[34rem]"
+          fetchpriority="high"
+          decoding="async"
+          data-home-hero-image
+          data-day-src={dayHeroImage.src}
+          data-day-srcset={dayHeroImage.srcset}
+          data-night-src={nightHeroImage.src}
+          data-night-srcset={nightHeroImage.srcset}
         />
-
-        <div class="space-y-4">
-          <h1
-            class="text-4xl font-bold tracking-tight text-foreground md:text-5xl"
-          >
-            Сайт в разработке
-          </h1>
-          <p class="ui-copy mx-auto max-w-2xl text-muted-foreground">
-            {'Собираем сайт поселка Шелково от застройщика '}<a
-              href="https://zemlyamo.ru/"
-              target="_blank"
-              rel="noreferrer noopener"
-              class="site-inline-link">Земля МО</a
-            >{
-              '. Здесь будет информация о Шелково, Шелково Ривер, Шелково Форест, Шелково Парк и Шелково Вилладж, а также об обслуживающей компании '
-            }<a
-              href="https://ok-komfort.ru/"
-              target="_blank"
-              rel="noreferrer noopener"
-              class="site-inline-link">ОК Комфорт</a
-            >{'. Пока уже доступен раздел со '}<a
-              href="/compare/"
-              class="site-inline-link">сравнением тарифов</a
-            >{' и данными по поселкам, а еще потихоньку наполняем '}<a
-              href="/news/"
-              class="site-inline-link">раздел новостей</a
-            >{' и ведем '}<a href="/status/" class="site-inline-link"
-              >статусную страницу</a
-            >{'.'}
-          </p>
+        <div
+          class="home-hero-overlay pointer-events-none absolute inset-x-0 top-0 h-28 md:h-32"
+        >
         </div>
+        <div class="absolute inset-x-0 top-0 z-10">
+          <div
+            class="mx-auto flex w-full max-w-[1720px] justify-end px-5 pt-4 md:px-10 md:pt-5 lg:px-20 lg:pt-6"
+          >
+            <nav
+              class="home-hero-nav flex items-center gap-5 text-sm font-medium md:gap-10 md:text-base"
+            >
+              <a href="/news/">Новости</a>
+              <a href="/compare/">Тариф</a>
+              <a
+                href="/status/"
+                aria-label={`Статус: ${statusLabel}`}
+                class="flex items-center gap-3"
+              >
+                <span>Статус</span>
+                <span
+                  aria-hidden="true"
+                  class:list={[
+                    'home-hero-status-dot inline-block h-3 w-3 rounded-full',
+                    statusDotClass,
+                  ]}></span>
+              </a>
+            </nav>
+          </div>
+        </div>
+        <script is:inline>
+          (() => {
+            const shell = document.querySelector('[data-home-hero-mode]');
+            const image = document.querySelector('[data-home-hero-image]');
+            if (!(image instanceof HTMLImageElement)) return;
+
+            const hour = Number(
+              new Intl.DateTimeFormat('en-GB', {
+                hour: '2-digit',
+                hour12: false,
+                timeZone: 'Europe/Moscow',
+              }).format(new Date()),
+            );
+            const mode = hour >= 6 && hour < 22 ? 'day' : 'night';
+            const src = image.dataset[`${mode}Src`];
+            const srcset = image.dataset[`${mode}Srcset`];
+
+            if (shell instanceof HTMLElement) {
+              shell.dataset.homeHeroMode = mode;
+            }
+
+            if (src && srcset) {
+              image.src = src;
+              image.srcset = srcset;
+            }
+          })();
+        </script>
       </div>
     </section>
+
+    {
+      latestNews && (
+        <section class="ui-page pt-8 pb-4 md:pt-12 md:pb-6 lg:pt-14 lg:pb-8">
+          <div class="px-5 md:px-6">
+            <h1 class="border-b border-border pb-4 text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]">
+              Что нового в поселке
+            </h1>
+
+            <article class="grid grid-cols-1 gap-5 py-7 md:grid-cols-[12rem_minmax(0,1fr)] md:gap-10 md:py-9">
+              <p class="flex flex-wrap items-center gap-2.5 text-2xl font-normal leading-tight tracking-tight text-foreground md:block">
+                <time datetime={latestNews.published_iso}>
+                  {formatNewsDate(latestNews.published_iso)}
+                </time>
+                {latestNews.time && (
+                  <span class="ui-num">{latestNews.time}</span>
+                )}
+              </p>
+
+              <div class="max-w-3xl space-y-4">
+                <h2 class="flex items-start gap-2 text-2xl font-semibold tracking-tight text-foreground">
+                  <a href={articleUrl(latestNews)} class="ui-link">
+                    {latestNews.title}
+                  </a>
+                </h2>
+                <p class="ui-copy text-muted-foreground">
+                  {latestNews.summary}
+                </p>
+                <a
+                  href={articleUrl(latestNews)}
+                  class="site-inline-link inline-flex items-center gap-2 text-base font-semibold"
+                >
+                  Читать новость <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </article>
+          </div>
+        </section>
+      )
+    }
   </main>
 </BaseLayout>
+
+<style>
+  .home-hero-overlay {
+    background: linear-gradient(
+      to bottom,
+      oklch(100% 0 0 / 0.36),
+      oklch(100% 0 0 / 0.1) 54%,
+      transparent
+    );
+  }
+
+  .home-hero-nav {
+    color: var(--color-text);
+    text-shadow: 0 0.0625rem 1rem oklch(100% 0 0 / 0.72);
+  }
+
+  .home-hero-nav a {
+    transition:
+      color 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  .home-hero-nav a:is(:hover, :focus-visible) {
+    opacity: 0.78;
+  }
+
+  .home-hero-status-dot {
+    box-shadow: 0 0 0 1px oklch(100% 0 0 / 0.72);
+  }
+
+  .home-hero[data-home-hero-mode='night'] .home-hero-overlay {
+    background: linear-gradient(
+      to bottom,
+      oklch(5% 0.01 250 / 0.58),
+      oklch(5% 0.01 250 / 0.22) 58%,
+      transparent
+    );
+  }
+
+  .home-hero[data-home-hero-mode='night'] .home-hero-nav {
+    color: oklch(97% 0.004 125);
+    text-shadow: 0 0.0625rem 1rem oklch(0% 0 0 / 0.76);
+  }
+
+  .home-hero[data-home-hero-mode='night'] .home-hero-status-dot {
+    box-shadow: 0 0 0 1px oklch(97% 0.004 125 / 0.62);
+  }
+</style>
