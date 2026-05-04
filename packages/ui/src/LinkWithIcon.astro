@@ -1,0 +1,59 @@
+---
+import DomylandIcon from './icons/system/Domyland.astro';
+import TelegramIcon from './icons/system/Telegram.astro';
+import { isDomylandUrl, isTelegramUrl } from '@shelkovo/url';
+
+interface Props {
+  readonly href: string;
+  readonly label?: string;
+  readonly ariaLabel?: string;
+  readonly ariaLabelPrefix?: string;
+  readonly class?: string;
+  readonly iconClass?: string;
+  readonly textClass?: string;
+}
+
+const {
+  href,
+  label,
+  ariaLabel,
+  ariaLabelPrefix,
+  class: className,
+  iconClass = 'size-3.5 shrink-0 text-primary',
+  textClass,
+}: Props = Astro.props;
+
+const isTelegramLink = isTelegramUrl(href);
+const isDomylandLink = isDomylandUrl(href);
+const targetUrl =
+  !isTelegramLink && !isDomylandLink
+    ? new URL(href.startsWith('//') ? `https:${href}` : href)
+    : undefined;
+const hostLabel = isTelegramLink
+  ? 'Telegram'
+  : isDomylandLink
+    ? 'Домиленд'
+    : targetUrl?.hostname.replace(/^www\./i, '') || undefined;
+const resolvedLabel = label ?? 'источник';
+const resolvedAriaLabel =
+  ariaLabel ??
+  (ariaLabelPrefix && hostLabel
+    ? `${ariaLabelPrefix}: ${hostLabel}`
+    : (ariaLabelPrefix ?? hostLabel));
+---
+
+<a
+  href={href}
+  target="_blank"
+  rel="noreferrer noopener"
+  aria-label={resolvedAriaLabel}
+  class:list={[
+    'ui-link font-medium',
+    (isTelegramLink || isDomylandLink) && 'inline-flex items-center gap-1',
+    className,
+  ]}
+>
+  {isTelegramLink && <TelegramIcon class={iconClass} />}
+  {isDomylandLink && <DomylandIcon class={iconClass} />}
+  <span class={textClass}>{resolvedLabel}</span>
+</a>
