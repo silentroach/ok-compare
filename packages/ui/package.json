@@ -19,6 +19,7 @@
     "./icons/services/Lightning.astro": "./src/icons/services/Lightning.astro",
     "./icons/services/WaterDrop.astro": "./src/icons/services/WaterDrop.astro",
     "./icons/system/AlertCircle.astro": "./src/icons/system/AlertCircle.astro",
+    "./icons/system/CalendarPlus.astro": "./src/icons/system/CalendarPlus.astro",
     "./icons/system/CheckCircle.astro": "./src/icons/system/CheckCircle.astro",
     "./icons/system/Phone.astro": "./src/icons/system/Phone.astro",
     "./icons/system/Star.astro": "./src/icons/system/Star.astro",

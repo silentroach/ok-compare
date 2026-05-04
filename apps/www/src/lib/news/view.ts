@@ -1,5 +1,5 @@
-import { formatDate, formatMonth } from '@shelkovo/format';
-import type { NewsArea, NewsAuthor } from './schema';
+import { dateTimeFromISO, formatDate, formatMonth } from '@shelkovo/format';
+import type { NewsArea, NewsAuthor, NewsEvent } from './schema';
 
 const AREA_LABELS: Record<NewsArea, string> = {
   river: 'Шелково Ривер',
@@ -17,6 +17,15 @@ const capitalize = (value: string): string => {
 
   return value[0].toUpperCase() + value.slice(1);
 };
+
+const formatNewsCalendarDate = (iso: string): string =>
+  dateTimeFromISO(iso).toFormat('d MMMM yyyy');
+
+const formatNewsTime = (iso: string): string =>
+  dateTimeFromISO(iso).toFormat('HH:mm');
+
+const isSameNewsDay = (startIso: string, endIso: string): boolean =>
+  dateTimeFromISO(startIso).hasSame(dateTimeFromISO(endIso), 'day');
 
 export const formatNewsDate = (value: string): string => formatDate(value);
 
@@ -44,3 +53,37 @@ export const formatNewsAuthor = (
   },
 ): string =>
   opts?.short === false ? author.name : (author.short_name ?? author.name);
+
+export const formatNewsDateTime = (iso: string, time?: string): string =>
+  `${formatNewsCalendarDate(iso)}, ${time ?? formatNewsTime(iso)}`;
+
+export const formatNewsEventRange = (
+  event: Pick<
+    NewsEvent,
+    'starts_iso' | 'starts_time' | 'ends_iso' | 'ends_time'
+  >,
+): string => {
+  if (isSameNewsDay(event.starts_iso, event.ends_iso)) {
+    return `${formatNewsCalendarDate(event.starts_iso)}, ${event.starts_time}-${event.ends_time}`;
+  }
+
+  return `${formatNewsDateTime(event.starts_iso, event.starts_time)} - ${formatNewsDateTime(event.ends_iso, event.ends_time)}`;
+};
+
+export const buildNewsEventMapUrl = (
+  event: Pick<NewsEvent, 'coordinates' | 'location'>,
+): string | undefined => {
+  if (event.coordinates) {
+    const point = `${event.coordinates.lng},${event.coordinates.lat}`;
+
+    return `https://yandex.ru/maps/?pt=${point}&z=16&l=map`;
+  }
+
+  if (event.location) {
+    const query = encodeURIComponent(event.location);
+
+    return `https://yandex.ru/maps/?text=${query}&z=16&l=map`;
+  }
+
+  return undefined;
+};
