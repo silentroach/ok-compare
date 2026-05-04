@@ -52,7 +52,7 @@ test.describe('NewsEventCard visual', () => {
     ).toHaveCount(1);
     await expect(target.locator('.news-event-map-pin')).toHaveCount(0);
     await expect(
-      target.getByRole('link', { name: 'Найти место на Яндекс Картах' }),
+      target.getByRole('link', { name: 'Открыть на Яндекс Картах' }),
     ).toBeVisible();
 
     await expect(target).toHaveScreenshot(
