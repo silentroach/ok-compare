@@ -3,6 +3,8 @@ title: Акарицидная обработка общих пространст
 summary: В КП Шелково провели обработку от клещей на детских и спортивных площадках. До 6 мая включительно просим ограничить пребывание детей и выгул домашних животных на этих участках.
 date: 04.05.2026
 author: ok-comfort
+pinned: true
+pinned_until: 2026-05-07
 tags:
   - клещи
 source_url: https://okkomfort.domyland.app/news?targetId=111227&entityName=news&t=okkomfort

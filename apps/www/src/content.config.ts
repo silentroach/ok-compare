@@ -373,6 +373,7 @@ const newsArticles = defineCollection({
         time: forbiddenTime('time').optional(),
         author: reference('newsAuthors'),
         pinned: z.boolean().optional(),
+        pinned_until: newsDate('pinned_until').optional(),
         areas: z.array(z.enum(NEWS_AREAS)).min(1).optional(),
         tags: z.array(tag()).min(1).optional(),
         source_url: absoluteUrl('source_url').optional(),
