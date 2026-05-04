@@ -1,0 +1,119 @@
+---
+import '@shelkovo/ui/styles.css';
+import '@/styles/site.css';
+
+import NewsEventCard from '@/components/news/NewsEventCard.astro';
+import type { NewsEvent } from '@/lib/news/schema';
+
+const eventWithCoordinates = {
+  title: 'Встреча по регламенту',
+  starts_at: new Date('2026-05-31T19:00:00+03:00'),
+  starts_iso: '2026-05-31T19:00:00.000+03:00',
+  starts_time: '19:00',
+  ends_at: new Date('2026-05-31T21:00:00+03:00'),
+  ends_iso: '2026-05-31T21:00:00.000+03:00',
+  ends_time: '21:00',
+  ics_url: '/news/2026/05/reglament/event.ics',
+  location: 'КП Шелково, эко-клуб',
+  coordinates: {
+    lat: 55.123456,
+    lng: 38.654321,
+  },
+} satisfies NewsEvent;
+
+const eventWithoutCoordinates = {
+  title: 'Обсуждение благоустройства въезда',
+  starts_at: new Date('2026-06-03T10:30:00+03:00'),
+  starts_iso: '2026-06-03T10:30:00.000+03:00',
+  starts_time: '10:30',
+  ends_at: new Date('2026-06-03T12:00:00+03:00'),
+  ends_iso: '2026-06-03T12:00:00.000+03:00',
+  ends_time: '12:00',
+  ics_url: '/news/2026/06/entrance/event.ics',
+  location: 'КП Шелково, главный въезд',
+} satisfies NewsEvent;
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>News event card visual fixture</title>
+  </head>
+  <body class="ui-root-site news-event-visual-page">
+    <main class="news-event-visual-shell">
+      <section class="news-event-visual-card">
+        <p class="news-event-visual-label">Coordinates</p>
+        <div
+          class="news-event-visual-target"
+          data-testid="news-event-card-coordinates"
+        >
+          <NewsEventCard event={eventWithCoordinates} />
+        </div>
+      </section>
+
+      <section class="news-event-visual-card">
+        <p class="news-event-visual-label">Location only</p>
+        <div
+          class="news-event-visual-target"
+          data-testid="news-event-card-location-only"
+        >
+          <NewsEventCard event={eventWithoutCoordinates} />
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style>
+  .news-event-visual-page {
+    min-height: 100vh;
+    margin: 0;
+    background:
+      radial-gradient(circle at top, oklch(97% 0.012 145) 0, transparent 44%),
+      linear-gradient(180deg, oklch(98% 0.008 140), oklch(95% 0.012 140));
+    color: var(--color-text);
+  }
+
+  .news-event-visual-shell {
+    display: grid;
+    gap: 1.5rem;
+    width: min(100%, 68rem);
+    margin: 0 auto;
+    padding: 3rem;
+  }
+
+  .news-event-visual-card {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .news-event-visual-label {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .news-event-visual-target {
+    width: 56rem;
+    max-width: 100%;
+    padding: 0.75rem;
+    border-radius: 1.75rem;
+    background: color-mix(in oklab, white 74%, var(--color-bg) 26%);
+  }
+
+  @media (max-width: 47.999rem) {
+    .news-event-visual-shell {
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .news-event-visual-target {
+      padding: 0.5rem;
+    }
+  }
+</style>

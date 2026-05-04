@@ -12,7 +12,10 @@
     "test:watch": "vitest",
     "test:visual:status": "playwright test -c playwright.status-visual.local.config.ts",
     "test:visual:status:update": "playwright test -c playwright.status-visual.local.config.ts --update-snapshots",
-    "test:visual:status:serve": "node ../../scripts/check-port.mjs 4324 && astro build --root tests/status-timeline-visual && astro preview --root tests/status-timeline-visual --host 127.0.0.1 --port 4324"
+    "test:visual:status:serve": "node ../../scripts/check-port.mjs 4324 && astro build --root tests/status-timeline-visual && astro preview --root tests/status-timeline-visual --host 127.0.0.1 --port 4324",
+    "test:visual:news-event": "playwright test -c playwright.news-event-card-visual.local.config.ts",
+    "test:visual:news-event:update": "playwright test -c playwright.news-event-card-visual.local.config.ts --update-snapshots",
+    "test:visual:news-event:serve": "node ../../scripts/check-port.mjs 4327 && astro build --root tests/news-event-card-visual && astro preview --root tests/news-event-card-visual --host 127.0.0.1 --port 4327"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.18",
