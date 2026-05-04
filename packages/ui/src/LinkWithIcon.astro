@@ -6,6 +6,7 @@ import { isDomylandUrl, isTelegramUrl } from '@shelkovo/url';
 interface Props {
   readonly href: string;
   readonly label?: string;
+  readonly ariaLabel?: string;
   readonly ariaLabelPrefix?: string;
   readonly class?: string;
   readonly iconClass?: string;
@@ -15,6 +16,7 @@ interface Props {
 const {
   href,
   label,
+  ariaLabel,
   ariaLabelPrefix,
   class: className,
   iconClass = 'size-3.5 shrink-0 text-primary',
@@ -34,9 +36,10 @@ const hostLabel = isTelegramLink
     : targetUrl?.hostname.replace(/^www\./i, '') || undefined;
 const resolvedLabel = label ?? 'источник';
 const resolvedAriaLabel =
-  ariaLabelPrefix && hostLabel
+  ariaLabel ??
+  (ariaLabelPrefix && hostLabel
     ? `${ariaLabelPrefix}: ${hostLabel}`
-    : (ariaLabelPrefix ?? hostLabel);
+    : (ariaLabelPrefix ?? hostLabel));
 ---
 
 <a

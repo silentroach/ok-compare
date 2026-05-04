@@ -3,8 +3,8 @@ import '@styles/global.css';
 import { collectKeywords, imageMimeType, serializeSchema } from '@shelkovo/seo';
 import type { SchemaDoc } from '@shelkovo/seo';
 import FontPreloads from '@shelkovo/ui/FontPreloads.astro';
+import LinkWithIcon from '@shelkovo/ui/LinkWithIcon.astro';
 import SiteFooter from '@shelkovo/ui/SiteFooter.astro';
-import TelegramIcon from '@shelkovo/ui/icons/system/Telegram.astro';
 import { browserColor, themeColor } from '@shelkovo/ui/theme';
 import { COMPARE_KEYWORDS } from '@lib/seo';
 import { canon } from '@lib/site';
@@ -141,18 +141,13 @@ const ym = `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).p
       <p slot="right">
         Если нашли неточность или у вас есть данные про другие поселки &mdash;
         напишите
-        <a
+        <LinkWithIcon
           href="https://t.me/silentroach"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Написать в Telegram silentroach"
-          class="ui-link whitespace-nowrap font-medium text-foreground"
-        >
-          <TelegramIcon
-            class="mr-1 inline-block size-3.5 align-middle text-primary"
-          />
-          <span>silentroach</span>
-        </a>
+          label="silentroach"
+          ariaLabel="Написать в Telegram silentroach"
+          class="whitespace-nowrap text-foreground"
+          iconClass="size-3.5 shrink-0 text-primary"
+        />
       </p>
     </SiteFooter>
   </body>
