@@ -1,16 +1,30 @@
 const ABSOLUTE_URL_SCHEME = /^(?:https?:|mailto:|tel:)/i;
-const TELEGRAM_URL_SCHEME =
-  /^(?:tg:\/\/|(?:https?:\/\/)?(?:www\.)?(?:t\.me|telegram\.me)\/)/i;
-const DOMYLAND_URL_SCHEME = /^https?:\/\/(?:[^./]+\.)*domyland\.app(?:\/|$)/i;
+const TELEGRAM_HOST = /^(?:www\.)?(?:t\.me|telegram\.me)$/i;
+const DOMYLAND_HOST = /^(?:[^.]+\.)*domyland\.app$/i;
 
 export const isAbsoluteUrl = (value: string): boolean =>
   ABSOLUTE_URL_SCHEME.test(value) || value.startsWith('//');
 
-export const isTelegramUrl = (value: string): boolean =>
-  TELEGRAM_URL_SCHEME.test(value);
+export const isTelegramUrl = (value: string): boolean => {
+  try {
+    const url = new URL(value);
+    return (
+      url.protocol === 'tg:' ||
+      (/^https?:$/i.test(url.protocol) && TELEGRAM_HOST.test(url.hostname))
+    );
+  } catch {
+    return false;
+  }
+};
 
-export const isDomylandUrl = (value: string): boolean =>
-  DOMYLAND_URL_SCHEME.test(value);
+export const isDomylandUrl = (value: string): boolean => {
+  try {
+    const url = new URL(value);
+    return /^https?:$/i.test(url.protocol) && DOMYLAND_HOST.test(url.hostname);
+  } catch {
+    return false;
+  }
+};
 
 /**
  * Builds URL with base path prepended.

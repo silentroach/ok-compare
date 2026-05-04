@@ -96,4 +96,15 @@ describe('isDomylandUrl', () => {
     expect(isDomylandUrl('https://domyland.ru')).toBe(false);
     expect(isDomylandUrl('https://example.com/domyland.app')).toBe(false);
   });
+
+  it('handles query strings and hashes without a trailing slash', () => {
+    expect(isDomylandUrl('https://domyland.app?foo=bar')).toBe(true);
+    expect(isDomylandUrl('https://okkomfort.domyland.app#section')).toBe(true);
+  });
+
+  it('rejects non-http schemes and relative paths', () => {
+    expect(isDomylandUrl('ftp://domyland.app')).toBe(false);
+    expect(isDomylandUrl('//domyland.app')).toBe(false);
+    expect(isDomylandUrl('/domyland.app')).toBe(false);
+  });
 });

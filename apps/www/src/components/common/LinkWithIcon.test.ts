@@ -35,4 +35,20 @@ describe('LinkWithIcon', () => {
     expect(html).toContain('viewBox="0 0 133 141"');
     expect(html).toContain('>источник<');
   });
+
+  it('renders generic external link with hostname label', async () => {
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(LinkWithIcon, {
+      props: {
+        href: 'https://example.com/article',
+        label: 'Подробнее',
+        ariaLabelPrefix: 'Источник',
+      },
+    });
+
+    expect(html).toContain('aria-label="Источник: example.com"');
+    expect(html).not.toContain('viewBox="0 0 24 24"');
+    expect(html).not.toContain('viewBox="0 0 133 141"');
+    expect(html).toContain('>Подробнее<');
+  });
 });
