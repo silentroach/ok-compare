@@ -84,7 +84,9 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, articlesDataPath()),
             type: 'application/json',
-            'title*': star('Основной машиночитаемый feed news-section'),
+            'title*': star(
+              'Основной машиночитаемый feed news-section, включая optional events',
+            ),
           },
           {
             href: abs(root, newsLlmsPath()),

@@ -17,12 +17,14 @@ import {
   type NewsAttachment,
   type NewsAuthor,
   type NewsDataset,
+  type NewsEvent,
   type NewsMonthArchive,
   type NewsPhoto,
   type NewsTag,
   type NewsTagPage,
   type NewsYearArchive,
 } from './schema';
+import { buildNewsEventMapUrl } from './view';
 
 export const PROFILE = 'https://www.rfc-editor.org/info/rfc9727';
 export const OAS = 'application/vnd.oai.openapi+json';
@@ -58,6 +60,19 @@ export interface NewsDiscoveryCover {
   readonly alt: string;
 }
 
+export interface NewsDiscoveryEvent {
+  readonly title: string;
+  readonly starts_at: string;
+  readonly ends_at: string;
+  readonly location?: string;
+  readonly coordinates?: {
+    readonly lat: number;
+    readonly lng: number;
+  };
+  readonly map_url?: string;
+  readonly ics_url: string;
+}
+
 export interface NewsDiscoveryAddendum {
   readonly title?: string;
   readonly published_at: string;
@@ -87,6 +102,7 @@ export interface NewsDiscoveryArticle {
   readonly areas: readonly string[];
   readonly tags: readonly NewsDiscoveryTag[];
   readonly cover?: NewsDiscoveryCover;
+  readonly event?: NewsDiscoveryEvent;
   readonly photos: readonly NewsDiscoveryPhoto[];
   readonly attachments: readonly NewsDiscoveryAttachment[];
   readonly body_markdown: string;
@@ -162,6 +178,15 @@ const integer = (
   maximum?: number,
 ): Record<string, unknown> => ({
   type: 'integer',
+  ...(minimum !== undefined ? { minimum } : {}),
+  ...(maximum !== undefined ? { maximum } : {}),
+});
+
+const numeric = (
+  minimum?: number,
+  maximum?: number,
+): Record<string, unknown> => ({
+  type: 'number',
   ...(minimum !== undefined ? { minimum } : {}),
   ...(maximum !== undefined ? { maximum } : {}),
 });
@@ -254,6 +279,30 @@ function cover(article: NewsArticle): NewsDiscoveryCover | undefined {
   };
 }
 
+const discoveryUrl = (value: string): string =>
+  value.startsWith('/') ? fullUrl(value) : value;
+
+function event(item: NewsEvent): NewsDiscoveryEvent {
+  const mapUrl = buildNewsEventMapUrl(item);
+
+  return {
+    title: item.title,
+    starts_at: item.starts_iso,
+    ends_at: item.ends_iso,
+    ...(item.location ? { location: item.location } : {}),
+    ...(item.coordinates
+      ? {
+          coordinates: {
+            lat: item.coordinates.lat,
+            lng: item.coordinates.lng,
+          },
+        }
+      : {}),
+    ...(mapUrl ? { map_url: discoveryUrl(mapUrl) } : {}),
+    ics_url: fullUrl(item.ics_url),
+  };
+}
+
 function addendum(item: NewsAddendum): NewsDiscoveryAddendum {
   return {
     ...(item.title ? { title: item.title } : {}),
@@ -288,6 +337,7 @@ function article(item: NewsArticle): NewsDiscoveryArticle {
     areas: [...item.areas],
     tags: item.tags.map(tag),
     ...(image ? { cover: image } : {}),
+    ...(item.event ? { event: event(item.event) } : {}),
     photos: item.photos.map(photo),
     attachments: item.attachments.map(attachment),
     body_markdown: item.body,
@@ -333,7 +383,7 @@ export function schema(root: string): Record<string, unknown> {
     $id: abs(root, articlesSchemaPath()),
     title: 'NewsArticlesPayload',
     description:
-      'Read-only полный feed news-section с canonical HTML URL, markdown companions, full body_markdown и отдельным массивом addenda.',
+      'Read-only полный feed news-section с canonical HTML URL, markdown companions, full body_markdown, optional event metadata с article-local ics_url и отдельным массивом addenda.',
     type: 'object',
     additionalProperties: false,
     required: ['articles', 'archives', 'tags'],
@@ -407,6 +457,27 @@ export function schema(root: string): Record<string, unknown> {
         },
         ['url', 'alt'],
       ),
+      coordinates: obj(
+        {
+          lat: numeric(-90, 90),
+          lng: numeric(-180, 180),
+        },
+        ['lat', 'lng'],
+      ),
+      event: obj(
+        {
+          title: text(1),
+          starts_at: dateTime(),
+          ends_at: dateTime(),
+          location: text(1),
+          coordinates: {
+            $ref: '#/$defs/coordinates',
+          },
+          map_url: uri(),
+          ics_url: uri(),
+        },
+        ['title', 'starts_at', 'ends_at', 'ics_url'],
+      ),
       addendum: obj(
         {
           title: text(1),
@@ -461,6 +532,9 @@ export function schema(root: string): Record<string, unknown> {
           }),
           cover: {
             $ref: '#/$defs/cover',
+          },
+          event: {
+            $ref: '#/$defs/event',
           },
           photos: list({
             $ref: '#/$defs/photo',
@@ -537,7 +611,7 @@ export function openapi(root: string): Record<string, unknown> {
       title: 'Шелково News Feed',
       version: '1.0.0',
       description:
-        'Read-only OpenAPI wrapper для /news/data/articles.json с полным body_markdown, addenda, архивами и тегами.',
+        'Read-only OpenAPI wrapper для /news/data/articles.json с полным body_markdown, optional article events, addenda, архивами и тегами.',
     },
     servers: [
       {
@@ -550,7 +624,7 @@ export function openapi(root: string): Record<string, unknown> {
           operationId: 'getNewsArticles',
           summary: 'Read full news feed',
           description:
-            'Возвращает основной structured feed news-section со статьями, полным body_markdown, addenda, тегами и архивами.',
+            'Возвращает основной structured feed news-section со статьями, полным body_markdown, optional event metadata с article-local ics_url, addenda, тегами и архивами.',
           responses: {
             200: {
               description: 'Full news feed',
@@ -583,7 +657,9 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, articlesDataPath()),
             type: 'application/json',
-            'title*': star('Основной машиночитаемый feed news-section'),
+            'title*': star(
+              'Основной машиночитаемый feed news-section, включая optional events',
+            ),
           },
           {
             href: abs(root, feedPath()),
