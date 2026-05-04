@@ -10,7 +10,7 @@ import { loadPeopleMentionRegistry } from '../people/load';
 import { withBase } from '../site';
 import { buildArchives, newsMonthKey } from './archives';
 import { NEWS_LATEST_LIMIT } from './config';
-import { parseNewsTimestamp } from './date';
+import { parseNewsTimestamp, parseNewsTimestampInput } from './date';
 import { articleCanonical, articleMarkdownUrl, articleUrl } from './routes';
 import {
   compareAddendaPublishedAsc,
@@ -61,6 +61,21 @@ type PhotoInput =
 
 let cache: Promise<NewsDataset> | undefined;
 const EMPTY_MENTION_REGISTRY: PeopleMentionRegistry = new Map();
+
+const isPinnedAtBuild = (input: {
+  readonly pinned?: boolean;
+  readonly pinned_until?: string;
+}): boolean => {
+  if (!input.pinned) {
+    return false;
+  }
+
+  const until = input.pinned_until
+    ? parseNewsTimestampInput(input.pinned_until)
+    : undefined;
+
+  return until ? Date.now() < until.at.valueOf() : true;
+};
 
 const content = (
   value: string | undefined,
@@ -324,7 +339,7 @@ function normalizeArticle(
     applies_to_all_areas: area.applies_to_all_areas,
     areas: area.areas,
     tags: buildArticleTags(entry.data.tags),
-    pinned: entry.data.pinned ?? false,
+    pinned: isPinnedAtBuild(entry.data),
     ...(entry.data.source_url ? { source_url: entry.data.source_url } : {}),
     ...(coverUrl ? { cover_url: coverUrl } : {}),
     ...(cover

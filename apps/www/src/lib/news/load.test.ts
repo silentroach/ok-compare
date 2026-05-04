@@ -32,6 +32,8 @@ const article = (input: {
   readonly summary: string;
   readonly date: string;
   readonly body?: string;
+  readonly pinned?: boolean;
+  readonly pinned_until?: string;
   readonly addenda?: readonly {
     readonly date: string;
     readonly body?: string;
@@ -44,6 +46,8 @@ const article = (input: {
     summary: input.summary,
     date: input.date,
     author: { id: 'ig' } as NewsArticleEntry['data']['author'],
+    ...(input.pinned !== undefined ? { pinned: input.pinned } : {}),
+    ...(input.pinned_until ? { pinned_until: input.pinned_until } : {}),
     ...(input.addenda
       ? {
           addenda: input.addenda.map((item) => ({
@@ -56,6 +60,77 @@ const article = (input: {
 });
 
 describe('buildNewsDataset', () => {
+  it('keeps pinned news only before pinned_until date', () => {
+    const now = Date.now;
+    Date.now = () => new Date('2026-05-06T12:00:00.000Z').valueOf();
+
+    try {
+      const data = buildNewsDataset(
+        [author({ id: 'ig', name: 'Редакция' })],
+        [
+          article({
+            id: '2026/05/pinned-active',
+            title: 'Активный пин',
+            summary: 'До срока',
+            date: '04.05.2026',
+            pinned: true,
+            pinned_until: '2026-05-07',
+          }),
+          article({
+            id: '2026/05/pinned-expired',
+            title: 'Истекший пин',
+            summary: 'После срока',
+            date: '03.05.2026',
+            pinned: true,
+            pinned_until: '2026-05-05',
+          }),
+        ],
+      );
+
+      expect(data.home.pinned.map((item) => item.id)).toEqual([
+        '2026/05/pinned-active',
+      ]);
+    } finally {
+      Date.now = now;
+    }
+  });
+
+  it('shows multiple pinned news on top in publication-date order', () => {
+    const data = buildNewsDataset(
+      [author({ id: 'ig', name: 'Редакция' })],
+      [
+        article({
+          id: '2026/05/pinned-new',
+          title: 'Новый пин',
+          summary: 'Новый',
+          date: '05.05.2026 10:00',
+          pinned: true,
+        }),
+        article({
+          id: '2026/05/pinned-old',
+          title: 'Старый пин',
+          summary: 'Старый',
+          date: '04.05.2026 10:00',
+          pinned: true,
+        }),
+        article({
+          id: '2026/05/regular',
+          title: 'Обычная новость',
+          summary: 'Без пина',
+          date: '06.05.2026 10:00',
+        }),
+      ],
+    );
+
+    expect(data.home.pinned.map((item) => item.id)).toEqual([
+      '2026/05/pinned-new',
+      '2026/05/pinned-old',
+    ]);
+    expect(data.home.latest.map((item) => item.id)).toEqual([
+      '2026/05/regular',
+    ]);
+  });
+
   it('normalizes mentions in article and addendum bodies', () => {
     const data = buildNewsDataset(
       [author({ id: 'ig', name: 'Редакция' })],
