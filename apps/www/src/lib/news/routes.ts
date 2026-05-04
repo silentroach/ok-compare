@@ -96,6 +96,9 @@ export const articleUrl = (input: NewsArticleRouteInput): string =>
 export const articleMarkdownUrl = (input: NewsArticleRouteInput): string =>
   withBase(`${articlePath(input)}index.md`);
 
+export const articleEventIcsUrl = (input: NewsArticleRouteInput): string =>
+  withBase(`${articlePath(input)}event.ics`);
+
 export const articleCanonical = (input: NewsArticleRouteInput): string =>
   canon(articlePath(input));
 

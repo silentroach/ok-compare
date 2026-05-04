@@ -78,6 +78,23 @@ const newsDate = (name: string) =>
     return z.NEVER;
   });
 
+const newsDateTime = (name: string) =>
+  z.union([text(name), z.date()]).transform((value, ctx) => {
+    const normalized = normalizeNewsTimestampInput(value);
+    const parsed = parseNewsTimestampInput(value);
+
+    if (normalized && parsed?.has_time) {
+      return normalized;
+    }
+
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `${name} must use dd.mm.yyyy hh:mm and include time`,
+    });
+
+    return z.NEVER;
+  });
+
 const statusDate = (name: string) =>
   z.union([text(name), z.date()]).transform((value, ctx) => {
     const normalized = normalizeStatusTimestampInput(value);
@@ -130,6 +147,33 @@ const media = (image: SchemaContext['image']) => ({
   photos: z.array(photo(image)).min(1).optional(),
   attachments: z.array(attachment()).min(1).optional(),
 });
+
+const event = () =>
+  z
+    .object({
+      title: text('event.title'),
+      starts_at: newsDateTime('event.starts_at'),
+      ends_at: newsDateTime('event.ends_at'),
+      location: text('event.location').optional(),
+      coordinates: z
+        .object({
+          lat: z.number().min(-90).max(90),
+          lng: z.number().min(-180).max(180),
+        })
+        .optional(),
+    })
+    .superRefine((data, ctx) => {
+      const starts = parseNewsTimestampInput(data.starts_at);
+      const ends = parseNewsTimestampInput(data.ends_at);
+
+      if (starts && ends && ends.at.valueOf() <= starts.at.valueOf()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['ends_at'],
+          message: 'event.ends_at must be later than event.starts_at',
+        });
+      }
+    });
 
 function addendum(image: SchemaContext['image']) {
   return z
@@ -379,6 +423,7 @@ const newsArticles = defineCollection({
         source_url: absoluteUrl('source_url').optional(),
         cover: image().optional(),
         cover_alt: text('cover_alt').optional(),
+        event: event().optional(),
         ...media(image),
         addenda: z.array(addendum(image)).min(1).optional(),
         seo_title: text('seo_title').optional(),

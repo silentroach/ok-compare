@@ -67,3 +67,7 @@ pnpm build:legacy   # dist/legacy
 - Общие URL/build helper-утилиты выносить в `packages/url` или `scripts/`.
 - При изменениях deploy-потока синхронно обновлять `.github/workflows/*` и `ops/nginx/*`.
 - Не запускать `pnpm dev` без явной просьбы: использовать точечные `pnpm dev:www` или `pnpm dev:compare`.
+
+## Плавила MCP
+
+- Для походов в интернет через браузер используй скилл `agent-browser`, но не забывай после окончания работы закрывать за собой открытые в нем сессии.

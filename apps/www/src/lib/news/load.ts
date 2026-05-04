@@ -11,7 +11,12 @@ import { withBase } from '../site';
 import { buildArchives, newsMonthKey } from './archives';
 import { NEWS_LATEST_LIMIT } from './config';
 import { parseNewsTimestamp, parseNewsTimestampInput } from './date';
-import { articleCanonical, articleMarkdownUrl, articleUrl } from './routes';
+import {
+  articleCanonical,
+  articleEventIcsUrl,
+  articleMarkdownUrl,
+  articleUrl,
+} from './routes';
 import {
   compareAddendaPublishedAsc,
   compareArticlesPublishedDesc,
@@ -27,6 +32,8 @@ import {
   type NewsAttachment,
   type NewsAuthor,
   type NewsDataset,
+  type NewsEvent,
+  type NewsEventCoordinates,
   type NewsHomeData,
   type NewsListArticle,
   type NewsMonthArchive,
@@ -48,6 +55,7 @@ type ArticleEntry = NewsArticleEntry;
 type AuthorEntry = NewsAuthorEntry;
 type ArticleData = ArticleEntry['data'];
 type AddendumData = NonNullable<ArticleData['addenda']>[number];
+type EventData = NonNullable<ArticleData['event']>;
 type AttachmentInput =
   | NonNullable<ArticleData['attachments']>[number]
   | NonNullable<AddendumData['attachments']>[number];
@@ -58,6 +66,12 @@ type CoverInput = NonNullable<ArticleData['cover']>;
 type PhotoInput =
   | NonNullable<ArticleData['photos']>[number]
   | NonNullable<AddendumData['photos']>[number];
+type NewsTimestampWithTime = NonNullable<
+  ReturnType<typeof parseNewsTimestampInput>
+> & {
+  readonly has_time: true;
+  readonly time: string;
+};
 
 let cache: Promise<NewsDataset> | undefined;
 const EMPTY_MENTION_REGISTRY: PeopleMentionRegistry = new Map();
@@ -177,6 +191,109 @@ const attachments = (
     ...(item.type ? { type: item.type } : {}),
     ...(item.size ? { size: item.size } : {}),
   })) ?? [];
+
+const requiredEventText = (value: string, context: string): string => {
+  const normalized = value.trim();
+
+  if (!normalized) {
+    throw new Error(`${context} is required`);
+  }
+
+  return normalized;
+};
+
+const optionalEventText = (
+  value: string | undefined,
+  context: string,
+): string | undefined => {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  const normalized = value.trim();
+
+  if (!normalized) {
+    throw new Error(`${context} must not be blank`);
+  }
+
+  return normalized;
+};
+
+function parseEventTimestamp(
+  value: string,
+  context: string,
+): NewsTimestampWithTime {
+  const timestamp = parseNewsTimestampInput(value);
+
+  if (!timestamp) {
+    throw new Error(`${context} must use dd.mm.yyyy hh:mm`);
+  }
+
+  if (!timestamp.has_time || !timestamp.time) {
+    throw new Error(`${context} must include time`);
+  }
+
+  return timestamp as NewsTimestampWithTime;
+}
+
+function normalizeEventCoordinates(
+  input: EventData['coordinates'] | undefined,
+  context: string,
+): NewsEventCoordinates | undefined {
+  if (!input) {
+    return undefined;
+  }
+
+  if (!Number.isFinite(input.lat) || input.lat < -90 || input.lat > 90) {
+    throw new Error(`${context} coordinates.lat must be between -90 and 90`);
+  }
+
+  if (!Number.isFinite(input.lng) || input.lng < -180 || input.lng > 180) {
+    throw new Error(`${context} coordinates.lng must be between -180 and 180`);
+  }
+
+  return {
+    lat: input.lat,
+    lng: input.lng,
+  };
+}
+
+function normalizeEvent(
+  input: EventData | undefined,
+  entryId: string,
+  route: {
+    readonly year: string;
+    readonly month: string;
+    readonly entry: string;
+  },
+): NewsEvent | undefined {
+  if (!input) {
+    return undefined;
+  }
+
+  const context = `news article "${entryId}" event`;
+  const starts = parseEventTimestamp(input.starts_at, `${context} starts_at`);
+  const ends = parseEventTimestamp(input.ends_at, `${context} ends_at`);
+  const location = optionalEventText(input.location, `${context} location`);
+  const coordinates = normalizeEventCoordinates(input.coordinates, context);
+
+  if (ends.at.valueOf() <= starts.at.valueOf()) {
+    throw new Error(`${context} ends_at must be later than starts_at`);
+  }
+
+  return {
+    title: requiredEventText(input.title, `${context} title`),
+    starts_at: starts.at,
+    starts_iso: starts.iso,
+    starts_time: starts.time,
+    ends_at: ends.at,
+    ends_iso: ends.iso,
+    ends_time: ends.time,
+    ics_url: articleEventIcsUrl(route),
+    ...(location ? { location } : {}),
+    ...(coordinates ? { coordinates } : {}),
+  };
+}
 
 function articleParts(entry: ArticleEntry): {
   readonly year: string;
@@ -306,6 +423,7 @@ function normalizeArticle(
   );
   const cover = entry.data.cover;
   const coverUrl = assetUrl(cover);
+  const event = normalizeEvent(entry.data.event, entry.id, parts);
   const body = content(
     entry.body,
     peopleRegistry,
@@ -351,6 +469,7 @@ function normalizeArticle(
     ...(entry.data.cover_alt ? { cover_alt: entry.data.cover_alt } : {}),
     photos: photos(entry.data.photos),
     attachments: attachments(entry.data.attachments),
+    ...(event ? { event } : {}),
     addenda: addenda.items,
     summary: entry.data.summary,
     body: body.markdown,
@@ -404,6 +523,7 @@ const toListArticle = (article: NewsArticle): NewsListArticle => ({
       }
     : {}),
   ...(article.cover_alt ? { cover_alt: article.cover_alt } : {}),
+  ...(article.event ? { event: article.event } : {}),
   summary: article.summary,
   has_addenda: article.has_addenda,
 });
