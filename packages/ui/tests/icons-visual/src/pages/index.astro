@@ -1,0 +1,237 @@
+---
+import '@shelkovo/ui/styles.css';
+import ForestIcon from '@shelkovo/ui/icons/areas/Forest.astro';
+import ParkIcon from '@shelkovo/ui/icons/areas/Park.astro';
+import RiverIcon from '@shelkovo/ui/icons/areas/River.astro';
+import VillageIcon from '@shelkovo/ui/icons/areas/Village.astro';
+import DamIcon from '@shelkovo/ui/icons/services/Dam.astro';
+import LightningIcon from '@shelkovo/ui/icons/services/Lightning.astro';
+import WaterDropIcon from '@shelkovo/ui/icons/services/WaterDrop.astro';
+import AlertCircleIcon from '@shelkovo/ui/icons/system/AlertCircle.astro';
+import CalendarPlusIcon from '@shelkovo/ui/icons/system/CalendarPlus.astro';
+import CheckCircleIcon from '@shelkovo/ui/icons/system/CheckCircle.astro';
+import DomylandIcon from '@shelkovo/ui/icons/system/Domyland.astro';
+import PhoneIcon from '@shelkovo/ui/icons/system/Phone.astro';
+import StarIcon from '@shelkovo/ui/icons/system/Star.astro';
+import TelegramIcon from '@shelkovo/ui/icons/system/Telegram.astro';
+
+const groups = [
+  {
+    label: 'Areas',
+    icons: [
+      { name: 'Forest', Icon: ForestIcon, variant: 'wide' },
+      { name: 'Park', Icon: ParkIcon, variant: 'wide' },
+      { name: 'River', Icon: RiverIcon, variant: 'wide' },
+      { name: 'Village', Icon: VillageIcon, variant: 'wide' },
+    ],
+  },
+  {
+    label: 'Services',
+    icons: [
+      { name: 'Dam', Icon: DamIcon },
+      { name: 'Lightning', Icon: LightningIcon },
+      { name: 'WaterDrop', Icon: WaterDropIcon },
+    ],
+  },
+  {
+    label: 'System',
+    icons: [
+      { name: 'AlertCircle', Icon: AlertCircleIcon },
+      { name: 'CalendarPlus', Icon: CalendarPlusIcon },
+      { name: 'CheckCircle', Icon: CheckCircleIcon },
+      { name: 'Domyland', Icon: DomylandIcon, variant: 'brand' },
+      { name: 'Phone', Icon: PhoneIcon },
+      { name: 'Star', Icon: StarIcon },
+      { name: 'Telegram', Icon: TelegramIcon },
+    ],
+  },
+] as const;
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Icons visual fixture</title>
+  </head>
+  <body class="ui-root-site icons-visual-page">
+    <main class="icons-visual-shell" data-testid="icons-catalog">
+      <header class="icons-visual-header">
+        <p class="icons-visual-kicker">UI package</p>
+        <h1>Shared icons</h1>
+        <p>Один снимок для всех Astro-иконок shared UI.</p>
+      </header>
+
+      {
+        groups.map((group) => (
+          <section
+            class="icons-visual-group"
+            aria-labelledby={`icons-${group.label}`}
+          >
+            <h2 id={`icons-${group.label}`}>{group.label}</h2>
+            <div class="icons-visual-grid">
+              {group.icons.map(({ name, Icon, variant }) => (
+                <article
+                  class={`icons-visual-card icons-visual-card--${group.label.toLowerCase()}`}
+                  data-icon-card
+                >
+                  <div class="icons-visual-stage" aria-hidden="true">
+                    <Icon
+                      class={`icons-visual-icon${variant === 'wide' ? ' icons-visual-icon--wide' : ''}${variant === 'brand' ? ' icons-visual-icon--brand' : ''}`}
+                    />
+                  </div>
+                  <p>{name}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+        ))
+      }
+    </main>
+  </body>
+</html>
+
+<style>
+  .icons-visual-page {
+    min-height: 100vh;
+    margin: 0;
+    background:
+      radial-gradient(
+        circle at 14% 8%,
+        oklch(95% 0.05 146) 0,
+        transparent 28rem
+      ),
+      radial-gradient(
+        circle at 88% 12%,
+        oklch(93% 0.055 208) 0,
+        transparent 24rem
+      ),
+      linear-gradient(180deg, oklch(98% 0.008 140), oklch(95% 0.012 140));
+    color: var(--color-text);
+  }
+
+  .icons-visual-shell {
+    display: grid;
+    gap: 2rem;
+    width: min(100%, 76rem);
+    margin: 0 auto;
+    padding: 3rem;
+  }
+
+  .icons-visual-header {
+    display: grid;
+    gap: 0.45rem;
+    max-width: 44rem;
+  }
+
+  .icons-visual-kicker,
+  .icons-visual-header p,
+  .icons-visual-card p {
+    margin: 0;
+  }
+
+  .icons-visual-kicker {
+    color: var(--color-accent-strong);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .icons-visual-header h1 {
+    margin: 0;
+    color: var(--color-text-strong);
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1;
+  }
+
+  .icons-visual-header p {
+    color: var(--color-text-muted);
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .icons-visual-header code {
+    color: var(--color-text-strong);
+    font-size: 0.95em;
+  }
+
+  .icons-visual-group {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .icons-visual-group h2 {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .icons-visual-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 1rem;
+  }
+
+  .icons-visual-card {
+    display: grid;
+    gap: 0.8rem;
+    min-height: 9rem;
+    padding: 1rem;
+    border: 1px solid color-mix(in oklab, var(--color-border) 84%, white 16%);
+    border-radius: 1.35rem;
+    background: color-mix(in oklab, white 84%, var(--color-bg) 16%);
+    box-shadow: 0 1rem 2.4rem oklch(22% 0.035 145 / 0.08);
+  }
+
+  .icons-visual-stage {
+    display: grid;
+    min-height: 4.75rem;
+    place-items: center;
+    border-radius: 1rem;
+    background:
+      linear-gradient(
+        135deg,
+        oklch(100% 0 0 / 0.78),
+        oklch(98% 0.012 145 / 0.7)
+      ),
+      color-mix(in oklab, var(--color-bg) 88%, white 12%);
+    color: var(--color-accent-strong);
+  }
+
+  .icons-visual-card--services .icons-visual-stage {
+    color: oklch(57% 0.16 226);
+  }
+
+  .icons-visual-card--system .icons-visual-stage {
+    color: oklch(42% 0.04 150);
+  }
+
+  .icons-visual-icon {
+    display: block;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .icons-visual-icon--wide {
+    width: 4.9rem;
+    height: 3rem;
+  }
+
+  .icons-visual-icon--brand {
+    width: 2.7rem;
+    height: 2.7rem;
+  }
+
+  .icons-visual-card p {
+    color: var(--color-text-strong);
+    font-size: 0.92rem;
+    font-weight: 700;
+    text-align: center;
+  }
+</style>
