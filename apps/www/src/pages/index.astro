@@ -1,58 +1,108 @@
 ---
-import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import logo from '../../../../docs/design/logo.png';
+import { loadNewsArticles } from '@/lib/news/load';
+import { articleUrl } from '@/lib/news/routes';
+import { loadStatusData } from '@/lib/status/load';
 
 const title = 'Шелково Онлайн — сайт поселка Шелково от застройщика Земля МО';
 const description =
   'Сайт поселка Шелково от застройщика Земля МО. Здесь собираем информацию о Шелково, Шелково Ривер, Шелково Форест, Шелково Парк и Шелково Вилладж, а также об обслуживающей компании ОК Комфорт.';
+
+const [news, status] = await Promise.all([
+  loadNewsArticles(),
+  loadStatusData(),
+]);
+const latestNews = news[0];
+const hasActiveIncidents = status.active.some(
+  (item) => item.kind === 'incident',
+);
+const statusDotClass = hasActiveIncidents ? 'bg-red-600' : 'bg-lime-500';
+
+const hourInMoscow = Number(
+  new Intl.DateTimeFormat('en-GB', {
+    hour: '2-digit',
+    hour12: false,
+    timeZone: 'Europe/Moscow',
+  }).format(new Date()),
+);
+const isDaytime = hourInMoscow >= 6 && hourInMoscow < 22;
+const heroImage = isDaytime
+  ? '/images/home-hero-day.png'
+  : '/images/home-hero-night.png';
 ---
 
 <BaseLayout title={title} description={description}>
-  <main class="ui-page py-12 md:py-16">
-    <section class="mx-auto flex w-full max-w-5xl flex-col gap-10 md:gap-12">
-      <div class="flex flex-col items-center gap-6 text-center md:gap-8">
-        <Image
-          src={logo}
-          alt="Логотип Шелково"
-          width={960}
-          height={640}
-          format="webp"
-          loading="eager"
-          class="w-full max-w-[34rem]"
-        />
+  <main class="ui-page pb-16">
+    <section class="border-b border-border bg-background">
+      <div
+        class="mx-auto flex w-full max-w-[1720px] items-center justify-between px-8 py-8 md:px-12 md:py-10"
+      >
+        <a href="/" aria-label="На главную">
+          <img
+            src={logo}
+            alt="Логотип Шелково"
+            width="220"
+            height="120"
+            class="h-auto w-36 md:w-52"
+            loading="eager"
+          />
+        </a>
 
-        <div class="space-y-4">
-          <h1
-            class="text-4xl font-bold tracking-tight text-foreground md:text-5xl"
-          >
-            Сайт в разработке
-          </h1>
-          <p class="ui-copy mx-auto max-w-2xl text-muted-foreground">
-            {'Собираем сайт поселка Шелково от застройщика '}<a
-              href="https://zemlyamo.ru/"
-              target="_blank"
-              rel="noreferrer noopener"
-              class="site-inline-link">Земля МО</a
-            >{
-              '. Здесь будет информация о Шелково, Шелково Ривер, Шелково Форест, Шелково Парк и Шелково Вилладж, а также об обслуживающей компании '
-            }<a
-              href="https://ok-komfort.ru/"
-              target="_blank"
-              rel="noreferrer noopener"
-              class="site-inline-link">ОК Комфорт</a
-            >{'. Пока уже доступен раздел со '}<a
-              href="/compare/"
-              class="site-inline-link">сравнением тарифов</a
-            >{' и данными по поселкам, а еще потихоньку наполняем '}<a
-              href="/news/"
-              class="site-inline-link">раздел новостей</a
-            >{' и ведем '}<a href="/status/" class="site-inline-link"
-              >статусную страницу</a
-            >{'.'}
-          </p>
-        </div>
+        <nav
+          class="flex items-center gap-8 text-xl text-[#445f44] md:gap-16 md:text-[2.25rem]"
+        >
+          <a href="/news/" class="hover:opacity-80">Новости</a>
+          <a href="/status/" class="flex items-center gap-4 hover:opacity-80">
+            <span>Статус</span>
+            <span
+              class:list={['inline-block h-4 w-4 rounded-full', statusDotClass]}
+            ></span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="h-[320px] w-full md:h-[560px]">
+        <img
+          src={heroImage}
+          alt="Панорама поселка Шелково"
+          width="2048"
+          height="1024"
+          class="h-full w-full object-cover"
+          loading="eager"
+        />
       </div>
     </section>
+
+    {
+      latestNews && (
+        <section class="mx-auto w-full max-w-[1720px] px-8 py-12 md:px-12 md:py-16">
+          <h1 class="border-b border-border pb-5 text-4xl text-[#445f44] md:text-6xl">
+            Что нового в поселке
+          </h1>
+
+          <article class="grid grid-cols-1 gap-6 border-b border-border py-8 md:grid-cols-[220px_minmax(0,1fr)] md:gap-12 md:py-10">
+            <p class="text-2xl text-[#445f44] md:text-4xl">
+              {latestNews.published_human}
+            </p>
+
+            <div class="space-y-5">
+              <h2 class="text-3xl text-[#445f44] md:text-5xl">
+                {latestNews.title}
+              </h2>
+              <p class="ui-copy text-xl text-muted-foreground md:text-3xl">
+                {latestNews.excerpt}
+              </p>
+              <a
+                href={articleUrl(latestNews)}
+                class="inline-flex items-center gap-3 text-2xl text-[#445f44] hover:opacity-80 md:text-4xl"
+              >
+                Читать новость <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </article>
+        </section>
+      )
+    }
   </main>
 </BaseLayout>
