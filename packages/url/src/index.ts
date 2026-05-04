@@ -1,12 +1,16 @@
 const ABSOLUTE_URL_SCHEME = /^(?:https?:|mailto:|tel:)/i;
 const TELEGRAM_URL_SCHEME =
   /^(?:tg:\/\/|(?:https?:\/\/)?(?:www\.)?(?:t\.me|telegram\.me)\/)/i;
+const DOMYLAND_URL_SCHEME = /^https?:\/\/(?:[^./]+\.)*domyland\.app(?:\/|$)/i;
 
 export const isAbsoluteUrl = (value: string): boolean =>
   ABSOLUTE_URL_SCHEME.test(value) || value.startsWith('//');
 
 export const isTelegramUrl = (value: string): boolean =>
   TELEGRAM_URL_SCHEME.test(value);
+
+export const isDomylandUrl = (value: string): boolean =>
+  DOMYLAND_URL_SCHEME.test(value);
 
 /**
  * Builds URL with base path prepended.

@@ -1,7 +1,6 @@
 ---
 import ShelkovoAreaIcon from '../ShelkovoAreaIcon.astro';
-import TelegramIcon from '@shelkovo/ui/icons/system/Telegram.astro';
-import { isTelegramUrl } from '@shelkovo/url';
+import LinkWithIcon from '@shelkovo/ui/LinkWithIcon.astro';
 import type { NewsArea, NewsAuthor } from '../../lib/news/schema';
 import { formatNewsAuthor, formatNewsDate } from '../../lib/news/view';
 
@@ -36,17 +35,6 @@ const {
 } = Astro.props;
 
 const visibleAreas = appliesToAllAreas ? [] : areas;
-const isTelegramSource = sourceUrl ? isTelegramUrl(sourceUrl) : false;
-const sourceTarget =
-  sourceUrl && !isTelegramSource
-    ? new URL(sourceUrl.startsWith('//') ? `https:${sourceUrl}` : sourceUrl)
-    : undefined;
-const sourceHost = sourceUrl
-  ? isTelegramSource
-    ? 'Telegram'
-    : sourceTarget?.hostname.replace(/^www\./i, '') || undefined
-  : undefined;
-const sourceLabel = sourceHost ? `Источник: ${sourceHost}` : undefined;
 ---
 
 <div
@@ -84,23 +72,5 @@ const sourceLabel = sourceHost ? `Источник: ${sourceHost}` : undefined;
     )
   }
   {visibleAreas.map((area) => <ShelkovoAreaIcon area={area} />)}
-  {
-    sourceUrl && (
-      <a
-        href={sourceUrl}
-        target="_blank"
-        rel="noreferrer noopener"
-        aria-label={sourceLabel}
-        class:list={[
-          'ui-link font-medium',
-          isTelegramSource && 'inline-flex items-center gap-1',
-        ]}
-      >
-        {isTelegramSource && (
-          <TelegramIcon class="size-3.5 shrink-0 text-primary" />
-        )}
-        <span>источник</span>
-      </a>
-    )
-  }
+  {sourceUrl && <LinkWithIcon href={sourceUrl} ariaLabelPrefix="Источник" />}
 </div>

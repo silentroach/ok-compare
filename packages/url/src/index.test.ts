@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { isAbsoluteUrl, isTelegramUrl, telegram, withBase } from './index';
+import {
+  isAbsoluteUrl,
+  isDomylandUrl,
+  isTelegramUrl,
+  telegram,
+  withBase,
+} from './index';
 
 describe('isAbsoluteUrl package', () => {
   it('detects absolute URLs and protocol-relative URLs', () => {
@@ -79,5 +85,15 @@ describe('telegram package', () => {
     expect(telegram('  @shelkovoecoclub  ')).toBe(
       'https://t.me/shelkovoecoclub',
     );
+  });
+});
+
+describe('isDomylandUrl', () => {
+  it('detects domyland app URLs with http and https', () => {
+    expect(isDomylandUrl('https://okkomfort.domyland.app/news')).toBe(true);
+    expect(isDomylandUrl('http://demo.domyland.app')).toBe(true);
+    expect(isDomylandUrl('https://domyland.app')).toBe(true);
+    expect(isDomylandUrl('https://domyland.ru')).toBe(false);
+    expect(isDomylandUrl('https://example.com/domyland.app')).toBe(false);
   });
 });
