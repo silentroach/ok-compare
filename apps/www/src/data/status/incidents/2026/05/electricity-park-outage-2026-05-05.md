@@ -1,7 +1,7 @@
 ---
 service: electricity
 kind: incident
-started_at: 05.05.2026 14:40
+started_at: 05.05.2026 15:40
 ended_at: 05.05.2026 15:53
 areas:
   - park
