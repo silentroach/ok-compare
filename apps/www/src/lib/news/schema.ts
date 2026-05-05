@@ -80,8 +80,10 @@ export interface NewsAddendum {
 export interface NewsArticle {
   readonly id: string;
   readonly title: string;
-  readonly seo_title?: string;
-  readonly seo_description?: string;
+  readonly seo?: {
+    readonly title?: string;
+    readonly description?: string;
+  };
   readonly author: NewsAuthor;
   readonly year: number;
   readonly month: number;

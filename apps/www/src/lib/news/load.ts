@@ -432,10 +432,7 @@ function normalizeArticle(
   const article = {
     id: entry.id,
     title: entry.data.title,
-    ...(entry.data.seo_title ? { seo_title: entry.data.seo_title } : {}),
-    ...(entry.data.seo_description
-      ? { seo_description: entry.data.seo_description }
-      : {}),
+    ...(entry.data.seo ? { seo: entry.data.seo } : {}),
     author,
     year: Number(parts.year),
     month: Number(parts.month),
