@@ -7,7 +7,7 @@ seo:
 date: 05.05.2026
 author: ok-comfort
 tags:
-  - событие
+  - мероприятие
 source_url: https://okkomfort.domyland.app/news?targetId=111551&entityName=news&t=okkomfort
 event:
   title: День Победы в Гринвуде
