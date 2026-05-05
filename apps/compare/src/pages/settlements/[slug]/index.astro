@@ -169,6 +169,8 @@ const heroMap = hasPoint
   schema={schema}
 >
   <main class="ui-page py-6 md:py-10 lg:pt-0">
+    <h1 class="sr-only">{settlement.name}</h1>
+
     <section
       class="hero-bleed relative hidden min-h-[430px] lg:block"
       data-testid="settlement-hero"
@@ -253,11 +255,12 @@ const heroMap = hasPoint
           <div class="mb-4">
             <div class="flex items-start gap-4">
               <div class="min-w-0">
-                <h1
+                <div
+                  aria-hidden="true"
                   class="text-4xl font-bold leading-[1.06] text-foreground [text-shadow:0_2px_10px_rgba(255,255,255,0.75)] xl:text-[2.7rem]"
                 >
                   {settlement.name}
-                </h1>
+                </div>
               </div>
               <div class="mt-1 flex shrink-0 items-center gap-2">
                 {
@@ -558,11 +561,12 @@ const heroMap = hasPoint
         <div>
           <div class="mb-2 flex items-start justify-between gap-3">
             <div class="min-w-0 flex-1">
-              <h1
+              <div
+                aria-hidden="true"
                 class="text-3xl font-bold leading-[1.08] text-foreground md:text-4xl"
               >
                 {settlement.name}
-              </h1>
+              </div>
             </div>
             <div class="flex shrink-0 items-center gap-2">
               {
