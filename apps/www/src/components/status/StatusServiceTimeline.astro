@@ -593,5 +593,9 @@ const timelineGroups = incidents
 <script>
   import { hydrateStatusTimelines } from '@/lib/status/timeline.dom';
 
-  hydrateStatusTimelines();
+  const hydrate = () => hydrateStatusTimelines();
+
+  hydrate();
+  document.addEventListener('astro:after-swap', hydrate);
+  document.addEventListener('astro:page-load', hydrate);
 </script>

@@ -40,6 +40,13 @@ pnpm typecheck
 - Если нужна ссылка на compare, вести на `/compare/`, а не на legacy домен.
 - Если меняется deploy/base/root behavior, синхронно обновлять `ops/nginx/kpshelkovo-online.conf` и compose scripts.
 
+## People Mentions
+
+- В `src/data/people/*.md` живут профили людей для раздела `/people/`; canonical slug человека равен имени файла без `.md`, например `kschemelinin`.
+- Если человек из `people` упоминается в `news`, `status` или другом people body, в source markdown нужно писать `@slug`, а не plain text имя и не ручную ссылку на `/people/.../`.
+- При рендере `@slug` автоматически раскрывается в каноническое имя и ссылку на профиль; неизвестный `@slug` должен падать на билде и исправляться до merge.
+- Для атрибуции к внешнему источнику ссылку ставь на вводную фразу, например `[По словам](https://t.me/...) @kschemelinin, ...`.
+
 ## Agent-Facing Surfaces
 
 - Root discovery:
