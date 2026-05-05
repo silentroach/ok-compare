@@ -19,6 +19,7 @@ const list = toExplorer(settlements, ratings);
 // Convert comparisons Map to a plain object for serialization
 const comparisonsObj = Object.fromEntries(comparisons);
 const dataUrl = withBase('data/explorer.json');
+const ratingUrl = withBase('/rating/');
 
 const cards = [...list].sort((a, b) => {
   const d = b.rating - a.rating;
@@ -53,7 +54,9 @@ const schema = {
   <main class="ui-page py-6 md:py-10">
     <Hero
       title="Сравнение тарифов поселков с Шелково"
-      subtitle="Структурированное сравнение поселков по цене, инфраструктуре и сервисам"
+      subtitle="Структурированное сравнение поселков по цене, инфраструктуре, сервисам и"
+      subtitleLinkHref={ratingUrl}
+      subtitleLinkText="рейтингу"
     >
       <KPIStats stats={stats} embed />
     </Hero>

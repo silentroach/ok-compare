@@ -4,10 +4,18 @@
   interface Props {
     title: string;
     subtitle?: string;
+    subtitleLinkHref?: string;
+    subtitleLinkText?: string;
     children?: Snippet;
   }
 
-  let { title, subtitle, children }: Props = $props();
+  let {
+    title,
+    subtitle = 'Сравнивайте стоимость обслуживания и качество инфраструктуры по одинаковой шкале, чтобы принимать решения на данных, а не на обещаниях.',
+    subtitleLinkHref,
+    subtitleLinkText,
+    children,
+  }: Props = $props();
 </script>
 
 <section class="ui-shell-strong overflow-hidden p-6 md:p-8">
@@ -18,8 +26,15 @@
       {title}
     </h1>
     <p class="mt-3 max-w-3xl text-base text-muted-foreground md:text-lg">
-      {subtitle ||
-        'Сравнивайте стоимость обслуживания и качество инфраструктуры по одинаковой шкале, чтобы принимать решения на данных, а не на обещаниях.'}
+      {subtitle}
+      {#if subtitleLinkHref && subtitleLinkText}
+        <a
+          href={subtitleLinkHref}
+          class="font-medium text-foreground underline decoration-border underline-offset-4 transition-colors hover:text-primary hover:decoration-primary"
+        >
+          {subtitleLinkText}
+        </a>
+      {/if}
     </p>
 
     <div class="mt-4 max-w-4xl md:mt-5">
