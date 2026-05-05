@@ -84,6 +84,7 @@ pnpm build:legacy   # dist/legacy
 - Общие стили и UI-примитивы выносить в `packages/ui`.
 - Общие URL/build helper-утилиты выносить в `packages/url` или `scripts/`.
 - При изменениях deploy-потока синхронно обновлять `.github/workflows/*` и `ops/nginx/*`.
+- Если добавляется внешний ресурс или запрос вовне (`fetch`/`connect`, iframe, script, image, font, style, analytics, карты и т.п.), синхронно проверить и при необходимости обновить CSP в `ops/nginx/*`.
 - Не запускать `pnpm dev` без явной просьбы: использовать точечные `pnpm dev:www` или `pnpm dev:compare`.
 
 ## Плавила MCP
