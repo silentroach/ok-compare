@@ -2,14 +2,22 @@ import remarkGfm from 'remark-gfm';
 import remarkParse from 'remark-parse';
 import { unified } from 'unified';
 
+import {
+  isPersonNameCase,
+  PERSON_DEFAULT_NAME_CASE,
+  type PersonAlternateNameCase,
+  type PersonNameCase,
+  type PersonNameCaseForms,
+} from './name-cases';
 import { personMarkdownUrl, personUrl } from './routes';
 
 const parser = unified().use(remarkParse).use(remarkGfm);
 const SLUG_START = /[a-z0-9]/u;
 const SLUG_CHAR = /[a-z0-9-]/u;
+const CASE_CHAR = /[a-z]/u;
 const BLOCKED_PREFIX = /[\p{L}\p{N}_]/u;
 const ASCII_ALPHANUMERIC = /[A-Za-z0-9]/u;
-const TOKEN_DELIMITER = /[\s,;:!?)}\]>'"«»]/u;
+const TOKEN_DELIMITER = /[\s,;!?)}\]>'"«»]/u;
 const SKIPPED_NODE_TYPES = new Set([
   'code',
   'definition',
@@ -40,12 +48,16 @@ interface MarkdownNode {
 interface MentionReplacement {
   readonly start: number;
   readonly end: number;
+  readonly name_case: PersonNameCase;
   readonly target: PersonMentionTarget;
 }
 
 export interface PersonMentionTarget {
   readonly slug: string;
   readonly name: string;
+  readonly name_cases?: PersonNameCaseForms;
+  readonly company?: string;
+  readonly position?: string;
   readonly html_url: string;
   readonly markdown_url: string;
 }
@@ -60,8 +72,16 @@ export interface NormalizedPeopleMentions {
 const escapeLinkText = (value: string): string =>
   value.replace(/([\\\[\]])/gu, '\\$1');
 
-const mentionLink = (target: PersonMentionTarget): string =>
-  `[${escapeLinkText(target.name)}](${target.html_url})`;
+const escapeLinkTitle = (value: string): string =>
+  value.replace(/([\\"])/gu, '\\$1');
+
+const mentionTitle = (target: PersonMentionTarget): string | undefined => {
+  const parts = [target.position, target.company].filter(
+    (item): item is string => item !== undefined,
+  );
+
+  return parts.length > 0 ? parts.join(', ') : undefined;
+};
 
 const token = (segment: string, start: number): string => {
   let end = start + 1;
@@ -75,6 +95,38 @@ const token = (segment: string, start: number): string => {
 
 const failMention = (context: string, message: string): never => {
   throw new Error(`${context} ${message}`);
+};
+
+const mentionName = (
+  target: PersonMentionTarget,
+  nameCase: PersonNameCase,
+  context: string,
+): string => {
+  if (nameCase === PERSON_DEFAULT_NAME_CASE) {
+    return target.name;
+  }
+
+  const alternateNameCase: PersonAlternateNameCase = nameCase;
+  const name = target.name_cases?.[alternateNameCase];
+
+  return (
+    name ??
+    failMention(
+      context,
+      `contains person mention "@${target.slug}:${nameCase}", but person "${target.slug}" has no "${nameCase}" name case`,
+    )
+  );
+};
+
+const mentionLink = (
+  target: PersonMentionTarget,
+  nameCase: PersonNameCase,
+  context: string,
+): string => {
+  const title = mentionTitle(target);
+  const titlePart = title ? ` "${escapeLinkTitle(title)}"` : '';
+
+  return `[${escapeLinkText(mentionName(target, nameCase, context))}](${target.html_url}${titlePart})`;
 };
 
 const absoluteOffsets = (
@@ -125,7 +177,47 @@ const invalidMentionTail = (
   tail === '/' ||
   tail === '@' ||
   tail === '\\' ||
+  tail === '-' ||
+  (tail === ':' && next !== undefined && !/\s/u.test(next)) ||
+  (tail !== undefined && BLOCKED_PREFIX.test(tail)) ||
   (tail === '.' && next !== undefined && ASCII_ALPHANUMERIC.test(next));
+
+const mentionCase = (
+  segment: string,
+  mentionStart: number,
+  slugEnd: number,
+  context: string,
+): {
+  readonly name_case: PersonNameCase;
+  readonly end: number;
+} => {
+  if (segment[slugEnd] !== ':' || !CASE_CHAR.test(segment[slugEnd + 1] ?? '')) {
+    return {
+      name_case: PERSON_DEFAULT_NAME_CASE,
+      end: slugEnd,
+    };
+  }
+
+  let end = slugEnd + 1;
+
+  while (end < segment.length && CASE_CHAR.test(segment[end])) {
+    end += 1;
+  }
+
+  const nameCase = segment.slice(slugEnd + 1, end);
+
+  if (isPersonNameCase(nameCase)) {
+    return {
+      name_case: nameCase,
+      end,
+    };
+  }
+
+  return failMention(
+    context,
+    `contains invalid person mention "${token(segment, mentionStart)}"`,
+  );
+};
 
 function mentionReplacements(
   segment: string,
@@ -171,8 +263,9 @@ function mentionReplacements(
     }
 
     const slug = segment.slice(start, end);
-    const tail = segment[end];
-    const next = segment[end + 1];
+    const nameCase = mentionCase(segment, index, end, context);
+    const tail = segment[nameCase.end];
+    const next = segment[nameCase.end + 1];
 
     if (invalidMentionTail(tail, next)) {
       failMention(
@@ -189,11 +282,12 @@ function mentionReplacements(
 
     replacements.push({
       start: absoluteStart + index,
-      end: absoluteStart + end,
+      end: absoluteStart + nameCase.end,
+      name_case: nameCase.name_case,
       target: target!,
     });
 
-    index = end - 1;
+    index = nameCase.end - 1;
   }
 
   return replacements;
@@ -202,9 +296,15 @@ function mentionReplacements(
 export const createPersonMentionTarget = (
   slug: string,
   name: string,
+  name_cases?: PersonNameCaseForms,
+  company?: string,
+  position?: string,
 ): PersonMentionTarget => ({
   slug,
   name,
+  ...(name_cases ? { name_cases } : {}),
+  ...(company ? { company } : {}),
+  ...(position ? { position } : {}),
   html_url: personUrl(slug),
   markdown_url: personMarkdownUrl(slug),
 });
@@ -245,7 +345,7 @@ export const normalizePeopleMentions = (input: {
   const mentions = new Map<string, PersonMentionTarget>();
 
   for (const replacement of replacements) {
-    markdown += `${input.markdown.slice(cursor, replacement.start)}${mentionLink(replacement.target)}`;
+    markdown += `${input.markdown.slice(cursor, replacement.start)}${mentionLink(replacement.target, replacement.name_case, input.context)}`;
     cursor = replacement.end;
 
     if (!mentions.has(replacement.target.slug)) {

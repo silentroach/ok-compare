@@ -197,7 +197,13 @@ const personRegistry = (
   const registry = new Map(
     entries.map((entry) => [
       entry.id,
-      createPersonMentionTarget(entry.id, entry.data.name),
+      createPersonMentionTarget(
+        entry.id,
+        entry.data.name,
+        entry.data.name_cases,
+        entry.data.company,
+        entry.data.position,
+      ),
     ]),
   );
 
@@ -222,6 +228,7 @@ const normalizePerson = (
     id: entry.id,
     slug: entry.id,
     name: entry.data.name,
+    ...(entry.data.name_cases ? { name_cases: entry.data.name_cases } : {}),
     ...(entry.data.company ? { company: entry.data.company } : {}),
     ...(entry.data.position ? { position: entry.data.position } : {}),
     url: personUrl(entry.id),

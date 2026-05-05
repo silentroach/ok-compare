@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { dateTimeFromISO } from '@shelkovo/format';
 
+import { visibleWhitespace } from '../test/visible-whitespace';
+
 import {
   buildStatusTimelineTooltipData,
   buildStatusTimelineTooltipListItemData,
@@ -201,38 +203,46 @@ describe('buildStatusTimelineTooltipData', () => {
       },
     });
 
-    expect(tooltip).toEqual({
-      serviceLabel: 'Вода',
-      kindLabel: 'Инцидент',
-      title: 'Нет воды на Центральной',
-      phaseLabel: 'идет',
-      periodLabel: 'Начиная с 1 мая, 07:32',
-    });
-    expect(formatStatusTimelineTooltipLabel(tooltip)).toBe(
-      'Вода. Инцидент. Нет воды на Центральной. Статус: идет. Начиная с 1 мая, 07:32',
+    expect(visibleWhitespace(tooltip)).toMatchInlineSnapshot(`
+      {
+        "kindLabel": "Инцидент",
+        "periodLabel": "Начиная с·1·мая, 07:32",
+        "phaseLabel": "идет",
+        "serviceLabel": "Вода",
+        "title": "Нет воды на·Центральной",
+      }
+    `);
+    expect(
+      visibleWhitespace(formatStatusTimelineTooltipLabel(tooltip)),
+    ).toMatchInlineSnapshot(
+      `"Вода. Инцидент. Нет воды на·Центральной. Статус: идет. Начиная с·1·мая, 07:32"`,
     );
   });
 
   it('builds timeline tooltip labels for planned maintenance', () => {
     expect(
-      buildStatusTimelineTooltipData({
-        service: 'electricity',
-        incident: {
-          kind: 'maintenance',
-          title: 'Плановая профилактика сети',
-          is_active: false,
-          started_iso: `${currentYear}-05-03T00:00:00+03:00`,
-          started_has_time: false,
-          ended_has_time: false,
-        },
-      }),
-    ).toEqual({
-      serviceLabel: 'Электричество',
-      kindLabel: 'Плановые работы',
-      title: 'Плановая профилактика сети',
-      phaseLabel: 'запланировано',
-      periodLabel: 'Начало 3 мая',
-    });
+      visibleWhitespace(
+        buildStatusTimelineTooltipData({
+          service: 'electricity',
+          incident: {
+            kind: 'maintenance',
+            title: 'Плановая профилактика сети',
+            is_active: false,
+            started_iso: `${currentYear}-05-03T00:00:00+03:00`,
+            started_has_time: false,
+            ended_has_time: false,
+          },
+        }),
+      ),
+    ).toMatchInlineSnapshot(`
+      {
+        "kindLabel": "Плановые работы",
+        "periodLabel": "Начало 3·мая",
+        "phaseLabel": "запланировано",
+        "serviceLabel": "Электричество",
+        "title": "Плановая профилактика сети",
+      }
+    `);
   });
 
   it('keeps future maintenance with an end date in planned phase', () => {
@@ -254,7 +264,7 @@ describe('buildStatusTimelineTooltipData', () => {
       kindLabel: 'Плановые работы',
       title: 'Плановая профилактика сети',
       phaseLabel: 'запланировано',
-      periodLabel: `3 мая ${nextYear} - 4 мая ${nextYear}`,
+      periodLabel: `3${NBSP}мая ${nextYear}${NBSP}— 4${NBSP}мая ${nextYear}`,
     });
   });
 
@@ -273,8 +283,10 @@ describe('buildStatusTimelineTooltipData', () => {
     });
 
     expect(tooltip.periodLabel).toBe(`Начиная с${NBSP}1${NBSP}мая, 07:32`);
-    expect(formatStatusTimelineTooltipLabel(tooltip)).toBe(
-      `Вода. Инцидент. Нет воды на Центральной. Статус: идет. Начиная с${NBSP}1${NBSP}мая, 07:32`,
+    expect(
+      visibleWhitespace(formatStatusTimelineTooltipLabel(tooltip)),
+    ).toMatchInlineSnapshot(
+      `"Вода. Инцидент. Нет воды на·Центральной. Статус: идет. Начиная с·1·мая, 07:32"`,
     );
   });
 });
@@ -282,11 +294,13 @@ describe('buildStatusTimelineTooltipData', () => {
 describe('grouped timeline tooltip text', () => {
   it('builds a compact day group title', () => {
     expect(
-      formatStatusTimelineGroupTitle({
-        count: 3,
-        startedIso: `${currentYear}-05-09T07:32:00+03:00`,
-      }),
-    ).toBe('3 события за 9 мая');
+      visibleWhitespace(
+        formatStatusTimelineGroupTitle({
+          count: 3,
+          startedIso: `${currentYear}-05-09T07:32:00+03:00`,
+        }),
+      ),
+    ).toMatchInlineSnapshot(`"3 события за·9·мая"`);
   });
 
   it('formats grouped tooltip list items and summary labels', () => {
@@ -313,19 +327,23 @@ describe('grouped timeline tooltip text', () => {
       }),
     ];
 
-    expect(items[0]).toEqual({
-      title: 'Отключение 1',
-      periodLabel: '9 мая, 07:32 - 08:10 (38 мин.)',
-      phaseIcon: 'check',
-    });
+    expect(visibleWhitespace(items[0])).toMatchInlineSnapshot(`
+      {
+        "periodLabel": "9·мая, 07:32·— 08:10 (38 мин.)",
+        "phaseIcon": "check",
+        "title": "Отключение·1",
+      }
+    `);
     expect(
-      formatStatusTimelineTooltipGroupLabel({
-        serviceLabel: 'Электричество',
-        title: '2 события за 9 мая',
-        items,
-      }),
-    ).toBe(
-      'Электричество. 2 события за 9 мая. Отключение 1. 9 мая, 07:32 - 08:10 (38 мин.). Отключение 2. Начиная с 9 мая, 12:15',
+      visibleWhitespace(
+        formatStatusTimelineTooltipGroupLabel({
+          serviceLabel: 'Электричество',
+          title: '2 события за 9 мая',
+          items,
+        }),
+      ),
+    ).toMatchInlineSnapshot(
+      `"Электричество. 2 события за 9 мая. Отключение·1. 9·мая, 07:32·— 08:10 (38 мин.). Отключение·2. Начиная с·9·мая, 12:15"`,
     );
   });
 });

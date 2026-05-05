@@ -10,6 +10,7 @@ import {
   formatStatusTimelineTooltipGroupLabel,
   type StatusTimelineTooltipListItemData,
 } from './view';
+import type { StatusArea } from './schema';
 
 export interface StatusTimelineHydrationOptions {
   readonly nowMs?: number;
@@ -32,6 +33,7 @@ interface StatusTimelineTooltipSerializedItem {
   readonly started_has_time: boolean;
   readonly ended_iso?: string;
   readonly ended_has_time: boolean;
+  readonly areas?: readonly StatusArea[];
   readonly duration?: {
     readonly total_minutes: number;
   };
@@ -42,6 +44,8 @@ interface StatusTimelineTooltipData {
   readonly ariaLabel: string;
   readonly phaseIcon?: 'alert' | 'check';
   readonly periodLabel?: string;
+  readonly areaLabel?: string;
+  readonly areas?: readonly StatusArea[];
   readonly items?: readonly StatusTimelineTooltipListItemData[];
 }
 
@@ -52,6 +56,8 @@ interface StatusTimelineTooltipElements {
   readonly phaseAlertIcon: HTMLElement;
   readonly phaseCheckIcon: HTMLElement;
   readonly period: HTMLElement;
+  readonly titleAreas: HTMLElement;
+  readonly areaTemplates: ReadonlyMap<StatusArea, HTMLElement>;
   readonly list: HTMLElement;
 }
 
@@ -67,6 +73,13 @@ const STATUS_TIMELINE_PROBLEM_SELECTOR = '[data-status-problem]';
 const STATUS_TIMELINE_GREEN_SELECTOR = '[data-status-segment="green"]';
 const STATUS_TIMELINE_TOOLTIP_SELECTOR = '[data-status-timeline-tooltip]';
 const STATUS_TIMELINE_TOOLTIP_MARGIN_PX = 8;
+const STATUS_TIMELINE_AREAS = [
+  'river',
+  'forest',
+  'park',
+  'village',
+] as const satisfies readonly StatusArea[];
+const STATUS_TIMELINE_AREA_SET = new Set<string>(STATUS_TIMELINE_AREAS);
 
 const isFiniteNumber = (value: unknown): value is number =>
   typeof value === 'number' && Number.isFinite(value);
@@ -101,8 +114,18 @@ const getStatusTimelineTooltip = (
     '[data-status-tooltip-phase-icon-check]',
   );
   const period = shell.querySelector('[data-status-tooltip-period]');
+  const titleAreas = shell.querySelector('[data-status-tooltip-title-areas]');
   const list = shell.querySelector('[data-status-tooltip-list]');
   const titleRow = title?.parentElement;
+  const areaTemplates = new Map(
+    STATUS_TIMELINE_AREAS.flatMap((area) => {
+      const template = shell.querySelector(
+        `[data-status-tooltip-area-template="${area}"]`,
+      );
+
+      return template instanceof HTMLElement ? [[area, template]] : [];
+    }),
+  );
 
   if (
     !(titleRow instanceof HTMLElement) ||
@@ -110,6 +133,8 @@ const getStatusTimelineTooltip = (
     !(phaseAlertIcon instanceof HTMLElement) ||
     !(phaseCheckIcon instanceof HTMLElement) ||
     !(period instanceof HTMLElement) ||
+    !(titleAreas instanceof HTMLElement) ||
+    areaTemplates.size !== STATUS_TIMELINE_AREAS.length ||
     !(list instanceof HTMLElement)
   ) {
     return undefined;
@@ -122,8 +147,33 @@ const getStatusTimelineTooltip = (
     phaseAlertIcon,
     phaseCheckIcon,
     period,
+    titleAreas,
+    areaTemplates,
     list,
   };
+};
+
+const isStatusTimelineArea = (value: unknown): value is StatusArea =>
+  typeof value === 'string' && STATUS_TIMELINE_AREA_SET.has(value);
+
+const parseStatusTimelineTooltipAreas = (
+  value?: string,
+): readonly StatusArea[] | undefined => {
+  if (!value) {
+    return undefined;
+  }
+
+  try {
+    const parsed = JSON.parse(value) as unknown;
+
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      return undefined;
+    }
+
+    return parsed.every(isStatusTimelineArea) ? parsed : undefined;
+  } catch {
+    return undefined;
+  }
 };
 
 const isTimelineTooltipSerializedItem = (
@@ -150,7 +200,11 @@ const isTimelineTooltipSerializedItem = (
       (typeof candidate.duration === 'object' &&
         candidate.duration !== null &&
         typeof candidate.duration.total_minutes === 'number' &&
-        Number.isFinite(candidate.duration.total_minutes)))
+        Number.isFinite(candidate.duration.total_minutes))) &&
+    (candidate.areas === undefined ||
+      (Array.isArray(candidate.areas) &&
+        candidate.areas.length > 0 &&
+        candidate.areas.every(isStatusTimelineArea)))
   );
 };
 
@@ -202,6 +256,8 @@ const readStatusTimelineTooltipData = (
   const title = trigger.dataset.tooltipTitle;
   const phaseIcon = trigger.dataset.tooltipPhaseIcon;
   const periodLabel = trigger.dataset.tooltipPeriodLabel;
+  const areaLabel = trigger.dataset.tooltipAreaLabel;
+  const areas = parseStatusTimelineTooltipAreas(trigger.dataset.tooltipAreas);
   const kindLabel = trigger.dataset.tooltipKindLabel;
   const phaseLabel = trigger.dataset.tooltipPhaseLabel;
 
@@ -217,10 +273,40 @@ const readStatusTimelineTooltipData = (
       title,
       `Статус: ${phaseLabel}`,
       periodLabel,
+      ...(areaLabel ? [`Части поселка: ${areaLabel}`] : []),
     ].join('. '),
     ...(phaseIcon === 'alert' || phaseIcon === 'check' ? { phaseIcon } : {}),
     periodLabel,
+    ...(areaLabel ? { areaLabel } : {}),
+    ...(areas ? { areas } : {}),
   };
+};
+
+const renderStatusTimelineTooltipAreas = (
+  target: HTMLElement,
+  templates: ReadonlyMap<StatusArea, HTMLElement>,
+  areas?: readonly StatusArea[],
+): void => {
+  target.replaceChildren();
+
+  if (!areas?.length) {
+    target.hidden = true;
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+
+  areas.forEach((area) => {
+    const template = templates.get(area);
+    const icon = template?.firstElementChild?.cloneNode(true);
+
+    if (icon instanceof HTMLElement) {
+      fragment.append(icon);
+    }
+  });
+
+  target.append(fragment);
+  target.hidden = target.childElementCount === 0;
 };
 
 const setStatusTimelineProblemAriaLabel = (element: HTMLElement): void => {
@@ -256,6 +342,7 @@ const renderStatusTimelineTooltipItems = (
       '[data-status-tooltip-phase-icon-check]',
     );
     const period = tooltip.period.cloneNode(true) as HTMLElement;
+    const titleAreas = title.querySelector('[data-status-tooltip-title-areas]');
 
     shell.style.display = 'grid';
     shell.style.gap = '0.4rem';
@@ -273,6 +360,15 @@ const renderStatusTimelineTooltipItems = (
       titleText.hidden = false;
       titleText.textContent = item.title;
       titleText.removeAttribute('data-status-tooltip-title');
+    }
+
+    if (titleAreas instanceof HTMLElement) {
+      titleAreas.removeAttribute('data-status-tooltip-title-areas');
+      renderStatusTimelineTooltipAreas(
+        titleAreas,
+        tooltip.areaTemplates,
+        item.areas,
+      );
     }
 
     if (phaseAlertIcon instanceof HTMLElement) {
@@ -410,6 +506,11 @@ const openStatusTimelineTooltip = (
     data.phaseIcon !== 'check' || !!data.items?.length;
   tooltip.period.hidden = !data.periodLabel;
   tooltip.period.textContent = data.periodLabel ?? '';
+  renderStatusTimelineTooltipAreas(
+    tooltip.titleAreas,
+    tooltip.areaTemplates,
+    data.items?.length ? undefined : data.areas,
+  );
   renderStatusTimelineTooltipItems(tooltip, data.items);
   tooltip.shell.hidden = false;
   tooltip.shell.setAttribute('aria-hidden', 'false');

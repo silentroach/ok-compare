@@ -171,6 +171,64 @@ describe('buildNewsDataset', () => {
     );
   });
 
+  it('renders requested mention case and profile context in link title', () => {
+    const data = buildNewsDataset(
+      [author({ id: 'ig', name: 'Редакция' })],
+      [
+        article({
+          id: '2026/05/electricity',
+          title: 'Авария на линии',
+          summary: 'Краткая сводка',
+          date: '03.05.2026 09:00',
+          body: 'По словам @kschemelinin:gen, повреждение было редким.',
+        }),
+      ],
+      {
+        people_registry: new Map([
+          [
+            'kschemelinin',
+            createPersonMentionTarget(
+              'kschemelinin',
+              'Кирилл Щемелинин',
+              { gen: 'Кирилла Щемелинина' },
+              'ОК "Комфорт"',
+              'Исполняющий обязанности директора по эксплуатации',
+            ),
+          ],
+        ]),
+      },
+    );
+
+    expect(data.articles[0]?.body).toBe(
+      'По словам [Кирилла Щемелинина](/people/kschemelinin/ "Исполняющий обязанности директора по эксплуатации, ОК \\"Комфорт\\""), повреждение было редким.',
+    );
+  });
+
+  it('rejects requested mention cases missing from person data', () => {
+    expect(() =>
+      buildNewsDataset(
+        [author({ id: 'ig', name: 'Редакция' })],
+        [
+          article({
+            id: '2026/05/electricity',
+            title: 'Авария на линии',
+            summary: 'Краткая сводка',
+            date: '03.05.2026 09:00',
+            body: 'По словам @kschemelinin:gen, повреждение было редким.',
+          }),
+        ],
+        {
+          people_registry: new Map([
+            [
+              'kschemelinin',
+              createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),
+            ],
+          ]),
+        },
+      ),
+    ).toThrow('has no "gen" name case');
+  });
+
   it('normalizes a valid event for article and list data', () => {
     const data = buildNewsDataset(
       [author({ id: 'ig', name: 'Редакция' })],

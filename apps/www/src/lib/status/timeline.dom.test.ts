@@ -2,6 +2,7 @@
 
 import { afterEach, describe, expect, it } from 'vitest';
 
+import { visibleWhitespace } from '../test/visible-whitespace';
 import { hydrateStatusTimeline, hydrateStatusTimelines } from './timeline.dom';
 
 interface TooltipInput {
@@ -12,6 +13,15 @@ interface TooltipInput {
   readonly phaseIcon?: 'alert' | 'check';
   readonly periodLabel: string;
 }
+
+const AREA_TEMPLATES = `
+  <div data-status-tooltip-area-templates hidden>
+    <span data-status-tooltip-area-template="river"><span role="img">river</span></span>
+    <span data-status-tooltip-area-template="forest"><span role="img">forest</span></span>
+    <span data-status-tooltip-area-template="park"><span role="img">park</span></span>
+    <span data-status-tooltip-area-template="village"><span role="img">village</span></span>
+  </div>
+`;
 
 interface ProblemNodeInput {
   readonly id: string;
@@ -114,9 +124,11 @@ const renderTimeline = (
             hidden
           ></span>
           <span data-status-tooltip-title></span>
+          <span data-status-tooltip-title-areas hidden></span>
         </p>
         <p data-status-tooltip-period></p>
         <div data-status-tooltip-list hidden></div>
+        ${AREA_TEMPLATES}
       </div>
     </div>
   `;
@@ -481,12 +493,14 @@ describe('hydrateStatusTimeline', () => {
               class="status-service-timeline__tooltip-phase-icon status-service-timeline__tooltip-phase-icon--check"
               data-status-tooltip-phase-icon-check
               hidden
-            ></span>
-            <span data-status-tooltip-title></span>
-          </p>
-          <p data-status-tooltip-period></p>
-          <div data-status-tooltip-list hidden></div>
-        </div>
+             ></span>
+             <span data-status-tooltip-title></span>
+             <span data-status-tooltip-title-areas hidden></span>
+           </p>
+           <p data-status-tooltip-period></p>
+           <div data-status-tooltip-list hidden></div>
+           ${AREA_TEMPLATES}
+         </div>
       </div>
     `;
 
@@ -502,22 +516,39 @@ describe('hydrateStatusTimeline', () => {
 
     expect(getTooltipField('[data-status-tooltip-title]').hidden).toBe(true);
     expect(getTooltipField('[data-status-tooltip-period]').hidden).toBe(true);
-    expect(getTooltipField('[data-status-tooltip-list]').textContent).toContain(
-      'Отключение 1',
-    );
+    expect(
+      String(
+        visibleWhitespace(
+          getTooltipField('[data-status-tooltip-list]').textContent,
+        ),
+      )
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .join('\n'),
+    ).toMatchInlineSnapshot(`
+      "Отключение·1
+      9·мая, 06:00·—·06:40 (40·мин.)
+      Отключение·2
+      9·мая, 11:10·—·11:45 (35·мин.)
+      Отключение·3
+      Начиная с·9·мая, 22:20"
+    `);
     const firstTitleText = getTooltipField('[data-status-tooltip-list]')
-      .firstElementChild?.firstElementChild?.lastElementChild as
-      | HTMLElement
-      | undefined;
+      .firstElementChild?.firstElementChild as HTMLElement | undefined;
 
-    expect(firstTitleText?.textContent).toBe('Отключение 1');
+    expect(visibleWhitespace(firstTitleText?.textContent)).toContain(
+      'Отключение·1',
+    );
     expect(firstTitleText?.hidden).toBe(false);
     expect(getTooltipField('[data-status-tooltip-list]').textContent).toContain(
       '06:00',
     );
-    expect(getTooltipField('[data-status-tooltip-list]').textContent).toContain(
-      'Отключение 3',
-    );
+    expect(
+      visibleWhitespace(
+        getTooltipField('[data-status-tooltip-list]').textContent,
+      ),
+    ).toContain('Отключение·3');
     expect(getTooltipField('[data-status-tooltip-list]').textContent).toContain(
       '22:20',
     );
@@ -627,12 +658,14 @@ describe('hydrateStatusTimeline', () => {
                  class="status-service-timeline__tooltip-phase-icon status-service-timeline__tooltip-phase-icon--check"
                  data-status-tooltip-phase-icon-check
                  hidden
-               ></span>
-               <span data-status-tooltip-title></span>
-             </p>
-             <p data-status-tooltip-period></p>
-             <div data-status-tooltip-list hidden></div>
-           </div>
+                ></span>
+                <span data-status-tooltip-title></span>
+                <span data-status-tooltip-title-areas hidden></span>
+              </p>
+              <p data-status-tooltip-period></p>
+              <div data-status-tooltip-list hidden></div>
+              ${AREA_TEMPLATES}
+            </div>
          </div>
          <div data-status-timeline data-range-days="10"></div>
        </section>

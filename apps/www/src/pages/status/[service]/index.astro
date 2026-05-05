@@ -55,6 +55,10 @@ const stateClass = {
   red: 'text-[color:var(--color-danger)]',
 } as const;
 const latestIncidents = summary.incidents.slice(0, 10);
+const timelineIncidents = summary.incidents.map(
+  ({ applies_to_all_areas, areas, ...incident }) =>
+    applies_to_all_areas ? incident : { ...incident, areas },
+);
 const schemaItems = latestIncidents
   .filter((item) => item.has_page)
   .map((item) => ({ name: item.title, url: item.url }));
@@ -110,7 +114,7 @@ const schema = collectionPageSchema({
         </p>
         <StatusServiceTimeline
           service={summary.service}
-          incidents={summary.incidents}
+          incidents={timelineIncidents}
           timelineDays={365}
         />
       </div>

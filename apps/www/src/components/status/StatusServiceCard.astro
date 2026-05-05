@@ -3,6 +3,7 @@ import DamIcon from '@shelkovo/ui/icons/services/Dam.astro';
 import LightningIcon from '@shelkovo/ui/icons/services/Lightning.astro';
 import WaterDropIcon from '@shelkovo/ui/icons/services/WaterDrop.astro';
 
+import ShelkovoAreaIcon from '@/components/ShelkovoAreaIcon.astro';
 import StatusServiceTimeline from './StatusServiceTimeline.astro';
 import type { StatusServiceSummary } from '../../lib/status/schema';
 import {
@@ -33,6 +34,12 @@ const latestDuration =
   latestRecord && !latestRecord.is_active && latestRecord.duration
     ? formatStatusDuration(latestRecord.duration, { nonBreaking: true })
     : undefined;
+const latestAreas =
+  latestRecord && !latestRecord.applies_to_all_areas ? latestRecord.areas : [];
+const timelineIncidents = summary.incidents.map(
+  ({ applies_to_all_areas, areas, ...incident }) =>
+    applies_to_all_areas ? incident : { ...incident, areas },
+);
 const stateClass = {
   green: 'text-[color:var(--color-success)]',
   amber: 'text-[color:var(--color-warning-text)]',
@@ -106,7 +113,7 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
     <div class="flex flex-col gap-2 lg:gap-0">
       <StatusServiceTimeline
         service={summary.service}
-        incidents={summary.incidents}
+        incidents={timelineIncidents}
         timelineDays={timelineDays}
       />
     </div>
@@ -144,10 +151,13 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
                 {latestRecord.title}
               </p>
             )}
-            {latestMoment && (
-              <p class="text-[0.8125rem] leading-5 text-muted-foreground">
-                {latestMoment}
-              </p>
+            {(latestMoment || latestAreas.length > 0) && (
+              <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.8125rem] leading-5 text-muted-foreground">
+                {latestMoment && <span>{latestMoment}</span>}
+                {latestAreas.map((area) => (
+                  <ShelkovoAreaIcon area={area} />
+                ))}
+              </div>
             )}
             {latestDuration && (
               <p class="text-[0.8125rem] leading-5 text-muted-foreground">

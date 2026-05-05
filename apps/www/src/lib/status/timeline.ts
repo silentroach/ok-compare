@@ -1,4 +1,4 @@
-import type { StatusDuration, StatusKind } from './schema';
+import type { StatusArea, StatusDuration, StatusKind } from './schema';
 
 export const STATUS_TIMELINE_DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -13,6 +13,7 @@ export interface StatusTimelineIncidentInput {
   readonly ended_iso?: string;
   readonly ended_has_time: boolean;
   readonly is_active: boolean;
+  readonly areas?: readonly StatusArea[];
   readonly duration?: StatusDuration;
 }
 

@@ -26,6 +26,13 @@ const entry = (input: {
   readonly name: string;
   readonly company?: string;
   readonly position?: string;
+  readonly name_cases?: {
+    readonly gen?: string;
+    readonly dat?: string;
+    readonly acc?: string;
+    readonly ins?: string;
+    readonly prep?: string;
+  };
   readonly body?: string;
   readonly contacts?: readonly {
     readonly type: 'phone' | 'telegram';
@@ -36,6 +43,7 @@ const entry = (input: {
   body: input.body ?? '',
   data: {
     name: input.name,
+    ...(input.name_cases ? { name_cases: input.name_cases } : {}),
     ...(input.company ? { company: input.company } : {}),
     ...(input.position ? { position: input.position } : {}),
     contacts: [...(input.contacts ?? [])],
@@ -114,6 +122,9 @@ describe('buildPeopleDataset', () => {
       entry({
         id: 'kschemelinin',
         name: 'Кирилл Щемелинин',
+        name_cases: {
+          gen: 'Кирилла Щемелинина',
+        },
         company: 'ОК "Комфорт"',
         position: 'Исполняющий обязанности директора по эксплуатации',
         body: 'Профиль Кирилла.',
@@ -135,8 +146,8 @@ describe('buildPeopleDataset', () => {
       }),
     ]);
 
-    expect(data.by_slug.get('apetrov')?.body).toBe(
-      'Работал вместе с [Кирилл Щемелинин](/people/kschemelinin/) над разбором аварии.',
+    expect(data.by_slug.get('apetrov')?.body).toMatchInlineSnapshot(
+      `"Работал вместе с [Кирилл Щемелинин](/people/kschemelinin/ \"Исполняющий обязанности директора по эксплуатации, ОК \\\"Комфорт\\\"\") над разбором аварии."`,
     );
     expect(
       data.by_slug.get('apetrov')?.mentions.map((item) => item.slug),
@@ -155,6 +166,9 @@ describe('buildPeopleDataset', () => {
         href: 'tel:+79165551234',
       },
     ]);
+    expect(data.by_slug.get('kschemelinin')?.name_cases).toEqual({
+      gen: 'Кирилла Щемелинина',
+    });
     expect(data.by_slug.get('kschemelinin')?.company).toBe('ОК "Комфорт"');
     expect(data.by_slug.get('kschemelinin')?.position).toBe(
       'Исполняющий обязанности директора по эксплуатации',

@@ -148,6 +148,18 @@ const media = (image: SchemaContext['image']) => ({
   attachments: z.array(attachment()).min(1).optional(),
 });
 
+const personNameCases = () =>
+  z
+    .object({
+      gen: text('name_cases.gen').optional(),
+      dat: text('name_cases.dat').optional(),
+      acc: text('name_cases.acc').optional(),
+      ins: text('name_cases.ins').optional(),
+      prep: text('name_cases.prep').optional(),
+    })
+    .strict()
+    .partial();
+
 const event = () =>
   z
     .object({
@@ -492,6 +504,7 @@ const peopleProfiles = defineCollection({
   }),
   schema: z.object({
     name: text('name'),
+    name_cases: personNameCases().optional(),
     company: text('company').optional(),
     position: text('position').optional(),
     contacts: z.array(

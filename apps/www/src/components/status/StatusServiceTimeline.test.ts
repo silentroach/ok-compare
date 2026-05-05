@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // @ts-expect-error Astro component modules are resolved by Astro/Vitest at test time.
 import StatusServiceTimeline from './StatusServiceTimeline.astro';
+import type { StatusArea } from '@/lib/status/schema';
 import type { StatusTimelineIncidentInput } from '@/lib/status/timeline';
 
 const NBSP = '\u00A0';
@@ -19,6 +20,7 @@ interface IncidentInput {
   readonly ended_iso?: string;
   readonly ended_has_time?: boolean;
   readonly is_active?: boolean;
+  readonly areas?: readonly StatusArea[];
 }
 
 const incident = (input: IncidentInput): StatusTimelineIncidentInput => ({
@@ -32,6 +34,7 @@ const incident = (input: IncidentInput): StatusTimelineIncidentInput => ({
   ...(input.ended_iso ? { ended_iso: input.ended_iso } : {}),
   ended_has_time: input.ended_has_time ?? true,
   is_active: input.is_active ?? !input.ended_iso,
+  ...(input.areas ? { areas: input.areas } : {}),
 });
 
 const renderTimeline = async (
@@ -180,6 +183,50 @@ describe('StatusServiceTimeline', () => {
     );
     expect(html).toContain(
       `aria-label="Вода. Инцидент. Запись incident-active. Статус: идет. Начиная с${NBSP}9${NBSP}мая, 03:00"`,
+    );
+  });
+
+  it('serializes area icons only for explicitly scoped incidents', async () => {
+    const html = await renderTimeline([
+      incident({
+        id: 'park-outage',
+        started_iso: '2026-05-09T00:00:00Z',
+        is_active: true,
+        areas: ['park'],
+      }),
+      incident({
+        id: 'all-village-outage',
+        started_iso: '2026-05-08T00:00:00Z',
+        ended_iso: '2026-05-08T01:00:00Z',
+        is_active: false,
+      }),
+    ]);
+
+    expect(html).toMatch(
+      /data-incident-id="park-outage"[^>]*data-tooltip-areas="\[&#34;park&#34;\]"/,
+    );
+    expect(html).toMatch(
+      new RegExp(
+        `data-incident-id="park-outage"[^>]*data-tooltip-area-label="Шелково${NBSP}Парк"`,
+      ),
+    );
+    expect(html).not.toMatch(
+      /data-incident-id="all-village-outage"[^>]*data-tooltip-areas=/,
+    );
+  });
+
+  it('applies typography to tooltip titles', async () => {
+    const html = await renderTimeline([
+      incident({
+        id: 'park-outage',
+        title: 'Нет воды в Шелково Парк',
+        started_iso: '2026-05-09T00:00:00Z',
+        is_active: true,
+      }),
+    ]);
+
+    expect(html).toContain(
+      `data-tooltip-title="Нет воды в${NBSP}Шелково${NBSP}Парк"`,
     );
   });
 

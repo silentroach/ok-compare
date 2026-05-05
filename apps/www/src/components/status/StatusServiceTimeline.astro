@@ -3,7 +3,12 @@ import { dateTimeFromISO } from '@shelkovo/format';
 import AlertCircleIcon from '@shelkovo/ui/icons/system/AlertCircle.astro';
 import CheckCircleIcon from '@shelkovo/ui/icons/system/CheckCircle.astro';
 
-import type { StatusService } from '@/lib/status/schema';
+import ShelkovoAreaIcon from '@/components/ShelkovoAreaIcon.astro';
+import {
+  STATUS_AREAS,
+  type StatusArea,
+  type StatusService,
+} from '@/lib/status/schema';
 import {
   buildStatusTimelineProblemSegments,
   getStatusTimelineSegmentGeometry,
@@ -46,6 +51,7 @@ interface TimelineTooltipSerializedItem {
   readonly started_has_time: boolean;
   readonly ended_iso?: string;
   readonly ended_has_time: boolean;
+  readonly areas?: readonly StatusArea[];
   readonly duration?: StatusTimelineIncidentInput['duration'];
 }
 
@@ -67,6 +73,13 @@ const toTimelineSortMs = (value?: string): number => {
 
 const getTimelineDayKey = (value: string): string =>
   dateTimeFromISO(value).toISODate() ?? value.slice(0, 10);
+
+const visibleAreas = (
+  item: Pick<StatusTimelineIncidentInput, 'areas'>,
+): readonly StatusArea[] => item.areas ?? [];
+
+const serializeAreas = (areas: readonly StatusArea[]): string | undefined =>
+  areas.length > 0 ? JSON.stringify(areas) : undefined;
 
 const isCompactTimelineCandidate = (
   item: StatusTimelineIncidentInput,
@@ -105,6 +118,7 @@ const serializeTimelineTooltipItems = (
   JSON.stringify(
     items.map(
       ({
+        areas,
         duration,
         ended_has_time,
         ended_iso,
@@ -122,6 +136,7 @@ const serializeTimelineTooltipItems = (
           started_has_time,
           ...(ended_iso ? { ended_iso } : {}),
           ended_has_time,
+          ...(areas?.length ? { areas } : {}),
           ...(duration ? { duration } : {}),
         }) satisfies TimelineTooltipSerializedItem,
     ),
@@ -177,7 +192,6 @@ const timelineGroups = incidents
   }, [])
   .map((group) => {
     const [firstItem] = group.items;
-    const lastItem = group.items.at(-1) ?? firstItem;
     const hasVisibleSpan = group.visibleSegments.length > 0;
     const tooltipItems = group.items.map((item) =>
       buildStatusTimelineTooltipListItemData(item, { nonBreaking: true }),
@@ -227,6 +241,7 @@ const timelineGroups = incidents
       : latestEndedIso;
 
     if (group.items.length === 1) {
+      const areas = visibleAreas(firstItem);
       const tooltip = buildStatusTimelineTooltipData({
         service,
         incident: firstItem,
@@ -255,7 +270,11 @@ const timelineGroups = incidents
         statusKind: firstItem.kind,
         tone: firstItem.kind === 'maintenance' ? 'amber' : 'red',
         tooltip,
+        tooltipAreas: areas,
+        tooltipAreaLabel: tooltip.areaLabel,
         tooltipLabel: formatStatusTimelineTooltipLabel(tooltip),
+        tooltipItems: undefined,
+        tooltipServiceLabel: undefined,
         tooltipTitle,
         phaseIcon,
         width: geometry?.widthPercent,
@@ -280,6 +299,8 @@ const timelineGroups = incidents
         ? 'red'
         : 'amber',
       tooltipItems: serializeTimelineTooltipItems(group.items),
+      tooltipAreaLabel: undefined,
+      tooltipAreas: undefined,
       tooltipLabel: formatStatusTimelineTooltipGroupLabel({
         serviceLabel,
         title: tooltipTitle,
@@ -315,6 +336,8 @@ const timelineGroups = incidents
             statusKind,
             tone,
             tooltip,
+            tooltipAreaLabel,
+            tooltipAreas,
             tooltipLabel,
             tooltipItems,
             tooltipServiceLabel,
@@ -345,6 +368,10 @@ const timelineGroups = incidents
                 data-tooltip-phase-label={tooltip?.phaseLabel}
                 data-tooltip-phase-icon={tooltip ? phaseIcon : undefined}
                 data-tooltip-period-label={tooltip?.periodLabel}
+                data-tooltip-area-label={tooltipAreaLabel}
+                data-tooltip-areas={
+                  tooltipAreas ? serializeAreas(tooltipAreas) : undefined
+                }
                 data-tooltip-group-title={tooltip ? undefined : tooltipTitle}
                 data-tooltip-items={tooltipItems}
                 class:list={[
@@ -397,6 +424,12 @@ const timelineGroups = incidents
         <CheckCircleIcon class="size-4" />
       </span>
       <span data-status-tooltip-title></span>
+      <span
+        class="status-service-timeline__tooltip-areas"
+        data-status-tooltip-title-areas
+        hidden
+      >
+      </span>
     </p>
     <p class="status-service-timeline__tooltip-row" data-status-tooltip-period>
     </p>
@@ -405,6 +438,15 @@ const timelineGroups = incidents
       data-status-tooltip-list
       hidden
     >
+    </div>
+    <div data-status-tooltip-area-templates hidden>
+      {
+        STATUS_AREAS.map((area) => (
+          <span data-status-tooltip-area-template={area}>
+            <ShelkovoAreaIcon area={area} />
+          </span>
+        ))
+      }
     </div>
   </div>
 </div>
@@ -546,6 +588,32 @@ const timelineGroups = incidents
     font-size: 0.78rem;
     line-height: 1.45;
     color: var(--color-text-muted);
+  }
+
+  .status-service-timeline__tooltip-areas {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.24rem;
+    margin-left: 0.35rem;
+    align-items: center;
+    color: var(--color-text-muted);
+    vertical-align: -0.15em;
+  }
+
+  .status-service-timeline__tooltip-areas[hidden] {
+    display: none;
+  }
+
+  .status-service-timeline__tooltip-areas :global(span[role='img']) {
+    inline-size: 1.15rem;
+    block-size: 1.15rem;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--color-surface-muted) 78%, white 22%);
+  }
+
+  .status-service-timeline__tooltip-areas :global(svg) {
+    max-inline-size: 0.78rem;
+    max-block-size: 0.78rem;
   }
 
   .status-service-timeline__tooltip-list {

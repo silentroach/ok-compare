@@ -43,8 +43,11 @@ pnpm typecheck
 ## People Mentions
 
 - В `src/data/people/*.md` живут профили людей для раздела `/people/`; canonical slug человека равен имени файла без `.md`, например `kschemelinin`.
-- Если человек из `people` упоминается в `news`, `status` или другом people body, в source markdown нужно писать `@slug`, а не plain text имя и не ручную ссылку на `/people/.../`.
-- При рендере `@slug` автоматически раскрывается в каноническое имя и ссылку на профиль; неизвестный `@slug` должен падать на билде и исправляться до merge.
+- Если человек из `people` упоминается в `news`, `status` или другом people body, в source markdown нужно писать `@slug` или `@slug:case`, а не plain text имя и не ручную ссылку на `/people/.../`.
+- Поддерживаемые падежи mention: `nom`, `gen`, `dat`, `acc`, `ins`, `prep`; без модификатора используется `nom`.
+- Если нужен не `nom`, сначала добавь форму в `name_cases` профиля человека, например `name_cases.gen`, затем используй `@kschemelinin:gen`.
+- При рендере mention автоматически раскрывается в имя нужного падежа и ссылку на профиль; неизвестный `@slug` или отсутствующий `name_cases.case` должен падать на билде и исправляться до merge.
+- Если у профиля есть `position` и/или `company`, они должны попадать в title markdown-ссылки mention как контекст человека.
 - Для атрибуции к внешнему источнику ссылку ставь на вводную фразу, например `[По словам](https://t.me/...) @kschemelinin, ...`.
 
 ## Agent-Facing Surfaces

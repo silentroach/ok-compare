@@ -1,5 +1,6 @@
 import { absoluteUrl } from '../site';
 import type { PersonMentionTarget } from './mentions';
+import type { PersonNameCaseForms } from './name-cases';
 import type {
   PersonBacklinks,
   PersonContact,
@@ -29,6 +30,8 @@ export interface PeopleDiscoveryContact {
 export interface PeopleDiscoveryMention {
   readonly slug: string;
   readonly name: string;
+  readonly company?: string;
+  readonly position?: string;
   readonly html_url: string;
   readonly markdown_url: string;
 }
@@ -54,6 +57,7 @@ export interface PeopleDiscoveryProfile {
   readonly id: string;
   readonly slug: string;
   readonly name: string;
+  readonly name_cases?: PersonNameCaseForms;
   readonly company?: string;
   readonly position?: string;
   readonly html_url: string;
@@ -166,6 +170,8 @@ const contact = (item: PersonContact): PeopleDiscoveryContact => ({
 const mention = (item: PersonMentionTarget): PeopleDiscoveryMention => ({
   slug: item.slug,
   name: item.name,
+  ...(item.company ? { company: item.company } : {}),
+  ...(item.position ? { position: item.position } : {}),
   html_url: fullUrl(item.html_url),
   markdown_url: fullUrl(item.markdown_url),
 });
@@ -191,6 +197,7 @@ const profile = (item: PersonProfile): PeopleDiscoveryProfile => ({
   id: item.id,
   slug: item.slug,
   name: item.name,
+  ...(item.name_cases ? { name_cases: item.name_cases } : {}),
   ...(item.company ? { company: item.company } : {}),
   ...(item.position ? { position: item.position } : {}),
   html_url: item.canonical,
@@ -252,6 +259,16 @@ export function schema(root: string): Record<string, unknown> {
       kind: {
         enum: ['article', 'addendum', 'incident', 'person'],
       },
+      nameCases: obj(
+        {
+          gen: text(1),
+          dat: text(1),
+          acc: text(1),
+          ins: text(1),
+          prep: text(1),
+        },
+        [],
+      ),
       contact: obj(
         {
           type: {
@@ -267,6 +284,8 @@ export function schema(root: string): Record<string, unknown> {
         {
           slug: text(1),
           name: text(1),
+          company: text(1),
+          position: text(1),
           html_url: uri(),
           markdown_url: uri(),
         },
@@ -308,6 +327,9 @@ export function schema(root: string): Record<string, unknown> {
           id: text(1),
           slug: text(1),
           name: text(1),
+          name_cases: {
+            $ref: '#/$defs/nameCases',
+          },
           company: text(1),
           position: text(1),
           html_url: uri(),

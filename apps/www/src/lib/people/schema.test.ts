@@ -19,6 +19,9 @@ describe('peopleProfiles collection schema', () => {
     expect(
       schema.safeParse({
         name: 'Кирилл Щемелинин',
+        name_cases: {
+          gen: 'Кирилла Щемелинина',
+        },
         company: 'ОК "Комфорт"',
         position: 'Исполняющий обязанности директора по эксплуатации',
         contacts: [
@@ -60,6 +63,25 @@ describe('peopleProfiles collection schema', () => {
       expect.arrayContaining([
         expect.objectContaining({
           path: ['name'],
+        }),
+      ]),
+    );
+  });
+
+  it('rejects blank name case forms', () => {
+    const result = schema.safeParse({
+      name: 'Кирилл Щемелинин',
+      name_cases: {
+        gen: '   ',
+      },
+      contacts: [],
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          path: ['name_cases', 'gen'],
         }),
       ]),
     );

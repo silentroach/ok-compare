@@ -2,6 +2,7 @@ import { dateTimeFromISO, pluralizeRu } from '@shelkovo/format';
 
 import { extractFirstMarkdownText } from '../markdown/plain-text';
 import { formatNewsArea } from '../news/view';
+import { formatDynamicHtml } from '../typography';
 import type {
   StatusArea,
   StatusDaysWithoutIncidents,
@@ -64,11 +65,14 @@ export interface StatusTimelineTooltipData {
   readonly title: string;
   readonly phaseLabel: string;
   readonly periodLabel: string;
+  readonly areaLabel?: string;
 }
 
 export interface StatusTimelineTooltipListItemData {
   readonly title: string;
   readonly periodLabel: string;
+  readonly areas?: readonly StatusArea[];
+  readonly areaLabel?: string;
   readonly phaseIcon?: 'alert' | 'check';
 }
 
@@ -82,7 +86,9 @@ type StatusTimelineTooltipIncident = Pick<
   | 'started_has_time'
   | 'ended_has_time'
   | 'duration'
->;
+> & {
+  readonly areas?: readonly StatusArea[];
+};
 
 interface StatusTypographyOptions {
   readonly nonBreaking?: boolean;
@@ -97,6 +103,9 @@ const NBSP = '\u00A0';
 const CURRENT_STATUS_YEAR = dateTimeFromISO(new Date().toISOString()).year;
 
 const formatStatusNbsp = (value: string): string => value.replaceAll(' ', NBSP);
+
+const formatStatusTooltipText = (value: string): string =>
+  formatDynamicHtml(value);
 
 const joinStatusValueAndUnit = (
   value: number,
@@ -264,18 +273,34 @@ export const formatStatusIncidentPeriodText = (
   return text;
 };
 
+const formatStatusAreaList = (
+  areas: readonly StatusArea[] | undefined,
+): string | undefined =>
+  areas && areas.length > 0
+    ? areas
+        .map((area) => formatStatusTooltipText(formatStatusArea(area)))
+        .join(', ')
+    : undefined;
+
 export const buildStatusTimelineTooltipData = (input: {
   readonly service: StatusService;
   readonly incident: StatusTimelineTooltipIncident;
   readonly nonBreaking?: boolean;
 }): StatusTimelineTooltipData => ({
-  serviceLabel: formatStatusService(input.service),
-  kindLabel: formatStatusKind(input.incident.kind),
-  title: input.incident.title,
-  phaseLabel: getStatusIncidentPhase(input.incident).label,
-  periodLabel: formatStatusIncidentPeriodText(input.incident, {
-    nonBreaking: input.nonBreaking,
-  }),
+  serviceLabel: formatStatusTooltipText(formatStatusService(input.service)),
+  kindLabel: formatStatusTooltipText(formatStatusKind(input.incident.kind)),
+  title: formatStatusTooltipText(input.incident.title),
+  phaseLabel: formatStatusTooltipText(
+    getStatusIncidentPhase(input.incident).label,
+  ),
+  periodLabel: formatStatusTooltipText(
+    formatStatusIncidentPeriodText(input.incident, {
+      nonBreaking: input.nonBreaking,
+    }),
+  ),
+  ...(formatStatusAreaList(input.incident.areas)
+    ? { areaLabel: formatStatusAreaList(input.incident.areas) }
+    : {}),
 });
 
 export const formatStatusTimelineTooltipLabel = (
@@ -285,16 +310,25 @@ export const formatStatusTimelineTooltipLabel = (
     tooltip.serviceLabel,
     tooltip.kindLabel,
     tooltip.title,
-    `Статус: ${tooltip.phaseLabel}`,
+    formatStatusTooltipText(`Статус: ${tooltip.phaseLabel}`),
     tooltip.periodLabel,
+    ...(tooltip.areaLabel
+      ? [formatStatusTooltipText(`Части поселка: ${tooltip.areaLabel}`)]
+      : []),
   ].join('. ');
 
 export const buildStatusTimelineTooltipListItemData = (
   incident: StatusTimelineTooltipIncident,
   opts?: StatusTypographyOptions,
 ): StatusTimelineTooltipListItemData => ({
-  title: incident.title,
-  periodLabel: formatStatusIncidentPeriodText(incident, opts),
+  title: formatStatusTooltipText(incident.title),
+  periodLabel: formatStatusTooltipText(
+    formatStatusIncidentPeriodText(incident, opts),
+  ),
+  ...(incident.areas?.length ? { areas: incident.areas } : {}),
+  ...(formatStatusAreaList(incident.areas)
+    ? { areaLabel: formatStatusAreaList(incident.areas) }
+    : {}),
   ...(incident.kind !== 'incident'
     ? {}
     : incident.is_active
@@ -311,7 +345,9 @@ export const formatStatusTimelineGroupTitle = (input: {
 }): string => {
   const spacer = input.nonBreaking ? NBSP : ' ';
 
-  return `${input.count}${spacer}${pluralizeRu(input.count, ['событие', 'события', 'событий'])} за${spacer}${formatStatusCalendarDate(input.startedIso, { nonBreaking: input.nonBreaking })}`;
+  return formatStatusTooltipText(
+    `${input.count}${spacer}${pluralizeRu(input.count, ['событие', 'события', 'событий'])} за${spacer}${formatStatusCalendarDate(input.startedIso, { nonBreaking: input.nonBreaking })}`,
+  );
 };
 
 export const formatStatusTimelineTooltipGroupLabel = (input: {
@@ -322,7 +358,15 @@ export const formatStatusTimelineTooltipGroupLabel = (input: {
   [
     input.serviceLabel,
     input.title,
-    ...input.items.map((item) => `${item.title}. ${item.periodLabel}`),
+    ...input.items.map((item) =>
+      [
+        item.title,
+        item.periodLabel,
+        ...(item.areaLabel
+          ? [formatStatusTooltipText(`Части поселка: ${item.areaLabel}`)]
+          : []),
+      ].join('. '),
+    ),
   ].join('. ');
 
 export const formatStatusDaysWithoutIncidents = (

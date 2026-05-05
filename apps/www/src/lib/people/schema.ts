@@ -1,4 +1,5 @@
 import type { PersonMentionTarget } from './mentions';
+import type { PersonNameCaseForms } from './name-cases';
 
 export const PERSON_CONTACT_TYPES = ['phone', 'telegram'] as const;
 export type PersonContactType = (typeof PERSON_CONTACT_TYPES)[number];
@@ -49,6 +50,7 @@ export interface PersonProfile {
   readonly id: string;
   readonly slug: string;
   readonly name: string;
+  readonly name_cases?: PersonNameCaseForms;
   readonly company?: string;
   readonly position?: string;
   readonly url: string;
