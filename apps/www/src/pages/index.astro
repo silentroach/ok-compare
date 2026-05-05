@@ -9,9 +9,9 @@ import { articleUrl } from '@/lib/news/routes';
 import { formatNewsDate } from '@/lib/news/view';
 import { loadStatusData } from '@/lib/status/load';
 
-const title = 'Шелково Онлайн — сайт поселка Шелково от застройщика Земля МО';
+const title = 'Шелково Онлайн';
 const description =
-  'Сайт поселка Шелково от застройщика Земля МО. Здесь собираем информацию о Шелково, Шелково Ривер, Шелково Форест, Шелково Парк и Шелково Вилладж, а также об обслуживающей компании ОК Комфорт.';
+  'Главный сайт поселка Шелково: новости, статус сервисов, сравнение тарифов и справочная информация по связанным проектам.';
 
 const [news, status] = await Promise.all([
   loadNewsArticles(),

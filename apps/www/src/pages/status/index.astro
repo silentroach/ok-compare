@@ -19,9 +19,9 @@ const plannedWorks = data.incidents.filter(
     item.kind === 'maintenance' &&
     (item.is_active || item.started_at.valueOf() > now),
 );
-const title = 'Статус поселка Шелково';
+const title = 'Статус сервисов — Шелково Онлайн';
 const description =
-  'Статус поселка Шелково: инциденты, плановые работы и история сервисов.';
+  'Текущее состояние сервисов поселка Шелково: инциденты, плановые работы и история изменений.';
 const breadcrumbs = withHomeBreadcrumbs([{ label: 'Статус' }]);
 const schemaItems = data.incidents
   .filter((item) => item.has_page)

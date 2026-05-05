@@ -86,7 +86,7 @@ const waterTitle =
 const hasDelta =
   !settlement.is_baseline && !!comparison && comparison.tariffDelta !== 0;
 const pageUrl = canon(`/settlements/${settlement.slug}/`);
-const pageTitle = `${settlement.name} — тариф и инфраструктура`;
+const pageTitle = `${settlement.name}: тариф и инфраструктура — Сравни с Шелково`;
 const delta =
   hasDelta && comparison
     ? `${comparison.isCheaper ? 'Дешевле' : 'Дороже'} Шелково на ${formatCurrency(Math.abs(comparison.tariffDelta))}.`
@@ -101,7 +101,7 @@ const pageDescription = [
   companyDescription,
   `Тариф ${formatTariffAuto(settlement.tariff)}.`,
   delta,
-  'Инфраструктура, общие пространства, сервисы и источники данных.',
+  'Тариф, инфраструктура, общие пространства, сервисная модель и источники данных.',
 ]
   .filter(Boolean)
   .join(' ');

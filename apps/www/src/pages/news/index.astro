@@ -13,9 +13,9 @@ import { collectionPageSchema } from '@/lib/news/seo';
 const data = await loadNewsData();
 const articles = [...data.home.pinned, ...data.home.latest];
 
-const title = 'Новости Шелково';
+const title = 'Новости — Шелково Онлайн';
 const description =
-  'Короткие новости по Шелково, соседним очередям и сервисным темам.';
+  'Короткие новости поселка Шелково, соседних очередей и сервисов: встречи, объявления, изменения и важные события.';
 const breadcrumbs = withHomeBreadcrumbs([{ label: 'Новости' }]);
 const schema = collectionPageSchema({
   name: title,

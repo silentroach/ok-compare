@@ -25,6 +25,7 @@ pnpm typecheck
 ## Дизайн
 
 - За визуальными решениями, палитрой и компонентными правилами идти в `../../docs/design/design-code-shelkovo.md`.
+- За правилами `title` и `description` страниц идти в `../../docs/page-meta.md`.
 - Этот `AGENTS.md` держать про workflow, архитектуру и ограничения app-а.
 
 ## Правила
