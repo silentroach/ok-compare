@@ -1,6 +1,8 @@
 import { fileURLToPath } from 'node:url';
+import { constants } from 'node:zlib';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import compressor from 'astro-compressor';
 import tailwindcss from '@tailwindcss/vite';
 import type { Plugin } from 'vite';
 import { rehypeTypograf } from './src/lib/typography';
@@ -104,6 +106,29 @@ export default defineConfig({
       filter(page) {
         return !/\/404(?:\/|\.html)?$/.test(page);
       },
+    }),
+    compressor({
+      gzip: {
+        level: 9,
+      },
+      brotli: {
+        params: {
+          [constants.BROTLI_PARAM_QUALITY]: 11,
+        },
+      },
+      zstd: false,
+      fileExtensions: [
+        '.css',
+        '.js',
+        '.html',
+        '.md',
+        '.xml',
+        '.cjs',
+        '.mjs',
+        '.svg',
+        '.txt',
+        '.json',
+      ],
     }),
   ],
   build: {
