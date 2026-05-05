@@ -1,17 +1,40 @@
 ---
 import { getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import type { SchemaDoc } from '@shelkovo/seo';
 import dayHero from '@/assets/home/home-hero-day.png';
 import nightHero from '@/assets/home/home-hero-night.png';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { loadNewsArticles } from '@/lib/news/load';
 import { articleUrl } from '@/lib/news/routes';
 import { formatNewsDate } from '@/lib/news/view';
+import { canon } from '@/lib/site';
 import { loadStatusData } from '@/lib/status/load';
 
 const title = 'Шелково Онлайн';
 const description =
   'Главный сайт поселка Шелково: новости, статус сервисов, сравнение тарифов и справочная информация по связанным проектам.';
+const siteUrl = canon('/');
+const organizationId = `${siteUrl}#organization`;
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: title,
+    url: siteUrl,
+    inLanguage: 'ru-RU',
+    publisher: {
+      '@id': organizationId,
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': organizationId,
+    name: title,
+    url: siteUrl,
+  },
+] satisfies readonly SchemaDoc[];
 
 const [news, status] = await Promise.all([
   loadNewsArticles(),
@@ -60,7 +83,7 @@ const heroMode = isDaytime ? 'day' : 'night';
 const heroImage = isDaytime ? dayHeroImage : nightHeroImage;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} schema={schema}>
   <main class="pb-2 md:pb-3 lg:pb-4">
     <section
       class="home-hero relative overflow-hidden border-b border-border bg-muted"
