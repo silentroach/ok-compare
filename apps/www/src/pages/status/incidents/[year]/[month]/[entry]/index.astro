@@ -12,6 +12,7 @@ import {
 import { renderMarkdown } from '@/lib/markdown/render';
 import { loadStatusIncident, loadStatusIncidents } from '@/lib/status/load';
 import { statusUrl } from '@/lib/status/routes';
+import { formatStatusDate } from '@/lib/status/view';
 import { techArticleSchema } from '@/lib/news/seo';
 import { NEWS_PROSE } from '@/lib/news/view';
 
@@ -45,7 +46,7 @@ if (!incident || !incident.has_page) {
 }
 
 const bodyHtml = incident.body ? renderMarkdown(incident.body) : undefined;
-const title = `${incident.kind === 'maintenance' ? 'Плановые работы' : 'Инцидент'}: ${incident.title} — Статус — Шелково Онлайн`;
+const title = `${incident.kind === 'maintenance' ? 'Плановые работы' : 'Инцидент'}: ${incident.title} за ${formatStatusDate(incident.started_iso)} — Статус — Шелково Онлайн`;
 const description =
   incident.excerpt ??
   'Подробная запись о статусе сервиса в поселке Шелково: что произошло, когда началось и чем закончилось.';
