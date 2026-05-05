@@ -33,15 +33,9 @@ const { article, featured = false } = Astro.props;
 
   <div class="space-y-4 px-5 py-5 md:px-6 md:py-6">
     {
-      (article.event ||
-        (featured && article.has_addenda && article.updated_iso)) && (
+      featured && article.has_addenda && article.updated_iso && (
         <div class="flex flex-wrap gap-2">
-          {article.event && (
-            <span class="ui-chip news-event-list-chip">Событие</span>
-          )}
-          {featured && article.has_addenda && article.updated_iso && (
-            <span class="ui-chip">Есть уточнения</span>
-          )}
+          <span class="ui-chip">Есть уточнения</span>
         </div>
       )
     }
@@ -83,9 +77,3 @@ const { article, featured = false } = Astro.props;
     <NewsTagList items={article.tags} compact />
   </div>
 </article>
-
-<style>
-  .news-event-list-chip {
-    color: var(--color-primary);
-  }
-</style>

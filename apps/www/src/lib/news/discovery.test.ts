@@ -155,12 +155,7 @@ describe('news discovery payload', () => {
     const openapiDefs =
       api.components?.schemas?.NewsArticlesPayload?.$defs ?? {};
 
-    expect(defs.event?.required).toEqual([
-      'title',
-      'starts_at',
-      'ends_at',
-      'ics_url',
-    ]);
+    expect(defs.event?.required).toEqual(['title', 'starts_at', 'ics_url']);
     expect(defs.article?.required).not.toContain('event');
     expect(defs.event?.properties?.starts_at).toMatchObject({
       format: 'date-time',

@@ -273,11 +273,13 @@ function normalizeEvent(
 
   const context = `news article "${entryId}" event`;
   const starts = parseEventTimestamp(input.starts_at, `${context} starts_at`);
-  const ends = parseEventTimestamp(input.ends_at, `${context} ends_at`);
+  const ends = input.ends_at
+    ? parseEventTimestamp(input.ends_at, `${context} ends_at`)
+    : undefined;
   const location = optionalEventText(input.location, `${context} location`);
   const coordinates = normalizeEventCoordinates(input.coordinates, context);
 
-  if (ends.at.valueOf() <= starts.at.valueOf()) {
+  if (ends && ends.at.valueOf() <= starts.at.valueOf()) {
     throw new Error(`${context} ends_at must be later than starts_at`);
   }
 
@@ -286,10 +288,14 @@ function normalizeEvent(
     starts_at: starts.at,
     starts_iso: starts.iso,
     starts_time: starts.time,
-    ends_at: ends.at,
-    ends_iso: ends.iso,
-    ends_time: ends.time,
     ics_url: articleEventIcsUrl(route),
+    ...(ends
+      ? {
+          ends_at: ends.at,
+          ends_iso: ends.iso,
+          ends_time: ends.time,
+        }
+      : {}),
     ...(location ? { location } : {}),
     ...(coordinates ? { coordinates } : {}),
   };

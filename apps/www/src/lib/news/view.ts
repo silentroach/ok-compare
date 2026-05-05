@@ -63,6 +63,10 @@ export const formatNewsEventRange = (
     'starts_iso' | 'starts_time' | 'ends_iso' | 'ends_time'
   >,
 ): string => {
+  if (!event.ends_iso || !event.ends_time) {
+    return formatNewsDateTime(event.starts_iso, event.starts_time);
+  }
+
   if (isSameNewsDay(event.starts_iso, event.ends_iso)) {
     return `${formatNewsCalendarDate(event.starts_iso)}, ${event.starts_time}-${event.ends_time}`;
   }
@@ -86,4 +90,21 @@ export const buildNewsEventMapUrl = (
   }
 
   return undefined;
+};
+
+export const buildNewsEventMapEmbedUrl = (
+  event: Pick<NewsEvent, 'coordinates'>,
+): string | undefined => {
+  if (!event.coordinates) {
+    return undefined;
+  }
+
+  const point = `${event.coordinates.lng},${event.coordinates.lat}`;
+  const params = new URLSearchParams({
+    ll: point,
+    z: '16',
+    l: 'map',
+  });
+
+  return `https://yandex.ru/map-widget/v1/?${params.toString()}`;
 };

@@ -63,7 +63,7 @@ export interface NewsDiscoveryCover {
 export interface NewsDiscoveryEvent {
   readonly title: string;
   readonly starts_at: string;
-  readonly ends_at: string;
+  readonly ends_at?: string;
   readonly location?: string;
   readonly coordinates?: {
     readonly lat: number;
@@ -288,7 +288,7 @@ function event(item: NewsEvent): NewsDiscoveryEvent {
   return {
     title: item.title,
     starts_at: item.starts_iso,
-    ends_at: item.ends_iso,
+    ...(item.ends_iso ? { ends_at: item.ends_iso } : {}),
     ...(item.location ? { location: item.location } : {}),
     ...(item.coordinates
       ? {
@@ -476,7 +476,7 @@ export function schema(root: string): Record<string, unknown> {
           map_url: uri(),
           ics_url: uri(),
         },
-        ['title', 'starts_at', 'ends_at', 'ics_url'],
+        ['title', 'starts_at', 'ics_url'],
       ),
       addendum: obj(
         {

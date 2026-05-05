@@ -165,7 +165,7 @@ const event = () =>
     .object({
       title: text('event.title'),
       starts_at: newsDateTime('event.starts_at'),
-      ends_at: newsDateTime('event.ends_at'),
+      ends_at: newsDateTime('event.ends_at').optional(),
       location: text('event.location').optional(),
       coordinates: z
         .object({
@@ -176,7 +176,9 @@ const event = () =>
     })
     .superRefine((data, ctx) => {
       const starts = parseNewsTimestampInput(data.starts_at);
-      const ends = parseNewsTimestampInput(data.ends_at);
+      const ends = data.ends_at
+        ? parseNewsTimestampInput(data.ends_at)
+        : undefined;
 
       if (starts && ends && ends.at.valueOf() <= starts.at.valueOf()) {
         ctx.addIssue({

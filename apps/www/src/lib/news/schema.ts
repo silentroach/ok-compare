@@ -56,9 +56,9 @@ export interface NewsEvent {
   readonly starts_at: Date;
   readonly starts_iso: string;
   readonly starts_time: string;
-  readonly ends_at: Date;
-  readonly ends_iso: string;
-  readonly ends_time: string;
+  readonly ends_at?: Date;
+  readonly ends_iso?: string;
+  readonly ends_time?: string;
   readonly ics_url: string;
   readonly location?: string;
   readonly coordinates?: NewsEventCoordinates;

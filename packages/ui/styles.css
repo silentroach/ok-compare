@@ -517,6 +517,15 @@ a.ui-chip:hover {
   font-variant-numeric: tabular-nums;
 }
 
+.ui-map-marker {
+  width: var(--ui-map-marker-size, 18px);
+  height: var(--ui-map-marker-size, 18px);
+  border: var(--ui-map-marker-border, 2px solid #ffffff);
+  border-radius: 999px;
+  background: var(--ui-map-marker-color, #064b08);
+  box-shadow: var(--ui-map-marker-shadow, 0 2px 6px oklch(24% 0.04 145 / 0.35));
+}
+
 .ui-page {
   width: min(calc(100% - var(--page-padding) * 2), var(--container));
   margin-inline: auto;

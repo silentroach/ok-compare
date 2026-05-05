@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildNewsEventMapUrl, formatNewsEventRange } from './view';
+import {
+  buildNewsEventMapEmbedUrl,
+  buildNewsEventMapUrl,
+  formatNewsEventRange,
+} from './view';
 
 describe('formatNewsEventRange', () => {
   it('formats same-day event ranges', () => {
@@ -23,6 +27,15 @@ describe('formatNewsEventRange', () => {
         ends_time: '01:00',
       }),
     ).toBe('31 мая 2026, 23:30 - 1 июня 2026, 01:00');
+  });
+
+  it('formats open-ended event ranges with start time only', () => {
+    expect(
+      formatNewsEventRange({
+        starts_iso: '2026-05-31T19:00:00+03:00',
+        starts_time: '19:00',
+      }),
+    ).toBe('31 мая 2026, 19:00');
   });
 });
 
@@ -47,5 +60,17 @@ describe('buildNewsEventMapUrl', () => {
 
   it('skips map links without coordinates or location', () => {
     expect(buildNewsEventMapUrl({})).toBeUndefined();
+  });
+
+  it('builds Yandex Maps widget URLs from coordinates', () => {
+    const url = buildNewsEventMapEmbedUrl({
+      coordinates: { lat: 55.123456, lng: 38.654321 },
+    });
+
+    expect(url).toBeDefined();
+    expect(new URL(url ?? '').searchParams.get('ll')).toBe(
+      '38.654321,55.123456',
+    );
+    expect(new URL(url ?? '').searchParams.get('pt')).toBeNull();
   });
 });

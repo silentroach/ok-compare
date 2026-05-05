@@ -272,6 +272,32 @@ describe('buildNewsDataset', () => {
     );
   });
 
+  it('keeps omitted event end empty in normalized event data', () => {
+    const data = buildNewsDataset(
+      [author({ id: 'ig', name: 'Редакция' })],
+      [
+        article({
+          id: '2026/05/event',
+          title: 'Встреча по регламенту',
+          summary: 'Коротко о встрече',
+          date: '04.05.2026 10:00',
+          event: {
+            title: 'Встреча по регламенту',
+            starts_at: '31.05.2026 19:00',
+          },
+        }),
+      ],
+    );
+
+    expect(data.articles[0]?.event).toMatchObject({
+      starts_iso: '2026-05-31T19:00:00+03:00',
+      starts_time: '19:00',
+    });
+    expect(data.articles[0]?.event?.ends_at).toBeUndefined();
+    expect(data.articles[0]?.event?.ends_iso).toBeUndefined();
+    expect(data.articles[0]?.event?.ends_time).toBeUndefined();
+  });
+
   it('rejects an event start without time', () => {
     expect(() =>
       buildNewsDataset(

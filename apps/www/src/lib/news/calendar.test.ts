@@ -20,15 +20,20 @@ const event = (input?: {
   readonly title?: string;
   readonly location?: string;
   readonly coordinates?: NewsEvent['coordinates'];
+  readonly ends?: boolean;
 }): NewsEvent => ({
   title: input?.title ?? 'Встреча по регламенту',
   starts_at: new Date('2026-05-31T16:00:00.000Z'),
   starts_iso: '2026-05-31T19:00:00+03:00',
   starts_time: '19:00',
-  ends_at: new Date('2026-05-31T18:00:00.000Z'),
-  ends_iso: '2026-05-31T21:00:00+03:00',
-  ends_time: '21:00',
   ics_url: '/news/2026/04/ok-meeting-regulation/event.ics',
+  ...(input?.ends === false
+    ? {}
+    : {
+        ends_at: new Date('2026-05-31T18:00:00.000Z'),
+        ends_iso: '2026-05-31T21:00:00+03:00',
+        ends_time: '21:00',
+      }),
   ...(input?.location ? { location: input.location } : {}),
   ...(input?.coordinates ? { coordinates: input.coordinates } : {}),
 });
@@ -88,6 +93,15 @@ describe('buildArticleEventIcs', () => {
     expect(ics).toContain('DTSTAMP:20260428T210000Z\r\n');
   });
 
+  it('defaults omitted event end to two hours in ICS only', () => {
+    const ics = buildArticleEventIcs(
+      article({ event: event({ ends: false }) }),
+    );
+
+    expect(ics).toContain('DTSTART:20260531T160000Z\r\n');
+    expect(ics).toContain('DTEND:20260531T180000Z\r\n');
+  });
+
   it('escapes text values', () => {
     const ics = buildArticleEventIcs(
       article({
@@ -118,6 +132,7 @@ describe('buildArticleEventIcs', () => {
         }),
       }),
     );
+    const unfolded = ics.replaceAll('\r\n ', '');
 
     expect(ics).toContain(
       'UID:news-event-2026-04-ok-meeting-regulation@example.com\r\n',
@@ -127,6 +142,10 @@ describe('buildArticleEventIcs', () => {
     );
     expect(ics).toContain('LOCATION:КП Шелково\\, эко-клуб\r\n');
     expect(ics).toContain('GEO:55;38\r\n');
+    expect(unfolded).toContain(
+      'X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-APPLE-RADIUS=100;',
+    );
+    expect(unfolded).toContain('X-TITLE="КП Шелково, эко-клуб":geo:55,38\r\n');
   });
 
   it('throws for article without event', () => {

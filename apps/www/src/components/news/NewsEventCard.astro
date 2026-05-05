@@ -1,15 +1,22 @@
 ---
 import CalendarPlusIcon from '@shelkovo/ui/icons/system/CalendarPlus.astro';
 import type { NewsEvent } from '@/lib/news/schema';
-import { buildNewsEventMapUrl, formatNewsEventRange } from '@/lib/news/view';
+import {
+  buildNewsEventMapEmbedUrl,
+  buildNewsEventMapUrl,
+  formatNewsEventRange,
+} from '@/lib/news/view';
 
 interface Props {
   readonly event: NewsEvent;
+  readonly variant?: 'wide' | 'compact';
 }
 
-const { event } = Astro.props;
+const { event, variant = 'wide' } = Astro.props;
+const isCompact = variant === 'compact';
 const eventRange = formatNewsEventRange(event);
 const mapUrl = buildNewsEventMapUrl(event);
+const mapEmbedUrl = buildNewsEventMapEmbedUrl(event);
 const hasCoordinates = event.coordinates !== undefined;
 const eventDateParts = event.starts_iso.slice(0, 10).split('-');
 const eventMonthLabels = [
@@ -28,74 +35,188 @@ const eventMonthLabels = [
 ] as const;
 const eventDay = String(Number(eventDateParts[2] ?? ''));
 const eventMonth = eventMonthLabels[Number(eventDateParts[1]) - 1] ?? '';
-const eventTime = `${event.starts_time}-${event.ends_time}`;
+const eventTime = event.ends_time
+  ? `${event.starts_time}-${event.ends_time}`
+  : event.starts_time;
 const titleId = `news-event-title-${event.ics_url
   .replace(/[^a-zA-Z0-9]+/g, '-')
   .replace(/^-|-$/g, '')}`;
 ---
 
-<section class="news-event-card" aria-labelledby={titleId}>
-  <div
-    class:list={[
-      'news-event-map-layer',
-      hasCoordinates
-        ? 'news-event-map-layer--located'
-        : 'news-event-map-layer--placeholder',
-    ]}
-    aria-hidden="true"
-  >
-  </div>
-  {hasCoordinates && <span class="news-event-map-pin" aria-hidden="true" />}
+{
+  isCompact ? (
+    <aside
+      class:list={[
+        'news-event-compact-card',
+        hasCoordinates ? 'news-event-compact-card--mapped' : undefined,
+      ]}
+      aria-labelledby={titleId}
+    >
+      {mapEmbedUrl && (
+        <div class="news-event-compact-map" aria-hidden="true">
+          <div class="news-event-compact-map-layer">
+            <iframe
+              src={mapEmbedUrl}
+              loading="lazy"
+              tabindex="-1"
+              class="news-event-compact-map-frame"
+            />
+            <span class="ui-map-marker news-event-compact-map-pin" />
+          </div>
+        </div>
+      )}
 
-  <div class="news-event-panel">
-    <time class="news-event-date-card" datetime={event.starts_iso}>
-      <span class="news-event-date-day">{eventDay}</span>
-      <span class="news-event-date-month">{eventMonth}</span>
-      <span class="news-event-date-time">{eventTime}</span>
-    </time>
+      <div class="news-event-compact-content">
+        <time class="news-event-compact-date-card" datetime={event.starts_iso}>
+          <span class="news-event-compact-day">{eventDay}</span>
+          <span class="news-event-compact-month">{eventMonth}</span>
+        </time>
 
-    <div class="news-event-main">
-      <h2 id={titleId} class="news-event-title">{event.title}</h2>
-      <p class="news-event-details">
-        <time datetime={event.starts_iso}>{eventRange}</time>
-        {
-          event.location && (
-            <>
-              <span class="news-event-details-divider" aria-hidden="true">
-                ·
-              </span>
+        <h2 id={titleId} class="news-event-compact-title">
+          {event.title}
+        </h2>
+
+        <ul class="news-event-compact-meta">
+          <li>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              class="news-event-compact-icon"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="8.25" />
+              <path d="M12 7.75v4.75l3 1.75" />
+            </svg>
+            <span>{eventTime}</span>
+          </li>
+
+          {event.location && (
+            <li>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                class="news-event-compact-icon"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M19 10.2c0 5.1-7 10.05-7 10.05s-7-4.95-7-10.05a7 7 0 1 1 14 0Z" />
+                <circle cx="12" cy="10.2" r="2.35" />
+              </svg>
               <span>{event.location}</span>
-            </>
-          )
-        }
-      </p>
+            </li>
+          )}
+        </ul>
 
-      <div class="news-event-actions">
-        <a
-          href={event.ics_url}
-          download="event.ics"
-          class="ui-btn ui-btn-md news-event-action news-event-action--calendar"
-        >
-          <CalendarPlusIcon class="news-event-calendar-icon" />
-          <span>Добавить в календарь</span>
-        </a>
+        <div class="news-event-compact-actions">
+          <a
+            href={event.ics_url}
+            download="event.ics"
+            class="news-event-compact-action news-event-compact-action--primary"
+            aria-label="Добавить в календарь"
+            title="Добавить в календарь"
+          >
+            <CalendarPlusIcon class="news-event-calendar-icon news-event-compact-icon news-event-compact-icon--calendar" />
+          </a>
 
-        {
-          mapUrl && (
+          {mapUrl && (
             <a
               href={mapUrl}
               target="_blank"
               rel="noreferrer noopener"
-              class="ui-btn ui-btn-md ui-btn-outline news-event-action news-event-action--map"
+              class="news-event-compact-action"
+              aria-label="Открыть на Яндекс Картах"
+              title="Открыть на Яндекс Картах"
             >
-              Открыть на Яндекс Картах
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                class="news-event-compact-icon"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M19 10.2c0 5.1-7 10.05-7 10.05s-7-4.95-7-10.05a7 7 0 1 1 14 0Z" />
+                <circle cx="12" cy="10.2" r="2.35" />
+              </svg>
             </a>
-          )
-        }
+          )}
+        </div>
       </div>
-    </div>
-  </div>
-</section>
+    </aside>
+  ) : (
+    <section class="news-event-card" aria-labelledby={titleId}>
+      <div
+        class:list={[
+          'news-event-map-layer',
+          hasCoordinates
+            ? 'news-event-map-layer--located'
+            : 'news-event-map-layer--placeholder',
+        ]}
+        aria-hidden="true"
+      ></div>
+      {hasCoordinates && <span class="news-event-map-pin" aria-hidden="true" />}
+
+      <div class="news-event-panel">
+        <time class="news-event-date-card" datetime={event.starts_iso}>
+          <span class="news-event-date-day">{eventDay}</span>
+          <span class="news-event-date-month">{eventMonth}</span>
+          <span class="news-event-date-time">{eventTime}</span>
+        </time>
+
+        <div class="news-event-main">
+          <h2 id={titleId} class="news-event-title">
+            {event.title}
+          </h2>
+          <p class="news-event-details">
+            <time datetime={event.starts_iso}>{eventRange}</time>
+            {event.location && (
+              <>
+                <span class="news-event-details-divider" aria-hidden="true">
+                  ·
+                </span>
+                <span>{event.location}</span>
+              </>
+            )}
+          </p>
+
+          <div class="news-event-actions">
+            <a
+              href={event.ics_url}
+              download="event.ics"
+              class="ui-btn ui-btn-md news-event-action news-event-action--calendar"
+            >
+              <CalendarPlusIcon class="news-event-calendar-icon" />
+              <span>Добавить в календарь</span>
+            </a>
+
+            {mapUrl && (
+              <a
+                href={mapUrl}
+                target="_blank"
+                rel="noreferrer noopener"
+                class="ui-btn ui-btn-md ui-btn-outline news-event-action news-event-action--map"
+              >
+                Открыть на Яндекс Картах
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
 
 <style>
   .news-event-card {
@@ -441,5 +562,182 @@ const titleId = `news-event-title-${event.ics_url
       top: 76%;
       left: 86%;
     }
+  }
+
+  .news-event-compact-card {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    overflow: hidden;
+    padding: 1rem;
+    border: 1px solid
+      color-mix(
+        in oklab,
+        var(--color-border-strong) 76%,
+        var(--color-primary) 24%
+      );
+    border-radius: 1rem;
+    background: var(--color-surface-raised);
+    box-shadow: 0 0.65rem 1.55rem oklch(24% 0.04 145 / 0.07);
+  }
+
+  .news-event-compact-card--mapped {
+    background:
+      linear-gradient(
+        110deg,
+        oklch(100% 0 0 / 0.98) 0%,
+        oklch(100% 0 0 / 0.95) 52%,
+        oklch(100% 0 0 / 0.72) 100%
+      ),
+      var(--color-surface-raised);
+  }
+
+  .news-event-compact-map {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    opacity: 0.36;
+    pointer-events: none;
+  }
+
+  .news-event-compact-map-layer {
+    position: absolute;
+    top: -66%;
+    right: auto;
+    bottom: -8%;
+    left: 0;
+    width: 150%;
+    height: 164%;
+  }
+
+  .news-event-compact-map-frame {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    filter: grayscale(0.18) saturate(0.78) contrast(0.92);
+  }
+
+  .news-event-compact-map-pin {
+    --ui-map-marker-size: 18px;
+    --ui-map-marker-color: #064b08;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .news-event-compact-content {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .news-event-compact-date-card {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    border-bottom: 1px solid
+      color-mix(in oklab, var(--color-border) 78%, var(--color-accent) 22%);
+    padding-bottom: 0.75rem;
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .news-event-compact-day {
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: -0.08em;
+    line-height: 0.9;
+  }
+
+  .news-event-compact-month {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .news-event-compact-title {
+    margin: 0;
+    max-width: 12ch;
+    color: var(--color-foreground);
+    font-family: var(--font-heading);
+    font-size: clamp(1.18rem, 1.02rem + 0.72vw, 1.48rem);
+    font-weight: 700;
+    letter-spacing: -0.055em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  .news-event-compact-meta {
+    display: grid;
+    gap: 0.55rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .news-event-compact-meta li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    color: var(--color-muted-foreground);
+    font-size: 0.9rem;
+    font-weight: 560;
+    line-height: 1.35;
+  }
+
+  .news-event-compact-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.55rem;
+    padding-top: 0.15rem;
+  }
+
+  .news-event-compact-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.45rem;
+    height: 2.45rem;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 0.62rem;
+    background: oklch(100% 0 0 / 0.82);
+    color: var(--color-foreground);
+    text-decoration: none;
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .news-event-compact-action:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .news-event-compact-action--primary {
+    border-color: color-mix(
+      in oklab,
+      var(--color-accent) 62%,
+      var(--color-border) 38%
+    );
+    color: color-mix(in oklab, var(--color-accent) 72%, var(--color-earth) 28%);
+  }
+
+  .news-event-compact-icon {
+    width: 1.05rem;
+    height: 1.05rem;
+    flex: none;
+  }
+
+  :global(.news-event-compact-icon) {
+    width: 1.05rem;
+    height: 1.05rem;
+    flex: none;
+  }
+
+  :global(.news-event-compact-icon--calendar) {
+    transform: translateY(-0.04rem);
   }
 </style>

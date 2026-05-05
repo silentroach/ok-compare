@@ -1,5 +1,6 @@
 import type { SchemaDoc } from '@shelkovo/seo';
 import { absoluteUrl } from '../site';
+import type { NewsEvent } from './schema';
 
 const CONTEXT = 'https://schema.org';
 const LANG = 'ru-RU';
@@ -37,7 +38,14 @@ interface ArticleInput extends BasePageInput {
   readonly author?: AuthorInput;
 }
 
-export interface NewsArticleInput extends Omit<ArticleInput, 'type'> {}
+export interface NewsArticleEventInput extends Pick<
+  NewsEvent,
+  'title' | 'starts_iso' | 'ends_iso' | 'location' | 'coordinates'
+> {}
+
+export interface NewsArticleInput extends Omit<ArticleInput, 'type'> {
+  readonly event?: NewsArticleEventInput;
+}
 
 export interface TechArticleInput extends Omit<ArticleInput, 'type'> {}
 
@@ -107,6 +115,58 @@ const articleSchema = (input: ArticleInput): readonly SchemaDoc[] => {
   return docs;
 };
 
+const eventLocationSchema = (
+  event: NewsArticleEventInput,
+): SchemaDoc | undefined => {
+  if (!event.location && !event.coordinates) {
+    return undefined;
+  }
+
+  return {
+    '@type': 'Place',
+    ...(event.location
+      ? {
+          name: event.location,
+          address: event.location,
+        }
+      : {}),
+    ...(event.coordinates
+      ? {
+          geo: {
+            '@type': 'GeoCoordinates',
+            latitude: event.coordinates.lat,
+            longitude: event.coordinates.lng,
+          },
+        }
+      : {}),
+  };
+};
+
+const newsEventSchema = (input: NewsArticleInput): SchemaDoc | undefined => {
+  if (!input.event) {
+    return undefined;
+  }
+
+  const url = absoluteUrl(input.url);
+  const location = eventLocationSchema(input.event);
+
+  return {
+    '@context': CONTEXT,
+    '@type': 'Event',
+    '@id': `${url}#event`,
+    name: input.event.title,
+    description: input.description,
+    url,
+    mainEntityOfPage: url,
+    inLanguage: LANG,
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    startDate: input.event.starts_iso,
+    ...(input.event.ends_iso ? { endDate: input.event.ends_iso } : {}),
+    ...(location ? { location } : {}),
+  };
+};
+
 export function collectionPageSchema(
   input: CollectionPageInput,
 ): readonly SchemaDoc[] {
@@ -139,7 +199,13 @@ export function collectionPageSchema(
 
 export const newsArticleSchema = (
   input: NewsArticleInput,
-): readonly SchemaDoc[] => articleSchema({ ...input, type: 'NewsArticle' });
+): readonly SchemaDoc[] => {
+  const event = newsEventSchema(input);
+
+  return event
+    ? [...articleSchema({ ...input, type: 'NewsArticle' }), event]
+    : articleSchema({ ...input, type: 'NewsArticle' });
+};
 
 export const techArticleSchema = (
   input: TechArticleInput,

@@ -218,13 +218,9 @@
       }
 
       const el = document.createElement('div');
+      el.className = 'ui-map-marker';
       el.style.cssText = `
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
         background: ${color};
-        border: 2px solid #ffffff;
-        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.35);
         cursor: ${interactive && popup ? 'pointer' : 'default'};
       `;
       el.setAttribute('title', settlement.name);

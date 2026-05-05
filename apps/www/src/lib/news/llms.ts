@@ -109,7 +109,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           '- Это основной read-only structured feed для агентов и машинного обхода news-section.',
           '- Корневой объект содержит `articles`, `archives.years` и `tags`.',
           '- `articles[]` включает `id`, `title`, `summary`, `published_at`, опциональный `updated_at`, дату по частям (`year`, `month`, `day`), `entry`, `html_url`, `markdown_url`, `source_url`, `pinned`, `is_official`, `author`, `areas`, `tags`, опциональные `cover` и `event`, массивы `photos`, `attachments`, полный `body_markdown` и массив `addenda`.',
-          '- `articles[].event` существует только у новостей, которые объявляют календарное событие; объект содержит `title`, `starts_at`, `ends_at`, optional `location`, `coordinates`, `map_url` и обязательный `ics_url`.',
+          '- `articles[].event` существует только у новостей, которые объявляют календарное событие; объект содержит `title`, `starts_at`, optional `ends_at`, `location`, `coordinates`, `map_url` и обязательный `ics_url`.',
           '- `addenda[]` сериализуются отдельно от основного body и сохраняют собственные `published_at`, `author`, `source_url`, `body_markdown`, `photos` и `attachments`.',
           '- `archives.years[]` описывают годовые и месячные архивы с count и URL на HTML/Markdown pages.',
           '- `tags[]` содержат редакционный label, normalized key, count и URL на HTML/Markdown tag pages.',

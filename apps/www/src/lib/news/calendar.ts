@@ -2,7 +2,9 @@ import type { NewsArticle, NewsEvent } from './schema';
 
 const CRLF = '\r\n';
 const MAX_CONTENT_LINE_BYTES = 75;
+const DEFAULT_EVENT_DURATION_MS = 2 * 60 * 60 * 1000;
 const TEXT_ESCAPE = /\r\n|\r|\n|[\\;,]/g;
+const PARAM_ESCAPE = /\r\n|\r|\n|[\\"]/g;
 const encoder = new TextEncoder();
 
 type NewsArticleWithEvent = NewsArticle & {
@@ -63,6 +65,19 @@ const textLine = (name: string, value: string): string =>
 
 const rawLine = (value: string): string => foldLine(value);
 
+const parameterValue = (value: string): string =>
+  `"${value.replace(PARAM_ESCAPE, (match) => {
+    if (match === '\\') {
+      return '\\\\';
+    }
+
+    if (match === '"') {
+      return '\\"';
+    }
+
+    return ' ';
+  })}"`;
+
 const formatUtcDateTime = (value: Date): string => {
   if (Number.isNaN(value.valueOf())) {
     throw new Error('ICS date must be valid');
@@ -94,12 +109,27 @@ export const articleEventIcsFilename = (
 const articleEventUid = (article: NewsArticle): string =>
   `${safeToken(`news-event-${article.id}`)}@${articleHost(article)}`;
 
+const articleEventEnd = (event: NewsEvent): Date =>
+  event.ends_at ??
+  new Date(event.starts_at.valueOf() + DEFAULT_EVENT_DURATION_MS);
+
+const structuredLocation = (event: NewsEvent): string | undefined => {
+  if (!event.coordinates) {
+    return undefined;
+  }
+
+  const title = parameterValue(event.location ?? event.title);
+
+  return `X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-APPLE-RADIUS=100;X-TITLE=${title}:geo:${event.coordinates.lat},${event.coordinates.lng}`;
+};
+
 export function buildArticleEventIcs(article: NewsArticle): string {
   if (!article.event) {
     throw new Error(`news article "${article.id}" has no event`);
   }
 
   const host = articleHost(article);
+  const appleLocation = structuredLocation(article.event);
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
@@ -110,7 +140,7 @@ export function buildArticleEventIcs(article: NewsArticle): string {
     rawLine(`UID:${articleEventUid(article)}`),
     rawLine(`DTSTAMP:${formatUtcDateTime(article.published_at)}`),
     rawLine(`DTSTART:${formatUtcDateTime(article.event.starts_at)}`),
-    rawLine(`DTEND:${formatUtcDateTime(article.event.ends_at)}`),
+    rawLine(`DTEND:${formatUtcDateTime(articleEventEnd(article.event))}`),
     textLine('SUMMARY', article.event.title),
     textLine('DESCRIPTION', article.summary),
     rawLine(`URL:${article.canonical}`),
@@ -124,6 +154,7 @@ export function buildArticleEventIcs(article: NewsArticle): string {
           ),
         ]
       : []),
+    ...(appleLocation ? [rawLine(appleLocation)] : []),
     'END:VEVENT',
     'END:VCALENDAR',
     '',
