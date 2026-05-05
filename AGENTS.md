@@ -19,10 +19,12 @@ scripts/     # compose/build helper scripts
 - Перед работой в `apps/compare` обязательно читать `apps/compare/AGENTS.md`.
 - Перед работой в `apps/www` обязательно читать `apps/www/AGENTS.md`.
 - Если меняются shared стили, примитивы ссылок или URL-утилиты, проверить оба app-а.
+- Не парься с форматированием кода - prettier все отформатирует автоматом при коммите
 
 ## Дизайн
 
 - За визуальными решениями, палитрой и UI-правилами идти в `docs/design/design-code-shelkovo.md`.
+- За правилами `title` и `description` страниц идти в `docs/page-meta.md`.
 - В `AGENTS.md` держать процессные и архитектурные правила, а не подробный дизайн-гайд.
 
 ## Команды workspace

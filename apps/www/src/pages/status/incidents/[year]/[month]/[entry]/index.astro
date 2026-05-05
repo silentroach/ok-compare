@@ -45,10 +45,13 @@ if (!incident || !incident.has_page) {
 }
 
 const bodyHtml = incident.body ? renderMarkdown(incident.body) : undefined;
-const title = `${incident.kind === 'maintenance' ? 'Плановые работы' : 'Инцидент'} ${incident.title} — статус Шелково`;
+const title = `${incident.title} — Шелково Онлайн`;
+const excerptSentence = incident.excerpt?.match(/^[^.!?]+[.!?]/u)?.[0];
 const description =
-  incident.excerpt ??
-  'Детальная запись по инциденту или плановым работам в статусе поселка Шелково.';
+  (incident.excerpt && incident.excerpt.length <= 170
+    ? incident.excerpt
+    : excerptSentence) ??
+  'Подробная запись о статусе сервиса в поселке Шелково: что произошло, когда началось и чем закончилось.';
 const breadcrumbs = withHomeBreadcrumbs([
   { label: 'Статус', href: statusUrl() },
   { label: incident.title },

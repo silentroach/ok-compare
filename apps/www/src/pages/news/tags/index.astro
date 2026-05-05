@@ -11,9 +11,9 @@ import { collectionPageSchema } from '@/lib/news/seo';
 import { newsUrl, tagsUrl } from '@/lib/news/routes';
 
 const tags = await loadNewsTags();
-const title = 'Теги новостей Шелково';
+const title = 'Темы новостей — Шелково Онлайн';
 const description =
-  'Теги новостей Шелково: темы, события и локальные сюжеты. Откройте нужный тег, чтобы посмотреть последние публикации по теме.';
+  'Темы новостей Шелково: события, сервисы и локальные сюжеты с быстрым переходом к публикациям по каждой теме.';
 const breadcrumbs = withHomeBreadcrumbs([
   { label: 'Новости', href: newsUrl() },
   { label: 'Теги' },

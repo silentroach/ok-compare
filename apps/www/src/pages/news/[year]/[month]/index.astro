@@ -47,8 +47,8 @@ const monthName = formatNewsMonth(archive.year, archive.month, {
   capitalize: true,
 });
 const heading = `Новости за ${monthLabel}`;
-const title = `Новости Шелково за ${monthLabel}`;
-const description = `Архив новостей Шелково за ${monthLabel}: все публикации месяца в кратком формате без раскрытия полного body и addenda.`;
+const title = `Новости за ${monthLabel} — Шелково Онлайн`;
+const description = `Архив новостей Шелково за ${monthLabel}: публикации месяца в хронологическом порядке.`;
 const breadcrumbs = withHomeBreadcrumbs([
   { label: 'Новости', href: newsUrl() },
   { label: String(archive.year), href: yearUrl(archive.year) },

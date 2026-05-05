@@ -426,8 +426,12 @@ const newsArticles = defineCollection({
         event: event().optional(),
         ...media(image),
         addenda: z.array(addendum(image)).min(1).optional(),
-        seo_title: text('seo_title').optional(),
-        seo_description: text('seo_description').optional(),
+        seo: z
+          .object({
+            title: text('seo.title').optional(),
+            description: text('seo.description').optional(),
+          })
+          .optional(),
       })
       .superRefine((data, ctx) => {
         if (data.cover && !data.cover_alt) {

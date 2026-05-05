@@ -33,9 +33,9 @@ if (!tag) {
   throw new Error(`news tag page "${key}" not found`);
 }
 
-const title = `Тег «${tag.label}» — новости Шелково`;
+const title = `Тема: ${tag.label} — Новости — Шелково Онлайн`;
 const latestPublicationsLabel = `${NEWS_LATEST_LIMIT} ${pluralizeRu(NEWS_LATEST_LIMIT, ['публикация', 'публикации', 'публикаций'])}`;
-const description = `Последние новости Шелково по тегу «${tag.label}». На странице собраны последние ${latestPublicationsLabel} по теме, а более ранние материалы доступны в архивах.`;
+const description = `Последние новости Шелково по теме «${tag.label}»: ${latestPublicationsLabel}, а более ранние материалы доступны в архивах.`;
 const breadcrumbs = withHomeBreadcrumbs([
   { label: 'Новости', href: newsUrl() },
   { label: 'Теги', href: tagsUrl() },

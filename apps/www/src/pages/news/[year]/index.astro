@@ -28,8 +28,8 @@ if (!archive) {
   throw new Error(`news year archive "${Astro.params.year}" not found`);
 }
 
-const title = `Новости Шелково за ${archive.year} год`;
-const description = `Архив новостей Шелково за ${archive.year} год: все публикации по месяцам в хронологическом порядке без reshuffle pinned-материалов.`;
+const title = `Новости за ${archive.year} год — Шелково Онлайн`;
+const description = `Архив новостей Шелково за ${archive.year} год: публикации по месяцам в хронологическом порядке.`;
 const breadcrumbs = withHomeBreadcrumbs([
   { label: 'Новости', href: newsUrl() },
   { label: String(archive.year) },

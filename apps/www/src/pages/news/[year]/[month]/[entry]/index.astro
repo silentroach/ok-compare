@@ -77,8 +77,8 @@ const heroImageStyle = heroCoverUrl
       'mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 68%, rgba(0, 0, 0, 0.86) 82%, rgba(0, 0, 0, 0) 100%)',
     ].join('; ')
   : undefined;
-const title = article.seo_title ?? `${article.title} — новости Шелково`;
-const description = article.seo_description ?? article.summary;
+const title = `${article.seo?.title ?? article.title} — Новости — Шелково Онлайн`;
+const description = article.seo?.description ?? article.summary;
 const breadcrumbs = withHomeBreadcrumbs([
   { label: 'Новости', href: newsUrl() },
   { label: String(article.year), href: yearUrl(article.year) },

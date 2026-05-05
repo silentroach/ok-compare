@@ -65,16 +65,16 @@ const distanceFromShelkovo =
 const hasPoint =
   Number.isFinite(settlement.location.lat) &&
   Number.isFinite(settlement.location.lng);
+const SHORT_COMPANY_LENGTH = 18;
 const company = settlement.management_company;
 const companyTitle =
   typeof company === 'string' ? company : (company?.title ?? '');
-const companyKeywords = companyTitle
-  ? Array.from(
-      new Set([
-        companyTitle,
-        companyTitle.replaceAll('"', '').replace(/\s+/g, ' ').trim(),
-      ]),
-    )
+const companyName = companyTitle
+  .replaceAll('"', '')
+  .replace(/\s+/g, ' ')
+  .trim();
+const companyKeywords = companyName
+  ? Array.from(new Set([companyTitle, companyName]))
   : [];
 const companyUrl = typeof company === 'object' ? company.url : '';
 const tg = settlement.telegram ? telegram(settlement.telegram) : undefined;
@@ -86,22 +86,25 @@ const waterTitle =
 const hasDelta =
   !settlement.is_baseline && !!comparison && comparison.tariffDelta !== 0;
 const pageUrl = canon(`/settlements/${settlement.slug}/`);
-const pageTitle = `${settlement.name} — тариф и инфраструктура`;
+const pageTitle = `${settlement.name}: тариф и инфраструктура — Сравни с Шелково`;
 const delta =
   hasDelta && comparison
     ? `${comparison.isCheaper ? 'Дешевле' : 'Дороже'} Шелково на ${formatCurrency(Math.abs(comparison.tariffDelta))}.`
     : settlement.is_baseline
       ? 'Базовый поселок для сравнения.'
-      : '';
-const companyDescription = companyTitle
-  ? `Обслуживающая компания: ${companyTitle.replaceAll('"', '').trim()}.`
-  : '';
+      : comparison
+        ? 'Тариф как в Шелково.'
+        : '';
+const companyDescription =
+  companyName && companyName.length <= SHORT_COMPANY_LENGTH
+    ? `Обслуживает ${companyName}.`
+    : '';
 const pageDescription = [
   `${settlement.name}, ${settlement.location.district}.`,
   companyDescription,
   `Тариф ${formatTariffAuto(settlement.tariff)}.`,
   delta,
-  'Инфраструктура, общие пространства, сервисы и источники данных.',
+  'Сравнение тарифа и инфраструктуры.',
 ]
   .filter(Boolean)
   .join(' ');
@@ -169,6 +172,8 @@ const heroMap = hasPoint
   schema={schema}
 >
   <main class="ui-page py-6 md:py-10 lg:pt-0">
+    <h1 class="sr-only">{settlement.name}</h1>
+
     <section
       class="hero-bleed relative hidden min-h-[430px] lg:block"
       data-testid="settlement-hero"
@@ -253,11 +258,12 @@ const heroMap = hasPoint
           <div class="mb-4">
             <div class="flex items-start gap-4">
               <div class="min-w-0">
-                <h1
+                <div
+                  aria-hidden="true"
                   class="text-4xl font-bold leading-[1.06] text-foreground [text-shadow:0_2px_10px_rgba(255,255,255,0.75)] xl:text-[2.7rem]"
                 >
                   {settlement.name}
-                </h1>
+                </div>
               </div>
               <div class="mt-1 flex shrink-0 items-center gap-2">
                 {
@@ -558,11 +564,12 @@ const heroMap = hasPoint
         <div>
           <div class="mb-2 flex items-start justify-between gap-3">
             <div class="min-w-0 flex-1">
-              <h1
+              <div
+                aria-hidden="true"
                 class="text-3xl font-bold leading-[1.08] text-foreground md:text-4xl"
               >
                 {settlement.name}
-              </h1>
+              </div>
             </div>
             <div class="flex shrink-0 items-center gap-2">
               {
