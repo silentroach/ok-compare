@@ -65,16 +65,16 @@ const distanceFromShelkovo =
 const hasPoint =
   Number.isFinite(settlement.location.lat) &&
   Number.isFinite(settlement.location.lng);
+const SHORT_COMPANY_LENGTH = 18;
 const company = settlement.management_company;
 const companyTitle =
   typeof company === 'string' ? company : (company?.title ?? '');
-const companyKeywords = companyTitle
-  ? Array.from(
-      new Set([
-        companyTitle,
-        companyTitle.replaceAll('"', '').replace(/\s+/g, ' ').trim(),
-      ]),
-    )
+const companyName = companyTitle
+  .replaceAll('"', '')
+  .replace(/\s+/g, ' ')
+  .trim();
+const companyKeywords = companyName
+  ? Array.from(new Set([companyTitle, companyName]))
   : [];
 const companyUrl = typeof company === 'object' ? company.url : '';
 const tg = settlement.telegram ? telegram(settlement.telegram) : undefined;
@@ -92,16 +92,19 @@ const delta =
     ? `${comparison.isCheaper ? 'Дешевле' : 'Дороже'} Шелково на ${formatCurrency(Math.abs(comparison.tariffDelta))}.`
     : settlement.is_baseline
       ? 'Базовый поселок для сравнения.'
-      : '';
-const companyDescription = companyTitle
-  ? `Обслуживающая компания: ${companyTitle.replaceAll('"', '').trim()}.`
-  : '';
+      : comparison
+        ? 'Тариф как в Шелково.'
+        : '';
+const companyDescription =
+  companyName && companyName.length <= SHORT_COMPANY_LENGTH
+    ? `Обслуживает ${companyName}.`
+    : '';
 const pageDescription = [
   `${settlement.name}, ${settlement.location.district}.`,
   companyDescription,
   `Тариф ${formatTariffAuto(settlement.tariff)}.`,
   delta,
-  'Тариф, инфраструктура, общие пространства, сервисная модель и источники данных.',
+  'Сравнение тарифа и инфраструктуры.',
 ]
   .filter(Boolean)
   .join(' ');
