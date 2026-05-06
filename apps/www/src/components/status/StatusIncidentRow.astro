@@ -35,36 +35,29 @@ const TitleIcon = titleIcon?.Icon;
 <article class="ui-shell px-5 py-5 md:px-6 md:py-6">
   <div class="max-w-4xl space-y-3">
     <div class="space-y-2">
-      <h3 class="text-2xl font-semibold tracking-tight text-foreground">
+      <h3
+        class="flex items-start gap-2 text-2xl font-semibold tracking-tight text-foreground"
+      >
+        {
+          titleIcon && TitleIcon && (
+            <span
+              aria-hidden="true"
+              class:list={[
+                'mt-[0.2em] inline-flex size-5 shrink-0',
+                titleIcon.toneClass,
+              ]}
+            >
+              <TitleIcon class="size-5" />
+            </span>
+          )
+        }
         {
           incident.has_page ? (
-            <a href={incident.url} class="ui-link">
-              {titleIcon && TitleIcon && (
-                <span
-                  class:list={[
-                    'mr-2 inline-flex size-5 align-[-0.12em]',
-                    titleIcon.toneClass,
-                  ]}
-                >
-                  <TitleIcon class="size-5" />
-                </span>
-              )}
+            <a href={incident.url} class="ui-link min-w-0">
               {incident.title}
             </a>
           ) : (
-            <span>
-              {titleIcon && TitleIcon && (
-                <span
-                  class:list={[
-                    'mr-2 inline-flex size-5 align-[-0.12em]',
-                    titleIcon.toneClass,
-                  ]}
-                >
-                  <TitleIcon class="size-5" />
-                </span>
-              )}
-              {incident.title}
-            </span>
+            <span class="min-w-0">{incident.title}</span>
           )
         }
       </h3>

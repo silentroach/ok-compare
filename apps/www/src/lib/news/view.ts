@@ -8,7 +8,14 @@ const AREA_LABELS: Record<NewsArea, string> = {
   village: 'Шелково Вилладж',
 };
 
+const MAP_TILE_SIZE = 256;
+const MAP_WIDGET_ZOOM = 16;
+const MERCATOR_MAX_LAT = 85.05112878;
+
 export const NEWS_PROSE = 'ui-prose';
+
+const clamp = (value: number, min: number, max: number): number =>
+  Math.max(min, Math.min(max, value));
 
 const capitalize = (value: string): string => {
   if (!value) {
@@ -16,6 +23,31 @@ const capitalize = (value: string): string => {
   }
 
   return value[0].toUpperCase() + value.slice(1);
+};
+
+const toRad = (value: number): number => (value * Math.PI) / 180;
+
+const toDeg = (value: number): number => (value * 180) / Math.PI;
+
+const toMercatorY = (lat: number): number => {
+  const clamped = clamp(lat, -MERCATOR_MAX_LAT, MERCATOR_MAX_LAT);
+  const sin = Math.sin(toRad(clamped));
+
+  return 0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI);
+};
+
+const fromMercatorY = (y: number): number =>
+  toDeg(Math.atan(Math.sinh(Math.PI - 2 * Math.PI * y)));
+
+// Yandex centers `ll` in Web Mercator pixels; offset it when CSS moves the iframe behind a fixed pin.
+const shiftMapLatByPixels = (
+  lat: number,
+  yOffsetPx: number,
+  zoom: number,
+): number => {
+  const worldSize = MAP_TILE_SIZE * 2 ** zoom;
+
+  return fromMercatorY(toMercatorY(lat) + yOffsetPx / worldSize);
 };
 
 const formatNewsCalendarDate = (iso: string): string =>
@@ -94,15 +126,27 @@ export const buildNewsEventMapUrl = (
 
 export const buildNewsEventMapEmbedUrl = (
   event: Pick<NewsEvent, 'coordinates'>,
+  opts?: {
+    readonly centerOffsetYPx?: number;
+  },
 ): string | undefined => {
   if (!event.coordinates) {
     return undefined;
   }
 
-  const point = `${event.coordinates.lng},${event.coordinates.lat}`;
+  const centerOffsetYPx = opts?.centerOffsetYPx;
+  const lat =
+    centerOffsetYPx !== undefined
+      ? shiftMapLatByPixels(
+          event.coordinates.lat,
+          centerOffsetYPx,
+          MAP_WIDGET_ZOOM,
+        )
+      : event.coordinates.lat;
+  const point = `${event.coordinates.lng},${lat}`;
   const params = new URLSearchParams({
     ll: point,
-    z: '16',
+    z: String(MAP_WIDGET_ZOOM),
     l: 'map',
   });
 

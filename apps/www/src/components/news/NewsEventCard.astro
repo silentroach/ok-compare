@@ -16,7 +16,9 @@ const { event, variant = 'wide' } = Astro.props;
 const isCompact = variant === 'compact';
 const eventRange = formatNewsEventRange(event);
 const mapUrl = buildNewsEventMapUrl(event);
-const mapEmbedUrl = buildNewsEventMapEmbedUrl(event);
+const mapEmbedUrl = isCompact
+  ? buildNewsEventMapEmbedUrl(event, { centerOffsetYPx: 50 })
+  : undefined;
 const hasCoordinates = event.coordinates !== undefined;
 const eventDateParts = event.starts_iso.slice(0, 10).split('-');
 const eventMonthLabels = [
@@ -165,7 +167,7 @@ const titleId = `news-event-title-${event.ics_url
             : 'news-event-map-layer--placeholder',
         ]}
         aria-hidden="true"
-      ></div>
+      />
       {hasCoordinates && <span class="news-event-map-pin" aria-hidden="true" />}
 
       <div class="news-event-panel">
@@ -593,6 +595,7 @@ const titleId = `news-event-title-${event.ics_url
   }
 
   .news-event-compact-map {
+    --news-event-compact-map-frame-shift-y: 50px;
     position: absolute;
     inset: 0;
     z-index: -1;
@@ -612,10 +615,12 @@ const titleId = `news-event-title-${event.ics_url
   }
 
   .news-event-compact-map-frame {
+    display: block;
     width: 100%;
     height: 100%;
     border: 0;
     filter: grayscale(0.18) saturate(0.78) contrast(0.92);
+    transform: translateY(var(--news-event-compact-map-frame-shift-y));
   }
 
   .news-event-compact-map-pin {

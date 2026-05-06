@@ -73,4 +73,22 @@ describe('buildNewsEventMapUrl', () => {
     );
     expect(new URL(url ?? '').searchParams.get('pt')).toBeNull();
   });
+
+  it('can offset Yandex Maps widget center for fixed overlay pins', () => {
+    const url = buildNewsEventMapEmbedUrl(
+      {
+        coordinates: { lat: 55.123456, lng: 38.654321 },
+      },
+      { centerOffsetYPx: 50 },
+    );
+
+    const params = new URL(url ?? '').searchParams;
+    const [lng = Number.NaN, lat = Number.NaN] = (params.get('ll') ?? '')
+      .split(',')
+      .map(Number);
+
+    expect(lng).toBe(38.654321);
+    expect(lat).toBeLessThan(55.123456);
+    expect(lat).toBeGreaterThan(55.122);
+  });
 });
