@@ -40,11 +40,17 @@ interface ArticleInput extends BasePageInput {
 
 export interface NewsArticleEventInput extends Pick<
   NewsEvent,
-  'title' | 'starts_iso' | 'ends_iso' | 'location' | 'coordinates'
+  | 'slug'
+  | 'title'
+  | 'description'
+  | 'starts_iso'
+  | 'ends_iso'
+  | 'location'
+  | 'coordinates'
 > {}
 
 export interface NewsArticleInput extends Omit<ArticleInput, 'type'> {
-  readonly event?: NewsArticleEventInput;
+  readonly events?: readonly NewsArticleEventInput[];
 }
 
 export interface TechArticleInput extends Omit<ArticleInput, 'type'> {}
@@ -142,29 +148,30 @@ const eventLocationSchema = (
   };
 };
 
-const newsEventSchema = (input: NewsArticleInput): SchemaDoc | undefined => {
-  if (!input.event) {
-    return undefined;
-  }
+const newsEventSchema = (input: NewsArticleInput): readonly SchemaDoc[] => {
+  const events = input.events ?? [];
 
   const url = absoluteUrl(input.url);
-  const location = eventLocationSchema(input.event);
 
-  return {
-    '@context': CONTEXT,
-    '@type': 'Event',
-    '@id': `${url}#event`,
-    name: input.event.title,
-    description: input.description,
-    url,
-    mainEntityOfPage: url,
-    inLanguage: LANG,
-    eventStatus: 'https://schema.org/EventScheduled',
-    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-    startDate: input.event.starts_iso,
-    ...(input.event.ends_iso ? { endDate: input.event.ends_iso } : {}),
-    ...(location ? { location } : {}),
-  };
+  return events.map((event) => {
+    const location = eventLocationSchema(event);
+
+    return {
+      '@context': CONTEXT,
+      '@type': 'Event',
+      '@id': `${url}#event-${event.slug}`,
+      name: event.title,
+      description: event.description ?? input.description,
+      url,
+      mainEntityOfPage: url,
+      inLanguage: LANG,
+      eventStatus: 'https://schema.org/EventScheduled',
+      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+      startDate: event.starts_iso,
+      ...(event.ends_iso ? { endDate: event.ends_iso } : {}),
+      ...(location ? { location } : {}),
+    };
+  });
 };
 
 export function collectionPageSchema(
@@ -200,11 +207,9 @@ export function collectionPageSchema(
 export const newsArticleSchema = (
   input: NewsArticleInput,
 ): readonly SchemaDoc[] => {
-  const event = newsEventSchema(input);
+  const events = newsEventSchema(input);
 
-  return event
-    ? [...articleSchema({ ...input, type: 'NewsArticle' }), event]
-    : articleSchema({ ...input, type: 'NewsArticle' });
+  return [...articleSchema({ ...input, type: 'NewsArticle' }), ...events];
 };
 
 export const techArticleSchema = (

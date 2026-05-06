@@ -4,7 +4,7 @@ import type { NewsArticle, NewsEvent } from './schema';
 
 let articleEventIcsUrl: typeof import('./routes').articleEventIcsUrl;
 let buildArticleEventIcs: typeof import('./calendar').buildArticleEventIcs;
-let hasArticleEvent: typeof import('./calendar').hasArticleEvent;
+let hasArticleEvents: typeof import('./calendar').hasArticleEvents;
 
 beforeAll(async () => {
   Object.assign(import.meta.env, {
@@ -13,20 +13,24 @@ beforeAll(async () => {
   });
 
   ({ articleEventIcsUrl } = await import('./routes'));
-  ({ buildArticleEventIcs, hasArticleEvent } = await import('./calendar'));
+  ({ buildArticleEventIcs, hasArticleEvents } = await import('./calendar'));
 });
 
 const event = (input?: {
+  readonly slug?: string;
   readonly title?: string;
+  readonly description?: string;
   readonly location?: string;
   readonly coordinates?: NewsEvent['coordinates'];
   readonly ends?: boolean;
 }): NewsEvent => ({
+  slug: input?.slug ?? 'event',
   title: input?.title ?? 'Встреча по регламенту',
+  ...(input?.description ? { description: input.description } : {}),
   starts_at: new Date('2026-05-31T16:00:00.000Z'),
   starts_iso: '2026-05-31T19:00:00+03:00',
   starts_time: '19:00',
-  ics_url: '/news/2026/04/ok-meeting-regulation/event.ics',
+  ics_url: `/news/2026/04/ok-meeting-regulation/${input?.slug ?? 'event'}.ics`,
   ...(input?.ends === false
     ? {}
     : {
@@ -40,7 +44,7 @@ const event = (input?: {
 
 const article = (input?: {
   readonly summary?: string;
-  readonly event?: NewsEvent;
+  readonly events?: readonly NewsEvent[];
 }): NewsArticle => ({
   id: '2026/04/ok-meeting-regulation',
   title: 'ОК согласились на встречу',
@@ -66,7 +70,7 @@ const article = (input?: {
   pinned: false,
   photos: [],
   attachments: [],
-  ...(input?.event ? { event: input.event } : {}),
+  events: input?.events ?? [],
   addenda: [],
   summary: input?.summary ?? 'Коротко о встрече',
   body: '',
@@ -76,7 +80,8 @@ const article = (input?: {
 
 describe('buildArticleEventIcs', () => {
   it('builds a valid calendar skeleton', () => {
-    const ics = buildArticleEventIcs(article({ event: event() }));
+    const item = event();
+    const ics = buildArticleEventIcs(article({ events: [item] }), item);
 
     expect(ics).toContain('BEGIN:VCALENDAR\r\n');
     expect(ics).toContain('BEGIN:VEVENT\r\n');
@@ -86,7 +91,8 @@ describe('buildArticleEventIcs', () => {
   });
 
   it('converts Moscow event time to UTC', () => {
-    const ics = buildArticleEventIcs(article({ event: event() }));
+    const item = event();
+    const ics = buildArticleEventIcs(article({ events: [item] }), item);
 
     expect(ics).toContain('DTSTART:20260531T160000Z\r\n');
     expect(ics).toContain('DTEND:20260531T180000Z\r\n');
@@ -94,22 +100,23 @@ describe('buildArticleEventIcs', () => {
   });
 
   it('defaults omitted event end to two hours in ICS only', () => {
-    const ics = buildArticleEventIcs(
-      article({ event: event({ ends: false }) }),
-    );
+    const item = event({ ends: false });
+    const ics = buildArticleEventIcs(article({ events: [item] }), item);
 
     expect(ics).toContain('DTSTART:20260531T160000Z\r\n');
     expect(ics).toContain('DTEND:20260531T180000Z\r\n');
   });
 
   it('escapes text values', () => {
+    const item = event({
+      title: 'Comma, semi; slash \\ and\nbreak',
+    });
     const ics = buildArticleEventIcs(
       article({
         summary: 'Comma, semi; slash \\ and\nbreak',
-        event: event({
-          title: 'Comma, semi; slash \\ and\nbreak',
-        }),
+        events: [item],
       }),
+      item,
     );
 
     expect(ics).toContain(
@@ -120,22 +127,50 @@ describe('buildArticleEventIcs', () => {
     );
   });
 
-  it('includes article identity, location, geo, and URL', () => {
+  it('uses event description when it is provided', () => {
+    const item = event({ description: 'Описание календарного события' });
     const ics = buildArticleEventIcs(
       article({
-        event: event({
-          location: 'КП Шелково, эко-клуб',
-          coordinates: {
-            lat: 55,
-            lng: 38,
-          },
-        }),
+        summary: 'Короткое содержание новости',
+        events: [item],
       }),
+      item,
+    );
+
+    expect(ics).toContain('DESCRIPTION:Описание календарного события\r\n');
+  });
+
+  it('falls back to article summary when event description is omitted', () => {
+    const item = event();
+    const ics = buildArticleEventIcs(
+      article({
+        summary: 'Короткое содержание новости',
+        events: [item],
+      }),
+      item,
+    );
+
+    expect(ics).toContain('DESCRIPTION:Короткое содержание новости\r\n');
+  });
+
+  it('includes article identity, location, geo, and URL', () => {
+    const item = event({
+      location: 'КП Шелково, эко-клуб',
+      coordinates: {
+        lat: 55,
+        lng: 38,
+      },
+    });
+    const ics = buildArticleEventIcs(
+      article({
+        events: [item],
+      }),
+      item,
     );
     const unfolded = ics.replaceAll('\r\n ', '');
 
     expect(ics).toContain(
-      'UID:news-event-2026-04-ok-meeting-regulation@example.com\r\n',
+      'UID:news-event-2026-04-ok-meeting-regulation-event@example.com\r\n',
     );
     expect(ics).toContain(
       'URL:https://example.com/news/2026/04/ok-meeting-regulation/\r\n',
@@ -147,12 +182,6 @@ describe('buildArticleEventIcs', () => {
     );
     expect(unfolded).toContain('X-TITLE="КП Шелково, эко-клуб":geo:55,38\r\n');
   });
-
-  it('throws for article without event', () => {
-    expect(() => buildArticleEventIcs(article())).toThrow(
-      /news article "2026\/04\/ok-meeting-regulation" has no event/,
-    );
-  });
 });
 
 describe('article event route helpers', () => {
@@ -162,12 +191,13 @@ describe('article event route helpers', () => {
         year: 2026,
         month: 4,
         entry: 'ok-meeting-regulation',
+        event: 'greenwood',
       }),
-    ).toBe('/news/2026/04/ok-meeting-regulation/event.ics');
+    ).toBe('/news/2026/04/ok-meeting-regulation/greenwood.ics');
   });
 
   it('marks only event articles as event-route eligible', () => {
-    expect(hasArticleEvent(article({ event: event() }))).toBe(true);
-    expect(hasArticleEvent(article())).toBe(false);
+    expect(hasArticleEvents(article({ events: [event()] }))).toBe(true);
+    expect(hasArticleEvents(article())).toBe(false);
   });
 });

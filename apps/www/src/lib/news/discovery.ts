@@ -61,7 +61,9 @@ export interface NewsDiscoveryCover {
 }
 
 export interface NewsDiscoveryEvent {
+  readonly slug: string;
   readonly title: string;
+  readonly description?: string;
   readonly starts_at: string;
   readonly ends_at?: string;
   readonly location?: string;
@@ -102,7 +104,7 @@ export interface NewsDiscoveryArticle {
   readonly areas: readonly string[];
   readonly tags: readonly NewsDiscoveryTag[];
   readonly cover?: NewsDiscoveryCover;
-  readonly event?: NewsDiscoveryEvent;
+  readonly events?: readonly NewsDiscoveryEvent[];
   readonly photos: readonly NewsDiscoveryPhoto[];
   readonly attachments: readonly NewsDiscoveryAttachment[];
   readonly body_markdown: string;
@@ -286,7 +288,9 @@ function event(item: NewsEvent): NewsDiscoveryEvent {
   const mapUrl = buildNewsEventMapUrl(item);
 
   return {
+    slug: item.slug,
     title: item.title,
+    ...(item.description ? { description: item.description } : {}),
     starts_at: item.starts_iso,
     ...(item.ends_iso ? { ends_at: item.ends_iso } : {}),
     ...(item.location ? { location: item.location } : {}),
@@ -337,7 +341,7 @@ function article(item: NewsArticle): NewsDiscoveryArticle {
     areas: [...item.areas],
     tags: item.tags.map(tag),
     ...(image ? { cover: image } : {}),
-    ...(item.event ? { event: event(item.event) } : {}),
+    ...(item.events.length > 0 ? { events: item.events.map(event) } : {}),
     photos: item.photos.map(photo),
     attachments: item.attachments.map(attachment),
     body_markdown: item.body,
@@ -383,7 +387,7 @@ export function schema(root: string): Record<string, unknown> {
     $id: abs(root, articlesSchemaPath()),
     title: 'NewsArticlesPayload',
     description:
-      'Read-only полный feed news-section с canonical HTML URL, markdown companions, full body_markdown, optional event metadata с article-local ics_url и отдельным массивом addenda.',
+      'Read-only полный feed news-section с canonical HTML URL, markdown companions, full body_markdown, optional events metadata с article-local ics_url и отдельным массивом addenda.',
     type: 'object',
     additionalProperties: false,
     required: ['articles', 'archives', 'tags'],
@@ -466,7 +470,9 @@ export function schema(root: string): Record<string, unknown> {
       ),
       event: obj(
         {
+          slug: text(1),
           title: text(1),
+          description: text(1),
           starts_at: dateTime(),
           ends_at: dateTime(),
           location: text(1),
@@ -476,7 +482,7 @@ export function schema(root: string): Record<string, unknown> {
           map_url: uri(),
           ics_url: uri(),
         },
-        ['title', 'starts_at', 'ics_url'],
+        ['slug', 'title', 'starts_at', 'ics_url'],
       ),
       addendum: obj(
         {
@@ -533,9 +539,14 @@ export function schema(root: string): Record<string, unknown> {
           cover: {
             $ref: '#/$defs/cover',
           },
-          event: {
-            $ref: '#/$defs/event',
-          },
+          events: list(
+            {
+              $ref: '#/$defs/event',
+            },
+            {
+              minItems: 1,
+            },
+          ),
           photos: list({
             $ref: '#/$defs/photo',
           }),
@@ -624,7 +635,7 @@ export function openapi(root: string): Record<string, unknown> {
           operationId: 'getNewsArticles',
           summary: 'Read full news feed',
           description:
-            'Возвращает основной structured feed news-section со статьями, полным body_markdown, optional event metadata с article-local ics_url, addenda, тегами и архивами.',
+            'Возвращает основной structured feed news-section со статьями, полным body_markdown, optional events metadata с article-local ics_url, addenda, тегами и архивами.',
           responses: {
             200: {
               description: 'Full news feed',

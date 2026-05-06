@@ -33,21 +33,25 @@ const articleWithEvent = (): NewsArticle => ({
   pinned: false,
   photos: [],
   attachments: [],
-  event: {
-    title: 'Встреча по регламенту',
-    starts_at: new Date('2026-05-31T19:00:00+03:00'),
-    starts_iso: '2026-05-31T19:00:00.000+03:00',
-    starts_time: '19:00',
-    ends_at: new Date('2026-05-31T21:00:00+03:00'),
-    ends_iso: '2026-05-31T21:00:00.000+03:00',
-    ends_time: '21:00',
-    ics_url: '/news/2026/05/event/event.ics',
-    location: 'КП Шелково, эко-клуб',
-    coordinates: {
-      lat: 55,
-      lng: 38,
+  events: [
+    {
+      slug: 'event',
+      title: 'Встреча по регламенту',
+      description: 'Описание календарного события.',
+      starts_at: new Date('2026-05-31T19:00:00+03:00'),
+      starts_iso: '2026-05-31T19:00:00.000+03:00',
+      starts_time: '19:00',
+      ends_at: new Date('2026-05-31T21:00:00+03:00'),
+      ends_iso: '2026-05-31T21:00:00.000+03:00',
+      ends_time: '21:00',
+      ics_url: '/news/2026/05/event/event.ics',
+      location: 'КП Шелково, эко-клуб',
+      coordinates: {
+        lat: 55,
+        lng: 38,
+      },
     },
-  },
+  ],
   addenda: [],
   summary: 'Будет обсуждение регламента.',
   body: 'Текст новости.',
@@ -85,26 +89,29 @@ describe('news discovery payload', () => {
   it('serializes optional article events with absolute ICS URLs', () => {
     const payload = buildNewsPayload(dataset([articleWithEvent()]));
 
-    expect(payload.articles[0]?.event).toEqual({
-      title: 'Встреча по регламенту',
-      starts_at: '2026-05-31T19:00:00.000+03:00',
-      ends_at: '2026-05-31T21:00:00.000+03:00',
-      location: 'КП Шелково, эко-клуб',
-      coordinates: {
-        lat: 55,
-        lng: 38,
+    expect(payload.articles[0]?.events).toEqual([
+      {
+        slug: 'event',
+        title: 'Встреча по регламенту',
+        description: 'Описание календарного события.',
+        starts_at: '2026-05-31T19:00:00.000+03:00',
+        ends_at: '2026-05-31T21:00:00.000+03:00',
+        location: 'КП Шелково, эко-клуб',
+        coordinates: {
+          lat: 55,
+          lng: 38,
+        },
+        map_url: 'https://yandex.ru/maps/?pt=38,55&z=16&l=map',
+        ics_url: 'https://example.com/news/2026/05/event/event.ics',
       },
-      map_url: 'https://yandex.ru/maps/?pt=38,55&z=16&l=map',
-      ics_url: 'https://example.com/news/2026/05/event/event.ics',
-    });
+    ]);
   });
 
   it('keeps non-event articles compatible', () => {
-    const article = articleWithEvent();
-    delete (article as { event?: unknown }).event;
+    const article = { ...articleWithEvent(), events: [] };
     const payload = buildNewsPayload(dataset([article]));
 
-    expect(payload.articles[0]).not.toHaveProperty('event');
+    expect(payload.articles[0]).not.toHaveProperty('events');
   });
 
   it('keeps schema, openapi, and catalog aligned around article-local events', () => {
@@ -155,8 +162,13 @@ describe('news discovery payload', () => {
     const openapiDefs =
       api.components?.schemas?.NewsArticlesPayload?.$defs ?? {};
 
-    expect(defs.event?.required).toEqual(['title', 'starts_at', 'ics_url']);
-    expect(defs.article?.required).not.toContain('event');
+    expect(defs.event?.required).toEqual([
+      'slug',
+      'title',
+      'starts_at',
+      'ics_url',
+    ]);
+    expect(defs.article?.required).not.toContain('events');
     expect(defs.event?.properties?.starts_at).toMatchObject({
       format: 'date-time',
     });
@@ -170,8 +182,11 @@ describe('news discovery payload', () => {
       maximum: 180,
     });
     expect(openapiDefs.event?.required).toEqual(defs.event?.required);
-    expect(openapiDefs.article?.properties?.event).toMatchObject({
-      $ref: '#/components/schemas/NewsArticlesPayload/$defs/event',
+    expect(openapiDefs.article?.properties?.events).toMatchObject({
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/NewsArticlesPayload/$defs/event',
+      },
     });
     expect(
       api.paths?.['/news/data/articles.json']?.get?.responses?.[200]?.content?.[

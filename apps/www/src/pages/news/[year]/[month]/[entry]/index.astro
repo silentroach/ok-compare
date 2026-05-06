@@ -70,6 +70,7 @@ const heroCover =
     : undefined;
 const heroCoverUrl = heroCover?.src;
 const hasHeroCover = Boolean(heroCoverUrl);
+const hasEvents = article.events.length > 0;
 const heroImageStyle = heroCoverUrl
   ? [
       'object-position: 50% 64%',
@@ -107,7 +108,7 @@ const schema = newsArticleSchema({
   ...(article.updated_iso ? { dateModified: article.updated_iso } : {}),
   ...(article.cover_url ? { image: article.cover_url } : {}),
   author,
-  ...(article.event ? { event: article.event } : {}),
+  ...(hasEvents ? { events: article.events } : {}),
 });
 ---
 
@@ -249,16 +250,16 @@ const schema = newsArticleSchema({
             <div
               class:list={[
                 'news-article-body-layout',
-                article.event
-                  ? 'news-article-body-layout--with-event'
-                  : undefined,
+                hasEvents ? 'news-article-body-layout--with-event' : undefined,
               ]}
             >
               <div class={NEWS_PROSE} set:html={bodyHtml} />
 
-              {article.event && (
+              {hasEvents && (
                 <div class="news-article-event-aside">
-                  <NewsEventCard event={article.event} variant="compact" />
+                  {article.events.map((event) => (
+                    <NewsEventCard event={event} variant="compact" />
+                  ))}
                 </div>
               )}
             </div>
@@ -267,7 +268,7 @@ const schema = newsArticleSchema({
       }
 
       {
-        !article.body && article.event && (
+        !article.body && hasEvents && (
           <section
             class:list={[
               'px-5 md:px-6',
@@ -275,7 +276,9 @@ const schema = newsArticleSchema({
             ]}
           >
             <div class="news-article-event-only">
-              <NewsEventCard event={article.event} variant="compact" />
+              {article.events.map((event) => (
+                <NewsEventCard event={event} variant="compact" />
+              ))}
             </div>
           </section>
         )
@@ -297,6 +300,8 @@ const schema = newsArticleSchema({
 
   .news-article-event-aside,
   .news-article-event-only {
+    display: grid;
+    gap: 1rem;
     width: min(100%, 24rem);
   }
 

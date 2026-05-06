@@ -55,7 +55,7 @@ type ArticleEntry = NewsArticleEntry;
 type AuthorEntry = NewsAuthorEntry;
 type ArticleData = ArticleEntry['data'];
 type AddendumData = NonNullable<ArticleData['addenda']>[number];
-type EventData = NonNullable<ArticleData['event']>;
+type EventData = NonNullable<ArticleData['events']>[number];
 type AttachmentInput =
   | NonNullable<ArticleData['attachments']>[number]
   | NonNullable<AddendumData['attachments']>[number];
@@ -259,19 +259,18 @@ function normalizeEventCoordinates(
 }
 
 function normalizeEvent(
-  input: EventData | undefined,
+  input: EventData,
   entryId: string,
   route: {
     readonly year: string;
     readonly month: string;
     readonly entry: string;
   },
-): NewsEvent | undefined {
-  if (!input) {
-    return undefined;
-  }
-
-  const context = `news article "${entryId}" event`;
+  index: number,
+  count: number,
+): NewsEvent {
+  const context = `news article "${entryId}" events[${index}]`;
+  const slug = optionalEventText(input.slug, `${context} slug`);
   const starts = parseEventTimestamp(input.starts_at, `${context} starts_at`);
   const ends = input.ends_at
     ? parseEventTimestamp(input.ends_at, `${context} ends_at`)
@@ -283,12 +282,27 @@ function normalizeEvent(
     throw new Error(`${context} ends_at must be later than starts_at`);
   }
 
+  if (count > 1 && !slug) {
+    throw new Error(
+      `${context} slug is required when article has multiple events`,
+    );
+  }
+
   return {
+    slug: slug ?? 'event',
     title: requiredEventText(input.title, `${context} title`),
+    ...(input.description
+      ? {
+          description: requiredEventText(
+            input.description,
+            `${context} description`,
+          ),
+        }
+      : {}),
     starts_at: starts.at,
     starts_iso: starts.iso,
     starts_time: starts.time,
-    ics_url: articleEventIcsUrl(route),
+    ics_url: articleEventIcsUrl({ ...route, event: slug ?? 'event' }),
     ...(ends
       ? {
           ends_at: ends.at,
@@ -299,6 +313,36 @@ function normalizeEvent(
     ...(location ? { location } : {}),
     ...(coordinates ? { coordinates } : {}),
   };
+}
+
+function normalizeEvents(
+  input: readonly EventData[] | undefined,
+  entryId: string,
+  route: {
+    readonly year: string;
+    readonly month: string;
+    readonly entry: string;
+  },
+): readonly NewsEvent[] {
+  if (!input?.length) {
+    return [];
+  }
+
+  const seen = new Set<string>();
+
+  return input.map((item, index) => {
+    const event = normalizeEvent(item, entryId, route, index, input.length);
+
+    if (seen.has(event.slug)) {
+      throw new Error(
+        `news article "${entryId}" duplicate event slug "${event.slug}"`,
+      );
+    }
+
+    seen.add(event.slug);
+
+    return event;
+  });
 }
 
 function articleParts(entry: ArticleEntry): {
@@ -429,7 +473,7 @@ function normalizeArticle(
   );
   const cover = entry.data.cover;
   const coverUrl = assetUrl(cover);
-  const event = normalizeEvent(entry.data.event, entry.id, parts);
+  const events = normalizeEvents(entry.data.events, entry.id, parts);
   const body = content(
     entry.body,
     peopleRegistry,
@@ -472,7 +516,7 @@ function normalizeArticle(
     ...(entry.data.cover_alt ? { cover_alt: entry.data.cover_alt } : {}),
     photos: photos(entry.data.photos),
     attachments: attachments(entry.data.attachments),
-    ...(event ? { event } : {}),
+    events,
     addenda: addenda.items,
     summary: entry.data.summary,
     body: body.markdown,
@@ -526,7 +570,7 @@ const toListArticle = (article: NewsArticle): NewsListArticle => ({
       }
     : {}),
   ...(article.cover_alt ? { cover_alt: article.cover_alt } : {}),
-  ...(article.event ? { event: article.event } : {}),
+  events: article.events,
   summary: article.summary,
   has_addenda: article.has_addenda,
 });

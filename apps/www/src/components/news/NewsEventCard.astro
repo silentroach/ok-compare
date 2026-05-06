@@ -40,9 +40,8 @@ const eventMonth = eventMonthLabels[Number(eventDateParts[1]) - 1] ?? '';
 const eventTime = event.ends_time
   ? `${event.starts_time}-${event.ends_time}`
   : event.starts_time;
-const titleId = `news-event-title-${event.ics_url
-  .replace(/[^a-zA-Z0-9]+/g, '-')
-  .replace(/^-|-$/g, '')}`;
+const calendarFilename = `${event.slug}.ics`;
+const titleId = `news-event-title-${event.slug}`;
 ---
 
 {
@@ -121,7 +120,7 @@ const titleId = `news-event-title-${event.ics_url
         <div class="news-event-compact-actions">
           <a
             href={event.ics_url}
-            download="event.ics"
+            download={calendarFilename}
             class="news-event-compact-action news-event-compact-action--primary"
             aria-label="Добавить в календарь"
             title="Добавить в календарь"
@@ -196,7 +195,7 @@ const titleId = `news-event-title-${event.ics_url
           <div class="news-event-actions">
             <a
               href={event.ics_url}
-              download="event.ics"
+              download={calendarFilename}
               class="ui-btn ui-btn-md news-event-action news-event-action--calendar"
             >
               <CalendarPlusIcon class="news-event-calendar-icon" />
@@ -650,7 +649,7 @@ const titleId = `news-event-title-${event.ics_url
 
   .news-event-compact-day {
     font-family: var(--font-heading);
-    font-size: 3rem;
+    font-size: 2.65rem;
     font-weight: 700;
     letter-spacing: -0.08em;
     line-height: 0.9;
@@ -664,7 +663,6 @@ const titleId = `news-event-title-${event.ics_url
 
   .news-event-compact-title {
     margin: 0;
-    max-width: 12ch;
     color: var(--color-foreground);
     font-family: var(--font-heading);
     font-size: clamp(1.18rem, 1.02rem + 0.72vw, 1.48rem);

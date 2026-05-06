@@ -37,6 +37,10 @@ export interface NewsArticleRouteInput {
   readonly entry: string;
 }
 
+export interface NewsArticleEventRouteInput extends NewsArticleRouteInput {
+  readonly event: string;
+}
+
 const need = (value: string, name: string): string => {
   const text = value.trim();
 
@@ -96,8 +100,8 @@ export const articleUrl = (input: NewsArticleRouteInput): string =>
 export const articleMarkdownUrl = (input: NewsArticleRouteInput): string =>
   withBase(`${articlePath(input)}index.md`);
 
-export const articleEventIcsUrl = (input: NewsArticleRouteInput): string =>
-  withBase(`${articlePath(input)}event.ics`);
+export const articleEventIcsUrl = (input: NewsArticleEventRouteInput): string =>
+  withBase(`${articlePath(input)}${need(input.event, 'event')}.ics`);
 
 export const articleCanonical = (input: NewsArticleRouteInput): string =>
   canon(articlePath(input));

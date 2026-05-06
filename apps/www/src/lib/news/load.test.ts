@@ -5,7 +5,9 @@ import type { NewsArticleEntry, NewsAuthorEntry } from './load';
 
 let buildNewsDataset: typeof import('./load').buildNewsDataset;
 
-type ArticleEventInput = NonNullable<NewsArticleEntry['data']['event']>;
+type ArticleEventInput = NonNullable<
+  NewsArticleEntry['data']['events']
+>[number];
 
 beforeAll(async () => {
   Object.assign(import.meta.env, {
@@ -36,7 +38,7 @@ const article = (input: {
   readonly body?: string;
   readonly pinned?: boolean;
   readonly pinned_until?: string;
-  readonly event?: ArticleEventInput;
+  readonly events?: readonly ArticleEventInput[];
   readonly addenda?: readonly {
     readonly date: string;
     readonly body?: string;
@@ -51,7 +53,7 @@ const article = (input: {
     author: { id: 'ig' } as NewsArticleEntry['data']['author'],
     ...(input.pinned !== undefined ? { pinned: input.pinned } : {}),
     ...(input.pinned_until ? { pinned_until: input.pinned_until } : {}),
-    ...(input.event ? { event: input.event } : {}),
+    ...(input.events ? { events: input.events } : {}),
     ...(input.addenda
       ? {
           addenda: input.addenda.map((item) => ({
@@ -238,22 +240,27 @@ describe('buildNewsDataset', () => {
           title: 'Встреча по регламенту',
           summary: 'Коротко о встрече',
           date: '04.05.2026 10:00',
-          event: {
-            title: 'Встреча по регламенту',
-            starts_at: '31.05.2026 19:00',
-            ends_at: '31.05.2026 21:00',
-            location: 'КП Шелково, эко-клуб',
-            coordinates: {
-              lat: 55,
-              lng: 38,
+          events: [
+            {
+              title: 'Встреча по регламенту',
+              description: 'Описание календарного события.',
+              starts_at: '31.05.2026 19:00',
+              ends_at: '31.05.2026 21:00',
+              location: 'КП Шелково, эко-клуб',
+              coordinates: {
+                lat: 55,
+                lng: 38,
+              },
             },
-          },
+          ],
         }),
       ],
     );
 
-    expect(data.articles[0]?.event).toMatchObject({
+    expect(data.articles[0]?.events[0]).toMatchObject({
+      slug: 'event',
       title: 'Встреча по регламенту',
+      description: 'Описание календарного события.',
       starts_iso: '2026-05-31T19:00:00+03:00',
       starts_time: '19:00',
       ends_iso: '2026-05-31T21:00:00+03:00',
@@ -265,9 +272,9 @@ describe('buildNewsDataset', () => {
         lng: 38,
       },
     });
-    expect(data.articles[0]?.event?.starts_at).toBeInstanceOf(Date);
-    expect(data.articles[0]?.event?.ends_at).toBeInstanceOf(Date);
-    expect(data.home.latest[0]?.event?.starts_iso).toBe(
+    expect(data.articles[0]?.events[0]?.starts_at).toBeInstanceOf(Date);
+    expect(data.articles[0]?.events[0]?.ends_at).toBeInstanceOf(Date);
+    expect(data.home.latest[0]?.events[0]?.starts_iso).toBe(
       '2026-05-31T19:00:00+03:00',
     );
   });
@@ -281,21 +288,23 @@ describe('buildNewsDataset', () => {
           title: 'Встреча по регламенту',
           summary: 'Коротко о встрече',
           date: '04.05.2026 10:00',
-          event: {
-            title: 'Встреча по регламенту',
-            starts_at: '31.05.2026 19:00',
-          },
+          events: [
+            {
+              title: 'Встреча по регламенту',
+              starts_at: '31.05.2026 19:00',
+            },
+          ],
         }),
       ],
     );
 
-    expect(data.articles[0]?.event).toMatchObject({
+    expect(data.articles[0]?.events[0]).toMatchObject({
       starts_iso: '2026-05-31T19:00:00+03:00',
       starts_time: '19:00',
     });
-    expect(data.articles[0]?.event?.ends_at).toBeUndefined();
-    expect(data.articles[0]?.event?.ends_iso).toBeUndefined();
-    expect(data.articles[0]?.event?.ends_time).toBeUndefined();
+    expect(data.articles[0]?.events[0]?.ends_at).toBeUndefined();
+    expect(data.articles[0]?.events[0]?.ends_iso).toBeUndefined();
+    expect(data.articles[0]?.events[0]?.ends_time).toBeUndefined();
   });
 
   it('rejects an event start without time', () => {
@@ -308,15 +317,17 @@ describe('buildNewsDataset', () => {
             title: 'Встреча по регламенту',
             summary: 'Коротко о встрече',
             date: '04.05.2026 10:00',
-            event: {
-              title: 'Встреча по регламенту',
-              starts_at: '31.05.2026',
-              ends_at: '31.05.2026 21:00',
-            },
+            events: [
+              {
+                title: 'Встреча по регламенту',
+                starts_at: '31.05.2026',
+                ends_at: '31.05.2026 21:00',
+              },
+            ],
           }),
         ],
       ),
-    ).toThrow(/event starts_at must include time/);
+    ).toThrow(/events\[0\] starts_at must include time/);
   });
 
   it('rejects an event end without time', () => {
@@ -329,15 +340,17 @@ describe('buildNewsDataset', () => {
             title: 'Встреча по регламенту',
             summary: 'Коротко о встрече',
             date: '04.05.2026 10:00',
-            event: {
-              title: 'Встреча по регламенту',
-              starts_at: '31.05.2026 19:00',
-              ends_at: '31.05.2026',
-            },
+            events: [
+              {
+                title: 'Встреча по регламенту',
+                starts_at: '31.05.2026 19:00',
+                ends_at: '31.05.2026',
+              },
+            ],
           }),
         ],
       ),
-    ).toThrow(/event ends_at must include time/);
+    ).toThrow(/events\[0\] ends_at must include time/);
   });
 
   it('rejects an event that does not end after it starts', () => {
@@ -350,15 +363,17 @@ describe('buildNewsDataset', () => {
             title: 'Встреча по регламенту',
             summary: 'Коротко о встрече',
             date: '04.05.2026 10:00',
-            event: {
-              title: 'Встреча по регламенту',
-              starts_at: '31.05.2026 19:00',
-              ends_at: '31.05.2026 19:00',
-            },
+            events: [
+              {
+                title: 'Встреча по регламенту',
+                starts_at: '31.05.2026 19:00',
+                ends_at: '31.05.2026 19:00',
+              },
+            ],
           }),
         ],
       ),
-    ).toThrow(/event ends_at must be later than starts_at/);
+    ).toThrow(/events\[0\] ends_at must be later than starts_at/);
   });
 
   it('rejects invalid event coordinates', () => {
@@ -371,15 +386,17 @@ describe('buildNewsDataset', () => {
             title: 'Встреча по регламенту',
             summary: 'Коротко о встрече',
             date: '04.05.2026 10:00',
-            event: {
-              title: 'Встреча по регламенту',
-              starts_at: '31.05.2026 19:00',
-              ends_at: '31.05.2026 21:00',
-              coordinates: {
-                lat: 91,
-                lng: 38,
+            events: [
+              {
+                title: 'Встреча по регламенту',
+                starts_at: '31.05.2026 19:00',
+                ends_at: '31.05.2026 21:00',
+                coordinates: {
+                  lat: 91,
+                  lng: 38,
+                },
               },
-            },
+            ],
           }),
         ],
       ),
@@ -399,7 +416,7 @@ describe('buildNewsDataset', () => {
       ],
     );
 
-    expect(data.articles[0]?.event).toBeUndefined();
-    expect(data.home.latest[0]?.event).toBeUndefined();
+    expect(data.articles[0]?.events).toEqual([]);
+    expect(data.home.latest[0]?.events).toEqual([]);
   });
 });

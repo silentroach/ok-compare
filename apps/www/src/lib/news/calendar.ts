@@ -8,12 +8,12 @@ const PARAM_ESCAPE = /\r\n|\r|\n|[\\"]/g;
 const encoder = new TextEncoder();
 
 type NewsArticleWithEvent = NewsArticle & {
-  readonly event: NewsEvent;
+  readonly events: readonly [NewsEvent, ...NewsEvent[]];
 };
 
-export const hasArticleEvent = (
+export const hasArticleEvents = (
   article: NewsArticle,
-): article is NewsArticleWithEvent => article.event !== undefined;
+): article is NewsArticleWithEvent => article.events.length > 0;
 
 const escapeText = (value: string): string =>
   value.replace(TEXT_ESCAPE, (match) => {
@@ -103,11 +103,11 @@ const articleHost = (article: NewsArticle): string =>
   new URL(article.canonical).host;
 
 export const articleEventIcsFilename = (
-  article: Pick<NewsArticle, 'id'>,
-): string => `${safeToken(`news-event-${article.id}`)}.ics`;
+  event: Pick<NewsEvent, 'slug'>,
+): string => `${safeToken(event.slug)}.ics`;
 
-const articleEventUid = (article: NewsArticle): string =>
-  `${safeToken(`news-event-${article.id}`)}@${articleHost(article)}`;
+const articleEventUid = (article: NewsArticle, event: NewsEvent): string =>
+  `${safeToken(`news-event-${article.id}-${event.slug}`)}@${articleHost(article)}`;
 
 const articleEventEnd = (event: NewsEvent): Date =>
   event.ends_at ??
@@ -123,13 +123,12 @@ const structuredLocation = (event: NewsEvent): string | undefined => {
   return `X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-APPLE-RADIUS=100;X-TITLE=${title}:geo:${event.coordinates.lat},${event.coordinates.lng}`;
 };
 
-export function buildArticleEventIcs(article: NewsArticle): string {
-  if (!article.event) {
-    throw new Error(`news article "${article.id}" has no event`);
-  }
-
+export function buildArticleEventIcs(
+  article: NewsArticle,
+  event: NewsEvent,
+): string {
   const host = articleHost(article);
-  const appleLocation = structuredLocation(article.event);
+  const appleLocation = structuredLocation(event);
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
@@ -137,22 +136,16 @@ export function buildArticleEventIcs(article: NewsArticle): string {
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',
-    rawLine(`UID:${articleEventUid(article)}`),
+    rawLine(`UID:${articleEventUid(article, event)}`),
     rawLine(`DTSTAMP:${formatUtcDateTime(article.published_at)}`),
-    rawLine(`DTSTART:${formatUtcDateTime(article.event.starts_at)}`),
-    rawLine(`DTEND:${formatUtcDateTime(articleEventEnd(article.event))}`),
-    textLine('SUMMARY', article.event.title),
-    textLine('DESCRIPTION', article.summary),
+    rawLine(`DTSTART:${formatUtcDateTime(event.starts_at)}`),
+    rawLine(`DTEND:${formatUtcDateTime(articleEventEnd(event))}`),
+    textLine('SUMMARY', event.title),
+    textLine('DESCRIPTION', event.description ?? article.summary),
     rawLine(`URL:${article.canonical}`),
-    ...(article.event.location
-      ? [textLine('LOCATION', article.event.location)]
-      : []),
-    ...(article.event.coordinates
-      ? [
-          rawLine(
-            `GEO:${article.event.coordinates.lat};${article.event.coordinates.lng}`,
-          ),
-        ]
+    ...(event.location ? [textLine('LOCATION', event.location)] : []),
+    ...(event.coordinates
+      ? [rawLine(`GEO:${event.coordinates.lat};${event.coordinates.lng}`)]
       : []),
     ...(appleLocation ? [rawLine(appleLocation)] : []),
     'END:VEVENT',

@@ -23,11 +23,11 @@ description: Используй для чтения статического new
 
 - Сначала читай `/news/data/articles.json`.
 - Для одной записи переходи на `/news/YYYY/MM/[entry]/` или `/news/YYYY/MM/[entry]/index.md`.
-- Если у записи есть `event`, используй `event.ics_url` или шаблон `/news/YYYY/MM/[entry]/event.ics` для скачивания календаря.
+- Если у записи есть `events`, используй `events[].ics_url` или шаблон `/news/YYYY/MM/[entry]/[event-slug].ics` для скачивания календаря.
 - Для списков по времени и тегам используй `archives` и `tags` из feed или соответствующие HTML/Markdown pages.
 
 ## Ограничения
 
 - Полный machine-readable контент живет в `articles.json`; RSS остается summary-first surface.
 - HTML detail page остается каноническим представлением для людей.
-- `articles[].event` есть только у новостей, которые объявляют календарное событие; глобального events calendar feed нет.
+- `articles[].events[]` есть только у новостей, которые объявляют календарные события; глобального events calendar feed нет.

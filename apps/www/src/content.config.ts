@@ -163,10 +163,14 @@ const personNameCases = () =>
 const event = () =>
   z
     .object({
-      title: text('event.title'),
-      starts_at: newsDateTime('event.starts_at'),
-      ends_at: newsDateTime('event.ends_at').optional(),
-      location: text('event.location').optional(),
+      slug: text('events[].slug')
+        .refine((value) => SLUG.test(value), 'events[].slug must be a slug')
+        .optional(),
+      title: text('events[].title'),
+      description: text('events[].description').optional(),
+      starts_at: newsDateTime('events[].starts_at'),
+      ends_at: newsDateTime('events[].ends_at').optional(),
+      location: text('events[].location').optional(),
       coordinates: z
         .object({
           lat: z.number().min(-90).max(90),
@@ -184,10 +188,50 @@ const event = () =>
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['ends_at'],
-          message: 'event.ends_at must be later than event.starts_at',
+          message: 'events[].ends_at must be later than events[].starts_at',
         });
       }
     });
+
+type NewsEventInput = z.infer<ReturnType<typeof event>>;
+
+function validateEventSlugs(
+  events: readonly NewsEventInput[] | undefined,
+  ctx: z.RefinementCtx,
+): void {
+  if (!events?.length) {
+    return;
+  }
+
+  const seen = new Set<string>();
+  const requiresExplicitSlug = events.length > 1;
+
+  events.forEach((item, index) => {
+    if (requiresExplicitSlug && !item.slug) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['events', index, 'slug'],
+        message: 'events[].slug is required when article has multiple events',
+      });
+      return;
+    }
+
+    if (!item.slug) {
+      return;
+    }
+
+    if (seen.has(item.slug)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['events', index, 'slug'],
+        message: `duplicate event slug "${item.slug}"`,
+      });
+      return;
+    }
+
+    seen.add(item.slug);
+  });
+}
 
 function addendum(image: SchemaContext['image']) {
   return z
@@ -437,7 +481,7 @@ const newsArticles = defineCollection({
         source_url: absoluteUrl('source_url').optional(),
         cover: image().optional(),
         cover_alt: text('cover_alt').optional(),
-        event: event().optional(),
+        events: z.array(event()).min(1).optional(),
         ...media(image),
         addenda: z.array(addendum(image)).min(1).optional(),
         seo: z
@@ -457,6 +501,7 @@ const newsArticles = defineCollection({
         }
 
         validateTags(data.tags, ctx);
+        validateEventSlugs(data.events, ctx);
       }),
 });
 

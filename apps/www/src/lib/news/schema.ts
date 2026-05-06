@@ -52,7 +52,9 @@ export interface NewsEventCoordinates {
 }
 
 export interface NewsEvent {
+  readonly slug: string;
   readonly title: string;
+  readonly description?: string;
   readonly starts_at: Date;
   readonly starts_iso: string;
   readonly starts_time: string;
@@ -109,7 +111,7 @@ export interface NewsArticle {
   readonly cover_height?: number;
   readonly photos: readonly NewsPhoto[];
   readonly attachments: readonly NewsAttachment[];
-  readonly event?: NewsEvent;
+  readonly events: readonly NewsEvent[];
   readonly addenda: readonly NewsAddendum[];
   readonly summary: string;
   readonly body: string;
@@ -144,7 +146,7 @@ export interface NewsListArticle {
   readonly cover_width?: number;
   readonly cover_height?: number;
   readonly summary: string;
-  readonly event?: NewsEvent;
+  readonly events: readonly NewsEvent[];
   readonly has_addenda: boolean;
 }
 
