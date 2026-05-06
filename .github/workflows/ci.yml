@@ -1,9 +1,9 @@
-name: Deploy
+name: CI/CD
 
 on:
-  workflow_run:
-    workflows: [Tests]
-    types: [completed]
+  push:
+    branches: [master]
+  pull_request:
     branches: [master]
   workflow_dispatch:
 
@@ -11,18 +11,15 @@ permissions:
   contents: read
 
 concurrency:
-  group: deploy
-  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  build:
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
@@ -39,9 +36,46 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-${{ github.event.workflow_run.head_branch || github.head_ref || github.ref_name }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'turbo.json', 'apps/*/package.json', 'packages/*/package.json') }}
+          key: ${{ runner.os }}-turbo-${{ github.head_ref || github.ref_name }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'turbo.json', 'apps/*/package.json', 'packages/*/package.json') }}
           restore-keys: |
-            ${{ runner.os }}-turbo-${{ github.event.workflow_run.head_branch || github.head_ref || github.ref_name }}-
+            ${{ runner.os }}-turbo-${{ github.head_ref || github.ref_name }}-
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run typecheck
+        run: pnpm typecheck
+
+      - name: Run tests
+        run: pnpm test
+
+  build:
+    needs: test
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/master') || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 10.20.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v6.3.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Restore Turbo cache
+        uses: actions/cache@v5
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.ref_name }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'turbo.json', 'apps/*/package.json', 'packages/*/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-${{ github.ref_name }}-
             ${{ runner.os }}-turbo-
 
       - name: Install dependencies
@@ -76,8 +110,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Download VPS artifact
         uses: actions/download-artifact@v8
@@ -163,21 +195,21 @@ jobs:
         run: |
           ssh_opts="ssh -p $DEPLOY_PORT -o ControlMaster=auto -o ControlPersist=600 -o ControlPath=$HOME/.ssh/cm-%C"
 
-          rsync -az --delete --mkpath --chmod=D755,F644 \
+          rsync -azc --delete --mkpath --chmod=D755,F644 \
             --exclude '/static/' \
             -e "$ssh_opts" \
             dist/www/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_WWW_PATH/"
 
-          rsync -az --mkpath --chmod=D755,F644 \
+          rsync -azc --mkpath --chmod=D755,F644 \
             -e "$ssh_opts" \
             dist/www/static/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_WWW_PATH/static/"
 
-          rsync -az --delete --mkpath --chmod=D755,F644 \
+          rsync -azc --delete --mkpath --chmod=D755,F644 \
             --exclude '/static/' \
             -e "$ssh_opts" \
             dist/legacy/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_COMPARE_PATH/"
 
-          rsync -az --mkpath --chmod=D755,F644 \
+          rsync -azc --mkpath --chmod=D755,F644 \
             -e "$ssh_opts" \
             dist/legacy/static/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_COMPARE_PATH/static/"
 
