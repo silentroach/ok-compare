@@ -5,7 +5,6 @@ seo:
   title: Дамба закрыта до 10 мая
 date: 30.04.2026
 author: ok-comfort
-pinned: true
 tags:
   - мост
   - дамба

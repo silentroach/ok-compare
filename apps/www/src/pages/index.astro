@@ -40,7 +40,7 @@ const [news, status] = await Promise.all([
   loadNewsArticles(),
   loadStatusData(),
 ]);
-const latestNews = news[0];
+const latestNews = news.slice(0, 2);
 const hasActiveIncidents = status.active.some(
   (item) => item.kind === 'incident',
 );
@@ -167,34 +167,36 @@ const heroImage = isDaytime ? dayHeroImage : nightHeroImage;
     </section>
 
     {
-      latestNews && (
+      latestNews.length > 0 && (
         <section class="ui-page pt-8 pb-4 md:pt-12 md:pb-6 lg:pt-14 lg:pb-8">
           <div class="px-5 md:px-6">
             <h1 class="border-b border-border pb-4 text-3xl font-bold tracking-tight text-foreground md:text-4xl md:leading-[1.1]">
               Что нового в поселке
             </h1>
 
-            <article class="grid grid-cols-1 gap-4 py-6 md:grid-cols-[10rem_minmax(0,1fr)] md:gap-8 md:py-7">
-              <p class="flex flex-wrap items-center gap-2 text-sm font-normal leading-tight tracking-tight text-foreground md:flex-col md:items-center md:gap-1 md:pt-1 md:text-center md:text-base">
-                <time datetime={latestNews.published_iso}>
-                  {formatNewsDate(latestNews.published_iso)}
-                </time>
-                {latestNews.time && (
-                  <span class="ui-num">{latestNews.time}</span>
-                )}
-              </p>
+            <div>
+              {latestNews.map((article) => (
+                <article class="grid grid-cols-1 gap-4 py-6 md:grid-cols-[10rem_minmax(0,1fr)] md:gap-8 md:py-7">
+                  <p class="flex flex-wrap items-center gap-2 text-sm font-normal leading-tight tracking-tight text-foreground md:flex-col md:items-center md:gap-1 md:pt-1 md:text-center md:text-base">
+                    <time datetime={article.published_iso}>
+                      {formatNewsDate(article.published_iso)}
+                    </time>
+                    {article.time && <span class="ui-num">{article.time}</span>}
+                  </p>
 
-              <div class="max-w-3xl space-y-3">
-                <h2 class="flex items-start gap-2 text-xl font-semibold leading-snug tracking-tight text-foreground">
-                  <a href={articleUrl(latestNews)} class="ui-link">
-                    {latestNews.title}
-                  </a>
-                </h2>
-                <p class="text-sm leading-6 text-muted-foreground md:text-base md:leading-7">
-                  {latestNews.summary}
-                </p>
-              </div>
-            </article>
+                  <div class="max-w-3xl space-y-3">
+                    <h2 class="flex items-start gap-2 text-xl font-semibold leading-snug tracking-tight text-foreground">
+                      <a href={articleUrl(article)} class="ui-link">
+                        {article.title}
+                      </a>
+                    </h2>
+                    <p class="text-sm leading-6 text-muted-foreground md:text-base md:leading-7">
+                      {article.summary}
+                    </p>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
       )
