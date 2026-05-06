@@ -3,7 +3,10 @@ import type { GetStaticPaths } from 'astro';
 
 import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { withHomeBreadcrumbs } from '@/lib/breadcrumbs';
+import {
+  withHomeBreadcrumbs,
+  withHomeSchemaBreadcrumbs,
+} from '@/lib/breadcrumbs';
 import { renderMarkdown } from '@/lib/markdown/render';
 import { formatDynamicHtml } from '@/lib/typography';
 import PhoneIcon from '@shelkovo/ui/icons/system/Phone.astro';
@@ -66,6 +69,9 @@ const schema = personProfilePageSchema({
   position: profile.position,
   url: profile.url,
   contacts: profile.contacts,
+  breadcrumbs: withHomeSchemaBreadcrumbs([
+    { name: profile.name, url: profile.url },
+  ]),
 });
 ---
 

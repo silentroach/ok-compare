@@ -13,7 +13,24 @@ interface PersonProfilePageInput {
   readonly position?: string;
   readonly url: string;
   readonly contacts: readonly PersonContact[];
+  readonly breadcrumbs?: readonly BreadcrumbLink[];
 }
+
+interface BreadcrumbLink {
+  readonly name: string;
+  readonly url: string;
+}
+
+const breadcrumbSchema = (items: readonly BreadcrumbLink[]): SchemaDoc => ({
+  '@context': CONTEXT,
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: item.name,
+    item: absoluteUrl(item.url),
+  })),
+});
 
 const personEntity = (input: PersonProfilePageInput): SchemaDoc => {
   const url = absoluteUrl(input.url);
@@ -55,7 +72,7 @@ export const personProfilePageSchema = (
 ): readonly SchemaDoc[] => {
   const url = absoluteUrl(input.url);
 
-  return [
+  const docs: SchemaDoc[] = [
     {
       '@context': CONTEXT,
       '@type': 'ProfilePage',
@@ -69,4 +86,10 @@ export const personProfilePageSchema = (
     },
     personEntity(input),
   ];
+
+  if (input.breadcrumbs?.length) {
+    docs.push(breadcrumbSchema(input.breadcrumbs));
+  }
+
+  return docs;
 };

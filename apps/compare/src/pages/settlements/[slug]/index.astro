@@ -115,6 +115,24 @@ const pageKeywords = collectKeywords(
   settlement.location.district,
   companyKeywords,
 );
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Сравнение поселков',
+      item: canon('/'),
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: settlement.name,
+      item: pageUrl,
+    },
+  ],
+};
 const same = [settlement.website, ...(tg ? [tg] : [])];
 const schema = {
   '@context': 'https://schema.org',
@@ -169,7 +187,7 @@ const heroMap = hasPoint
   title={pageTitle}
   description={pageDescription}
   keywords={pageKeywords}
-  schema={schema}
+  schema={[schema, breadcrumb]}
 >
   <main class="ui-page py-6 md:py-10 lg:pt-0">
     <h1 class="sr-only">{settlement.name}</h1>

@@ -43,8 +43,10 @@ describe('StatusIncidentRow', () => {
     });
 
     expect(html).toMatch(
-      /<a(?=[^>]*href="\/status\/incidents\/2026\/05\/outage\/")(?=[^>]*class="ui-link")[^>]*>Отключение электричества<\/a>/u,
+      /<a(?=[^>]*href="\/status\/incidents\/2026\/05\/outage\/")(?=[^>]*class="[^"]*\bui-link\b[^"]*")[^>]*>Отключение электричества<\/a>/u,
     );
-    expect(html).not.toMatch(/<a(?=[^>]*class="ui-link")[^>]*>\s+Отключение/u);
+    expect(html).not.toMatch(
+      /<a(?=[^>]*class="[^"]*\bui-link\b[^"]*")[^>]*>\s+Отключение/u,
+    );
   });
 });

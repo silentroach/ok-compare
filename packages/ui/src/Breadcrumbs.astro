@@ -10,6 +10,7 @@ interface Props {
 }
 
 const { items, linkLast = false } = Astro.props;
+const lastIndex = items.length - 1;
 ---
 
 {
@@ -17,9 +18,14 @@ const { items, linkLast = false } = Astro.props;
     <nav aria-label="Хлебные крошки">
       <ol class="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-muted-foreground md:gap-x-2">
         {items.map((item, index) => (
-          <li class="flex items-center gap-1.5 md:gap-2">
+          <li
+            class:list={[
+              'items-center gap-1.5 md:gap-2',
+              index === lastIndex ? 'hidden sm:flex' : 'flex',
+            ]}
+          >
             {index > 0 && <span aria-hidden="true">›</span>}
-            {item.href && (linkLast || index < items.length - 1) ? (
+            {item.href && (linkLast || index < lastIndex) ? (
               <a href={item.href} class="ui-link font-medium">
                 {item.label}
               </a>

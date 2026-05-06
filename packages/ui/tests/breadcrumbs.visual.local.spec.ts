@@ -20,6 +20,15 @@ test.describe('Breadcrumbs visual', () => {
     });
   });
 
+  test('hides the current page item on narrow screens', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+
+    const target = page.getByTestId('breadcrumbs-section');
+
+    await expect(target.getByRole('link', { name: 'Главная' })).toBeVisible();
+    await expect(target.locator('[aria-current="page"]')).toBeHidden();
+  });
+
   test('renders a long trail when the last item stays linked', async ({
     page,
   }) => {
