@@ -53,9 +53,8 @@ const TitleIcon = titleIcon?.Icon;
         }
         {
           incident.has_page ? (
-            <a href={incident.url} class="ui-link min-w-0">
-              {incident.title}
-            </a>
+            // prettier-ignore
+            <a href={incident.url} class="ui-link min-w-0">{incident.title}</a>
           ) : (
             <span class="min-w-0">{incident.title}</span>
           )
