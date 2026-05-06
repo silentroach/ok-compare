@@ -195,38 +195,18 @@ jobs:
         run: |
           ssh_opts="ssh -p $DEPLOY_PORT -o ControlMaster=auto -o ControlPersist=600 -o ControlPath=$HOME/.ssh/cm-%C"
 
-          rsync -azc --delete --mkpath --chmod=D755,F644 \
-            --exclude '/static/' \
+          # --no-t: не обновлять mtime у файлов, контент которых не изменился
+          # (-c сравнивает по checksum, без -t mtime на сервере остается прежним
+          # для уже существующих файлов; новые файлы получат mtime деплоя)
+          rsync_opts="-azc --no-t --delete --mkpath --chmod=D755,F644"
+
+          rsync $rsync_opts \
             -e "$ssh_opts" \
             dist/www/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_WWW_PATH/"
 
-          rsync -azc --mkpath --chmod=D755,F644 \
-            -e "$ssh_opts" \
-            dist/www/static/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_WWW_PATH/static/"
-
-          rsync -azc --delete --mkpath --chmod=D755,F644 \
-            --exclude '/static/' \
+          rsync $rsync_opts \
             -e "$ssh_opts" \
             dist/legacy/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_COMPARE_PATH/"
-
-          rsync -azc --mkpath --chmod=D755,F644 \
-            -e "$ssh_opts" \
-            dist/legacy/static/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_COMPARE_PATH/static/"
-
-      - name: Prune stale hashed assets
-        run: |
-          ssh_opts="-p $DEPLOY_PORT -o ControlMaster=auto -o ControlPersist=600 -o ControlPath=$HOME/.ssh/cm-%C"
-
-          ssh $ssh_opts "$DEPLOY_USER@$DEPLOY_HOST" '
-            set -eu
-
-            for dir in "'$DEPLOY_WWW_PATH'/static" "'$DEPLOY_COMPARE_PATH'/static"; do
-              if [ -d "$dir" ]; then
-                find "$dir" -type f -mtime +30 -delete
-                find "$dir" -type d -empty -delete
-              fi
-            done
-          '
 
       - name: Deploy nginx config
         run: |
