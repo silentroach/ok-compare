@@ -225,6 +225,28 @@ const setMatchingDeltaText = (
   });
 };
 
+const setMatchingRowTariffText = (
+  root: ParentNode,
+  row: CalculatedEstimateRow,
+): void => {
+  root.querySelectorAll('[data-reglament-row-tariff]').forEach((node) => {
+    if (
+      node instanceof HTMLElement &&
+      node.getAttribute('data-reglament-row-tariff') === row.id
+    ) {
+      node.textContent = formatReglamentTariffValue(row.tariff_per_sotka_month);
+      const tone = deltaTone(row.delta_tariff_per_sotka_month);
+
+      if (tone === 'zero') {
+        delete node.dataset.reglamentDeltaTone;
+        return;
+      }
+
+      node.dataset.reglamentDeltaTone = tone;
+    }
+  });
+};
+
 const setMatchingBreakdownText = (
   root: ParentNode,
   rowId: string,
@@ -254,20 +276,7 @@ const renderRow = (root: ParentNode, row: CalculatedEstimateRow): void => {
     row.id,
     formatReglamentAnnualMoney(row.annual_gross),
   );
-  setMatchingText(
-    root,
-    '[data-reglament-row-tariff]',
-    'data-reglament-row-tariff',
-    row.id,
-    formatReglamentTariffValue(row.tariff_per_sotka_month),
-  );
-  setMatchingDeltaText(
-    root,
-    '[data-reglament-row-delta]',
-    'data-reglament-row-delta',
-    row.id,
-    row.delta_tariff_per_sotka_month,
-  );
+  setMatchingRowTariffText(root, row);
   BREAKDOWN_FIELD_KEYS.forEach((field) =>
     setMatchingBreakdownText(
       root,

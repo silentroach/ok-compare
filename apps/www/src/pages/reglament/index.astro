@@ -461,7 +461,7 @@ const inlineInputClass = `${inputClass} text-right`;
               </div>
 
               <div class="-mx-5 overflow-x-auto border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0">
-                <table class="min-w-[54rem] w-full border-separate border-spacing-0 text-left text-sm">
+                <table class="min-w-[48rem] w-full border-separate border-spacing-0 text-left text-sm">
                   <caption class="sr-only">{section.title}</caption>
                   <thead class="bg-muted text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
                     <tr>
@@ -473,11 +473,8 @@ const inlineInputClass = `${inputClass} text-right`;
                       <th class="w-[14%] px-4 py-2.5 align-bottom">
                         Цена/ставка
                       </th>
-                      <th class="w-[12%] px-4 py-2.5 text-right align-bottom">
+                      <th class="w-[22%] px-4 py-2.5 text-right align-bottom">
                         Вклад в тариф
-                      </th>
-                      <th class="w-[10%] px-4 py-2.5 text-right align-bottom">
-                        Изменение
                       </th>
                     </tr>
                   </thead>
@@ -601,17 +598,9 @@ const inlineInputClass = `${inputClass} text-right`;
                               row.computed.tariff_per_sotka_month,
                             )}
                           </td>
-                          <td
-                            class="border-t border-border px-4 py-2.5 text-right align-top text-muted-foreground"
-                            data-reglament-row-delta={row.id}
-                          >
-                            {formatReglamentMoneyDelta(
-                              row.computed.delta_tariff_per_sotka_month,
-                            )}
-                          </td>
                         </tr>
                         <tr>
-                          <td class="px-4 pb-3 pt-0 align-top" colspan="6">
+                          <td class="px-4 pb-3 pt-0 align-top" colspan="5">
                             <details class="max-w-[calc(100vw-2.5rem)] text-xs leading-5 text-muted-foreground sm:max-w-[calc(100vw-6rem)] lg:max-w-none">
                               <summary class="inline-flex cursor-pointer font-bold text-primary outline-none focus-visible:rounded-md focus-visible:ring-2 focus-visible:ring-primary/25">
                                 Детали расчета и источники

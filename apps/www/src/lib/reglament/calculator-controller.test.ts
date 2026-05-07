@@ -9,7 +9,11 @@ import {
   hydrateReglamentCalculator,
 } from './calculator-controller';
 import type { CalculatedEstimate, CalculatedEstimateRow } from './calculate';
-import { formatReglamentAnnualMoney, formatReglamentMoney } from './format';
+import {
+  formatReglamentAnnualMoney,
+  formatReglamentMoney,
+  formatReglamentTariffValue,
+} from './format';
 
 const findCalculatedRow = (
   result: CalculatedEstimate,
@@ -251,5 +255,46 @@ describe('buildReglamentCalculatorChanges', () => {
 
     expect(input.value).toBe('1473084');
     expect(stickyTariff.textContent).toMatchInlineSnapshot(`"902,07 ₽/сотка"`);
+  });
+
+  it('renders changed row contribution in the tariff cell with delta tone', () => {
+    const rowId = 'cleaning-winter-mechanized';
+    document.body.innerHTML = `
+      <div data-reglament-calculator>
+        <input
+          type="number"
+          data-reglament-field="frequency"
+          data-reglament-row-id="${rowId}"
+          data-reglament-baseline="116"
+          value="100"
+        />
+        <span data-reglament-row-tariff="${rowId}"></span>
+      </div>
+    `;
+    const root = document.querySelector('[data-reglament-calculator]');
+    const rowTariff = document.querySelector('[data-reglament-row-tariff]');
+
+    if (!(root instanceof HTMLElement) || !(rowTariff instanceof HTMLElement)) {
+      throw new Error('Missing row tariff fixture nodes');
+    }
+
+    hydrateReglamentCalculator(root);
+
+    const expectedRow = findCalculatedRow(
+      calculateReglamentCalculatorState([
+        {
+          rowId,
+          key: 'frequency',
+          baseline: 116,
+          value: '100',
+        },
+      ]),
+      rowId,
+    );
+
+    expect(rowTariff.textContent).toBe(
+      formatReglamentTariffValue(expectedRow.tariff_per_sotka_month),
+    );
+    expect(rowTariff.dataset.reglamentDeltaTone).toBe('negative');
   });
 });
