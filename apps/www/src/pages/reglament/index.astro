@@ -369,15 +369,16 @@ const inlineInputClass = `${inputClass} text-right`;
     </section>
 
     <div
-      class="sticky top-0 z-20 border-y border-border bg-surface px-3 py-1 md:px-6"
+      class="reglament-sticky-total sticky top-0 z-20 border-y border-border px-5 py-1 md:px-6"
     >
       <div
-        class="flex h-9 max-w-5xl items-center gap-3 overflow-hidden whitespace-nowrap text-xs text-muted-foreground md:text-sm"
+        class="flex h-9 w-full max-w-6xl items-center gap-3 overflow-hidden whitespace-nowrap text-xs text-muted-foreground md:text-sm"
       >
         <button
           class="shrink-0 rounded-full border border-border-strong bg-surface px-2.5 py-0.5 text-xs font-bold text-primary hover:border-primary hover:bg-muted md:px-3 md:text-sm"
           type="button"
           data-reglament-reset
+          hidden
         >
           <span class="hidden sm:inline">Сбросить</span><span class="sm:hidden"
             >Сброс</span
@@ -385,7 +386,7 @@ const inlineInputClass = `${inputClass} text-right`;
         </button>
         <span class="sr-only">Текущий тариф</span>
         <strong
-          class="ml-auto min-w-0 truncate text-right text-sm text-foreground md:text-base"
+          class="ml-auto min-w-0 truncate text-right text-base text-foreground md:text-lg"
           data-reglament-current-tariff
         >
           {formatReglamentTariff(payload.computed.tariff_per_sotka_month)}
@@ -770,6 +771,11 @@ const inlineInputClass = `${inputClass} text-right`;
   </main>
 
   <style>
+    .reglament-sticky-total {
+      background: var(--color-surface-muted);
+      box-shadow: 0 0.45rem 1rem oklch(27% 0.05 142 / 0.055);
+    }
+
     [data-reglament-delta-tone='negative'] {
       color: var(--color-success);
     }

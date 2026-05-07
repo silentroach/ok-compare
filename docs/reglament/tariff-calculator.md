@@ -693,6 +693,28 @@ Dependencies: Task 6, Task 13.
 
 Estimated scope: M.
 
+### Task 24: Довести sticky-панель тарифа
+
+Описание: выровнять текущий тариф в sticky-панели по правому краю секционных итогов, увеличить размер цифры, сделать панель визуально отличимой от фона и показывать кнопку сброса только при изменениях пользователя.
+
+Acceptance criteria:
+
+- [x] Sticky-тариф выровнен по правому краю с цифрой секционного итога.
+- [x] Sticky-тариф крупнее прежнего, но панель остается компактной.
+- [x] Sticky-панель имеет отличимый фон и мягкую нижнюю тень без карточной перегрузки.
+- [x] Кнопка `Сбросить` скрыта в baseline-состоянии и появляется только при изменениях.
+
+Verification:
+
+- [x] Unit-test controller-а проверяет dirty-state видимость кнопки сброса.
+- [x] `pnpm --dir apps/www test`
+- [x] `pnpm --dir apps/www build`
+- [x] Manual check: sticky-тариф совпадает правым краем с секционным итогом, reset появляется после изменения и пропадает после сброса.
+
+Dependencies: Task 22.
+
+Estimated scope: S.
+
 ## Checkpoints
 
 Checkpoint after Tasks 1-3:
@@ -711,7 +733,7 @@ Checkpoint after Tasks 7-10:
 - [x] Discovery полный.
 - [x] Build, tests и typecheck проходят.
 
-Checkpoint after follow-up Tasks 11-23:
+Checkpoint after follow-up Tasks 11-24:
 
 - [x] UI-лейблы, источники и controls соответствуют follow-up notes.
 - [x] Спорная строка благоустройства перепроверена или явно помечена caveat.

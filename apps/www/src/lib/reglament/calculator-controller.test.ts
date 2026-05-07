@@ -215,7 +215,7 @@ describe('buildReglamentCalculatorChanges', () => {
     ).toMatchInlineSnapshot(`"48,27 ₽/сотка"`);
   });
 
-  it('updates a single sticky current tariff and resets it to baseline', () => {
+  it('updates a single sticky current tariff and shows reset only while dirty', () => {
     document.body.innerHTML = `
       <div data-reglament-calculator>
         <input
@@ -246,15 +246,20 @@ describe('buildReglamentCalculatorChanges', () => {
     }
 
     hydrateReglamentCalculator(root);
+
+    expect(reset.hidden).toBe(true);
+
     input.value = '1573084';
     input.dispatchEvent(new Event('input', { bubbles: true }));
 
     expect(stickyTariff.textContent).toMatchInlineSnapshot(`"902,48 ₽/сотка"`);
+    expect(reset.hidden).toBe(false);
 
     reset.click();
 
     expect(input.value).toBe('1473084');
     expect(stickyTariff.textContent).toMatchInlineSnapshot(`"902,07 ₽/сотка"`);
+    expect(reset.hidden).toBe(true);
   });
 
   it('renders changed row contribution in the tariff cell with delta tone', () => {

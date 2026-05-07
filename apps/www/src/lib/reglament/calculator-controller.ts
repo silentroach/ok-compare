@@ -163,6 +163,26 @@ export const calculateReglamentCalculatorState = (
 ): CalculatedEstimate =>
   calculateEstimate(estimate2026, buildReglamentCalculatorChanges(fields));
 
+const isReglamentCalculatorFieldDirty = (
+  field: ReglamentCalculatorFieldState,
+): boolean => {
+  if (field.key === 'enabled') {
+    const baseline = toBoolean(field.baseline);
+    const value = toBoolean(field.value);
+
+    return baseline !== undefined && value !== undefined && value !== baseline;
+  }
+
+  if (!isNumberEditableFieldKey(field.key)) {
+    return false;
+  }
+
+  const baseline = toFiniteNumber(field.baseline);
+  const value = toFiniteNumber(field.value);
+
+  return baseline !== undefined && (value === undefined || value !== baseline);
+};
+
 const deltaTone = (value: number): 'negative' | 'positive' | 'zero' => {
   if (value < 0) {
     return 'negative';
@@ -394,12 +414,20 @@ const resetReglamentCalculatorFields = (root: ParentNode): void => {
   });
 };
 
+const setResetVisibility = (root: ParentNode, isDirty: boolean): void => {
+  root.querySelectorAll(RESET_SELECTOR).forEach((node) => {
+    if (node instanceof HTMLButtonElement) {
+      node.hidden = !isDirty;
+    }
+  });
+};
+
 export const hydrateReglamentCalculator = (root: HTMLElement): void => {
   const render = (): void => {
-    renderReglamentCalculator(
-      root,
-      calculateReglamentCalculatorState(readReglamentCalculatorFields(root)),
-    );
+    const fields = readReglamentCalculatorFields(root);
+
+    renderReglamentCalculator(root, calculateReglamentCalculatorState(fields));
+    setResetVisibility(root, fields.some(isReglamentCalculatorFieldDirty));
   };
 
   if (root.dataset.reglamentCalculatorHydrated === 'true') {
