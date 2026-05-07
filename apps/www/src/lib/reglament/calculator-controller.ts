@@ -8,11 +8,13 @@ import {
   type EstimateRowChange,
 } from './calculate';
 import {
+  formatReglamentInputNumber,
   formatReglamentAnnualMoney,
   formatReglamentMoney,
   formatReglamentMoneyDelta,
   formatReglamentTariff,
   formatReglamentTariffValue,
+  parseReglamentNumberInput,
 } from './format';
 import {
   EDITABLE_FIELD_KEYS,
@@ -82,15 +84,7 @@ const toFiniteNumber = (
     return Number.isFinite(value) ? value : undefined;
   }
 
-  const normalized = value.trim().replaceAll(' ', '').replace(',', '.');
-
-  if (!normalized) {
-    return undefined;
-  }
-
-  const numberValue = Number(normalized);
-
-  return Number.isFinite(numberValue) ? numberValue : undefined;
+  return parseReglamentNumberInput(value);
 };
 
 const toBoolean = (value: boolean | number | string): boolean | undefined => {
@@ -410,8 +404,23 @@ const resetReglamentCalculatorFields = (root: ParentNode): void => {
       return;
     }
 
-    node.value = node.dataset.reglamentBaseline ?? '';
+    const baseline = toFiniteNumber(node.dataset.reglamentBaseline ?? '');
+
+    node.value =
+      baseline === undefined ? '' : formatReglamentInputNumber(baseline);
   });
+};
+
+const formatReglamentInput = (input: HTMLInputElement): void => {
+  if (input.type === 'checkbox') {
+    return;
+  }
+
+  const value = toFiniteNumber(input.value);
+
+  if (value !== undefined) {
+    input.value = formatReglamentInputNumber(value);
+  }
 };
 
 const setResetVisibility = (root: ParentNode, isDirty: boolean): void => {
@@ -446,6 +455,15 @@ export const hydrateReglamentCalculator = (root: HTMLElement): void => {
       render();
     }
   });
+  root.addEventListener(
+    'blur',
+    (event) => {
+      if (event.target instanceof HTMLInputElement) {
+        formatReglamentInput(event.target);
+      }
+    },
+    true,
+  );
   root.querySelectorAll(RESET_SELECTOR).forEach((node) => {
     if (node instanceof HTMLButtonElement) {
       node.addEventListener('click', () => {

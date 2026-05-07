@@ -11,6 +11,7 @@ import { collectionPageSchema } from '@/lib/news/seo';
 import { buildReglamentPayload } from '@/lib/reglament/discovery';
 import {
   formatReglamentAnnualMoney,
+  formatReglamentInputNumber,
   formatReglamentMoney,
   formatReglamentMoneyDelta,
   formatReglamentNumber,
@@ -267,9 +268,17 @@ const viewSections = htmlSections.map((section) => ({
     };
   }),
 }));
-const inputClass =
-  'w-full min-w-0 rounded-md border border-border bg-surface px-2 py-1.5 text-sm font-semibold text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20';
-const inlineInputClass = `${inputClass} text-right`;
+const inputShellClass =
+  'inline-flex max-w-full overflow-hidden rounded-lg border border-border bg-surface align-top transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20';
+const inputBaseClass =
+  'reglament-input min-w-0 bg-transparent px-2.5 py-1.5 text-sm font-semibold text-foreground outline-none';
+const inputClass = `${inputBaseClass} w-[6.25rem]`;
+const inlineInputClass = `${inputBaseClass} w-[7.5rem] text-right`;
+const inputUnitClass =
+  'flex shrink-0 items-center border-l border-border bg-muted px-2 text-[0.6875rem] font-semibold leading-none text-muted-foreground';
+const tableTextClass = 'block pt-[0.4375rem] leading-snug';
+const formatInputUnit = (unit: string): string =>
+  unit === '₽/год' ? '₽' : unit;
 ---
 
 <BaseLayout
@@ -488,7 +497,7 @@ const inlineInputClass = `${inputClass} text-right`;
                               <div class="flex items-start gap-2">
                                 {row.controls.enabled && (
                                   <input
-                                    class="mt-0.5 h-4 w-4 shrink-0 rounded border-border text-primary focus:ring-primary"
+                                    class="mt-2 h-4 w-4 shrink-0 rounded border-border text-primary focus:ring-primary"
                                     type="checkbox"
                                     checked={row.baseline.is_enabled}
                                     aria-label={`Включить позицию: ${row.title}`}
@@ -499,7 +508,12 @@ const inlineInputClass = `${inputClass} text-right`;
                                     )}
                                   />
                                 )}
-                                <p class="min-w-0 flex-1 font-semibold leading-snug text-foreground">
+                                <p
+                                  class:list={[
+                                    tableTextClass,
+                                    'min-w-0 flex-1 font-semibold text-foreground',
+                                  ]}
+                                >
                                   {row.title}
                                 </p>
                               </div>
@@ -507,104 +521,144 @@ const inlineInputClass = `${inputClass} text-right`;
                           </td>
                           <td class="border-t border-border px-4 py-2.5 align-top text-muted-foreground">
                             {row.controls.base ? (
-                              <label class="block space-y-1">
-                                <input
-                                  class={inputClass}
-                                  type="number"
-                                  inputmode="decimal"
-                                  min={row.controls.base.min}
-                                  max={row.controls.base.max}
-                                  step={row.controls.base.step}
-                                  value={row.controls.base.value}
-                                  aria-label={`${row.title}: ${row.controls.base.label}`}
-                                  data-reglament-field={row.controls.base.key}
-                                  data-reglament-row-id={row.id}
-                                  data-reglament-baseline={String(
-                                    row.controls.base.value,
+                              <label class="block">
+                                <span class={inputShellClass}>
+                                  <input
+                                    class={inputClass}
+                                    type="text"
+                                    inputmode="decimal"
+                                    value={formatReglamentInputNumber(
+                                      row.controls.base.value,
+                                    )}
+                                    aria-label={`${row.title}: ${row.controls.base.label}`}
+                                    data-reglament-field={row.controls.base.key}
+                                    data-reglament-row-id={row.id}
+                                    data-reglament-baseline={String(
+                                      row.controls.base.value,
+                                    )}
+                                    data-reglament-min={row.controls.base.min}
+                                    data-reglament-max={row.controls.base.max}
+                                    data-reglament-step={row.controls.base.step}
+                                  />
+                                  {row.controls.base.unit && (
+                                    <span class={inputUnitClass}>
+                                      {row.controls.base.unit}
+                                    </span>
                                   )}
-                                />
-                                {row.controls.base.unit && (
-                                  <span class="block text-xs text-muted-foreground">
-                                    {row.controls.base.unit}
-                                  </span>
-                                )}
+                                </span>
                               </label>
                             ) : (
-                              formatDisplayValue(row.baseline.base)
+                              <span class={tableTextClass}>
+                                {formatDisplayValue(row.baseline.base)}
+                              </span>
                             )}
                           </td>
                           <td class="border-t border-border px-4 py-2.5 align-top text-muted-foreground">
                             {row.controls.frequency ? (
-                              <label class="block space-y-1">
-                                <input
-                                  class={inputClass}
-                                  type="number"
-                                  inputmode="decimal"
-                                  min={row.controls.frequency.min}
-                                  max={row.controls.frequency.max}
-                                  step={row.controls.frequency.step}
-                                  value={row.controls.frequency.value}
-                                  aria-label={`${row.title}: ${row.controls.frequency.label}`}
-                                  data-reglament-field={
-                                    row.controls.frequency.key
-                                  }
-                                  data-reglament-row-id={row.id}
-                                  data-reglament-baseline={String(
-                                    row.controls.frequency.value,
+                              <label class="block">
+                                <span class={inputShellClass}>
+                                  <input
+                                    class={inputClass}
+                                    type="text"
+                                    inputmode="decimal"
+                                    value={formatReglamentInputNumber(
+                                      row.controls.frequency.value,
+                                    )}
+                                    aria-label={`${row.title}: ${row.controls.frequency.label}`}
+                                    data-reglament-field={
+                                      row.controls.frequency.key
+                                    }
+                                    data-reglament-row-id={row.id}
+                                    data-reglament-baseline={String(
+                                      row.controls.frequency.value,
+                                    )}
+                                    data-reglament-min={
+                                      row.controls.frequency.min
+                                    }
+                                    data-reglament-max={
+                                      row.controls.frequency.max
+                                    }
+                                    data-reglament-step={
+                                      row.controls.frequency.step
+                                    }
+                                  />
+                                  {row.controls.frequency.unit && (
+                                    <span class={inputUnitClass}>
+                                      {row.controls.frequency.unit}
+                                    </span>
                                   )}
-                                />
-                                {row.controls.frequency.unit && (
-                                  <span class="block text-xs text-muted-foreground">
-                                    {row.controls.frequency.unit}
-                                  </span>
-                                )}
+                                </span>
                               </label>
                             ) : (
-                              formatDisplayValue(row.baseline.frequency)
+                              <span class={tableTextClass}>
+                                {formatDisplayValue(row.baseline.frequency)}
+                              </span>
                             )}
                           </td>
                           <td class="border-t border-border px-4 py-2.5 align-top text-muted-foreground">
                             {row.controls.rate ? (
-                              <label class="block space-y-1">
-                                <input
-                                  class={inputClass}
-                                  type="number"
-                                  inputmode="decimal"
-                                  min={row.controls.rate.min}
-                                  max={row.controls.rate.max}
-                                  step={row.controls.rate.step}
-                                  value={row.controls.rate.value}
-                                  aria-label={`${row.title}: ${row.controls.rate.label}`}
-                                  data-reglament-field={row.controls.rate.key}
-                                  data-reglament-row-id={row.id}
-                                  data-reglament-baseline={String(
-                                    row.controls.rate.value,
+                              <label class="block">
+                                <span class={inputShellClass}>
+                                  <input
+                                    class={inputClass}
+                                    type="text"
+                                    inputmode="decimal"
+                                    value={formatReglamentInputNumber(
+                                      row.controls.rate.value,
+                                    )}
+                                    aria-label={`${row.title}: ${row.controls.rate.label}`}
+                                    data-reglament-field={row.controls.rate.key}
+                                    data-reglament-row-id={row.id}
+                                    data-reglament-baseline={String(
+                                      row.controls.rate.value,
+                                    )}
+                                    data-reglament-min={row.controls.rate.min}
+                                    data-reglament-max={row.controls.rate.max}
+                                    data-reglament-step={row.controls.rate.step}
+                                  />
+                                  {row.controls.rate.unit && (
+                                    <span class={inputUnitClass}>
+                                      {row.controls.rate.unit}
+                                    </span>
                                   )}
-                                />
-                                {row.controls.rate.unit && (
-                                  <span class="block text-xs text-muted-foreground">
-                                    {row.controls.rate.unit}
-                                  </span>
-                                )}
+                                </span>
                               </label>
                             ) : (
-                              formatDisplayValue(row.baseline.price)
+                              <span class={tableTextClass}>
+                                {formatDisplayValue(row.baseline.price)}
+                              </span>
                             )}
                           </td>
-                          <td
-                            class="border-t border-border px-4 py-2.5 text-right align-top font-semibold text-foreground"
-                            data-reglament-row-tariff={row.id}
-                          >
-                            {formatReglamentTariffValue(
-                              row.computed.tariff_per_sotka_month,
-                            )}
+                          <td class="border-t border-border px-4 py-2.5 text-right align-top font-semibold text-foreground">
+                            <span
+                              class={tableTextClass}
+                              data-reglament-row-tariff={row.id}
+                            >
+                              {formatReglamentTariffValue(
+                                row.computed.tariff_per_sotka_month,
+                              )}
+                            </span>
                           </td>
                         </tr>
                         <tr>
                           <td class="px-4 pb-3 pt-0 align-top" colspan="5">
-                            <details class="max-w-[calc(100vw-2.5rem)] text-xs leading-5 text-muted-foreground sm:max-w-[calc(100vw-6rem)] lg:max-w-none">
-                              <summary class="inline-flex cursor-pointer font-bold text-primary outline-none focus-visible:rounded-md focus-visible:ring-2 focus-visible:ring-primary/25">
-                                Детали расчета и источники
+                            <details class="ml-1.5 max-w-[calc(100vw-2.875rem)] text-xs leading-5 text-muted-foreground sm:max-w-[calc(100vw-6.375rem)] lg:max-w-none">
+                              <summary class="reglament-details-summary inline-flex cursor-pointer list-none items-center gap-1.5 font-bold text-primary outline-none focus-visible:rounded-md focus-visible:ring-2 focus-visible:ring-primary/25">
+                                <svg
+                                  class="reglament-details-icon h-3 w-3 shrink-0 transition-transform"
+                                  viewBox="0 0 12 12"
+                                  aria-hidden="true"
+                                >
+                                  <path
+                                    d="M4.5 2.5 8 6l-3.5 3.5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="1.8"
+                                  />
+                                </svg>
+                                <span>Детали расчета и источники</span>
                               </summary>
                               <div class="mt-3 space-y-4 border-l border-border pl-3 md:pl-4">
                                 {row.description && (
@@ -668,32 +722,48 @@ const inlineInputClass = `${inputClass} text-right`;
                                           <dt class="pt-1.5">{field.label}</dt>
                                           <dd class="min-w-[10rem] text-right font-semibold text-foreground">
                                             {control ? (
-                                              <label class="block space-y-1">
+                                              <label class="block">
                                                 <span class="sr-only">
                                                   {row.title}: {control.label}
                                                 </span>
-                                                <input
-                                                  class={inlineInputClass}
-                                                  type="number"
-                                                  inputmode="decimal"
-                                                  min={control.min}
-                                                  max={control.max}
-                                                  step={control.step}
-                                                  value={control.value}
-                                                  aria-label={`${row.title}: ${control.label}`}
-                                                  data-reglament-field={
-                                                    control.key
-                                                  }
-                                                  data-reglament-row-id={row.id}
-                                                  data-reglament-baseline={String(
-                                                    control.value,
+                                                <span class={inputShellClass}>
+                                                  <input
+                                                    class={inlineInputClass}
+                                                    type="text"
+                                                    inputmode="decimal"
+                                                    value={formatReglamentInputNumber(
+                                                      control.value,
+                                                    )}
+                                                    aria-label={`${row.title}: ${control.label}`}
+                                                    data-reglament-field={
+                                                      control.key
+                                                    }
+                                                    data-reglament-row-id={
+                                                      row.id
+                                                    }
+                                                    data-reglament-baseline={String(
+                                                      control.value,
+                                                    )}
+                                                    data-reglament-min={
+                                                      control.min
+                                                    }
+                                                    data-reglament-max={
+                                                      control.max
+                                                    }
+                                                    data-reglament-step={
+                                                      control.step
+                                                    }
+                                                  />
+                                                  {control.unit && (
+                                                    <span
+                                                      class={inputUnitClass}
+                                                    >
+                                                      {formatInputUnit(
+                                                        control.unit,
+                                                      )}
+                                                    </span>
                                                   )}
-                                                />
-                                                {control.unit && (
-                                                  <span class="block text-[0.6875rem] font-normal text-muted-foreground">
-                                                    {control.unit}
-                                                  </span>
-                                                )}
+                                                </span>
                                               </label>
                                             ) : (
                                               <span
@@ -729,26 +799,30 @@ const inlineInputClass = `${inputClass} text-right`;
                                           <span class="font-bold text-muted-foreground">
                                             {control.label}
                                           </span>
-                                          <input
-                                            class={inputClass}
-                                            type="number"
-                                            inputmode="decimal"
-                                            min={control.min}
-                                            max={control.max}
-                                            step={control.step}
-                                            value={control.value}
-                                            aria-label={`${row.title}: ${control.label}`}
-                                            data-reglament-field={control.key}
-                                            data-reglament-row-id={row.id}
-                                            data-reglament-baseline={String(
-                                              control.value,
+                                          <span class={inputShellClass}>
+                                            <input
+                                              class={inputClass}
+                                              type="text"
+                                              inputmode="decimal"
+                                              value={formatReglamentInputNumber(
+                                                control.value,
+                                              )}
+                                              aria-label={`${row.title}: ${control.label}`}
+                                              data-reglament-field={control.key}
+                                              data-reglament-row-id={row.id}
+                                              data-reglament-baseline={String(
+                                                control.value,
+                                              )}
+                                              data-reglament-min={control.min}
+                                              data-reglament-max={control.max}
+                                              data-reglament-step={control.step}
+                                            />
+                                            {control.unit && (
+                                              <span class={inputUnitClass}>
+                                                {formatInputUnit(control.unit)}
+                                              </span>
                                             )}
-                                          />
-                                          {control.unit && (
-                                            <span class="block text-muted-foreground">
-                                              {control.unit}
-                                            </span>
-                                          )}
+                                          </span>
                                         </label>
                                       ))}
                                     </div>
@@ -774,6 +848,14 @@ const inlineInputClass = `${inputClass} text-right`;
     .reglament-sticky-total {
       background: var(--color-surface-muted);
       box-shadow: 0 0.45rem 1rem oklch(27% 0.05 142 / 0.055);
+    }
+
+    .reglament-details-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details[open] .reglament-details-icon {
+      transform: rotate(90deg);
     }
 
     [data-reglament-delta-tone='negative'] {

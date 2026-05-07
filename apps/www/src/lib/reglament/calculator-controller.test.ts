@@ -10,6 +10,7 @@ import {
 } from './calculator-controller';
 import type { CalculatedEstimate, CalculatedEstimateRow } from './calculate';
 import {
+  formatReglamentInputNumber,
   formatReglamentAnnualMoney,
   formatReglamentMoney,
   formatReglamentTariffValue,
@@ -257,7 +258,51 @@ describe('buildReglamentCalculatorChanges', () => {
 
     reset.click();
 
-    expect(input.value).toBe('1473084');
+    expect(input.value).toBe(formatReglamentInputNumber(1_473_084));
+    expect(stickyTariff.textContent).toMatchInlineSnapshot(`"902,07 ₽/сотка"`);
+    expect(reset.hidden).toBe(true);
+  });
+
+  it('accepts readable grouped money input and resets to grouped baseline', () => {
+    document.body.innerHTML = `
+      <div data-reglament-calculator>
+        <input
+          type="text"
+          data-reglament-field="fixed_price"
+          data-reglament-row-id="lighting-electricity"
+          data-reglament-baseline="1473084"
+          value="${formatReglamentInputNumber(1_473_084)}"
+        />
+        <button type="button" data-reglament-reset>Сброс</button>
+        <strong data-reglament-current-tariff></strong>
+      </div>
+    `;
+    const root = document.querySelector('[data-reglament-calculator]');
+    const input = document.querySelector('input');
+    const reset = document.querySelector('[data-reglament-reset]');
+    const stickyTariff = document.querySelector(
+      '[data-reglament-current-tariff]',
+    );
+
+    if (
+      !(root instanceof HTMLElement) ||
+      !(input instanceof HTMLInputElement) ||
+      !(reset instanceof HTMLButtonElement) ||
+      !(stickyTariff instanceof HTMLElement)
+    ) {
+      throw new Error('Missing grouped money calculator fixture nodes');
+    }
+
+    hydrateReglamentCalculator(root);
+    input.value = formatReglamentInputNumber(1_573_084);
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+
+    expect(stickyTariff.textContent).toMatchInlineSnapshot(`"902,48 ₽/сотка"`);
+    expect(reset.hidden).toBe(false);
+
+    reset.click();
+
+    expect(input.value).toBe(formatReglamentInputNumber(1_473_084));
     expect(stickyTariff.textContent).toMatchInlineSnapshot(`"902,07 ₽/сотка"`);
     expect(reset.hidden).toBe(true);
   });
