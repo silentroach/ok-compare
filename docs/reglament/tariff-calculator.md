@@ -365,16 +365,16 @@ Estimated scope: M.
 
 Acceptance criteria:
 
-- [ ] Sticky-панель помещается в одну строку на desktop.
-- [ ] Mobile sticky занимает минимум высоты и не перекрывает критичные controls.
-- [ ] Нет многоуровневых карточек, тяжелых теней, blur и бумажного фона.
-- [ ] Бейджи нейтральные и фактические.
-- [ ] Страница читается на 320px, 768px, 1024px и 1440px.
+- [x] Sticky-панель помещается в одну строку на desktop.
+- [x] Mobile sticky занимает минимум высоты и не перекрывает критичные controls.
+- [x] Нет многоуровневых карточек, тяжелых теней, blur и бумажного фона.
+- [x] Бейджи нейтральные и фактические.
+- [x] Страница читается на 320px, 768px, 1024px и 1440px.
 
 Verification:
 
-- [ ] Manual responsive check на ключевых breakpoints.
-- [ ] `pnpm --dir apps/www build`
+- [x] Manual responsive check на ключевых breakpoints.
+- [x] `pnpm --dir apps/www build`
 
 Dependencies: Task 6, Task 7.
 
