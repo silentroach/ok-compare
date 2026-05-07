@@ -9,6 +9,7 @@ import {
 } from '@/lib/breadcrumbs';
 import { collectionPageSchema } from '@/lib/news/seo';
 import { buildReglamentPayload } from '@/lib/reglament/discovery';
+import { reglamentNumberInputStep } from '@/lib/reglament/input-step';
 import {
   reglamentEstimate2026DataUrl,
   reglamentLlmsUrl,
@@ -180,7 +181,7 @@ const numberControl = (
     unit: fieldUnit(row, key, field.unit),
     min: field.min,
     max: field.max,
-    step: field.step ?? (Number.isInteger(value) ? 1 : 0.01),
+    step: reglamentNumberInputStep(field, value),
   };
 };
 const expertFieldValue = (
@@ -231,7 +232,7 @@ const expertNumberControls = (
         unit: field.unit ?? (field.key.endsWith('_rate') ? 'доля' : '₽/год'),
         min: field.min,
         max: field.max,
-        step: field.step ?? (Number.isInteger(value) ? 1 : 0.01),
+        step: reglamentNumberInputStep(field, value),
       },
     ];
   });

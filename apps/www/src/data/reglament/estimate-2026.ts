@@ -38,7 +38,6 @@ const frequencyEditableField = {
   label: 'Кратность',
   level: 'basic',
   min: 0,
-  step: 0.01,
 } satisfies EditableField;
 
 const rateEditableField = {
