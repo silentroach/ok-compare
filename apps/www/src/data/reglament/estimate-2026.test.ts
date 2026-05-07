@@ -11,6 +11,18 @@ const round2 = (value: number): number => Math.round(value * 100) / 100;
 const flattenRows = (rows: readonly EstimateRow[]): readonly EstimateRow[] =>
   rows.flatMap((row) => [row, ...flattenRows(row.children ?? [])]);
 
+const findRow = (id: string): EstimateRow => {
+  const row = flattenRows(
+    estimate2026.sections.flatMap((section) => section.rows),
+  ).find((item) => item.id === id);
+
+  if (!row) {
+    throw new Error(`Estimate row not found: ${id}`);
+  }
+
+  return row;
+};
+
 describe('estimate2026 baseline data', () => {
   it('keeps the official total and tariff from final.pdf', () => {
     expect(estimate2026.baseline).toEqual({
@@ -110,5 +122,59 @@ describe('estimate2026 baseline data', () => {
     expect(fixedPriceFields.every((field) => field.level === 'expert')).toBe(
       true,
     );
+  });
+
+  it('keeps the disputed improvement repair source caveat explicit', () => {
+    const row = findRow('improvement-road-surface-repair');
+
+    expect({
+      title: row.title,
+      annual_gross: row.baseline.annual_gross,
+      materials: row.baseline.breakdown.materials,
+      description: row.description,
+      tags: row.tags,
+      source_refs: row.source_refs.map((ref) => ({
+        pdf: ref.pdf,
+        page: ref.page,
+        fragment: ref.fragment,
+        ...(ref.note ? { note: ref.note } : {}),
+      })),
+    }).toMatchInlineSnapshot(`
+      {
+        "annual_gross": 320424,
+        "description": "Сопоставление строки итоговой сметы с детализацией не подтверждено: в final.pdf указано покрытие дорог и площадок, а в детализации благоустройства найдена только близкая по сумме строка ремонта периметрального ограждения. Baseline сохранен по итоговой смете и требует проверки по исходной рабочей книге или у составителя сметы.",
+        "materials": 298320,
+        "source_refs": [
+          {
+            "fragment": "строка 4.2",
+            "page": 2,
+            "pdf": "final",
+          },
+          {
+            "fragment": "производственная программа, ремонт периметрального ограждения",
+            "note": "В детализации благоустройства нет найденной строки ремонта покрытия дорог или площадок; сопоставление с этой строкой не подтверждено.",
+            "page": 2,
+            "pdf": "improvement",
+          },
+          {
+            "fragment": "локальный расчет, замена поврежденных элементов периметрального ограждения",
+            "note": "Материалы 298 320 ₽ близки к строке 4.2 после налоговых начислений, но название работ отличается от final.pdf.",
+            "page": 11,
+            "pdf": "improvement",
+          },
+          {
+            "fragment": "локальный расчет, материалы профнастила и итог 298 320 ₽",
+            "note": "Страница продолжает строку ремонта периметрального ограждения и подтверждает материальную сумму, использованную в baseline breakdown.",
+            "page": 12,
+            "pdf": "improvement",
+          },
+        ],
+        "tags": [
+          "материалы",
+          "требует проверки",
+        ],
+        "title": "Текущий ремонт покрытия дорог, площадок",
+      }
+    `);
   });
 });

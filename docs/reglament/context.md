@@ -32,3 +32,6 @@
 - По follow-up notes добавлены будущие Tasks 20-23: убрать лишние разделители секционных таблиц, сделать чекбокс строки инлайновым без отступа при переносе, упростить sticky до одной текущей цифры справа, убрать колонку `Изменение` и подсвечивать измененный вклад в тариф.
 - Task 15 закрыта: общий formatter лежит в `apps/www/src/lib/reglament/format.ts`; HTML `/reglament/`, vanilla controller, reglament markdown/llms и root llms используют единый формат с `NBSP` между разрядами, числом и `₽` для `₽`, `₽/год`, `₽/сотка` и дельт.
 - Проверки Task 15: `pnpm --dir apps/www test`, `pnpm --dir apps/www build`; `format.test.ts` показывает `NBSP` видимым символом `·`.
+- Task 16 закрыта: `improvement-road-surface-repair` оставлен с official title/value из `final.pdf` (`320 424 ₽`, `1,31 ₽/сотка`), но source refs и description теперь явно говорят, что сопоставление с детализацией не подтверждено.
+- Сверка Task 16: в `final.pdf` стр. 2 есть строка 4.2 «Текущий ремонт покрытия дорог, площадок»; в `improvement.pdf` по поиску не найдено ремонта покрытия дорог/площадок, ближайшая сумма - ремонт периметрального ограждения с материалами `298 320 ₽` на стр. 2, 11, 12.
+- Проверки Task 16: добавлен тест caveat/source refs в `estimate-2026.test.ts`; прошли `pnpm --dir apps/www test -- estimate-2026.test.ts` и `pnpm --dir apps/www test`.

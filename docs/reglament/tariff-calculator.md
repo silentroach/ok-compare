@@ -532,15 +532,15 @@ Estimated scope: M.
 
 Acceptance criteria:
 
-- [ ] Принято и зафиксировано решение: строка сопоставлена корректно или данные исправлены.
-- [ ] Если данные исправлены, source refs, title, tags, note и computed baseline остаются согласованными.
-- [ ] Если данных недостаточно, caveat сохранен явно и без оценочных формулировок.
+- [x] Принято и зафиксировано решение: строка сопоставлена корректно или данные исправлены.
+- [x] Если данные исправлены, source refs, title, tags, note и computed baseline остаются согласованными.
+- [x] Если данных недостаточно, caveat сохранен явно и без оценочных формулировок.
 
 Verification:
 
-- [ ] Unit-test baseline-итогов продолжает сходиться с `final.pdf`.
-- [ ] `pnpm --dir apps/www test`
-- [ ] Manual check: source refs строки не вводят пользователя в заблуждение.
+- [x] Unit-test baseline-итогов продолжает сходиться с `final.pdf`.
+- [x] `pnpm --dir apps/www test`
+- [x] Manual check: source refs строки не вводят пользователя в заблуждение.
 
 Dependencies: Task 10.
 
