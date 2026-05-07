@@ -308,14 +308,29 @@ const formatInputUnit = (unit: string): string =>
           >
             Калькулятор тарифа по смете 2026
           </h1>
-          <p
-            class="max-w-3xl text-base leading-7 text-muted-foreground md:text-lg"
+          <div
+            class="max-w-3xl space-y-3 text-sm leading-6 text-muted-foreground md:text-[0.9375rem]"
           >
-            Смета разложена по разделам и строкам. На этом этапе страница
-            показывает официальные значения, а главная единица сравнения -
-            <span class="font-semibold text-foreground">₽/сотка</span>.
-            Расчетный период - месяц.
-          </p>
+            <p>
+              Смета разложена по разделам и строкам: можно менять объемы,
+              периодичность и цены, чтобы увидеть, как меняется тариф в{' '}
+              <span class="font-semibold text-foreground">₽/сотка за месяц</span
+              >. Пробуйте менять цифры регламента прямо на странице: калькулятор
+              сразу покажет, каким стал бы итоговый тариф после изменений.
+            </p>
+            <p>
+              Для сверки с полным регламентом отдельно вынесены справочники:{
+                ' '
+              }
+              <a class="ui-link font-semibold" href={reglamentAssetsUrl()}>
+                что входит в общее имущество
+              </a>{' '}
+              и{' '}
+              <a class="ui-link font-semibold" href={reglamentServicesUrl()}>
+                какие услуги указаны в регламенте
+              </a>.
+            </p>
+          </div>
         </div>
 
         <div
@@ -379,45 +394,6 @@ const formatInputUnit = (unit: string): string =>
             </p>
           </div>
         </div>
-
-        <nav
-          class="grid gap-3 md:grid-cols-2"
-          aria-label="Справочные страницы полного регламента"
-        >
-          <a
-            class="rounded-xl border border-border bg-surface p-4 transition hover:border-primary hover:bg-muted"
-            href={reglamentAssetsUrl()}
-          >
-            <span
-              class="block text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
-            >
-              Полный регламент
-            </span>
-            <span class="mt-1 block text-base font-semibold text-primary">
-              Что входит в общее имущество
-            </span>
-            <span class="mt-1 block text-sm leading-6 text-muted-foreground">
-              Дороги, ливневки, зелень, благоустройство, электроснабжение и
-              охрана.
-            </span>
-          </a>
-          <a
-            class="rounded-xl border border-border bg-surface p-4 transition hover:border-primary hover:bg-muted"
-            href={reglamentServicesUrl()}
-          >
-            <span
-              class="block text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
-            >
-              Полный регламент
-            </span>
-            <span class="mt-1 block text-base font-semibold text-primary">
-              Какие услуги указаны в регламенте
-            </span>
-            <span class="mt-1 block text-sm leading-6 text-muted-foreground">
-              Периодичность услуг и осторожное сопоставление со строками сметы.
-            </span>
-          </a>
-        </nav>
       </div>
     </section>
 
