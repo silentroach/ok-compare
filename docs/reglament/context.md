@@ -48,3 +48,4 @@
 - Проверки Task 19: `pnpm --dir apps/www test`, `pnpm --dir apps/www build`; manual preview на `/reglament/` подтвердил порядок `cleaning > security > waste-transfer > lighting-power > landscaping > waste-operator > improvement` и отсутствие пересортировки после изменения input.
 - Task 20 закрыта: в `apps/www/src/pages/reglament/index.astro` у секционных блоков убран дополнительный `border-t`; таблицы сохранили собственные border/spacing, без новой карточной вложенности.
 - Проверки Task 20: `pnpm --dir apps/www build`; статическая проверка build output подтвердила, что секции `/reglament/` идут без верхнего section-divider и читаются как единый список таблиц.
+- Task 21 закрыта spec-only: инлайновый checkbox layout решили не реализовывать; текущий компактный чекбокс рядом с названием строки оставлен без изменений, UI/logic не трогались.
