@@ -11,12 +11,7 @@
 - Task 6 закрыта: интерактивность реализована одним vanilla TypeScript controller в `apps/www/src/lib/reglament/calculator-controller.ts`; `/reglament/` рендерит basic controls через `data-reglament-*`, без framework islands, baseline остается читаемым без JS.
 - Task 7 закрыта: каждая строка `/reglament/` получила native `details/summary` с годовой суммой, breakdown, source refs и expert inputs; controller обновляет `data-reglament-row-annual` и `data-reglament-row-breakdown` при пересчете.
 - Basic editable fields формируются по наличию baseline `base`/`frequency`/`price`: volume, frequency, rate, fixed annual price и enabled; expert поля выводятся только внутри раскрытия строки, не в основных колонках таблицы.
-- Future UI note: заменить пользовательскую единицу `₽/сотка/мес` на короткую `₽/сотка`; подразумевается месячный тариф.
-- Future source note: не показывать пользователю пути/названия PDF как основной источник; лучше убирать их из UI или заменять на понятные секции регламента.
-- Future table note: колонка или инпут `Годовая стоимость` в основном виде, вероятно, не нужны; если годовую стоимость оставить, не делать ее редактируемой.
-- Future input note: для целочисленных значений вроде количества раз или дней ставить `step=1`, чтобы стрелки number-input не меняли сотые доли.
-- Future formatting note: стоимости форматировать с учетом типографии, включая неразрывные пробелы между разрядами, числом, знаком рубля и единицей измерения там, где это нужно.
-- Future control note: вместо отдельного чекбокса с подписью `Включено` можно поставить компактный чекбокс слева от названия строки.
+- Future notes превращены в follow-up Tasks 11-17 в `docs/reglament/tariff-calculator.md`: короткая единица тарифа, понятные source labels, упрощение controls, `step=1` для целых inputs, типографика денег, сверка спорной строки благоустройства и решение по полю площади участка.
 - Browser check Task 6: на `astro preview` изменение `lighting-electricity.fixed_price` с `1 473 084` до `1 573 084` дало общий тариф `902,48 ₽/сотка/мес`, delta строки `+0,41 ₽`, reset вернул `902,07 ₽/сотка/мес`.
 - Browser check Task 7: на `astro preview` фокус на `summary` + Enter открывает раскрытие; изменение `waste-transfer-from-homes.primary_salary` до `3 000 000` обновило годовую сумму строки до `11 769 172,11 ₽/год` и breakdown `primary_salary` до `3 000 000 ₽`.
 - Task 8 закрыта: UI `/reglament/` уплотнен в `apps/www/src/pages/reglament/index.astro`; sticky высотой 46px, без wrap и document overflow на 320/768/1024/1440; таблицы на mobile уходят в локальный horizontal scroll, раскрытия строк уплощены до border-left без nested card.
