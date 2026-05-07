@@ -7,6 +7,9 @@
 - `calculateEstimate(estimate, { rows })` возвращает totals, section totals, rows, deltas и breakdown без DOM/Astro; неизвестные row id в changes бросают ошибку.
 - `/reglament/data/estimate-2026.json` отдает baseline, formulas, source refs с `pdf_path`, sections/rows и computed values; `/reglament/.well-known/api-catalog`, schema, OpenAPI, `llms.txt`, `llms-full.txt` и `index.md` уже есть.
 - Root discovery и root llms/index.md уже знают про `/reglament/`.
-- Task 5 закрыта: `apps/www/src/pages/reglament/index.astro` рендерит статический каркас `/reglament/` на `BaseLayout` с meta, baseline-итогами, ссылками на agent data и отдельными секционными таблицами; интерактивного JS еще нет.
+- Task 5 закрыта: `apps/www/src/pages/reglament/index.astro` рендерит статический каркас `/reglament/` на `BaseLayout` с meta, baseline-итогами, ссылками на agent data и отдельными секционными таблицами.
+- Task 6 закрыта: интерактивность реализована одним vanilla TypeScript controller в `apps/www/src/lib/reglament/calculator-controller.ts`; `/reglament/` рендерит basic controls через `data-reglament-*`, без framework islands, baseline остается читаемым без JS.
+- Basic editable fields теперь формируются по наличию baseline `base`/`frequency`/`price`: volume, frequency, rate, fixed annual price и enabled; expert поля остаются в данных для будущего Task 7, но на странице пока не выводятся.
+- Browser check Task 6: на `astro preview` изменение `lighting-electricity.fixed_price` с `1 473 084` до `1 573 084` дало общий тариф `902,48 ₽/сотка/мес`, delta строки `+0,41 ₽`, reset вернул `902,07 ₽/сотка/мес`.
 - Официальный baseline хранит `221 264 198 ₽/год` и `902,07 ₽/сотка/мес`; расчет сохраняет эти значения через baseline + delta, потому что прямой расчет `221264198 / 20440.54 / 12` стандартным округлением дает `902,06`, а сумма тарифов секций из `final.pdf` дает `902,07`.
 - В `improvement-road-surface-repair` оставлен source note: в `final.pdf` строка называется ремонтом покрытия дорог/площадок, а в детализации ближайшая крупная ремонтная строка - замена поврежденных элементов периметрального ограждения. Это стоит перепроверить при финальной сверке.

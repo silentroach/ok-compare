@@ -20,31 +20,44 @@ const coefficients = {
   vat_rate: 0.05,
 } as const;
 
-const basicEditableFields = [
-  {
-    key: 'enabled',
-    label: 'Включить позицию',
-    level: 'basic',
-  },
-  {
-    key: 'frequency',
-    label: 'Кратность',
-    level: 'basic',
-    min: 0,
-    step: 1,
-  },
-  {
-    key: 'fixed_price',
-    label: 'Годовая стоимость',
-    level: 'basic',
-    unit: '₽/год',
-    min: 0,
-    step: 1,
-  },
-] satisfies readonly EditableField[];
+const enabledEditableField = {
+  key: 'enabled',
+  label: 'Включить позицию',
+  level: 'basic',
+} satisfies EditableField;
 
-const expertEditableFields = [
-  ...basicEditableFields,
+const volumeEditableField = {
+  key: 'volume',
+  label: 'Объем',
+  level: 'basic',
+  min: 0,
+} satisfies EditableField;
+
+const frequencyEditableField = {
+  key: 'frequency',
+  label: 'Кратность',
+  level: 'basic',
+  min: 0,
+  step: 0.01,
+} satisfies EditableField;
+
+const rateEditableField = {
+  key: 'rate',
+  label: 'Цена/ставка',
+  level: 'basic',
+  min: 0,
+} satisfies EditableField;
+
+const fixedPriceEditableField = {
+  key: 'fixed_price',
+  label: 'Годовая стоимость',
+  level: 'basic',
+  unit: '₽/год',
+  min: 0,
+  step: 1,
+} satisfies EditableField;
+
+const expertCostEditableFields = [
   {
     key: 'primary_salary',
     label: 'Основная зарплата',
@@ -87,6 +100,29 @@ const expertEditableFields = [
   },
 ] satisfies readonly EditableField[];
 
+const basicEditableFieldsForInput = (input: {
+  readonly base?: EstimateRow['baseline']['base'];
+  readonly frequency?: EstimateRow['baseline']['frequency'];
+  readonly price?: EstimateRow['baseline']['price'];
+}): readonly EditableField[] =>
+  [
+    enabledEditableField,
+    ...(input.base ? [volumeEditableField] : []),
+    ...(input.frequency ? [frequencyEditableField] : []),
+    ...(input.price ? [rateEditableField] : []),
+    fixedPriceEditableField,
+  ] satisfies readonly EditableField[];
+
+const expertEditableFieldsForInput = (input: {
+  readonly base?: EstimateRow['baseline']['base'];
+  readonly frequency?: EstimateRow['baseline']['frequency'];
+  readonly price?: EstimateRow['baseline']['price'];
+}): readonly EditableField[] =>
+  [
+    ...basicEditableFieldsForInput(input),
+    ...expertCostEditableFields,
+  ] satisfies readonly EditableField[];
+
 type BreakdownInput = {
   readonly gross: number;
   readonly income?: number;
@@ -113,7 +149,7 @@ type EstimateRowInput = {
   readonly base?: EstimateRow['baseline']['base'];
   readonly frequency?: EstimateRow['baseline']['frequency'];
   readonly price?: EstimateRow['baseline']['price'];
-  readonly editable_fields?: readonly EditableField[];
+  readonly editable_fields?: readonly EditableField[] | 'basic';
   readonly description?: string;
   readonly tags?: readonly string[];
 };
@@ -184,7 +220,10 @@ const estimateRow = (input: EstimateRowInput): EstimateRow => ({
     breakdown: costBreakdown({ ...input.breakdown, gross: input.annual_gross }),
   },
   source_refs: input.source_refs,
-  editable_fields: input.editable_fields ?? expertEditableFields,
+  editable_fields:
+    input.editable_fields === 'basic'
+      ? basicEditableFieldsForInput(input)
+      : (input.editable_fields ?? expertEditableFieldsForInput(input)),
   description: input.description,
   tags: input.tags,
 });
@@ -465,7 +504,7 @@ export const estimate2026 = {
               'обработка от клещей и борьба с борщевиком',
             ),
           ],
-          editable_fields: basicEditableFields,
+          editable_fields: 'basic',
           description:
             'Подрядные услуги акарицидной обработки и борьбы с борщевиком сохранены одной строкой contractors.',
           tags: ['подрядная услуга', 'крупная статья'],
@@ -551,7 +590,7 @@ export const estimate2026 = {
               'В final.pdf строка названа текущим ремонтом покрытия дорог, площадок; в детализации ближайшая крупная ремонтная строка - материалы на замену элементов.',
             ),
           ],
-          editable_fields: basicEditableFields,
+          editable_fields: 'basic',
           tags: ['материалы', 'требует проверки'],
         }),
       ],
@@ -590,7 +629,7 @@ export const estimate2026 = {
             source('final', 2, 'строка 5.1'),
             source('security', 5, 'раздел круглосуточного пропускного режима'),
           ],
-          editable_fields: basicEditableFields,
+          editable_fields: 'basic',
           description:
             'Подрядная охрана и материальные расходы КПП сохранены в contractors и materials.',
           tags: ['подрядная услуга', 'крупная статья'],
@@ -685,7 +724,7 @@ export const estimate2026 = {
             ),
             source('waste', 5, 'калькуляция стоимости услуг по работе с РО'),
           ],
-          editable_fields: basicEditableFields,
+          editable_fields: 'basic',
           tags: ['подрядная услуга', 'крупная статья'],
         }),
       ],
@@ -753,7 +792,7 @@ export const estimate2026 = {
             source('lighting', 6, 'нормативный расчет электроэнергии'),
             source('lighting', 8, 'локальный расчет электроэнергии'),
           ],
-          editable_fields: basicEditableFields,
+          editable_fields: 'basic',
           tags: ['материалы'],
         }),
         estimateRow({

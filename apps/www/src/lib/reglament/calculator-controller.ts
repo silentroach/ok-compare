@@ -1,0 +1,393 @@
+import { estimate2026 } from '@/data/reglament/estimate-2026';
+
+import {
+  calculateEstimate,
+  type CalculatedEstimate,
+  type CalculatedEstimateRow,
+  type EstimateCalculationChanges,
+  type EstimateRowChange,
+} from './calculate';
+import { EDITABLE_FIELD_KEYS, type EditableFieldKey } from './schema';
+
+export interface ReglamentCalculatorFieldState {
+  readonly rowId: string;
+  readonly key: EditableFieldKey;
+  readonly baseline: boolean | number;
+  readonly value: boolean | number | string;
+}
+
+type NumberEditableFieldKey = Exclude<EditableFieldKey, 'enabled'>;
+type MutableEstimateRowChange = {
+  -readonly [Key in keyof EstimateRowChange]?: EstimateRowChange[Key];
+};
+
+const FIELD_SELECTOR = '[data-reglament-field]';
+const RESET_SELECTOR = '[data-reglament-reset]';
+const ROOT_SELECTOR = '[data-reglament-calculator]';
+
+const EDITABLE_FIELD_KEY_SET: ReadonlySet<string> = new Set(
+  EDITABLE_FIELD_KEYS,
+);
+const NUMBER_EDITABLE_FIELD_KEYS = EDITABLE_FIELD_KEYS.filter(
+  (key): key is NumberEditableFieldKey => key !== 'enabled',
+);
+const NUMBER_EDITABLE_FIELD_KEY_SET: ReadonlySet<string> = new Set(
+  NUMBER_EDITABLE_FIELD_KEYS,
+);
+
+const moneyFormatter = new Intl.NumberFormat('ru-RU', {
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 0,
+});
+const signedMoneyFormatter = new Intl.NumberFormat('ru-RU', {
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 0,
+  signDisplay: 'exceptZero',
+});
+
+const isEditableFieldKey = (
+  value: string | undefined,
+): value is EditableFieldKey =>
+  value !== undefined && EDITABLE_FIELD_KEY_SET.has(value);
+
+const isNumberEditableFieldKey = (
+  value: EditableFieldKey,
+): value is NumberEditableFieldKey => NUMBER_EDITABLE_FIELD_KEY_SET.has(value);
+
+const toFiniteNumber = (
+  value: boolean | number | string,
+): number | undefined => {
+  if (typeof value === 'boolean') {
+    return undefined;
+  }
+
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : undefined;
+  }
+
+  const normalized = value.trim().replaceAll(' ', '').replace(',', '.');
+
+  if (!normalized) {
+    return undefined;
+  }
+
+  const numberValue = Number(normalized);
+
+  return Number.isFinite(numberValue) ? numberValue : undefined;
+};
+
+const toBoolean = (value: boolean | number | string): boolean | undefined => {
+  if (typeof value === 'boolean') {
+    return value;
+  }
+
+  if (value === 'true') {
+    return true;
+  }
+
+  if (value === 'false') {
+    return false;
+  }
+
+  return undefined;
+};
+
+const getRowChange = (
+  rows: Record<string, MutableEstimateRowChange>,
+  rowId: string,
+): MutableEstimateRowChange => {
+  rows[rowId] ??= {};
+
+  return rows[rowId];
+};
+
+const setNumberRowChange = (
+  rowChange: MutableEstimateRowChange,
+  key: NumberEditableFieldKey,
+  value: number,
+): void => {
+  rowChange[key] = value;
+};
+
+export const buildReglamentCalculatorChanges = (
+  fields: readonly ReglamentCalculatorFieldState[],
+): EstimateCalculationChanges => {
+  const rows: Record<string, MutableEstimateRowChange> = {};
+
+  for (const field of fields) {
+    if (field.key === 'enabled') {
+      const baseline = toBoolean(field.baseline);
+      const value = toBoolean(field.value);
+
+      if (baseline !== undefined && value !== undefined && value !== baseline) {
+        getRowChange(rows, field.rowId).enabled = value;
+      }
+
+      continue;
+    }
+
+    if (!isNumberEditableFieldKey(field.key)) {
+      continue;
+    }
+
+    const baseline = toFiniteNumber(field.baseline);
+    const value = toFiniteNumber(field.value);
+
+    if (baseline !== undefined && value !== undefined && value !== baseline) {
+      setNumberRowChange(getRowChange(rows, field.rowId), field.key, value);
+    }
+  }
+
+  return Object.keys(rows).length > 0 ? { rows } : {};
+};
+
+export const calculateReglamentCalculatorState = (
+  fields: readonly ReglamentCalculatorFieldState[],
+): CalculatedEstimate =>
+  calculateEstimate(estimate2026, buildReglamentCalculatorChanges(fields));
+
+const formatNumber = (value: number): string => moneyFormatter.format(value);
+const formatTariff = (value: number): string =>
+  `${formatNumber(value)} ₽/сотка/мес`;
+const formatTariffValue = (value: number): string => `${formatNumber(value)} ₽`;
+const formatAnnualMoney = (value: number): string =>
+  `${formatNumber(value)} ₽/год`;
+const formatTariffDelta = (value: number): string =>
+  `${signedMoneyFormatter.format(value)} ₽`;
+
+const deltaTone = (value: number): 'negative' | 'positive' | 'zero' => {
+  if (value < 0) {
+    return 'negative';
+  }
+
+  if (value > 0) {
+    return 'positive';
+  }
+
+  return 'zero';
+};
+
+const setText = (root: ParentNode, selector: string, value: string): void => {
+  root.querySelectorAll(selector).forEach((node) => {
+    if (node instanceof HTMLElement) {
+      node.textContent = value;
+    }
+  });
+};
+
+const setDeltaText = (
+  root: ParentNode,
+  selector: string,
+  value: number,
+): void => {
+  root.querySelectorAll(selector).forEach((node) => {
+    if (node instanceof HTMLElement) {
+      node.textContent = formatTariffDelta(value);
+      node.dataset.reglamentDeltaTone = deltaTone(value);
+    }
+  });
+};
+
+const setMatchingText = (
+  root: ParentNode,
+  selector: string,
+  attr: string,
+  id: string,
+  value: string,
+): void => {
+  root.querySelectorAll(selector).forEach((node) => {
+    if (node instanceof HTMLElement && node.getAttribute(attr) === id) {
+      node.textContent = value;
+    }
+  });
+};
+
+const setMatchingDeltaText = (
+  root: ParentNode,
+  selector: string,
+  attr: string,
+  id: string,
+  value: number,
+): void => {
+  root.querySelectorAll(selector).forEach((node) => {
+    if (node instanceof HTMLElement && node.getAttribute(attr) === id) {
+      node.textContent = formatTariffDelta(value);
+      node.dataset.reglamentDeltaTone = deltaTone(value);
+    }
+  });
+};
+
+const renderRow = (root: ParentNode, row: CalculatedEstimateRow): void => {
+  setMatchingText(
+    root,
+    '[data-reglament-row-tariff]',
+    'data-reglament-row-tariff',
+    row.id,
+    formatTariffValue(row.tariff_per_sotka_month),
+  );
+  setMatchingDeltaText(
+    root,
+    '[data-reglament-row-delta]',
+    'data-reglament-row-delta',
+    row.id,
+    row.delta_tariff_per_sotka_month,
+  );
+
+  row.children?.forEach((child) => renderRow(root, child));
+};
+
+const renderReglamentCalculator = (
+  root: ParentNode,
+  result: CalculatedEstimate,
+): void => {
+  setText(
+    root,
+    '[data-reglament-current-tariff]',
+    formatTariff(result.tariff_per_sotka_month),
+  );
+  setText(
+    root,
+    '[data-reglament-current-annual]',
+    formatAnnualMoney(result.annual_gross),
+  );
+  setDeltaText(
+    root,
+    '[data-reglament-current-delta]',
+    result.delta_tariff_per_sotka_month,
+  );
+
+  for (const section of result.sections) {
+    setMatchingText(
+      root,
+      '[data-reglament-section-tariff]',
+      'data-reglament-section-tariff',
+      section.id,
+      formatTariff(section.tariff_per_sotka_month),
+    );
+    setMatchingText(
+      root,
+      '[data-reglament-section-annual]',
+      'data-reglament-section-annual',
+      section.id,
+      formatAnnualMoney(section.annual_gross),
+    );
+    setMatchingDeltaText(
+      root,
+      '[data-reglament-section-delta]',
+      'data-reglament-section-delta',
+      section.id,
+      section.delta_tariff_per_sotka_month,
+    );
+    section.rows.forEach((row) => renderRow(root, row));
+  }
+};
+
+const readReglamentCalculatorField = (
+  input: HTMLInputElement,
+): ReglamentCalculatorFieldState | undefined => {
+  const rowId = input.dataset.reglamentRowId;
+  const key = input.dataset.reglamentField;
+
+  if (!rowId || !isEditableFieldKey(key)) {
+    return undefined;
+  }
+
+  if (key === 'enabled') {
+    return {
+      rowId,
+      key,
+      baseline: input.dataset.reglamentBaseline === 'true',
+      value: input.checked,
+    };
+  }
+
+  const baseline = toFiniteNumber(input.dataset.reglamentBaseline ?? '');
+
+  return baseline === undefined
+    ? undefined
+    : {
+        rowId,
+        key,
+        baseline,
+        value: input.value,
+      };
+};
+
+const readReglamentCalculatorFields = (
+  root: ParentNode,
+): readonly ReglamentCalculatorFieldState[] =>
+  Array.from(root.querySelectorAll(FIELD_SELECTOR)).flatMap((node) => {
+    if (!(node instanceof HTMLInputElement)) {
+      return [];
+    }
+
+    const field = readReglamentCalculatorField(node);
+
+    return field ? [field] : [];
+  });
+
+const resetReglamentCalculatorFields = (root: ParentNode): void => {
+  root.querySelectorAll(FIELD_SELECTOR).forEach((node) => {
+    if (!(node instanceof HTMLInputElement)) {
+      return;
+    }
+
+    if (node.type === 'checkbox') {
+      node.checked = node.dataset.reglamentBaseline === 'true';
+      return;
+    }
+
+    node.value = node.dataset.reglamentBaseline ?? '';
+  });
+};
+
+export const hydrateReglamentCalculator = (root: HTMLElement): void => {
+  const render = (): void => {
+    renderReglamentCalculator(
+      root,
+      calculateReglamentCalculatorState(readReglamentCalculatorFields(root)),
+    );
+  };
+
+  if (root.dataset.reglamentCalculatorHydrated === 'true') {
+    render();
+    return;
+  }
+
+  root.dataset.reglamentCalculatorHydrated = 'true';
+  root.addEventListener('input', (event) => {
+    if (event.target instanceof HTMLInputElement) {
+      render();
+    }
+  });
+  root.addEventListener('change', (event) => {
+    if (event.target instanceof HTMLInputElement) {
+      render();
+    }
+  });
+  root.querySelectorAll(RESET_SELECTOR).forEach((node) => {
+    if (node instanceof HTMLButtonElement) {
+      node.addEventListener('click', () => {
+        resetReglamentCalculatorFields(root);
+        render();
+      });
+    }
+  });
+
+  render();
+};
+
+export const hydrateReglamentCalculators = (scope?: ParentNode): void => {
+  const rootScope =
+    scope ?? (typeof document === 'undefined' ? undefined : document);
+
+  if (!rootScope) {
+    return;
+  }
+
+  rootScope.querySelectorAll(ROOT_SELECTOR).forEach((root) => {
+    if (root instanceof HTMLElement) {
+      hydrateReglamentCalculator(root);
+    }
+  });
+};
