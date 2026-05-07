@@ -49,3 +49,5 @@
 - Task 20 закрыта: в `apps/www/src/pages/reglament/index.astro` у секционных блоков убран дополнительный `border-t`; таблицы сохранили собственные border/spacing, без новой карточной вложенности.
 - Проверки Task 20: `pnpm --dir apps/www build`; статическая проверка build output подтвердила, что секции `/reglament/` идут без верхнего section-divider и читаются как единый список таблиц.
 - Task 21 закрыта spec-only: инлайновый checkbox layout решили не реализовывать; текущий компактный чекбокс рядом с названием строки оставлен без изменений, UI/logic не трогались.
+- Task 22 закрыта: sticky-строка `/reglament/` показывает только кнопку reset слева и одну текущую цифру тарифа справа; официальный baseline и дельта остались в верхней итоговой панели, но убраны из sticky.
+- Проверки Task 22: `pnpm --dir apps/www test -- calculator-controller.test.ts`, `pnpm --dir apps/www build`; manual preview на `astro preview` подтвердил пересчет sticky после изменения `lighting-electricity.rate`, reset до `902,07 ₽/сотка` и компактность на 320px без горизонтального overflow.

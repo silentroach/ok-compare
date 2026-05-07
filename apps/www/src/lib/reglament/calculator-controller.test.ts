@@ -210,4 +210,46 @@ describe('buildReglamentCalculatorChanges', () => {
       document.querySelector('[data-reglament-section-tariff]')?.textContent,
     ).toMatchInlineSnapshot(`"48,27 ₽/сотка"`);
   });
+
+  it('updates a single sticky current tariff and resets it to baseline', () => {
+    document.body.innerHTML = `
+      <div data-reglament-calculator>
+        <input
+          type="number"
+          data-reglament-field="fixed_price"
+          data-reglament-row-id="lighting-electricity"
+          data-reglament-baseline="1473084"
+          value="1473084"
+        />
+        <button type="button" data-reglament-reset>Сброс</button>
+        <strong data-reglament-current-tariff></strong>
+      </div>
+    `;
+    const root = document.querySelector('[data-reglament-calculator]');
+    const input = document.querySelector('input');
+    const reset = document.querySelector('[data-reglament-reset]');
+    const stickyTariff = document.querySelector(
+      '[data-reglament-current-tariff]',
+    );
+
+    if (
+      !(root instanceof HTMLElement) ||
+      !(input instanceof HTMLInputElement) ||
+      !(reset instanceof HTMLButtonElement) ||
+      !(stickyTariff instanceof HTMLElement)
+    ) {
+      throw new Error('Missing sticky calculator fixture nodes');
+    }
+
+    hydrateReglamentCalculator(root);
+    input.value = '1573084';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+
+    expect(stickyTariff.textContent).toMatchInlineSnapshot(`"902,48 ₽/сотка"`);
+
+    reset.click();
+
+    expect(input.value).toBe('1473084');
+    expect(stickyTariff.textContent).toMatchInlineSnapshot(`"902,07 ₽/сотка"`);
+  });
 });

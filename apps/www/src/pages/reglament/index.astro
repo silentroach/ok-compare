@@ -372,26 +372,10 @@ const inlineInputClass = `${inputClass} text-right`;
       class="sticky top-0 z-20 border-y border-border bg-surface px-3 py-1 md:px-6"
     >
       <div
-        class="flex h-9 max-w-5xl items-center gap-2 overflow-hidden whitespace-nowrap text-xs text-muted-foreground sm:gap-3 md:text-sm"
+        class="flex h-9 max-w-5xl items-center gap-3 overflow-hidden whitespace-nowrap text-xs text-muted-foreground md:text-sm"
       >
-        <span class="hidden shrink-0 sm:inline">
-          {formatReglamentTariff(payload.official.tariff_per_sotka_month)} -&gt;
-        </span>
-        <strong
-          class="min-w-0 flex-1 truncate text-sm text-foreground sm:flex-none md:text-base"
-          data-reglament-current-tariff
-        >
-          {formatReglamentTariff(payload.computed.tariff_per_sotka_month)}
-        </strong>
-        <span class="shrink-0 font-semibold" data-reglament-current-delta>
-          {
-            formatReglamentMoneyDelta(
-              payload.computed.delta_tariff_per_sotka_month,
-            )
-          }
-        </span>
         <button
-          class="ml-auto shrink-0 rounded-full border border-border-strong bg-surface px-2.5 py-0.5 text-xs font-bold text-primary hover:border-primary hover:bg-muted md:px-3 md:text-sm"
+          class="shrink-0 rounded-full border border-border-strong bg-surface px-2.5 py-0.5 text-xs font-bold text-primary hover:border-primary hover:bg-muted md:px-3 md:text-sm"
           type="button"
           data-reglament-reset
         >
@@ -399,6 +383,13 @@ const inlineInputClass = `${inputClass} text-right`;
             >Сброс</span
           >
         </button>
+        <span class="sr-only">Текущий тариф</span>
+        <strong
+          class="ml-auto min-w-0 truncate text-right text-sm text-foreground md:text-base"
+          data-reglament-current-tariff
+        >
+          {formatReglamentTariff(payload.computed.tariff_per_sotka_month)}
+        </strong>
       </div>
     </div>
 
