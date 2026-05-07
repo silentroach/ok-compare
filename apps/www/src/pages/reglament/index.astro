@@ -44,7 +44,7 @@ type DisplayValue =
   ReglamentPayload['sections'][number]['rows'][number]['baseline']['base'];
 type BasicNumberFieldKey = Extract<
   EditableFieldKey,
-  'volume' | 'frequency' | 'rate' | 'fixed_price'
+  'volume' | 'frequency' | 'rate'
 >;
 type ExpertNumberFieldKey = Exclude<
   EditableFieldKey,
@@ -105,6 +105,7 @@ const breakdownFields = [
   readonly label: string;
 }[];
 const expertFieldKeys = [
+  'fixed_price',
   'primary_salary',
   'machinist_salary',
   'machines',
@@ -138,7 +139,7 @@ const fieldValue = (
     return row.baseline.price?.value;
   }
 
-  return row.baseline.annual_gross;
+  return undefined;
 };
 const fieldUnit = (
   row: PayloadRow,
@@ -186,6 +187,10 @@ const expertFieldValue = (
   row: PayloadRow,
   key: ExpertNumberFieldKey,
 ): number => {
+  if (key === 'fixed_price') {
+    return row.baseline.annual_gross;
+  }
+
   if (key === 'insurance_rate') {
     return payload.coefficients.insurance_rate;
   }
@@ -243,7 +248,6 @@ const viewSections = payload.sections.map((section) => ({
       base: numberControl(row, 'volume'),
       frequency: numberControl(row, 'frequency'),
       rate: numberControl(row, 'rate'),
-      fixedPrice: numberControl(row, 'fixed_price'),
       expert: expertNumberControls(row),
     },
   })),
@@ -487,9 +491,24 @@ const inputClass =
                       <tr class="border-t border-border">
                         <td class="border-t border-border px-4 py-2.5 align-top">
                           <div class="space-y-1.5">
-                            <p class="font-semibold leading-snug text-foreground">
-                              {row.title}
-                            </p>
+                            <div class="flex items-start gap-2">
+                              {row.controls.enabled && (
+                                <input
+                                  class="mt-0.5 h-4 w-4 shrink-0 rounded border-border text-primary focus:ring-primary"
+                                  type="checkbox"
+                                  checked={row.baseline.is_enabled}
+                                  aria-label={`Включить позицию: ${row.title}`}
+                                  data-reglament-field="enabled"
+                                  data-reglament-row-id={row.id}
+                                  data-reglament-baseline={String(
+                                    row.baseline.is_enabled,
+                                  )}
+                                />
+                              )}
+                              <p class="min-w-0 flex-1 font-semibold leading-snug text-foreground">
+                                {row.title}
+                              </p>
+                            </div>
                             {row.tags && row.tags.length > 0 && (
                               <div class="flex flex-wrap gap-1.5">
                                 {row.tags.map((tag) => (
@@ -498,21 +517,6 @@ const inputClass =
                                   </span>
                                 ))}
                               </div>
-                            )}
-                            {row.controls.enabled && (
-                              <label class="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-                                <input
-                                  class="h-4 w-4 rounded border-border text-primary focus:ring-primary"
-                                  type="checkbox"
-                                  checked={row.baseline.is_enabled}
-                                  data-reglament-field="enabled"
-                                  data-reglament-row-id={row.id}
-                                  data-reglament-baseline={String(
-                                    row.baseline.is_enabled,
-                                  )}
-                                />
-                                <span>Включено</span>
-                              </label>
                             )}
                             <details class="mt-2 border-t border-border pt-2 text-xs leading-5 text-muted-foreground">
                               <summary class="cursor-pointer font-bold text-primary outline-none focus-visible:rounded-md focus-visible:ring-2 focus-visible:ring-primary/25">
@@ -591,7 +595,7 @@ const inputClass =
                                 {row.controls.expert.length > 0 && (
                                   <fieldset class="space-y-2 border-t border-border pt-3">
                                     <legend class="font-bold uppercase tracking-[0.06em] text-muted-foreground">
-                                      Экспертные поля
+                                      Дополнительные поля
                                     </legend>
                                     <div class="grid gap-2 sm:grid-cols-2">
                                       {row.controls.expert.map((control) => (
@@ -697,65 +701,32 @@ const inputClass =
                           )}
                         </td>
                         <td class="border-t border-border px-4 py-2.5 align-top text-muted-foreground">
-                          {row.controls.rate || row.controls.fixedPrice ? (
-                            <div class="space-y-3">
-                              {row.controls.rate && (
-                                <label class="block space-y-1">
-                                  <span class="text-[0.6875rem] font-bold uppercase tracking-[0.06em] text-muted-foreground">
-                                    {row.controls.rate.label}
-                                  </span>
-                                  <input
-                                    class={inputClass}
-                                    type="number"
-                                    inputmode="decimal"
-                                    min={row.controls.rate.min}
-                                    max={row.controls.rate.max}
-                                    step={row.controls.rate.step}
-                                    value={row.controls.rate.value}
-                                    aria-label={`${row.title}: ${row.controls.rate.label}`}
-                                    data-reglament-field={row.controls.rate.key}
-                                    data-reglament-row-id={row.id}
-                                    data-reglament-baseline={String(
-                                      row.controls.rate.value,
-                                    )}
-                                  />
-                                  {row.controls.rate.unit && (
-                                    <span class="block text-xs text-muted-foreground">
-                                      {row.controls.rate.unit}
-                                    </span>
-                                  )}
-                                </label>
+                          {row.controls.rate ? (
+                            <label class="block space-y-1">
+                              <span class="text-[0.6875rem] font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                                {row.controls.rate.label}
+                              </span>
+                              <input
+                                class={inputClass}
+                                type="number"
+                                inputmode="decimal"
+                                min={row.controls.rate.min}
+                                max={row.controls.rate.max}
+                                step={row.controls.rate.step}
+                                value={row.controls.rate.value}
+                                aria-label={`${row.title}: ${row.controls.rate.label}`}
+                                data-reglament-field={row.controls.rate.key}
+                                data-reglament-row-id={row.id}
+                                data-reglament-baseline={String(
+                                  row.controls.rate.value,
+                                )}
+                              />
+                              {row.controls.rate.unit && (
+                                <span class="block text-xs text-muted-foreground">
+                                  {row.controls.rate.unit}
+                                </span>
                               )}
-                              {row.controls.fixedPrice && (
-                                <label class="block space-y-1">
-                                  <span class="text-[0.6875rem] font-bold uppercase tracking-[0.06em] text-muted-foreground">
-                                    {row.controls.fixedPrice.label}
-                                  </span>
-                                  <input
-                                    class={inputClass}
-                                    type="number"
-                                    inputmode="decimal"
-                                    min={row.controls.fixedPrice.min}
-                                    max={row.controls.fixedPrice.max}
-                                    step={row.controls.fixedPrice.step}
-                                    value={row.controls.fixedPrice.value}
-                                    aria-label={`${row.title}: ${row.controls.fixedPrice.label}`}
-                                    data-reglament-field={
-                                      row.controls.fixedPrice.key
-                                    }
-                                    data-reglament-row-id={row.id}
-                                    data-reglament-baseline={String(
-                                      row.controls.fixedPrice.value,
-                                    )}
-                                  />
-                                  {row.controls.fixedPrice.unit && (
-                                    <span class="block text-xs text-muted-foreground">
-                                      {row.controls.fixedPrice.unit}
-                                    </span>
-                                  )}
-                                </label>
-                              )}
-                            </div>
+                            </label>
                           ) : (
                             formatDisplayValue(row.baseline.price)
                           )}

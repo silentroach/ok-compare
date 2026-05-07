@@ -51,7 +51,7 @@ const rateEditableField = {
 const fixedPriceEditableField = {
   key: 'fixed_price',
   label: 'Годовая стоимость',
-  level: 'basic',
+  level: 'expert',
   unit: '₽/год',
   min: 0,
   step: 1,
@@ -100,26 +100,36 @@ const expertCostEditableFields = [
   },
 ] satisfies readonly EditableField[];
 
-const basicEditableFieldsForInput = (input: {
+type EditableFieldsInput = {
   readonly base?: EstimateRow['baseline']['base'];
   readonly frequency?: EstimateRow['baseline']['frequency'];
   readonly price?: EstimateRow['baseline']['price'];
-}): readonly EditableField[] =>
+};
+
+const basicEditableFieldsForInput = (
+  input: EditableFieldsInput,
+): readonly EditableField[] =>
   [
     enabledEditableField,
     ...(input.base ? [volumeEditableField] : []),
     ...(input.frequency ? [frequencyEditableField] : []),
     ...(input.price ? [rateEditableField] : []),
+  ] satisfies readonly EditableField[];
+
+const compactEditableFieldsForInput = (
+  input: EditableFieldsInput,
+): readonly EditableField[] =>
+  [
+    ...basicEditableFieldsForInput(input),
     fixedPriceEditableField,
   ] satisfies readonly EditableField[];
 
-const expertEditableFieldsForInput = (input: {
-  readonly base?: EstimateRow['baseline']['base'];
-  readonly frequency?: EstimateRow['baseline']['frequency'];
-  readonly price?: EstimateRow['baseline']['price'];
-}): readonly EditableField[] =>
+const expertEditableFieldsForInput = (
+  input: EditableFieldsInput,
+): readonly EditableField[] =>
   [
     ...basicEditableFieldsForInput(input),
+    fixedPriceEditableField,
     ...expertCostEditableFields,
   ] satisfies readonly EditableField[];
 
@@ -222,7 +232,7 @@ const estimateRow = (input: EstimateRowInput): EstimateRow => ({
   source_refs: input.source_refs,
   editable_fields:
     input.editable_fields === 'basic'
-      ? basicEditableFieldsForInput(input)
+      ? compactEditableFieldsForInput(input)
       : (input.editable_fields ?? expertEditableFieldsForInput(input)),
   description: input.description,
   tags: input.tags,

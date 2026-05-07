@@ -58,7 +58,7 @@ describe('buildReglamentCalculatorChanges', () => {
     ).toEqual({});
   });
 
-  it('groups changed basic fields by estimate row', () => {
+  it('groups changed editable fields by estimate row', () => {
     expect(
       buildReglamentCalculatorChanges([
         {
@@ -187,16 +187,19 @@ describe('buildReglamentCalculatorChanges', () => {
     ).toBe(formatMoney(expectedRow.breakdown.gross));
   });
 
-  it('renders human-facing tariff values with short sotka unit', () => {
+  it('renders fixed annual price changes from row details with short sotka unit', () => {
     document.body.innerHTML = `
       <div data-reglament-calculator>
-        <input
-          type="number"
-          data-reglament-field="fixed_price"
-          data-reglament-row-id="lighting-electricity"
-          data-reglament-baseline="1473084"
-          value="1573084"
-        />
+        <details open>
+          <summary>Детали расчета и источники</summary>
+          <input
+            type="number"
+            data-reglament-field="fixed_price"
+            data-reglament-row-id="lighting-electricity"
+            data-reglament-baseline="1473084"
+            value="1573084"
+          />
+        </details>
         <span data-reglament-current-tariff></span>
         <span data-reglament-section-tariff="lighting-power"></span>
       </div>

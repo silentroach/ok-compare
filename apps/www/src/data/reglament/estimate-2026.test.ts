@@ -97,4 +97,18 @@ describe('estimate2026 baseline data', () => {
       }
     }
   });
+
+  it('keeps fixed annual price outside basic main-table controls', () => {
+    const rows = flattenRows(
+      estimate2026.sections.flatMap((section) => section.rows),
+    );
+    const fixedPriceFields = rows.flatMap((row) =>
+      row.editable_fields.filter((field) => field.key === 'fixed_price'),
+    );
+
+    expect(fixedPriceFields.length).toBeGreaterThan(0);
+    expect(fixedPriceFields.every((field) => field.level === 'expert')).toBe(
+      true,
+    );
+  });
 });
