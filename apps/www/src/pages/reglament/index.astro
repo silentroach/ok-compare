@@ -257,6 +257,7 @@ const viewSections = htmlSections.map((section) => ({
 
     return {
       ...row,
+      titleId: `reglament-row-title-${row.id}`,
       controls: {
         enabled: hasEnabledControl(row),
         base: numberControl(row, 'volume'),
@@ -500,7 +501,8 @@ const formatInputUnit = (unit: string): string =>
                                     class="mt-2 h-4 w-4 shrink-0 rounded border-border text-primary focus:ring-primary"
                                     type="checkbox"
                                     checked={row.baseline.is_enabled}
-                                    aria-label={`Включить позицию: ${row.title}`}
+                                    aria-label="Включить позицию"
+                                    aria-describedby={row.titleId}
                                     data-reglament-field="enabled"
                                     data-reglament-row-id={row.id}
                                     data-reglament-baseline={String(
@@ -509,6 +511,7 @@ const formatInputUnit = (unit: string): string =>
                                   />
                                 )}
                                 <p
+                                  id={row.titleId}
                                   class:list={[
                                     tableTextClass,
                                     'min-w-0 flex-1 font-semibold text-foreground',
