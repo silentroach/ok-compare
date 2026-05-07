@@ -168,7 +168,7 @@ export const calculateReglamentCalculatorState = (
 
 const formatNumber = (value: number): string => moneyFormatter.format(value);
 const formatTariff = (value: number): string =>
-  `${formatNumber(value)} ₽/сотка/мес`;
+  `${formatNumber(value)} ₽/сотка`;
 const formatMoney = (value: number): string => `${formatNumber(value)} ₽`;
 const formatTariffValue = (value: number): string => `${formatNumber(value)} ₽`;
 const formatAnnualMoney = (value: number): string =>

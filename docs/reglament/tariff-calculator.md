@@ -427,16 +427,16 @@ Estimated scope: S.
 
 Acceptance criteria:
 
-- [ ] На HTML-странице и sticky-панели пользователь видит `₽/сотка`, а не `₽/сотка/мес`.
-- [ ] Текст страницы один раз явно объясняет, что расчетный период - месяц.
-- [ ] JSON feed, schema, OpenAPI и имена полей `tariff_per_sotka_month` не переименованы.
-- [ ] Markdown companion и llms outputs не создают двусмысленности между UI-лейблом и machine-readable полем.
+- [x] На HTML-странице и sticky-панели пользователь видит `₽/сотка`, а не `₽/сотка/мес`.
+- [x] Текст страницы один раз явно объясняет, что расчетный период - месяц.
+- [x] JSON feed, schema, OpenAPI и имена полей `tariff_per_sotka_month` не переименованы.
+- [x] Markdown companion и llms outputs не создают двусмысленности между UI-лейблом и machine-readable полем.
 
 Verification:
 
-- [ ] `pnpm --dir apps/www test`
-- [ ] `pnpm --dir apps/www build`
-- [ ] Manual check: sticky-панель и секционные итоги показывают короткую единицу.
+- [x] `pnpm --dir apps/www test`
+- [x] `pnpm --dir apps/www build`
+- [x] Manual check: sticky-панель и секционные итоги показывают короткую единицу.
 
 Dependencies: Task 10.
 
@@ -565,6 +565,27 @@ Dependencies: Task 11.
 
 Estimated scope: S.
 
+### Task 18: Исправить раскрытие деталей строки в таблице
+
+Описание: разобраться с layout раскрытия `details/summary`, которое сейчас визуально раскрывает подробности как будто внутри одной колонки `Работа`, хотя содержание относится ко всей строке таблицы.
+
+Acceptance criteria:
+
+- [ ] Детали строки визуально читаются как раскрытие всей строки, а не только первой колонки.
+- [ ] Решение остается keyboard-friendly и сохраняет native `details/summary` или равноценную доступность.
+- [ ] Desktop-таблица не получает лишнюю вложенную карточность и сохраняет плотный табличный вид.
+- [ ] Mobile horizontal scroll и раскрытия не ломают чтение подробностей.
+
+Verification:
+
+- [ ] `pnpm --dir apps/www build`
+- [ ] Manual check: открыть детали первой строки на desktop и убедиться, что блок деталей не выглядит ограниченным одной колонкой.
+- [ ] Manual responsive check: раскрытия читаются на 320px и 768px.
+
+Dependencies: Task 10.
+
+Estimated scope: M.
+
 ## Checkpoints
 
 Checkpoint after Tasks 1-3:
@@ -583,8 +604,9 @@ Checkpoint after Tasks 7-10:
 - [x] Discovery полный.
 - [x] Build, tests и typecheck проходят.
 
-Checkpoint after follow-up Tasks 11-17:
+Checkpoint after follow-up Tasks 11-18:
 
 - [ ] UI-лейблы, источники и controls соответствуют follow-up notes.
 - [ ] Спорная строка благоустройства перепроверена или явно помечена caveat.
+- [ ] Раскрытия строк читаются как детали всей строки, а не одной колонки.
 - [ ] Build и tests проходят после всех follow-up правок.

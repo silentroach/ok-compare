@@ -186,4 +186,34 @@ describe('buildReglamentCalculatorChanges', () => {
         ?.textContent,
     ).toBe(formatMoney(expectedRow.breakdown.gross));
   });
+
+  it('renders human-facing tariff values with short sotka unit', () => {
+    document.body.innerHTML = `
+      <div data-reglament-calculator>
+        <input
+          type="number"
+          data-reglament-field="fixed_price"
+          data-reglament-row-id="lighting-electricity"
+          data-reglament-baseline="1473084"
+          value="1573084"
+        />
+        <span data-reglament-current-tariff></span>
+        <span data-reglament-section-tariff="lighting-power"></span>
+      </div>
+    `;
+    const root = document.querySelector('[data-reglament-calculator]');
+
+    if (!(root instanceof HTMLElement)) {
+      throw new Error('Missing calculator fixture root');
+    }
+
+    hydrateReglamentCalculator(root);
+
+    expect(
+      document.querySelector('[data-reglament-current-tariff]')?.textContent,
+    ).toMatchInlineSnapshot(`"902,48 ₽/сотка"`);
+    expect(
+      document.querySelector('[data-reglament-section-tariff]')?.textContent,
+    ).toMatchInlineSnapshot(`"48,27 ₽/сотка"`);
+  });
 });

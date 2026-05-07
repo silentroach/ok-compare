@@ -27,7 +27,7 @@ const money = (value: number): string =>
     minimumFractionDigits: 0,
   }).format(value);
 
-const tariff = (value: number): string => `${money(value)} ₽/сотка/мес`;
+const tariff = (value: number): string => `${money(value)} ₽/сотка`;
 
 const rowsCount = (rows: readonly EstimateRow[]): number =>
   rows.reduce((total, row) => total + 1 + rowsCount(row.children ?? []), 0);
@@ -59,7 +59,7 @@ export function build(kind: 'short' | 'full'): string {
         '- Это static reglament-section внутри kpshelkovo.online для интерактивной сметы тарифа 2026.',
         `- Baseline: ${tariff(payload.official.tariff_per_sotka_month)} при годовом итоге ${money(payload.official.annual_gross)} ₽ и площади ${money(payload.tariff_area_sotki)} сотки.`,
         `- В feed ${payload.sections.length} секций и ${rows} строк; runtime-парсинга PDF нет.`,
-        '- Основная единица анализа: ₽/сотка/мес; годовые суммы нужны для проверки формул.',
+        '- UI-лейбл: ₽/сотка; machine-readable поле `tariff_per_sotka_month` остается месячным тарифом.',
         '',
         'Главные URL',
         `- Раздел: ${home}`,
@@ -84,6 +84,7 @@ export function build(kind: 'short' | 'full'): string {
         'Проект',
         '- Это machine-readable и text-first слой для будущей страницы `/reglament/` с калькулятором тарифа по смете регламента 2026.',
         '- Раздел строится на нормализованном статическом data module, без client-side PDF parsing и без mutation endpoints.',
+        '- UI-лейбл: ₽/сотка; machine-readable поле `tariff_per_sotka_month` остается месячным тарифом.',
         `- Официальный baseline: ${money(payload.official.annual_gross)} ₽/год и ${tariff(payload.official.tariff_per_sotka_month)}.`,
         `- Расчетный baseline сейчас дает ${money(calculated.annual_gross)} ₽/год и ${tariff(calculated.tariff_per_sotka_month)}.`,
         '',

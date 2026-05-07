@@ -24,7 +24,7 @@ const money = (value: number): string =>
     minimumFractionDigits: 0,
   }).format(value);
 
-const tariff = (value: number): string => `${money(value)} ₽/сотка/мес`;
+const tariff = (value: number): string => `${money(value)} ₽/сотка`;
 
 const annual = (value: number): string => `${money(value)} ₽/год`;
 
@@ -55,7 +55,8 @@ export function buildReglamentMarkdown(estimate: Estimate): string {
   return join([
     '# Калькулятор тарифа по смете 2026',
     '',
-    'Текстовое представление интерактивной сметы регламента. Главная расчетная единица — ₽/сотка/мес.',
+    'Текстовое представление интерактивной сметы регламента.',
+    'UI-лейбл: ₽/сотка; machine-readable поле `tariff_per_sotka_month` остается месячным тарифом.',
     '',
     '## Главные URL',
     `- Раздел: ${absoluteUrl(reglamentUrl())}`,

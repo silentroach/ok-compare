@@ -198,7 +198,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         `- llms.txt: ${reglamentLlms}`,
         `- JSON feed: ${reglamentFeed}`,
         `- API catalog: ${reglamentCatalog}`,
-        `- В feed ${estimate2026.sections.length} секций сметы; официальный тариф ${estimate2026.baseline.tariff_per_sotka_month} ₽/сотка/мес.`,
+        `- В feed ${estimate2026.sections.length} секций сметы; официальный месячный тариф ${estimate2026.baseline.tariff_per_sotka_month} ₽/сотка.`,
         '',
         'Раздел Люди',
         `- HTML index page отсутствует; section overview живет в Markdown: ${peopleMarkdown}`,

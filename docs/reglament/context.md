@@ -21,3 +21,5 @@
 - JSON feed/source refs теперь сохраняют repo `pdf_path` и добавляют public `pdf_url`; HTML, markdown, llms и section API catalog ссылаются на публичные PDF URL.
 - Task 10 закрыта: финальная сверка baseline/discovery/static baseline/JS/tone прошла, в `dist/www` есть `/reglament/`, JSON feed, OpenAPI, schema, llms, markdown, section catalog и public PDF routes.
 - Финальные проверки Task 10 прошли: `pnpm typecheck`, `pnpm test`, `pnpm build:main`.
+- Task 11 закрыта: человекоориентированный UI, sticky, markdown companion и reglament/root llms теперь показывают короткую единицу `₽/сотка`; HTML явно поясняет, что расчетный период - месяц; JSON/schema/OpenAPI и поле `tariff_per_sotka_month` не переименовывались.
+- Добавлена future Task 18: исправить layout раскрытия деталей строки, чтобы подробности не выглядели ограниченными одной колонкой `Работа`.

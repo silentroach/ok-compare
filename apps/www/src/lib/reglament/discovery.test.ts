@@ -199,4 +199,24 @@ describe('reglament discovery route smoke', () => {
     expect(response.headers.get('Content-Type')).toContain('application/pdf');
     expect(marker).toBe('%PDF');
   });
+
+  it('explains the short UI tariff unit without renaming machine fields', async () => {
+    const markdownRoute = await import('../../pages/reglament/index.md');
+    const shortLlmsRoute = await import('../../pages/reglament/llms.txt');
+    const fullLlmsRoute = await import('../../pages/reglament/llms-full.txt');
+    const jsonRoute =
+      await import('../../pages/reglament/data/estimate-2026.json');
+    const markdown = await (await markdownRoute.GET({} as never)).text();
+    const shortLlms = await (await shortLlmsRoute.GET({} as never)).text();
+    const fullLlms = await (await fullLlmsRoute.GET({} as never)).text();
+    const json = await (await jsonRoute.GET({} as never)).text();
+
+    expect(markdown).toContain('UI-лейбл: ₽/сотка');
+    expect(shortLlms).toContain('UI-лейбл: ₽/сотка');
+    expect(fullLlms).toContain('UI-лейбл: ₽/сотка');
+    expect(`${markdown}\n${shortLlms}\n${fullLlms}`).not.toContain(
+      '₽/сотка/мес',
+    );
+    expect(json).toContain('tariff_per_sotka_month');
+  });
 });

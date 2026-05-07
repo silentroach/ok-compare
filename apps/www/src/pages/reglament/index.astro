@@ -79,7 +79,7 @@ const formatAnnualMoney = (value: number): string =>
   `${formatMoney(value)}/год`;
 const formatTariffValue = (value: number): string => `${formatNumber(value)} ₽`;
 const formatTariff = (value: number): string =>
-  `${formatTariffValue(value)}/сотка/мес`;
+  `${formatTariffValue(value)}/сотка`;
 const formatTariffDelta = (value: number): string =>
   `${signedMoneyFormatter.format(value)} ₽`;
 const formatDisplayValue = (value: DisplayValue): string =>
@@ -286,7 +286,8 @@ const inputClass =
           >
             Смета разложена по разделам и строкам. На этом этапе страница
             показывает официальные значения, а главная единица сравнения -
-            <span class="font-semibold text-foreground">₽/сотка/мес</span>.
+            <span class="font-semibold text-foreground">₽/сотка</span>.
+            Расчетный период - месяц.
           </p>
         </div>
 
