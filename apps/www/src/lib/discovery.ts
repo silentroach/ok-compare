@@ -21,10 +21,14 @@ import { siteSkillsUrl } from './skills';
 import {
   reglamentApiCatalogPath,
   reglamentEstimate2026DataPath,
+  reglamentAssetsPath,
+  reglamentFull2026DataPath,
+  reglamentFullMarkdownPath,
   reglamentLlmsFullPath,
   reglamentLlmsPath,
   reglamentMarkdownPath,
   reglamentPath,
+  reglamentServicesPath,
 } from './reglament/routes';
 import {
   statusApiCatalogPath,
@@ -141,9 +145,29 @@ export function catalog(root: string): Record<string, unknown> {
             'title*': star('Markdown companion reglament-section'),
           },
           {
+            href: abs(root, reglamentFullMarkdownPath()),
+            type: 'text/markdown',
+            'title*': star('Markdown companion полного регламента'),
+          },
+          {
             href: abs(root, reglamentEstimate2026DataPath()),
             type: 'application/json',
             'title*': star('Основной машиночитаемый feed reglament-section'),
+          },
+          {
+            href: abs(root, reglamentFull2026DataPath()),
+            type: 'application/json',
+            'title*': star('Dataset полного регламента'),
+          },
+          {
+            href: abs(root, reglamentAssetsPath()),
+            type: 'text/html',
+            'title*': star('Общее имущество регламента'),
+          },
+          {
+            href: abs(root, reglamentServicesPath()),
+            type: 'text/html',
+            'title*': star('Услуги регламента'),
           },
           {
             href: abs(root, reglamentLlmsPath()),

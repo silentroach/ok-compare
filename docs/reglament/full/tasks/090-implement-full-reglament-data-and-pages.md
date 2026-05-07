@@ -32,13 +32,20 @@
 
 ## Acceptance Criteria
 
-- [ ] Код реализует contract из `070`.
-- [ ] Публичные страницы соответствуют решению из `080`.
-- [ ] `/reglament/` остается калькулятором и получает только короткие ссылки на новый слой.
-- [ ] LLM endpoints ссылаются на новый dataset.
-- [ ] Есть тесты на контрольные числа и наличие source refs.
-- [ ] Проходят релевантные проверки `pnpm --dir apps/www test` и `pnpm --dir apps/www build`.
+- [x] Код реализует contract из `070`.
+- [x] Публичные страницы соответствуют решению из `080`.
+- [x] `/reglament/` остается калькулятором и получает только короткие ссылки на новый слой.
+- [x] LLM endpoints ссылаются на новый dataset.
+- [x] Есть тесты на контрольные числа и наличие source refs.
+- [x] Проходят релевантные проверки `pnpm --dir apps/www test` и `pnpm --dir apps/www build`.
 
 ## Зависимости
 
 - Все задачи `010-080`.
+
+## Выполнено
+
+- 2026-05-07: добавлен `apps/www/src/data/reglament/full-2026.ts` с dataset `full-reglament-2026`.
+- 2026-05-07: добавлены `/reglament/data/full-2026.json`, `/reglament/full.md`, `/reglament/assets/`, `/reglament/services/`.
+- 2026-05-07: обновлены `/reglament/`, `llms.txt`, `llms-full.txt`, section/root discovery surfaces.
+- 2026-05-07: проверки прошли: `pnpm --dir apps/www test`, `pnpm --dir apps/www typecheck`, `pnpm --dir apps/www build`.

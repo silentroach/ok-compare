@@ -1,0 +1,233 @@
+---
+import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+
+import { fullReglamentDataset2026 } from '@/data/reglament/full-2026';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import {
+  withHomeBreadcrumbs,
+  withHomeSchemaBreadcrumbs,
+} from '@/lib/breadcrumbs';
+import { collectionPageSchema } from '@/lib/news/seo';
+import type { FullReglamentCommonAsset } from '@/lib/reglament/full-schema';
+import { formatReglamentNumber } from '@/lib/reglament/format';
+import {
+  reglamentAssetsUrl,
+  reglamentFull2026DataUrl,
+  reglamentServicesUrl,
+  reglamentUrl,
+} from '@/lib/reglament/routes';
+
+type AssetCategory = FullReglamentCommonAsset['category'];
+
+const title = 'Общее имущество — Регламент — Шелково Онлайн';
+const description =
+  'Таблицы общего имущества SHELKOVO из полного регламента: дороги, ливневки, зелень, благоустройство, электроснабжение и охрана.';
+const breadcrumbs = withHomeBreadcrumbs([
+  { label: 'Регламент', href: reglamentUrl() },
+  { label: 'Общее имущество' },
+]);
+const categoryLabels = {
+  roads: 'Дороги и тротуары',
+  stormwater: 'Ливневые траншеи',
+  greenery: 'Зеленые насаждения',
+  forest: 'Лес',
+  improvement: 'Объекты благоустройства',
+  electricity: 'Электроснабжение',
+  security: 'Охрана',
+} as const satisfies Record<AssetCategory, string>;
+const categoryOrder = [
+  'roads',
+  'stormwater',
+  'greenery',
+  'forest',
+  'improvement',
+  'electricity',
+  'security',
+] as const satisfies readonly AssetCategory[];
+const groups = categoryOrder
+  .map((category) => ({
+    category,
+    title: categoryLabels[category],
+    assets: fullReglamentDataset2026.common_assets.filter(
+      (asset) => asset.category === category,
+    ),
+  }))
+  .filter((group) => group.assets.length > 0);
+const schema = collectionPageSchema({
+  name: title,
+  description,
+  url: reglamentAssetsUrl(),
+  breadcrumbs: withHomeSchemaBreadcrumbs([
+    { name: 'Регламент', url: reglamentUrl() },
+    { name: 'Общее имущество', url: reglamentAssetsUrl() },
+  ]),
+  items: groups.map((group) => ({
+    name: group.title,
+    url: `${reglamentAssetsUrl()}#${group.category}`,
+  })),
+});
+
+const displayQuantity = (
+  quantity: FullReglamentCommonAsset['total'],
+): string =>
+  quantity.value === null
+    ? quantity.raw
+    : formatReglamentNumber(quantity.value);
+const sourceLabel = (asset: FullReglamentCommonAsset): string =>
+  asset.source_refs
+    .map((ref) => `full.pdf, стр. ${ref.page}, ${ref.fragment}`)
+    .join('; ');
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={reglamentAssetsUrl()}
+  keywords={[
+    'общее имущество Шелково',
+    'регламент Шелково имущество',
+    'SHELKOVO дороги охрана освещение',
+  ]}
+  schema={schema}
+>
+  <main class="ui-page pb-8 md:pb-12 lg:pb-16">
+    <section class="px-5 pb-6 pt-3 md:px-6 md:pb-8 md:pt-5 lg:pb-10 lg:pt-6">
+      <div class="max-w-5xl space-y-6">
+        <Breadcrumbs items={breadcrumbs} />
+
+        <div class="space-y-4">
+          <h1
+            class="max-w-4xl text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
+          >
+            Что входит в общее имущество
+          </h1>
+          <p
+            class="max-w-3xl text-base leading-7 text-muted-foreground md:text-lg"
+          >
+            Это справочник по Приложению №2 полного регламента, страницы PDF
+            128-130. Пустые ячейки показаны как <span
+              class="font-semibold text-foreground">-</span
+            >
+            и не считаются подтвержденным нулем.
+          </p>
+        </div>
+
+        <div class="grid gap-3 md:grid-cols-3">
+          <a
+            class="rounded-xl border border-border bg-surface p-4 hover:border-primary"
+            href={reglamentFull2026DataUrl()}
+          >
+            <span
+              class="block text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
+            >
+              Dataset
+            </span>
+            <span class="mt-1 block font-semibold text-primary"
+              >full-2026.json</span
+            >
+          </a>
+          <a
+            class="rounded-xl border border-border bg-surface p-4 hover:border-primary"
+            href={reglamentServicesUrl()}
+          >
+            <span
+              class="block text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
+            >
+              Услуги
+            </span>
+            <span class="mt-1 block font-semibold text-primary"
+              >Какие услуги указаны</span
+            >
+          </a>
+          <a
+            class="rounded-xl border border-border bg-surface p-4 hover:border-primary"
+            href={reglamentUrl()}
+          >
+            <span
+              class="block text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
+            >
+              Калькулятор
+            </span>
+            <span class="mt-1 block font-semibold text-primary"
+              >Вернуться к расчету</span
+            >
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-5 md:px-6" aria-labelledby="assets-title">
+      <div class="max-w-6xl space-y-10">
+        <h2 id="assets-title" class="sr-only">Таблицы общего имущества</h2>
+
+        {
+          groups.map((group) => (
+            <section id={group.category} class="space-y-4">
+              <div class="max-w-3xl space-y-1.5">
+                <h3 class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]">
+                  {group.title}
+                </h3>
+                <p class="text-sm leading-6 text-muted-foreground md:text-base md:leading-7">
+                  Источник: full.pdf, Приложение №2. Значения перенесены как
+                  справочные факты, строки с сомнениями помечены отдельно.
+                </p>
+              </div>
+
+              <div class="-mx-5 overflow-x-auto border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0">
+                <table class="min-w-[62rem] w-full border-separate border-spacing-0 text-left text-sm">
+                  <caption class="sr-only">{group.title}</caption>
+                  <thead class="bg-muted text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                    <tr>
+                      <th class="w-[24%] px-4 py-2.5 align-bottom">Объект</th>
+                      <th class="px-4 py-2.5 align-bottom">Ед.</th>
+                      {fullReglamentDataset2026.villages.map((village) => (
+                        <th class="px-4 py-2.5 text-right align-bottom">
+                          {village.title.replace('SHELKOVO ', '')}
+                        </th>
+                      ))}
+                      <th class="px-4 py-2.5 text-right align-bottom">Итог</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {group.assets.map((asset) => (
+                      <tr class="border-t border-border">
+                        <td class="border-t border-border px-4 py-3 align-top">
+                          <div class="space-y-1.5">
+                            <p class="font-semibold text-foreground">
+                              {asset.title}
+                            </p>
+                            <p class="text-xs leading-5 text-muted-foreground">
+                              {sourceLabel(asset)}
+                            </p>
+                            {asset.verification_note && (
+                              <p class="text-xs font-semibold leading-5 text-primary">
+                                {asset.verification_note}
+                              </p>
+                            )}
+                          </div>
+                        </td>
+                        <td class="border-t border-border px-4 py-3 align-top text-muted-foreground">
+                          {asset.unit ?? '-'}
+                        </td>
+                        {fullReglamentDataset2026.villages.map((village) => (
+                          <td class="border-t border-border px-4 py-3 text-right align-top text-muted-foreground">
+                            {displayQuantity(
+                              asset.values_by_village[village.id],
+                            )}
+                          </td>
+                        ))}
+                        <td class="border-t border-border px-4 py-3 text-right align-top font-semibold text-foreground">
+                          {displayQuantity(asset.total)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+</BaseLayout>

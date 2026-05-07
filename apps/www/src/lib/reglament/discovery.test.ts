@@ -5,7 +5,10 @@ import { estimate2026 } from '@/data/reglament/estimate-2026';
 import {
   REGLAMENT_PUBLIC_PATHS,
   reglamentApiCatalogPath,
+  reglamentAssetsPath,
   reglamentEstimate2026DataPath,
+  reglamentFull2026DataPath,
+  reglamentServicesPath,
   reglamentSourcePdfPath,
 } from './routes';
 
@@ -140,16 +143,28 @@ describe('reglament discovery route smoke', () => {
         marker: '"id": "estimate-2026"',
       },
       {
+        name: 'full reglament markdown companion',
+        load: () => import('../../pages/reglament/full.md'),
+        contentType: 'text/markdown',
+        marker: '# Полный регламент содержания SHELKOVO',
+      },
+      {
+        name: 'full reglament json feed',
+        load: () => import('../../pages/reglament/data/full-2026.json'),
+        contentType: 'application/json',
+        marker: '"dataset_id": "full-reglament-2026"',
+      },
+      {
         name: 'short llms',
         load: () => import('../../pages/reglament/llms.txt'),
         contentType: 'text/plain',
-        marker: 'Файл: llms.txt',
+        marker: '/reglament/data/full-2026.json',
       },
       {
         name: 'full llms',
         load: () => import('../../pages/reglament/llms-full.txt'),
         contentType: 'text/plain',
-        marker: 'Файл: llms-full.txt',
+        marker: '/reglament/full.md',
       },
       {
         name: 'json schema',
@@ -169,7 +184,7 @@ describe('reglament discovery route smoke', () => {
         name: 'api catalog',
         load: () => import('../../pages/reglament/.well-known/api-catalog'),
         contentType: 'application/linkset+json',
-        marker: '/reglament/data/estimate-2026.json',
+        marker: '/reglament/data/full-2026.json',
       },
     ];
 
@@ -183,6 +198,15 @@ describe('reglament discovery route smoke', () => {
       );
       expect(body, item.name).toContain(item.marker);
     }
+  });
+
+  it('serves public full-reglament pages and exposes the full dataset route', async () => {
+    const root = 'https://example.com';
+    const apiCatalog = JSON.stringify(catalog(root));
+
+    expect(apiCatalog).toContain(`${root}${reglamentFull2026DataPath()}`);
+    expect(apiCatalog).toContain(`${root}${reglamentAssetsPath()}`);
+    expect(apiCatalog).toContain(`${root}${reglamentServicesPath()}`);
   });
 
   it('serves public source PDFs from stable reglament URLs', async () => {

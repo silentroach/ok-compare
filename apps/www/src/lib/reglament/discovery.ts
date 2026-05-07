@@ -4,10 +4,14 @@ import {
   reglamentEstimate2026DataPath,
   reglamentEstimate2026OpenApiPath,
   reglamentEstimate2026SchemaPath,
+  reglamentAssetsPath,
+  reglamentFull2026DataPath,
+  reglamentFullMarkdownPath,
   reglamentLlmsFullPath,
   reglamentLlmsPath,
   reglamentMarkdownPath,
   reglamentPath,
+  reglamentServicesPath,
   reglamentSourcePdfPath,
 } from './routes';
 import type {
@@ -621,11 +625,35 @@ export function catalog(root: string): Record<string, unknown> {
             ),
           },
           {
+            href: abs(root, reglamentFullMarkdownPath()),
+            type: 'text/markdown',
+            'title*': star(
+              'Markdown companion полного регламента содержания SHELKOVO',
+            ),
+          },
+          {
             href: abs(root, reglamentEstimate2026DataPath()),
             type: 'application/json',
             'title*': star(
               'Основной машиночитаемый feed сметы регламента 2026',
             ),
+          },
+          {
+            href: abs(root, reglamentFull2026DataPath()),
+            type: 'application/json',
+            'title*': star(
+              'Dataset полного регламента: имущество, услуги, сопоставления и audit notes',
+            ),
+          },
+          {
+            href: abs(root, reglamentAssetsPath()),
+            type: 'text/html',
+            'title*': star('Страница общего имущества из полного регламента'),
+          },
+          {
+            href: abs(root, reglamentServicesPath()),
+            type: 'text/html',
+            'title*': star('Страница услуг и сопоставления со сметой'),
           },
           {
             href: abs(root, reglamentLlmsPath()),
