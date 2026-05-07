@@ -1,0 +1,62 @@
+import { canon, withBase } from '../site';
+
+const REGLAMENT_ROOT = '/reglament/';
+const REGLAMENT_MARKDOWN = '/reglament/index.md';
+const REGLAMENT_DATA_ESTIMATE_2026 = '/reglament/data/estimate-2026.json';
+const REGLAMENT_LLMS = '/reglament/llms.txt';
+const REGLAMENT_LLMS_FULL = '/reglament/llms-full.txt';
+const REGLAMENT_API_CATALOG = '/reglament/.well-known/api-catalog';
+const REGLAMENT_SCHEMA = '/reglament/schemas/estimate-2026.schema.json';
+const REGLAMENT_OPENAPI = '/reglament/openapi/estimate-2026.openapi.json';
+
+export const REGLAMENT_PUBLIC_PATHS = [
+  REGLAMENT_ROOT,
+  REGLAMENT_MARKDOWN,
+  REGLAMENT_DATA_ESTIMATE_2026,
+  REGLAMENT_LLMS,
+  REGLAMENT_LLMS_FULL,
+  REGLAMENT_SCHEMA,
+  REGLAMENT_OPENAPI,
+  REGLAMENT_API_CATALOG,
+] as const;
+
+export type ReglamentPublicPath = (typeof REGLAMENT_PUBLIC_PATHS)[number];
+
+export const reglamentPath = (): string => REGLAMENT_ROOT;
+
+export const reglamentMarkdownPath = (): string => REGLAMENT_MARKDOWN;
+
+export const reglamentEstimate2026DataPath = (): string =>
+  REGLAMENT_DATA_ESTIMATE_2026;
+
+export const reglamentLlmsPath = (): string => REGLAMENT_LLMS;
+
+export const reglamentLlmsFullPath = (): string => REGLAMENT_LLMS_FULL;
+
+export const reglamentApiCatalogPath = (): string => REGLAMENT_API_CATALOG;
+
+export const reglamentEstimate2026SchemaPath = (): string => REGLAMENT_SCHEMA;
+
+export const reglamentEstimate2026OpenApiPath = (): string => REGLAMENT_OPENAPI;
+
+export const reglamentUrl = (): string => withBase(REGLAMENT_ROOT);
+
+export const reglamentMarkdownUrl = (): string => withBase(REGLAMENT_MARKDOWN);
+
+export const reglamentEstimate2026DataUrl = (): string =>
+  withBase(REGLAMENT_DATA_ESTIMATE_2026);
+
+export const reglamentLlmsUrl = (): string => withBase(REGLAMENT_LLMS);
+
+export const reglamentLlmsFullUrl = (): string => withBase(REGLAMENT_LLMS_FULL);
+
+export const reglamentApiCatalogUrl = (): string =>
+  withBase(REGLAMENT_API_CATALOG);
+
+export const reglamentEstimate2026SchemaUrl = (): string =>
+  withBase(REGLAMENT_SCHEMA);
+
+export const reglamentEstimate2026OpenApiUrl = (): string =>
+  withBase(REGLAMENT_OPENAPI);
+
+export const reglamentCanonical = (): string => canon(REGLAMENT_ROOT);

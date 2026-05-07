@@ -221,13 +221,13 @@ AI-поверхности являются обязательной частью
 
 Acceptance criteria:
 
-- [ ] Есть `apps/www/src/lib/reglament/routes.ts` со всеми публичными маршрутами раздела.
-- [ ] Есть `apps/www/src/lib/reglament/schema.ts` с типами `Estimate`, `EstimateSection`, `EstimateRow`, `CostBreakdown`, `EditableField`, `EstimateSourceRef`.
-- [ ] Типы запрещают строку без `id`, `title`, `source_refs` и официального baseline.
+- [x] Есть `apps/www/src/lib/reglament/routes.ts` со всеми публичными маршрутами раздела.
+- [x] Есть `apps/www/src/lib/reglament/schema.ts` с типами `Estimate`, `EstimateSection`, `EstimateRow`, `CostBreakdown`, `EditableField`, `EstimateSourceRef`.
+- [x] Типы запрещают строку без `id`, `title`, `source_refs` и официального baseline.
 
 Verification:
 
-- [ ] `pnpm --dir apps/www typecheck`
+- [x] `pnpm --dir apps/www typecheck`
 
 Dependencies: none.
 
