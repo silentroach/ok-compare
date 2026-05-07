@@ -1,0 +1,288 @@
+---
+import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+
+import { estimate2026 } from '@/data/reglament/estimate-2026';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import {
+  withHomeBreadcrumbs,
+  withHomeSchemaBreadcrumbs,
+} from '@/lib/breadcrumbs';
+import { collectionPageSchema } from '@/lib/news/seo';
+import { buildReglamentPayload } from '@/lib/reglament/discovery';
+import {
+  reglamentEstimate2026DataUrl,
+  reglamentLlmsUrl,
+  reglamentMarkdownUrl,
+  reglamentUrl,
+} from '@/lib/reglament/routes';
+
+export const prerender = true;
+
+const payload = buildReglamentPayload(estimate2026);
+const title = 'Смета 2026: калькулятор тарифа — Шелково Онлайн';
+const description =
+  'Интерактивная версия сметы регламента 2026: тариф за сотку в месяц, секционные таблицы и расчетная база по PDF-источникам.';
+const breadcrumbs = withHomeBreadcrumbs([{ label: 'Регламент' }]);
+const schema = collectionPageSchema({
+  name: title,
+  description,
+  url: reglamentUrl(),
+  breadcrumbs: withHomeSchemaBreadcrumbs([
+    { name: 'Регламент', url: reglamentUrl() },
+  ]),
+  items: payload.sections.map((section) => ({
+    name: section.title,
+    url: `${reglamentUrl()}#${section.id}`,
+  })),
+});
+
+type ReglamentPayload = ReturnType<typeof buildReglamentPayload>;
+type SourceRef = ReglamentPayload['source_refs'][number];
+type DisplayValue =
+  ReglamentPayload['sections'][number]['rows'][number]['baseline']['base'];
+
+const moneyFormatter = new Intl.NumberFormat('ru-RU', {
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 0,
+});
+
+const signedMoneyFormatter = new Intl.NumberFormat('ru-RU', {
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 0,
+  signDisplay: 'exceptZero',
+});
+
+const formatNumber = (value: number): string => moneyFormatter.format(value);
+const formatMoney = (value: number): string => `${formatNumber(value)} ₽`;
+const formatAnnualMoney = (value: number): string =>
+  `${formatMoney(value)}/год`;
+const formatTariffValue = (value: number): string => `${formatNumber(value)} ₽`;
+const formatTariff = (value: number): string =>
+  `${formatTariffValue(value)}/сотка/мес`;
+const formatTariffDelta = (value: number): string =>
+  `${signedMoneyFormatter.format(value)} ₽`;
+const formatDisplayValue = (value: DisplayValue): string =>
+  value
+    ? `${formatNumber(value.value)} ${value.unit}${value.label ? `, ${value.label}` : ''}`
+    : 'из сметной строки';
+const formatSource = (ref: SourceRef): string =>
+  `${ref.pdf}.pdf, стр. ${ref.page}${ref.fragment ? `, ${ref.fragment}` : ''}`;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={reglamentUrl()}
+  keywords={[
+    'смета 2026 Шелково',
+    'калькулятор тарифа Шелково',
+    'регламент Шелково',
+  ]}
+  schema={schema}
+>
+  <main class="ui-page pb-8 md:pb-12 lg:pb-16">
+    <section class="px-5 pb-6 pt-3 md:px-6 md:pb-8 md:pt-5 lg:pb-10 lg:pt-6">
+      <div class="max-w-5xl space-y-6">
+        <Breadcrumbs items={breadcrumbs} />
+
+        <div class="space-y-4">
+          <p
+            class="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground"
+          >
+            Смета регламента 2026
+          </p>
+          <h1
+            class="max-w-4xl text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
+          >
+            Калькулятор тарифа по смете 2026
+          </h1>
+          <p
+            class="max-w-3xl text-base leading-7 text-muted-foreground md:text-lg"
+          >
+            Смета разложена по разделам и строкам. На этом этапе страница
+            показывает официальные значения, а главная единица сравнения -
+            <span class="font-semibold text-foreground">₽/сотка/мес</span>.
+          </p>
+        </div>
+
+        <div
+          class="grid overflow-hidden rounded-2xl border border-border bg-surface md:grid-cols-3"
+          aria-label="Итоги сметы"
+        >
+          <div
+            class="border-b border-border p-4 md:border-b-0 md:border-r md:p-5"
+          >
+            <p
+              class="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
+            >
+              Официальный тариф
+            </p>
+            <p class="mt-2 text-2xl font-bold tracking-tight text-foreground">
+              {formatTariff(payload.official.tariff_per_sotka_month)}
+            </p>
+            <p class="mt-1 text-xs text-muted-foreground">
+              {formatAnnualMoney(payload.official.annual_gross)}
+            </p>
+          </div>
+          <div
+            class="border-b border-border p-4 md:border-b-0 md:border-r md:p-5"
+          >
+            <p
+              class="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
+            >
+              Текущий расчет
+            </p>
+            <p class="mt-2 text-2xl font-bold tracking-tight text-foreground">
+              {formatTariff(payload.computed.tariff_per_sotka_month)}
+            </p>
+            <p class="mt-1 text-xs text-muted-foreground">
+              без пользовательских изменений
+            </p>
+          </div>
+          <div class="p-4 md:p-5">
+            <p
+              class="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
+            >
+              Разница
+            </p>
+            <p class="mt-2 text-2xl font-bold tracking-tight text-foreground">
+              {formatTariffDelta(payload.computed.delta_tariff_per_sotka_month)}
+            </p>
+            <p class="mt-1 text-xs text-muted-foreground">
+              к официальному тарифу
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground"
+        >
+          <a class="ui-link text-primary" href={reglamentEstimate2026DataUrl()}>
+            JSON-данные
+          </a>
+          <a class="ui-link text-primary" href={reglamentMarkdownUrl()}>
+            Markdown companion
+          </a>
+          <a class="ui-link text-primary" href={reglamentLlmsUrl()}>
+            llms.txt
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-5 md:px-6" aria-labelledby="estimate-sections-title">
+      <div class="space-y-10">
+        <div class="max-w-3xl space-y-2">
+          <h2
+            id="estimate-sections-title"
+            class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]"
+          >
+            Разделы сметы
+          </h2>
+          <p
+            class="text-sm leading-6 text-muted-foreground md:text-base md:leading-7"
+          >
+            Годовые суммы оставлены в итогах и источниках для проверки, но в
+            строках главным числом показан вклад позиции в тариф.
+          </p>
+        </div>
+
+        {
+          payload.sections.map((section) => (
+            <section
+              id={section.id}
+              class="border-t border-border pt-7 md:pt-8"
+            >
+              <div class="mb-4 flex flex-col gap-3 md:mb-5 md:flex-row md:items-end md:justify-between">
+                <div class="space-y-1.5">
+                  <h3 class="text-xl font-semibold tracking-tight text-foreground md:text-2xl">
+                    {section.title}
+                  </h3>
+                  <p class="text-xs leading-5 text-muted-foreground">
+                    Источники раздела:{' '}
+                    {section.source_refs.map(formatSource).join('; ')}
+                  </p>
+                </div>
+                <div class="shrink-0 text-left md:text-right">
+                  <p class="text-lg font-bold tracking-tight text-foreground">
+                    {formatTariff(section.official.tariff_per_sotka_month)}
+                  </p>
+                  <p class="text-xs text-muted-foreground">
+                    {formatAnnualMoney(section.official.annual_gross)}
+                  </p>
+                </div>
+              </div>
+
+              <div class="overflow-x-auto rounded-xl border border-border bg-surface">
+                <table class="min-w-[58rem] w-full border-separate border-spacing-0 text-left text-sm">
+                  <caption class="sr-only">{section.title}</caption>
+                  <thead class="bg-muted text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                    <tr>
+                      <th class="w-[32%] px-4 py-3 align-bottom">Работа</th>
+                      <th class="w-[18%] px-4 py-3 align-bottom">База</th>
+                      <th class="w-[14%] px-4 py-3 align-bottom">Кратность</th>
+                      <th class="w-[14%] px-4 py-3 align-bottom">
+                        Цена/ставка
+                      </th>
+                      <th class="w-[12%] px-4 py-3 text-right align-bottom">
+                        Вклад в тариф
+                      </th>
+                      <th class="w-[10%] px-4 py-3 text-right align-bottom">
+                        Изменение
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {section.rows.map((row) => (
+                      <tr class="border-t border-border">
+                        <td class="border-t border-border px-4 py-3 align-top">
+                          <div class="space-y-1.5">
+                            <p class="font-semibold leading-snug text-foreground">
+                              {row.title}
+                            </p>
+                            {row.tags && row.tags.length > 0 && (
+                              <div class="flex flex-wrap gap-1.5">
+                                {row.tags.map((tag) => (
+                                  <span class="inline-flex rounded-full border border-border bg-muted px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 text-muted-foreground">
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                            <p class="text-xs leading-5 text-muted-foreground">
+                              Источники:{' '}
+                              {row.source_refs.map(formatSource).join('; ')}
+                            </p>
+                          </div>
+                        </td>
+                        <td class="border-t border-border px-4 py-3 align-top text-muted-foreground">
+                          {formatDisplayValue(row.baseline.base)}
+                        </td>
+                        <td class="border-t border-border px-4 py-3 align-top text-muted-foreground">
+                          {formatDisplayValue(row.baseline.frequency)}
+                        </td>
+                        <td class="border-t border-border px-4 py-3 align-top text-muted-foreground">
+                          {formatDisplayValue(row.baseline.price)}
+                        </td>
+                        <td class="border-t border-border px-4 py-3 text-right align-top font-semibold text-foreground">
+                          {formatTariffValue(
+                            row.computed.tariff_per_sotka_month,
+                          )}
+                        </td>
+                        <td class="border-t border-border px-4 py-3 text-right align-top text-muted-foreground">
+                          {formatTariffDelta(
+                            row.computed.delta_tariff_per_sotka_month,
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+</BaseLayout>

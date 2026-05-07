@@ -303,16 +303,16 @@ Estimated scope: M.
 
 Acceptance criteria:
 
-- [ ] Страница использует `BaseLayout` и правила `docs/page-meta.md`.
-- [ ] Title: `Смета 2026: калькулятор тарифа — Шелково Онлайн` или близкий вариант в пределах style guide.
-- [ ] Description коротко объясняет интерактивную смету и тариф за сотку.
-- [ ] Все секции видны на странице как отдельные таблицы.
-- [ ] Годовая цена не является основной колонкой.
+- [x] Страница использует `BaseLayout` и правила `docs/page-meta.md`.
+- [x] Title: `Смета 2026: калькулятор тарифа — Шелково Онлайн` или близкий вариант в пределах style guide.
+- [x] Description коротко объясняет интерактивную смету и тариф за сотку.
+- [x] Все секции видны на странице как отдельные таблицы.
+- [x] Годовая цена не является основной колонкой.
 
 Verification:
 
-- [ ] `pnpm --dir apps/www typecheck`
-- [ ] `pnpm --dir apps/www build`
+- [x] `pnpm --dir apps/www typecheck`
+- [x] `pnpm --dir apps/www build`
 
 Dependencies: Task 2.
 
