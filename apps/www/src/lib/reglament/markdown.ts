@@ -34,7 +34,7 @@ const source = (
   const fragment = ref.fragment ? `, ${ref.fragment}` : '';
   const note = ref.note ? ` (${ref.note})` : '';
 
-  return `${ref.pdf}.pdf, стр. ${ref.page}${fragment}${note}`;
+  return `[${ref.pdf}.pdf, стр. ${ref.page}${fragment}](${absoluteUrl(ref.pdf_url)})${note}`;
 };
 
 const rowLines = (
@@ -65,6 +65,10 @@ export function buildReglamentMarkdown(estimate: Estimate): string {
     `- API catalog: ${absoluteUrl(reglamentApiCatalogUrl())}`,
     `- llms.txt: ${absoluteUrl(reglamentLlmsUrl())}`,
     `- llms-full.txt: ${absoluteUrl(reglamentLlmsFullUrl())}`,
+    ...payload.sources.map(
+      (item) =>
+        `- PDF source ${item.pdf}.pdf: ${absoluteUrl(item.pdf_url)} (repo: ${item.pdf_path})`,
+    ),
     '',
     '## Итог',
     `- Официальный годовой итог: ${annual(payload.official.annual_gross)}`,

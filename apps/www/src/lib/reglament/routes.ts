@@ -1,4 +1,5 @@
 import { canon, withBase } from '../site';
+import { ESTIMATE_SOURCE_PDFS, type EstimateSourcePdf } from './schema';
 
 const REGLAMENT_ROOT = '/reglament/';
 const REGLAMENT_MARKDOWN = '/reglament/index.md';
@@ -8,6 +9,18 @@ const REGLAMENT_LLMS_FULL = '/reglament/llms-full.txt';
 const REGLAMENT_API_CATALOG = '/reglament/.well-known/api-catalog';
 const REGLAMENT_SCHEMA = '/reglament/schemas/estimate-2026.schema.json';
 const REGLAMENT_OPENAPI = '/reglament/openapi/estimate-2026.openapi.json';
+const REGLAMENT_SOURCE_PDF_ROOT = '/reglament/original/';
+
+export type ReglamentSourcePdfPath =
+  `/reglament/original/${EstimateSourcePdf}.pdf`;
+
+export const reglamentSourcePdfPath = (
+  pdf: EstimateSourcePdf,
+): ReglamentSourcePdfPath => `${REGLAMENT_SOURCE_PDF_ROOT}${pdf}.pdf`;
+
+export const REGLAMENT_SOURCE_PDF_PATHS = ESTIMATE_SOURCE_PDFS.map(
+  reglamentSourcePdfPath,
+);
 
 export const REGLAMENT_PUBLIC_PATHS = [
   REGLAMENT_ROOT,
@@ -18,6 +31,7 @@ export const REGLAMENT_PUBLIC_PATHS = [
   REGLAMENT_SCHEMA,
   REGLAMENT_OPENAPI,
   REGLAMENT_API_CATALOG,
+  ...REGLAMENT_SOURCE_PDF_PATHS,
 ] as const;
 
 export type ReglamentPublicPath = (typeof REGLAMENT_PUBLIC_PATHS)[number];
@@ -38,6 +52,9 @@ export const reglamentApiCatalogPath = (): string => REGLAMENT_API_CATALOG;
 export const reglamentEstimate2026SchemaPath = (): string => REGLAMENT_SCHEMA;
 
 export const reglamentEstimate2026OpenApiPath = (): string => REGLAMENT_OPENAPI;
+
+export const reglamentSourcePdfUrl = (pdf: EstimateSourcePdf): string =>
+  withBase(reglamentSourcePdfPath(pdf));
 
 export const reglamentUrl = (): string => withBase(REGLAMENT_ROOT);
 

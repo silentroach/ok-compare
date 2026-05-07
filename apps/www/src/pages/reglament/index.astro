@@ -424,7 +424,18 @@ const inputClass =
                   </h3>
                   <p class="text-xs leading-5 text-muted-foreground">
                     Источники раздела:{' '}
-                    {section.source_refs.map(formatSource).join('; ')}
+                    {section.source_refs.map((ref, index) => (
+                      <>
+                        {index > 0 && '; '}
+                        <a
+                          class="ui-link text-primary"
+                          href={ref.pdf_url}
+                          type="application/pdf"
+                        >
+                          {formatSource(ref)}
+                        </a>
+                      </>
+                    ))}
                   </p>
                 </div>
                 <div class="shrink-0 text-left md:text-right">
@@ -536,7 +547,13 @@ const inputClass =
                                     <ul class="space-y-1">
                                       {row.source_refs.map((ref) => (
                                         <li>
-                                          {formatSource(ref)}
+                                          <a
+                                            class="ui-link text-primary"
+                                            href={ref.pdf_url}
+                                            type="application/pdf"
+                                          >
+                                            {formatSource(ref)}
+                                          </a>
                                           {ref.note && (
                                             <span class="block text-muted-foreground">
                                               {ref.note}

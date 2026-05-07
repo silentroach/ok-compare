@@ -6,6 +6,7 @@ import {
   REGLAMENT_PUBLIC_PATHS,
   reglamentApiCatalogPath,
   reglamentEstimate2026DataPath,
+  reglamentSourcePdfPath,
 } from './routes';
 
 let buildReglamentPayload: typeof import('./discovery').buildReglamentPayload;
@@ -64,8 +65,18 @@ describe('reglament discovery payload', () => {
     expect(payload.sections[0]?.rows[0]?.source_refs[0]).toMatchObject({
       pdf: 'final',
       pdf_path: 'docs/reglament/original/final.pdf',
+      pdf_url: reglamentSourcePdfPath('final'),
       page: 1,
     });
+    expect(payload.sources).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          pdf: 'final',
+          pdf_path: 'docs/reglament/original/final.pdf',
+          pdf_url: reglamentSourcePdfPath('final'),
+        }),
+      ]),
+    );
   });
 
   it('keeps schema, openapi and catalog aligned with public routes', () => {
@@ -102,6 +113,9 @@ describe('reglament discovery payload', () => {
 
     expect(self(root)).toContain(
       `https://example.com${reglamentApiCatalogPath()}`,
+    );
+    expect(apiCatalog).toContain(
+      `https://example.com${reglamentSourcePdfPath('final')}`,
     );
     expect(jsonSchema.additionalProperties).toBe(false);
     expect(jsonSchema.$defs?.row?.additionalProperties).toBe(false);
@@ -169,5 +183,20 @@ describe('reglament discovery route smoke', () => {
       );
       expect(body, item.name).toContain(item.marker);
     }
+  });
+
+  it('serves public source PDFs from stable reglament URLs', async () => {
+    const route = await import('../../pages/reglament/original/[pdf].pdf');
+    const paths = route.getStaticPaths();
+    const response = await route.GET({ params: { pdf: 'final' } } as never);
+    const marker = new TextDecoder().decode(
+      (await response.arrayBuffer()).slice(0, 4),
+    );
+
+    expect(paths).toEqual(
+      expect.arrayContaining([{ params: { pdf: 'final' } }]),
+    );
+    expect(response.headers.get('Content-Type')).toContain('application/pdf');
+    expect(marker).toBe('%PDF');
   });
 });

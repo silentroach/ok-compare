@@ -386,14 +386,14 @@ Estimated scope: S.
 
 Acceptance criteria:
 
-- [ ] Принято решение: публикуем PDF или оставляем только source refs к repo path.
-- [ ] Если публикуем, PDF доступны по стабильным URL под `/reglament/original/`.
-- [ ] JSON feed и HTML-страница ссылаются на публичные PDF URL.
+- [x] Принято решение: публикуем PDF или оставляем только source refs к repo path.
+- [x] Если публикуем, PDF доступны по стабильным URL под `/reglament/original/`.
+- [x] JSON feed и HTML-страница ссылаются на публичные PDF URL.
 
 Verification:
 
-- [ ] `pnpm --dir apps/www build`
-- [ ] Manual check: ссылки на PDF открываются из build output.
+- [x] `pnpm --dir apps/www build`
+- [x] Manual check: ссылки на PDF открываются из build output.
 
 Dependencies: Task 4, Task 5.
 
