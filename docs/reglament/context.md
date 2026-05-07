@@ -37,3 +37,5 @@
 - Проверки Task 16: добавлен тест caveat/source refs в `estimate-2026.test.ts`; прошли `pnpm --dir apps/www test -- estimate-2026.test.ts` и `pnpm --dir apps/www test`.
 - Task 17 закрыта spec-only: поле площади участка (`мой участок`) оставлено вне текущего продукта, чтобы фокус `/reglament/` оставался на проверяемом тарифе `₽/сотка`, а не частном платеже пользователя.
 - Проверка Task 17: review diff; UI/logic не менялись, поэтому `pnpm --dir apps/www test` и `pnpm --dir apps/www build` не запускались для этой задачи.
+- Task 18 закрыта: раскрытие строки в `apps/www/src/pages/reglament/index.astro` вынесено из первой ячейки в отдельную table row с `td colspan="6"`; native `details/summary` сохранен, desktop-блок занимает ширину строки, mobile/tablet details ограничены видимой шириной внутри horizontal scroll.
+- Проверки Task 18: `pnpm --dir apps/www build`; manual preview через `astro preview` на 1024px, 768px и 320px подтвердил keyboard-open для первой строки и читаемую ширину раскрытия.
