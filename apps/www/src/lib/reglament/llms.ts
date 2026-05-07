@@ -20,6 +20,7 @@ import {
   reglamentEstimate2026SchemaUrl,
   reglamentFull2026DataUrl,
   reglamentFullMarkdownUrl,
+  reglamentFullSourcePdfUrl,
   reglamentLlmsFullUrl,
   reglamentLlmsUrl,
   reglamentMarkdownUrl,
@@ -46,6 +47,7 @@ export function build(kind: 'short' | 'full'): string {
   const fullMarkdown = absoluteUrl(reglamentFullMarkdownUrl());
   const feed = absoluteUrl(reglamentEstimate2026DataUrl());
   const fullDataset = absoluteUrl(reglamentFull2026DataUrl());
+  const fullSourcePdf = absoluteUrl(reglamentFullSourcePdfUrl());
   const assets = absoluteUrl(reglamentAssetsUrl());
   const services = absoluteUrl(reglamentServicesUrl());
   const short = absoluteUrl(reglamentLlmsUrl());
@@ -72,6 +74,7 @@ export function build(kind: 'short' | 'full'): string {
         `- Полный регламент Markdown: ${fullMarkdown}`,
         `- JSON feed: ${feed}`,
         `- Dataset полного регламента: ${fullDataset}`,
+        `- PDF полного регламента: ${fullSourcePdf}`,
         `- Общее имущество: ${assets}`,
         `- Услуги регламента: ${services}`,
         `- API catalog: ${catalog}`,
@@ -106,6 +109,7 @@ export function build(kind: 'short' | 'full'): string {
         `- Расширенный агентный обзор: ${full}`,
         `- JSON feed: ${feed}`,
         `- Dataset полного регламента: ${fullDataset}`,
+        `- PDF полного регламента: ${fullSourcePdf}`,
         `- Общее имущество: ${assets}`,
         `- Услуги регламента: ${services}`,
         `- API catalog: ${catalog}`,
