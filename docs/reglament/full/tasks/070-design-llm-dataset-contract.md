@@ -34,11 +34,15 @@
 
 ## Acceptance Criteria
 
-- [ ] Есть `docs/reglament/full/070-llm-dataset-contract.md`.
-- [ ] Контракт покрывает данные из задач `020-060`.
-- [ ] Контракт явно хранит source refs до страницы PDF.
-- [ ] Контракт не требует runtime-парсинга PDF.
-- [ ] Нет изменений в `apps/www`.
+- [x] Есть `docs/reglament/full/070-llm-dataset-contract.md`.
+- [x] Контракт покрывает данные из задач `020-060`.
+- [x] Контракт явно хранит source refs до страницы PDF.
+- [x] Контракт не требует runtime-парсинга PDF.
+- [x] Нет изменений в `apps/www`.
+
+## Статус
+
+Выполнено 2026-05-07. Результат: `docs/reglament/full/070-llm-dataset-contract.md`.
 
 ## Зависимости
 
