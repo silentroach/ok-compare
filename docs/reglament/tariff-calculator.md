@@ -586,6 +586,28 @@ Dependencies: Task 10.
 
 Estimated scope: M.
 
+### Task 19: Отсортировать секции по вкладу в тариф
+
+Описание: изменить исходный порядок секций на странице так, чтобы при первом открытии они шли по убыванию официального вклада в тариф. Автоматически пересортировывать секции после пользовательских изменений не нужно.
+
+Acceptance criteria:
+
+- [ ] HTML-страница изначально показывает секции по убыванию `official.tariff_per_sotka_month`.
+- [ ] Порядок секций не меняется при редактировании полей калькулятора.
+- [ ] JSON feed сохраняет исходную структуру данных без требования сортировать machine-readable payload для UI.
+- [ ] Anchor/id секций и source refs остаются стабильными.
+
+Verification:
+
+- [ ] Unit-test или route smoke проверяет порядок секций в HTML/view-model, если есть удобная тестируемая точка.
+- [ ] `pnpm --dir apps/www test`
+- [ ] `pnpm --dir apps/www build`
+- [ ] Manual check: первым разделом видна самая крупная секция по тарифу, а после изменения поля порядок не прыгает.
+
+Dependencies: Task 10.
+
+Estimated scope: S.
+
 ## Checkpoints
 
 Checkpoint after Tasks 1-3:
@@ -604,9 +626,10 @@ Checkpoint after Tasks 7-10:
 - [x] Discovery полный.
 - [x] Build, tests и typecheck проходят.
 
-Checkpoint after follow-up Tasks 11-18:
+Checkpoint after follow-up Tasks 11-19:
 
 - [ ] UI-лейблы, источники и controls соответствуют follow-up notes.
 - [ ] Спорная строка благоустройства перепроверена или явно помечена caveat.
 - [ ] Раскрытия строк читаются как детали всей строки, а не одной колонки.
+- [ ] Секции стартово отсортированы по официальному вкладу в тариф без runtime-пересортировки.
 - [ ] Build и tests проходят после всех follow-up правок.
