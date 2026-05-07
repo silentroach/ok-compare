@@ -19,12 +19,14 @@ import {
 } from '@/lib/reglament/format';
 import { reglamentNumberInputStep } from '@/lib/reglament/input-step';
 import { reglamentUrl } from '@/lib/reglament/routes';
+import { reglamentSectionsByOfficialTariff } from '@/lib/reglament/section-order';
 import type { CostBreakdown, EditableFieldKey } from '@/lib/reglament/schema';
 import { formatEstimateSourceRefLabel } from '@/lib/reglament/source-labels';
 
 export const prerender = true;
 
 const payload = buildReglamentPayload(estimate2026);
+const htmlSections = reglamentSectionsByOfficialTariff(payload.sections);
 const title = 'Смета 2026: калькулятор тарифа — Шелково Онлайн';
 const description =
   'Интерактивная версия сметы регламента 2026: тариф за сотку в месяц, секционные таблицы и расчетная база по PDF-источникам.';
@@ -36,7 +38,7 @@ const schema = collectionPageSchema({
   breadcrumbs: withHomeSchemaBreadcrumbs([
     { name: 'Регламент', url: reglamentUrl() },
   ]),
-  items: payload.sections.map((section) => ({
+  items: htmlSections.map((section) => ({
     name: section.title,
     url: `${reglamentUrl()}#${section.id}`,
   })),
@@ -247,7 +249,7 @@ const hasEnabledControl = (row: PayloadRow): boolean =>
   row.editable_fields.some(
     (field) => field.key === 'enabled' && field.level === 'basic',
   );
-const viewSections = payload.sections.map((section) => ({
+const viewSections = htmlSections.map((section) => ({
   ...section,
   rows: section.rows.map((row) => {
     const expert = expertNumberControls(row);

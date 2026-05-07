@@ -594,17 +594,17 @@ Estimated scope: M.
 
 Acceptance criteria:
 
-- [ ] HTML-страница изначально показывает секции по убыванию `official.tariff_per_sotka_month`.
-- [ ] Порядок секций не меняется при редактировании полей калькулятора.
-- [ ] JSON feed сохраняет исходную структуру данных без требования сортировать machine-readable payload для UI.
-- [ ] Anchor/id секций и source refs остаются стабильными.
+- [x] HTML-страница изначально показывает секции по убыванию `official.tariff_per_sotka_month`.
+- [x] Порядок секций не меняется при редактировании полей калькулятора.
+- [x] JSON feed сохраняет исходную структуру данных без требования сортировать machine-readable payload для UI.
+- [x] Anchor/id секций и source refs остаются стабильными.
 
 Verification:
 
-- [ ] Unit-test или route smoke проверяет порядок секций в HTML/view-model, если есть удобная тестируемая точка.
-- [ ] `pnpm --dir apps/www test`
-- [ ] `pnpm --dir apps/www build`
-- [ ] Manual check: первым разделом видна самая крупная секция по тарифу, а после изменения поля порядок не прыгает.
+- [x] Unit-test или route smoke проверяет порядок секций в HTML/view-model, если есть удобная тестируемая точка.
+- [x] `pnpm --dir apps/www test`
+- [x] `pnpm --dir apps/www build`
+- [x] Manual check: первым разделом видна самая крупная секция по тарифу, а после изменения поля порядок не прыгает.
 
 Dependencies: Task 10.
 
