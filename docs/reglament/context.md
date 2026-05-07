@@ -9,7 +9,11 @@
 - Root discovery и root llms/index.md уже знают про `/reglament/`.
 - Task 5 закрыта: `apps/www/src/pages/reglament/index.astro` рендерит статический каркас `/reglament/` на `BaseLayout` с meta, baseline-итогами, ссылками на agent data и отдельными секционными таблицами.
 - Task 6 закрыта: интерактивность реализована одним vanilla TypeScript controller в `apps/www/src/lib/reglament/calculator-controller.ts`; `/reglament/` рендерит basic controls через `data-reglament-*`, без framework islands, baseline остается читаемым без JS.
-- Basic editable fields теперь формируются по наличию baseline `base`/`frequency`/`price`: volume, frequency, rate, fixed annual price и enabled; expert поля остаются в данных для будущего Task 7, но на странице пока не выводятся.
+- Task 7 закрыта: каждая строка `/reglament/` получила native `details/summary` с годовой суммой, breakdown, source refs и expert inputs; controller обновляет `data-reglament-row-annual` и `data-reglament-row-breakdown` при пересчете.
+- Basic editable fields формируются по наличию baseline `base`/`frequency`/`price`: volume, frequency, rate, fixed annual price и enabled; expert поля выводятся только внутри раскрытия строки, не в основных колонках таблицы.
+- Future UI note: заменить пользовательскую единицу `₽/сотка/мес` на короткую `₽/сотка`; подразумевается месячный тариф.
+- Future source note: не показывать пользователю пути/названия PDF как основной источник; лучше убирать их из UI или заменять на понятные секции регламента.
 - Browser check Task 6: на `astro preview` изменение `lighting-electricity.fixed_price` с `1 473 084` до `1 573 084` дало общий тариф `902,48 ₽/сотка/мес`, delta строки `+0,41 ₽`, reset вернул `902,07 ₽/сотка/мес`.
+- Browser check Task 7: на `astro preview` фокус на `summary` + Enter открывает раскрытие; изменение `waste-transfer-from-homes.primary_salary` до `3 000 000` обновило годовую сумму строки до `11 769 172,11 ₽/год` и breakdown `primary_salary` до `3 000 000 ₽`.
 - Официальный baseline хранит `221 264 198 ₽/год` и `902,07 ₽/сотка/мес`; расчет сохраняет эти значения через baseline + delta, потому что прямой расчет `221264198 / 20440.54 / 12` стандартным округлением дает `902,06`, а сумма тарифов секций из `final.pdf` дает `902,07`.
 - В `improvement-road-surface-repair` оставлен source note: в `final.pdf` строка называется ремонтом покрытия дорог/площадок, а в детализации ближайшая крупная ремонтная строка - замена поврежденных элементов периметрального ограждения. Это стоит перепроверить при финальной сверке.

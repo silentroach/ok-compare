@@ -7,7 +7,11 @@ import {
   type EstimateCalculationChanges,
   type EstimateRowChange,
 } from './calculate';
-import { EDITABLE_FIELD_KEYS, type EditableFieldKey } from './schema';
+import {
+  EDITABLE_FIELD_KEYS,
+  type CostBreakdown,
+  type EditableFieldKey,
+} from './schema';
 
 export interface ReglamentCalculatorFieldState {
   readonly rowId: string;
@@ -17,6 +21,7 @@ export interface ReglamentCalculatorFieldState {
 }
 
 type NumberEditableFieldKey = Exclude<EditableFieldKey, 'enabled'>;
+type BreakdownFieldKey = keyof CostBreakdown;
 type MutableEstimateRowChange = {
   -readonly [Key in keyof EstimateRowChange]?: EstimateRowChange[Key];
 };
@@ -34,6 +39,21 @@ const NUMBER_EDITABLE_FIELD_KEYS = EDITABLE_FIELD_KEYS.filter(
 const NUMBER_EDITABLE_FIELD_KEY_SET: ReadonlySet<string> = new Set(
   NUMBER_EDITABLE_FIELD_KEYS,
 );
+const BREAKDOWN_FIELD_KEYS = [
+  'primary_salary',
+  'machinist_salary',
+  'fot',
+  'machines',
+  'materials',
+  'contractors',
+  'insurance',
+  'overhead',
+  'profit',
+  'usn',
+  'income',
+  'vat',
+  'gross',
+] as const satisfies readonly BreakdownFieldKey[];
 
 const moneyFormatter = new Intl.NumberFormat('ru-RU', {
   maximumFractionDigits: 2,
@@ -149,6 +169,7 @@ export const calculateReglamentCalculatorState = (
 const formatNumber = (value: number): string => moneyFormatter.format(value);
 const formatTariff = (value: number): string =>
   `${formatNumber(value)} ₽/сотка/мес`;
+const formatMoney = (value: number): string => `${formatNumber(value)} ₽`;
 const formatTariffValue = (value: number): string => `${formatNumber(value)} ₽`;
 const formatAnnualMoney = (value: number): string =>
   `${formatNumber(value)} ₽/год`;
@@ -217,7 +238,35 @@ const setMatchingDeltaText = (
   });
 };
 
+const setMatchingBreakdownText = (
+  root: ParentNode,
+  rowId: string,
+  field: BreakdownFieldKey,
+  value: string,
+): void => {
+  root
+    .querySelectorAll(
+      '[data-reglament-row-breakdown][data-reglament-breakdown-field]',
+    )
+    .forEach((node) => {
+      if (
+        node instanceof HTMLElement &&
+        node.getAttribute('data-reglament-row-breakdown') === rowId &&
+        node.getAttribute('data-reglament-breakdown-field') === field
+      ) {
+        node.textContent = value;
+      }
+    });
+};
+
 const renderRow = (root: ParentNode, row: CalculatedEstimateRow): void => {
+  setMatchingText(
+    root,
+    '[data-reglament-row-annual]',
+    'data-reglament-row-annual',
+    row.id,
+    formatAnnualMoney(row.annual_gross),
+  );
   setMatchingText(
     root,
     '[data-reglament-row-tariff]',
@@ -231,6 +280,14 @@ const renderRow = (root: ParentNode, row: CalculatedEstimateRow): void => {
     'data-reglament-row-delta',
     row.id,
     row.delta_tariff_per_sotka_month,
+  );
+  BREAKDOWN_FIELD_KEYS.forEach((field) =>
+    setMatchingBreakdownText(
+      root,
+      row.id,
+      field,
+      formatMoney(row.breakdown[field]),
+    ),
   );
 
   row.children?.forEach((child) => renderRow(root, child));

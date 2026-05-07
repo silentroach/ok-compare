@@ -1,6 +1,42 @@
+// @vitest-environment happy-dom
+
+import { afterEach } from 'vitest';
 import { describe, expect, it } from 'vitest';
 
-import { buildReglamentCalculatorChanges } from './calculator-controller';
+import {
+  buildReglamentCalculatorChanges,
+  calculateReglamentCalculatorState,
+  hydrateReglamentCalculator,
+} from './calculator-controller';
+import type { CalculatedEstimate, CalculatedEstimateRow } from './calculate';
+
+const moneyFormatter = new Intl.NumberFormat('ru-RU', {
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 0,
+});
+
+const formatMoney = (value: number): string =>
+  `${moneyFormatter.format(value)} ₽`;
+const formatAnnualMoney = (value: number): string =>
+  `${formatMoney(value)}/год`;
+
+const findCalculatedRow = (
+  result: CalculatedEstimate,
+  rowId: string,
+): CalculatedEstimateRow => {
+  const rows = result.sections.flatMap((section) => section.rows);
+  const row = rows.find((item) => item.id === rowId);
+
+  if (!row) {
+    throw new Error(`Missing calculated row ${rowId}`);
+  }
+
+  return row;
+};
+
+afterEach(() => {
+  document.body.innerHTML = '';
+});
 
 describe('buildReglamentCalculatorChanges', () => {
   it('omits unchanged baseline fields', () => {
@@ -87,5 +123,67 @@ describe('buildReglamentCalculatorChanges', () => {
         },
       },
     });
+  });
+
+  it('renders expert field changes into row annual total and breakdown details', () => {
+    const rowId = 'waste-transfer-from-homes';
+    document.body.innerHTML = `
+      <div data-reglament-calculator>
+        <input
+          type="number"
+          data-reglament-field="primary_salary"
+          data-reglament-row-id="${rowId}"
+          data-reglament-baseline="3418555.1"
+          value="3418555.1"
+        />
+        <span data-reglament-row-annual="${rowId}"></span>
+        <span
+          data-reglament-row-breakdown="${rowId}"
+          data-reglament-breakdown-field="primary_salary"
+        ></span>
+        <span
+          data-reglament-row-breakdown="${rowId}"
+          data-reglament-breakdown-field="gross"
+        ></span>
+      </div>
+    `;
+    const root = document.querySelector('[data-reglament-calculator]');
+    const input = document.querySelector('input');
+
+    if (
+      !(root instanceof HTMLElement) ||
+      !(input instanceof HTMLInputElement)
+    ) {
+      throw new Error('Missing calculator fixture nodes');
+    }
+
+    hydrateReglamentCalculator(root);
+    input.value = '3000000';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+
+    const expectedRow = findCalculatedRow(
+      calculateReglamentCalculatorState([
+        {
+          rowId,
+          key: 'primary_salary',
+          baseline: 3_418_555.1,
+          value: '3000000',
+        },
+      ]),
+      rowId,
+    );
+
+    expect(
+      document.querySelector('[data-reglament-row-annual]')?.textContent,
+    ).toBe(formatAnnualMoney(expectedRow.annual_gross));
+    expect(
+      document.querySelector(
+        '[data-reglament-breakdown-field="primary_salary"]',
+      )?.textContent,
+    ).toBe(formatMoney(expectedRow.breakdown.primary_salary));
+    expect(
+      document.querySelector('[data-reglament-breakdown-field="gross"]')
+        ?.textContent,
+    ).toBe(formatMoney(expectedRow.breakdown.gross));
   });
 });
