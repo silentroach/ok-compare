@@ -405,17 +405,17 @@ Estimated scope: S.
 
 Acceptance criteria:
 
-- [ ] Официальный baseline не расходится с `final.pdf`.
-- [ ] Все discovery routes включены в корневой API catalog.
-- [ ] Страница работает без JS как readable baseline.
-- [ ] Интерактивный JS не ломает build и не требует dev-server.
-- [ ] В тексте страницы нет сарказма и оценочных утверждений.
+- [x] Официальный baseline не расходится с `final.pdf`.
+- [x] Все discovery routes включены в корневой API catalog.
+- [x] Страница работает без JS как readable baseline.
+- [x] Интерактивный JS не ломает build и не требует dev-server.
+- [x] В тексте страницы нет сарказма и оценочных утверждений.
 
 Verification:
 
-- [ ] `pnpm typecheck`
-- [ ] `pnpm test`
-- [ ] `pnpm build:main`
+- [x] `pnpm typecheck`
+- [x] `pnpm test`
+- [x] `pnpm build:main`
 
 Dependencies: all previous tasks.
 
@@ -435,6 +435,6 @@ Checkpoint after Tasks 4-6:
 
 Checkpoint after Tasks 7-10:
 
-- [ ] UI не перегружен деталями.
-- [ ] Discovery полный.
-- [ ] Build, tests и typecheck проходят.
+- [x] UI не перегружен деталями.
+- [x] Discovery полный.
+- [x] Build, tests и typecheck проходят.

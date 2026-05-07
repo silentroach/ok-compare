@@ -24,3 +24,5 @@
 - В `improvement-road-surface-repair` оставлен source note: в `final.pdf` строка называется ремонтом покрытия дорог/площадок, а в детализации ближайшая крупная ремонтная строка - замена поврежденных элементов периметрального ограждения. Это стоит перепроверить при финальной сверке.
 - Task 9 закрыта: PDF публикуются статическими Astro endpoints из `docs/reglament/original/*.pdf` по `/reglament/original/{final,cleaning,landscaping,improvement,lighting,security,waste}.pdf`; бинарники не копировались в `apps/www/public`.
 - JSON feed/source refs теперь сохраняют repo `pdf_path` и добавляют public `pdf_url`; HTML, markdown, llms и section API catalog ссылаются на публичные PDF URL.
+- Task 10 закрыта: финальная сверка baseline/discovery/static baseline/JS/tone прошла, в `dist/www` есть `/reglament/`, JSON feed, OpenAPI, schema, llms, markdown, section catalog и public PDF routes.
+- Финальные проверки Task 10 прошли: `pnpm typecheck`, `pnpm test`, `pnpm build:main`.
