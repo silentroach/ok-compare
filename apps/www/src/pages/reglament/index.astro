@@ -18,12 +18,7 @@ import {
   formatReglamentTariffValue,
 } from '@/lib/reglament/format';
 import { reglamentNumberInputStep } from '@/lib/reglament/input-step';
-import {
-  reglamentEstimate2026DataUrl,
-  reglamentLlmsUrl,
-  reglamentMarkdownUrl,
-  reglamentUrl,
-} from '@/lib/reglament/routes';
+import { reglamentUrl } from '@/lib/reglament/routes';
 import type { CostBreakdown, EditableFieldKey } from '@/lib/reglament/schema';
 import { formatEstimateSourceRefLabel } from '@/lib/reglament/source-labels';
 
@@ -79,20 +74,30 @@ const breakdownFields = [
   { key: 'primary_salary', label: 'Основная зарплата' },
   { key: 'machinist_salary', label: 'Зарплата машинистов' },
   { key: 'fot', label: 'ФОТ' },
-  { key: 'machines', label: 'Машины' },
+  { key: 'machines', label: 'Машины и механизмы' },
   { key: 'materials', label: 'Материалы' },
-  { key: 'contractors', label: 'Подрядчики' },
-  { key: 'insurance', label: 'Страховые' },
-  { key: 'overhead', label: 'Накладные' },
+  { key: 'contractors', label: 'Услуги подрядчиков' },
+  { key: 'insurance', label: 'Страховые взносы' },
+  { key: 'overhead', label: 'Общеэксплуатационные расходы' },
   { key: 'profit', label: 'Прибыль' },
   { key: 'usn', label: 'УСН' },
-  { key: 'income', label: 'Доходов всего' },
+  { key: 'income', label: 'Доходы всего' },
   { key: 'vat', label: 'НДС' },
   { key: 'gross', label: 'Итого с НДС' },
 ] as const satisfies readonly {
   readonly key: BreakdownFieldKey;
   readonly label: string;
 }[];
+const inlineBreakdownFieldKeys = [
+  'primary_salary',
+  'machinist_salary',
+  'machines',
+  'materials',
+  'contractors',
+] as const satisfies readonly ExpertNumberFieldKey[];
+const inlineBreakdownFieldKeySet: ReadonlySet<EditableFieldKey> = new Set(
+  inlineBreakdownFieldKeys,
+);
 const expertFieldKeys = [
   'fixed_price',
   'primary_salary',
@@ -112,6 +117,9 @@ const expertFieldKeySet: ReadonlySet<EditableFieldKey> = new Set(
 const isExpertNumberFieldKey = (
   value: EditableFieldKey,
 ): value is ExpertNumberFieldKey => expertFieldKeySet.has(value);
+const isInlineBreakdownControl = (
+  control: NumberControl<ExpertNumberFieldKey>,
+): boolean => inlineBreakdownFieldKeySet.has(control.key);
 const fieldValue = (
   row: PayloadRow,
   key: BasicNumberFieldKey,
@@ -224,25 +232,42 @@ const expertNumberControls = (
       },
     ];
   });
+const inlineBreakdownControls = (
+  controls: readonly NumberControl<ExpertNumberFieldKey>[],
+): readonly NumberControl<ExpertNumberFieldKey>[] =>
+  controls.filter(isInlineBreakdownControl);
+const extraExpertControls = (
+  controls: readonly NumberControl<ExpertNumberFieldKey>[],
+): readonly NumberControl<ExpertNumberFieldKey>[] =>
+  controls.filter(
+    (control) =>
+      control.key !== 'fixed_price' && !isInlineBreakdownControl(control),
+  );
 const hasEnabledControl = (row: PayloadRow): boolean =>
   row.editable_fields.some(
     (field) => field.key === 'enabled' && field.level === 'basic',
   );
 const viewSections = payload.sections.map((section) => ({
   ...section,
-  rows: section.rows.map((row) => ({
-    ...row,
-    controls: {
-      enabled: hasEnabledControl(row),
-      base: numberControl(row, 'volume'),
-      frequency: numberControl(row, 'frequency'),
-      rate: numberControl(row, 'rate'),
-      expert: expertNumberControls(row),
-    },
-  })),
+  rows: section.rows.map((row) => {
+    const expert = expertNumberControls(row);
+
+    return {
+      ...row,
+      controls: {
+        enabled: hasEnabledControl(row),
+        base: numberControl(row, 'volume'),
+        frequency: numberControl(row, 'frequency'),
+        rate: numberControl(row, 'rate'),
+        breakdown: inlineBreakdownControls(expert),
+        expert: extraExpertControls(expert),
+      },
+    };
+  }),
 }));
 const inputClass =
   'w-full min-w-0 rounded-md border border-border bg-surface px-2 py-1.5 text-sm font-semibold text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20';
+const inlineInputClass = `${inputClass} text-right`;
 ---
 
 <BaseLayout
@@ -262,11 +287,6 @@ const inputClass =
         <Breadcrumbs items={breadcrumbs} />
 
         <div class="space-y-4">
-          <p
-            class="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground"
-          >
-            Смета регламента 2026
-          </p>
           <h1
             class="max-w-4xl text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
           >
@@ -342,20 +362,6 @@ const inputClass =
               к официальному тарифу
             </p>
           </div>
-        </div>
-
-        <div
-          class="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground"
-        >
-          <a class="ui-link text-primary" href={reglamentEstimate2026DataUrl()}>
-            JSON-данные
-          </a>
-          <a class="ui-link text-primary" href={reglamentMarkdownUrl()}>
-            Markdown companion
-          </a>
-          <a class="ui-link text-primary" href={reglamentLlmsUrl()}>
-            llms.txt
-          </a>
         </div>
       </div>
     </section>
@@ -509,23 +515,11 @@ const inputClass =
                                   {row.title}
                                 </p>
                               </div>
-                              {row.tags && row.tags.length > 0 && (
-                                <div class="flex flex-wrap gap-1.5">
-                                  {row.tags.map((tag) => (
-                                    <span class="inline-flex whitespace-nowrap rounded-full border border-border bg-surface px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 text-muted-foreground">
-                                      {tag}
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
                             </div>
                           </td>
                           <td class="border-t border-border px-4 py-2.5 align-top text-muted-foreground">
                             {row.controls.base ? (
                               <label class="block space-y-1">
-                                <span class="text-[0.6875rem] font-bold uppercase tracking-[0.06em] text-muted-foreground">
-                                  {row.controls.base.label}
-                                </span>
                                 <input
                                   class={inputClass}
                                   type="number"
@@ -554,9 +548,6 @@ const inputClass =
                           <td class="border-t border-border px-4 py-2.5 align-top text-muted-foreground">
                             {row.controls.frequency ? (
                               <label class="block space-y-1">
-                                <span class="text-[0.6875rem] font-bold uppercase tracking-[0.06em] text-muted-foreground">
-                                  {row.controls.frequency.label}
-                                </span>
                                 <input
                                   class={inputClass}
                                   type="number"
@@ -587,9 +578,6 @@ const inputClass =
                           <td class="border-t border-border px-4 py-2.5 align-top text-muted-foreground">
                             {row.controls.rate ? (
                               <label class="block space-y-1">
-                                <span class="text-[0.6875rem] font-bold uppercase tracking-[0.06em] text-muted-foreground">
-                                  {row.controls.rate.label}
-                                </span>
                                 <input
                                   class={inputClass}
                                   type="number"
@@ -689,22 +677,64 @@ const inputClass =
                                     Расчетный состав
                                   </p>
                                   <dl class="grid gap-x-3 gap-y-2 sm:grid-cols-2">
-                                    {breakdownFields.map((field) => (
-                                      <div class="flex items-baseline justify-between gap-3 border-b border-border pb-1">
-                                        <dt>{field.label}</dt>
-                                        <dd
-                                          class="text-right font-semibold text-foreground"
-                                          data-reglament-row-breakdown={row.id}
-                                          data-reglament-breakdown-field={
-                                            field.key
-                                          }
-                                        >
-                                          {formatReglamentMoney(
-                                            row.computed.breakdown[field.key],
-                                          )}
-                                        </dd>
-                                      </div>
-                                    ))}
+                                    {breakdownFields.map((field) => {
+                                      const control =
+                                        row.controls.breakdown.find(
+                                          (item) => item.key === field.key,
+                                        );
+
+                                      return (
+                                        <div class="flex items-start justify-between gap-3 border-b border-border pb-1">
+                                          <dt class="pt-1.5">{field.label}</dt>
+                                          <dd class="min-w-[10rem] text-right font-semibold text-foreground">
+                                            {control ? (
+                                              <label class="block space-y-1">
+                                                <span class="sr-only">
+                                                  {row.title}: {control.label}
+                                                </span>
+                                                <input
+                                                  class={inlineInputClass}
+                                                  type="number"
+                                                  inputmode="decimal"
+                                                  min={control.min}
+                                                  max={control.max}
+                                                  step={control.step}
+                                                  value={control.value}
+                                                  aria-label={`${row.title}: ${control.label}`}
+                                                  data-reglament-field={
+                                                    control.key
+                                                  }
+                                                  data-reglament-row-id={row.id}
+                                                  data-reglament-baseline={String(
+                                                    control.value,
+                                                  )}
+                                                />
+                                                {control.unit && (
+                                                  <span class="block text-[0.6875rem] font-normal text-muted-foreground">
+                                                    {control.unit}
+                                                  </span>
+                                                )}
+                                              </label>
+                                            ) : (
+                                              <span
+                                                data-reglament-row-breakdown={
+                                                  row.id
+                                                }
+                                                data-reglament-breakdown-field={
+                                                  field.key
+                                                }
+                                              >
+                                                {formatReglamentMoney(
+                                                  row.computed.breakdown[
+                                                    field.key
+                                                  ],
+                                                )}
+                                              </span>
+                                            )}
+                                          </dd>
+                                        </div>
+                                      );
+                                    })}
                                   </dl>
                                 </div>
 
@@ -742,10 +772,6 @@ const inputClass =
                                         </label>
                                       ))}
                                     </div>
-                                    <p class="text-muted-foreground">
-                                      Эти поля меняют расчетную строку и не
-                                      выводятся в основной таблице.
-                                    </p>
                                   </fieldset>
                                 )}
                               </div>
