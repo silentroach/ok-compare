@@ -670,7 +670,7 @@ const formatInputUnit = (unit: string): string =>
                                 <div class="grid gap-3 sm:grid-cols-2">
                                   <div class="space-y-1">
                                     <p class="font-bold uppercase tracking-[0.06em] text-muted-foreground">
-                                      Годовая сумма
+                                      Сумма за год
                                     </p>
                                     <p
                                       class="font-semibold text-foreground"
@@ -767,6 +767,7 @@ const formatInputUnit = (unit: string): string =>
                                               </label>
                                             ) : (
                                               <span
+                                                class="block pt-1.5"
                                                 data-reglament-row-breakdown={
                                                   row.id
                                                 }
