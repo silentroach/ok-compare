@@ -56,3 +56,5 @@
 - Task 24 закрыта: sticky-панель `/reglament/` выровнена по `max-w-6xl` как секционные итоги, тариф увеличен до `18px` на desktop, фон переведен на `--color-surface-muted`, добавлена мягкая нижняя тень.
 - Reset в sticky теперь dirty-only: controller скрывает кнопку на baseline, показывает после любого изменения поля и снова скрывает после сброса.
 - Проверки Task 24: `pnpm --dir apps/www test`, `pnpm --dir apps/www build`; manual preview подтвердил `deltaPx: 0` между правым краем sticky-тарифа и секционного итога, reset hidden на baseline и после reset, visible после изменения.
+- Task 25 закрыта spec-only: раздел `Открытые вопросы` в `docs/reglament/tariff-calculator.md` заменен на `Решенные вопросы`.
+- Зафиксированы решения: финальный route `/reglament/`; PDF публикуются Astro endpoints `/reglament/original/*.pdf` без копирования в `apps/www/public`; глобальные коэффициенты остаются baseline/discovery данными и не редактируются в первом релизе; мелкие ресурсные строки группируются в деталях родительских работ, крупные подрядные/материальные строки представлены явно.
