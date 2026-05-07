@@ -77,12 +77,20 @@ const schema = collectionPageSchema({
   })),
 });
 
-const estimateRows = (
+const estimateSourceLabel = (
   mapping: FullReglamentServiceToEstimateMapItem,
 ): string =>
-  mapping.estimate_row_ids.length > 0
-    ? mapping.estimate_row_ids.join(', ')
-    : '-';
+  mapping.estimate_source_refs.length > 0
+    ? `Смета: ${mapping.estimate_source_refs
+        .map((ref) => ref.fragment.replace(/^Сводная смета\s*\/\s*/u, ''))
+        .join(', ')}`
+    : 'Явная строка сметы не найдена';
+const mappingVerificationNote = (
+  mapping: FullReglamentServiceToEstimateMapItem,
+): string | null =>
+  mapping.verification_note === statusLabels[mapping.status]
+    ? null
+    : mapping.verification_note;
 const tableHeaderCellClass =
   'sticky top-0 z-10 border-b border-border bg-muted px-4 py-2.5 align-bottom';
 ---
@@ -171,6 +179,9 @@ const tableHeaderCellClass =
                   <tbody>
                     {group.services.map((service) => {
                       const mapping = mappingByService.get(service.id);
+                      const verificationNote = mapping
+                        ? mappingVerificationNote(mapping)
+                        : null;
 
                       return (
                         <tr class="border-t border-border">
@@ -208,15 +219,15 @@ const tableHeaderCellClass =
                               <div class="space-y-1.5">
                                 <p>
                                   <span class="font-semibold text-foreground">
-                                    {estimateRows(mapping)}
+                                    {estimateSourceLabel(mapping)}
                                   </span>
                                 </p>
                                 <p class="text-xs leading-5">
                                   {mapping.explanation}
                                 </p>
-                                {mapping.verification_note && (
+                                {verificationNote && (
                                   <p class="text-xs font-semibold leading-5 text-primary">
-                                    {mapping.verification_note}
+                                    {verificationNote}
                                   </p>
                                 )}
                               </div>
