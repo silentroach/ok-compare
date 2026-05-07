@@ -13,8 +13,7 @@ import {
 } from '@/lib/breadcrumbs';
 import { collectionPageSchema } from '@/lib/news/seo';
 import {
-  reglamentAssetsUrl,
-  reglamentFull2026DataUrl,
+  reglamentFullSourcePdfUrl,
   reglamentServicesUrl,
   reglamentUrl,
 } from '@/lib/reglament/routes';
@@ -78,16 +77,14 @@ const schema = collectionPageSchema({
   })),
 });
 
-const sourceLabel = (service: FullReglamentService): string =>
-  service.source_refs
-    .map((ref) => `full.pdf, стр. ${ref.page}, ${ref.fragment}`)
-    .join('; ');
 const estimateRows = (
   mapping: FullReglamentServiceToEstimateMapItem,
 ): string =>
   mapping.estimate_row_ids.length > 0
     ? mapping.estimate_row_ids.join(', ')
     : '-';
+const tableHeaderCellClass =
+  'sticky top-0 z-10 border-b border-border bg-muted px-4 py-2.5 align-bottom';
 ---
 
 <BaseLayout
@@ -112,56 +109,16 @@ const estimateRows = (
           >
             Какие услуги указаны в регламенте
           </h1>
-          <p
-            class="max-w-3xl text-base leading-7 text-muted-foreground md:text-lg"
+          <div
+            class="max-w-3xl space-y-3 text-sm leading-6 text-muted-foreground md:text-[0.9375rem]"
           >
-            Перечень взят из Приложения №4 полного регламента, page 135. Ниже
-            показано осторожное сопоставление со строками текущей сметы:
-            частичное совпадение или отсутствие явной строки не является
-            юридическим выводом.
-          </p>
-        </div>
-
-        <div class="grid gap-3 md:grid-cols-3">
-          <a
-            class="rounded-xl border border-border bg-surface p-4 hover:border-primary"
-            href={reglamentFull2026DataUrl()}
-          >
-            <span
-              class="block text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
-            >
-              Dataset
-            </span>
-            <span class="mt-1 block font-semibold text-primary"
-              >full-2026.json</span
-            >
-          </a>
-          <a
-            class="rounded-xl border border-border bg-surface p-4 hover:border-primary"
-            href={reglamentAssetsUrl()}
-          >
-            <span
-              class="block text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
-            >
-              Имущество
-            </span>
-            <span class="mt-1 block font-semibold text-primary"
-              >Что входит в общее имущество</span
-            >
-          </a>
-          <a
-            class="rounded-xl border border-border bg-surface p-4 hover:border-primary"
-            href={reglamentUrl()}
-          >
-            <span
-              class="block text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
-            >
-              Калькулятор
-            </span>
-            <span class="mt-1 block font-semibold text-primary"
-              >Вернуться к расчету</span
-            >
-          </a>
+            <p>
+              Перечень взят из Приложения №4 полного регламента, стр. 135. Ниже
+              показано осторожное сопоставление со строками текущей сметы:
+              частичное совпадение или отсутствие явной строки не является
+              юридическим выводом.
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -178,22 +135,35 @@ const estimateRows = (
                   {group.title}
                 </h3>
                 <p class="text-sm leading-6 text-muted-foreground md:text-base md:leading-7">
-                  Услуги и периодичность перенесены из полного регламента без
-                  попытки автоматически пересчитать годовые кратности сметы.
+                  Источник:{' '}
+                  <a
+                    class="ui-link text-primary"
+                    href={reglamentFullSourcePdfUrl()}
+                    type="application/pdf"
+                  >
+                    полный регламент
+                  </a>
+                  , Приложение №4, стр. 135. Услуги и периодичность перенесены
+                  из полного регламента без попытки автоматически пересчитать
+                  годовые кратности сметы.
                 </p>
               </div>
 
-              <div class="-mx-5 overflow-x-auto border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0">
+              <div class="-mx-5 overflow-x-auto border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0 lg:overflow-visible">
                 <table class="min-w-[58rem] w-full border-separate border-spacing-0 text-left text-sm">
                   <caption class="sr-only">{group.title}</caption>
                   <thead class="bg-muted text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
                     <tr>
-                      <th class="w-[34%] px-4 py-2.5 align-bottom">Услуга</th>
-                      <th class="w-[16%] px-4 py-2.5 align-bottom">
+                      <th class:list={[tableHeaderCellClass, 'w-[34%]']}>
+                        Услуга
+                      </th>
+                      <th class:list={[tableHeaderCellClass, 'w-[16%]']}>
                         Периодичность
                       </th>
-                      <th class="w-[18%] px-4 py-2.5 align-bottom">Статус</th>
-                      <th class="w-[32%] px-4 py-2.5 align-bottom">
+                      <th class:list={[tableHeaderCellClass, 'w-[18%]']}>
+                        Статус
+                      </th>
+                      <th class:list={[tableHeaderCellClass, 'w-[32%]']}>
                         Сопоставление
                       </th>
                     </tr>
@@ -208,9 +178,6 @@ const estimateRows = (
                             <div class="space-y-1.5">
                               <p class="font-semibold text-foreground">
                                 {service.title}
-                              </p>
-                              <p class="text-xs leading-5 text-muted-foreground">
-                                {sourceLabel(service)}
                               </p>
                             </div>
                           </td>

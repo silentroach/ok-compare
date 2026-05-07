@@ -1,5 +1,9 @@
 ---
 import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+import ForestIcon from '@shelkovo/ui/icons/areas/Forest.astro';
+import ParkIcon from '@shelkovo/ui/icons/areas/Park.astro';
+import RiverIcon from '@shelkovo/ui/icons/areas/River.astro';
+import VillageIcon from '@shelkovo/ui/icons/areas/Village.astro';
 
 import { fullReglamentDataset2026 } from '@/data/reglament/full-2026';
 import BaseLayout from '@/layouts/BaseLayout.astro';
@@ -8,12 +12,14 @@ import {
   withHomeSchemaBreadcrumbs,
 } from '@/lib/breadcrumbs';
 import { collectionPageSchema } from '@/lib/news/seo';
-import type { FullReglamentCommonAsset } from '@/lib/reglament/full-schema';
+import type {
+  FullReglamentCommonAsset,
+  FullReglamentVillageId,
+} from '@/lib/reglament/full-schema';
 import { formatReglamentNumber } from '@/lib/reglament/format';
 import {
   reglamentAssetsUrl,
-  reglamentFull2026DataUrl,
-  reglamentServicesUrl,
+  reglamentFullSourcePdfUrl,
   reglamentUrl,
 } from '@/lib/reglament/routes';
 
@@ -73,10 +79,23 @@ const displayQuantity = (
   quantity.value === null
     ? quantity.raw
     : formatReglamentNumber(quantity.value);
-const sourceLabel = (asset: FullReglamentCommonAsset): string =>
-  asset.source_refs
-    .map((ref) => `full.pdf, стр. ${ref.page}, ${ref.fragment}`)
-    .join('; ');
+const hiddenVerificationNotes = new Set([
+  'пустые ячейки в PDF',
+  'пустая ячейка в PDF',
+  'требует визуальной сверки: единица измерения не указана',
+]);
+const publicVerificationNote = (
+  note: FullReglamentCommonAsset['verification_note'],
+): string | null => (note && !hiddenVerificationNotes.has(note) ? note : null);
+const villageIcons = {
+  'shelkovo-village': VillageIcon,
+  'shelkovo-forest': ForestIcon,
+  'shelkovo-park': ParkIcon,
+  'shelkovo-river': RiverIcon,
+} as const satisfies Record<FullReglamentVillageId, typeof VillageIcon>;
+const tableHeaderCellClass =
+  'sticky top-0 z-10 border-b border-border bg-muted px-4 py-2.5 align-bottom';
+const tableHeaderCellRightClass = `${tableHeaderCellClass} text-right`;
 ---
 
 <BaseLayout
@@ -101,57 +120,15 @@ const sourceLabel = (asset: FullReglamentCommonAsset): string =>
           >
             Что входит в общее имущество
           </h1>
-          <p
-            class="max-w-3xl text-base leading-7 text-muted-foreground md:text-lg"
+          <div
+            class="max-w-3xl space-y-3 text-sm leading-6 text-muted-foreground md:text-[0.9375rem]"
           >
-            Это справочник по Приложению №2 полного регламента, страницы PDF
-            128-130. Пустые ячейки показаны как <span
-              class="font-semibold text-foreground">-</span
-            >
-            и не считаются подтвержденным нулем.
-          </p>
-        </div>
-
-        <div class="grid gap-3 md:grid-cols-3">
-          <a
-            class="rounded-xl border border-border bg-surface p-4 hover:border-primary"
-            href={reglamentFull2026DataUrl()}
-          >
-            <span
-              class="block text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
-            >
-              Dataset
-            </span>
-            <span class="mt-1 block font-semibold text-primary"
-              >full-2026.json</span
-            >
-          </a>
-          <a
-            class="rounded-xl border border-border bg-surface p-4 hover:border-primary"
-            href={reglamentServicesUrl()}
-          >
-            <span
-              class="block text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
-            >
-              Услуги
-            </span>
-            <span class="mt-1 block font-semibold text-primary"
-              >Какие услуги указаны</span
-            >
-          </a>
-          <a
-            class="rounded-xl border border-border bg-surface p-4 hover:border-primary"
-            href={reglamentUrl()}
-          >
-            <span
-              class="block text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
-            >
-              Калькулятор
-            </span>
-            <span class="mt-1 block font-semibold text-primary"
-              >Вернуться к расчету</span
-            >
-          </a>
+            <p>
+              Справочник по Приложению №2 полного регламента: дороги, ливневки,
+              зеленые насаждения, благоустройство, электроснабжение и охрана по
+              поселкам.
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -168,59 +145,81 @@ const sourceLabel = (asset: FullReglamentCommonAsset): string =>
                   {group.title}
                 </h3>
                 <p class="text-sm leading-6 text-muted-foreground md:text-base md:leading-7">
-                  Источник: full.pdf, Приложение №2. Значения перенесены как
+                  Источник:{' '}
+                  <a
+                    class="ui-link text-primary"
+                    href={reglamentFullSourcePdfUrl()}
+                    type="application/pdf"
+                  >
+                    полный регламент
+                  </a>
+                  , Приложение №2, стр. 128-130. Значения перенесены как
                   справочные факты, строки с сомнениями помечены отдельно.
                 </p>
               </div>
 
-              <div class="-mx-5 overflow-x-auto border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0">
-                <table class="min-w-[62rem] w-full border-separate border-spacing-0 text-left text-sm">
+              <div class="-mx-5 overflow-x-auto border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0 lg:overflow-visible">
+                <table class="min-w-[58rem] w-full border-separate border-spacing-0 text-left text-sm">
                   <caption class="sr-only">{group.title}</caption>
                   <thead class="bg-muted text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
                     <tr>
-                      <th class="w-[24%] px-4 py-2.5 align-bottom">Объект</th>
-                      <th class="px-4 py-2.5 align-bottom">Ед.</th>
-                      {fullReglamentDataset2026.villages.map((village) => (
-                        <th class="px-4 py-2.5 text-right align-bottom">
-                          {village.title.replace('SHELKOVO ', '')}
-                        </th>
-                      ))}
-                      <th class="px-4 py-2.5 text-right align-bottom">Итог</th>
+                      <th class:list={[tableHeaderCellClass, 'w-[24%]']}>
+                        Объект
+                      </th>
+                      <th class={tableHeaderCellClass}>Ед.</th>
+                      {fullReglamentDataset2026.villages.map((village) => {
+                        const AreaIcon = villageIcons[village.id];
+
+                        return (
+                          <th class={tableHeaderCellRightClass}>
+                            <span class="inline-flex items-baseline justify-end gap-1.5">
+                              <AreaIcon class="h-3.5 w-7 shrink-0" />
+                              <span>
+                                {village.title.replace('SHELKOVO ', '')}
+                              </span>
+                            </span>
+                          </th>
+                        );
+                      })}
+                      <th class={tableHeaderCellRightClass}>Итог</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {group.assets.map((asset) => (
-                      <tr class="border-t border-border">
-                        <td class="border-t border-border px-4 py-3 align-top">
-                          <div class="space-y-1.5">
-                            <p class="font-semibold text-foreground">
-                              {asset.title}
-                            </p>
-                            <p class="text-xs leading-5 text-muted-foreground">
-                              {sourceLabel(asset)}
-                            </p>
-                            {asset.verification_note && (
-                              <p class="text-xs font-semibold leading-5 text-primary">
-                                {asset.verification_note}
+                    {group.assets.map((asset) => {
+                      const note = publicVerificationNote(
+                        asset.verification_note,
+                      );
+
+                      return (
+                        <tr class="border-t border-border">
+                          <td class="border-t border-border px-4 py-3 align-top">
+                            <div class="space-y-1.5">
+                              <p class="font-semibold text-foreground">
+                                {asset.title}
                               </p>
-                            )}
-                          </div>
-                        </td>
-                        <td class="border-t border-border px-4 py-3 align-top text-muted-foreground">
-                          {asset.unit ?? '-'}
-                        </td>
-                        {fullReglamentDataset2026.villages.map((village) => (
-                          <td class="border-t border-border px-4 py-3 text-right align-top text-muted-foreground">
-                            {displayQuantity(
-                              asset.values_by_village[village.id],
-                            )}
+                              {note && (
+                                <p class="text-xs font-semibold leading-5 text-primary">
+                                  {note}
+                                </p>
+                              )}
+                            </div>
                           </td>
-                        ))}
-                        <td class="border-t border-border px-4 py-3 text-right align-top font-semibold text-foreground">
-                          {displayQuantity(asset.total)}
-                        </td>
-                      </tr>
-                    ))}
+                          <td class="border-t border-border px-4 py-3 align-top text-muted-foreground">
+                            {asset.unit ?? '-'}
+                          </td>
+                          {fullReglamentDataset2026.villages.map((village) => (
+                            <td class="border-t border-border px-4 py-3 text-right align-top text-muted-foreground">
+                              {displayQuantity(
+                                asset.values_by_village[village.id],
+                              )}
+                            </td>
+                          ))}
+                          <td class="border-t border-border px-4 py-3 text-right align-top font-semibold text-foreground">
+                            {displayQuantity(asset.total)}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

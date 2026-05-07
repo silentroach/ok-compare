@@ -8,6 +8,7 @@ import {
   reglamentAssetsPath,
   reglamentEstimate2026DataPath,
   reglamentFull2026DataPath,
+  reglamentFullSourcePdfPath,
   reglamentServicesPath,
   reglamentSourcePdfPath,
 } from './routes';
@@ -207,21 +208,33 @@ describe('reglament discovery route smoke', () => {
     expect(apiCatalog).toContain(`${root}${reglamentFull2026DataPath()}`);
     expect(apiCatalog).toContain(`${root}${reglamentAssetsPath()}`);
     expect(apiCatalog).toContain(`${root}${reglamentServicesPath()}`);
+    expect(apiCatalog).toContain(`${root}${reglamentFullSourcePdfPath()}`);
   });
 
   it('serves public source PDFs from stable reglament URLs', async () => {
     const route = await import('../../pages/reglament/original/[pdf].pdf');
     const paths = route.getStaticPaths();
     const response = await route.GET({ params: { pdf: 'final' } } as never);
+    const fullResponse = await route.GET({ params: { pdf: 'full' } } as never);
     const marker = new TextDecoder().decode(
       (await response.arrayBuffer()).slice(0, 4),
     );
+    const fullMarker = new TextDecoder().decode(
+      (await fullResponse.arrayBuffer()).slice(0, 4),
+    );
 
     expect(paths).toEqual(
-      expect.arrayContaining([{ params: { pdf: 'final' } }]),
+      expect.arrayContaining([
+        { params: { pdf: 'full' } },
+        { params: { pdf: 'final' } },
+      ]),
     );
     expect(response.headers.get('Content-Type')).toContain('application/pdf');
+    expect(fullResponse.headers.get('Content-Type')).toContain(
+      'application/pdf',
+    );
     expect(marker).toBe('%PDF');
+    expect(fullMarker).toBe('%PDF');
   });
 
   it('explains the short UI tariff unit without renaming machine fields', async () => {

@@ -2,32 +2,31 @@ import { readFile } from 'node:fs/promises';
 
 import type { APIRoute, GetStaticPaths } from 'astro';
 
-import {
-  ESTIMATE_SOURCE_PDFS,
-  type EstimateSourcePdf,
-} from '@/lib/reglament/schema';
+import { ESTIMATE_SOURCE_PDFS } from '@/lib/reglament/schema';
 
 export const prerender = true;
 
-const sourcePdfSet: ReadonlySet<string> = new Set(ESTIMATE_SOURCE_PDFS);
+const SOURCE_PDFS = ['full', ...ESTIMATE_SOURCE_PDFS] as const;
+type SourcePdf = (typeof SOURCE_PDFS)[number];
 
-const isEstimateSourcePdf = (
-  value: string | undefined,
-): value is EstimateSourcePdf => value !== undefined && sourcePdfSet.has(value);
+const sourcePdfSet: ReadonlySet<string> = new Set(SOURCE_PDFS);
 
-const sourcePdfFile = (pdf: EstimateSourcePdf): URL =>
+const isSourcePdf = (value: string | undefined): value is SourcePdf =>
+  value !== undefined && sourcePdfSet.has(value);
+
+const sourcePdfFile = (pdf: SourcePdf): URL =>
   new URL(
     `../../../../../../docs/reglament/original/${pdf}.pdf`,
     import.meta.url,
   );
 
 export const getStaticPaths = (() =>
-  ESTIMATE_SOURCE_PDFS.map((pdf) => ({
+  SOURCE_PDFS.map((pdf) => ({
     params: { pdf },
   }))) satisfies GetStaticPaths;
 
 export const GET: APIRoute = async ({ params }) => {
-  if (!isEstimateSourcePdf(params.pdf)) {
+  if (!isSourcePdf(params.pdf)) {
     return new Response(null, { status: 404, statusText: 'Not found' });
   }
 

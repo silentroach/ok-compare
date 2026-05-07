@@ -7,6 +7,7 @@ import {
   reglamentAssetsPath,
   reglamentFull2026DataPath,
   reglamentFullMarkdownPath,
+  reglamentFullSourcePdfPath,
   reglamentLlmsFullPath,
   reglamentLlmsPath,
   reglamentMarkdownPath,
@@ -654,6 +655,11 @@ export function catalog(root: string): Record<string, unknown> {
             href: abs(root, reglamentServicesPath()),
             type: 'text/html',
             'title*': star('Страница услуг и сопоставления со сметой'),
+          },
+          {
+            href: abs(root, reglamentFullSourcePdfPath()),
+            type: 'application/pdf',
+            'title*': star('Исходный PDF полного регламента'),
           },
           {
             href: abs(root, reglamentLlmsPath()),

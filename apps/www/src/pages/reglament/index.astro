@@ -282,6 +282,9 @@ const inlineInputClass = `${inputBaseClass} w-[7.5rem] text-right`;
 const inputUnitClass =
   'flex shrink-0 items-center border-l border-border bg-muted px-2 text-[0.6875rem] font-semibold leading-none text-muted-foreground';
 const tableTextClass = 'block pt-[0.4375rem] leading-snug';
+const tableHeaderCellClass =
+  'sticky top-12 z-10 border-b border-border bg-muted px-4 py-2.5 align-bottom';
+const tableHeaderCellRightClass = `${tableHeaderCellClass} text-right`;
 const formatInputUnit = (unit: string): string =>
   unit === '₽/год' ? '₽' : unit;
 ---
@@ -510,20 +513,24 @@ const formatInputUnit = (unit: string): string =>
                 </div>
               </div>
 
-              <div class="-mx-5 overflow-x-auto border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0">
+              <div class="-mx-5 overflow-x-auto border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0 lg:overflow-visible">
                 <table class="min-w-[48rem] w-full border-separate border-spacing-0 text-left text-sm">
                   <caption class="sr-only">{section.title}</caption>
                   <thead class="bg-muted text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
                     <tr>
-                      <th class="w-[32%] px-4 py-2.5 align-bottom">Работа</th>
-                      <th class="w-[18%] px-4 py-2.5 align-bottom">База</th>
-                      <th class="w-[14%] px-4 py-2.5 align-bottom">
+                      <th class:list={[tableHeaderCellClass, 'w-[32%]']}>
+                        Работа
+                      </th>
+                      <th class:list={[tableHeaderCellClass, 'w-[18%]']}>
+                        База
+                      </th>
+                      <th class:list={[tableHeaderCellClass, 'w-[14%]']}>
                         Кратность
                       </th>
-                      <th class="w-[14%] px-4 py-2.5 align-bottom">
+                      <th class:list={[tableHeaderCellClass, 'w-[14%]']}>
                         Цена/ставка
                       </th>
-                      <th class="w-[22%] px-4 py-2.5 text-right align-bottom">
+                      <th class:list={[tableHeaderCellRightClass, 'w-[22%]']}>
                         Вклад в тариф
                       </th>
                     </tr>

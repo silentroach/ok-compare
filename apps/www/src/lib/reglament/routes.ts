@@ -14,9 +14,11 @@ const REGLAMENT_API_CATALOG = '/reglament/.well-known/api-catalog';
 const REGLAMENT_SCHEMA = '/reglament/schemas/estimate-2026.schema.json';
 const REGLAMENT_OPENAPI = '/reglament/openapi/estimate-2026.openapi.json';
 const REGLAMENT_SOURCE_PDF_ROOT = '/reglament/original/';
+const REGLAMENT_FULL_SOURCE_PDF = '/reglament/original/full.pdf';
 
 export type ReglamentSourcePdfPath =
   `/reglament/original/${EstimateSourcePdf}.pdf`;
+export type ReglamentFullSourcePdfPath = typeof REGLAMENT_FULL_SOURCE_PDF;
 
 export const reglamentSourcePdfPath = (
   pdf: EstimateSourcePdf,
@@ -25,6 +27,9 @@ export const reglamentSourcePdfPath = (
 export const REGLAMENT_SOURCE_PDF_PATHS = ESTIMATE_SOURCE_PDFS.map(
   reglamentSourcePdfPath,
 );
+
+export const reglamentFullSourcePdfPath = (): ReglamentFullSourcePdfPath =>
+  REGLAMENT_FULL_SOURCE_PDF;
 
 export const REGLAMENT_PUBLIC_PATHS = [
   REGLAMENT_ROOT,
@@ -39,6 +44,7 @@ export const REGLAMENT_PUBLIC_PATHS = [
   REGLAMENT_SCHEMA,
   REGLAMENT_OPENAPI,
   REGLAMENT_API_CATALOG,
+  REGLAMENT_FULL_SOURCE_PDF,
   ...REGLAMENT_SOURCE_PDF_PATHS,
 ] as const;
 
@@ -71,6 +77,9 @@ export const reglamentEstimate2026OpenApiPath = (): string => REGLAMENT_OPENAPI;
 
 export const reglamentSourcePdfUrl = (pdf: EstimateSourcePdf): string =>
   withBase(reglamentSourcePdfPath(pdf));
+
+export const reglamentFullSourcePdfUrl = (): string =>
+  withBase(REGLAMENT_FULL_SOURCE_PDF);
 
 export const reglamentUrl = (): string => withBase(REGLAMENT_ROOT);
 
