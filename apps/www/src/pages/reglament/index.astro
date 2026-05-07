@@ -385,7 +385,7 @@ const formatInputUnit = (unit: string): string =>
         class="flex h-9 w-full max-w-6xl items-center gap-3 overflow-hidden whitespace-nowrap text-xs text-muted-foreground md:text-sm"
       >
         <button
-          class="shrink-0 rounded-full border border-border-strong bg-surface px-2.5 py-0.5 text-xs font-bold text-primary hover:border-primary hover:bg-muted md:px-3 md:text-sm"
+          class="shrink-0 cursor-pointer rounded-full border border-border-strong bg-surface px-2.5 py-0.5 text-xs font-bold text-primary hover:border-primary hover:bg-muted md:px-3 md:text-sm"
           type="button"
           data-reglament-reset
           hidden
@@ -395,12 +395,32 @@ const formatInputUnit = (unit: string): string =>
           >
         </button>
         <span class="sr-only">Текущий тариф</span>
-        <strong
-          class="ml-auto min-w-0 truncate text-right text-base text-foreground md:text-lg"
-          data-reglament-current-tariff
+        <span
+          class="ml-auto flex min-w-0 items-baseline justify-end gap-1.5 text-right"
         >
-          {formatReglamentTariff(payload.computed.tariff_per_sotka_month)}
-        </strong>
+          <span
+            class="reglament-sticky-total-original shrink-0 text-[0.8125rem] font-bold md:text-sm"
+            data-reglament-current-original-tariff
+            hidden
+          >
+            {formatReglamentNumber(payload.official.tariff_per_sotka_month)}
+          </span>
+          <span
+            class="reglament-sticky-total-arrow shrink-0 text-sm font-bold md:text-base"
+            data-reglament-current-tariff-arrow
+            aria-hidden="true"
+            hidden
+          >
+            →
+          </span>
+          <strong
+            class="min-w-0 truncate text-base text-foreground transition-colors md:text-lg"
+            data-reglament-current-tariff
+            data-reglament-current-tariff-tone
+          >
+            {formatReglamentTariff(payload.computed.tariff_per_sotka_month)}
+          </strong>
+        </span>
       </div>
     </div>
 
@@ -852,6 +872,17 @@ const formatInputUnit = (unit: string): string =>
     .reglament-sticky-total {
       background: var(--color-surface-muted);
       box-shadow: 0 0.45rem 1rem oklch(27% 0.05 142 / 0.055);
+    }
+
+    .reglament-sticky-total-original {
+      color: var(--color-text-muted);
+      opacity: 0.58;
+    }
+
+    .reglament-sticky-total-arrow {
+      color: var(--color-text-muted);
+      opacity: 0.52;
+      transform: translateY(-0.04em);
     }
 
     .reglament-details-summary::-webkit-details-marker {

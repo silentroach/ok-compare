@@ -227,12 +227,23 @@ describe('buildReglamentCalculatorChanges', () => {
           value="1473084"
         />
         <button type="button" data-reglament-reset>Сброс</button>
-        <strong data-reglament-current-tariff></strong>
+        <span data-reglament-current-original-tariff hidden></span>
+        <span data-reglament-current-tariff-arrow hidden></span>
+        <strong
+          data-reglament-current-tariff
+          data-reglament-current-tariff-tone
+        ></strong>
       </div>
     `;
     const root = document.querySelector('[data-reglament-calculator]');
     const input = document.querySelector('input');
     const reset = document.querySelector('[data-reglament-reset]');
+    const originalTariff = document.querySelector(
+      '[data-reglament-current-original-tariff]',
+    );
+    const arrow = document.querySelector(
+      '[data-reglament-current-tariff-arrow]',
+    );
     const stickyTariff = document.querySelector(
       '[data-reglament-current-tariff]',
     );
@@ -241,6 +252,8 @@ describe('buildReglamentCalculatorChanges', () => {
       !(root instanceof HTMLElement) ||
       !(input instanceof HTMLInputElement) ||
       !(reset instanceof HTMLButtonElement) ||
+      !(originalTariff instanceof HTMLElement) ||
+      !(arrow instanceof HTMLElement) ||
       !(stickyTariff instanceof HTMLElement)
     ) {
       throw new Error('Missing sticky calculator fixture nodes');
@@ -249,17 +262,35 @@ describe('buildReglamentCalculatorChanges', () => {
     hydrateReglamentCalculator(root);
 
     expect(reset.hidden).toBe(true);
+    expect(originalTariff.hidden).toBe(true);
+    expect(arrow.hidden).toBe(true);
+    expect(stickyTariff.dataset.reglamentDeltaTone).toBeUndefined();
 
     input.value = '1573084';
     input.dispatchEvent(new Event('input', { bubbles: true }));
 
+    expect(originalTariff.textContent).toMatchInlineSnapshot(`"902,07"`);
+    expect(originalTariff.hidden).toBe(false);
+    expect(arrow.textContent).toBe('→');
+    expect(arrow.hidden).toBe(false);
     expect(stickyTariff.textContent).toMatchInlineSnapshot(`"902,48 ₽/сотка"`);
+    expect(stickyTariff.dataset.reglamentDeltaTone).toBe('positive');
     expect(reset.hidden).toBe(false);
+
+    input.value = '1373084';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+
+    expect(originalTariff.hidden).toBe(false);
+    expect(arrow.hidden).toBe(false);
+    expect(stickyTariff.dataset.reglamentDeltaTone).toBe('negative');
 
     reset.click();
 
     expect(input.value).toBe(formatReglamentInputNumber(1_473_084));
     expect(stickyTariff.textContent).toMatchInlineSnapshot(`"902,07 ₽/сотка"`);
+    expect(stickyTariff.dataset.reglamentDeltaTone).toBeUndefined();
+    expect(originalTariff.hidden).toBe(true);
+    expect(arrow.hidden).toBe(true);
     expect(reset.hidden).toBe(true);
   });
 

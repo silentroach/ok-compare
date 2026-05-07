@@ -12,6 +12,7 @@ import {
   formatReglamentAnnualMoney,
   formatReglamentMoney,
   formatReglamentMoneyDelta,
+  formatReglamentNumber,
   formatReglamentTariff,
   formatReglamentTariffValue,
   parseReglamentNumberInput,
@@ -38,6 +39,15 @@ type MutableEstimateRowChange = {
 const FIELD_SELECTOR = '[data-reglament-field]';
 const RESET_SELECTOR = '[data-reglament-reset]';
 const ROOT_SELECTOR = '[data-reglament-calculator]';
+const CURRENT_TARIFF_SELECTOR = '[data-reglament-current-tariff]';
+const CURRENT_TARIFF_TONE_SELECTOR = '[data-reglament-current-tariff-tone]';
+const CURRENT_ORIGINAL_TARIFF_SELECTOR =
+  '[data-reglament-current-original-tariff]';
+const CURRENT_TARIFF_ARROW_SELECTOR = '[data-reglament-current-tariff-arrow]';
+const OFFICIAL_TARIFF_TEXT = formatReglamentNumber(
+  estimate2026.baseline.tariff_per_sotka_month,
+);
+const TARIFF_ARROW_TEXT = '→';
 
 const EDITABLE_FIELD_KEY_SET: ReadonlySet<string> = new Set(
   EDITABLE_FIELD_KEYS,
@@ -210,6 +220,44 @@ const setDeltaText = (
   });
 };
 
+const setCurrentTariffText = (
+  root: ParentNode,
+  result: CalculatedEstimate,
+): void => {
+  const tone = deltaTone(result.delta_tariff_per_sotka_month);
+  const isBaseline = tone === 'zero';
+
+  setText(
+    root,
+    CURRENT_TARIFF_SELECTOR,
+    formatReglamentTariff(result.tariff_per_sotka_month),
+  );
+  root.querySelectorAll(CURRENT_TARIFF_TONE_SELECTOR).forEach((node) => {
+    if (!(node instanceof HTMLElement)) {
+      return;
+    }
+
+    if (isBaseline) {
+      delete node.dataset.reglamentDeltaTone;
+      return;
+    }
+
+    node.dataset.reglamentDeltaTone = tone;
+  });
+  root.querySelectorAll(CURRENT_ORIGINAL_TARIFF_SELECTOR).forEach((node) => {
+    if (node instanceof HTMLElement) {
+      node.textContent = OFFICIAL_TARIFF_TEXT;
+      node.hidden = isBaseline;
+    }
+  });
+  root.querySelectorAll(CURRENT_TARIFF_ARROW_SELECTOR).forEach((node) => {
+    if (node instanceof HTMLElement) {
+      node.textContent = TARIFF_ARROW_TEXT;
+      node.hidden = isBaseline;
+    }
+  });
+};
+
 const setMatchingText = (
   root: ParentNode,
   selector: string,
@@ -307,11 +355,7 @@ const renderReglamentCalculator = (
   root: ParentNode,
   result: CalculatedEstimate,
 ): void => {
-  setText(
-    root,
-    '[data-reglament-current-tariff]',
-    formatReglamentTariff(result.tariff_per_sotka_month),
-  );
+  setCurrentTariffText(root, result);
   setText(
     root,
     '[data-reglament-current-annual]',
