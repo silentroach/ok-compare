@@ -77,6 +77,14 @@ pnpm typecheck
   - `src/pages/status/.well-known/api-catalog.ts`
   - `src/pages/status/schemas/status.schema.json.ts`
   - `src/pages/status/openapi/status.openapi.json.ts`
+- Reglament discovery:
+  - `src/pages/reglament/index.md.ts`
+  - `src/pages/reglament/llms.txt.ts`
+  - `src/pages/reglament/llms-full.txt.ts`
+  - `src/pages/reglament/data/estimate-2026.json.ts`
+  - `src/pages/reglament/.well-known/api-catalog.ts`
+  - `src/pages/reglament/schemas/estimate-2026.schema.json.ts`
+  - `src/pages/reglament/openapi/estimate-2026.openapi.json.ts`
 - People discovery:
   - `src/pages/people/[slug]/index.md.ts`
   - `src/pages/people/index.md.ts`

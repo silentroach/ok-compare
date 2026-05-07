@@ -281,17 +281,17 @@ Estimated scope: M.
 
 Acceptance criteria:
 
-- [ ] `/reglament/data/estimate-2026.json` содержит baseline, формулы, секции, строки, source refs и computed values.
-- [ ] `/reglament/schemas/estimate-2026.schema.json` описывает payload без `additionalProperties` там, где структура стабильна.
-- [ ] `/reglament/openapi/estimate-2026.openapi.json` описывает статические endpoints раздела.
-- [ ] `/reglament/.well-known/api-catalog` возвращает linkset с JSON, schema, OpenAPI, llms и markdown companion.
-- [ ] `apps/www/src/lib/discovery.ts` включает новый раздел в корневой catalog.
+- [x] `/reglament/data/estimate-2026.json` содержит baseline, формулы, секции, строки, source refs и computed values.
+- [x] `/reglament/schemas/estimate-2026.schema.json` описывает payload без `additionalProperties` там, где структура стабильна.
+- [x] `/reglament/openapi/estimate-2026.openapi.json` описывает статические endpoints раздела.
+- [x] `/reglament/.well-known/api-catalog` возвращает linkset с JSON, schema, OpenAPI, llms и markdown companion.
+- [x] `apps/www/src/lib/discovery.ts` включает новый раздел в корневой catalog.
 
 Verification:
 
-- [ ] Tests для discovery проверяют наличие всех section routes.
-- [ ] Tests для root discovery проверяют, что `/reglament/` и JSON feed доступны агентам.
-- [ ] `pnpm --dir apps/www test`
+- [x] Tests для discovery проверяют наличие всех section routes.
+- [x] Tests для root discovery проверяют, что `/reglament/` и JSON feed доступны агентам.
+- [x] `pnpm --dir apps/www test`
 
 Dependencies: Task 1, Task 2, Task 3.
 

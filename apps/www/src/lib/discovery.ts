@@ -19,6 +19,14 @@ import {
 } from './llms';
 import { siteSkillsUrl } from './skills';
 import {
+  reglamentApiCatalogPath,
+  reglamentEstimate2026DataPath,
+  reglamentLlmsFullPath,
+  reglamentLlmsPath,
+  reglamentMarkdownPath,
+  reglamentPath,
+} from './reglament/routes';
+import {
   statusApiCatalogPath,
   statusDataPath,
   statusLlmsPath,
@@ -121,6 +129,38 @@ export function catalog(root: string): Record<string, unknown> {
             href: abs(root, statusApiCatalogPath()),
             type: 'application/linkset+json',
             'title*': star('API catalog status-section'),
+          },
+        ],
+      },
+      {
+        anchor: abs(root, reglamentPath()),
+        item: [
+          {
+            href: abs(root, reglamentMarkdownPath()),
+            type: 'text/markdown',
+            'title*': star('Markdown companion reglament-section'),
+          },
+          {
+            href: abs(root, reglamentEstimate2026DataPath()),
+            type: 'application/json',
+            'title*': star('Основной машиночитаемый feed reglament-section'),
+          },
+          {
+            href: abs(root, reglamentLlmsPath()),
+            type: 'text/plain',
+            'title*': star('Агентный обзор reglament-section'),
+          },
+          {
+            href: abs(root, reglamentLlmsFullPath()),
+            type: 'text/plain',
+            'title*': star('Расширенный агентный обзор reglament-section'),
+          },
+        ],
+        'service-desc': [
+          {
+            href: abs(root, reglamentApiCatalogPath()),
+            type: 'application/linkset+json',
+            'title*': star('API catalog reglament-section'),
           },
         ],
       },
