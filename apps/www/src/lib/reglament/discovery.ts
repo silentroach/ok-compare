@@ -321,7 +321,7 @@ export function schema(root: string): Record<string, unknown> {
     $id: abs(root, reglamentEstimate2026SchemaPath()),
     title: ESTIMATE_PAYLOAD_SCHEMA,
     description:
-      'Read-only feed сметы регламента 2026 с baseline, формулами, source refs и computed значениями в рублях за сотку в месяц.',
+      'JSON сметы регламента 2026 только для чтения: baseline, формулы, source refs и computed значения в рублях за сотку в месяц.',
     type: 'object',
     additionalProperties: false,
     required: [
@@ -572,10 +572,10 @@ export function openapi(root: string): Record<string, unknown> {
     openapi: '3.1.0',
     jsonSchemaDialect: 'https://json-schema.org/draft/2020-12/schema',
     info: {
-      title: 'Шелково Reglament Estimate 2026 Feed',
+      title: 'Шелково Reglament Estimate 2026 JSON',
       version: '1.0.0',
       description:
-        'Read-only OpenAPI wrapper для /reglament/data/estimate-2026.json с baseline сметы, формулами, source refs и computed значениями.',
+        'OpenAPI-описание read-only JSON /reglament/data/estimate-2026.json: baseline сметы, формулы, source refs и computed значения.',
     },
     servers: [
       {
@@ -586,12 +586,12 @@ export function openapi(root: string): Record<string, unknown> {
       [reglamentEstimate2026DataPath()]: {
         get: {
           operationId: 'getReglamentEstimate2026',
-          summary: 'Read reglament estimate 2026 feed',
+          summary: 'Read reglament estimate 2026 JSON',
           description:
-            'Возвращает нормализованную смету регламента 2026 с официальным baseline, формулами пересчета, строками, секциями, source refs и computed тарифами.',
+            'Возвращает нормализованную смету регламента 2026: официальный baseline, формулы пересчета, секции, строки, source refs и computed тарифы.',
           responses: {
             200: {
-              description: 'Full reglament estimate 2026 feed',
+              description: 'Full reglament estimate 2026 JSON',
               content: {
                 'application/json': {
                   schema: {
@@ -629,21 +629,21 @@ export function catalog(root: string): Record<string, unknown> {
             href: abs(root, reglamentFullMarkdownPath()),
             type: 'text/markdown',
             'title*': star(
-              'Markdown companion полного регламента содержания SHELKOVO',
+              'Markdown companion полного регламента содержания Шелково',
             ),
           },
           {
             href: abs(root, reglamentEstimate2026DataPath()),
             type: 'application/json',
             'title*': star(
-              'Основной машиночитаемый feed сметы регламента 2026',
+              'Основной машиночитаемый JSON сметы регламента 2026',
             ),
           },
           {
             href: abs(root, reglamentFull2026DataPath()),
             type: 'application/json',
             'title*': star(
-              'Dataset полного регламента: имущество, услуги, сопоставления и audit notes',
+              'Набор данных полного регламента: имущество, услуги, сопоставления и заметки аудита',
             ),
           },
           {
@@ -681,12 +681,12 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, reglamentEstimate2026SchemaPath()),
             type: 'application/schema+json',
-            'title*': star('JSON Schema для feed сметы регламента 2026'),
+            'title*': star('JSON Schema для данных сметы регламента 2026'),
           },
           {
             href: abs(root, reglamentEstimate2026OpenApiPath()),
             type: OAS,
-            'title*': star('OpenAPI для feed сметы регламента 2026'),
+            'title*': star('OpenAPI для данных сметы регламента 2026'),
           },
         ],
       },

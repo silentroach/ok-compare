@@ -27,7 +27,7 @@ type AssetCategory = FullReglamentCommonAsset['category'];
 
 const title = 'Общее имущество — Регламент — Шелково Онлайн';
 const description =
-  'Таблицы общего имущества SHELKOVO из полного регламента: дороги, ливневки, зелень, благоустройство, электроснабжение и охрана.';
+  'Справочник общего имущества Шелково из полного регламента: дороги, ливневые траншеи, зелень, благоустройство, электроснабжение и охрана.';
 const breadcrumbs = withHomeBreadcrumbs([
   { label: 'Регламент', href: reglamentUrl() },
   { label: 'Общее имущество' },
@@ -105,7 +105,7 @@ const tableHeaderCellRightClass = `${tableHeaderCellClass} text-right`;
   keywords={[
     'общее имущество Шелково',
     'регламент Шелково имущество',
-    'SHELKOVO дороги охрана освещение',
+    'Шелково дороги охрана освещение',
   ]}
   schema={schema}
 >
@@ -124,9 +124,9 @@ const tableHeaderCellRightClass = `${tableHeaderCellClass} text-right`;
             class="max-w-3xl space-y-3 text-sm leading-6 text-muted-foreground md:text-[0.9375rem]"
           >
             <p>
-              Справочник по Приложению №2 полного регламента: дороги, ливневки,
-              зеленые насаждения, благоустройство, электроснабжение и охрана по
-              поселкам.
+              Справочник по Приложению №2 полного регламента: дороги, ливневые
+              траншеи, зеленые насаждения, благоустройство, электроснабжение и
+              охрана по поселкам.
             </p>
           </div>
         </div>
@@ -154,7 +154,8 @@ const tableHeaderCellRightClass = `${tableHeaderCellClass} text-right`;
                     полный регламент
                   </a>
                   , Приложение №2, стр. 128-130. Значения перенесены как
-                  справочные факты, строки с сомнениями помечены отдельно.
+                  справочные факты; спорные или неоднозначные строки отмечены
+                  отдельно.
                 </p>
               </div>
 
@@ -166,7 +167,7 @@ const tableHeaderCellRightClass = `${tableHeaderCellClass} text-right`;
                       <th class:list={[tableHeaderCellClass, 'w-[24%]']}>
                         Объект
                       </th>
-                      <th class={tableHeaderCellClass}>Ед.</th>
+                      <th class={tableHeaderCellClass}>Ед. изм.</th>
                       {fullReglamentDataset2026.villages.map((village) => {
                         const AreaIcon = villageIcons[village.id];
 
@@ -175,13 +176,13 @@ const tableHeaderCellRightClass = `${tableHeaderCellClass} text-right`;
                             <span class="inline-flex items-baseline justify-end gap-1.5">
                               <AreaIcon class="h-3.5 w-7 shrink-0" />
                               <span>
-                                {village.title.replace('SHELKOVO ', '')}
+                                {village.title.replace('Шелково ', '')}
                               </span>
                             </span>
                           </th>
                         );
                       })}
-                      <th class={tableHeaderCellRightClass}>Итог</th>
+                      <th class={tableHeaderCellRightClass}>Всего</th>
                     </tr>
                   </thead>
                   <tbody>

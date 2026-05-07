@@ -18,11 +18,11 @@ const TYPOGRAPHY_SKIP_TAGS = new Set([
   'textarea',
 ]);
 
-const SHELKOVO_PART_RULE = 'ru/nbsp/shelkovoPartName';
+const BRAND_PART_RULE = 'ru/nbsp/shelkovoPartName';
 
-if (!Typograf.getRule(SHELKOVO_PART_RULE)) {
+if (!Typograf.getRule(BRAND_PART_RULE)) {
   Typograf.addRule({
-    name: SHELKOVO_PART_RULE,
+    name: BRAND_PART_RULE,
     // Keep brand compounds like "Шелково Ривер" on one line.
     handler: (text) => text.replace(/Шелково (?=[A-ZА-ЯЁ])/gu, 'Шелково\u00A0'),
   });

@@ -34,7 +34,7 @@ const payload = buildReglamentPayload(estimate2026);
 const htmlSections = reglamentSectionsByOfficialTariff(payload.sections);
 const title = 'Смета 2026: калькулятор тарифа — Шелково Онлайн';
 const description =
-  'Интерактивная версия сметы регламента 2026: тариф за сотку в месяц, секционные таблицы и расчетная база по PDF-источникам.';
+  'Интерактивная смета регламента 2026: тариф за сотку в месяц, строки расходов, источники из PDF и быстрый пересчет итогов.';
 const breadcrumbs = withHomeBreadcrumbs([{ label: 'Регламент' }]);
 const schema = collectionPageSchema({
   name: title,
@@ -76,7 +76,7 @@ interface NumberControl<Key extends EditableFieldKey = BasicNumberFieldKey> {
 const formatDisplayValue = (value: DisplayValue): string =>
   value
     ? `${formatReglamentNumber(value.value)} ${value.unit}${value.label ? `, ${value.label}` : ''}`
-    : 'из сметной строки';
+    : 'по строке сметы';
 const breakdownFields = [
   { key: 'primary_salary', label: 'Основная зарплата' },
   { key: 'machinist_salary', label: 'Зарплата машинистов' },
@@ -315,16 +315,13 @@ const formatInputUnit = (unit: string): string =>
             class="max-w-3xl space-y-3 text-sm leading-6 text-muted-foreground md:text-[0.9375rem]"
           >
             <p>
-              Смета разложена по разделам и строкам: можно менять объемы,
-              периодичность и цены, чтобы увидеть, как меняется тариф в{' '}
+              Смета разложена на разделы и строки. Меняйте объемы, периодичность
+              и цены: калькулятор сразу пересчитает тариф в{' '}
               <span class="font-semibold text-foreground">₽/сотка за месяц</span
-              >. Пробуйте менять цифры регламента прямо на странице: калькулятор
-              сразу покажет, каким стал бы итоговый тариф после изменений.
+              > и покажет, как изменилась итоговая сумма.
             </p>
             <p>
-              Для сверки с полным регламентом отдельно вынесены справочники:{
-                ' '
-              }
+              Для проверки по полному регламенту рядом есть справочники:{' '}
               <a class="ui-link font-semibold" href={reglamentAssetsUrl()}>
                 что входит в общее имущество
               </a>{' '}
@@ -361,7 +358,7 @@ const formatInputUnit = (unit: string): string =>
             <p
               class="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
             >
-              Текущий расчет
+              Текущий пересчет
             </p>
             <p
               class="mt-2 text-2xl font-bold tracking-tight text-foreground"
@@ -458,8 +455,8 @@ const formatInputUnit = (unit: string): string =>
           <p
             class="text-sm leading-6 text-muted-foreground md:text-base md:leading-7"
           >
-            Годовые суммы оставлены в итогах и источниках для проверки, но в
-            строках главным числом показан вклад позиции в тариф.
+            В строках главным числом показан вклад в тариф. Годовые суммы
+            оставлены в деталях и источниках, чтобы можно было свериться с PDF.
           </p>
         </div>
 
@@ -525,7 +522,7 @@ const formatInputUnit = (unit: string): string =>
                         База
                       </th>
                       <th class:list={[tableHeaderCellClass, 'w-[14%]']}>
-                        Кратность
+                        Периодичность
                       </th>
                       <th class:list={[tableHeaderCellClass, 'w-[14%]']}>
                         Цена/ставка
@@ -757,7 +754,7 @@ const formatInputUnit = (unit: string): string =>
 
                                 <div class="space-y-2">
                                   <p class="font-bold uppercase tracking-[0.06em] text-muted-foreground">
-                                    Расчетный состав
+                                    Состав расчета
                                   </p>
                                   <dl class="grid gap-x-3 gap-y-2 sm:grid-cols-2">
                                     {breakdownFields.map((field) => {

@@ -147,7 +147,7 @@ describe('reglament discovery route smoke', () => {
         name: 'full reglament markdown companion',
         load: () => import('../../pages/reglament/full.md'),
         contentType: 'text/markdown',
-        marker: '# Полный регламент содержания SHELKOVO',
+        marker: '# Полный регламент содержания Шелково',
       },
       {
         name: 'full reglament json feed',
