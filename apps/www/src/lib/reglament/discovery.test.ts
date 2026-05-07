@@ -219,4 +219,33 @@ describe('reglament discovery route smoke', () => {
     );
     expect(json).toContain('tariff_per_sotka_month');
   });
+
+  it('keeps public PDF URLs and repo paths in agent-facing surfaces', async () => {
+    const markdownRoute = await import('../../pages/reglament/index.md');
+    const shortLlmsRoute = await import('../../pages/reglament/llms.txt');
+    const fullLlmsRoute = await import('../../pages/reglament/llms-full.txt');
+    const jsonRoute =
+      await import('../../pages/reglament/data/estimate-2026.json');
+    const markdown = await (await markdownRoute.GET({} as never)).text();
+    const shortLlms = await (await shortLlmsRoute.GET({} as never)).text();
+    const fullLlms = await (await fullLlmsRoute.GET({} as never)).text();
+    const json = JSON.parse(
+      await (await jsonRoute.GET({} as never)).text(),
+    ) as {
+      readonly source_refs: readonly {
+        readonly pdf: string;
+        readonly pdf_path: string;
+        readonly pdf_url: string;
+      }[];
+    };
+
+    expect(`${markdown}\n${shortLlms}\n${fullLlms}`).toContain(
+      '/reglament/original/final.pdf',
+    );
+    expect(json.source_refs[0]).toMatchObject({
+      pdf: 'final',
+      pdf_path: 'docs/reglament/original/final.pdf',
+      pdf_url: '/reglament/original/final.pdf',
+    });
+  });
 });

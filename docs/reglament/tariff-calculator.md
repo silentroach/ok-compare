@@ -448,16 +448,16 @@ Estimated scope: S.
 
 Acceptance criteria:
 
-- [ ] В HTML-странице источники подписаны человекочитаемо: `Итоговая смета`, `Детализация уборки`, `Детализация охраны` и т.п.
-- [ ] Технические имена PDF не являются основной видимой подписью ссылок в UI.
-- [ ] JSON feed сохраняет `pdf`, `pdf_path` и `pdf_url` для агентов.
-- [ ] Markdown companion и llms outputs сохраняют публичные PDF URL для проверки.
+- [x] В HTML-странице источники подписаны человекочитаемо: `Итоговая смета`, `Детализация уборки`, `Детализация охраны` и т.п.
+- [x] Технические имена PDF не являются основной видимой подписью ссылок в UI.
+- [x] JSON feed сохраняет `pdf`, `pdf_path` и `pdf_url` для агентов.
+- [x] Markdown companion и llms outputs сохраняют публичные PDF URL для проверки.
 
 Verification:
 
-- [ ] `pnpm --dir apps/www test`
-- [ ] `pnpm --dir apps/www build`
-- [ ] Manual check: в `/reglament/` ссылки на PDF выглядят как понятные источники, а не как файловые имена.
+- [x] `pnpm --dir apps/www test`
+- [x] `pnpm --dir apps/www build`
+- [x] Manual check: в `/reglament/` ссылки на PDF выглядят как понятные источники, а не как файловые имена.
 
 Dependencies: Task 10.
 

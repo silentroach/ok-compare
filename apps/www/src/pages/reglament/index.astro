@@ -16,6 +16,7 @@ import {
   reglamentUrl,
 } from '@/lib/reglament/routes';
 import type { CostBreakdown, EditableFieldKey } from '@/lib/reglament/schema';
+import { formatEstimateSourceRefLabel } from '@/lib/reglament/source-labels';
 
 export const prerender = true;
 
@@ -38,7 +39,6 @@ const schema = collectionPageSchema({
 });
 
 type ReglamentPayload = ReturnType<typeof buildReglamentPayload>;
-type SourceRef = ReglamentPayload['source_refs'][number];
 type PayloadRow = ReglamentPayload['sections'][number]['rows'][number];
 type DisplayValue =
   ReglamentPayload['sections'][number]['rows'][number]['baseline']['base'];
@@ -86,8 +86,6 @@ const formatDisplayValue = (value: DisplayValue): string =>
   value
     ? `${formatNumber(value.value)} ${value.unit}${value.label ? `, ${value.label}` : ''}`
     : 'из сметной строки';
-const formatSource = (ref: SourceRef): string =>
-  `${ref.pdf}.pdf, стр. ${ref.page}${ref.fragment ? `, ${ref.fragment}` : ''}`;
 const breakdownFields = [
   { key: 'primary_salary', label: 'Основная зарплата' },
   { key: 'machinist_salary', label: 'Зарплата машинистов' },
@@ -433,7 +431,7 @@ const inputClass =
                           href={ref.pdf_url}
                           type="application/pdf"
                         >
-                          {formatSource(ref)}
+                          {formatEstimateSourceRefLabel(ref)}
                         </a>
                       </>
                     ))}
@@ -553,7 +551,7 @@ const inputClass =
                                             href={ref.pdf_url}
                                             type="application/pdf"
                                           >
-                                            {formatSource(ref)}
+                                            {formatEstimateSourceRefLabel(ref)}
                                           </a>
                                           {ref.note && (
                                             <span class="block text-muted-foreground">
