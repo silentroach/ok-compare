@@ -30,3 +30,5 @@
 - Task 14 закрыта: шаги number inputs вынесены в `apps/www/src/lib/reglament/input-step.ts`; `volume`/`frequency` выводят `step=1` для целого baseline и `0.01` для дробного, ставки/коэффициенты остаются дробными, явный `field.step` сохраняет приоритет.
 - Проверки Task 14: `pnpm --dir apps/www test`, `pnpm --dir apps/www build`.
 - По follow-up notes добавлены будущие Tasks 20-23: убрать лишние разделители секционных таблиц, сделать чекбокс строки инлайновым без отступа при переносе, упростить sticky до одной текущей цифры справа, убрать колонку `Изменение` и подсвечивать измененный вклад в тариф.
+- Task 15 закрыта: общий formatter лежит в `apps/www/src/lib/reglament/format.ts`; HTML `/reglament/`, vanilla controller, reglament markdown/llms и root llms используют единый формат с `NBSP` между разрядами, числом и `₽` для `₽`, `₽/год`, `₽/сотка` и дельт.
+- Проверки Task 15: `pnpm --dir apps/www test`, `pnpm --dir apps/www build`; `format.test.ts` показывает `NBSP` видимым символом `·`.

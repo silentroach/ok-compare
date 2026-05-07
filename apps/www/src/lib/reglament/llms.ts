@@ -8,6 +8,11 @@ import {
   buildReglamentPayload,
 } from './discovery';
 import {
+  formatReglamentAnnualMoney,
+  formatReglamentNumber,
+  formatReglamentTariff,
+} from './format';
+import {
   reglamentApiCatalogUrl,
   reglamentEstimate2026DataUrl,
   reglamentEstimate2026OpenApiUrl,
@@ -20,14 +25,6 @@ import {
 import type { EstimateRow } from './schema';
 
 const join = (lines: readonly string[]): string => `${lines.join('\n')}\n`;
-
-const money = (value: number): string =>
-  new Intl.NumberFormat('ru-RU', {
-    maximumFractionDigits: 2,
-    minimumFractionDigits: 0,
-  }).format(value);
-
-const tariff = (value: number): string => `${money(value)} ₽/сотка`;
 
 const rowsCount = (rows: readonly EstimateRow[]): number =>
   rows.reduce((total, row) => total + 1 + rowsCount(row.children ?? []), 0);
@@ -57,7 +54,7 @@ export function build(kind: 'short' | 'full'): string {
         '',
         'Описание',
         '- Это static reglament-section внутри kpshelkovo.online для интерактивной сметы тарифа 2026.',
-        `- Baseline: ${tariff(payload.official.tariff_per_sotka_month)} при годовом итоге ${money(payload.official.annual_gross)} ₽ и площади ${money(payload.tariff_area_sotki)} сотки.`,
+        `- Baseline: ${formatReglamentTariff(payload.official.tariff_per_sotka_month)} при годовом итоге ${formatReglamentAnnualMoney(payload.official.annual_gross)} и площади ${formatReglamentNumber(payload.tariff_area_sotki)} сотки.`,
         `- В feed ${payload.sections.length} секций и ${rows} строк; runtime-парсинга PDF нет.`,
         '- UI-лейбл: ₽/сотка; machine-readable поле `tariff_per_sotka_month` остается месячным тарифом.',
         '',
@@ -85,8 +82,8 @@ export function build(kind: 'short' | 'full'): string {
         '- Это machine-readable и text-first слой для будущей страницы `/reglament/` с калькулятором тарифа по смете регламента 2026.',
         '- Раздел строится на нормализованном статическом data module, без client-side PDF parsing и без mutation endpoints.',
         '- UI-лейбл: ₽/сотка; machine-readable поле `tariff_per_sotka_month` остается месячным тарифом.',
-        `- Официальный baseline: ${money(payload.official.annual_gross)} ₽/год и ${tariff(payload.official.tariff_per_sotka_month)}.`,
-        `- Расчетный baseline сейчас дает ${money(calculated.annual_gross)} ₽/год и ${tariff(calculated.tariff_per_sotka_month)}.`,
+        `- Официальный baseline: ${formatReglamentAnnualMoney(payload.official.annual_gross)} и ${formatReglamentTariff(payload.official.tariff_per_sotka_month)}.`,
+        `- Расчетный baseline сейчас дает ${formatReglamentAnnualMoney(calculated.annual_gross)} и ${formatReglamentTariff(calculated.tariff_per_sotka_month)}.`,
         '',
         'Канонические URL',
         `- Раздел: ${home}`,
@@ -117,7 +114,7 @@ export function build(kind: 'short' | 'full'): string {
         'Секции',
         ...payload.sections.map(
           (section) =>
-            `- ${section.title}: ${money(section.official.annual_gross)} ₽/год; ${tariff(section.official.tariff_per_sotka_month)}; строк: ${section.rows.length}`,
+            `- ${section.title}: ${formatReglamentAnnualMoney(section.official.annual_gross)}; ${formatReglamentTariff(section.official.tariff_per_sotka_month)}; строк: ${section.rows.length}`,
         ),
         '',
         'Ограничения',

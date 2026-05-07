@@ -22,6 +22,7 @@ import {
 import { absoluteUrl, withBase } from './site';
 import { siteSkillsUrl } from './skills';
 import { estimate2026 } from '@/data/reglament/estimate-2026';
+import { formatReglamentTariff } from './reglament/format';
 import {
   reglamentApiCatalogUrl,
   reglamentEstimate2026DataUrl,
@@ -198,7 +199,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         `- llms.txt: ${reglamentLlms}`,
         `- JSON feed: ${reglamentFeed}`,
         `- API catalog: ${reglamentCatalog}`,
-        `- В feed ${estimate2026.sections.length} секций сметы; официальный месячный тариф ${estimate2026.baseline.tariff_per_sotka_month} ₽/сотка.`,
+        `- В feed ${estimate2026.sections.length} секций сметы; официальный месячный тариф ${formatReglamentTariff(estimate2026.baseline.tariff_per_sotka_month)}.`,
         '',
         'Раздел Люди',
         `- HTML index page отсутствует; section overview живет в Markdown: ${peopleMarkdown}`,

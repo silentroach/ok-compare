@@ -511,16 +511,16 @@ Estimated scope: S.
 
 Acceptance criteria:
 
-- [ ] HTML-страница использует общий formatter для `₽`, `₽/год`, `₽/сотка` и дельт.
-- [ ] Client controller использует тот же формат или совместимый helper, чтобы hydrated значения не меняли типографику.
-- [ ] Markdown companion и llms outputs не получают сломанную разметку и остаются читаемыми plain text.
-- [ ] В тестах видны неразрывные пробелы через helper или snapshot-представление.
+- [x] HTML-страница использует общий formatter для `₽`, `₽/год`, `₽/сотка` и дельт.
+- [x] Client controller использует тот же формат или совместимый helper, чтобы hydrated значения не меняли типографику.
+- [x] Markdown companion и llms outputs не получают сломанную разметку и остаются читаемыми plain text.
+- [x] В тестах видны неразрывные пробелы через helper или snapshot-представление.
 
 Verification:
 
-- [ ] Unit-test formatter-а или controller-state format output.
-- [ ] `pnpm --dir apps/www test`
-- [ ] `pnpm --dir apps/www build`
+- [x] Unit-test formatter-а или controller-state format output.
+- [x] `pnpm --dir apps/www test`
+- [x] `pnpm --dir apps/www build`
 
 Dependencies: Task 11.
 

@@ -2,6 +2,11 @@ import type { Estimate } from './schema';
 import { absoluteUrl } from '../site';
 import { buildReglamentPayload } from './discovery';
 import {
+  formatReglamentAnnualMoney,
+  formatReglamentNumber,
+  formatReglamentTariff,
+} from './format';
+import {
   reglamentApiCatalogUrl,
   reglamentEstimate2026DataUrl,
   reglamentEstimate2026OpenApiUrl,
@@ -18,16 +23,6 @@ export const REGLAMENT_MARKDOWN_HEADERS = {
 
 const join = (lines: readonly string[]): string => `${lines.join('\n')}\n`;
 
-const money = (value: number): string =>
-  new Intl.NumberFormat('ru-RU', {
-    maximumFractionDigits: 2,
-    minimumFractionDigits: 0,
-  }).format(value);
-
-const tariff = (value: number): string => `${money(value)} ₽/сотка`;
-
-const annual = (value: number): string => `${money(value)} ₽/год`;
-
 const source = (
   ref: ReturnType<typeof buildReglamentPayload>['source_refs'][number],
 ): string => {
@@ -42,7 +37,7 @@ const rowLines = (
     typeof buildReglamentPayload
   >['sections'][number]['rows'][number],
 ): readonly string[] => [
-  `- ${row.title} — ${tariff(row.baseline.tariff_per_sotka_month)}; ${annual(row.baseline.annual_gross)}; source: ${row.source_refs.map(source).join('; ')}`,
+  `- ${row.title} — ${formatReglamentTariff(row.baseline.tariff_per_sotka_month)}; ${formatReglamentAnnualMoney(row.baseline.annual_gross)}; source: ${row.source_refs.map(source).join('; ')}`,
   ...(row.description ? [`  ${row.description}`] : []),
   ...(row.tags && row.tags.length > 0
     ? [`  Теги: ${row.tags.map((tag) => `\`${tag}\``).join(', ')}`]
@@ -72,10 +67,10 @@ export function buildReglamentMarkdown(estimate: Estimate): string {
     ),
     '',
     '## Итог',
-    `- Официальный годовой итог: ${annual(payload.official.annual_gross)}`,
-    `- Официальный тариф: ${tariff(payload.official.tariff_per_sotka_month)}`,
-    `- Расчетный baseline feed: ${annual(payload.computed.annual_gross)}; ${tariff(payload.computed.tariff_per_sotka_month)}`,
-    `- Тарифицируемая площадь: ${money(payload.tariff_area_sotki)} сотки`,
+    `- Официальный годовой итог: ${formatReglamentAnnualMoney(payload.official.annual_gross)}`,
+    `- Официальный тариф: ${formatReglamentTariff(payload.official.tariff_per_sotka_month)}`,
+    `- Расчетный baseline feed: ${formatReglamentAnnualMoney(payload.computed.annual_gross)}; ${formatReglamentTariff(payload.computed.tariff_per_sotka_month)}`,
+    `- Тарифицируемая площадь: ${formatReglamentNumber(payload.tariff_area_sotki)} сотки`,
     '',
     '## Формулы',
     `- Тариф: \`${payload.formulas.tariff_per_sotka_month}\``,
@@ -88,7 +83,7 @@ export function buildReglamentMarkdown(estimate: Estimate): string {
     '',
     ...payload.sections.flatMap((section) => [
       `## ${section.title}`,
-      `- Итог раздела: ${annual(section.official.annual_gross)}; ${tariff(section.official.tariff_per_sotka_month)}`,
+      `- Итог раздела: ${formatReglamentAnnualMoney(section.official.annual_gross)}; ${formatReglamentTariff(section.official.tariff_per_sotka_month)}`,
       '',
       ...section.rows.flatMap(rowLines),
       '',

@@ -8,6 +8,13 @@ import {
   type EstimateRowChange,
 } from './calculate';
 import {
+  formatReglamentAnnualMoney,
+  formatReglamentMoney,
+  formatReglamentMoneyDelta,
+  formatReglamentTariff,
+  formatReglamentTariffValue,
+} from './format';
+import {
   EDITABLE_FIELD_KEYS,
   type CostBreakdown,
   type EditableFieldKey,
@@ -54,16 +61,6 @@ const BREAKDOWN_FIELD_KEYS = [
   'vat',
   'gross',
 ] as const satisfies readonly BreakdownFieldKey[];
-
-const moneyFormatter = new Intl.NumberFormat('ru-RU', {
-  maximumFractionDigits: 2,
-  minimumFractionDigits: 0,
-});
-const signedMoneyFormatter = new Intl.NumberFormat('ru-RU', {
-  maximumFractionDigits: 2,
-  minimumFractionDigits: 0,
-  signDisplay: 'exceptZero',
-});
 
 const isEditableFieldKey = (
   value: string | undefined,
@@ -166,16 +163,6 @@ export const calculateReglamentCalculatorState = (
 ): CalculatedEstimate =>
   calculateEstimate(estimate2026, buildReglamentCalculatorChanges(fields));
 
-const formatNumber = (value: number): string => moneyFormatter.format(value);
-const formatTariff = (value: number): string =>
-  `${formatNumber(value)} ₽/сотка`;
-const formatMoney = (value: number): string => `${formatNumber(value)} ₽`;
-const formatTariffValue = (value: number): string => `${formatNumber(value)} ₽`;
-const formatAnnualMoney = (value: number): string =>
-  `${formatNumber(value)} ₽/год`;
-const formatTariffDelta = (value: number): string =>
-  `${signedMoneyFormatter.format(value)} ₽`;
-
 const deltaTone = (value: number): 'negative' | 'positive' | 'zero' => {
   if (value < 0) {
     return 'negative';
@@ -203,7 +190,7 @@ const setDeltaText = (
 ): void => {
   root.querySelectorAll(selector).forEach((node) => {
     if (node instanceof HTMLElement) {
-      node.textContent = formatTariffDelta(value);
+      node.textContent = formatReglamentMoneyDelta(value);
       node.dataset.reglamentDeltaTone = deltaTone(value);
     }
   });
@@ -232,7 +219,7 @@ const setMatchingDeltaText = (
 ): void => {
   root.querySelectorAll(selector).forEach((node) => {
     if (node instanceof HTMLElement && node.getAttribute(attr) === id) {
-      node.textContent = formatTariffDelta(value);
+      node.textContent = formatReglamentMoneyDelta(value);
       node.dataset.reglamentDeltaTone = deltaTone(value);
     }
   });
@@ -265,14 +252,14 @@ const renderRow = (root: ParentNode, row: CalculatedEstimateRow): void => {
     '[data-reglament-row-annual]',
     'data-reglament-row-annual',
     row.id,
-    formatAnnualMoney(row.annual_gross),
+    formatReglamentAnnualMoney(row.annual_gross),
   );
   setMatchingText(
     root,
     '[data-reglament-row-tariff]',
     'data-reglament-row-tariff',
     row.id,
-    formatTariffValue(row.tariff_per_sotka_month),
+    formatReglamentTariffValue(row.tariff_per_sotka_month),
   );
   setMatchingDeltaText(
     root,
@@ -286,7 +273,7 @@ const renderRow = (root: ParentNode, row: CalculatedEstimateRow): void => {
       root,
       row.id,
       field,
-      formatMoney(row.breakdown[field]),
+      formatReglamentMoney(row.breakdown[field]),
     ),
   );
 
@@ -300,12 +287,12 @@ const renderReglamentCalculator = (
   setText(
     root,
     '[data-reglament-current-tariff]',
-    formatTariff(result.tariff_per_sotka_month),
+    formatReglamentTariff(result.tariff_per_sotka_month),
   );
   setText(
     root,
     '[data-reglament-current-annual]',
-    formatAnnualMoney(result.annual_gross),
+    formatReglamentAnnualMoney(result.annual_gross),
   );
   setDeltaText(
     root,
@@ -319,14 +306,14 @@ const renderReglamentCalculator = (
       '[data-reglament-section-tariff]',
       'data-reglament-section-tariff',
       section.id,
-      formatTariff(section.tariff_per_sotka_month),
+      formatReglamentTariff(section.tariff_per_sotka_month),
     );
     setMatchingText(
       root,
       '[data-reglament-section-annual]',
       'data-reglament-section-annual',
       section.id,
-      formatAnnualMoney(section.annual_gross),
+      formatReglamentAnnualMoney(section.annual_gross),
     );
     setMatchingDeltaText(
       root,

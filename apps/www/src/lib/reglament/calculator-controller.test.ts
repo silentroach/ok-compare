@@ -9,16 +9,7 @@ import {
   hydrateReglamentCalculator,
 } from './calculator-controller';
 import type { CalculatedEstimate, CalculatedEstimateRow } from './calculate';
-
-const moneyFormatter = new Intl.NumberFormat('ru-RU', {
-  maximumFractionDigits: 2,
-  minimumFractionDigits: 0,
-});
-
-const formatMoney = (value: number): string =>
-  `${moneyFormatter.format(value)} ₽`;
-const formatAnnualMoney = (value: number): string =>
-  `${formatMoney(value)}/год`;
+import { formatReglamentAnnualMoney, formatReglamentMoney } from './format';
 
 const findCalculatedRow = (
   result: CalculatedEstimate,
@@ -175,16 +166,16 @@ describe('buildReglamentCalculatorChanges', () => {
 
     expect(
       document.querySelector('[data-reglament-row-annual]')?.textContent,
-    ).toBe(formatAnnualMoney(expectedRow.annual_gross));
+    ).toBe(formatReglamentAnnualMoney(expectedRow.annual_gross));
     expect(
       document.querySelector(
         '[data-reglament-breakdown-field="primary_salary"]',
       )?.textContent,
-    ).toBe(formatMoney(expectedRow.breakdown.primary_salary));
+    ).toBe(formatReglamentMoney(expectedRow.breakdown.primary_salary));
     expect(
       document.querySelector('[data-reglament-breakdown-field="gross"]')
         ?.textContent,
-    ).toBe(formatMoney(expectedRow.breakdown.gross));
+    ).toBe(formatReglamentMoney(expectedRow.breakdown.gross));
   });
 
   it('renders fixed annual price changes from row details with short sotka unit', () => {
@@ -214,9 +205,9 @@ describe('buildReglamentCalculatorChanges', () => {
 
     expect(
       document.querySelector('[data-reglament-current-tariff]')?.textContent,
-    ).toMatchInlineSnapshot(`"902,48 ₽/сотка"`);
+    ).toMatchInlineSnapshot(`"902,48 ₽/сотка"`);
     expect(
       document.querySelector('[data-reglament-section-tariff]')?.textContent,
-    ).toMatchInlineSnapshot(`"48,27 ₽/сотка"`);
+    ).toMatchInlineSnapshot(`"48,27 ₽/сотка"`);
   });
 });

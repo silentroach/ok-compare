@@ -9,6 +9,14 @@ import {
 } from '@/lib/breadcrumbs';
 import { collectionPageSchema } from '@/lib/news/seo';
 import { buildReglamentPayload } from '@/lib/reglament/discovery';
+import {
+  formatReglamentAnnualMoney,
+  formatReglamentMoney,
+  formatReglamentMoneyDelta,
+  formatReglamentNumber,
+  formatReglamentTariff,
+  formatReglamentTariffValue,
+} from '@/lib/reglament/format';
 import { reglamentNumberInputStep } from '@/lib/reglament/input-step';
 import {
   reglamentEstimate2026DataUrl,
@@ -63,29 +71,9 @@ interface NumberControl<Key extends EditableFieldKey = BasicNumberFieldKey> {
   readonly step: number;
 }
 
-const moneyFormatter = new Intl.NumberFormat('ru-RU', {
-  maximumFractionDigits: 2,
-  minimumFractionDigits: 0,
-});
-
-const signedMoneyFormatter = new Intl.NumberFormat('ru-RU', {
-  maximumFractionDigits: 2,
-  minimumFractionDigits: 0,
-  signDisplay: 'exceptZero',
-});
-
-const formatNumber = (value: number): string => moneyFormatter.format(value);
-const formatMoney = (value: number): string => `${formatNumber(value)} ₽`;
-const formatAnnualMoney = (value: number): string =>
-  `${formatMoney(value)}/год`;
-const formatTariffValue = (value: number): string => `${formatNumber(value)} ₽`;
-const formatTariff = (value: number): string =>
-  `${formatTariffValue(value)}/сотка`;
-const formatTariffDelta = (value: number): string =>
-  `${signedMoneyFormatter.format(value)} ₽`;
 const formatDisplayValue = (value: DisplayValue): string =>
   value
-    ? `${formatNumber(value.value)} ${value.unit}${value.label ? `, ${value.label}` : ''}`
+    ? `${formatReglamentNumber(value.value)} ${value.unit}${value.label ? `, ${value.label}` : ''}`
     : 'из сметной строки';
 const breakdownFields = [
   { key: 'primary_salary', label: 'Основная зарплата' },
@@ -307,10 +295,10 @@ const inputClass =
               Официальный тариф
             </p>
             <p class="mt-2 text-2xl font-bold tracking-tight text-foreground">
-              {formatTariff(payload.official.tariff_per_sotka_month)}
+              {formatReglamentTariff(payload.official.tariff_per_sotka_month)}
             </p>
             <p class="mt-1 text-xs text-muted-foreground">
-              {formatAnnualMoney(payload.official.annual_gross)}
+              {formatReglamentAnnualMoney(payload.official.annual_gross)}
             </p>
           </div>
           <div
@@ -325,13 +313,13 @@ const inputClass =
               class="mt-2 text-2xl font-bold tracking-tight text-foreground"
               data-reglament-current-tariff
             >
-              {formatTariff(payload.computed.tariff_per_sotka_month)}
+              {formatReglamentTariff(payload.computed.tariff_per_sotka_month)}
             </p>
             <p
               class="mt-1 text-xs text-muted-foreground"
               data-reglament-current-annual
             >
-              {formatAnnualMoney(payload.computed.annual_gross)}
+              {formatReglamentAnnualMoney(payload.computed.annual_gross)}
             </p>
           </div>
           <div class="p-4 md:p-5">
@@ -344,7 +332,11 @@ const inputClass =
               class="mt-2 text-2xl font-bold tracking-tight text-foreground"
               data-reglament-current-delta
             >
-              {formatTariffDelta(payload.computed.delta_tariff_per_sotka_month)}
+              {
+                formatReglamentMoneyDelta(
+                  payload.computed.delta_tariff_per_sotka_month,
+                )
+              }
             </p>
             <p class="mt-1 text-xs text-muted-foreground">
               к официальному тарифу
@@ -375,16 +367,20 @@ const inputClass =
         class="flex h-9 max-w-5xl items-center gap-2 overflow-hidden whitespace-nowrap text-xs text-muted-foreground sm:gap-3 md:text-sm"
       >
         <span class="hidden shrink-0 sm:inline">
-          {formatTariff(payload.official.tariff_per_sotka_month)} -&gt;
+          {formatReglamentTariff(payload.official.tariff_per_sotka_month)} -&gt;
         </span>
         <strong
           class="min-w-0 flex-1 truncate text-sm text-foreground sm:flex-none md:text-base"
           data-reglament-current-tariff
         >
-          {formatTariff(payload.computed.tariff_per_sotka_month)}
+          {formatReglamentTariff(payload.computed.tariff_per_sotka_month)}
         </strong>
         <span class="shrink-0 font-semibold" data-reglament-current-delta>
-          {formatTariffDelta(payload.computed.delta_tariff_per_sotka_month)}
+          {
+            formatReglamentMoneyDelta(
+              payload.computed.delta_tariff_per_sotka_month,
+            )
+          }
         </span>
         <button
           class="ml-auto shrink-0 rounded-full border border-border-strong bg-surface px-2.5 py-0.5 text-xs font-bold text-primary hover:border-primary hover:bg-muted md:px-3 md:text-sm"
@@ -447,19 +443,21 @@ const inputClass =
                     class="text-lg font-bold tracking-tight text-foreground"
                     data-reglament-section-tariff={section.id}
                   >
-                    {formatTariff(section.official.tariff_per_sotka_month)}
+                    {formatReglamentTariff(
+                      section.official.tariff_per_sotka_month,
+                    )}
                   </p>
                   <p
                     class="text-xs text-muted-foreground"
                     data-reglament-section-annual={section.id}
                   >
-                    {formatAnnualMoney(section.official.annual_gross)}
+                    {formatReglamentAnnualMoney(section.official.annual_gross)}
                   </p>
                   <p
                     class="text-xs font-semibold text-muted-foreground"
                     data-reglament-section-delta={section.id}
                   >
-                    {formatTariffDelta(
+                    {formatReglamentMoneyDelta(
                       section.computed.delta_tariff_per_sotka_month,
                     )}
                   </p>
@@ -539,7 +537,7 @@ const inputClass =
                                       class="font-semibold text-foreground"
                                       data-reglament-row-annual={row.id}
                                     >
-                                      {formatAnnualMoney(
+                                      {formatReglamentAnnualMoney(
                                         row.computed.annual_gross,
                                       )}
                                     </p>
@@ -584,7 +582,7 @@ const inputClass =
                                             field.key
                                           }
                                         >
-                                          {formatMoney(
+                                          {formatReglamentMoney(
                                             row.computed.breakdown[field.key],
                                           )}
                                         </dd>
@@ -736,7 +734,7 @@ const inputClass =
                           class="border-t border-border px-4 py-2.5 text-right align-top font-semibold text-foreground"
                           data-reglament-row-tariff={row.id}
                         >
-                          {formatTariffValue(
+                          {formatReglamentTariffValue(
                             row.computed.tariff_per_sotka_month,
                           )}
                         </td>
@@ -744,7 +742,7 @@ const inputClass =
                           class="border-t border-border px-4 py-2.5 text-right align-top text-muted-foreground"
                           data-reglament-row-delta={row.id}
                         >
-                          {formatTariffDelta(
+                          {formatReglamentMoneyDelta(
                             row.computed.delta_tariff_per_sotka_month,
                           )}
                         </td>
