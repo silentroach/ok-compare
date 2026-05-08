@@ -305,4 +305,14 @@ describe('estimate detail markdown companions', () => {
     );
     expect(markdown).toContain('cleaning-summer-mechanized-water');
   });
+
+  it('exposes cleaning resource statement reconciliation in real checks markdown', () => {
+    const checks = buildEstimateDetailChecksMarkdown();
+
+    expect(checks).toContain('cleaning-resource-statement-materials');
+    expect(checks).toContain(
+      'ресурсная ведомость по локальному ресурсному сметному расчету',
+    );
+    expect(checks).toContain('Песок для посыпки дорог');
+  });
 });

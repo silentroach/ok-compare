@@ -1,6 +1,6 @@
 # Task 011: Cleaning Resource Statement
 
-Status: [ ] Not started
+Status: [x] Done
 
 ## Description
 
@@ -8,15 +8,15 @@ Use the resource statement section of `cleaning.pdf` to cross-check resources ex
 
 ## Acceptance Criteria
 
-- [ ] Resource statement totals are represented as control totals or audit facts.
-- [ ] Extracted resources are reconciled against resource statement quantities and annual sums.
-- [ ] Any mismatch is recorded in detail checks with `needs_check` or explicit rounding note.
-- [ ] Markdown checks file exposes the reconciliation result.
+- [x] Resource statement totals are represented as control totals or audit facts.
+- [x] Extracted resources are reconciled against resource statement quantities and annual sums.
+- [x] Any mismatch is recorded in detail checks with `needs_check` or explicit rounding note.
+- [x] Markdown checks file exposes the reconciliation result.
 
 ## Verification
 
-- [ ] `pnpm --filter @shelkovo/www test -- estimate-details-2026`
-- [ ] `/815/regulation/details/checks.md` includes cleaning resource statement checks.
+- [x] `pnpm --filter @shelkovo/www test -- estimate-details-2026`
+- [x] `/815/regulation/details/checks.md` includes cleaning resource statement checks.
 
 ## Dependencies
 

@@ -33,11 +33,12 @@ const round2 = (value: number): number => Math.round(value * 100) / 100;
 const flattenRows = (rows: readonly EstimateRow[]): readonly EstimateRow[] =>
   rows.flatMap((row) => [row, ...flattenRows(row.children ?? [])]);
 
-const estimateRowIds = new Set(
-  flattenRows(estimate2026.sections.flatMap((section) => section.rows)).map(
+const estimateItemIds = new Set([
+  ...estimate2026.sections.map((section) => section.id),
+  ...flattenRows(estimate2026.sections.flatMap((section) => section.rows)).map(
     (row) => row.id,
   ),
-);
+]);
 
 const sourcePdfIds = new Set(
   estimateDetails2026.source_pdfs.map((sourcePdf) => sourcePdf.pdf),
@@ -2357,6 +2358,58 @@ describe('estimate details 2026 dataset', () => {
     `);
   });
 
+  it('reconciles cleaning resources against the resource statement', () => {
+    const controlTotals = estimateDetails2026.control_totals
+      .filter((controlTotal) =>
+        controlTotal.id.startsWith('cleaning-resource-statement-'),
+      )
+      .map((controlTotal) => ({
+        id: controlTotal.id,
+        estimate_row_id: controlTotal.estimate_row_id,
+        cost_bucket: controlTotal.cost_bucket,
+        source_total_rub: controlTotal.source_total_rub.value,
+        detail_total_rub: controlTotal.detail_total_rub?.value ?? null,
+        status: controlTotal.status,
+      }));
+
+    expect(controlTotals).toMatchInlineSnapshot(`
+      [
+        {
+          "cost_bucket": "primary_salary",
+          "detail_total_rub": 17641901.84,
+          "estimate_row_id": "cleaning",
+          "id": "cleaning-resource-statement-primary-salary",
+          "source_total_rub": 17641901.84,
+          "status": "verified",
+        },
+        {
+          "cost_bucket": "machinist_salary",
+          "detail_total_rub": 25917429.4,
+          "estimate_row_id": "cleaning",
+          "id": "cleaning-resource-statement-machinist-salary",
+          "source_total_rub": 25917429.4,
+          "status": "verified",
+        },
+        {
+          "cost_bucket": "machines",
+          "detail_total_rub": 43379375.72,
+          "estimate_row_id": "cleaning",
+          "id": "cleaning-resource-statement-machines",
+          "source_total_rub": 43379375.72,
+          "status": "verified",
+        },
+        {
+          "cost_bucket": "materials",
+          "detail_total_rub": 817415.84,
+          "estimate_row_id": "cleaning",
+          "id": "cleaning-resource-statement-materials",
+          "source_total_rub": 817415.84,
+          "status": "needs_check",
+        },
+      ]
+    `);
+  });
+
   it('keeps PDF source refs on every detail fact', () => {
     const facts = detailFactsWithSourceRefs();
     const missingRefs = facts
@@ -2388,7 +2441,7 @@ describe('estimate details 2026 dataset', () => {
     });
   });
 
-  it('keeps every estimate_row_id backed by estimate-2026', () => {
+  it('keeps every estimate_row_id backed by estimate-2026 rows or sections', () => {
     const missingRows = [
       ...estimateDetails2026.work_items.map((item) => ({
         fact_id: `work_items:${item.id}`,
@@ -2402,7 +2455,7 @@ describe('estimate details 2026 dataset', () => {
         fact_id: `control_totals:${controlTotal.id}`,
         estimate_row_id: controlTotal.estimate_row_id,
       })),
-    ].filter((item) => !estimateRowIds.has(item.estimate_row_id));
+    ].filter((item) => !estimateItemIds.has(item.estimate_row_id));
 
     expect(missingRows).toEqual([]);
   });

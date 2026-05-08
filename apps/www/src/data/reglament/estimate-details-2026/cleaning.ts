@@ -563,6 +563,36 @@ const cleaningDocumentVatSource = detailSource(
   },
 );
 
+const cleaningResourceStatementLaborSource = detailSource(
+  'cleaning',
+  26,
+  'ресурсная ведомость по локальному ресурсному сметному расчету / труд',
+  {
+    quote:
+      'Рабочий по уборке территории 26563,3 664,15 17 641 901,84; Машинист 27739,3 934,32 25 917 429,40',
+  },
+);
+
+const cleaningResourceStatementMachinesSource = detailSource(
+  'cleaning',
+  26,
+  'ресурсная ведомость по локальному ресурсному сметному расчету / машины и механизмы',
+  {
+    quote:
+      'Трактор МТЗ 80 с навесным оборудованием 27739,3 1476,02 40 943 848,99; Навесной разбрасыватель песка РПМ-01 210,4 40,8 8 574,51; ОПМ-5,0 (бочка) 22389,2 108,4 2 426 952,22',
+  },
+);
+
+const cleaningResourceStatementMaterialsSource = detailSource(
+  'cleaning',
+  26,
+  'ресурсная ведомость по локальному ресурсному сметному расчету / материалы',
+  {
+    quote:
+      'Костюм 151 250,00; Куртка 66 000,00; Жилет 33 000,00; Сапоги утепленные 38 500,00; Перчатки 38 500,00; Рукавицы 77 000,00; Сапоги резиновые 55 000,00; Мыло 38 280,00; инвентарь 52 194,20; Песок для посыпки дорог кг. 76,3 1800,00 137 329,56; Вода 9568,0 13,56 129 742,08',
+  },
+);
+
 const cleaningCalculationSource = detailSource(
   'cleaning',
   27,
@@ -575,10 +605,14 @@ const cleaningCalculationSource = detailSource(
 
 const cleaningRoundedQuantityNote =
   'количество в PDF округлено; итог сохранен по исходной строке';
+const cleaningResourceStatementRoundingNote =
+  'Ресурсная ведомость показывает годовые количества с большей точностью, чем часть строковых позиций; рублевые итоги сверяются по source totals.';
 const cleaningVatNeedsCheckNote =
   'Прямой НДС 7 441 315,26 в локальном расчете равен 5% от 148 826 305,16 до УСН; агрегированная смета уборки сходится с НДС 5% от калькуляционных доходов 151 439 865.';
 const cleaningDerivedVatNeedsCheckReason =
   'cleaning.pdf показывает НДС 5% двумя несовпадающими способами: прямой НДС в локальном расчете и расчетный НДС от калькуляционных доходов; строковая доля выведена для сверки с estimate-2026.';
+const cleaningResourceStatementSandUnitNeedsCheckReason =
+  'В ресурсной ведомости единица песка извлекается как «кг.», но производственная программа и локальные позиции показывают песок в тоннах при цене 1800 руб.; рублевый итог сходится, единицу нужно проверить глазами в PDF.';
 const cleaningDerivedVatNeedsCheckRefs = detailSourceRefs(
   cleaningWinterMechanizedTotalsSource,
   cleaningDocumentVatSource,
@@ -741,6 +775,25 @@ const cleaningSummerManualGrossResourceIds = [
   cleaningSummerManualProfitResourceId,
   cleaningSummerManualUsnResourceId,
   cleaningSummerManualVatResourceId,
+] as const;
+
+const cleaningResourceStatementPrimarySalaryResourceIds = [
+  ...cleaningWinterManualLaborResourceIds,
+  ...cleaningSummerManualLaborResourceIds,
+] as const;
+const cleaningResourceStatementMachinistSalaryResourceIds = [
+  ...cleaningWinterMechanizedMachinistResourceIds,
+  ...cleaningSummerMechanizedMachinistResourceIds,
+] as const;
+const cleaningResourceStatementMachineResourceIds = [
+  ...cleaningWinterMechanizedMachineResourceIds,
+  ...cleaningSummerMechanizedMachineResourceIds,
+] as const;
+const cleaningResourceStatementMaterialResourceIds = [
+  ...cleaningWinterMechanizedMaterialResourceIds,
+  ...cleaningWinterManualMaterialResourceIds,
+  ...cleaningSummerMechanizedMaterialResourceIds,
+  ...cleaningSummerManualMaterialResourceIds,
 ] as const;
 
 export const cleaningWorkItems = [
@@ -2267,6 +2320,67 @@ export const cleaningResources = [
 ] satisfies readonly EstimateDetailResource[];
 
 export const cleaningControlTotals = [
+  detailControlTotal({
+    id: 'cleaning-resource-statement-primary-salary',
+    estimate_row_id: 'cleaning',
+    cost_bucket: 'primary_salary',
+    source_total_rub: detailMoney(17_641_901.84, { raw: '17 641 901,84' }),
+    detail_total_rub: detailMoney(17_641_901.84, {
+      raw: '17 641 901,84',
+      note: 'сумма округленных строковых ресурсов дает 17 641 901,83',
+    }),
+    delta_rub: 0,
+    tolerance_rub: 0.02,
+    resource_ids: cleaningResourceStatementPrimarySalaryResourceIds,
+    source_refs: detailSourceRefs(cleaningResourceStatementLaborSource),
+    note: `${cleaningResourceStatementRoundingNote} Контроль по всей уборке: 26 563,3 чел-час рабочих.`,
+    ...detailStatus('verified'),
+  }),
+  detailControlTotal({
+    id: 'cleaning-resource-statement-machinist-salary',
+    estimate_row_id: 'cleaning',
+    cost_bucket: 'machinist_salary',
+    source_total_rub: detailMoney(25_917_429.4, { raw: '25 917 429,40' }),
+    detail_total_rub: detailMoney(25_917_429.4, {
+      raw: '25 917 429,40',
+      note: 'сумма округленных строковых ресурсов дает 25 917 429,39',
+    }),
+    delta_rub: 0,
+    tolerance_rub: 0.02,
+    resource_ids: cleaningResourceStatementMachinistSalaryResourceIds,
+    source_refs: detailSourceRefs(cleaningResourceStatementLaborSource),
+    note: `${cleaningResourceStatementRoundingNote} Контроль по всей уборке: 27 739,3 чел-час машинистов.`,
+    ...detailStatus('verified'),
+  }),
+  detailControlTotal({
+    id: 'cleaning-resource-statement-machines',
+    estimate_row_id: 'cleaning',
+    cost_bucket: 'machines',
+    source_total_rub: detailMoney(43_379_375.72, { raw: '43 379 375,72' }),
+    detail_total_rub: detailMoney(43_379_375.72, { raw: '43 379 375,72' }),
+    delta_rub: 0,
+    tolerance_rub: 0.01,
+    resource_ids: cleaningResourceStatementMachineResourceIds,
+    source_refs: detailSourceRefs(cleaningResourceStatementMachinesSource),
+    note: `${cleaningResourceStatementRoundingNote} Контроль по всей уборке: трактор 27 739,3 маш.-час, разбрасыватель 210,4 маш.-час, ОПМ-5,0 22 389,2 маш.-час.`,
+    ...detailStatus('verified'),
+  }),
+  detailControlTotal({
+    id: 'cleaning-resource-statement-materials',
+    estimate_row_id: 'cleaning',
+    cost_bucket: 'materials',
+    source_total_rub: detailMoney(817_415.84, { raw: '817 415,84' }),
+    detail_total_rub: detailMoney(817_415.84, { raw: '817 415,84' }),
+    delta_rub: 0,
+    tolerance_rub: 0.01,
+    resource_ids: cleaningResourceStatementMaterialResourceIds,
+    source_refs: detailSourceRefs(cleaningResourceStatementMaterialsSource),
+    note: `${cleaningResourceStatementRoundingNote} Рублевые итоги материалов сходятся с ведомостью; единица песка в ведомости требует визуальной проверки.`,
+    ...detailNeedsCheckStatus(
+      cleaningResourceStatementSandUnitNeedsCheckReason,
+      detailSourceRefs(cleaningResourceStatementMaterialsSource),
+    ),
+  }),
   detailControlTotal({
     id: 'cleaning-winter-mechanized-machinist-salary',
     estimate_row_id: 'cleaning-winter-mechanized',
