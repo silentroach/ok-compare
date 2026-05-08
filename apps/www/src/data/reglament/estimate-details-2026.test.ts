@@ -703,6 +703,446 @@ describe('estimate details 2026 dataset', () => {
     `);
   });
 
+  it('captures lighting details from lighting.pdf', () => {
+    const lightingRowIds = new Set([
+      'lighting-street-maintenance',
+      'lighting-electricity',
+      'lighting-poles-repair',
+      'lighting-power-system-repair',
+    ]);
+    const workItems = estimateDetails2026.work_items
+      .filter((item) => lightingRowIds.has(item.estimate_row_id))
+      .map((item) => ({
+        id: item.id,
+        estimate_row_id: item.estimate_row_id,
+        service_ids: item.service_ids ?? [],
+        status: item.status,
+      }));
+    const resources = estimateDetails2026.resources
+      .filter((resource) => lightingRowIds.has(resource.estimate_row_id))
+      .map((resource) => ({
+        id: resource.id,
+        kind: resource.kind,
+        cost_bucket: resource.cost_bucket,
+        total_rub: resource.total_rub.value,
+        status: resource.status,
+      }));
+    const controlTotals = estimateDetails2026.control_totals
+      .filter((controlTotal) =>
+        lightingRowIds.has(controlTotal.estimate_row_id),
+      )
+      .map((controlTotal) => ({
+        id: controlTotal.id,
+        cost_bucket: controlTotal.cost_bucket,
+        source_total_rub: controlTotal.source_total_rub.value,
+        aggregate_total_rub: controlTotal.aggregate_total_rub?.value ?? null,
+        status: controlTotal.status,
+      }));
+
+    expect({ workItems, resources, controlTotals }).toMatchInlineSnapshot(`
+      {
+        "controlTotals": [
+          {
+            "aggregate_total_rub": 2549913.41,
+            "cost_bucket": "primary_salary",
+            "id": "lighting-street-primary-salary",
+            "source_total_rub": 2549913.41,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 97820,
+            "cost_bucket": "materials",
+            "id": "lighting-street-materials",
+            "source_total_rub": 97820,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 770073.85,
+            "cost_bucket": "insurance",
+            "id": "lighting-street-insurance",
+            "source_total_rub": 770073.85,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 1784939.39,
+            "cost_bucket": "overhead",
+            "id": "lighting-street-overhead",
+            "source_total_rub": 1784939.39,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 1019965.36,
+            "cost_bucket": "profit",
+            "id": "lighting-street-profit",
+            "source_total_rub": 1019965.36,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 130601.32,
+            "cost_bucket": "usn",
+            "id": "lighting-street-usn",
+            "source_total_rub": 130601.32,
+            "status": "needs_check",
+          },
+          {
+            "aggregate_total_rub": 317665.67,
+            "cost_bucket": "vat",
+            "id": "lighting-street-vat",
+            "source_total_rub": 317665.67,
+            "status": "needs_check",
+          },
+          {
+            "aggregate_total_rub": 6670979,
+            "cost_bucket": "gross",
+            "id": "lighting-street-gross",
+            "source_total_rub": 6670979,
+            "status": "needs_check",
+          },
+          {
+            "aggregate_total_rub": 1374097.6,
+            "cost_bucket": "materials",
+            "id": "lighting-electricity-materials",
+            "source_total_rub": 1374097.6,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 28839.54,
+            "cost_bucket": "usn",
+            "id": "lighting-electricity-usn",
+            "source_total_rub": 28839.54,
+            "status": "needs_check",
+          },
+          {
+            "aggregate_total_rub": 70146.86,
+            "cost_bucket": "vat",
+            "id": "lighting-electricity-vat",
+            "source_total_rub": 70146.86,
+            "status": "needs_check",
+          },
+          {
+            "aggregate_total_rub": 1473084,
+            "cost_bucket": "gross",
+            "id": "lighting-electricity-gross",
+            "source_total_rub": 1473084,
+            "status": "needs_check",
+          },
+          {
+            "aggregate_total_rub": 222066.98,
+            "cost_bucket": "primary_salary",
+            "id": "lighting-poles-primary-salary",
+            "source_total_rub": 222066.98,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 277692.8,
+            "cost_bucket": "materials",
+            "id": "lighting-poles-materials",
+            "source_total_rub": 277692.8,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 67064.23,
+            "cost_bucket": "insurance",
+            "id": "lighting-poles-insurance",
+            "source_total_rub": 67064.23,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 155446.88,
+            "cost_bucket": "overhead",
+            "id": "lighting-poles-overhead",
+            "source_total_rub": 155446.88,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 88826.79,
+            "cost_bucket": "profit",
+            "id": "lighting-poles-profit",
+            "source_total_rub": 88826.79,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 17023.27,
+            "cost_bucket": "usn",
+            "id": "lighting-poles-usn",
+            "source_total_rub": 17023.27,
+            "status": "needs_check",
+          },
+          {
+            "aggregate_total_rub": 41406.05,
+            "cost_bucket": "vat",
+            "id": "lighting-poles-vat",
+            "source_total_rub": 41406.05,
+            "status": "needs_check",
+          },
+          {
+            "aggregate_total_rub": 869527,
+            "cost_bucket": "gross",
+            "id": "lighting-poles-gross",
+            "source_total_rub": 869527,
+            "status": "needs_check",
+          },
+          {
+            "aggregate_total_rub": 1058236.64,
+            "cost_bucket": "primary_salary",
+            "id": "lighting-power-system-primary-salary",
+            "source_total_rub": 1058236.64,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 319587.46,
+            "cost_bucket": "insurance",
+            "id": "lighting-power-system-insurance",
+            "source_total_rub": 319587.46,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 740765.64,
+            "cost_bucket": "overhead",
+            "id": "lighting-power-system-overhead",
+            "source_total_rub": 740765.64,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 423294.65,
+            "cost_bucket": "profit",
+            "id": "lighting-power-system-profit",
+            "source_total_rub": 423294.65,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 53348.94,
+            "cost_bucket": "usn",
+            "id": "lighting-power-system-usn",
+            "source_total_rub": 53348.94,
+            "status": "needs_check",
+          },
+          {
+            "aggregate_total_rub": 129761.67,
+            "cost_bucket": "vat",
+            "id": "lighting-power-system-vat",
+            "source_total_rub": 129761.67,
+            "status": "needs_check",
+          },
+          {
+            "aggregate_total_rub": 2724995,
+            "cost_bucket": "gross",
+            "id": "lighting-power-system-gross",
+            "source_total_rub": 2724995,
+            "status": "needs_check",
+          },
+        ],
+        "resources": [
+          {
+            "cost_bucket": "primary_salary",
+            "id": "lighting-street-fixture-labor",
+            "kind": "labor",
+            "status": "verified",
+            "total_rub": 2508335.23,
+          },
+          {
+            "cost_bucket": "primary_salary",
+            "id": "lighting-street-cable-labor",
+            "kind": "labor",
+            "status": "verified",
+            "total_rub": 41578.18,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "lighting-street-fixture-material",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 97820,
+          },
+          {
+            "cost_bucket": "insurance",
+            "id": "lighting-street-insurance",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 770073.85,
+          },
+          {
+            "cost_bucket": "overhead",
+            "id": "lighting-street-overhead",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 1784939.39,
+          },
+          {
+            "cost_bucket": "profit",
+            "id": "lighting-street-profit",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 1019965.36,
+          },
+          {
+            "cost_bucket": "usn",
+            "id": "lighting-street-usn-derived",
+            "kind": "other_cost",
+            "status": "needs_check",
+            "total_rub": 130601.32,
+          },
+          {
+            "cost_bucket": "vat",
+            "id": "lighting-street-vat-derived",
+            "kind": "other_cost",
+            "status": "needs_check",
+            "total_rub": 317665.67,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "lighting-electricity-material",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 1374097.6,
+          },
+          {
+            "cost_bucket": "usn",
+            "id": "lighting-electricity-usn-derived",
+            "kind": "other_cost",
+            "status": "needs_check",
+            "total_rub": 28839.54,
+          },
+          {
+            "cost_bucket": "vat",
+            "id": "lighting-electricity-vat-derived",
+            "kind": "other_cost",
+            "status": "needs_check",
+            "total_rub": 70146.86,
+          },
+          {
+            "cost_bucket": "primary_salary",
+            "id": "lighting-poles-paint-labor",
+            "kind": "labor",
+            "status": "verified",
+            "total_rub": 222066.98,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "lighting-poles-paint-material",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 277692.8,
+          },
+          {
+            "cost_bucket": "insurance",
+            "id": "lighting-poles-insurance",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 67064.23,
+          },
+          {
+            "cost_bucket": "overhead",
+            "id": "lighting-poles-overhead",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 155446.88,
+          },
+          {
+            "cost_bucket": "profit",
+            "id": "lighting-poles-profit",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 88826.79,
+          },
+          {
+            "cost_bucket": "usn",
+            "id": "lighting-poles-usn-derived",
+            "kind": "other_cost",
+            "status": "needs_check",
+            "total_rub": 17023.27,
+          },
+          {
+            "cost_bucket": "vat",
+            "id": "lighting-poles-vat-derived",
+            "kind": "other_cost",
+            "status": "needs_check",
+            "total_rub": 41406.05,
+          },
+          {
+            "cost_bucket": "primary_salary",
+            "id": "lighting-power-system-ktp-krn-labor",
+            "kind": "labor",
+            "status": "verified",
+            "total_rub": 974022.95,
+          },
+          {
+            "cost_bucket": "primary_salary",
+            "id": "lighting-power-system-transformer-labor",
+            "kind": "labor",
+            "status": "verified",
+            "total_rub": 84213.69,
+          },
+          {
+            "cost_bucket": "insurance",
+            "id": "lighting-power-system-insurance",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 319587.46,
+          },
+          {
+            "cost_bucket": "overhead",
+            "id": "lighting-power-system-overhead",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 740765.64,
+          },
+          {
+            "cost_bucket": "profit",
+            "id": "lighting-power-system-profit",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 423294.65,
+          },
+          {
+            "cost_bucket": "usn",
+            "id": "lighting-power-system-usn-derived",
+            "kind": "other_cost",
+            "status": "needs_check",
+            "total_rub": 53348.94,
+          },
+          {
+            "cost_bucket": "vat",
+            "id": "lighting-power-system-vat-derived",
+            "kind": "other_cost",
+            "status": "needs_check",
+            "total_rub": 129761.67,
+          },
+        ],
+        "workItems": [
+          {
+            "estimate_row_id": "lighting-street-maintenance",
+            "id": "lighting-street-maintenance",
+            "service_ids": [
+              "year-round-power-lines-maintenance",
+            ],
+            "status": "verified",
+          },
+          {
+            "estimate_row_id": "lighting-electricity",
+            "id": "lighting-electricity",
+            "service_ids": [],
+            "status": "verified",
+          },
+          {
+            "estimate_row_id": "lighting-poles-repair",
+            "id": "lighting-poles-repair",
+            "service_ids": [],
+            "status": "verified",
+          },
+          {
+            "estimate_row_id": "lighting-power-system-repair",
+            "id": "lighting-power-system-repair",
+            "service_ids": [
+              "year-round-power-lines-maintenance",
+            ],
+            "status": "verified",
+          },
+        ],
+      }
+    `);
+  });
+
   it('keeps PDF source refs on every detail fact', () => {
     const facts = detailFactsWithSourceRefs();
     const missingRefs = facts

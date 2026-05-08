@@ -1,6 +1,6 @@
 # Task 014: Lighting Details
 
-Status: [ ] Not started
+Status: [x] Done
 
 ## Description
 
@@ -8,15 +8,15 @@ Extract lighting service details and resources from `lighting.pdf`: maintenance,
 
 ## Acceptance Criteria
 
-- [ ] Lighting work items are represented.
-- [ ] Material resources such as lamps and electrical components are captured.
-- [ ] Labor/machine resources are captured if present.
-- [ ] Controls reconcile to lighting rows in `estimate-2026`.
+- [x] Lighting work items are represented.
+- [x] Material resources such as lamps and electrical components are captured.
+- [x] Labor/machine resources are captured if present.
+- [x] Controls reconcile to lighting rows in `estimate-2026`.
 
 ## Verification
 
-- [ ] `pnpm --filter @shelkovo/www test -- estimate-details-2026`
-- [ ] Manual spot-check against `lighting.pdf`.
+- [x] `pnpm --filter @shelkovo/www test -- estimate-details-2026`
+- [x] Manual spot-check against `lighting.pdf`.
 
 ## Dependencies
 
