@@ -4,8 +4,8 @@ import { renderNewsMarkdown } from './html';
 
 describe('renderNewsMarkdown', () => {
   it('applies typography inside markdown links', () => {
-    expect(renderNewsMarkdown('[Шелково Парк](/compare/)')).toBe(
-      '<p><a href="/compare/">Шелково\u00A0Парк</a></p>',
+    expect(renderNewsMarkdown('[Шелково Парк](/815/compare/)')).toBe(
+      '<p><a href="/815/compare/">Шелково\u00A0Парк</a></p>',
     );
   });
 

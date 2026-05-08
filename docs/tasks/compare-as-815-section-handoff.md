@@ -19,7 +19,7 @@ Use it to pass forward facts that are not obvious from the current task diff: co
 | T1  | done   | `audit compare 815 migration surface`   | `docs/tasks/compare-as-815-section-migration/T1-audit-url-surface.md`           |
 | T2  | done   | `move compare section base to 815 path` | `docs/tasks/compare-as-815-section-migration/T2-move-compare-base.md`           |
 | T3  | done   | `compose compare into 815 section`      | `docs/tasks/compare-as-815-section-migration/T3-compose-www-section.md`         |
-| T4  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T4-update-root-links-discovery.md` |
+| T4  | done   | `update root compare references`        | `docs/tasks/compare-as-815-section-migration/T4-update-root-links-discovery.md` |
 | T5  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T5-add-compare-breadcrumbs.md`     |
 | T6  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T6-nginx-redirects.md`             |
 | T7  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T7-remove-legacy-build.md`         |
@@ -34,7 +34,7 @@ Date: 2026-05-08.
 - Current compare section build and compare dev server use `COMPARE_BASE=/815/compare` and `COMPARE_CANONICAL_BASE=/815/compare` in `apps/compare/package.json`.
 - `scripts/compose-www.mjs` copies `apps/compare/dist/section` to `dist/www/815/compare`.
 - Root `apps/www/astro.config.ts` proxies dev requests whose URL starts with `/815/compare` and points `customSitemaps` at `https://kpshelkovo.online/815/compare/sitemap.xml`.
-- Root-site compare references are known in `apps/www/src/lib/discovery.ts`, `apps/www/src/lib/llms.ts`, `apps/www/src/pages/index.astro`, `apps/www/public/.well-known/agent-skills/site-sections/SKILL.md` and `apps/www/AGENTS.md`.
+- Root-site visible links and agent-facing discovery references now use `/815/compare/` in `apps/www/src/lib/discovery.ts`, `apps/www/src/lib/llms.ts`, `apps/www/src/pages/index.astro`, `apps/www/public/.well-known/agent-skills/site-sections/SKILL.md`, `apps/www/AGENTS.md` and root `AGENTS.md`.
 - Compare JSON-LD breadcrumbs currently use `Сравнение поселков` as root-ish label on rating and settlement pages. The migration idea wants `Главная > Сравнение тарифов` and settlement pages adding the settlement name.
 - Shared visible breadcrumbs component is exported as `@shelkovo/ui/Breadcrumbs.astro` from `packages/ui/src/Breadcrumbs.astro`.
 - `apps/www/src/lib/breadcrumbs.ts` has a home breadcrumb helper, but it is app-local to `apps/www`; compare can either add its own small helper or inline the arrays.
@@ -56,6 +56,28 @@ Date: 2026-05-08.
 - Target-host `nginx -t` is needed for final nginx validation unless a local nginx environment is available.
 
 ## Task Log
+
+### T4 - 2026-05-08 - update root links and discovery
+
+Status: done.
+
+Context:
+
+- Updating root-site visible compare links and root agent-facing discovery references from `/compare/` to `/815/compare/`.
+- Home tariff dropdown now links to `/815/compare/`.
+- Root API catalog, `llms.txt`, `llms-full.txt`, root markdown companion and `site-sections` skill now use `/815/compare/...` for compare HTML, markdown, feed, `llms.txt`, API catalog and skill index URLs.
+- Updated the root news markdown typography test fixture to use the current compare path instead of leaving a stale `/compare/` sample.
+- Review found no old-path `/compare/` URLs left in `apps/www` or `packages`; remaining `/compare/` hits in `docs` are migration history, redirect scope, or future nginx/legacy tasks.
+
+Verification:
+
+- `pnpm --dir apps/www test`: pass, 38 files / 228 tests.
+- `pnpm --dir apps/www typecheck`: pass.
+- `rg "/compare" apps/www packages docs AGENTS.md`: reviewed; old-path leftovers are limited to migration/history/redirect docs or non-URL path text like `apps/compare`.
+
+Commit:
+
+- `update root compare references`
 
 ### T3 - 2026-05-08 - compose www section
 
@@ -189,3 +211,5 @@ Add command results here when they affect later tasks.
 | 2026-05-08 | T2   | `pnpm --dir=apps/compare build`           | pass         | Built `apps/compare/dist/section` with `/815/compare` canonical/base links. |
 | 2026-05-08 | T3   | `pnpm build:main`                         | pass         | Built root site, compare section and composed into `dist/www/815/compare`.  |
 | 2026-05-08 | T3   | `test -f dist/www/815/compare/index.html` | pass         | Confirmed composed compare index exists.                                    |
+| 2026-05-08 | T4   | `pnpm --dir apps/www test`                | pass         | 38 files / 228 tests.                                                       |
+| 2026-05-08 | T4   | `pnpm --dir apps/www typecheck`           | pass         | Astro sync and `tsc --noEmit` passed.                                       |

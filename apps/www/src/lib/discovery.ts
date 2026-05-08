@@ -43,11 +43,11 @@ import {
 
 export const PROFILE = 'https://www.rfc-editor.org/info/rfc9727';
 
-const COMPARE_PATH = '/compare/';
-const COMPARE_DATA = '/compare/data/settlements.json';
-const COMPARE_LLMS = '/compare/llms.txt';
-const COMPARE_CATALOG = '/compare/.well-known/api-catalog';
-const COMPARE_SKILLS = '/compare/.well-known/agent-skills/index.json';
+const COMPARE_PATH = '/815/compare/';
+const COMPARE_DATA = '/815/compare/data/settlements.json';
+const COMPARE_LLMS = '/815/compare/llms.txt';
+const COMPARE_CATALOG = '/815/compare/.well-known/api-catalog';
+const COMPARE_SKILLS = '/815/compare/.well-known/agent-skills/index.json';
 
 const abs = (root: string, path: string): string =>
   new URL(path.replace(/^\//, ''), `${root}/`).toString();

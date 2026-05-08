@@ -136,13 +136,13 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
   const personMarkdown = person
     ? absoluteUrl(person.markdown_url)
     : '/people/[slug]/index.md';
-  const compareHome = absoluteUrl('/compare/');
-  const compareMarkdown = absoluteUrl('/compare/index.md');
-  const compareFeed = absoluteUrl('/compare/data/settlements.json');
-  const compareLlms = absoluteUrl('/compare/llms.txt');
-  const compareCatalog = absoluteUrl('/compare/.well-known/api-catalog');
+  const compareHome = absoluteUrl('/815/compare/');
+  const compareMarkdown = absoluteUrl('/815/compare/index.md');
+  const compareFeed = absoluteUrl('/815/compare/data/settlements.json');
+  const compareLlms = absoluteUrl('/815/compare/llms.txt');
+  const compareCatalog = absoluteUrl('/815/compare/.well-known/api-catalog');
   const compareSkills = absoluteUrl(
-    '/compare/.well-known/agent-skills/index.json',
+    '/815/compare/.well-known/agent-skills/index.json',
   );
   const skills = absoluteUrl(siteSkillsUrl());
 
@@ -186,8 +186,8 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         '',
         'Проект',
         '- Это корневой статический сайт kpshelkovo.online.',
-        '- На корне сейчас есть home-страница и section-build поверхности `/news/`, `/status/`, `/815/regulation/`, `people` и `/compare/`.',
-        '- Compare публикуется как отдельный section build под `/compare/` и не должен дублироваться внутри `apps/www`.',
+        '- На корне сейчас есть home-страница и section-build поверхности `/news/`, `/status/`, `/815/regulation/`, `people` и `/815/compare/`.',
+        '- Compare публикуется как отдельный section build под `/815/compare/` и не должен дублироваться внутри `apps/www`.',
         '- People-section публикует detail pages `/people/[slug]/`, но намеренно не имеет публичной HTML index page `/people/`.',
         '',
         'Канонические URL',
@@ -260,7 +260,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         '- Для статуса при массовом чтении используйте `status/data/status.json`, а HTML/Markdown service/incident pages оставляйте для фокусной проверки одной линии или одного события.',
         '- Для регламента при массовом чтении используйте `815/regulation/data/estimate-2026.json` для расчетной сметы и `815/regulation/data/full-2026.json` для полного structured dataset; для текстового чтения начинайте с `815/regulation/full.md`, затем переходите в тематические файлы `815/regulation/full/*.md`.',
         '- Для people при массовом чтении используйте `people/data/people.json`, а detail pages `/people/[slug]/` и `/people/[slug]/index.md` оставляйте для чтения одного профиля.',
-        '- Для compare используйте `/compare/data/settlements.json` как основной structured feed, а detail pages и markdown companions - для чтения по одному поселку.',
+        '- Для compare используйте `/815/compare/data/settlements.json` как основной structured feed, а detail pages и markdown companions - для чтения по одному поселку.',
         '',
         'Skills и discovery',
         '- На корневом сайте public skills сейчас описывают навигацию по разделам, news feed, status feed и people profiles.',
@@ -283,7 +283,7 @@ export async function buildHomeMarkdown(): Promise<string> {
     `- [Статус](${absoluteUrl(statusUrl())}) — ${count(status.incidents.length, ['запись', 'записи', 'записей'])}, ${count(activeStatus.length, ['активный инцидент', 'активных инцидента', 'активных инцидентов'])}; structured feed: ${absoluteUrl(statusDataUrl())}; RSS: ${absoluteUrl(statusFeedUrl())}`,
     `- [Регламент](${absoluteUrl(reglamentUrl())}) — смета тарифа 2026; structured feed: ${absoluteUrl(reglamentEstimate2026DataUrl())}; full index: ${absoluteUrl(reglamentFullMarkdownUrl())}; full dataset: ${absoluteUrl(reglamentFull2026DataUrl())}; markdown overview: ${absoluteUrl(reglamentMarkdownUrl())}`,
     `- Люди — ${count(people.profiles.length, ['профиль', 'профиля', 'профилей'])}; markdown overview: ${absoluteUrl(peopleMarkdownUrl())}; structured feed: ${absoluteUrl(peopleDataUrl())}; публичного HTML-индекса нет`,
-    `- [Compare](${absoluteUrl('/compare/')}) — сравнение поселков, тарифов и рейтинга; structured feed: ${absoluteUrl('/compare/data/settlements.json')}`,
+    `- [Compare](${absoluteUrl('/815/compare/')}) — сравнение поселков, тарифов и рейтинга; structured feed: ${absoluteUrl('/815/compare/data/settlements.json')}`,
     '',
     '## Agent Discovery',
     `- API catalog сайта: ${absoluteUrl(siteApiCatalogUrl())}`,
@@ -296,6 +296,6 @@ export async function buildHomeMarkdown(): Promise<string> {
     `- Статус: ${absoluteUrl(statusLlmsUrl())}, ${absoluteUrl(statusApiCatalogUrl())}`,
     `- Регламент: ${absoluteUrl(reglamentLlmsUrl())}, ${absoluteUrl(reglamentApiCatalogUrl())}`,
     `- Люди: ${absoluteUrl(peopleLlmsUrl())}, ${absoluteUrl(peopleApiCatalogUrl())}`,
-    `- Compare: ${absoluteUrl('/compare/llms.txt')}, ${absoluteUrl('/compare/.well-known/api-catalog')}`,
+    `- Compare: ${absoluteUrl('/815/compare/llms.txt')}, ${absoluteUrl('/815/compare/.well-known/api-catalog')}`,
   ]);
 }

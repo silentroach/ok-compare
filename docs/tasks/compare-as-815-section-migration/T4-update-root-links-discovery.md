@@ -1,6 +1,6 @@
 # T4: Update Root-Site Links And Agent Discovery References
 
-Status: todo
+Status: done
 
 Index: `../compare-as-815-section-migration.md`
 Handoff: `../compare-as-815-section-handoff.md`
@@ -11,16 +11,16 @@ Handoff: `../compare-as-815-section-handoff.md`
 
 ## Acceptance Criteria
 
-- [ ] Home dropdown and any root-site visible compare links point to `/815/compare/`.
-- [ ] `apps/www/src/lib/discovery.ts` and `apps/www/src/lib/llms.ts` use `/815/compare/...` for compare paths, feeds, `llms.txt`, API catalog and skills.
-- [ ] Agent skill docs under `apps/www/public/.well-known/agent-skills` no longer describe compare as living under `/compare/`.
-- [ ] Hardcoded `/compare/` references left in the repo are either intentional redirects/tests for old paths or documented in handoff.
+- [x] Home dropdown and any root-site visible compare links point to `/815/compare/`.
+- [x] `apps/www/src/lib/discovery.ts` and `apps/www/src/lib/llms.ts` use `/815/compare/...` for compare paths, feeds, `llms.txt`, API catalog and skills.
+- [x] Agent skill docs under `apps/www/public/.well-known/agent-skills` no longer describe compare as living under `/compare/`.
+- [x] Hardcoded `/compare/` references left in the repo are either intentional redirects/tests for old paths or documented in handoff.
 
 ## Verification
 
-- [ ] `pnpm --dir apps/www test`
-- [ ] `pnpm --dir apps/www typecheck`
-- [ ] `rg "/compare" apps/www packages docs AGENTS.md` reviewed; intentional leftovers documented.
+- [x] `pnpm --dir apps/www test`
+- [x] `pnpm --dir apps/www typecheck`
+- [x] `rg "/compare" apps/www packages docs AGENTS.md` reviewed; intentional leftovers documented.
 
 ## Dependencies
 
@@ -43,7 +43,7 @@ M.
 
 ## Completion
 
-- [ ] Mark this file `Status: done`.
-- [ ] Update task index status.
-- [ ] Update handoff task registry and task log.
-- [ ] Commit this task separately.
+- [x] Mark this file `Status: done`.
+- [x] Update task index status.
+- [x] Update handoff task registry and task log.
+- [x] Commit this task separately.

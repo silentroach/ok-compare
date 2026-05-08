@@ -6,7 +6,7 @@
 
 ```text
 apps/
-  compare/   # compare-приложение: standalone legacy + section build для /compare
+  compare/   # compare-приложение: standalone legacy + section build для /815/compare
   www/       # корневой сайт kpshelkovo.online
 packages/    # shared утилиты и UI
 docs/        # документация и дизайн-гайды
