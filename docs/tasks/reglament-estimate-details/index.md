@@ -66,7 +66,7 @@
 - [x] [Task 018: Final agent review](tasks/018-final-agent-review.md)
 - [x] [Task 019: Structured source quote items](tasks/019-structured-source-quote-items.md)
 - [x] [Task 020: Cleaning quote item table fields](tasks/020-cleaning-quote-item-table-fields.md)
-- [ ] [Task 021: Landscaping quote item table fields](tasks/021-landscaping-quote-item-table-fields.md)
+- [x] [Task 021: Landscaping quote item table fields](tasks/021-landscaping-quote-item-table-fields.md)
 - [ ] [Task 022: Improvement quote item table fields](tasks/022-improvement-quote-item-table-fields.md)
 - [ ] [Task 023: Lighting quote item table fields](tasks/023-lighting-quote-item-table-fields.md)
 - [ ] [Task 024: Security quote item table fields](tasks/024-security-quote-item-table-fields.md)

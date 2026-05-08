@@ -516,6 +516,80 @@ describe('estimate details 2026 dataset', () => {
     `);
   });
 
+  it('keeps landscaping quote items enriched with source table fields', () => {
+    const treePpeSource = resourcesById
+      .get('landscaping-trees-ppe-cotton-suit')
+      ?.source_refs.find(
+        (ref) =>
+          ref.pdf === 'landscaping' &&
+          ref.page === 15 &&
+          ref.fragment ===
+            'позиция 9.1 / средства охраны труда для ухода за деревьями, начало',
+      );
+    const resourceStatementSource = resourcesById
+      .get('landscaping-mowing-trimmer-machine')
+      ?.source_refs.find(
+        (ref) =>
+          ref.pdf === 'landscaping' &&
+          ref.page === 21 &&
+          ref.fragment ===
+            'ресурсная ведомость по локальному ресурсному сметному расчету',
+      );
+    const trimmerResourceStatementItem =
+      resourceStatementSource?.quote_items?.find(
+        (item) => item.label === 'Триммер бензиновый',
+      );
+
+    expect({
+      ppe: treePpeSource?.quote_items?.[0],
+      resourceStatement: trimmerResourceStatementItem,
+    }).toMatchInlineSnapshot(`
+      {
+        "ppe": {
+          "label": "Костюм хлопчатобумажный",
+          "quantity": {
+            "note": "количество в PDF округлено; итог сохранен по исходной строке",
+            "raw": "0,5",
+            "unit": "шт.",
+            "value": 0.5,
+          },
+          "quote": "Костюм 2 915,00",
+          "resource_ids": [
+            "landscaping-trees-ppe-cotton-suit",
+          ],
+          "total_rub": {
+            "raw": "2 915,00",
+            "value": 2915,
+          },
+          "unit_price_rub": {
+            "raw": "5500,00",
+            "value": 5500,
+          },
+        },
+        "resourceStatement": {
+          "label": "Триммер бензиновый",
+          "quantity": {
+            "raw": "1030,4",
+            "unit": "маш.-час",
+            "value": 1030.4,
+          },
+          "quote": "Триммер бензиновый ... 61 792,83",
+          "resource_ids": [
+            "landscaping-mowing-trimmer-machine",
+          ],
+          "total_rub": {
+            "raw": "61 792,83",
+            "value": 61792.83,
+          },
+          "unit_price_rub": {
+            "raw": "59,97",
+            "value": 59.97,
+          },
+        },
+      }
+    `);
+  });
+
   it('migrates multi-position quote items in every section detail module', () => {
     const sectionPdfs = [
       'cleaning',
