@@ -4,6 +4,11 @@ import { ESTIMATE_SOURCE_PDFS, type EstimateSourcePdf } from './schema';
 const REGLAMENT_ROOT = '/815/regulation/';
 const REGLAMENT_MARKDOWN = '/815/regulation/index.md';
 const REGLAMENT_FULL_MARKDOWN = '/815/regulation/full.md';
+const REGLAMENT_FULL_ASSETS_MARKDOWN = '/815/regulation/full/assets.md';
+const REGLAMENT_FULL_SERVICES_MARKDOWN = '/815/regulation/full/services.md';
+const REGLAMENT_FULL_SERVICE_MAP_MARKDOWN =
+  '/815/regulation/full/service-map.md';
+const REGLAMENT_FULL_CHECKS_MARKDOWN = '/815/regulation/full/checks.md';
 const REGLAMENT_DATA_ESTIMATE_2026 = '/815/regulation/data/estimate-2026.json';
 const REGLAMENT_DATA_FULL_2026 = '/815/regulation/data/full-2026.json';
 const REGLAMENT_ASSETS = '/815/regulation/assets/';
@@ -35,6 +40,10 @@ export const REGLAMENT_PUBLIC_PATHS = [
   REGLAMENT_ROOT,
   REGLAMENT_MARKDOWN,
   REGLAMENT_FULL_MARKDOWN,
+  REGLAMENT_FULL_ASSETS_MARKDOWN,
+  REGLAMENT_FULL_SERVICES_MARKDOWN,
+  REGLAMENT_FULL_SERVICE_MAP_MARKDOWN,
+  REGLAMENT_FULL_CHECKS_MARKDOWN,
   REGLAMENT_DATA_ESTIMATE_2026,
   REGLAMENT_DATA_FULL_2026,
   REGLAMENT_ASSETS,
@@ -55,6 +64,18 @@ export const reglamentPath = (): string => REGLAMENT_ROOT;
 export const reglamentMarkdownPath = (): string => REGLAMENT_MARKDOWN;
 
 export const reglamentFullMarkdownPath = (): string => REGLAMENT_FULL_MARKDOWN;
+
+export const reglamentFullAssetsMarkdownPath = (): string =>
+  REGLAMENT_FULL_ASSETS_MARKDOWN;
+
+export const reglamentFullServicesMarkdownPath = (): string =>
+  REGLAMENT_FULL_SERVICES_MARKDOWN;
+
+export const reglamentFullServiceMapMarkdownPath = (): string =>
+  REGLAMENT_FULL_SERVICE_MAP_MARKDOWN;
+
+export const reglamentFullChecksMarkdownPath = (): string =>
+  REGLAMENT_FULL_CHECKS_MARKDOWN;
 
 export const reglamentEstimate2026DataPath = (): string =>
   REGLAMENT_DATA_ESTIMATE_2026;
@@ -87,6 +108,18 @@ export const reglamentMarkdownUrl = (): string => withBase(REGLAMENT_MARKDOWN);
 
 export const reglamentFullMarkdownUrl = (): string =>
   withBase(REGLAMENT_FULL_MARKDOWN);
+
+export const reglamentFullAssetsMarkdownUrl = (): string =>
+  withBase(REGLAMENT_FULL_ASSETS_MARKDOWN);
+
+export const reglamentFullServicesMarkdownUrl = (): string =>
+  withBase(REGLAMENT_FULL_SERVICES_MARKDOWN);
+
+export const reglamentFullServiceMapMarkdownUrl = (): string =>
+  withBase(REGLAMENT_FULL_SERVICE_MAP_MARKDOWN);
+
+export const reglamentFullChecksMarkdownUrl = (): string =>
+  withBase(REGLAMENT_FULL_CHECKS_MARKDOWN);
 
 export const reglamentEstimate2026DataUrl = (): string =>
   withBase(REGLAMENT_DATA_ESTIMATE_2026);

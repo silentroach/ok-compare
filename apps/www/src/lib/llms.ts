@@ -27,8 +27,12 @@ import {
   reglamentApiCatalogUrl,
   reglamentAssetsUrl,
   reglamentEstimate2026DataUrl,
+  reglamentFullAssetsMarkdownUrl,
+  reglamentFullChecksMarkdownUrl,
   reglamentFull2026DataUrl,
   reglamentFullMarkdownUrl,
+  reglamentFullServiceMapMarkdownUrl,
+  reglamentFullServicesMarkdownUrl,
   reglamentLlmsUrl,
   reglamentMarkdownUrl,
   reglamentServicesUrl,
@@ -104,6 +108,18 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
   const reglamentMarkdown = absoluteUrl(reglamentMarkdownUrl());
   const reglamentFeed = absoluteUrl(reglamentEstimate2026DataUrl());
   const reglamentFullMarkdown = absoluteUrl(reglamentFullMarkdownUrl());
+  const reglamentFullAssetsMarkdown = absoluteUrl(
+    reglamentFullAssetsMarkdownUrl(),
+  );
+  const reglamentFullServicesMarkdown = absoluteUrl(
+    reglamentFullServicesMarkdownUrl(),
+  );
+  const reglamentFullServiceMapMarkdown = absoluteUrl(
+    reglamentFullServiceMapMarkdownUrl(),
+  );
+  const reglamentFullChecksMarkdown = absoluteUrl(
+    reglamentFullChecksMarkdownUrl(),
+  );
   const reglamentFullDataset = absoluteUrl(reglamentFull2026DataUrl());
   const reglamentAssets = absoluteUrl(reglamentAssetsUrl());
   const reglamentServices = absoluteUrl(reglamentServicesUrl());
@@ -158,7 +174,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         `- Для новостей используйте ${absoluteUrl(newsLlmsUrl())} и ${newsFeed}.`,
         '- У новостей с календарными событиями читайте `articles[].events[].ics_url`; глобального календаря событий нет.',
         `- Для статуса используйте ${absoluteUrl(statusLlmsUrl())} и ${statusFeed}.`,
-        `- Для регламента используйте ${reglamentLlms}, ${reglamentFeed} и dataset полного регламента ${reglamentFullDataset}.`,
+        `- Для регламента используйте ${reglamentLlms}, ${reglamentFeed}, индекс полного регламента ${reglamentFullMarkdown} и dataset ${reglamentFullDataset}.`,
         `- Для people используйте ${peopleShort} и ${peopleFeed}; для одной персоны переходите на ${personHtml} или ${personMarkdown}.`,
         `- Для сравнения поселков используйте ${compareLlms} и ${compareFeed}.`,
         '- Public skill index на корневом сайте покрывает navigation, news, status и people; у compare есть свой отдельный skill index.',
@@ -205,6 +221,10 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         `- HTML home запланирован как калькулятор: ${reglamentHome}`,
         `- Markdown companion: ${reglamentMarkdown}`,
         `- Полный регламент Markdown: ${reglamentFullMarkdown}`,
+        `- Полный регламент, имущество Markdown: ${reglamentFullAssetsMarkdown}`,
+        `- Полный регламент, услуги Markdown: ${reglamentFullServicesMarkdown}`,
+        `- Полный регламент, сопоставления Markdown: ${reglamentFullServiceMapMarkdown}`,
+        `- Полный регламент, проверки Markdown: ${reglamentFullChecksMarkdown}`,
         `- llms.txt: ${reglamentLlms}`,
         `- JSON feed: ${reglamentFeed}`,
         `- Dataset полного регламента: ${reglamentFullDataset}`,
@@ -238,7 +258,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         '- Когда нужна текстовая версия home-страницы и быстрые ссылки на разделы, используйте `/index.md`.',
         '- Для новостей при массовом чтении используйте `news/data/articles.json`, а HTML/Markdown detail pages оставляйте для одной конкретной записи; если у статьи есть `events`, календарь берите из `events[].ics_url`.',
         '- Для статуса при массовом чтении используйте `status/data/status.json`, а HTML/Markdown service/incident pages оставляйте для фокусной проверки одной линии или одного события.',
-        '- Для регламента при массовом чтении используйте `815/regulation/data/estimate-2026.json` для расчетной сметы и `815/regulation/data/full-2026.json` для имущества, услуг, сопоставлений и audit notes.',
+        '- Для регламента при массовом чтении используйте `815/regulation/data/estimate-2026.json` для расчетной сметы и `815/regulation/data/full-2026.json` для полного structured dataset; для текстового чтения начинайте с `815/regulation/full.md`, затем переходите в тематические файлы `815/regulation/full/*.md`.',
         '- Для people при массовом чтении используйте `people/data/people.json`, а detail pages `/people/[slug]/` и `/people/[slug]/index.md` оставляйте для чтения одного профиля.',
         '- Для compare используйте `/compare/data/settlements.json` как основной structured feed, а detail pages и markdown companions - для чтения по одному поселку.',
         '',
@@ -261,7 +281,7 @@ export async function buildHomeMarkdown(): Promise<string> {
     '## Разделы',
     `- [Новости](${absoluteUrl(newsUrl())}) — ${count(news.articles.length, ['статья', 'статьи', 'статей'])}; structured feed: ${absoluteUrl(articlesDataUrl())}; RSS: ${absoluteUrl(newsFeedUrl())}; события: optional articles[].events[] с article-local [event-slug].ics`,
     `- [Статус](${absoluteUrl(statusUrl())}) — ${count(status.incidents.length, ['запись', 'записи', 'записей'])}, ${count(activeStatus.length, ['активный инцидент', 'активных инцидента', 'активных инцидентов'])}; structured feed: ${absoluteUrl(statusDataUrl())}; RSS: ${absoluteUrl(statusFeedUrl())}`,
-    `- [Регламент](${absoluteUrl(reglamentUrl())}) — смета тарифа 2026; structured feed: ${absoluteUrl(reglamentEstimate2026DataUrl())}; full dataset: ${absoluteUrl(reglamentFull2026DataUrl())}; markdown overview: ${absoluteUrl(reglamentMarkdownUrl())}`,
+    `- [Регламент](${absoluteUrl(reglamentUrl())}) — смета тарифа 2026; structured feed: ${absoluteUrl(reglamentEstimate2026DataUrl())}; full index: ${absoluteUrl(reglamentFullMarkdownUrl())}; full dataset: ${absoluteUrl(reglamentFull2026DataUrl())}; markdown overview: ${absoluteUrl(reglamentMarkdownUrl())}`,
     `- Люди — ${count(people.profiles.length, ['профиль', 'профиля', 'профилей'])}; markdown overview: ${absoluteUrl(peopleMarkdownUrl())}; structured feed: ${absoluteUrl(peopleDataUrl())}; публичного HTML-индекса нет`,
     `- [Compare](${absoluteUrl('/compare/')}) — сравнение поселков, тарифов и рейтинга; structured feed: ${absoluteUrl('/compare/data/settlements.json')}`,
     '',

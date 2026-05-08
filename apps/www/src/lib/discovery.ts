@@ -23,7 +23,11 @@ import {
   reglamentEstimate2026DataPath,
   reglamentAssetsPath,
   reglamentFull2026DataPath,
+  reglamentFullAssetsMarkdownPath,
+  reglamentFullChecksMarkdownPath,
   reglamentFullMarkdownPath,
+  reglamentFullServiceMapMarkdownPath,
+  reglamentFullServicesMarkdownPath,
   reglamentLlmsFullPath,
   reglamentLlmsPath,
   reglamentMarkdownPath,
@@ -147,7 +151,29 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, reglamentFullMarkdownPath()),
             type: 'text/markdown',
-            'title*': star('Markdown companion полного регламента'),
+            'title*': star('Markdown index полного регламента'),
+          },
+          {
+            href: abs(root, reglamentFullAssetsMarkdownPath()),
+            type: 'text/markdown',
+            'title*': star('Markdown полного регламента: общее имущество'),
+          },
+          {
+            href: abs(root, reglamentFullServicesMarkdownPath()),
+            type: 'text/markdown',
+            'title*': star('Markdown полного регламента: услуги'),
+          },
+          {
+            href: abs(root, reglamentFullServiceMapMarkdownPath()),
+            type: 'text/markdown',
+            'title*': star(
+              'Markdown полного регламента: сопоставление услуг со сметой',
+            ),
+          },
+          {
+            href: abs(root, reglamentFullChecksMarkdownPath()),
+            type: 'text/markdown',
+            'title*': star('Markdown полного регламента: проверки и допущения'),
           },
           {
             href: abs(root, reglamentEstimate2026DataPath()),

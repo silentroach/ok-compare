@@ -18,8 +18,12 @@ import {
   reglamentEstimate2026DataUrl,
   reglamentEstimate2026OpenApiUrl,
   reglamentEstimate2026SchemaUrl,
+  reglamentFullAssetsMarkdownUrl,
+  reglamentFullChecksMarkdownUrl,
   reglamentFull2026DataUrl,
   reglamentFullMarkdownUrl,
+  reglamentFullServiceMapMarkdownUrl,
+  reglamentFullServicesMarkdownUrl,
   reglamentFullSourcePdfUrl,
   reglamentLlmsFullUrl,
   reglamentLlmsUrl,
@@ -45,6 +49,12 @@ export function build(kind: 'short' | 'full'): string {
   const home = absoluteUrl(reglamentUrl());
   const markdown = absoluteUrl(reglamentMarkdownUrl());
   const fullMarkdown = absoluteUrl(reglamentFullMarkdownUrl());
+  const fullAssetsMarkdown = absoluteUrl(reglamentFullAssetsMarkdownUrl());
+  const fullServicesMarkdown = absoluteUrl(reglamentFullServicesMarkdownUrl());
+  const fullServiceMapMarkdown = absoluteUrl(
+    reglamentFullServiceMapMarkdownUrl(),
+  );
+  const fullChecksMarkdown = absoluteUrl(reglamentFullChecksMarkdownUrl());
   const feed = absoluteUrl(reglamentEstimate2026DataUrl());
   const fullDataset = absoluteUrl(reglamentFull2026DataUrl());
   const fullSourcePdf = absoluteUrl(reglamentFullSourcePdfUrl());
@@ -72,6 +82,7 @@ export function build(kind: 'short' | 'full'): string {
         `- Раздел: ${home}`,
         `- Markdown companion: ${markdown}`,
         `- Полный регламент Markdown: ${fullMarkdown}`,
+        `- Темы полного регламента Markdown: ${fullAssetsMarkdown}, ${fullServicesMarkdown}, ${fullServiceMapMarkdown}, ${fullChecksMarkdown}`,
         `- JSON сметы: ${feed}`,
         `- Dataset полного регламента: ${fullDataset}`,
         `- PDF полного регламента: ${fullSourcePdf}`,
@@ -87,6 +98,7 @@ export function build(kind: 'short' | 'full'): string {
         '- `official` хранит значения из итоговой сметы, `computed` хранит baseline, пересчитанный расчетным движком.',
         '- `sections[].rows[]` включает baseline, computed, source refs, editable fields, tags и breakdown.',
         '- `full-2026.json` хранит слой полного регламента: villages, common_assets, services, service_to_estimate_map, calculation_assumptions и audit_notes.',
+        '- `full.md` является индексом; подробные markdown-файлы разбиты по имуществу, услугам, сопоставлениям и проверкам.',
         `- Формула тарифа: \`${REGLAMENT_FORMULAS.tariff_per_sotka_month}\`.`,
       ])
     : join([
@@ -105,6 +117,10 @@ export function build(kind: 'short' | 'full'): string {
         `- Раздел: ${home}`,
         `- Markdown companion: ${markdown}`,
         `- Полный регламент Markdown: ${fullMarkdown}`,
+        `- Полный регламент, имущество Markdown: ${fullAssetsMarkdown}`,
+        `- Полный регламент, услуги Markdown: ${fullServicesMarkdown}`,
+        `- Полный регламент, сопоставления Markdown: ${fullServiceMapMarkdown}`,
+        `- Полный регламент, проверки Markdown: ${fullChecksMarkdown}`,
         `- Короткий агентный обзор: ${short}`,
         `- Расширенный агентный обзор: ${full}`,
         `- JSON сметы: ${feed}`,
@@ -126,6 +142,7 @@ export function build(kind: 'short' | 'full'): string {
         '- `rows[]` содержит стабильный `id`, `title`, `kind`, `coefficient_policy`, baseline breakdown, computed breakdown, source refs и editable fields.',
         '- `source_refs[]` указывают PDF, страницу, фрагмент, public `pdf_url` и repo path исходного PDF.',
         '- Отдельный `full-2026.json` хранит слой полного регламента без repo paths в source refs: имущество, услуги, сопоставления, расчетные допущения и audit notes.',
+        '- `full.md` хранит обзор и индекс, а подробные markdown-файлы лежат в `/815/regulation/full/*.md`.',
         '',
         'Формулы',
         `- Тариф: \`${REGLAMENT_FORMULAS.tariff_per_sotka_month}\``,

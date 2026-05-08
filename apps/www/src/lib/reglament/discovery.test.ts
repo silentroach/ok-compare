@@ -10,6 +10,10 @@ import {
   reglamentAssetsPath,
   reglamentEstimate2026DataPath,
   reglamentFull2026DataPath,
+  reglamentFullAssetsMarkdownPath,
+  reglamentFullChecksMarkdownPath,
+  reglamentFullServiceMapMarkdownPath,
+  reglamentFullServicesMarkdownPath,
   reglamentFullSourcePdfPath,
   reglamentServicesPath,
   reglamentSourcePdfPath,
@@ -153,6 +157,30 @@ describe('reglament discovery route smoke', () => {
         marker: '# Полный регламент содержания Шелково',
       },
       {
+        name: 'full reglament assets markdown companion',
+        load: () => import('../../pages/815/regulation/full/assets.md'),
+        contentType: 'text/markdown',
+        marker: '# Полный регламент: общее имущество',
+      },
+      {
+        name: 'full reglament services markdown companion',
+        load: () => import('../../pages/815/regulation/full/services.md'),
+        contentType: 'text/markdown',
+        marker: '# Полный регламент: услуги',
+      },
+      {
+        name: 'full reglament service map markdown companion',
+        load: () => import('../../pages/815/regulation/full/service-map.md'),
+        contentType: 'text/markdown',
+        marker: '# Полный регламент: сопоставление услуг со сметой',
+      },
+      {
+        name: 'full reglament checks markdown companion',
+        load: () => import('../../pages/815/regulation/full/checks.md'),
+        contentType: 'text/markdown',
+        marker: '# Полный регламент: проверки и допущения',
+      },
+      {
         name: 'full reglament json feed',
         load: () => import('../../pages/815/regulation/data/full-2026.json'),
         contentType: 'application/json',
@@ -210,6 +238,14 @@ describe('reglament discovery route smoke', () => {
     const apiCatalog = JSON.stringify(catalog(root));
 
     expect(apiCatalog).toContain(`${root}${reglamentFull2026DataPath()}`);
+    expect(apiCatalog).toContain(`${root}${reglamentFullAssetsMarkdownPath()}`);
+    expect(apiCatalog).toContain(
+      `${root}${reglamentFullServicesMarkdownPath()}`,
+    );
+    expect(apiCatalog).toContain(
+      `${root}${reglamentFullServiceMapMarkdownPath()}`,
+    );
+    expect(apiCatalog).toContain(`${root}${reglamentFullChecksMarkdownPath()}`);
     expect(apiCatalog).toContain(`${root}${reglamentAssetsPath()}`);
     expect(apiCatalog).toContain(`${root}${reglamentServicesPath()}`);
     expect(apiCatalog).toContain(`${root}${reglamentFullSourcePdfPath()}`);

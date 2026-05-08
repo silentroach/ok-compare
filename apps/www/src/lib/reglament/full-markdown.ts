@@ -4,6 +4,7 @@ import type {
   FullReglamentAuditNote,
   FullReglamentCalculationAssumption,
   FullReglamentCommonAsset,
+  FullReglamentService,
   FullReglamentServiceToEstimateMapItem,
   FullReglamentSourceRef,
 } from '@/lib/reglament/full-schema';
@@ -12,7 +13,13 @@ import type { EstimateRow, EstimateSourceRef } from '@/lib/reglament/schema';
 import { absoluteUrl } from '../site';
 import {
   reglamentAssetsUrl,
+  reglamentFullAssetsMarkdownUrl,
+  reglamentFullChecksMarkdownUrl,
+  reglamentFullMarkdownUrl,
+  reglamentFullServiceMapMarkdownUrl,
+  reglamentFullServicesMarkdownUrl,
   reglamentFull2026DataUrl,
+  reglamentFullSourcePdfUrl,
   reglamentServicesUrl,
 } from './routes';
 
@@ -38,6 +45,9 @@ const requiresManualCheck = (value: string | null | undefined): boolean =>
 
 const fullSource = (ref: FullReglamentSourceRef): string =>
   `full.pdf стр. ${ref.page}, ${ref.fragment}`;
+
+const fullSources = (refs: readonly FullReglamentSourceRef[]): string =>
+  refs.map(fullSource).join('; ');
 
 const estimateSource = (ref: EstimateSourceRef): string => {
   const fragment = ref.fragment ? `, ${ref.fragment}` : '';
@@ -105,24 +115,65 @@ const calculationManualLine = (
   `- calculation_assumptions:${item.id}: ${item.title}; статус: ${item.status_label_ru}; source: ${item.source_refs.map(fullSource).join('; ')}; как проверить: ${item.how_to_verify}`;
 
 const auditManualLine = (item: FullReglamentAuditNote): string =>
-  `- audit_notes:${item.id}: ${item.title}; ${item.public_wording}; source: ${item.source_refs.map(fullSource).join('; ')}; следующий шаг: ${item.next_step}`;
+  `- audit_notes:${item.id}: ${item.title}; ${item.public_wording}; source: ${fullSources(item.source_refs)}; следующий шаг: ${item.next_step}`;
 
 const assetLine = (asset: FullReglamentCommonAsset): string =>
-  `- ${asset.id}: ${asset.title}; единица: ${asset.unit ?? '-'}; итог: ${asset.total.raw}; source: ${asset.source_refs.map((ref) => `full.pdf стр. ${ref.page}, ${ref.fragment}`).join('; ')}`;
+  `- ${asset.id}: ${asset.title}; единица: ${asset.unit ?? '-'}; итог: ${asset.total.raw}; source: ${fullSources(asset.source_refs)}`;
+
+const serviceLine = (service: FullReglamentService): string => {
+  const note = service.frequency_note
+    ? `; примечание: ${service.frequency_note}`
+    : '';
+
+  return `- ${service.id}: ${service.title}; группа: ${service.group}; периодичность: ${service.frequency_raw}${note}; source: ${fullSources(service.source_refs)}`;
+};
 
 const mappingLine = (item: FullReglamentServiceToEstimateMapItem): string =>
   `- ${item.service_id}: ${item.status} (${item.status_label_ru}); строки сметы: ${item.estimate_row_ids.join(', ') || '-'}; ${item.explanation}`;
+
+const calculationLine = (item: FullReglamentCalculationAssumption): string =>
+  `- ${item.id}: ${item.title}; статус: ${item.status_label_ru}; ${item.summary}; source: ${fullSources(item.source_refs)}`;
+
+const auditLine = (item: FullReglamentAuditNote): string =>
+  `- ${item.id}: ${item.severity}; ${item.title}; ${item.public_wording}; следующий шаг: ${item.next_step}; source: ${fullSources(item.source_refs)}`;
+
+const topicLine = (title: string, url: string, description: string): string =>
+  `- ${title}: ${absoluteUrl(url)}; ${description}`;
 
 export const buildFullReglamentMarkdown = (): string =>
   join([
     '# Полный регламент содержания Шелково',
     '',
     'Курируемый слой фактов из полного регламента для LLM и публичных справочных страниц. PDF не парсится во время запроса.',
+    'Этот файл оставлен как обзор и индекс тематических файлов; подробные списки вынесены ниже по ссылкам.',
     '',
     '## Главные URL',
     `- JSON-набор данных: ${absoluteUrl(reglamentFull2026DataUrl())}`,
+    `- PDF полного регламента: ${absoluteUrl(reglamentFullSourcePdfUrl())}`,
     `- Общее имущество: ${absoluteUrl(reglamentAssetsUrl())}`,
     `- Услуги регламента: ${absoluteUrl(reglamentServicesUrl())}`,
+    '',
+    '## Тематические файлы',
+    topicLine(
+      'Общее имущество',
+      reglamentFullAssetsMarkdownUrl(),
+      'перечень объектов, единицы измерения, итоги и ссылки на PDF',
+    ),
+    topicLine(
+      'Услуги регламента',
+      reglamentFullServicesMarkdownUrl(),
+      'перечень услуг, группы и периодичность из приложения №4',
+    ),
+    topicLine(
+      'Сопоставление услуг со сметой',
+      reglamentFullServiceMapMarkdownUrl(),
+      'статусы explicit_found, partial, not_found и needs_check',
+    ),
+    topicLine(
+      'Проверки и допущения',
+      reglamentFullChecksMarkdownUrl(),
+      'ручная перепроверка, расчетные допущения и audit notes',
+    ),
     '',
     '## Контрольные числа',
     `- Тарифицируемая площадь: ${fullReglamentDataset2026.tariff_summary.tariff_area_sotka} сотки`,
@@ -144,6 +195,79 @@ export const buildFullReglamentMarkdown = (): string =>
     '',
     '## Ручная перепроверка',
     `- Всего позиций: ${manualCheckCount}`,
+    `- Подробности: ${absoluteUrl(reglamentFullChecksMarkdownUrl())}`,
+    '',
+    '## Поселки',
+    ...fullReglamentDataset2026.villages.map(
+      (village) =>
+        `- ${village.id}: ${village.title}; участков: ${village.households_count}; площадь: ${village.land_area_sotka} сотки; доля: ${village.land_area_share_percent}%`,
+    ),
+  ]);
+
+export const buildFullReglamentAssetsMarkdown = (): string =>
+  join([
+    '# Полный регламент: общее имущество',
+    '',
+    `- Индекс: ${absoluteUrl(reglamentFullMarkdownUrl())}`,
+    `- JSON-набор данных: ${absoluteUrl(reglamentFull2026DataUrl())}`,
+    `- HTML-страница: ${absoluteUrl(reglamentAssetsUrl())}`,
+    '',
+    '## Сводка',
+    `- Позиций: ${fullReglamentDataset2026.common_assets.length}`,
+    `- Позиции с визуальной сверкой: ${manualCommonAssets.length}`,
+    '',
+    '## Общее имущество',
+    ...fullReglamentDataset2026.common_assets.map(assetLine),
+  ]);
+
+export const buildFullReglamentServicesMarkdown = (): string =>
+  join([
+    '# Полный регламент: услуги',
+    '',
+    `- Индекс: ${absoluteUrl(reglamentFullMarkdownUrl())}`,
+    `- JSON-набор данных: ${absoluteUrl(reglamentFull2026DataUrl())}`,
+    `- HTML-страница: ${absoluteUrl(reglamentServicesUrl())}`,
+    '',
+    '## Сводка',
+    `- Услуг: ${fullReglamentDataset2026.services.length}`,
+    '',
+    '## Услуги',
+    ...fullReglamentDataset2026.services.map(serviceLine),
+  ]);
+
+export const buildFullReglamentServiceMapMarkdown = (): string =>
+  join([
+    '# Полный регламент: сопоставление услуг со сметой',
+    '',
+    `- Индекс: ${absoluteUrl(reglamentFullMarkdownUrl())}`,
+    `- JSON-набор данных: ${absoluteUrl(reglamentFull2026DataUrl())}`,
+    '',
+    '## Статусы сопоставления услуг',
+    `- explicit_found: ${statusCounts.explicit_found}`,
+    `- partial: ${statusCounts.partial}`,
+    `- not_found: ${statusCounts.not_found}`,
+    `- needs_check: ${statusCounts.needs_check}`,
+    '',
+    '## Сопоставления',
+    ...fullReglamentDataset2026.service_to_estimate_map.map(mappingLine),
+  ]);
+
+export const buildFullReglamentChecksMarkdown = (): string =>
+  join([
+    '# Полный регламент: проверки и допущения',
+    '',
+    `- Индекс: ${absoluteUrl(reglamentFullMarkdownUrl())}`,
+    `- JSON-набор данных: ${absoluteUrl(reglamentFull2026DataUrl())}`,
+    '',
+    '## Сводка',
+    `- Всего позиций ручной перепроверки: ${manualCheckCount}`,
+    `- Строк сметы с тегом «требует проверки»: ${manualEstimateRows.length}`,
+    `- Объектов общего имущества с визуальной сверкой: ${manualCommonAssets.length}`,
+    `- Сопоставлений услуг, где нужна сверка: ${manualServiceMappings.length}`,
+    `- Расчетных допущений, требующих проверки: ${manualCalculationAssumptions.length}`,
+    `- Audit notes с severity=needs_check: ${manualAuditNotes.length}`,
+    '',
+    '## Ручная перепроверка',
     '',
     '### Строки сметы с тегом «требует проверки»',
     ...manualEstimateRows.map(estimateManualLine),
@@ -160,14 +284,9 @@ export const buildFullReglamentMarkdown = (): string =>
     '### Audit notes с severity=needs_check',
     ...manualAuditNotes.map(auditManualLine),
     '',
-    '## Общее имущество',
-    ...fullReglamentDataset2026.common_assets.map(assetLine),
+    '## Расчетные допущения',
+    ...fullReglamentDataset2026.calculation_assumptions.map(calculationLine),
     '',
-    '## Сопоставление услуг со сметой',
-    ...fullReglamentDataset2026.service_to_estimate_map.map(mappingLine),
-    '',
-    '## Осторожные проверки',
-    ...fullReglamentDataset2026.audit_notes.map(
-      (item) => `- ${item.id}: ${item.public_wording}; ${item.next_step}`,
-    ),
+    '## Audit notes',
+    ...fullReglamentDataset2026.audit_notes.map(auditLine),
   ]);
