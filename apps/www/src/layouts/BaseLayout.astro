@@ -48,13 +48,13 @@ const prod = import.meta.env.PROD;
 const ymId = 108975391;
 const ym = `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=${ymId}','ym');ym(${ymId},'init',{ssr:true,clickmap:true,referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});`;
 const ymTransitions = `(() => {if (window.__shelkovoYmTransitions) return;window.__shelkovoYmTransitions = true;let href = location.href;document.addEventListener('astro:page-load', () => {if (location.href === href) return;href = location.href;if (typeof window.ym === 'function') window.ym(${ymId}, 'hit', href, { title: document.title });});})();`;
+const navigationProgress = `(() => {if (window.__shelkovoNavigationProgress) return;window.__shelkovoNavigationProgress = true;const attr = 'data-site-navigation-pending';const sourceAttr = 'data-site-navigation-source';const delay = 50;const root = document.documentElement;let source;const clearSource = () => {document.querySelectorAll(\`[\${sourceAttr}]\`).forEach((item) => item.removeAttribute(sourceAttr));source = undefined;};const setSource = (item) => {clearSource();source = item instanceof Element ? item.closest('a, button, [role="link"]') : undefined;};const show = () => {root.setAttribute(attr, '');document.body?.setAttribute('aria-busy', 'true');source?.setAttribute(sourceAttr, '');};const hide = () => {root.removeAttribute(attr);document.body?.removeAttribute('aria-busy');clearSource();};document.addEventListener('astro:before-preparation', (event) => {const loader = event.loader;let timer;setSource(event.sourceElement);event.loader = async () => {timer = window.setTimeout(show, delay);try {await loader();} finally {window.clearTimeout(timer);hide();}};});document.addEventListener('astro:page-load', hide);window.addEventListener('pageshow', hide);})();`;
 const contentTransition = fade({ duration: '60ms' });
 ---
 
 <!doctype html>
 <html lang="ru" transition:name="root" transition:animate="none">
   <head>
-    <base href={import.meta.env.BASE_URL} />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <FontPreloads />
@@ -113,6 +113,7 @@ const contentTransition = fade({ duration: '60ms' });
     <title>{title}</title>
     {docs.map((item) => <script type="application/ld+json" set:html={item} />)}
     <ClientRouter />
+    <script is:inline type="text/javascript" set:html={navigationProgress} />
     {prod && <script is:inline type="text/javascript" set:html={ym} />}
     {
       prod && (
@@ -121,6 +122,7 @@ const contentTransition = fade({ duration: '60ms' });
     }
   </head>
   <body class="ui-root-site flex min-h-screen flex-col text-foreground">
+    <div class="site-navigation-progress" aria-hidden="true"></div>
     {
       prod && (
         <noscript>
