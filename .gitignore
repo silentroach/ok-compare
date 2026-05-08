@@ -4,7 +4,7 @@ dist/
 apps/*/dist/
 apps/*/.astro/
 .turbo/
-.agents/
+.agents/skills/
 logs/
 .env
 .opencode/package-lock.json

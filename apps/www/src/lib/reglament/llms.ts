@@ -15,6 +15,12 @@ import {
 import {
   reglamentApiCatalogUrl,
   reglamentAssetsUrl,
+  reglamentEstimateDetailsChecksMarkdownUrl,
+  reglamentEstimateDetails2026DataUrl,
+  reglamentEstimateDetailsLaborMarkdownUrl,
+  reglamentEstimateDetailsMachinesMarkdownUrl,
+  reglamentEstimateDetailsMarkdownUrl,
+  reglamentEstimateDetailsMaterialsMarkdownUrl,
   reglamentEstimate2026DataUrl,
   reglamentEstimate2026OpenApiUrl,
   reglamentEstimate2026SchemaUrl,
@@ -55,7 +61,21 @@ export function build(kind: 'short' | 'full'): string {
     reglamentFullServiceMapMarkdownUrl(),
   );
   const fullChecksMarkdown = absoluteUrl(reglamentFullChecksMarkdownUrl());
+  const detailsMarkdown = absoluteUrl(reglamentEstimateDetailsMarkdownUrl());
+  const detailsMaterialsMarkdown = absoluteUrl(
+    reglamentEstimateDetailsMaterialsMarkdownUrl(),
+  );
+  const detailsMachinesMarkdown = absoluteUrl(
+    reglamentEstimateDetailsMachinesMarkdownUrl(),
+  );
+  const detailsLaborMarkdown = absoluteUrl(
+    reglamentEstimateDetailsLaborMarkdownUrl(),
+  );
+  const detailsChecksMarkdown = absoluteUrl(
+    reglamentEstimateDetailsChecksMarkdownUrl(),
+  );
   const feed = absoluteUrl(reglamentEstimate2026DataUrl());
+  const detailFeed = absoluteUrl(reglamentEstimateDetails2026DataUrl());
   const fullDataset = absoluteUrl(reglamentFull2026DataUrl());
   const fullSourcePdf = absoluteUrl(reglamentFullSourcePdfUrl());
   const assets = absoluteUrl(reglamentAssetsUrl());
@@ -81,9 +101,12 @@ export function build(kind: 'short' | 'full'): string {
         'Главные URL',
         `- Раздел: ${home}`,
         `- Markdown companion: ${markdown}`,
+        `- Детальная смета Markdown: ${detailsMarkdown}`,
+        `- Темы детальной сметы Markdown: ${detailsMaterialsMarkdown}, ${detailsMachinesMarkdown}, ${detailsLaborMarkdown}, ${detailsChecksMarkdown}`,
         `- Полный регламент Markdown: ${fullMarkdown}`,
         `- Темы полного регламента Markdown: ${fullAssetsMarkdown}, ${fullServicesMarkdown}, ${fullServiceMapMarkdown}, ${fullChecksMarkdown}`,
         `- JSON сметы: ${feed}`,
+        `- JSON детальной сметы: ${detailFeed}`,
         `- Dataset полного регламента: ${fullDataset}`,
         `- PDF полного регламента: ${fullSourcePdf}`,
         `- Общее имущество: ${assets}`,
@@ -97,9 +120,18 @@ export function build(kind: 'short' | 'full'): string {
         'Как читать JSON',
         '- `official` хранит значения из итоговой сметы, `computed` хранит baseline, пересчитанный расчетным движком.',
         '- `sections[].rows[]` включает baseline, computed, source refs, editable fields, tags и breakdown.',
+        '- `estimate-details-2026.json` хранит curated слой маленьких PDF: работы, ресурсы, контрольные итоги, source refs и needs_check.',
         '- `full-2026.json` хранит слой полного регламента: villages, common_assets, services, service_to_estimate_map, calculation_assumptions и audit_notes.',
+        '- `details.md` является индексом; тематические markdown-файлы разбиты по материалам, машинам, труду и проверкам.',
         '- `full.md` является индексом; подробные markdown-файлы разбиты по имуществу, услугам, сопоставлениям и проверкам.',
         `- Формула тарифа: \`${REGLAMENT_FORMULAS.tariff_per_sotka_month}\`.`,
+        '',
+        'Куда смотреть агенту',
+        '- Агрегированная смета: `estimate-2026.json` и `index.md` — разделы, строки, итоговые суммы, базовые частоты и breakdown.',
+        '- Услуги полного регламента: `full-2026.json`, `full/services.md` и `full/service-map.md` — формулировки услуг, периодичность и связь со строками сметы.',
+        '- Детальные ресурсы: `estimate-details-2026.json` и `details/*.md` — работы, материалы, машины, труд, подрядчики, контрольные итоги и `needs_check` из маленьких PDF.',
+        '- Связки: `estimate_row_id` соединяет detail-факты с агрегированной сметой; `service_ids` соединяют work items с услугами полного регламента.',
+        '- Пример проверки: для полива дорог сопоставьте услуги `summer-road-dust-suppression` и `summer-road-watering`, строку `cleaning-summer-mechanized` и detail-ресурсы полива.',
       ])
     : join([
         'Калькулятор тарифа по смете 2026',
@@ -116,6 +148,11 @@ export function build(kind: 'short' | 'full'): string {
         'Канонические URL',
         `- Раздел: ${home}`,
         `- Markdown companion: ${markdown}`,
+        `- Детальная смета Markdown: ${detailsMarkdown}`,
+        `- Детальная смета, материалы Markdown: ${detailsMaterialsMarkdown}`,
+        `- Детальная смета, машины Markdown: ${detailsMachinesMarkdown}`,
+        `- Детальная смета, труд Markdown: ${detailsLaborMarkdown}`,
+        `- Детальная смета, проверки Markdown: ${detailsChecksMarkdown}`,
         `- Полный регламент Markdown: ${fullMarkdown}`,
         `- Полный регламент, имущество Markdown: ${fullAssetsMarkdown}`,
         `- Полный регламент, услуги Markdown: ${fullServicesMarkdown}`,
@@ -124,6 +161,7 @@ export function build(kind: 'short' | 'full'): string {
         `- Короткий агентный обзор: ${short}`,
         `- Расширенный агентный обзор: ${full}`,
         `- JSON сметы: ${feed}`,
+        `- JSON детальной сметы: ${detailFeed}`,
         `- Dataset полного регламента: ${fullDataset}`,
         `- PDF полного регламента: ${fullSourcePdf}`,
         `- Общее имущество: ${assets}`,
@@ -141,8 +179,17 @@ export function build(kind: 'short' | 'full'): string {
         '- `sections[]` содержит официальный итог раздела, computed totals и строки.',
         '- `rows[]` содержит стабильный `id`, `title`, `kind`, `coefficient_policy`, baseline breakdown, computed breakdown, source refs и editable fields.',
         '- `source_refs[]` указывают PDF, страницу, фрагмент, public `pdf_url` и repo path исходного PDF.',
+        '- Отдельный `estimate-details-2026.json` хранит детализацию маленьких PDF: work_items, resources, control_totals, source_refs и статусы проверки.',
+        '- `details.md` хранит индекс детальной сметы, а `/815/regulation/details/*.md` разбивают ресурсы по материалам, машинам, труду и проверкам.',
         '- Отдельный `full-2026.json` хранит слой полного регламента без repo paths в source refs: имущество, услуги, сопоставления, расчетные допущения и audit notes.',
         '- `full.md` хранит обзор и индекс, а подробные markdown-файлы лежат в `/815/regulation/full/*.md`.',
+        '',
+        'Как выбирать источник',
+        '- Агрегированная смета: `estimate-2026.json` и `index.md` — официальный baseline по разделам и строкам, базовые частоты, годовые суммы, формулы и breakdown.',
+        '- Услуги полного регламента: `full-2026.json`, `full/services.md` и `full/service-map.md` — перечень услуг, периодичность, исходные формулировки и сопоставление с `estimate_row_id`.',
+        '- Детальные ресурсы: `estimate-details-2026.json` и `details/*.md` — work items, resources, control totals, source refs и причины `needs_check` из маленьких PDF.',
+        '- Практический порядок ответа: услуга и периодичность из full-слоя, строка и сумма из агрегированной сметы, состав ресурсов и проверки из detail-слоя.',
+        '- Пример вопроса: для полива дорог сравните `summer-road-dust-suppression`, `summer-road-watering`, строку `cleaning-summer-mechanized` и detail-ресурсы воды/поливомоечной техники.',
         '',
         'Формулы',
         `- Тариф: \`${REGLAMENT_FORMULAS.tariff_per_sotka_month}\``,
