@@ -62,6 +62,15 @@ const obviousMultiPositionQuotePatterns = [
   /Видеокамера/,
 ] as const;
 
+const hasOwnPropertyDeep = (value: unknown, key: string): boolean => {
+  if (typeof value !== 'object' || value === null) return false;
+  if (Object.prototype.hasOwnProperty.call(value, key)) return true;
+
+  return Object.values(value).some((nestedValue) =>
+    hasOwnPropertyDeep(nestedValue, key),
+  );
+};
+
 const detailFactsWithSourceRefs = (): readonly DetailFactWithSourceRefs[] => [
   ...estimateDetails2026.work_items.map((item) => ({
     fact_id: `work_items:${item.id}`,
@@ -386,60 +395,48 @@ describe('estimate details 2026 dataset', () => {
         {
           "label": "Рабочий по уборке территории",
           "quantity": {
-            "raw": "5147,3",
             "unit": "чел-час",
             "value": 5147.3,
           },
-          "quote": "Рабочий ... 5147,3 664,15 3 418 555,10",
           "resource_ids": [
             "waste-transfer-worker-labor",
           ],
           "total_rub": {
-            "raw": "3 418 555,10",
             "value": 3418555.1,
           },
           "unit_price_rub": {
-            "raw": "664,15",
             "value": 664.15,
           },
         },
         {
           "label": "Машинист",
           "quantity": {
-            "raw": "1460,0",
             "unit": "чел-час",
             "value": 1460,
           },
-          "quote": "Машинист 1460,0 934,32 1 364 107,20",
           "resource_ids": [
             "waste-transfer-machinist-labor",
           ],
           "total_rub": {
-            "raw": "1 364 107,20",
             "value": 1364107.2,
           },
           "unit_price_rub": {
-            "raw": "934,32",
             "value": 934.32,
           },
         },
         {
           "label": "Газель (GAZ 330232)",
           "quantity": {
-            "raw": "1460,0",
             "unit": "маш.-час",
             "value": 1460,
           },
-          "quote": "Газель (GAZ 330232) 1460,0 318,02 464 303,42",
           "resource_ids": [
             "waste-transfer-gazel-machine",
           ],
           "total_rub": {
-            "raw": "464 303,42",
             "value": 464303.42,
           },
           "unit_price_rub": {
-            "raw": "318,02",
             "value": 318.02,
           },
         },
@@ -478,37 +475,29 @@ describe('estimate details 2026 dataset', () => {
         "ppe": {
           "label": "Костюм хлопчатобумажный",
           "quantity": {
-            "raw": "2,7",
             "unit": "шт.",
             "value": 2.7,
           },
-          "quote": "Костюм 14 850,00",
           "resource_ids": [
             "cleaning-winter-mechanized-ppe-cotton-suit",
           ],
           "total_rub": {
-            "raw": "14 850,00",
             "value": 14850,
           },
           "unit_price_rub": {
-            "raw": "5500,00",
             "value": 5500,
           },
         },
         "resourceStatement": {
           "label": "Костюм",
           "quantity": {
-            "raw": "27,5",
             "unit": "шт.",
             "value": 27.5,
           },
-          "quote": "Костюм 151 250,00",
           "total_rub": {
-            "raw": "151 250,00",
             "value": 151250,
           },
           "unit_price_rub": {
-            "raw": "5500,00",
             "value": 5500,
           },
         },
@@ -549,40 +538,32 @@ describe('estimate details 2026 dataset', () => {
           "label": "Костюм хлопчатобумажный",
           "quantity": {
             "note": "количество в PDF округлено; итог сохранен по исходной строке",
-            "raw": "0,5",
             "unit": "шт.",
             "value": 0.5,
           },
-          "quote": "Костюм 2 915,00",
           "resource_ids": [
             "landscaping-trees-ppe-cotton-suit",
           ],
           "total_rub": {
-            "raw": "2 915,00",
             "value": 2915,
           },
           "unit_price_rub": {
-            "raw": "5500,00",
             "value": 5500,
           },
         },
         "resourceStatement": {
           "label": "Триммер бензиновый",
           "quantity": {
-            "raw": "1030,4",
             "unit": "маш.-час",
             "value": 1030.4,
           },
-          "quote": "Триммер бензиновый ... 61 792,83",
           "resource_ids": [
             "landscaping-mowing-trimmer-machine",
           ],
           "total_rub": {
-            "raw": "61 792,83",
             "value": 61792.83,
           },
           "unit_price_rub": {
-            "raw": "59,97",
             "value": 59.97,
           },
         },
@@ -619,40 +600,32 @@ describe('estimate details 2026 dataset', () => {
         "ppe": {
           "label": "Костюм хлопчатобумажный",
           "quantity": {
-            "raw": "1,3",
             "unit": "шт.",
             "value": 1.3,
           },
-          "quote": "Костюм 7 150,00",
           "resource_ids": [
             "improvement-ppe-cotton-suit",
           ],
           "total_rub": {
-            "raw": "7 150,00",
             "value": 7150,
           },
           "unit_price_rub": {
-            "raw": "5500,00",
             "value": 5500,
           },
         },
         "tool": {
           "label": "Лопата совковая",
           "quantity": {
-            "raw": "0,7",
             "unit": "шт.",
             "value": 0.7,
           },
-          "quote": "Лопата совковая 672,10",
           "resource_ids": [
             "improvement-scoop-shovel",
           ],
           "total_rub": {
-            "raw": "672,10",
             "value": 672.1,
           },
           "unit_price_rub": {
-            "raw": "1034,00",
             "value": 1034,
           },
         },
@@ -679,20 +652,16 @@ describe('estimate details 2026 dataset', () => {
         "label": "Краска по металлу",
         "quantity": {
           "note": "ресурсная ведомость округляет количество; итог сохранен по исходной строке",
-          "raw": "453",
           "unit": "кг.",
           "value": 453,
         },
-        "quote": "Краска ... 453 612,50 277 692,80",
         "resource_ids": [
           "lighting-poles-paint-material",
         ],
         "total_rub": {
-          "raw": "277 692,80",
           "value": 277692.8,
         },
         "unit_price_rub": {
-          "raw": "612,50",
           "value": 612.5,
         },
       }
@@ -716,20 +685,16 @@ describe('estimate details 2026 dataset', () => {
       {
         "label": "Труд по обслуживанию системы СКУД TRASSIR",
         "quantity": {
-          "raw": "35,1",
           "unit": "чел-час",
           "value": 35.1,
         },
-        "quote": "Затраты труда ... 35,1; 749,01; 26 252,91",
         "resource_ids": [
           "security-equipment-skud-labor",
         ],
         "total_rub": {
-          "raw": "26 252,91",
           "value": 26252.91,
         },
         "unit_price_rub": {
-          "raw": "749,01",
           "value": 749.01,
         },
       }
@@ -764,41 +729,33 @@ describe('estimate details 2026 dataset', () => {
         "resourceStatement": {
           "label": "Газель (GAZ 330232)",
           "quantity": {
-            "raw": "1460,0",
             "unit": "маш.-час",
             "value": 1460,
           },
-          "quote": "Газель (GAZ 330232) 1460,0 318,02 464 303,42",
           "resource_ids": [
             "waste-transfer-gazel-machine",
           ],
           "total_rub": {
-            "raw": "464 303,42",
             "value": 464303.42,
           },
           "unit_price_rub": {
-            "raw": "318,02",
             "value": 318.02,
           },
         },
         "staff": {
           "label": "Рабочий по уборке территории",
           "quantity": {
-            "raw": "2,6",
             "unit": "чел.",
             "value": 2.6,
           },
-          "quote": "Рабочий по уборке территории ... 2,6 ... 664,15",
           "resource_ids": [
             "waste-transfer-worker-labor",
           ],
           "total_rub": {
             "note": "колонка «Всего, руб. ((гр. 5 + гр. 6 + гр. 7 + гр. 8) × гр. 4)», не годовая сметная сумма",
-            "raw": "1 726,78",
             "value": 1726.78,
           },
           "unit_price_rub": {
-            "raw": "664,15",
             "value": 664.15,
           },
         },
@@ -824,12 +781,9 @@ describe('estimate details 2026 dataset', () => {
     const invalidItems = refsWithItems.flatMap((ref) =>
       (ref.quote_items ?? []).flatMap((item, itemIndex) => {
         const errors = [
-          item.label.trim() ? null : 'empty label',
-          item.quote.trim() ? null : 'empty quote',
-          ref.quote?.includes(item.quote)
-            ? null
-            : 'item quote missing in quote',
-          item.resource_ids?.length === 0 ? 'empty resource ids' : null,
+          item.label.trim() ? null : 'пустое название позиции',
+          ref.quote?.trim() ? null : 'нет общей цитаты source_refs[].quote',
+          item.resource_ids?.length === 0 ? 'пустой список ID ресурсов' : null,
         ].filter((error): error is string => error !== null);
 
         return errors.length > 0
@@ -848,6 +802,38 @@ describe('estimate details 2026 dataset', () => {
 
     expect(migratedPdfs).toEqual([...sectionPdfs].sort());
     expect(invalidItems).toEqual([]);
+  });
+
+  it('keeps quote item public contract free of curation fragments', () => {
+    const quoteItemLeaks = detailFactsWithSourceRefs()
+      .flatMap((fact) =>
+        fact.source_refs.map((ref) => ({ fact_id: fact.fact_id, ref })),
+      )
+      .flatMap(({ fact_id, ref }) =>
+        (ref.quote_items ?? []).flatMap((item, itemIndex) => {
+          const errors = [
+            Object.prototype.hasOwnProperty.call(item, 'quote')
+              ? 'лишнее поле quote'
+              : null,
+            hasOwnPropertyDeep(item, 'raw') ? 'лишнее поле raw' : null,
+          ].filter((error): error is string => error !== null);
+
+          return errors.length > 0
+            ? [
+                {
+                  fact_id,
+                  pdf: ref.pdf,
+                  page: ref.page,
+                  fragment: ref.fragment,
+                  item_index: itemIndex,
+                  errors,
+                },
+              ]
+            : [];
+        }),
+      );
+
+    expect(quoteItemLeaks).toEqual([]);
   });
 
   it('keeps obvious multi-position resource quotes structured', () => {

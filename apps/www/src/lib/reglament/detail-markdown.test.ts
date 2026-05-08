@@ -89,20 +89,16 @@ const fixtureDataset = {
           quote_items: [
             {
               label: 'Песок',
-              quote: 'Песок 12,5 т 1 000,00 12 500,00',
               resource_ids: ['material-sand'],
               quantity: {
                 value: 12.5,
                 unit: 'т',
-                raw: '12,5 т',
               },
               unit_price_rub: {
                 value: 1000,
-                raw: '1 000,00',
               },
               total_rub: {
                 value: 12500,
-                raw: '12 500,00',
               },
             },
           ],
@@ -304,7 +300,7 @@ describe('estimate detail markdown companions', () => {
     const materials = buildEstimateDetailMaterialsMarkdown(fixtureDataset);
 
     expect(materials).toContain(
-      'позиции цитаты: 1) Песок: «Песок 12,5 т 1 000,00 12 500,00»; ресурсы: material-sand; кол-во: 12,5 т; цена: 1 000,00 руб.; итог: 12 500,00 руб.',
+      'позиции цитаты: 1) Песок; ресурсы: material-sand; кол-во: 12,5 т; цена: 1 000 ₽; итог: 12 500 ₽',
     );
   });
 

@@ -21,6 +21,15 @@ type DetailSourceOptions = Pick<
 >;
 type DetailMoneyOptions = Pick<EstimateDetailMoneyValue, 'raw' | 'note'>;
 type DetailQuantityOptions = Pick<EstimateDetailQuantityValue, 'raw' | 'note'>;
+type DetailSourceQuoteItemInput = Omit<
+  EstimateDetailSourceQuoteItem,
+  'quantity' | 'unit_price_rub' | 'total_rub'
+> & {
+  readonly quote: string;
+  readonly quantity?: EstimateDetailQuantityValue;
+  readonly unit_price_rub?: EstimateDetailMoneyValue;
+  readonly total_rub?: EstimateDetailMoneyValue;
+};
 
 const detailSourcePdfTitles = {
   final: 'Итоговая смета',
@@ -52,8 +61,31 @@ const detailSourcePdfPagesTotal: Partial<
 
 const assertFiniteOrNull = (value: number | null, field: string): void => {
   if (value !== null && !Number.isFinite(value)) {
-    throw new Error(`${field} must be a finite number or null`);
+    throw new Error(`${field}: ожидается конечное число или null`);
   }
+};
+
+const quoteItemQuantity = (
+  quantity: EstimateDetailQuantityValue | undefined,
+): EstimateDetailSourceQuoteItem['quantity'] => {
+  if (!quantity) return undefined;
+
+  return {
+    value: quantity.value,
+    unit: quantity.unit,
+    ...(quantity.note ? { note: quantity.note } : {}),
+  };
+};
+
+const quoteItemMoney = (
+  money: EstimateDetailMoneyValue | undefined,
+): EstimateDetailSourceQuoteItem['unit_price_rub'] => {
+  if (!money) return undefined;
+
+  return {
+    value: money.value,
+    ...(money.note ? { note: money.note } : {}),
+  };
 };
 
 export const estimateDetailSourcePdfs = ESTIMATE_DETAIL_SOURCE_PDFS.map(
@@ -75,32 +107,53 @@ export const detailSource = (
   options: DetailSourceOptions = {},
 ): EstimateDetailSourceRef => {
   if (!Number.isInteger(page) || page < 1) {
-    throw new Error('detail source page must be a positive integer');
+    throw new Error(
+      'страница источника детализации должна быть положительным целым числом',
+    );
   }
   if (!fragment.trim()) {
-    throw new Error('detail source fragment must not be empty');
+    throw new Error('фрагмент источника детализации не должен быть пустым');
   }
   if (options.quote_items?.length === 0) {
-    throw new Error('detail source quote items must not be empty');
+    throw new Error(
+      'позиции цитаты источника детализации не должны быть пустыми',
+    );
   }
 
   return { pdf, page, fragment, ...options };
 };
 
 export const detailSourceQuoteItem = (
-  input: EstimateDetailSourceQuoteItem,
+  input: DetailSourceQuoteItemInput,
 ): EstimateDetailSourceQuoteItem => {
   if (!input.label.trim()) {
-    throw new Error('detail source quote item label must not be empty');
+    throw new Error(
+      'название позиции цитаты источника детализации не должно быть пустым',
+    );
   }
   if (!input.quote.trim()) {
-    throw new Error('detail source quote item quote must not be empty');
+    throw new Error(
+      'цитата позиции источника детализации не должна быть пустой',
+    );
   }
   if (input.resource_ids?.some((resourceId) => !resourceId.trim())) {
-    throw new Error('detail source quote item resource ids must not be empty');
+    throw new Error(
+      'ID ресурсов позиции цитаты источника детализации не должны быть пустыми',
+    );
   }
 
-  return input;
+  const quantity = quoteItemQuantity(input.quantity);
+  const unitPriceRub = quoteItemMoney(input.unit_price_rub);
+  const totalRub = quoteItemMoney(input.total_rub);
+
+  return {
+    label: input.label,
+    ...(input.resource_ids ? { resource_ids: input.resource_ids } : {}),
+    ...(quantity ? { quantity } : {}),
+    ...(unitPriceRub ? { unit_price_rub: unitPriceRub } : {}),
+    ...(totalRub ? { total_rub: totalRub } : {}),
+    ...(input.note ? { note: input.note } : {}),
+  };
 };
 
 export const detailSourceQuoteItems = (
@@ -117,7 +170,7 @@ export const detailMoney = (
   value: number | null,
   options: DetailMoneyOptions = {},
 ): EstimateDetailMoneyValue => {
-  assertFiniteOrNull(value, 'detail money value');
+  assertFiniteOrNull(value, 'денежное значение детализации');
 
   return { value, ...options };
 };
@@ -127,10 +180,12 @@ export const detailQuantity = (
   unit: string | null,
   options: DetailQuantityOptions = {},
 ): EstimateDetailQuantityValue => {
-  assertFiniteOrNull(value, 'detail quantity value');
+  assertFiniteOrNull(value, 'количество детализации');
 
   if (value !== null && unit === null) {
-    throw new Error('detail quantity unit is required when value is known');
+    throw new Error(
+      'единица измерения детализации обязательна, если значение известно',
+    );
   }
 
   return { value, unit, ...options };

@@ -70,7 +70,7 @@ const sourceQuoteItem = (
   const total = item.total_rub ? `; итог: ${formatMoney(item.total_rub)}` : '';
   const note = item.note ? `; примечание: ${item.note}` : '';
 
-  return `${index + 1}) ${item.label}: «${item.quote}»${resourceIds}${quantity}${unitPrice}${total}${note}`;
+  return `${index + 1}) ${item.label}${resourceIds}${quantity}${unitPrice}${total}${note}`;
 };
 
 const source = (ref: EstimateDetailSourceRef): string => {

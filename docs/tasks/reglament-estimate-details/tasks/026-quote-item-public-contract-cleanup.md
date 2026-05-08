@@ -1,6 +1,6 @@
 # Task 026: Quote Item Public Contract Cleanup
 
-Status: [ ] Not Started
+Status: [x] Completed
 
 ## Description
 
@@ -8,17 +8,17 @@ Review the public `source_refs[].quote_items` contract after table-field enrichm
 
 ## Acceptance Criteria
 
-- [ ] Decide whether `source_refs[].quote_items[].quote` should stay in the schema or be removed after `source_refs[].quote` remains available for source audit.
-- [ ] Decide whether `EstimateDetailQuantityValue.raw` and `EstimateDetailMoneyValue.raw` should stay in public JSON/markdown or be removed/kept only in a non-public curation layer.
-- [ ] If fields are removed, update `apps/www/src/lib/reglament/detail-schema.ts`, dataset modules, JSON/markdown output and tests consistently.
-- [ ] LLM markdown keeps useful structured values: label, linked `resource_ids`, unit, numeric quantity, unit price, total and notes.
-- [ ] No source provenance is lost: PDF id, page, fragment and legacy `source_refs[].quote` remain enough to audit the source row.
+- [x] Decide whether `source_refs[].quote_items[].quote` should stay in the schema or be removed after `source_refs[].quote` remains available for source audit.
+- [x] Decide whether `EstimateDetailQuantityValue.raw` and `EstimateDetailMoneyValue.raw` should stay in public JSON/markdown or be removed/kept only in a non-public curation layer.
+- [x] If fields are removed, update `apps/www/src/lib/reglament/detail-schema.ts`, dataset modules, JSON/markdown output and tests consistently.
+- [x] LLM markdown keeps useful structured values: label, linked `resource_ids`, unit, numeric quantity, unit price, total and notes.
+- [x] No source provenance is lost: PDF id, page, fragment and legacy `source_refs[].quote` remain enough to audit the source row.
 
 ## Verification
 
-- [ ] `pnpm --filter @shelkovo/www test -- estimate-details-2026`
-- [ ] `pnpm --filter @shelkovo/www test -- detail-markdown`
-- [ ] `pnpm --filter @shelkovo/www typecheck`
+- [x] `pnpm --filter @shelkovo/www test -- estimate-details-2026`
+- [x] `pnpm --filter @shelkovo/www test -- detail-markdown`
+- [x] `pnpm --filter @shelkovo/www typecheck`
 
 ## Dependencies
 
