@@ -1187,22 +1187,22 @@ describe('estimate details 2026 dataset', () => {
         {
           "aggregate_total_rub": 1816356,
           "id": "landscaping-mowing-gross",
-          "status": "needs_check",
+          "status": "derived",
         },
         {
           "aggregate_total_rub": 1755909,
           "id": "landscaping-trees-gross",
-          "status": "needs_check",
+          "status": "derived",
         },
         {
           "aggregate_total_rub": 6207773,
           "id": "landscaping-ticks-hogweed-gross",
-          "status": "needs_check",
+          "status": "derived",
         },
         {
           "aggregate_total_rub": 438041,
           "id": "landscaping-forest-gross",
-          "status": "needs_check",
+          "status": "derived",
         },
       ]
     `);

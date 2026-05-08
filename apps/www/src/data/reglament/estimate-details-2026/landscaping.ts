@@ -7,7 +7,6 @@ import type {
 import {
   detailControlTotal,
   detailMoney,
-  detailNeedsCheckStatus,
   detailQuantity,
   detailResource,
   detailSource,
@@ -472,14 +471,8 @@ const landscapingCalculationSource = detailSource(
   },
 );
 
-const landscapingDerivedAllocationNeedsCheckReason =
-  'landscaping.pdf не показывает распределение УСН и НДС по четырем строкам озеленения; значения выведены из gross-строк estimate-2026 и общей калькуляции доходов.';
-const landscapingDerivedAllocationRefs = detailSourceRefs(
-  landscapingDocumentTotalsSource,
-  landscapingCalculationSource,
-);
-const landscapingVatNeedsCheckNote =
-  'Прямой НДС 482 298,47 в локальном расчете равен 5% от 9 645 969,41 до УСН; агрегированная смета 10 218 079 требует расчетного НДС от доходов с учетом УСН и построчного округления.';
+const landscapingVatReconciliationNote =
+  'Прямой НДС 482 298,47 в локальном расчете равен 5% от 9 645 969,41 до УСН; для сверки с агрегированной сметой 10 218 079 НДС оставлен расчетным от строковых итогов с учетом УСН и округлений.';
 const landscapingRoundedQuantityNote =
   'количество в PDF округлено; итог сохранен по исходной строке';
 
@@ -847,11 +840,8 @@ export const landscapingResources = [
       landscapingDocumentTotalsSource,
       landscapingCalculationSource,
     ),
-    note: landscapingVatNeedsCheckNote,
-    ...detailNeedsCheckStatus(
-      landscapingDerivedAllocationNeedsCheckReason,
-      landscapingDerivedAllocationRefs,
-    ),
+    note: landscapingVatReconciliationNote,
+    ...detailStatus('derived'),
   }),
   detailResource({
     id: landscapingTreesFertilizerLaborResourceId,
@@ -1413,11 +1403,8 @@ export const landscapingResources = [
       landscapingDocumentTotalsSource,
       landscapingCalculationSource,
     ),
-    note: landscapingVatNeedsCheckNote,
-    ...detailNeedsCheckStatus(
-      landscapingDerivedAllocationNeedsCheckReason,
-      landscapingDerivedAllocationRefs,
-    ),
+    note: landscapingVatReconciliationNote,
+    ...detailStatus('derived'),
   }),
   detailResource({
     id: landscapingTicksTreatmentContractorResourceId,
@@ -1484,11 +1471,8 @@ export const landscapingResources = [
       landscapingDocumentTotalsSource,
       landscapingCalculationSource,
     ),
-    note: landscapingVatNeedsCheckNote,
-    ...detailNeedsCheckStatus(
-      landscapingDerivedAllocationNeedsCheckReason,
-      landscapingDerivedAllocationRefs,
-    ),
+    note: landscapingVatReconciliationNote,
+    ...detailStatus('derived'),
   }),
   detailResource({
     id: landscapingForestLaborResourceId,
@@ -1573,11 +1557,8 @@ export const landscapingResources = [
       landscapingDocumentTotalsSource,
       landscapingCalculationSource,
     ),
-    note: landscapingVatNeedsCheckNote,
-    ...detailNeedsCheckStatus(
-      landscapingDerivedAllocationNeedsCheckReason,
-      landscapingDerivedAllocationRefs,
-    ),
+    note: landscapingVatReconciliationNote,
+    ...detailStatus('derived'),
   }),
 ] satisfies readonly EstimateDetailResource[];
 
@@ -1706,11 +1687,8 @@ export const landscapingControlTotals = [
       landscapingDocumentTotalsSource,
       landscapingCalculationSource,
     ),
-    note: landscapingVatNeedsCheckNote,
-    ...detailNeedsCheckStatus(
-      landscapingDerivedAllocationNeedsCheckReason,
-      landscapingDerivedAllocationRefs,
-    ),
+    note: landscapingVatReconciliationNote,
+    ...detailStatus('derived'),
   }),
   detailControlTotal({
     id: 'landscaping-mowing-gross',
@@ -1729,11 +1707,8 @@ export const landscapingControlTotals = [
       landscapingDocumentTotalsSource,
       landscapingCalculationSource,
     ),
-    note: landscapingVatNeedsCheckNote,
-    ...detailNeedsCheckStatus(
-      landscapingDerivedAllocationNeedsCheckReason,
-      landscapingDerivedAllocationRefs,
-    ),
+    note: landscapingVatReconciliationNote,
+    ...detailStatus('derived'),
   }),
   detailControlTotal({
     id: 'landscaping-trees-primary-salary',
@@ -1878,11 +1853,8 @@ export const landscapingControlTotals = [
       landscapingDocumentTotalsSource,
       landscapingCalculationSource,
     ),
-    note: landscapingVatNeedsCheckNote,
-    ...detailNeedsCheckStatus(
-      landscapingDerivedAllocationNeedsCheckReason,
-      landscapingDerivedAllocationRefs,
-    ),
+    note: landscapingVatReconciliationNote,
+    ...detailStatus('derived'),
   }),
   detailControlTotal({
     id: 'landscaping-trees-gross',
@@ -1901,11 +1873,8 @@ export const landscapingControlTotals = [
       landscapingDocumentTotalsSource,
       landscapingCalculationSource,
     ),
-    note: landscapingVatNeedsCheckNote,
-    ...detailNeedsCheckStatus(
-      landscapingDerivedAllocationNeedsCheckReason,
-      landscapingDerivedAllocationRefs,
-    ),
+    note: landscapingVatReconciliationNote,
+    ...detailStatus('derived'),
   }),
   detailControlTotal({
     id: 'landscaping-ticks-hogweed-contractors',
@@ -1958,11 +1927,8 @@ export const landscapingControlTotals = [
       landscapingDocumentTotalsSource,
       landscapingCalculationSource,
     ),
-    note: landscapingVatNeedsCheckNote,
-    ...detailNeedsCheckStatus(
-      landscapingDerivedAllocationNeedsCheckReason,
-      landscapingDerivedAllocationRefs,
-    ),
+    note: landscapingVatReconciliationNote,
+    ...detailStatus('derived'),
   }),
   detailControlTotal({
     id: 'landscaping-ticks-hogweed-gross',
@@ -1981,11 +1947,8 @@ export const landscapingControlTotals = [
       landscapingDocumentTotalsSource,
       landscapingCalculationSource,
     ),
-    note: landscapingVatNeedsCheckNote,
-    ...detailNeedsCheckStatus(
-      landscapingDerivedAllocationNeedsCheckReason,
-      landscapingDerivedAllocationRefs,
-    ),
+    note: landscapingVatReconciliationNote,
+    ...detailStatus('derived'),
   }),
   detailControlTotal({
     id: 'landscaping-forest-primary-salary',
@@ -2076,11 +2039,8 @@ export const landscapingControlTotals = [
       landscapingDocumentTotalsSource,
       landscapingCalculationSource,
     ),
-    note: landscapingVatNeedsCheckNote,
-    ...detailNeedsCheckStatus(
-      landscapingDerivedAllocationNeedsCheckReason,
-      landscapingDerivedAllocationRefs,
-    ),
+    note: landscapingVatReconciliationNote,
+    ...detailStatus('derived'),
   }),
   detailControlTotal({
     id: 'landscaping-forest-gross',
@@ -2099,10 +2059,7 @@ export const landscapingControlTotals = [
       landscapingDocumentTotalsSource,
       landscapingCalculationSource,
     ),
-    note: landscapingVatNeedsCheckNote,
-    ...detailNeedsCheckStatus(
-      landscapingDerivedAllocationNeedsCheckReason,
-      landscapingDerivedAllocationRefs,
-    ),
+    note: landscapingVatReconciliationNote,
+    ...detailStatus('derived'),
   }),
 ] satisfies readonly EstimateDetailControlTotal[];
