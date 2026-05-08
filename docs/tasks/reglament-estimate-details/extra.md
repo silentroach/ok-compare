@@ -26,3 +26,6 @@
 - In `cleaning.pdf`, winter mechanized section totals are on PDF page 13. Existing aggregate source refs may point at page 12, but page 12 only contains the СИЗ position ending; keep detail source refs on page 13 for the section total.
 - For `cleaning-winter-mechanized`, PDF page 25 has direct local-calculation `НДС 5% 7 441 315,26`, but aggregate cleaning totals reconcile with page 27 income `151 439 865` plus derived 5% VAT. Row-level VAT for winter mechanized cleaning is derived from `estimate-2026` and stays marked as `needs_check`.
 - `cleaning.pdf` shows `УСН 2 613 560` only at whole-service level, not per row. Row-level USN for `cleaning-winter-mechanized` is derived from the aggregate row and the page 13 section total.
+- User confirmed: page 13 is the correct page for the winter mechanized section total; page 12 contains only intermediate totals for preceding positions.
+- User confirmed: derived row-level VAT/USN for `cleaning-winter-mechanized` is acceptable, but should remain documented as a derived reconciliation note.
+- User confirmed: rounding of winter mechanized sand from `73,6 т` in the production program to `74 т` in the local estimate row is acceptable.
