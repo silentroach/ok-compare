@@ -300,6 +300,9 @@ describe('estimate detail markdown companions', () => {
     expect(markdown).toContain(
       'Дороги (асфальт). Полив водой (обеспыливание) - 3 раза в день без дождя',
     );
+    expect(markdown).toContain(
+      'почему расчетный полив чаще и почему эти частоты отличаются, в cleaning.pdf не поясняется',
+    );
     expect(markdown).toContain('cleaning-summer-mechanized-water');
   });
 });
