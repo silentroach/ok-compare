@@ -1296,6 +1296,269 @@ describe('estimate details 2026 dataset', () => {
     ]);
   });
 
+  it('captures winter mechanized cleaning details from cleaning.pdf', () => {
+    const cleaningRowIds = new Set(['cleaning-winter-mechanized']);
+    const workItems = estimateDetails2026.work_items
+      .filter((item) => cleaningRowIds.has(item.estimate_row_id))
+      .map((item) => ({
+        id: item.id,
+        estimate_row_id: item.estimate_row_id,
+        service_ids: item.service_ids ?? [],
+        status: item.status,
+      }));
+    const resources = estimateDetails2026.resources
+      .filter((resource) => cleaningRowIds.has(resource.estimate_row_id))
+      .map((resource) => ({
+        id: resource.id,
+        kind: resource.kind,
+        cost_bucket: resource.cost_bucket,
+        total_rub: resource.total_rub.value,
+        status: resource.status,
+      }));
+    const controlTotals = estimateDetails2026.control_totals
+      .filter((controlTotal) =>
+        cleaningRowIds.has(controlTotal.estimate_row_id),
+      )
+      .map((controlTotal) => ({
+        id: controlTotal.id,
+        cost_bucket: controlTotal.cost_bucket,
+        source_total_rub: controlTotal.source_total_rub.value,
+        aggregate_total_rub: controlTotal.aggregate_total_rub?.value ?? null,
+        status: controlTotal.status,
+      }));
+
+    expect({ workItems, resources, controlTotals }).toMatchInlineSnapshot(`
+      {
+        "controlTotals": [
+          {
+            "aggregate_total_rub": 4998769.96,
+            "cost_bucket": "machinist_salary",
+            "id": "cleaning-winter-mechanized-machinist-salary",
+            "source_total_rub": 4998769.96,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 7905533.7,
+            "cost_bucket": "machines",
+            "id": "cleaning-winter-mechanized-machines",
+            "source_total_rub": 7905533.7,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 181328.76,
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-mechanized-materials",
+            "source_total_rub": 181328.76,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 1509628.52,
+            "cost_bucket": "insurance",
+            "id": "cleaning-winter-mechanized-insurance",
+            "source_total_rub": 1509628.52,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 3499138.97,
+            "cost_bucket": "overhead",
+            "id": "cleaning-winter-mechanized-overhead",
+            "source_total_rub": 3499138.97,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 1999507.98,
+            "cost_bucket": "profit",
+            "id": "cleaning-winter-mechanized-profit",
+            "source_total_rub": 1999507.98,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 352872.12,
+            "cost_bucket": "usn",
+            "id": "cleaning-winter-mechanized-usn",
+            "source_total_rub": 352872.12,
+            "status": "derived",
+          },
+          {
+            "aggregate_total_rub": 1022339,
+            "cost_bucket": "vat",
+            "id": "cleaning-winter-mechanized-vat",
+            "source_total_rub": 1022339,
+            "status": "needs_check",
+          },
+          {
+            "aggregate_total_rub": 21469119,
+            "cost_bucket": "gross",
+            "id": "cleaning-winter-mechanized-gross",
+            "source_total_rub": 21469119,
+            "status": "needs_check",
+          },
+        ],
+        "resources": [
+          {
+            "cost_bucket": "machinist_salary",
+            "id": "cleaning-winter-mechanized-snow-2cm-machinist-labor",
+            "kind": "machinist_labor",
+            "status": "verified",
+            "total_rub": 2018293.38,
+          },
+          {
+            "cost_bucket": "machinist_salary",
+            "id": "cleaning-winter-mechanized-heavy-snow-machinist-labor",
+            "kind": "machinist_labor",
+            "status": "verified",
+            "total_rub": 2783931.69,
+          },
+          {
+            "cost_bucket": "machinist_salary",
+            "id": "cleaning-winter-mechanized-sand-machinist-labor",
+            "kind": "machinist_labor",
+            "status": "verified",
+            "total_rub": 196544.88,
+          },
+          {
+            "cost_bucket": "machines",
+            "id": "cleaning-winter-mechanized-snow-2cm-tractor-machine",
+            "kind": "machine",
+            "status": "verified",
+            "total_rub": 3188460.49,
+          },
+          {
+            "cost_bucket": "machines",
+            "id": "cleaning-winter-mechanized-heavy-snow-tractor-machine",
+            "kind": "machine",
+            "status": "verified",
+            "total_rub": 4398000.94,
+          },
+          {
+            "cost_bucket": "machines",
+            "id": "cleaning-winter-mechanized-sand-tractor-machine",
+            "kind": "machine",
+            "status": "verified",
+            "total_rub": 310497.76,
+          },
+          {
+            "cost_bucket": "machines",
+            "id": "cleaning-winter-mechanized-sand-spreader-machine",
+            "kind": "machine",
+            "status": "verified",
+            "total_rub": 8574.51,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-mechanized-sand",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 132480.36,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-mechanized-ppe-cotton-suit",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 14850,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-mechanized-ppe-insulated-jacket",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 6480,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-mechanized-ppe-signal-vest",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 3240,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-mechanized-ppe-insulated-boots",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 3780,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-mechanized-ppe-polymer-gloves",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 3780,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-mechanized-ppe-insulated-mittens",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 7560,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-mechanized-ppe-rubber-boots",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 5400,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-mechanized-ppe-soap",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 3758.4,
+          },
+          {
+            "cost_bucket": "insurance",
+            "id": "cleaning-winter-mechanized-insurance",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 1509628.52,
+          },
+          {
+            "cost_bucket": "overhead",
+            "id": "cleaning-winter-mechanized-overhead",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 3499138.97,
+          },
+          {
+            "cost_bucket": "profit",
+            "id": "cleaning-winter-mechanized-profit",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 1999507.98,
+          },
+          {
+            "cost_bucket": "usn",
+            "id": "cleaning-winter-mechanized-usn-derived",
+            "kind": "other_cost",
+            "status": "derived",
+            "total_rub": 352872.12,
+          },
+          {
+            "cost_bucket": "vat",
+            "id": "cleaning-winter-mechanized-vat-derived",
+            "kind": "other_cost",
+            "status": "needs_check",
+            "total_rub": 1022339,
+          },
+        ],
+        "workItems": [
+          {
+            "estimate_row_id": "cleaning-winter-mechanized",
+            "id": "cleaning-winter-mechanized",
+            "service_ids": [
+              "winter-road-snow-ice-clearing",
+              "winter-heavy-snowfall-road-clearing",
+              "winter-anti-ice-spreading",
+            ],
+            "status": "verified",
+          },
+        ],
+      }
+    `);
+  });
+
   it('keeps PDF source refs on every detail fact', () => {
     const facts = detailFactsWithSourceRefs();
     const missingRefs = facts

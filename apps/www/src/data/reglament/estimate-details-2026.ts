@@ -1,5 +1,10 @@
 import type { EstimateDetailDataset } from '@/lib/reglament/detail-schema';
 import {
+  cleaningControlTotals,
+  cleaningResources,
+  cleaningWorkItems,
+} from '@/data/reglament/estimate-details-2026/cleaning';
+import {
   improvementControlTotals,
   improvementResources,
   improvementWorkItems,
@@ -38,6 +43,7 @@ export const estimateDetails2026 = {
     'Каждый будущий work item, resource и control total должен иметь source_refs с PDF, страницей и фрагментом; неоднозначные строки помечаются needs_check.',
   ],
   work_items: [
+    ...cleaningWorkItems,
     ...wasteWorkItems,
     ...securityWorkItems,
     ...lightingWorkItems,
@@ -45,6 +51,7 @@ export const estimateDetails2026 = {
     ...improvementWorkItems,
   ],
   resources: [
+    ...cleaningResources,
     ...wasteResources,
     ...securityResources,
     ...lightingResources,
@@ -52,6 +59,7 @@ export const estimateDetails2026 = {
     ...improvementResources,
   ],
   control_totals: [
+    ...cleaningControlTotals,
     ...wasteControlTotals,
     ...securityControlTotals,
     ...lightingControlTotals,

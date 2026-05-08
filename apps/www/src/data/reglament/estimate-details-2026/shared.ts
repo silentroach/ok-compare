@@ -36,6 +36,7 @@ const detailStatusLabels = {
 const detailSourcePdfPagesTotal: Partial<
   Record<EstimateDetailSourcePdf, number>
 > = {
+  cleaning: 27,
   landscaping: 22,
   improvement: 18,
   lighting: 14,
