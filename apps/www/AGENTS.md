@@ -13,12 +13,13 @@ pnpm typecheck
 ## Local dev
 
 - `pnpm dev` внутри app поднимает root-site на `http://localhost:4321`.
-- Интегрированный root workflow workspace тоже использует `4321`, а `/compare` приходит туда проксием из `apps/compare`.
+- `/815/compare` живет в этом же Astro-приложении, без отдельного compare dev-server.
 - Если порт `4321` занят, команда должна завершиться ошибкой, а не тихо перейти на другой порт.
 
 ## Стек
 
 - Astro 6 (static output)
+- Svelte 5 с runes для интерактивных compare-компонентов
 - Tailwind CSS v4
 - Shared styles from `@shelkovo/ui/styles.css`
 
@@ -30,15 +31,15 @@ pnpm typecheck
 
 ## Правила
 
-- Не копировать compare-страницы в `apps/www`.
-- Compare должен подключаться как готовый section build по пути `/compare`.
+- Compare source живет в `src/compare`, routes — в `src/pages/815/compare`.
+- Compare URL/base задается в `src/compare/lib/url.ts`; не завязывать его на Astro `base`.
 - Любой reusable дизайн, токены и примитивы поднимать в `packages/ui`.
 - Для imports внутри `apps/www/src` предпочитать alias `@/…` вместо длинных relative-путей; относительные imports оставлять только для соседних файлов и путей вне `src`.
 - Любые UI-подписи с количеством на русском языке обязательно склонять корректно (`1 новость`, `2 новости`, `5 новостей`).
 - Динамические текстовые блоки, которые рендерятся в HTML из markdown, CMS или других данных, прогонять через типограф на этапе рендера.
 - Типограф применять точечно к самому динамическому контенту, а не к целому layout или полной HTML-странице.
-- Если нужна ссылка на compare, вести на `/compare/`, а не на legacy домен.
-- Если меняется deploy/base/root behavior, синхронно обновлять `ops/nginx/kpshelkovo-online.conf` и compose scripts.
+- Если нужна ссылка на compare, вести на `/815/compare/`, а не на legacy домен.
+- Если меняется deploy/base/root behavior, синхронно обновлять `ops/nginx/kpshelkovo-online.conf`.
 
 ## People Mentions
 

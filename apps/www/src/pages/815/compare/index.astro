@@ -1,0 +1,119 @@
+---
+import '@/compare/styles/global.css';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/compare/components/Hero.svelte';
+import KPIStats from '@/compare/components/KPIStats.svelte';
+import SettlementCard from '@/compare/components/SettlementCard.svelte';
+import SettlementsExplorer from '@/compare/components/SettlementsExplorer.svelte';
+import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+import {
+  compareBreadcrumbs,
+  compareBreadcrumbSchema,
+} from '@/compare/lib/breadcrumbs';
+import { loadAllData } from '@/compare/lib/data';
+import { toExplorer } from '@/compare/lib/explorer';
+import { canon } from '@/compare/lib/site';
+import { rankSettlements } from '@/compare/lib/stats';
+import { withBase } from '@/compare/lib/url';
+
+// Load all data at build time
+const { settlements, stats, comparisons, ratings } = await loadAllData();
+const ranks = rankSettlements(settlements);
+const levels = Math.max(new Set(ranks.values()).size, 1);
+const list = toExplorer(settlements, ratings);
+
+// Convert comparisons Map to a plain object for serialization
+const comparisonsObj = Object.fromEntries(comparisons);
+const dataUrl = withBase('data/explorer.json');
+const ratingUrl = withBase('/rating/');
+
+const cards = [...list].sort((a, b) => {
+  const d = b.rating - a.rating;
+  if (d !== 0) return d;
+  return a.short_name.localeCompare(b.short_name, 'ru');
+});
+
+const pageTitle = 'Сравнение поселков — Сравни с Шелково';
+const pageDescription = `Сравните ${stats.totalSettlements} поселков по тарифам, инфраструктуре и сервисам: карточки, карта и разница с Шелково в одном месте.`;
+const pageUrl = canon('/');
+const breadcrumbs = compareBreadcrumbs();
+const breadcrumb = compareBreadcrumbSchema();
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: pageTitle,
+  description: pageDescription,
+  url: pageUrl,
+  inLanguage: 'ru-RU',
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: cards.length,
+    itemListElement: cards.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: canon(`/settlements/${item.slug}/`),
+    })),
+  },
+};
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  schema={[schema, breadcrumb]}
+  preconnectYandexMaps
+  bodyClass="ui-root-compare"
+>
+  <main class="ui-page pb-6 md:pb-10 lg:pb-12">
+    <section class="px-5 pt-3 md:px-6 md:pt-5 lg:pt-6">
+      <div class="space-y-5">
+        <Breadcrumbs items={breadcrumbs} />
+
+        <Hero
+          title="Сравнение тарифов поселков с Шелково"
+          subtitle="Структурированное сравнение поселков по цене, инфраструктуре, сервисам и"
+          subtitleLinkHref={ratingUrl}
+          subtitleLinkText="рейтингу"
+        >
+          <KPIStats stats={stats} embed />
+        </Hero>
+      </div>
+    </section>
+
+    <section
+      id="settlements"
+      aria-labelledby="settlements-title"
+      class="mt-6 space-y-6 px-5 md:px-6"
+    >
+      <h2 id="settlements-title" class="sr-only font-bold">
+        Список поселков для сравнения
+      </h2>
+      <SettlementsExplorer dataUrl={dataUrl} client:only="svelte" />
+
+      <div id="settlements-static">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {
+            cards.map((settlement) => (
+              <SettlementCard
+                settlement={settlement}
+                comparison={comparisonsObj[settlement.slug]}
+                rank={ranks.get(settlement.slug) ?? levels}
+                base={stats.shelkovoRank}
+                total={levels}
+                isBaseline={settlement.is_baseline}
+              />
+            ))
+          }
+        </div>
+      </div>
+
+      <script is:inline>
+        window.addEventListener('explorer:ready', () => {
+          const fallback = document.getElementById('settlements-static');
+          if (fallback) fallback.style.display = 'none';
+        });
+      </script>
+    </section>
+  </main>
+</BaseLayout>

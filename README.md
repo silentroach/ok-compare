@@ -6,8 +6,7 @@
 
 ```text
 apps/
-  compare/   # compare-приложение: /compare + legacy standalone
-  www/       # корневой сайт kpshelkovo.online
+  www/       # единое Astro-приложение kpshelkovo.online, включая /815/compare
 packages/
   ui/        # shared styles / UI primitives
   url/
@@ -20,14 +19,11 @@ ops/         # nginx и deploy-конфиги
 ## Команды
 
 ```bash
-# integrated local stack: www on :4321, compare on /compare
+# локальный сайт на :4321, включая /815/compare
 pnpm dev
 
-# root site only
+# то же самое, явно через app
 pnpm dev:www
-
-# compare app
-pnpm dev:compare
 
 # проверки
 pnpm typecheck
@@ -36,23 +32,20 @@ pnpm test
 # сборка
 pnpm build
 pnpm build:main
-pnpm build:legacy
 ```
 
 ## Выходы сборки
 
 - `dist/www` — основной сайт `kpshelkovo.online`
-- `dist/www/compare` — compare-раздел на новом домене
-- `dist/legacy` — standalone compare на старом домене
+- `dist/www/815/compare` — compare-раздел внутри основного сайта
 
 ## Деплой
 
 - `kpshelkovo.online` получает содержимое `dist/www`
-- старый compare-домен получает содержимое `dist/legacy`
+- старый compare-домен обслуживается nginx-редиректами
 - nginx-конфиги лежат в `ops/nginx/`
 
 ## Где искать детали
 
-- compare-specific правила: `apps/compare/AGENTS.md`
 - www-specific правила: `apps/www/AGENTS.md`
 - дизайн-гайд и визуальные правила: `docs/design/design-code-shelkovo.md`

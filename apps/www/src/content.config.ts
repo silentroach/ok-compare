@@ -23,6 +23,7 @@ import {
   STATUS_KINDS,
   STATUS_SERVICES,
 } from './lib/status/schema';
+import { SettlementSchema } from './compare/lib/schema';
 
 const YEAR = /^\d{4}$/;
 const MONTH = /^(0[1-9]|1[0-2])$/;
@@ -563,9 +564,18 @@ const peopleProfiles = defineCollection({
   }),
 });
 
+const settlements = defineCollection({
+  loader: glob({
+    pattern: '[!_]*.yaml',
+    base: './src/compare/data/settlements',
+  }),
+  schema: SettlementSchema,
+});
+
 export const collections = {
   newsAuthors,
   newsArticles,
+  settlements,
   statusIncidents,
   peopleProfiles,
 };
