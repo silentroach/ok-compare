@@ -45,7 +45,7 @@
 - [x] [Task 005: Discovery and LLM links](tasks/005-discovery-llm-links.md)
 - [x] [Task 006: Dataset tests](tasks/006-dataset-tests.md)
 - [x] [Task 007: Waste details](tasks/016-waste-details.md)
-- [ ] [Task 008: Security details](tasks/015-security-details.md)
+- [x] [Task 008: Security details](tasks/015-security-details.md)
 - [ ] [Task 009: Lighting details](tasks/014-lighting-details.md)
 - [ ] [Task 010: Landscaping details](tasks/012-landscaping-details.md)
 - [ ] [Task 011: Improvement details](tasks/013-improvement-details.md)
