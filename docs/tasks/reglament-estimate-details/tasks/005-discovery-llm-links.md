@@ -1,6 +1,6 @@
 # Task 005: Discovery And LLM Links
 
-Status: [ ] Not started
+Status: [x] Done
 
 ## Description
 
@@ -8,15 +8,15 @@ Wire detail JSON and markdown files into agent-facing discovery surfaces.
 
 ## Acceptance Criteria
 
-- [ ] `llms.txt` or reglament-specific LLM text points agents to detail JSON and markdown.
-- [ ] `llms-full.txt` includes the new detail surfaces.
-- [ ] API catalog includes detail JSON and markdown links.
-- [ ] `routes.ts` exposes constants/helpers for all detail paths.
+- [x] `llms.txt` or reglament-specific LLM text points agents to detail JSON and markdown.
+- [x] `llms-full.txt` includes the new detail surfaces.
+- [x] API catalog includes detail JSON and markdown links.
+- [x] `routes.ts` exposes constants/helpers for all detail paths.
 
 ## Verification
 
-- [ ] `pnpm --filter @shelkovo/www test -- reglament`
-- [ ] `pnpm --filter @shelkovo/www typecheck`
+- [x] `pnpm --filter @shelkovo/www test -- reglament`
+- [x] `pnpm --filter @shelkovo/www typecheck`
 
 ## Dependencies
 

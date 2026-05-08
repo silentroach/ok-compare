@@ -1,7 +1,12 @@
 import { calculateEstimate } from './calculate';
 import {
   reglamentApiCatalogPath,
+  reglamentEstimateDetailsChecksMarkdownPath,
   reglamentEstimateDetails2026DataPath,
+  reglamentEstimateDetailsLaborMarkdownPath,
+  reglamentEstimateDetailsMachinesMarkdownPath,
+  reglamentEstimateDetailsMarkdownPath,
+  reglamentEstimateDetailsMaterialsMarkdownPath,
   reglamentEstimate2026DataPath,
   reglamentEstimate2026OpenApiPath,
   reglamentEstimate2026SchemaPath,
@@ -658,6 +663,31 @@ export function catalog(root: string): Record<string, unknown> {
             href: abs(root, reglamentFullChecksMarkdownPath()),
             type: 'text/markdown',
             'title*': star('Markdown полного регламента: проверки и допущения'),
+          },
+          {
+            href: abs(root, reglamentEstimateDetailsMarkdownPath()),
+            type: 'text/markdown',
+            'title*': star('Markdown детальной сметы: индекс'),
+          },
+          {
+            href: abs(root, reglamentEstimateDetailsMaterialsMarkdownPath()),
+            type: 'text/markdown',
+            'title*': star('Markdown детальной сметы: материалы'),
+          },
+          {
+            href: abs(root, reglamentEstimateDetailsMachinesMarkdownPath()),
+            type: 'text/markdown',
+            'title*': star('Markdown детальной сметы: машины'),
+          },
+          {
+            href: abs(root, reglamentEstimateDetailsLaborMarkdownPath()),
+            type: 'text/markdown',
+            'title*': star('Markdown детальной сметы: труд'),
+          },
+          {
+            href: abs(root, reglamentEstimateDetailsChecksMarkdownPath()),
+            type: 'text/markdown',
+            'title*': star('Markdown детальной сметы: проверки'),
           },
           {
             href: abs(root, reglamentEstimate2026DataPath()),

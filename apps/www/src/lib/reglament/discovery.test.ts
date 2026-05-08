@@ -8,7 +8,12 @@ import {
   REGLAMENT_PUBLIC_PATHS,
   reglamentApiCatalogPath,
   reglamentAssetsPath,
+  reglamentEstimateDetailsChecksMarkdownPath,
   reglamentEstimateDetails2026DataPath,
+  reglamentEstimateDetailsLaborMarkdownPath,
+  reglamentEstimateDetailsMachinesMarkdownPath,
+  reglamentEstimateDetailsMarkdownPath,
+  reglamentEstimateDetailsMaterialsMarkdownPath,
   reglamentEstimate2026DataPath,
   reglamentFull2026DataPath,
   reglamentFullAssetsMarkdownPath,
@@ -260,6 +265,33 @@ describe('reglament discovery route smoke', () => {
     expect(apiCatalog).toContain(`${root}${reglamentAssetsPath()}`);
     expect(apiCatalog).toContain(`${root}${reglamentServicesPath()}`);
     expect(apiCatalog).toContain(`${root}${reglamentFullSourcePdfPath()}`);
+  });
+
+  it('exposes estimate detail JSON and markdown surfaces to agents', async () => {
+    const root = 'https://example.com';
+    const apiCatalog = JSON.stringify(catalog(root));
+    const shortLlmsRoute = await import('../../pages/815/regulation/llms.txt');
+    const fullLlmsRoute =
+      await import('../../pages/815/regulation/llms-full.txt');
+    const shortLlms = await (await shortLlmsRoute.GET({} as never)).text();
+    const fullLlms = await (await fullLlmsRoute.GET({} as never)).text();
+    const detailPaths = [
+      reglamentEstimateDetails2026DataPath(),
+      reglamentEstimateDetailsMarkdownPath(),
+      reglamentEstimateDetailsMaterialsMarkdownPath(),
+      reglamentEstimateDetailsMachinesMarkdownPath(),
+      reglamentEstimateDetailsLaborMarkdownPath(),
+      reglamentEstimateDetailsChecksMarkdownPath(),
+    ] as const;
+
+    for (const path of detailPaths) {
+      expect(REGLAMENT_PUBLIC_PATHS).toContain(path);
+      expect(apiCatalog).toContain(`${root}${path}`);
+      expect(fullLlms).toContain(path);
+    }
+
+    expect(shortLlms).toContain(reglamentEstimateDetails2026DataPath());
+    expect(shortLlms).toContain(reglamentEstimateDetailsMarkdownPath());
   });
 
   it('maps public source PDF URLs to public asset files', async () => {

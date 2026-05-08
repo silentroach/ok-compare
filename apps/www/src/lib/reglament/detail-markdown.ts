@@ -14,7 +14,12 @@ import { ESTIMATE_DETAIL_RESOURCE_KINDS } from '@/lib/reglament/detail-schema';
 import { absoluteUrl } from '../site';
 import { formatReglamentMoney, formatReglamentNumber } from './format';
 import {
+  reglamentEstimateDetailsChecksMarkdownUrl,
   reglamentEstimateDetails2026DataUrl,
+  reglamentEstimateDetailsLaborMarkdownUrl,
+  reglamentEstimateDetailsMachinesMarkdownUrl,
+  reglamentEstimateDetailsMarkdownUrl,
+  reglamentEstimateDetailsMaterialsMarkdownUrl,
   reglamentSourcePdfUrl,
 } from './routes';
 
@@ -22,12 +27,6 @@ export const ESTIMATE_DETAIL_MARKDOWN_HEADERS = {
   'Content-Type': 'text/markdown; charset=utf-8',
   'X-Robots-Tag': 'noindex, follow',
 } as const;
-
-const DETAIL_MARKDOWN = '/815/regulation/details.md';
-const DETAIL_MATERIALS_MARKDOWN = '/815/regulation/details/materials.md';
-const DETAIL_MACHINES_MARKDOWN = '/815/regulation/details/machines.md';
-const DETAIL_LABOR_MARKDOWN = '/815/regulation/details/labor.md';
-const DETAIL_CHECKS_MARKDOWN = '/815/regulation/details/checks.md';
 
 const RESOURCE_KIND_LABELS = {
   labor: 'труд',
@@ -188,27 +187,27 @@ export const buildEstimateDetailMarkdown = (
     '',
     '## Главные URL',
     `- JSON-набор данных: ${absoluteUrl(reglamentEstimateDetails2026DataUrl())}`,
-    `- Этот индекс: ${absoluteUrl(DETAIL_MARKDOWN)}`,
+    `- Этот индекс: ${absoluteUrl(reglamentEstimateDetailsMarkdownUrl())}`,
     '',
     '## Тематические файлы',
     topicLine(
       'Материалы',
-      DETAIL_MATERIALS_MARKDOWN,
+      reglamentEstimateDetailsMaterialsMarkdownUrl(),
       'ресурсы kind=material, количество, цена и итог',
     ),
     topicLine(
       'Машины',
-      DETAIL_MACHINES_MARKDOWN,
+      reglamentEstimateDetailsMachinesMarkdownUrl(),
       'ресурсы kind=machine и машинные затраты',
     ),
     topicLine(
       'Труд',
-      DETAIL_LABOR_MARKDOWN,
+      reglamentEstimateDetailsLaborMarkdownUrl(),
       'ресурсы kind=labor и kind=machinist_labor, ставки и итоги',
     ),
     topicLine(
       'Проверки',
-      DETAIL_CHECKS_MARKDOWN,
+      reglamentEstimateDetailsChecksMarkdownUrl(),
       'control totals, дельты и все позиции needs_check',
     ),
     '',
@@ -241,7 +240,7 @@ export const buildEstimateDetailMaterialsMarkdown = (
   return join([
     '# Детальная смета 2026: материалы',
     '',
-    `- Индекс: ${absoluteUrl(DETAIL_MARKDOWN)}`,
+    `- Индекс: ${absoluteUrl(reglamentEstimateDetailsMarkdownUrl())}`,
     `- JSON-набор данных: ${absoluteUrl(reglamentEstimateDetails2026DataUrl())}`,
     '',
     '## Сводка',
@@ -260,7 +259,7 @@ export const buildEstimateDetailMachinesMarkdown = (
   return join([
     '# Детальная смета 2026: машины',
     '',
-    `- Индекс: ${absoluteUrl(DETAIL_MARKDOWN)}`,
+    `- Индекс: ${absoluteUrl(reglamentEstimateDetailsMarkdownUrl())}`,
     `- JSON-набор данных: ${absoluteUrl(reglamentEstimateDetails2026DataUrl())}`,
     '',
     '## Сводка',
@@ -279,7 +278,7 @@ export const buildEstimateDetailLaborMarkdown = (
   return join([
     '# Детальная смета 2026: труд',
     '',
-    `- Индекс: ${absoluteUrl(DETAIL_MARKDOWN)}`,
+    `- Индекс: ${absoluteUrl(reglamentEstimateDetailsMarkdownUrl())}`,
     `- JSON-набор данных: ${absoluteUrl(reglamentEstimateDetails2026DataUrl())}`,
     '',
     '## Сводка',
@@ -300,7 +299,7 @@ export const buildEstimateDetailChecksMarkdown = (
   return join([
     '# Детальная смета 2026: проверки',
     '',
-    `- Индекс: ${absoluteUrl(DETAIL_MARKDOWN)}`,
+    `- Индекс: ${absoluteUrl(reglamentEstimateDetailsMarkdownUrl())}`,
     `- JSON-набор данных: ${absoluteUrl(reglamentEstimateDetails2026DataUrl())}`,
     '',
     '## Сводка',

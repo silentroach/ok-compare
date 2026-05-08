@@ -41,7 +41,7 @@
 - [x] [Task 002: Dataset scaffold](tasks/002-dataset-scaffold.md)
 - [x] [Task 003: JSON endpoint](tasks/003-json-endpoint.md)
 - [x] [Task 004: Markdown companions](tasks/004-markdown-companions.md)
-- [ ] [Task 005: Discovery and LLM links](tasks/005-discovery-llm-links.md)
+- [x] [Task 005: Discovery and LLM links](tasks/005-discovery-llm-links.md)
 - [ ] [Task 006: Dataset tests](tasks/006-dataset-tests.md)
 - [ ] [Task 007: Cleaning winter mechanized](tasks/007-cleaning-winter-mechanized.md)
 - [ ] [Task 008: Cleaning winter manual](tasks/008-cleaning-winter-manual.md)
