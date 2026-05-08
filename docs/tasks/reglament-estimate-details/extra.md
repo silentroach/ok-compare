@@ -32,3 +32,5 @@
 - For `cleaning-winter-manual`, the production program spans PDF pages 2-4; the local estimate rows are on PDF pages 13-17, and the section totals are on PDF page 17.
 - For `cleaning-winter-manual`, the local estimate displays rounded labor, sand, PPE and inventory quantities; the dataset keeps production-program quantities where available, local money totals, and explicit rounding notes.
 - Row-level USN/VAT for `cleaning-winter-manual` are derived from `estimate-2026`: income `2 989 256,19`, USN `51 588,99`, VAT `149 462,81`. VAT/gross remain `needs_check` because `cleaning.pdf` has the same document-level VAT conflict as `cleaning-winter-mechanized`.
+- User confirmed: small norm/quantity rounding in `cleaning-winter-manual` is acceptable when the difference is minor.
+- User confirmed: keep the `cleaning-winter-manual` derived VAT/USN discrepancy documented as a note, consistent with the other cleaning rows.
