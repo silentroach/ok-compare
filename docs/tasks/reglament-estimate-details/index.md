@@ -22,6 +22,7 @@
 - Не парсить PDF во время runtime или build страницы; извлекать вручную/скриптами и сохранять curated dataset.
 - Все факты должны иметь `source_refs` с PDF, страницей и фрагментом.
 - Если строка неоднозначна, не угадывать: помечать `needs_check` и писать причину.
+- Если есть расхождения или неясности - по окончании выдай мне нумерованный список того, что и где нужно перепроверить - я глазами проверю в документе
 - После выполнения задачи отметить чекбокс здесь и обновить `Status` в task-файле.
 - Сделать коммит с номером таска и его кратким описанием
 - Если в ходе выполнения задачи нашлась информация, которой нет здесь или в задаче - добавь информацию в `extra.md`, а при старте вычитывай ее.
@@ -43,16 +44,16 @@
 - [x] [Task 004: Markdown companions](tasks/004-markdown-companions.md)
 - [x] [Task 005: Discovery and LLM links](tasks/005-discovery-llm-links.md)
 - [x] [Task 006: Dataset tests](tasks/006-dataset-tests.md)
-- [ ] [Task 007: Cleaning winter mechanized](tasks/007-cleaning-winter-mechanized.md)
-- [ ] [Task 008: Cleaning winter manual](tasks/008-cleaning-winter-manual.md)
-- [ ] [Task 009: Cleaning summer mechanized](tasks/009-cleaning-summer-mechanized.md)
-- [ ] [Task 010: Cleaning summer manual](tasks/010-cleaning-summer-manual.md)
-- [ ] [Task 011: Cleaning resource statement](tasks/011-cleaning-resource-statement.md)
-- [ ] [Task 012: Landscaping details](tasks/012-landscaping-details.md)
-- [ ] [Task 013: Improvement details](tasks/013-improvement-details.md)
-- [ ] [Task 014: Lighting details](tasks/014-lighting-details.md)
-- [ ] [Task 015: Security details](tasks/015-security-details.md)
-- [x] [Task 016: Waste details](tasks/016-waste-details.md)
+- [x] [Task 007: Waste details](tasks/016-waste-details.md)
+- [ ] [Task 008: Security details](tasks/015-security-details.md)
+- [ ] [Task 009: Lighting details](tasks/014-lighting-details.md)
+- [ ] [Task 010: Landscaping details](tasks/012-landscaping-details.md)
+- [ ] [Task 011: Improvement details](tasks/013-improvement-details.md)
+- [ ] [Task 012: Cleaning winter mechanized](tasks/007-cleaning-winter-mechanized.md)
+- [ ] [Task 013: Cleaning winter manual](tasks/008-cleaning-winter-manual.md)
+- [ ] [Task 014: Cleaning summer mechanized](tasks/009-cleaning-summer-mechanized.md)
+- [ ] [Task 015: Cleaning summer manual](tasks/010-cleaning-summer-manual.md)
+- [ ] [Task 016: Cleaning resource statement](tasks/011-cleaning-resource-statement.md)
 - [ ] [Task 017: Final PDF controls](tasks/017-final-pdf-controls.md)
 - [ ] [Task 018: Final agent review](tasks/018-final-agent-review.md)
 
