@@ -125,7 +125,7 @@ const wasteTransferStaffSource = detailSource(
         unit_price_rub: detailMoney(664.15, { raw: '664,15' }),
         total_rub: detailMoney(1_726.78, {
           raw: '1 726,78',
-          note: 'итог строки штатного расписания, не годовая сметная сумма',
+          note: 'колонка «Всего, руб. ((гр. 5 + гр. 6 + гр. 7 + гр. 8) × гр. 4)», не годовая сметная сумма',
         }),
       }),
       detailSourceQuoteItem({
@@ -136,7 +136,7 @@ const wasteTransferStaffSource = detailSource(
         unit_price_rub: detailMoney(934.32, { raw: '934,32' }),
         total_rub: detailMoney(654.02, {
           raw: '654,02',
-          note: 'итог строки штатного расписания, не годовая сметная сумма',
+          note: 'колонка «Всего, руб. ((гр. 5 + гр. 6 + гр. 7 + гр. 8) × гр. 4)», не годовая сметная сумма',
         }),
       }),
     ),
