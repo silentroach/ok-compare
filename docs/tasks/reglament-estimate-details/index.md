@@ -60,10 +60,11 @@
 - [x] [Task 012: Cleaning winter mechanized](tasks/007-cleaning-winter-mechanized.md)
 - [x] [Task 013: Cleaning winter manual](tasks/008-cleaning-winter-manual.md)
 - [x] [Task 014: Cleaning summer mechanized](tasks/009-cleaning-summer-mechanized.md)
-- [ ] [Task 015: Cleaning summer manual](tasks/010-cleaning-summer-manual.md)
+- [x] [Task 015: Cleaning summer manual](tasks/010-cleaning-summer-manual.md)
 - [ ] [Task 016: Cleaning resource statement](tasks/011-cleaning-resource-statement.md)
 - [ ] [Task 017: Final PDF controls](tasks/017-final-pdf-controls.md)
 - [ ] [Task 018: Final agent review](tasks/018-final-agent-review.md)
+- [ ] [Task 019: Structured source quote items](tasks/019-structured-source-quote-items.md)
 
 ## Checkpoints
 

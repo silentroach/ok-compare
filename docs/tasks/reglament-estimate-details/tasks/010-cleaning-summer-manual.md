@@ -1,6 +1,6 @@
 # Task 010: Cleaning Summer Manual
 
-Status: [ ] Not started
+Status: [x] Done
 
 ## Description
 
@@ -8,15 +8,15 @@ Extract summer manual cleaning details from `cleaning.pdf`: curb cleaning, parki
 
 ## Acceptance Criteria
 
-- [ ] Work items for summer manual cleaning are represented with frequencies.
-- [ ] Open stormwater ditch cleaning is captured with `15 раз в летний период`.
-- [ ] Labor, PPE and inventory resources are captured.
-- [ ] Controls reconcile to `cleaning-summer-manual` buckets in `estimate-2026`.
+- [x] Work items for summer manual cleaning are represented with frequencies.
+- [x] Open stormwater ditch cleaning is captured with `15 раз в летний период`.
+- [x] Labor, PPE and inventory resources are captured.
+- [x] Controls reconcile to `cleaning-summer-manual` buckets in `estimate-2026`.
 
 ## Verification
 
-- [ ] `pnpm --filter @shelkovo/www test -- estimate-details-2026`
-- [ ] Manual source spot-check against `cleaning.pdf`.
+- [x] `pnpm --filter @shelkovo/www test -- estimate-details-2026`
+- [x] Manual source spot-check against `cleaning.pdf`.
 
 ## Dependencies
 

@@ -140,6 +140,49 @@ const cleaningSummerMechanizedUsnResourceId =
 const cleaningSummerMechanizedVatResourceId =
   'cleaning-summer-mechanized-vat-derived';
 
+const cleaningSummerManualCurbCleaningWorkerResourceId =
+  'cleaning-summer-manual-curb-cleaning-worker-labor';
+const cleaningSummerManualParkingTrashWorkerResourceId =
+  'cleaning-summer-manual-parking-trash-worker-labor';
+const cleaningSummerManualParkingSweepingWorkerResourceId =
+  'cleaning-summer-manual-parking-sweeping-worker-labor';
+const cleaningSummerManualContainerSiteWorkerResourceId =
+  'cleaning-summer-manual-container-site-worker-labor';
+const cleaningSummerManualDitchCleaningWorkerResourceId =
+  'cleaning-summer-manual-ditch-cleaning-worker-labor';
+const cleaningSummerManualPpeCottonSuitResourceId =
+  'cleaning-summer-manual-ppe-cotton-suit';
+const cleaningSummerManualPpeInsulatedJacketResourceId =
+  'cleaning-summer-manual-ppe-insulated-jacket';
+const cleaningSummerManualPpeSignalVestResourceId =
+  'cleaning-summer-manual-ppe-signal-vest';
+const cleaningSummerManualPpeInsulatedBootsResourceId =
+  'cleaning-summer-manual-ppe-insulated-boots';
+const cleaningSummerManualPpePolymerGlovesResourceId =
+  'cleaning-summer-manual-ppe-polymer-gloves';
+const cleaningSummerManualPpeInsulatedMittensResourceId =
+  'cleaning-summer-manual-ppe-insulated-mittens';
+const cleaningSummerManualPpeRubberBootsResourceId =
+  'cleaning-summer-manual-ppe-rubber-boots';
+const cleaningSummerManualPpeSoapResourceId = 'cleaning-summer-manual-ppe-soap';
+const cleaningSummerManualInventoryPolypropyleneBroomResourceId =
+  'cleaning-summer-manual-inventory-polypropylene-broom';
+const cleaningSummerManualInventoryRakeResourceId =
+  'cleaning-summer-manual-inventory-rake';
+const cleaningSummerManualInventoryScoopShovelResourceId =
+  'cleaning-summer-manual-inventory-scoop-shovel';
+const cleaningSummerManualInventoryWheelbarrowResourceId =
+  'cleaning-summer-manual-inventory-wheelbarrow';
+const cleaningSummerManualInventoryBucketResourceId =
+  'cleaning-summer-manual-inventory-bucket-12l';
+const cleaningSummerManualInsuranceResourceId =
+  'cleaning-summer-manual-insurance';
+const cleaningSummerManualOverheadResourceId =
+  'cleaning-summer-manual-overhead';
+const cleaningSummerManualProfitResourceId = 'cleaning-summer-manual-profit';
+const cleaningSummerManualUsnResourceId = 'cleaning-summer-manual-usn-derived';
+const cleaningSummerManualVatResourceId = 'cleaning-summer-manual-vat-derived';
+
 const cleaningWinterMechanizedProductionSnowSource = detailSource(
   'cleaning',
   1,
@@ -401,6 +444,116 @@ const cleaningSummerMechanizedTotalsSource = detailSource(
   },
 );
 
+const cleaningSummerManualProductionWorksSource = detailSource(
+  'cleaning',
+  5,
+  'производственная программа / летняя ручная уборка / кромка, парковки и контейнерная площадка',
+  {
+    quote:
+      'Летняя ручная уборка территории; трудозатраты 24738,0; Бордюрный камень ... кратность 153; объем 0,055; трудозатраты 164,9; Парковочные/иные площадки. Уборка территории от случайного мусора ... кратность 153; объем 449; трудозатраты 88,2; Подметание территории ... кратность 22; трудозатраты 13,2; Контейнерная площадка ... кратность 153; объем 36; трудозатраты 134,0',
+  },
+);
+
+const cleaningSummerManualProductionDitchSource = detailSource(
+  'cleaning',
+  6,
+  'производственная программа / летняя ручная уборка / открытые ливневые траншеи',
+  {
+    quote:
+      'Очистка открытых ливневых траншей вдоль дорог вручную (15 раз в летний период); V-X; кратность 15; объем 327,1; трудозатраты 24337,7',
+  },
+);
+
+const cleaningSummerManualProductionPpeInventorySource = detailSource(
+  'cleaning',
+  6,
+  'производственная программа / летняя ручная уборка / СИЗ и инвентарь',
+  {
+    quote:
+      'Средства охраны труда: Костюм хлопчатобумажный 12,5; Куртка 5,0; Жилет 12,5; Сапоги утепленные 5,0; Перчатки 50,0; Рукавицы 50,0; Сапоги резиновые 12,5; Мыло 150,0; Износ оборудования, инструментов: Метла 62,5; Грабли 4,1; Лопата совковая 6,3; Тачка садовая 6,3; Ведро п\\э 12л 4,1',
+  },
+);
+
+const cleaningSummerManualCurbCleaningSource = detailSource(
+  'cleaning',
+  20,
+  'позиция 4.1 / очистка кромки вдоль бортового камня',
+  {
+    quote:
+      'Бордюрный камень. Очистка кромки проезжей части вдоль бортового камня от грязи и мусора вручную - ежедневно; Рабочий по уборке территории 165 664,15 109 540,22; страховые взносы 33 081,15; общеэксплуатационные расходы 76 678,16; прибыль 43 816,09; ИТОГО ПО ПОЗИЦИИ 263 115,62',
+  },
+);
+
+const cleaningSummerManualParkingTrashSource = detailSource(
+  'cleaning',
+  20,
+  'позиция 4.2 / уборка парковочных и иных площадок от случайного мусора',
+  {
+    quote:
+      'Парковочные/иные площадки. Уборка территории от случайного мусора - 1 раз в день; Рабочий по уборке территории 88 664,15 58 551,86',
+  },
+);
+
+const cleaningSummerManualParkingSweepingSource = detailSource(
+  'cleaning',
+  21,
+  'позиция 4.3 / подметание парковочных и иных площадок',
+  {
+    quote:
+      'Парковочные/иные площадки. Подметание территории - 1 раз в неделю; Рабочий по уборке территории 13 664,15 8 747,24; ИТОГО ПО ПОЗИЦИИ 21 010,88',
+  },
+);
+
+const cleaningSummerManualContainerSiteSource = detailSource(
+  'cleaning',
+  22,
+  'позиция 4.4 / очистка контейнерной площадки в теплый период',
+  {
+    quote:
+      'Контейнерная площадка. Очистка контейнерной площадки в теплый период - 1 раз в день; Рабочий по уборке территории 134 664,15 89 014,13; ИТОГО ПО ПОЗИЦИИ 213 811,95',
+  },
+);
+
+const cleaningSummerManualDitchCleaningSource = detailSource(
+  'cleaning',
+  22,
+  'позиция 4.5 / очистка открытых ливневых траншей вдоль дорог',
+  {
+    quote:
+      'Очистка открытых ливневых траншей вдоль дорог вручную (15 раз в летний период); Рабочий по уборке территории 24338 664,15 16 163 799,83; ИТОГО ПО ПОЗИЦИИ 38 825 447,20',
+  },
+);
+
+const cleaningSummerManualPpeSource = detailSource(
+  'cleaning',
+  23,
+  'позиция 4.6 / средства охраны труда для летней ручной уборки',
+  {
+    quote:
+      'Костюм хлопчатобумажный 68 750,00; Куртка на утепляющей прокладке 30 000,00; Жилет сигнальный 15 000,00; Сапоги утепленные 17 500,00; Перчатки 17 500,00; Рукавицы 35 000,00; Сапоги резиновые 25 000,00; Мыло туалетное 17 400,00; ИТОГО ПО ПОЗИЦИИ 226 150,00',
+  },
+);
+
+const cleaningSummerManualInventorySource = detailSource(
+  'cleaning',
+  24,
+  'позиция 4.7 / износ оборудования и инструментов для летней ручной уборки',
+  {
+    quote:
+      'Метла полипропиленовая 23 125,00; Грабли с черенком 2 062,50; Лопата совковая 6 462,50; Тачка садовая 15 625,00; Ведро п\\э 12л 825,00; ИТОГО ПО ПОЗИЦИИ 48 100,00',
+  },
+);
+
+const cleaningSummerManualTotalsSource = detailSource(
+  'cleaning',
+  24,
+  'итого по разделу летней ручной уборки территории',
+  {
+    quote:
+      'Прямые затраты 16 703 903,28; страховые взносы 4 961 755,30; общеэксплуатационные расходы 11 500 757,30; прибыль 6 571 861,32; Итого 39 738 277,20; Основная зарплата 16 429 653,29; Материальные затраты 274 250,00',
+  },
+);
+
 const cleaningDocumentVatSource = detailSource(
   'cleaning',
   25,
@@ -438,6 +591,11 @@ const cleaningWinterManualDerivedVatNeedsCheckRefs = detailSourceRefs(
 );
 const cleaningSummerMechanizedDerivedVatNeedsCheckRefs = detailSourceRefs(
   cleaningSummerMechanizedTotalsSource,
+  cleaningDocumentVatSource,
+  cleaningCalculationSource,
+);
+const cleaningSummerManualDerivedVatNeedsCheckRefs = detailSourceRefs(
+  cleaningSummerManualTotalsSource,
   cleaningDocumentVatSource,
   cleaningCalculationSource,
 );
@@ -547,6 +705,44 @@ const cleaningSummerMechanizedGrossResourceIds = [
   cleaningSummerMechanizedVatResourceId,
 ] as const;
 
+const cleaningSummerManualLaborResourceIds = [
+  cleaningSummerManualCurbCleaningWorkerResourceId,
+  cleaningSummerManualParkingTrashWorkerResourceId,
+  cleaningSummerManualParkingSweepingWorkerResourceId,
+  cleaningSummerManualContainerSiteWorkerResourceId,
+  cleaningSummerManualDitchCleaningWorkerResourceId,
+] as const;
+const cleaningSummerManualPpeResourceIds = [
+  cleaningSummerManualPpeCottonSuitResourceId,
+  cleaningSummerManualPpeInsulatedJacketResourceId,
+  cleaningSummerManualPpeSignalVestResourceId,
+  cleaningSummerManualPpeInsulatedBootsResourceId,
+  cleaningSummerManualPpePolymerGlovesResourceId,
+  cleaningSummerManualPpeInsulatedMittensResourceId,
+  cleaningSummerManualPpeRubberBootsResourceId,
+  cleaningSummerManualPpeSoapResourceId,
+] as const;
+const cleaningSummerManualInventoryResourceIds = [
+  cleaningSummerManualInventoryPolypropyleneBroomResourceId,
+  cleaningSummerManualInventoryRakeResourceId,
+  cleaningSummerManualInventoryScoopShovelResourceId,
+  cleaningSummerManualInventoryWheelbarrowResourceId,
+  cleaningSummerManualInventoryBucketResourceId,
+] as const;
+const cleaningSummerManualMaterialResourceIds = [
+  ...cleaningSummerManualPpeResourceIds,
+  ...cleaningSummerManualInventoryResourceIds,
+] as const;
+const cleaningSummerManualGrossResourceIds = [
+  ...cleaningSummerManualLaborResourceIds,
+  ...cleaningSummerManualMaterialResourceIds,
+  cleaningSummerManualInsuranceResourceId,
+  cleaningSummerManualOverheadResourceId,
+  cleaningSummerManualProfitResourceId,
+  cleaningSummerManualUsnResourceId,
+  cleaningSummerManualVatResourceId,
+] as const;
+
 export const cleaningWorkItems = [
   detailWorkItem({
     id: 'cleaning-winter-mechanized',
@@ -594,6 +790,23 @@ export const cleaningWorkItems = [
       cleaningSummerMechanizedTotalsSource,
     ),
     note: 'Внутри агрегированной строки сохранены позиции 3.1-3.2: полив водой (обеспыливание) 3 раза в день без дождя, вода, поливомоечная техника и СИЗ. Производственная программа показывает кратность 234 именно для полива. В агрегированной строке estimate-2026 частота 153 раз/год относится к летней уборке территории в целом; почему расчетный полив чаще и почему эти частоты отличаются, в cleaning.pdf не поясняется.',
+    ...detailStatus('verified'),
+  }),
+  detailWorkItem({
+    id: 'cleaning-summer-manual',
+    title: 'Летняя ручная уборка территории',
+    estimate_row_id: 'cleaning-summer-manual',
+    service_ids: [
+      'summer-road-manual-cleaning',
+      'summer-road-gutters-cleaning',
+    ],
+    source_refs: detailSourceRefs(
+      cleaningSummerManualProductionWorksSource,
+      cleaningSummerManualProductionDitchSource,
+      cleaningSummerManualProductionPpeInventorySource,
+      cleaningSummerManualTotalsSource,
+    ),
+    note: 'Внутри агрегированной строки сохранены позиции 4.1-4.7: очистка кромки вдоль бортового камня 153 раза, уборка случайного мусора на парковочных и иных площадках 153 раза, подметание парковочных и иных площадок 22 раза, очистка контейнерной площадки 153 раза, очистка открытых ливневых траншей 15 раз в летний период, СИЗ и инвентарь.',
     ...detailStatus('verified'),
   }),
 ] satisfies readonly EstimateDetailWorkItem[];
@@ -1655,6 +1868,402 @@ export const cleaningResources = [
       cleaningSummerMechanizedDerivedVatNeedsCheckRefs,
     ),
   }),
+  detailResource({
+    id: cleaningSummerManualCurbCleaningWorkerResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'labor',
+    title: 'Рабочий по уборке территории: очистка кромки вдоль бортового камня',
+    cost_bucket: 'primary_salary',
+    quantity: detailQuantity(164.9, 'чел-час', {
+      raw: '164,9',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(664.15, { raw: '664,15' }),
+    total_rub: detailMoney(109_540.22, { raw: '109 540,22' }),
+    source_refs: detailSourceRefs(
+      cleaningSummerManualProductionWorksSource,
+      cleaningStaffSource,
+      cleaningSummerManualCurbCleaningSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualParkingTrashWorkerResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'labor',
+    title:
+      'Рабочий по уборке территории: уборка парковочных и иных площадок от случайного мусора',
+    cost_bucket: 'primary_salary',
+    quantity: detailQuantity(88.2, 'чел-час', {
+      raw: '88,2',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(664.15, { raw: '664,15' }),
+    total_rub: detailMoney(58_551.86, { raw: '58 551,86' }),
+    source_refs: detailSourceRefs(
+      cleaningSummerManualProductionWorksSource,
+      cleaningStaffSource,
+      cleaningSummerManualParkingTrashSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualParkingSweepingWorkerResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'labor',
+    title:
+      'Рабочий по уборке территории: подметание парковочных и иных площадок',
+    cost_bucket: 'primary_salary',
+    quantity: detailQuantity(13.2, 'чел-час', {
+      raw: '13,2',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(664.15, { raw: '664,15' }),
+    total_rub: detailMoney(8_747.24, { raw: '8 747,24' }),
+    source_refs: detailSourceRefs(
+      cleaningSummerManualProductionWorksSource,
+      cleaningStaffSource,
+      cleaningSummerManualParkingSweepingSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualContainerSiteWorkerResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'labor',
+    title:
+      'Рабочий по уборке территории: очистка контейнерной площадки в теплый период',
+    cost_bucket: 'primary_salary',
+    quantity: detailQuantity(134, 'чел-час', {
+      raw: '134,0',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(664.15, { raw: '664,15' }),
+    total_rub: detailMoney(89_014.13, { raw: '89 014,13' }),
+    source_refs: detailSourceRefs(
+      cleaningSummerManualProductionWorksSource,
+      cleaningStaffSource,
+      cleaningSummerManualContainerSiteSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualDitchCleaningWorkerResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'labor',
+    title:
+      'Рабочий по уборке территории: очистка открытых ливневых траншей вдоль дорог вручную',
+    cost_bucket: 'primary_salary',
+    quantity: detailQuantity(24_337.7, 'чел-час', {
+      raw: '24337,7',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(664.15, { raw: '664,15' }),
+    total_rub: detailMoney(16_163_799.83, { raw: '16 163 799,83' }),
+    source_refs: detailSourceRefs(
+      cleaningSummerManualProductionDitchSource,
+      cleaningStaffSource,
+      cleaningSummerManualDitchCleaningSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualPpeCottonSuitResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'material',
+    title: 'Костюм хлопчатобумажный',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(12.5, 'шт.', { raw: '12,5' }),
+    unit_price_rub: detailMoney(5_500, { raw: '5500,00' }),
+    total_rub: detailMoney(68_750, { raw: '68 750,00' }),
+    source_refs: detailSourceRefs(
+      cleaningSummerManualProductionPpeInventorySource,
+      cleaningSummerManualPpeSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualPpeInsulatedJacketResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'material',
+    title: 'Куртка на утепляющей прокладке',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(5, 'шт.', { raw: '5,0' }),
+    unit_price_rub: detailMoney(6_000, { raw: '6000,00' }),
+    total_rub: detailMoney(30_000, { raw: '30 000,00' }),
+    source_refs: detailSourceRefs(
+      cleaningSummerManualProductionPpeInventorySource,
+      cleaningSummerManualPpeSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualPpeSignalVestResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'material',
+    title: 'Жилет сигнальный',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(12.5, 'шт.', { raw: '12,5' }),
+    unit_price_rub: detailMoney(1_200, { raw: '1200,00' }),
+    total_rub: detailMoney(15_000, { raw: '15 000,00' }),
+    source_refs: detailSourceRefs(
+      cleaningSummerManualProductionPpeInventorySource,
+      cleaningSummerManualPpeSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualPpeInsulatedBootsResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'material',
+    title: 'Сапоги утепленные',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(5, 'шт.', { raw: '5,0' }),
+    unit_price_rub: detailMoney(3_500, { raw: '3500,00' }),
+    total_rub: detailMoney(17_500, { raw: '17 500,00' }),
+    source_refs: detailSourceRefs(
+      cleaningSummerManualProductionPpeInventorySource,
+      cleaningSummerManualPpeSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualPpePolymerGlovesResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'material',
+    title: 'Перчатки с полимерным покрытием',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(50, 'шт.', { raw: '50,0' }),
+    unit_price_rub: detailMoney(350, { raw: '350,00' }),
+    total_rub: detailMoney(17_500, { raw: '17 500,00' }),
+    source_refs: detailSourceRefs(
+      cleaningSummerManualProductionPpeInventorySource,
+      cleaningSummerManualPpeSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualPpeInsulatedMittensResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'material',
+    title: 'Рукавицы утепленные',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(50, 'шт.', { raw: '50,0' }),
+    unit_price_rub: detailMoney(700, { raw: '700,00' }),
+    total_rub: detailMoney(35_000, { raw: '35 000,00' }),
+    source_refs: detailSourceRefs(
+      cleaningSummerManualProductionPpeInventorySource,
+      cleaningSummerManualPpeSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualPpeRubberBootsResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'material',
+    title: 'Сапоги резиновые',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(12.5, 'шт.', { raw: '12,5' }),
+    unit_price_rub: detailMoney(2_000, { raw: '2000,00' }),
+    total_rub: detailMoney(25_000, { raw: '25 000,00' }),
+    source_refs: detailSourceRefs(
+      cleaningSummerManualProductionPpeInventorySource,
+      cleaningSummerManualPpeSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualPpeSoapResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'material',
+    title: 'Мыло туалетное',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(150, 'шт.', { raw: '150,0' }),
+    unit_price_rub: detailMoney(116, { raw: '116,00' }),
+    total_rub: detailMoney(17_400, { raw: '17 400,00' }),
+    source_refs: detailSourceRefs(
+      cleaningSummerManualProductionPpeInventorySource,
+      cleaningSummerManualPpeSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualInventoryPolypropyleneBroomResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'material',
+    title: 'Метла полипропиленовая с черенком',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(62.5, 'шт.', { raw: '62,5' }),
+    unit_price_rub: detailMoney(370, { raw: '370,00' }),
+    total_rub: detailMoney(23_125, { raw: '23 125,00' }),
+    source_refs: detailSourceRefs(
+      cleaningSummerManualProductionPpeInventorySource,
+      cleaningSummerManualInventorySource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualInventoryRakeResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'material',
+    title: 'Грабли с черенком',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(4.1, 'шт.', {
+      raw: '4,1',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(500, { raw: '500,00' }),
+    total_rub: detailMoney(2_062.5, { raw: '2 062,50' }),
+    source_refs: detailSourceRefs(
+      cleaningSummerManualProductionPpeInventorySource,
+      cleaningSummerManualInventorySource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualInventoryScoopShovelResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'material',
+    title: 'Лопата совковая',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(6.3, 'шт.', {
+      raw: '6,3',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(1_034, { raw: '1034,00' }),
+    total_rub: detailMoney(6_462.5, { raw: '6 462,50' }),
+    source_refs: detailSourceRefs(
+      cleaningSummerManualProductionPpeInventorySource,
+      cleaningSummerManualInventorySource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualInventoryWheelbarrowResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'material',
+    title: 'Тачка садовая',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(6.3, 'шт.', {
+      raw: '6,3',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(2_500, { raw: '2500,00' }),
+    total_rub: detailMoney(15_625, { raw: '15 625,00' }),
+    source_refs: detailSourceRefs(
+      cleaningSummerManualProductionPpeInventorySource,
+      cleaningSummerManualInventorySource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualInventoryBucketResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'material',
+    title: 'Ведро п\\э 12 л',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(4.1, 'шт.', {
+      raw: '4,1',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(200, { raw: '200,00' }),
+    total_rub: detailMoney(825, { raw: '825,00' }),
+    source_refs: detailSourceRefs(
+      cleaningSummerManualProductionPpeInventorySource,
+      cleaningSummerManualInventorySource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualInsuranceResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'other_cost',
+    title: 'Страховые взносы по летней ручной уборке',
+    cost_bucket: 'insurance',
+    total_rub: detailMoney(4_961_755.3, { raw: '4 961 755,30' }),
+    source_refs: detailSourceRefs(cleaningSummerManualTotalsSource),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualOverheadResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'other_cost',
+    title: 'Общеэксплуатационные расходы по летней ручной уборке',
+    cost_bucket: 'overhead',
+    total_rub: detailMoney(11_500_757.3, { raw: '11 500 757,30' }),
+    source_refs: detailSourceRefs(cleaningSummerManualTotalsSource),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualProfitResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'other_cost',
+    title: 'Прибыль по летней ручной уборке',
+    cost_bucket: 'profit',
+    total_rub: detailMoney(6_571_861.32, { raw: '6 571 861,32' }),
+    source_refs: detailSourceRefs(cleaningSummerManualTotalsSource),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningSummerManualUsnResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'other_cost',
+    title: 'Расчетная доля УСН по летней ручной уборке',
+    cost_bucket: 'usn',
+    total_rub: detailMoney(697_849.46, {
+      raw: '40 436 126,67 - 39 738 277,21',
+      note: 'выведено из строки estimate-2026 и сумм bucket-ов; итог раздела cleaning.pdf 39 738 277,20 отличается на 0,01 из-за округления',
+    }),
+    source_refs: detailSourceRefs(
+      cleaningSummerManualTotalsSource,
+      cleaningCalculationSource,
+    ),
+    note: 'В cleaning.pdf УСН показан только общей суммой по услуге, без распределения по строкам.',
+    ...detailStatus('derived'),
+  }),
+  detailResource({
+    id: cleaningSummerManualVatResourceId,
+    work_item_id: 'cleaning-summer-manual',
+    estimate_row_id: 'cleaning-summer-manual',
+    kind: 'other_cost',
+    title: 'Расчетный НДС 5% по летней ручной уборке',
+    cost_bucket: 'vat',
+    total_rub: detailMoney(2_021_806.33, {
+      raw: '42 457 933 - 40 436 126,67',
+      note: 'выведено из строки estimate-2026',
+    }),
+    source_refs: detailSourceRefs(
+      cleaningDocumentVatSource,
+      cleaningCalculationSource,
+    ),
+    note: cleaningVatNeedsCheckNote,
+    ...detailNeedsCheckStatus(
+      cleaningDerivedVatNeedsCheckReason,
+      cleaningSummerManualDerivedVatNeedsCheckRefs,
+    ),
+  }),
 ] satisfies readonly EstimateDetailResource[];
 
 export const cleaningControlTotals = [
@@ -2112,6 +2721,153 @@ export const cleaningControlTotals = [
     ...detailNeedsCheckStatus(
       cleaningDerivedVatNeedsCheckReason,
       cleaningSummerMechanizedDerivedVatNeedsCheckRefs,
+    ),
+  }),
+  detailControlTotal({
+    id: 'cleaning-summer-manual-primary-salary',
+    estimate_row_id: 'cleaning-summer-manual',
+    cost_bucket: 'primary_salary',
+    source_total_rub: detailMoney(16_429_653.29, { raw: '16 429 653,29' }),
+    detail_total_rub: detailMoney(16_429_653.29, {
+      raw: '16 429 653,29',
+      note: 'разделовый итог из PDF; сумма округленных позиций дает 16 429 653,28',
+    }),
+    aggregate_total_rub: detailMoney(16_429_653.29),
+    delta_rub: 0,
+    tolerance_rub: 0.02,
+    resource_ids: cleaningSummerManualLaborResourceIds,
+    source_refs: detailSourceRefs(
+      cleaningSummerManualCurbCleaningSource,
+      cleaningSummerManualParkingTrashSource,
+      cleaningSummerManualParkingSweepingSource,
+      cleaningSummerManualContainerSiteSource,
+      cleaningSummerManualDitchCleaningSource,
+      cleaningSummerManualTotalsSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailControlTotal({
+    id: 'cleaning-summer-manual-materials',
+    estimate_row_id: 'cleaning-summer-manual',
+    cost_bucket: 'materials',
+    source_total_rub: detailMoney(274_250, { raw: '274 250,00' }),
+    detail_total_rub: detailMoney(274_250, { raw: '274 250,00' }),
+    aggregate_total_rub: detailMoney(274_250),
+    delta_rub: 0,
+    tolerance_rub: 0.01,
+    resource_ids: cleaningSummerManualMaterialResourceIds,
+    source_refs: detailSourceRefs(
+      cleaningSummerManualPpeSource,
+      cleaningSummerManualInventorySource,
+      cleaningSummerManualTotalsSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailControlTotal({
+    id: 'cleaning-summer-manual-insurance',
+    estimate_row_id: 'cleaning-summer-manual',
+    cost_bucket: 'insurance',
+    source_total_rub: detailMoney(4_961_755.3, { raw: '4 961 755,30' }),
+    detail_total_rub: detailMoney(4_961_755.3, { raw: '4 961 755,30' }),
+    aggregate_total_rub: detailMoney(4_961_755.3),
+    delta_rub: 0,
+    tolerance_rub: 0.01,
+    resource_ids: [cleaningSummerManualInsuranceResourceId],
+    source_refs: detailSourceRefs(cleaningSummerManualTotalsSource),
+    ...detailStatus('verified'),
+  }),
+  detailControlTotal({
+    id: 'cleaning-summer-manual-overhead',
+    estimate_row_id: 'cleaning-summer-manual',
+    cost_bucket: 'overhead',
+    source_total_rub: detailMoney(11_500_757.3, { raw: '11 500 757,30' }),
+    detail_total_rub: detailMoney(11_500_757.3, { raw: '11 500 757,30' }),
+    aggregate_total_rub: detailMoney(11_500_757.3),
+    delta_rub: 0,
+    tolerance_rub: 0.01,
+    resource_ids: [cleaningSummerManualOverheadResourceId],
+    source_refs: detailSourceRefs(cleaningSummerManualTotalsSource),
+    ...detailStatus('verified'),
+  }),
+  detailControlTotal({
+    id: 'cleaning-summer-manual-profit',
+    estimate_row_id: 'cleaning-summer-manual',
+    cost_bucket: 'profit',
+    source_total_rub: detailMoney(6_571_861.32, { raw: '6 571 861,32' }),
+    detail_total_rub: detailMoney(6_571_861.32, { raw: '6 571 861,32' }),
+    aggregate_total_rub: detailMoney(6_571_861.32),
+    delta_rub: 0,
+    tolerance_rub: 0.01,
+    resource_ids: [cleaningSummerManualProfitResourceId],
+    source_refs: detailSourceRefs(cleaningSummerManualTotalsSource),
+    ...detailStatus('verified'),
+  }),
+  detailControlTotal({
+    id: 'cleaning-summer-manual-usn',
+    estimate_row_id: 'cleaning-summer-manual',
+    cost_bucket: 'usn',
+    source_total_rub: detailMoney(697_849.46, {
+      raw: '40 436 126,67 - 39 738 277,21',
+      note: 'выведено из строки estimate-2026 и сумм bucket-ов; итог раздела cleaning.pdf 39 738 277,20 отличается на 0,01 из-за округления',
+    }),
+    detail_total_rub: detailMoney(697_849.46),
+    aggregate_total_rub: detailMoney(697_849.46),
+    delta_rub: 0,
+    tolerance_rub: 0.01,
+    resource_ids: [cleaningSummerManualUsnResourceId],
+    source_refs: detailSourceRefs(
+      cleaningSummerManualTotalsSource,
+      cleaningCalculationSource,
+    ),
+    note: 'УСН выведен для строки, потому что cleaning.pdf показывает УСН только общей суммой по услуге.',
+    ...detailStatus('derived'),
+  }),
+  detailControlTotal({
+    id: 'cleaning-summer-manual-vat',
+    estimate_row_id: 'cleaning-summer-manual',
+    cost_bucket: 'vat',
+    source_total_rub: detailMoney(2_021_806.33, {
+      raw: '42 457 933 - 40 436 126,67',
+    }),
+    detail_total_rub: detailMoney(2_021_806.33),
+    aggregate_total_rub: detailMoney(2_021_806.33),
+    delta_rub: 0,
+    tolerance_rub: 0.01,
+    resource_ids: [cleaningSummerManualVatResourceId],
+    source_refs: detailSourceRefs(
+      cleaningDocumentVatSource,
+      cleaningCalculationSource,
+    ),
+    note: cleaningVatNeedsCheckNote,
+    ...detailNeedsCheckStatus(
+      cleaningDerivedVatNeedsCheckReason,
+      cleaningSummerManualDerivedVatNeedsCheckRefs,
+    ),
+  }),
+  detailControlTotal({
+    id: 'cleaning-summer-manual-gross',
+    estimate_row_id: 'cleaning-summer-manual',
+    cost_bucket: 'gross',
+    source_total_rub: detailMoney(42_457_933, {
+      raw: '39 738 277,21 + 697 849,46 + 2 021 806,33',
+    }),
+    detail_total_rub: detailMoney(42_457_933, {
+      raw: '42 457 933,00',
+      note: 'сумма ресурсов из-за округлений дает 42 457 932,99',
+    }),
+    aggregate_total_rub: detailMoney(42_457_933),
+    delta_rub: 0,
+    tolerance_rub: 0.02,
+    resource_ids: cleaningSummerManualGrossResourceIds,
+    source_refs: detailSourceRefs(
+      cleaningSummerManualTotalsSource,
+      cleaningDocumentVatSource,
+      cleaningCalculationSource,
+    ),
+    note: cleaningVatNeedsCheckNote,
+    ...detailNeedsCheckStatus(
+      cleaningDerivedVatNeedsCheckReason,
+      cleaningSummerManualDerivedVatNeedsCheckRefs,
     ),
   }),
 ] satisfies readonly EstimateDetailControlTotal[];

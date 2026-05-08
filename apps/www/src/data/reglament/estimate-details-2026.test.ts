@@ -1793,6 +1793,287 @@ describe('estimate details 2026 dataset', () => {
     `);
   });
 
+  it('captures summer manual cleaning details from cleaning.pdf', () => {
+    const cleaningRowIds = new Set(['cleaning-summer-manual']);
+    const workItems = estimateDetails2026.work_items
+      .filter((item) => cleaningRowIds.has(item.estimate_row_id))
+      .map((item) => ({
+        id: item.id,
+        estimate_row_id: item.estimate_row_id,
+        service_ids: item.service_ids ?? [],
+        status: item.status,
+      }));
+    const resources = estimateDetails2026.resources
+      .filter((resource) => cleaningRowIds.has(resource.estimate_row_id))
+      .map((resource) => ({
+        id: resource.id,
+        kind: resource.kind,
+        cost_bucket: resource.cost_bucket,
+        total_rub: resource.total_rub.value,
+        status: resource.status,
+      }));
+    const controlTotals = estimateDetails2026.control_totals
+      .filter((controlTotal) =>
+        cleaningRowIds.has(controlTotal.estimate_row_id),
+      )
+      .map((controlTotal) => ({
+        id: controlTotal.id,
+        cost_bucket: controlTotal.cost_bucket,
+        source_total_rub: controlTotal.source_total_rub.value,
+        aggregate_total_rub: controlTotal.aggregate_total_rub?.value ?? null,
+        status: controlTotal.status,
+      }));
+    const ditchCleaningResource = estimateDetails2026.resources.find(
+      (resource) =>
+        resource.id === 'cleaning-summer-manual-ditch-cleaning-worker-labor',
+    );
+
+    expect(ditchCleaningResource).toMatchObject({
+      quantity: { value: 24_337.7, unit: 'чел-час', raw: '24337,7' },
+    });
+    expect(
+      ditchCleaningResource?.source_refs
+        .map((sourceRef) => sourceRef.quote ?? '')
+        .join('\n'),
+    ).toContain('15 раз в летний период');
+    expect({ workItems, resources, controlTotals }).toMatchInlineSnapshot(`
+      {
+        "controlTotals": [
+          {
+            "aggregate_total_rub": 16429653.29,
+            "cost_bucket": "primary_salary",
+            "id": "cleaning-summer-manual-primary-salary",
+            "source_total_rub": 16429653.29,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 274250,
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-manual-materials",
+            "source_total_rub": 274250,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 4961755.3,
+            "cost_bucket": "insurance",
+            "id": "cleaning-summer-manual-insurance",
+            "source_total_rub": 4961755.3,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 11500757.3,
+            "cost_bucket": "overhead",
+            "id": "cleaning-summer-manual-overhead",
+            "source_total_rub": 11500757.3,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 6571861.32,
+            "cost_bucket": "profit",
+            "id": "cleaning-summer-manual-profit",
+            "source_total_rub": 6571861.32,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 697849.46,
+            "cost_bucket": "usn",
+            "id": "cleaning-summer-manual-usn",
+            "source_total_rub": 697849.46,
+            "status": "derived",
+          },
+          {
+            "aggregate_total_rub": 2021806.33,
+            "cost_bucket": "vat",
+            "id": "cleaning-summer-manual-vat",
+            "source_total_rub": 2021806.33,
+            "status": "needs_check",
+          },
+          {
+            "aggregate_total_rub": 42457933,
+            "cost_bucket": "gross",
+            "id": "cleaning-summer-manual-gross",
+            "source_total_rub": 42457933,
+            "status": "needs_check",
+          },
+        ],
+        "resources": [
+          {
+            "cost_bucket": "primary_salary",
+            "id": "cleaning-summer-manual-curb-cleaning-worker-labor",
+            "kind": "labor",
+            "status": "verified",
+            "total_rub": 109540.22,
+          },
+          {
+            "cost_bucket": "primary_salary",
+            "id": "cleaning-summer-manual-parking-trash-worker-labor",
+            "kind": "labor",
+            "status": "verified",
+            "total_rub": 58551.86,
+          },
+          {
+            "cost_bucket": "primary_salary",
+            "id": "cleaning-summer-manual-parking-sweeping-worker-labor",
+            "kind": "labor",
+            "status": "verified",
+            "total_rub": 8747.24,
+          },
+          {
+            "cost_bucket": "primary_salary",
+            "id": "cleaning-summer-manual-container-site-worker-labor",
+            "kind": "labor",
+            "status": "verified",
+            "total_rub": 89014.13,
+          },
+          {
+            "cost_bucket": "primary_salary",
+            "id": "cleaning-summer-manual-ditch-cleaning-worker-labor",
+            "kind": "labor",
+            "status": "verified",
+            "total_rub": 16163799.83,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-manual-ppe-cotton-suit",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 68750,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-manual-ppe-insulated-jacket",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 30000,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-manual-ppe-signal-vest",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 15000,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-manual-ppe-insulated-boots",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 17500,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-manual-ppe-polymer-gloves",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 17500,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-manual-ppe-insulated-mittens",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 35000,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-manual-ppe-rubber-boots",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 25000,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-manual-ppe-soap",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 17400,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-manual-inventory-polypropylene-broom",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 23125,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-manual-inventory-rake",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 2062.5,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-manual-inventory-scoop-shovel",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 6462.5,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-manual-inventory-wheelbarrow",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 15625,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-manual-inventory-bucket-12l",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 825,
+          },
+          {
+            "cost_bucket": "insurance",
+            "id": "cleaning-summer-manual-insurance",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 4961755.3,
+          },
+          {
+            "cost_bucket": "overhead",
+            "id": "cleaning-summer-manual-overhead",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 11500757.3,
+          },
+          {
+            "cost_bucket": "profit",
+            "id": "cleaning-summer-manual-profit",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 6571861.32,
+          },
+          {
+            "cost_bucket": "usn",
+            "id": "cleaning-summer-manual-usn-derived",
+            "kind": "other_cost",
+            "status": "derived",
+            "total_rub": 697849.46,
+          },
+          {
+            "cost_bucket": "vat",
+            "id": "cleaning-summer-manual-vat-derived",
+            "kind": "other_cost",
+            "status": "needs_check",
+            "total_rub": 2021806.33,
+          },
+        ],
+        "workItems": [
+          {
+            "estimate_row_id": "cleaning-summer-manual",
+            "id": "cleaning-summer-manual",
+            "service_ids": [
+              "summer-road-manual-cleaning",
+              "summer-road-gutters-cleaning",
+            ],
+            "status": "verified",
+          },
+        ],
+      }
+    `);
+  });
+
   it('captures winter manual cleaning details from cleaning.pdf', () => {
     const cleaningRowIds = new Set(['cleaning-winter-manual']);
     const workItems = estimateDetails2026.work_items
