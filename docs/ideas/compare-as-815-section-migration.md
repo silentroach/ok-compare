@@ -12,13 +12,13 @@ Make the old Russian domain redirect-only. It should no longer serve standalone 
 
 Add visible and schema breadcrumbs using the simple hierarchy that exists today: `Главная > Сравнение тарифов` for compare index/rating pages and `Главная > Сравнение тарифов > [Название поселка]` for settlement pages. Do not add a `Тариф 815` breadcrumb until there is a real `/815/` page.
 
-## Key Assumptions to Validate
+## Key Assumptions Validation
 
-- [ ] Old public URL scope is only pages, not `.md`, JSON, OpenAPI, schemas, `llms.txt`, or assets. Validate against nginx logs/search console before removing compatibility for machine URLs.
-- [ ] `COMPARE_BASE=/815/compare` does not break assets, links, sitemap, Svelte hydration, or canonical URL generation. Validate with `pnpm build`, sampled built files, and curl/browser checks.
-- [ ] A redirect-only old domain is acceptable with no standalone rollback artifact. Rollback is intentionally out of scope.
-- [ ] Breadcrumb text `Главная > Сравнение тарифов > [Название поселка]` matches the current information architecture. Validate visually on home, rating, and settlement pages.
-- [ ] Hardcoded nginx redirects can be deployed predictably. Validate generated-then-pasted rules with config review and `nginx -t` on the target host.
+- [ ] Old public URL scope is only pages, not `.md`, JSON, OpenAPI, schemas, `llms.txt`, or assets. Local redirect scope is implemented and reviewed; production nginx logs/Search Console validation remains an external gap before removing temporary compatibility.
+- [x] `COMPARE_BASE=/815/compare` does not break assets, links, sitemap, Svelte hydration, or canonical URL generation. Validated with `pnpm build`, sampled built output, `pnpm typecheck`, and `pnpm test`; deploy-time browser/curl smoke checks remain manual.
+- [x] A redirect-only old domain is acceptable with no standalone rollback artifact. Rollback is intentionally out of scope, and standalone legacy build/deploy output was removed.
+- [x] Breadcrumb text `Главная > Сравнение тарифов > [Название поселка]` matches the current information architecture. Built HTML samples and tests cover compare index, rating, and settlement pages.
+- [ ] Hardcoded nginx redirects can be deployed predictably. Local config review passed; `nginx -t` must run on the target host before reload/deploy.
 
 ## MVP Scope
 
@@ -46,6 +46,7 @@ In scope:
 - Copying compare code into `apps/www` - violates the existing section-build boundary.
 - Redesigning compare pages - breadcrumbs are enough to express hierarchy for this migration.
 
-## Open Questions
+## External Validation Gaps
 
-- No unresolved questions before implementation.
+- Production nginx logs/Search Console access is still needed before removing old URL compatibility.
+- Target-host `nginx -t` is still required before nginx reload/deploy.

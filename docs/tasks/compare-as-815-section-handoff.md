@@ -14,16 +14,16 @@ Use it to pass forward facts that are not obvious from the current task diff: co
 
 ## Task Registry
 
-| ID  | Status | Commit                                  | Notes                                                                           |
-| --- | ------ | --------------------------------------- | ------------------------------------------------------------------------------- |
-| T1  | done   | `audit compare 815 migration surface`   | `docs/tasks/compare-as-815-section-migration/T1-audit-url-surface.md`           |
-| T2  | done   | `move compare section base to 815 path` | `docs/tasks/compare-as-815-section-migration/T2-move-compare-base.md`           |
-| T3  | done   | `compose compare into 815 section`      | `docs/tasks/compare-as-815-section-migration/T3-compose-www-section.md`         |
-| T4  | done   | `update root compare references`        | `docs/tasks/compare-as-815-section-migration/T4-update-root-links-discovery.md` |
-| T5  | done   | `add compare breadcrumbs`               | `docs/tasks/compare-as-815-section-migration/T5-add-compare-breadcrumbs.md`     |
-| T6  | done   | `replace compare nginx redirects`       | `docs/tasks/compare-as-815-section-migration/T6-nginx-redirects.md`             |
-| T7  | done   | `remove legacy compare build`           | `docs/tasks/compare-as-815-section-migration/T7-remove-legacy-build.md`         |
-| T8  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T8-final-verification.md`          |
+| ID  | Status | Commit                                    | Notes                                                                           |
+| --- | ------ | ----------------------------------------- | ------------------------------------------------------------------------------- |
+| T1  | done   | `audit compare 815 migration surface`     | `docs/tasks/compare-as-815-section-migration/T1-audit-url-surface.md`           |
+| T2  | done   | `move compare section base to 815 path`   | `docs/tasks/compare-as-815-section-migration/T2-move-compare-base.md`           |
+| T3  | done   | `compose compare into 815 section`        | `docs/tasks/compare-as-815-section-migration/T3-compose-www-section.md`         |
+| T4  | done   | `update root compare references`          | `docs/tasks/compare-as-815-section-migration/T4-update-root-links-discovery.md` |
+| T5  | done   | `add compare breadcrumbs`                 | `docs/tasks/compare-as-815-section-migration/T5-add-compare-breadcrumbs.md`     |
+| T6  | done   | `replace compare nginx redirects`         | `docs/tasks/compare-as-815-section-migration/T6-nginx-redirects.md`             |
+| T7  | done   | `remove legacy compare build`             | `docs/tasks/compare-as-815-section-migration/T7-remove-legacy-build.md`         |
+| T8  | done   | `finalize compare migration verification` | `docs/tasks/compare-as-815-section-migration/T8-final-verification.md`          |
 
 ## Current Context Snapshot
 
@@ -55,7 +55,41 @@ Date: 2026-05-09.
 - nginx logs/Search Console access is needed to validate whether old machine URLs are requested in production before removing compatibility.
 - Target-host `nginx -t` is needed for final nginx validation unless a local nginx environment is available.
 
+## Final Deployment Notes
+
+- Deploy current output from `dist/www/`; compare is included at `dist/www/815/compare` and no `dist/legacy` artifact is required.
+- Stage both nginx configs, run `nginx -t` on the target host, and reload nginx only after the config test passes.
+- Keep temporary new-domain `/compare/`, `/compare/rating/`, and `/compare/settlements/:slug/` redirects until `2026-08-08`; before removal, review production logs/Search Console for old URL traffic.
+- The old domain remains redirect-only except ACME handling: public pages go to `/815/compare/...`, unmatched URLs go to `https://kpshelkovo.online/` by the T6 decision.
+
 ## Task Log
+
+### T8 - 2026-05-09 - final verification
+
+Status: done.
+
+Context:
+
+- Running the final repo-wide verification and documentation cleanup for the `/815/compare` migration.
+- Recent git history shows one commit per completed migration task: T1 through T7 are already committed separately; T8 is recorded as `finalize compare migration verification`.
+
+Verification:
+
+- `pnpm build`: pass; root build runs `build:main`, then composes compare into `dist/www/815/compare`.
+- `test -d "dist/www/815/compare" && test -f "dist/www/815/compare/index.html" && test ! -e "dist/legacy" && test ! -e "apps/compare/dist/legacy"`: pass.
+- `pnpm typecheck`: pass.
+- `pnpm test`: pass, 31 compare files / 241 tests and 38 www files / 228 tests.
+- `rg "/compare|815/compare|dist/legacy|build:legacy|DEPLOY_COMPARE_PATH"` with generated/cache exclusions: reviewed; remaining old `/compare` references are temporary redirects, migration history, tests, or documented exceptions.
+- Built output grep confirmed `https://kpshelkovo.online/815/compare` URLs and root sitemap `https://kpshelkovo.online/815/compare/sitemap.xml`; no `https://kpshelkovo.online/compare` canonical/href/src references were found in `dist/www/815/compare`.
+
+External/manual gaps:
+
+- Production nginx logs/Search Console access is still needed before removing old URL compatibility.
+- Target-host `nginx -t` is still required before nginx reload/deploy.
+
+Commit:
+
+- `finalize compare migration verification`
 
 ### T7 - 2026-05-09 - remove legacy build
 
@@ -266,38 +300,43 @@ Commit:
 
 Add entries here when `rg` finds old strings that should remain.
 
-| Pattern                                                                | Location                                 | Why it remains                                                | Removal condition                                                              |
-| ---------------------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `/compare/`                                                            | docs/history or redirect tasks           | Historical/source context or old-path redirects.              | Remove only if it stops documenting history or redirect behavior.              |
-| `/compare/`                                                            | `ops/nginx/kpshelkovo-online.conf`       | Temporary new-domain public page redirects.                   | Remove after `2026-08-08` if migration traffic is clean.                       |
-| `build:legacy`, `compose-legacy`, `dist/legacy`, `DEPLOY_COMPARE_PATH` | migration task docs and T1 audit history | Historical task context and future T8 verification checklist. | Clean up only during T8 documentation pass if the context is no longer useful. |
+| Pattern                                                                | Location                                 | Why it remains                                         | Removal condition                                                                      |
+| ---------------------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------- |
+| `/compare/`                                                            | docs/history or redirect tasks           | Historical/source context or old-path redirects.       | Remove only if it stops documenting history or redirect behavior.                      |
+| `/compare/`                                                            | `ops/nginx/kpshelkovo-online.conf`       | Temporary new-domain public page redirects.            | Remove after `2026-08-08` if migration traffic is clean.                               |
+| `build:legacy`, `compose-legacy`, `dist/legacy`, `DEPLOY_COMPARE_PATH` | migration task docs and T1/T7/T8 history | Historical task context and final verification record. | Keep while migration history is useful; do not treat as current build/deploy behavior. |
 
 ## Verification Notes
 
 Add command results here when they affect later tasks.
 
-| Date       | Task | Command                                   | Result       | Notes                                                                       |
-| ---------- | ---- | ----------------------------------------- | ------------ | --------------------------------------------------------------------------- | ---- | ------------------------------------------------------------- |
-| 2026-05-08 | T0   | Documentation review only                 | not run      | Planning docs only; no build/test needed.                                   |
-| 2026-05-08 | T1   | `rg "/compare                             | COMPARE_BASE | ..."`                                                                       | pass | Reviewed repo-wide URL/build/deploy surfaces; docs-only task. |
-| 2026-05-08 | T2   | `pnpm --dir=apps/compare test`            | pass         | 30 files / 238 tests.                                                       |
-| 2026-05-08 | T2   | `pnpm --dir=apps/compare typecheck`       | pass         | Astro sync and `tsc --noEmit` passed.                                       |
-| 2026-05-08 | T2   | `pnpm --dir=apps/compare build`           | pass         | Built `apps/compare/dist/section` with `/815/compare` canonical/base links. |
-| 2026-05-08 | T3   | `pnpm build:main`                         | pass         | Built root site, compare section and composed into `dist/www/815/compare`.  |
-| 2026-05-08 | T3   | `test -f dist/www/815/compare/index.html` | pass         | Confirmed composed compare index exists.                                    |
-| 2026-05-08 | T4   | `pnpm --dir apps/www test`                | pass         | 38 files / 228 tests.                                                       |
-| 2026-05-08 | T4   | `pnpm --dir apps/www typecheck`           | pass         | Astro sync and `tsc --noEmit` passed.                                       |
-| 2026-05-08 | T5   | `pnpm --dir apps/compare test`            | pass         | 31 files / 241 tests.                                                       |
-| 2026-05-08 | T5   | `pnpm --dir apps/compare typecheck`       | pass         | Astro sync and `tsc --noEmit` passed.                                       |
-| 2026-05-08 | T5   | `pnpm --dir apps/compare build`           | pass         | Built `apps/compare/dist/section` with compare breadcrumbs.                 |
-| 2026-05-08 | T5   | Built HTML breadcrumb sample check        | pass         | Checked index, rating and `settlements/shelkovo` HTML plus JSON-LD.         |
-| 2026-05-08 | T6   | `rg "return 301                           | /compare     | /815/compare" ops/nginx`                                                    | pass | Reviewed redirect order and `/815/compare` serving rules.     |
-| 2026-05-08 | T6   | Settlement redirect coverage script       | pass         | 37 slugs from settlement YAML files; no missing hardcoded redirects.        |
-| 2026-05-08 | T6   | `git diff --check`                        | pass         | No whitespace errors.                                                       |
-| 2026-05-08 | T6   | `nginx -v`                                | failed       | Local nginx is unavailable; run `nginx -t` on the target host.              |
-| 2026-05-09 | T7   | `pnpm build`                              | pass         | Built root site and compare section through `build:main` only.              |
-| 2026-05-09 | T7   | Legacy artifact existence check           | pass         | `dist/legacy` and `apps/compare/dist/legacy` were absent after build.       |
-| 2026-05-09 | T7   | `pnpm typecheck`                          | pass         | Workspace typecheck passed.                                                 |
-| 2026-05-09 | T7   | `pnpm test`                               | pass         | 31 compare files / 241 tests; 38 www files / 228 tests.                     |
-| 2026-05-09 | T7   | Legacy reference rg review                | pass         | Remaining hits are migration docs/history and T8 checklist only.            |
-| 2026-05-09 | T7   | `git diff --check`                        | pass         | No whitespace errors.                                                       |
+| Date       | Task | Command                                   | Result  | Notes                                                                       |
+| ---------- | ---- | ----------------------------------------- | ------- | --------------------------------------------------------------------------- |
+| 2026-05-08 | T0   | Documentation review only                 | not run | Planning docs only; no build/test needed.                                   |
+| 2026-05-08 | T1   | `rg "/compare\|COMPARE_BASE\|..."`        | pass    | Reviewed repo-wide URL/build/deploy surfaces; docs-only task.               |
+| 2026-05-08 | T2   | `pnpm --dir=apps/compare test`            | pass    | 30 files / 238 tests.                                                       |
+| 2026-05-08 | T2   | `pnpm --dir=apps/compare typecheck`       | pass    | Astro sync and `tsc --noEmit` passed.                                       |
+| 2026-05-08 | T2   | `pnpm --dir=apps/compare build`           | pass    | Built `apps/compare/dist/section` with `/815/compare` canonical/base links. |
+| 2026-05-08 | T3   | `pnpm build:main`                         | pass    | Built root site, compare section and composed into `dist/www/815/compare`.  |
+| 2026-05-08 | T3   | `test -f dist/www/815/compare/index.html` | pass    | Confirmed composed compare index exists.                                    |
+| 2026-05-08 | T4   | `pnpm --dir apps/www test`                | pass    | 38 files / 228 tests.                                                       |
+| 2026-05-08 | T4   | `pnpm --dir apps/www typecheck`           | pass    | Astro sync and `tsc --noEmit` passed.                                       |
+| 2026-05-08 | T5   | `pnpm --dir apps/compare test`            | pass    | 31 files / 241 tests.                                                       |
+| 2026-05-08 | T5   | `pnpm --dir apps/compare typecheck`       | pass    | Astro sync and `tsc --noEmit` passed.                                       |
+| 2026-05-08 | T5   | `pnpm --dir apps/compare build`           | pass    | Built `apps/compare/dist/section` with compare breadcrumbs.                 |
+| 2026-05-08 | T5   | Built HTML breadcrumb sample check        | pass    | Checked index, rating and `settlements/shelkovo` HTML plus JSON-LD.         |
+| 2026-05-08 | T6   | `rg "return 301\|/compare\|/815/compare"` | pass    | Reviewed redirect order and `/815/compare` serving rules.                   |
+| 2026-05-08 | T6   | Settlement redirect coverage script       | pass    | 37 slugs from settlement YAML files; no missing hardcoded redirects.        |
+| 2026-05-08 | T6   | `git diff --check`                        | pass    | No whitespace errors.                                                       |
+| 2026-05-08 | T6   | `nginx -v`                                | failed  | Local nginx is unavailable; run `nginx -t` on the target host.              |
+| 2026-05-09 | T7   | `pnpm build`                              | pass    | Built root site and compare section through `build:main` only.              |
+| 2026-05-09 | T7   | Legacy artifact existence check           | pass    | `dist/legacy` and `apps/compare/dist/legacy` were absent after build.       |
+| 2026-05-09 | T7   | `pnpm typecheck`                          | pass    | Workspace typecheck passed.                                                 |
+| 2026-05-09 | T7   | `pnpm test`                               | pass    | 31 compare files / 241 tests; 38 www files / 228 tests.                     |
+| 2026-05-09 | T7   | Legacy reference rg review                | pass    | Remaining hits are migration docs/history and T8 checklist only.            |
+| 2026-05-09 | T7   | `git diff --check`                        | pass    | No whitespace errors.                                                       |
+| 2026-05-09 | T8   | `pnpm build`                              | pass    | Built root site and compare section through `build:main` only.              |
+| 2026-05-09 | T8   | Final artifact existence check            | pass    | `dist/www/815/compare/index.html` exists; legacy outputs are absent.        |
+| 2026-05-09 | T8   | `pnpm typecheck`                          | pass    | Workspace typecheck passed.                                                 |
+| 2026-05-09 | T8   | `pnpm test`                               | pass    | 31 compare files / 241 tests; 38 www files / 228 tests.                     |
+| 2026-05-09 | T8   | Final migration reference rg review       | pass    | Remaining old-path references are redirects, tests, history or exceptions.  |

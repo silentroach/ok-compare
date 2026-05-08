@@ -39,7 +39,7 @@ Commit message format: кратко и по смыслу, например `move
 | T5  | [Add compare breadcrumbs and breadcrumb JSON-LD](compare-as-815-section-migration/T5-add-compare-breadcrumbs.md)                             | done   | T2             |
 | T6  | [Replace nginx compare page handling with old-path redirects](compare-as-815-section-migration/T6-nginx-redirects.md)                        | done   | T2, T3, T4     |
 | T7  | [Remove standalone legacy build and deploy path](compare-as-815-section-migration/T7-remove-legacy-build.md)                                 | done   | T6             |
-| T8  | [Final migration verification and documentation cleanup](compare-as-815-section-migration/T8-final-verification.md)                          | todo   | T4, T5, T6, T7 |
+| T8  | [Final migration verification and documentation cleanup](compare-as-815-section-migration/T8-final-verification.md)                          | done   | T4, T5, T6, T7 |
 
 ## Checkpoints
 
@@ -57,10 +57,10 @@ After T6:
 
 After T8:
 
-- [ ] Full `pnpm build`, `pnpm typecheck`, `pnpm test` pass or gaps are documented.
-- [ ] Every completed task has its own commit.
+- [x] Full `pnpm build`, `pnpm typecheck`, `pnpm test` pass or gaps are documented.
+- [x] Every completed task has its own commit.
 
 ## Open Questions
 
-- External validation still needed before removing machine URL compatibility: nginx logs and/or Search Console access.
+- External validation still needed before removing old URL compatibility: nginx logs and/or Search Console access.
 - Target-host `nginx -t` must be run during deploy or by an agent with host access.

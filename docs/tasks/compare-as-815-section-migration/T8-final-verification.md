@@ -1,6 +1,6 @@
 # T8: Final Migration Verification And Documentation Cleanup
 
-Status: todo
+Status: done
 
 Index: `../compare-as-815-section-migration.md`
 Handoff: `../compare-as-815-section-handoff.md`
@@ -11,18 +11,18 @@ Handoff: `../compare-as-815-section-handoff.md`
 
 ## Acceptance Criteria
 
-- [ ] `docs/ideas/compare-as-815-section-migration.md` assumptions are checked off or explicitly documented as external/manual validation gaps.
-- [ ] Task statuses in the task files, index and `docs/tasks/compare-as-815-section-handoff.md` are consistent.
-- [ ] Remaining `/compare` references are only old-path redirect rules, tests for redirects, historical docs, or explicitly documented exceptions.
-- [ ] Built output contains `dist/www/815/compare` and does not require `dist/legacy`.
-- [ ] Handoff has final deployment notes, including nginx validation steps and temporary redirect removal date.
+- [x] `docs/ideas/compare-as-815-section-migration.md` assumptions are checked off or explicitly documented as external/manual validation gaps.
+- [x] Task statuses in the task files, index and `docs/tasks/compare-as-815-section-handoff.md` are consistent.
+- [x] Remaining `/compare` references are only old-path redirect rules, tests for redirects, historical docs, or explicitly documented exceptions.
+- [x] Built output contains `dist/www/815/compare` and does not require `dist/legacy`.
+- [x] Handoff has final deployment notes, including nginx validation steps and temporary redirect removal date.
 
 ## Verification
 
-- [ ] `pnpm build`
-- [ ] `pnpm typecheck`
-- [ ] `pnpm test`
-- [ ] `rg "/compare|815/compare|dist/legacy|build:legacy|DEPLOY_COMPARE_PATH"` reviewed.
+- [x] `pnpm build`
+- [x] `pnpm typecheck`
+- [x] `pnpm test`
+- [x] `rg "/compare|815/compare|dist/legacy|build:legacy|DEPLOY_COMPARE_PATH"` reviewed.
 
 ## Dependencies
 
@@ -45,7 +45,7 @@ S.
 
 ## Completion
 
-- [ ] Mark this file `Status: done`.
-- [ ] Update task index status.
-- [ ] Update handoff task registry and task log.
-- [ ] Commit this task separately.
+- [x] Mark this file `Status: done`.
+- [x] Update task index status.
+- [x] Update handoff task registry and task log.
+- [x] Commit this task separately.
