@@ -70,7 +70,7 @@
 - [x] [Task 022: Improvement quote item table fields](tasks/022-improvement-quote-item-table-fields.md)
 - [x] [Task 023: Lighting quote item table fields](tasks/023-lighting-quote-item-table-fields.md)
 - [x] [Task 024: Security quote item table fields](tasks/024-security-quote-item-table-fields.md)
-- [ ] [Task 025: Waste quote item table fields](tasks/025-waste-quote-item-table-fields.md)
+- [x] [Task 025: Waste quote item table fields](tasks/025-waste-quote-item-table-fields.md)
 - [ ] [Task 026: Quote item public contract cleanup](tasks/026-quote-item-public-contract-cleanup.md)
 
 ## Checkpoints
@@ -79,7 +79,7 @@
 - [x] After Tasks 007-011: `cleaning.pdf` is fully represented and reconciled.
 - [x] After Tasks 012-016: all small section PDFs have detail resources.
 - [x] After Tasks 017-018: final controls, LLM docs and review are complete.
-- [ ] After Tasks 020-025: structured quote items include source table units, quantities, unit prices and totals where the PDF rows expose them.
+- [x] After Tasks 020-025: structured quote items include source table units, quantities, unit prices and totals where the PDF rows expose them.
 - [ ] After Task 026: public quote item output excludes fields that are only useful for curation/debugging.
 
 ## Open Questions

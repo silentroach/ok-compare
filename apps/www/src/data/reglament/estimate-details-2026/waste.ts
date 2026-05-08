@@ -123,6 +123,10 @@ const wasteTransferStaffSource = detailSource(
         resource_ids: [wasteTransferWorkerLaborResourceId],
         quantity: detailQuantity(2.6, 'чел.', { raw: '2,6' }),
         unit_price_rub: detailMoney(664.15, { raw: '664,15' }),
+        total_rub: detailMoney(1_726.78, {
+          raw: '1 726,78',
+          note: 'итог строки штатного расписания, не годовая сметная сумма',
+        }),
       }),
       detailSourceQuoteItem({
         label: 'Машинист',
@@ -130,6 +134,10 @@ const wasteTransferStaffSource = detailSource(
         resource_ids: [wasteTransferMachinistLaborResourceId],
         quantity: detailQuantity(0.7, 'чел.', { raw: '0,7' }),
         unit_price_rub: detailMoney(934.32, { raw: '934,32' }),
+        total_rub: detailMoney(654.02, {
+          raw: '654,02',
+          note: 'итог строки штатного расписания, не годовая сметная сумма',
+        }),
       }),
     ),
   },

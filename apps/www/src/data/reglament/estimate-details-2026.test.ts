@@ -736,6 +736,76 @@ describe('estimate details 2026 dataset', () => {
     `);
   });
 
+  it('keeps waste quote items enriched with source table fields', () => {
+    const staffSource = resourcesById
+      .get('waste-transfer-worker-labor')
+      ?.source_refs.find(
+        (ref) =>
+          ref.pdf === 'waste' &&
+          ref.page === 8 &&
+          ref.fragment ===
+            'нормативное штатное расписание для перемещения мусора',
+      );
+    const resourceStatementSource = resourcesById
+      .get('waste-transfer-gazel-machine')
+      ?.source_refs.find(
+        (ref) =>
+          ref.pdf === 'waste' &&
+          ref.page === 12 &&
+          ref.fragment ===
+            'ресурсная ведомость по локальному ресурсному сметному расчету',
+      );
+
+    expect({
+      staff: staffSource?.quote_items?.[0],
+      resourceStatement: resourceStatementSource?.quote_items?.[2],
+    }).toMatchInlineSnapshot(`
+      {
+        "resourceStatement": {
+          "label": "Газель (GAZ 330232)",
+          "quantity": {
+            "raw": "1460,0",
+            "unit": "маш.-час",
+            "value": 1460,
+          },
+          "quote": "Газель (GAZ 330232) 1460,0 318,02 464 303,42",
+          "resource_ids": [
+            "waste-transfer-gazel-machine",
+          ],
+          "total_rub": {
+            "raw": "464 303,42",
+            "value": 464303.42,
+          },
+          "unit_price_rub": {
+            "raw": "318,02",
+            "value": 318.02,
+          },
+        },
+        "staff": {
+          "label": "Рабочий по уборке территории",
+          "quantity": {
+            "raw": "2,6",
+            "unit": "чел.",
+            "value": 2.6,
+          },
+          "quote": "Рабочий по уборке территории ... 2,6 ... 664,15",
+          "resource_ids": [
+            "waste-transfer-worker-labor",
+          ],
+          "total_rub": {
+            "note": "итог строки штатного расписания, не годовая сметная сумма",
+            "raw": "1 726,78",
+            "value": 1726.78,
+          },
+          "unit_price_rub": {
+            "raw": "664,15",
+            "value": 664.15,
+          },
+        },
+      }
+    `);
+  });
+
   it('migrates multi-position quote items in every section detail module', () => {
     const sectionPdfs = [
       'cleaning',
