@@ -447,6 +447,75 @@ describe('estimate details 2026 dataset', () => {
     `);
   });
 
+  it('keeps cleaning quote items enriched with source table fields', () => {
+    const winterMechanizedPpeSource = resourcesById
+      .get('cleaning-winter-mechanized-ppe-cotton-suit')
+      ?.source_refs.find(
+        (ref) =>
+          ref.pdf === 'cleaning' &&
+          ref.page === 12 &&
+          ref.fragment ===
+            'позиция 1.4 / средства охраны труда для зимней механизированной уборки',
+      );
+    const resourceStatementMaterialsSource = estimateDetails2026.control_totals
+      .find(
+        (controlTotal) =>
+          controlTotal.id === 'cleaning-resource-statement-materials',
+      )
+      ?.source_refs.find(
+        (ref) =>
+          ref.pdf === 'cleaning' &&
+          ref.page === 26 &&
+          ref.fragment ===
+            'ресурсная ведомость по локальному ресурсному сметному расчету / материалы',
+      );
+
+    expect({
+      ppe: winterMechanizedPpeSource?.quote_items?.[0],
+      resourceStatement: resourceStatementMaterialsSource?.quote_items?.[0],
+    }).toMatchInlineSnapshot(`
+      {
+        "ppe": {
+          "label": "Костюм хлопчатобумажный",
+          "quantity": {
+            "raw": "2,7",
+            "unit": "шт.",
+            "value": 2.7,
+          },
+          "quote": "Костюм 14 850,00",
+          "resource_ids": [
+            "cleaning-winter-mechanized-ppe-cotton-suit",
+          ],
+          "total_rub": {
+            "raw": "14 850,00",
+            "value": 14850,
+          },
+          "unit_price_rub": {
+            "raw": "5500,00",
+            "value": 5500,
+          },
+        },
+        "resourceStatement": {
+          "label": "Костюм",
+          "quantity": {
+            "raw": "27,5",
+            "unit": "шт.",
+            "value": 27.5,
+          },
+          "quote": "Костюм 151 250,00",
+          "total_rub": {
+            "raw": "151 250,00",
+            "value": 151250,
+          },
+          "unit_price_rub": {
+            "raw": "5500,00",
+            "value": 5500,
+          },
+        },
+      }
+    `);
+  });
+
   it('migrates multi-position quote items in every section detail module', () => {
     const sectionPdfs = [
       'cleaning',
