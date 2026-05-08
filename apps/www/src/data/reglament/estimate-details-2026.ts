@@ -1,5 +1,10 @@
 import type { EstimateDetailDataset } from '@/lib/reglament/detail-schema';
 import {
+  landscapingControlTotals,
+  landscapingResources,
+  landscapingWorkItems,
+} from '@/data/reglament/estimate-details-2026/landscaping';
+import {
   lightingControlTotals,
   lightingResources,
   lightingWorkItems,
@@ -27,11 +32,22 @@ export const estimateDetails2026 = {
     'PDF не парсятся во время runtime или build страницы: этот файл является curated dataset для ручного пополнения.',
     'Каждый будущий work item, resource и control total должен иметь source_refs с PDF, страницей и фрагментом; неоднозначные строки помечаются needs_check.',
   ],
-  work_items: [...wasteWorkItems, ...securityWorkItems, ...lightingWorkItems],
-  resources: [...wasteResources, ...securityResources, ...lightingResources],
+  work_items: [
+    ...wasteWorkItems,
+    ...securityWorkItems,
+    ...lightingWorkItems,
+    ...landscapingWorkItems,
+  ],
+  resources: [
+    ...wasteResources,
+    ...securityResources,
+    ...lightingResources,
+    ...landscapingResources,
+  ],
   control_totals: [
     ...wasteControlTotals,
     ...securityControlTotals,
     ...lightingControlTotals,
+    ...landscapingControlTotals,
   ],
 } satisfies EstimateDetailDataset;

@@ -1143,6 +1143,71 @@ describe('estimate details 2026 dataset', () => {
     `);
   });
 
+  it('captures landscaping details from landscaping.pdf', () => {
+    const landscapingRowIds = new Set([
+      'landscaping-mowing-ditches',
+      'landscaping-trees-shrubs',
+      'landscaping-ticks-hogweed',
+      'landscaping-forest-care',
+    ]);
+    const workItems = estimateDetails2026.work_items.filter((item) =>
+      landscapingRowIds.has(item.estimate_row_id),
+    );
+    const resources = estimateDetails2026.resources.filter((resource) =>
+      landscapingRowIds.has(resource.estimate_row_id),
+    );
+    const grossControlTotals = estimateDetails2026.control_totals
+      .filter(
+        (controlTotal) =>
+          landscapingRowIds.has(controlTotal.estimate_row_id) &&
+          controlTotal.cost_bucket === 'gross',
+      )
+      .map((controlTotal) => ({
+        id: controlTotal.id,
+        aggregate_total_rub: controlTotal.aggregate_total_rub?.value ?? null,
+        status: controlTotal.status,
+      }));
+    const resourceKinds = new Set(resources.map((resource) => resource.kind));
+
+    expect(workItems).toHaveLength(4);
+    expect(resources).toHaveLength(57);
+    expect(grossControlTotals).toHaveLength(4);
+    expect(resourceKinds).toEqual(
+      new Set([
+        'labor',
+        'machinist_labor',
+        'machine',
+        'material',
+        'contractor',
+        'other_cost',
+      ]),
+    );
+    expect(grossControlTotals).toMatchInlineSnapshot(`
+      [
+        {
+          "aggregate_total_rub": 1816356,
+          "id": "landscaping-mowing-gross",
+          "status": "needs_check",
+        },
+        {
+          "aggregate_total_rub": 1755909,
+          "id": "landscaping-trees-gross",
+          "status": "needs_check",
+        },
+        {
+          "aggregate_total_rub": 6207773,
+          "id": "landscaping-ticks-hogweed-gross",
+          "status": "needs_check",
+        },
+        {
+          "aggregate_total_rub": 438041,
+          "id": "landscaping-forest-gross",
+          "status": "needs_check",
+        },
+      ]
+    `);
+  });
+
   it('keeps PDF source refs on every detail fact', () => {
     const facts = detailFactsWithSourceRefs();
     const missingRefs = facts

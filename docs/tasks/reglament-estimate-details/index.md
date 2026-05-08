@@ -55,7 +55,7 @@
 - [x] [Task 007: Waste details](tasks/016-waste-details.md)
 - [x] [Task 008: Security details](tasks/015-security-details.md)
 - [x] [Task 009: Lighting details](tasks/014-lighting-details.md)
-- [ ] [Task 010: Landscaping details](tasks/012-landscaping-details.md)
+- [x] [Task 010: Landscaping details](tasks/012-landscaping-details.md)
 - [ ] [Task 011: Improvement details](tasks/013-improvement-details.md)
 - [ ] [Task 012: Cleaning winter mechanized](tasks/007-cleaning-winter-mechanized.md)
 - [ ] [Task 013: Cleaning winter manual](tasks/008-cleaning-winter-manual.md)
