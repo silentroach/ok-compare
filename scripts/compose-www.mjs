@@ -1,4 +1,4 @@
-import { cp, rm } from 'node:fs/promises';
+import { cp, mkdir, rm } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -13,4 +13,5 @@ const cmp = join(root, 'apps', 'compare', 'dist', 'section');
 // and do not require changes here.
 await rm(dst, { recursive: true, force: true });
 await cp(site, dst, { recursive: true });
-await cp(cmp, join(dst, 'compare'), { recursive: true });
+await mkdir(join(dst, '815'), { recursive: true });
+await cp(cmp, join(dst, '815', 'compare'), { recursive: true });

@@ -6,7 +6,7 @@
 
 ```text
 apps/
-  compare/   # compare-приложение: /compare + legacy standalone
+  compare/   # compare-приложение: /815/compare + legacy standalone
   www/       # корневой сайт kpshelkovo.online
 packages/
   ui/        # shared styles / UI primitives
@@ -20,7 +20,7 @@ ops/         # nginx и deploy-конфиги
 ## Команды
 
 ```bash
-# integrated local stack: www on :4321, compare on /compare
+# integrated local stack: www on :4321, compare on /815/compare
 pnpm dev
 
 # root site only
@@ -42,7 +42,7 @@ pnpm build:legacy
 ## Выходы сборки
 
 - `dist/www` — основной сайт `kpshelkovo.online`
-- `dist/www/compare` — compare-раздел на новом домене
+- `dist/www/815/compare` — compare-раздел на новом домене
 - `dist/legacy` — standalone compare на старом домене
 
 ## Деплой

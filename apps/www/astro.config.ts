@@ -9,15 +9,16 @@ import { rehypeTypograf } from './src/lib/typography';
 
 const plugins = [tailwindcss()];
 const site = 'https://kpshelkovo.online';
+const compareBase = '/815/compare';
 const comparePort = Number(process.env.COMPARE_DEV_PROXY_PORT ?? '4322');
 const compareTarget = `http://localhost:${comparePort}`;
 
 function fromCompare(ref: string | undefined): boolean {
-  return Boolean(ref && ref.includes('/compare'));
+  return Boolean(ref && ref.includes(compareBase));
 }
 
 function compare(url: string | undefined): boolean {
-  return Boolean(url && /^\/compare(?:\/|$)/.test(url));
+  return Boolean(url && /^\/815\/compare(?:[/?#]|$)/.test(url));
 }
 
 function asset(url: string | undefined): boolean {
@@ -102,7 +103,7 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      customSitemaps: [`${site}/compare/sitemap.xml`],
+      customSitemaps: [`${site}${compareBase}/sitemap.xml`],
       filter(page) {
         return !/\/404(?:\/|\.html)?$/.test(page);
       },

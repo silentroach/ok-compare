@@ -64,14 +64,14 @@ pnpm build:legacy   # dist/legacy
 ## Артефакты сборки
 
 - `dist/www` — корневой сайт `kpshelkovo.online`.
-- `dist/www/compare` — compare-раздел внутри нового сайта.
+- `dist/www/815/compare` — compare-раздел внутри нового сайта.
 - `dist/legacy` — standalone compare для старого домена.
 
 ## Local dev ports
 
 - `pnpm dev` поднимает интегрированный dev-стек на `http://localhost:4321`.
-- compare в этом режиме живет за прокси по `http://localhost:4321/compare`.
-- внутренний compare dev-server слушает `http://localhost:4322/compare`.
+- compare в этом режиме живет за прокси по `http://localhost:4321/815/compare`.
+- внутренний compare dev-server слушает `http://localhost:4322/815/compare`.
 
 ## Правила Typescript
 
