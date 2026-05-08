@@ -1,6 +1,6 @@
 # Task 004: Markdown Companions
 
-Status: [ ] Not started
+Status: [x] Done
 
 ## Description
 
@@ -8,16 +8,16 @@ Generate markdown companions for LLM use from the detail dataset: overview, mate
 
 ## Acceptance Criteria
 
-- [ ] `/815/regulation/details.md` summarizes the dataset and links topical files.
-- [ ] `/815/regulation/details/materials.md` lists material resources.
-- [ ] `/815/regulation/details/machines.md` lists machine resources.
-- [ ] `/815/regulation/details/labor.md` lists labor resources and rates.
-- [ ] `/815/regulation/details/checks.md` lists control totals, deltas and `needs_check` items.
+- [x] `/815/regulation/details.md` summarizes the dataset and links topical files.
+- [x] `/815/regulation/details/materials.md` lists material resources.
+- [x] `/815/regulation/details/machines.md` lists machine resources.
+- [x] `/815/regulation/details/labor.md` lists labor resources and rates.
+- [x] `/815/regulation/details/checks.md` lists control totals, deltas and `needs_check` items.
 
 ## Verification
 
-- [ ] `pnpm --filter @shelkovo/www typecheck`
-- [ ] Markdown files render from dataset without hardcoded duplicate lists.
+- [x] `pnpm --filter @shelkovo/www typecheck`
+- [x] Markdown files render from dataset without hardcoded duplicate lists.
 
 ## Dependencies
 
