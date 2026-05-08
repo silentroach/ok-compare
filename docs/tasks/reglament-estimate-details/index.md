@@ -42,7 +42,7 @@
 - [x] [Task 003: JSON endpoint](tasks/003-json-endpoint.md)
 - [x] [Task 004: Markdown companions](tasks/004-markdown-companions.md)
 - [x] [Task 005: Discovery and LLM links](tasks/005-discovery-llm-links.md)
-- [ ] [Task 006: Dataset tests](tasks/006-dataset-tests.md)
+- [x] [Task 006: Dataset tests](tasks/006-dataset-tests.md)
 - [ ] [Task 007: Cleaning winter mechanized](tasks/007-cleaning-winter-mechanized.md)
 - [ ] [Task 008: Cleaning winter manual](tasks/008-cleaning-winter-manual.md)
 - [ ] [Task 009: Cleaning summer mechanized](tasks/009-cleaning-summer-mechanized.md)
@@ -58,7 +58,7 @@
 
 ## Checkpoints
 
-- [ ] After Tasks 001-006: empty dataset, endpoints and tests exist.
+- [x] After Tasks 001-006: empty dataset, endpoints and tests exist.
 - [ ] After Tasks 007-011: `cleaning.pdf` is fully represented and reconciled.
 - [ ] After Tasks 012-016: all small section PDFs have detail resources.
 - [ ] After Tasks 017-018: final controls, LLM docs and review are complete.

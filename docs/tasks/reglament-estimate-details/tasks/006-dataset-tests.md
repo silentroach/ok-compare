@@ -1,6 +1,6 @@
 # Task 006: Dataset Tests
 
-Status: [ ] Not started
+Status: [x] Done
 
 ## Description
 
@@ -8,14 +8,14 @@ Add tests that keep the detail dataset structurally valid and protect future res
 
 ## Acceptance Criteria
 
-- [ ] Test verifies every work item and resource has source refs.
-- [ ] Test verifies every `estimate_row_id` exists in `estimate-2026`.
-- [ ] Test verifies every `service_id` exists in `full-2026` when present.
-- [ ] Test verifies resource sums against declared control totals with explicit rounding tolerance.
+- [x] Test verifies every work item and resource has source refs.
+- [x] Test verifies every `estimate_row_id` exists in `estimate-2026`.
+- [x] Test verifies every `service_id` exists in `full-2026` when present.
+- [x] Test verifies resource sums against declared control totals with explicit rounding tolerance.
 
 ## Verification
 
-- [ ] `pnpm --filter @shelkovo/www test -- estimate-details-2026`
+- [x] `pnpm --filter @shelkovo/www test -- estimate-details-2026`
 
 ## Dependencies
 
