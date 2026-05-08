@@ -68,6 +68,9 @@ const improvementFenceProfileSheetResourceId =
 const improvementFenceUsnResourceId = 'improvement-fence-repair-usn-derived';
 const improvementFenceVatResourceId = 'improvement-fence-repair-vat-derived';
 
+const improvementRoundedQuantityNote =
+  'количество в PDF округлено; итог сохранен по исходной строке';
+
 const improvementFinalObjectsSource = detailSource(
   'final',
   2,
@@ -280,48 +283,70 @@ const improvementPpeSource = detailSource(
         label: 'Костюм хлопчатобумажный',
         quote: 'Костюм 7 150,00',
         resource_ids: [improvementPpeCottonSuitResourceId],
+        quantity: detailQuantity(1.3, 'шт.', { raw: '1,3' }),
+        unit_price_rub: detailMoney(5_500, { raw: '5500,00' }),
         total_rub: detailMoney(7_150, { raw: '7 150,00' }),
       }),
       detailSourceQuoteItem({
         label: 'Куртка на утепляющей прокладке',
         quote: 'Куртка 3 120,00',
         resource_ids: [improvementPpeInsulatedJacketResourceId],
+        quantity: detailQuantity(0.5, 'шт.', {
+          raw: '0,5',
+          note: improvementRoundedQuantityNote,
+        }),
+        unit_price_rub: detailMoney(6_000, { raw: '6000,00' }),
         total_rub: detailMoney(3_120, { raw: '3 120,00' }),
       }),
       detailSourceQuoteItem({
         label: 'Жилет сигнальный',
         quote: 'Жилет 1 560,00',
         resource_ids: [improvementPpeSignalVestResourceId],
+        quantity: detailQuantity(1.3, 'шт.', { raw: '1,3' }),
+        unit_price_rub: detailMoney(1_200, { raw: '1200,00' }),
         total_rub: detailMoney(1_560, { raw: '1 560,00' }),
       }),
       detailSourceQuoteItem({
         label: 'Сапоги утепленные',
         quote: 'Сапоги утепленные 1 820,00',
         resource_ids: [improvementPpeInsulatedBootsResourceId],
+        quantity: detailQuantity(0.5, 'шт.', {
+          raw: '0,5',
+          note: improvementRoundedQuantityNote,
+        }),
+        unit_price_rub: detailMoney(3_500, { raw: '3500,00' }),
         total_rub: detailMoney(1_820, { raw: '1 820,00' }),
       }),
       detailSourceQuoteItem({
         label: 'Перчатки с полимерным покрытием',
         quote: 'Перчатки 1 820,00',
         resource_ids: [improvementPpePolymerGlovesResourceId],
+        quantity: detailQuantity(5.2, 'шт.', { raw: '5,2' }),
+        unit_price_rub: detailMoney(350, { raw: '350,00' }),
         total_rub: detailMoney(1_820, { raw: '1 820,00' }),
       }),
       detailSourceQuoteItem({
         label: 'Рукавицы утепленные',
         quote: 'Рукавицы 3 640,00',
         resource_ids: [improvementPpeInsulatedMittensResourceId],
+        quantity: detailQuantity(5.2, 'шт.', { raw: '5,2' }),
+        unit_price_rub: detailMoney(700, { raw: '700,00' }),
         total_rub: detailMoney(3_640, { raw: '3 640,00' }),
       }),
       detailSourceQuoteItem({
         label: 'Сапоги резиновые',
         quote: 'Сапоги резиновые 2 600,00',
         resource_ids: [improvementPpeRubberBootsResourceId],
+        quantity: detailQuantity(1.3, 'шт.', { raw: '1,3' }),
+        unit_price_rub: detailMoney(2_000, { raw: '2000,00' }),
         total_rub: detailMoney(2_600, { raw: '2 600,00' }),
       }),
       detailSourceQuoteItem({
         label: 'Мыло туалетное',
         quote: 'Мыло 1 809,60',
         resource_ids: [improvementPpeSoapResourceId],
+        quantity: detailQuantity(15.6, 'шт.', { raw: '15,6' }),
+        unit_price_rub: detailMoney(116, { raw: '116,00' }),
         total_rub: detailMoney(1_809.6, { raw: '1 809,60' }),
       }),
     ),
@@ -419,8 +444,6 @@ const improvementCalculationSource = detailSource(
   },
 );
 
-const improvementRoundedQuantityNote =
-  'количество в PDF округлено; итог сохранен по исходной строке';
 const improvementVatReconciliationNote =
   'Прямой НДС 218 191,79 в локальном расчете равен 5% от 4 363 835,75 до УСН; агрегированная смета сходится с НДС 5% от калькуляционных доходов 4 463 981.';
 const improvementFenceMismatchReason =

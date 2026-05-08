@@ -590,6 +590,76 @@ describe('estimate details 2026 dataset', () => {
     `);
   });
 
+  it('keeps improvement quote items enriched with source table fields', () => {
+    const ppeSource = resourcesById
+      .get('improvement-ppe-cotton-suit')
+      ?.source_refs.find(
+        (ref) =>
+          ref.pdf === 'improvement' &&
+          ref.page === 14 &&
+          ref.fragment === 'позиция 8.1 / средства охраны труда',
+      );
+    const toolsSource = resourcesById
+      .get('improvement-scoop-shovel')
+      ?.source_refs.find(
+        (ref) =>
+          ref.pdf === 'improvement' &&
+          ref.page === 14 &&
+          ref.fragment === 'позиция 9.1 / износ оборудования и инструментов',
+      );
+    const scoopShovelItem = toolsSource?.quote_items?.find(
+      (item) => item.label === 'Лопата совковая',
+    );
+
+    expect({
+      ppe: ppeSource?.quote_items?.[0],
+      tool: scoopShovelItem,
+    }).toMatchInlineSnapshot(`
+      {
+        "ppe": {
+          "label": "Костюм хлопчатобумажный",
+          "quantity": {
+            "raw": "1,3",
+            "unit": "шт.",
+            "value": 1.3,
+          },
+          "quote": "Костюм 7 150,00",
+          "resource_ids": [
+            "improvement-ppe-cotton-suit",
+          ],
+          "total_rub": {
+            "raw": "7 150,00",
+            "value": 7150,
+          },
+          "unit_price_rub": {
+            "raw": "5500,00",
+            "value": 5500,
+          },
+        },
+        "tool": {
+          "label": "Лопата совковая",
+          "quantity": {
+            "raw": "0,7",
+            "unit": "шт.",
+            "value": 0.7,
+          },
+          "quote": "Лопата совковая 672,10",
+          "resource_ids": [
+            "improvement-scoop-shovel",
+          ],
+          "total_rub": {
+            "raw": "672,10",
+            "value": 672.1,
+          },
+          "unit_price_rub": {
+            "raw": "1034,00",
+            "value": 1034,
+          },
+        },
+      }
+    `);
+  });
+
   it('migrates multi-position quote items in every section detail module', () => {
     const sectionPdfs = [
       'cleaning',
