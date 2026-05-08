@@ -1559,6 +1559,240 @@ describe('estimate details 2026 dataset', () => {
     `);
   });
 
+  it('captures summer mechanized cleaning details from cleaning.pdf', () => {
+    const cleaningRowIds = new Set(['cleaning-summer-mechanized']);
+    const workItems = estimateDetails2026.work_items
+      .filter((item) => cleaningRowIds.has(item.estimate_row_id))
+      .map((item) => ({
+        id: item.id,
+        estimate_row_id: item.estimate_row_id,
+        service_ids: item.service_ids ?? [],
+        status: item.status,
+      }));
+    const resources = estimateDetails2026.resources
+      .filter((resource) => cleaningRowIds.has(resource.estimate_row_id))
+      .map((resource) => ({
+        id: resource.id,
+        kind: resource.kind,
+        cost_bucket: resource.cost_bucket,
+        total_rub: resource.total_rub.value,
+        status: resource.status,
+      }));
+    const controlTotals = estimateDetails2026.control_totals
+      .filter((controlTotal) =>
+        cleaningRowIds.has(controlTotal.estimate_row_id),
+      )
+      .map((controlTotal) => ({
+        id: controlTotal.id,
+        cost_bucket: controlTotal.cost_bucket,
+        source_total_rub: controlTotal.source_total_rub.value,
+        aggregate_total_rub: controlTotal.aggregate_total_rub?.value ?? null,
+        status: controlTotal.status,
+      }));
+
+    expect({ workItems, resources, controlTotals }).toMatchInlineSnapshot(`
+      {
+        "controlTotals": [
+          {
+            "aggregate_total_rub": 20918659.44,
+            "cost_bucket": "machinist_salary",
+            "id": "cleaning-summer-mechanized-machinist-salary",
+            "source_total_rub": 20918659.44,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 35473842.02,
+            "cost_bucket": "machines",
+            "id": "cleaning-summer-mechanized-machines",
+            "source_total_rub": 35473842.02,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 335990.88,
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-mechanized-materials",
+            "source_total_rub": 335990.88,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 6317435.15,
+            "cost_bucket": "insurance",
+            "id": "cleaning-summer-mechanized-insurance",
+            "source_total_rub": 6317435.15,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 14643061.61,
+            "cost_bucket": "overhead",
+            "id": "cleaning-summer-mechanized-overhead",
+            "source_total_rub": 14643061.61,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 8367463.78,
+            "cost_bucket": "profit",
+            "id": "cleaning-summer-mechanized-profit",
+            "source_total_rub": 8367463.78,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 1511249.98,
+            "cost_bucket": "usn",
+            "id": "cleaning-summer-mechanized-usn",
+            "source_total_rub": 1511249.98,
+            "status": "derived",
+          },
+          {
+            "aggregate_total_rub": 4378385.14,
+            "cost_bucket": "vat",
+            "id": "cleaning-summer-mechanized-vat",
+            "source_total_rub": 4378385.14,
+            "status": "needs_check",
+          },
+          {
+            "aggregate_total_rub": 91946088,
+            "cost_bucket": "gross",
+            "id": "cleaning-summer-mechanized-gross",
+            "source_total_rub": 91946088,
+            "status": "needs_check",
+          },
+        ],
+        "resources": [
+          {
+            "cost_bucket": "machinist_salary",
+            "id": "cleaning-summer-mechanized-watering-machinist-labor",
+            "kind": "machinist_labor",
+            "status": "verified",
+            "total_rub": 20918659.44,
+          },
+          {
+            "cost_bucket": "machines",
+            "id": "cleaning-summer-mechanized-watering-tractor-machine",
+            "kind": "machine",
+            "status": "verified",
+            "total_rub": 33046889.8,
+          },
+          {
+            "cost_bucket": "machines",
+            "id": "cleaning-summer-mechanized-watering-opm5-machine",
+            "kind": "machine",
+            "status": "verified",
+            "total_rub": 2426952.22,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-mechanized-water",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 129742.08,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-mechanized-ppe-cotton-suit",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 62700,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-mechanized-ppe-insulated-jacket",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 27360,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-mechanized-ppe-signal-vest",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 13680,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-mechanized-ppe-insulated-boots",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 15960,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-mechanized-ppe-polymer-gloves",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 15960,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-mechanized-ppe-insulated-mittens",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 31920,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-mechanized-ppe-rubber-boots",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 22800,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-summer-mechanized-ppe-soap",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 15868.8,
+          },
+          {
+            "cost_bucket": "insurance",
+            "id": "cleaning-summer-mechanized-insurance",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 6317435.15,
+          },
+          {
+            "cost_bucket": "overhead",
+            "id": "cleaning-summer-mechanized-overhead",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 14643061.61,
+          },
+          {
+            "cost_bucket": "profit",
+            "id": "cleaning-summer-mechanized-profit",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 8367463.78,
+          },
+          {
+            "cost_bucket": "usn",
+            "id": "cleaning-summer-mechanized-usn-derived",
+            "kind": "other_cost",
+            "status": "derived",
+            "total_rub": 1511249.98,
+          },
+          {
+            "cost_bucket": "vat",
+            "id": "cleaning-summer-mechanized-vat-derived",
+            "kind": "other_cost",
+            "status": "needs_check",
+            "total_rub": 4378385.14,
+          },
+        ],
+        "workItems": [
+          {
+            "estimate_row_id": "cleaning-summer-mechanized",
+            "id": "cleaning-summer-mechanized",
+            "service_ids": [
+              "summer-road-dust-suppression",
+              "summer-road-watering",
+            ],
+            "status": "verified",
+          },
+        ],
+      }
+    `);
+  });
+
   it('captures winter manual cleaning details from cleaning.pdf', () => {
     const cleaningRowIds = new Set(['cleaning-winter-manual']);
     const workItems = estimateDetails2026.work_items

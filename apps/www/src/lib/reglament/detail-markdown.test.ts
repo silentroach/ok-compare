@@ -289,4 +289,17 @@ describe('estimate detail markdown companions', () => {
     expect(checks).toContain('ремонт периметрального ограждения');
     expect(checks).toContain('Профнастил оцинкованный');
   });
+
+  it('keeps summer road watering frequency answerable in real markdown', () => {
+    const markdown = [
+      buildEstimateDetailMaterialsMarkdown(),
+      buildEstimateDetailMachinesMarkdown(),
+      buildEstimateDetailLaborMarkdown(),
+    ].join('\n');
+
+    expect(markdown).toContain(
+      'Дороги (асфальт). Полив водой (обеспыливание) - 3 раза в день без дождя',
+    );
+    expect(markdown).toContain('cleaning-summer-mechanized-water');
+  });
 });
