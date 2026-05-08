@@ -52,48 +52,4 @@ pnpm typecheck
 
 ## Agent-Facing Surfaces
 
-- Root discovery:
-  - `src/pages/index.md.ts`
-  - `src/pages/llms.txt.ts`
-  - `src/pages/llms-full.txt.ts`
-  - `src/pages/.well-known/api-catalog.ts`
-  - `src/pages/.well-known/agent-skills/index.json.ts`
-  - `public/.well-known/agent-skills/*/SKILL.md`
-- News discovery:
-  - `src/pages/news/index.md.ts`
-  - `src/pages/news/llms.txt.ts`
-  - `src/pages/news/llms-full.txt.ts`
-  - `src/pages/news/feed.xml.ts`
-  - `src/pages/news/data/articles.json.ts`
-  - `src/pages/news/.well-known/api-catalog.ts`
-  - `src/pages/news/schemas/articles.schema.json.ts`
-  - `src/pages/news/openapi/articles.openapi.json.ts`
-- Status discovery:
-  - `src/pages/status/index.md.ts`
-  - `src/pages/status/llms.txt.ts`
-  - `src/pages/status/llms-full.txt.ts`
-  - `src/pages/status/feed.xml.ts`
-  - `src/pages/status/data/status.json.ts`
-  - `src/pages/status/.well-known/api-catalog.ts`
-  - `src/pages/status/schemas/status.schema.json.ts`
-  - `src/pages/status/openapi/status.openapi.json.ts`
-- Reglament discovery:
-  - `src/pages/reglament/index.md.ts`
-  - `src/pages/reglament/llms.txt.ts`
-  - `src/pages/reglament/llms-full.txt.ts`
-  - `src/pages/reglament/data/estimate-2026.json.ts`
-  - `src/pages/reglament/.well-known/api-catalog.ts`
-  - `src/pages/reglament/schemas/estimate-2026.schema.json.ts`
-  - `src/pages/reglament/openapi/estimate-2026.openapi.json.ts`
-- People discovery:
-  - `src/pages/people/[slug]/index.md.ts`
-  - `src/pages/people/index.md.ts`
-  - `src/pages/people/llms.txt.ts`
-  - `src/pages/people/llms-full.txt.ts`
-  - `src/pages/people/data/people.json.ts`
-  - `src/pages/people/.well-known/api-catalog.ts`
-  - `src/pages/people/schemas/people.schema.json.ts`
-  - `src/pages/people/openapi/people.openapi.json.ts`
-  - `public/.well-known/agent-skills/people-profiles/SKILL.md`
-
-Если меняются section routes, markdown companions, JSON feeds, `llms.txt`, skills или discovery docs для `news`/`status`/`people`, эти поверхности нужно синхронно пересматривать.
+Если меняются section routes, markdown companions, JSON feeds, `llms.txt`, skills или discovery docs для разделов, связанные agent-facing поверхности нужно синхронно пересматривать.

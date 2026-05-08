@@ -70,7 +70,7 @@ describe('reglament discovery payload', () => {
     ).toBe(true);
     expect(payload.sections[0]?.rows[0]?.source_refs[0]).toMatchObject({
       pdf: 'final',
-      pdf_path: 'apps/www/public/reglament/original/final.pdf',
+      pdf_path: 'apps/www/public/815/regulation/original/final.pdf',
       pdf_url: reglamentSourcePdfPath('final'),
       page: 1,
     });
@@ -78,7 +78,7 @@ describe('reglament discovery payload', () => {
       expect.arrayContaining([
         expect.objectContaining({
           pdf: 'final',
-          pdf_path: 'apps/www/public/reglament/original/final.pdf',
+          pdf_path: 'apps/www/public/815/regulation/original/final.pdf',
           pdf_url: reglamentSourcePdfPath('final'),
         }),
       ]),
@@ -135,59 +135,61 @@ describe('reglament discovery route smoke', () => {
     const cases = [
       {
         name: 'markdown companion',
-        load: () => import('../../pages/reglament/index.md'),
+        load: () => import('../../pages/815/regulation/index.md'),
         contentType: 'text/markdown',
         marker: '# Калькулятор тарифа по смете 2026',
       },
       {
         name: 'json feed',
-        load: () => import('../../pages/reglament/data/estimate-2026.json'),
+        load: () =>
+          import('../../pages/815/regulation/data/estimate-2026.json'),
         contentType: 'application/json',
         marker: '"id": "estimate-2026"',
       },
       {
         name: 'full reglament markdown companion',
-        load: () => import('../../pages/reglament/full.md'),
+        load: () => import('../../pages/815/regulation/full.md'),
         contentType: 'text/markdown',
         marker: '# Полный регламент содержания Шелково',
       },
       {
         name: 'full reglament json feed',
-        load: () => import('../../pages/reglament/data/full-2026.json'),
+        load: () => import('../../pages/815/regulation/data/full-2026.json'),
         contentType: 'application/json',
         marker: '"dataset_id": "full-reglament-2026"',
       },
       {
         name: 'short llms',
-        load: () => import('../../pages/reglament/llms.txt'),
+        load: () => import('../../pages/815/regulation/llms.txt'),
         contentType: 'text/plain',
-        marker: '/reglament/data/full-2026.json',
+        marker: '/815/regulation/data/full-2026.json',
       },
       {
         name: 'full llms',
-        load: () => import('../../pages/reglament/llms-full.txt'),
+        load: () => import('../../pages/815/regulation/llms-full.txt'),
         contentType: 'text/plain',
-        marker: '/reglament/full.md',
+        marker: '/815/regulation/full.md',
       },
       {
         name: 'json schema',
         load: () =>
-          import('../../pages/reglament/schemas/estimate-2026.schema.json'),
+          import('../../pages/815/regulation/schemas/estimate-2026.schema.json'),
         contentType: 'application/schema+json',
         marker: 'Estimate2026Payload',
       },
       {
         name: 'openapi',
         load: () =>
-          import('../../pages/reglament/openapi/estimate-2026.openapi.json'),
+          import('../../pages/815/regulation/openapi/estimate-2026.openapi.json'),
         contentType: 'application/vnd.oai.openapi+json',
         marker: 'getReglamentEstimate2026',
       },
       {
         name: 'api catalog',
-        load: () => import('../../pages/reglament/.well-known/api-catalog'),
+        load: () =>
+          import('../../pages/815/regulation/.well-known/api-catalog'),
         contentType: 'application/linkset+json',
-        marker: '/reglament/data/full-2026.json',
+        marker: '/815/regulation/data/full-2026.json',
       },
     ];
 
@@ -236,11 +238,12 @@ describe('reglament discovery route smoke', () => {
   });
 
   it('explains the short UI tariff unit without renaming machine fields', async () => {
-    const markdownRoute = await import('../../pages/reglament/index.md');
-    const shortLlmsRoute = await import('../../pages/reglament/llms.txt');
-    const fullLlmsRoute = await import('../../pages/reglament/llms-full.txt');
+    const markdownRoute = await import('../../pages/815/regulation/index.md');
+    const shortLlmsRoute = await import('../../pages/815/regulation/llms.txt');
+    const fullLlmsRoute =
+      await import('../../pages/815/regulation/llms-full.txt');
     const jsonRoute =
-      await import('../../pages/reglament/data/estimate-2026.json');
+      await import('../../pages/815/regulation/data/estimate-2026.json');
     const markdown = await (await markdownRoute.GET({} as never)).text();
     const shortLlms = await (await shortLlmsRoute.GET({} as never)).text();
     const fullLlms = await (await fullLlmsRoute.GET({} as never)).text();
@@ -256,11 +259,12 @@ describe('reglament discovery route smoke', () => {
   });
 
   it('keeps public PDF URLs and repo paths in agent-facing surfaces', async () => {
-    const markdownRoute = await import('../../pages/reglament/index.md');
-    const shortLlmsRoute = await import('../../pages/reglament/llms.txt');
-    const fullLlmsRoute = await import('../../pages/reglament/llms-full.txt');
+    const markdownRoute = await import('../../pages/815/regulation/index.md');
+    const shortLlmsRoute = await import('../../pages/815/regulation/llms.txt');
+    const fullLlmsRoute =
+      await import('../../pages/815/regulation/llms-full.txt');
     const jsonRoute =
-      await import('../../pages/reglament/data/estimate-2026.json');
+      await import('../../pages/815/regulation/data/estimate-2026.json');
     const markdown = await (await markdownRoute.GET({} as never)).text();
     const shortLlms = await (await shortLlmsRoute.GET({} as never)).text();
     const fullLlms = await (await fullLlmsRoute.GET({} as never)).text();
@@ -275,12 +279,12 @@ describe('reglament discovery route smoke', () => {
     };
 
     expect(`${markdown}\n${shortLlms}\n${fullLlms}`).toContain(
-      '/reglament/original/final.pdf',
+      '/815/regulation/original/final.pdf',
     );
     expect(json.source_refs[0]).toMatchObject({
       pdf: 'final',
-      pdf_path: 'apps/www/public/reglament/original/final.pdf',
-      pdf_url: '/reglament/original/final.pdf',
+      pdf_path: 'apps/www/public/815/regulation/original/final.pdf',
+      pdf_url: '/815/regulation/original/final.pdf',
     });
   });
 });

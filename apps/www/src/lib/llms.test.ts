@@ -53,9 +53,9 @@ describe('root llms', () => {
     expect(short).toContain('Регламент');
     expect(full).toContain('Раздел Люди');
     expect(full).toContain('/people/data/people.json');
-    expect(full).toContain('/reglament/data/estimate-2026.json');
+    expect(full).toContain('/815/regulation/data/estimate-2026.json');
     expect(home).toContain('Люди');
     expect(home).toContain('/people/.well-known/api-catalog');
-    expect(home).toContain('/reglament/.well-known/api-catalog');
+    expect(home).toContain('/815/regulation/.well-known/api-catalog');
   });
 });

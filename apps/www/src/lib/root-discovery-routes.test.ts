@@ -18,7 +18,7 @@ describe('root discovery route smoke', () => {
       }[];
     };
     const reglament = payload.linkset.find(
-      (entry) => entry.anchor === 'https://example.com/reglament/',
+      (entry) => entry.anchor === 'https://example.com/815/regulation/',
     );
 
     expect(response.headers.get('Content-Type')).toContain(
@@ -32,7 +32,7 @@ describe('root discovery route smoke', () => {
     expect(reglament?.item).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          href: 'https://example.com/reglament/data/estimate-2026.json',
+          href: 'https://example.com/815/regulation/data/estimate-2026.json',
         }),
       ]),
     );

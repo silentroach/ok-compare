@@ -47,7 +47,7 @@ describe('root api catalog', () => {
       (entry) => entry.anchor === 'https://example.com/sub/people/index.md',
     );
     const reglamentEntry = payload.linkset.find(
-      (entry) => entry.anchor === 'https://example.com/sub/reglament/',
+      (entry) => entry.anchor === 'https://example.com/sub/815/regulation/',
     );
 
     expect(peopleEntry?.item).toEqual(
@@ -66,10 +66,10 @@ describe('root api catalog', () => {
     expect(reglamentEntry?.item).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          href: 'https://example.com/sub/reglament/data/estimate-2026.json',
+          href: 'https://example.com/sub/815/regulation/data/estimate-2026.json',
         }),
         expect.objectContaining({
-          href: 'https://example.com/sub/reglament/llms.txt',
+          href: 'https://example.com/sub/815/regulation/llms.txt',
         }),
       ]),
     );

@@ -54,7 +54,7 @@ export const REGLAMENT_FORMULAS = {
 } as const;
 
 export const REGLAMENT_CAVEATS = [
-  'PDF-таблицы нормализованы вручную; исходные PDF лежат в apps/www/public/reglament/original и доступны под /reglament/original/*.pdf.',
+  'PDF-таблицы нормализованы вручную; исходные PDF лежат в apps/www/public/815/regulation/original и доступны под /815/regulation/original/*.pdf.',
   'final.pdf сходится с полной строкой «Доходов всего» из калькуляции, умноженной на НДС 5%, а не только с локальной строкой «Сметная стоимость».',
   'Строки с тегом «требует проверки» стоит перепроверить по исходным PDF перед юридическими или финансовыми выводами.',
 ] as const;
@@ -190,7 +190,7 @@ function rewriteSchemaRefs(value: unknown, schemaRef: string): unknown {
 }
 
 export const estimateSourcePdfPath = (pdf: EstimateSourcePdf): string =>
-  `apps/www/public/reglament/original/${pdf}.pdf`;
+  `apps/www/public/815/regulation/original/${pdf}.pdf`;
 
 const sourceRef = (ref: EstimateSourceRef): ReglamentDiscoverySourceRef => ({
   ...ref,
@@ -575,7 +575,7 @@ export function openapi(root: string): Record<string, unknown> {
       title: 'Шелково Reglament Estimate 2026 JSON',
       version: '1.0.0',
       description:
-        'OpenAPI-описание read-only JSON /reglament/data/estimate-2026.json: baseline сметы, формулы, source refs и computed значения.',
+        'OpenAPI-описание read-only JSON /815/regulation/data/estimate-2026.json: baseline сметы, формулы, source refs и computed значения.',
     },
     servers: [
       {

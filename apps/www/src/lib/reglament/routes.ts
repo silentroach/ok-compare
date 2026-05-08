@@ -1,23 +1,23 @@
 import { canon, withBase } from '../site';
 import { ESTIMATE_SOURCE_PDFS, type EstimateSourcePdf } from './schema';
 
-const REGLAMENT_ROOT = '/reglament/';
-const REGLAMENT_MARKDOWN = '/reglament/index.md';
-const REGLAMENT_FULL_MARKDOWN = '/reglament/full.md';
-const REGLAMENT_DATA_ESTIMATE_2026 = '/reglament/data/estimate-2026.json';
-const REGLAMENT_DATA_FULL_2026 = '/reglament/data/full-2026.json';
-const REGLAMENT_ASSETS = '/reglament/assets/';
-const REGLAMENT_SERVICES = '/reglament/services/';
-const REGLAMENT_LLMS = '/reglament/llms.txt';
-const REGLAMENT_LLMS_FULL = '/reglament/llms-full.txt';
-const REGLAMENT_API_CATALOG = '/reglament/.well-known/api-catalog';
-const REGLAMENT_SCHEMA = '/reglament/schemas/estimate-2026.schema.json';
-const REGLAMENT_OPENAPI = '/reglament/openapi/estimate-2026.openapi.json';
-const REGLAMENT_SOURCE_PDF_ROOT = '/reglament/original/';
-const REGLAMENT_FULL_SOURCE_PDF = '/reglament/original/full.pdf';
+const REGLAMENT_ROOT = '/815/regulation/';
+const REGLAMENT_MARKDOWN = '/815/regulation/index.md';
+const REGLAMENT_FULL_MARKDOWN = '/815/regulation/full.md';
+const REGLAMENT_DATA_ESTIMATE_2026 = '/815/regulation/data/estimate-2026.json';
+const REGLAMENT_DATA_FULL_2026 = '/815/regulation/data/full-2026.json';
+const REGLAMENT_ASSETS = '/815/regulation/assets/';
+const REGLAMENT_SERVICES = '/815/regulation/services/';
+const REGLAMENT_LLMS = '/815/regulation/llms.txt';
+const REGLAMENT_LLMS_FULL = '/815/regulation/llms-full.txt';
+const REGLAMENT_API_CATALOG = '/815/regulation/.well-known/api-catalog';
+const REGLAMENT_SCHEMA = '/815/regulation/schemas/estimate-2026.schema.json';
+const REGLAMENT_OPENAPI = '/815/regulation/openapi/estimate-2026.openapi.json';
+const REGLAMENT_SOURCE_PDF_ROOT = '/815/regulation/original/';
+const REGLAMENT_FULL_SOURCE_PDF = '/815/regulation/original/full.pdf';
 
 export type ReglamentSourcePdfPath =
-  `/reglament/original/${EstimateSourcePdf}.pdf`;
+  `/815/regulation/original/${EstimateSourcePdf}.pdf`;
 export type ReglamentFullSourcePdfPath = typeof REGLAMENT_FULL_SOURCE_PDF;
 
 export const reglamentSourcePdfPath = (
