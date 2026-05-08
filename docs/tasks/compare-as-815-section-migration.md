@@ -23,7 +23,7 @@ Commit message format: кратко и по смыслу, например `move
 - Не оставлять `/compare/` вечным alias. New-domain redirects временные на 3 месяца с явным TODO removal date.
 - Старый домен `сравни.шелково.рф` после миграции не должен обслуживать standalone HTML.
 - Public page URL scope для редиректов: `/`, `/rating/`, `/settlements/:slug/` на старом домене и `/compare/`, `/compare/rating/`, `/compare/settlements/:slug/` на новом домене.
-- Не расширять редиректы на `.md`, JSON, OpenAPI, schemas, `llms.txt`, assets и sitemap без отдельного решения.
+- Не расширять редиректы на `.md`, JSON, OpenAPI, schemas, `llms.txt`, assets и sitemap без отдельного решения. T6 decision: unmatched old-domain URLs redirect to `https://kpshelkovo.online/` instead of 404.
 - При изменении frontend UI использовать `frontend-ui-engineering` и `tailwind-design-system`; при `.astro` использовать `astro`; при `.svelte` использовать `svelte-code-writer`.
 - При изменении nginx в `ops/nginx` использовать `nginx-expert`.
 - Не запускать `pnpm dev` из root без явной просьбы.
@@ -37,7 +37,7 @@ Commit message format: кратко и по смыслу, например `move
 | T3  | [Compose compare into `dist/www/815/compare` and update root dev/sitemap wiring](compare-as-815-section-migration/T3-compose-www-section.md) | done   | T2             |
 | T4  | [Update root-site links and agent discovery references](compare-as-815-section-migration/T4-update-root-links-discovery.md)                  | done   | T3             |
 | T5  | [Add compare breadcrumbs and breadcrumb JSON-LD](compare-as-815-section-migration/T5-add-compare-breadcrumbs.md)                             | done   | T2             |
-| T6  | [Replace nginx compare page handling with old-path redirects](compare-as-815-section-migration/T6-nginx-redirects.md)                        | todo   | T2, T3, T4     |
+| T6  | [Replace nginx compare page handling with old-path redirects](compare-as-815-section-migration/T6-nginx-redirects.md)                        | done   | T2, T3, T4     |
 | T7  | [Remove standalone legacy build and deploy path](compare-as-815-section-migration/T7-remove-legacy-build.md)                                 | todo   | T6             |
 | T8  | [Final migration verification and documentation cleanup](compare-as-815-section-migration/T8-final-verification.md)                          | todo   | T4, T5, T6, T7 |
 
@@ -51,9 +51,9 @@ After T3:
 
 After T6:
 
-- [ ] Redirect scope matches idea exactly.
-- [ ] New `/815/compare` serving rules are not shadowed by old redirects.
-- [ ] Old domain is redirect-only for public page URLs.
+- [x] Redirect scope matches idea plus documented old-domain catch-all decision.
+- [x] New `/815/compare` serving rules are not shadowed by old redirects.
+- [x] Old domain redirects public page URLs to compare and unmatched URLs to the new root.
 
 After T8:
 

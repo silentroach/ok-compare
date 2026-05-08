@@ -21,7 +21,7 @@ Use it to pass forward facts that are not obvious from the current task diff: co
 | T3  | done   | `compose compare into 815 section`      | `docs/tasks/compare-as-815-section-migration/T3-compose-www-section.md`         |
 | T4  | done   | `update root compare references`        | `docs/tasks/compare-as-815-section-migration/T4-update-root-links-discovery.md` |
 | T5  | done   | `add compare breadcrumbs`               | `docs/tasks/compare-as-815-section-migration/T5-add-compare-breadcrumbs.md`     |
-| T6  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T6-nginx-redirects.md`             |
+| T6  | done   | `replace compare nginx redirects`       | `docs/tasks/compare-as-815-section-migration/T6-nginx-redirects.md`             |
 | T7  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T7-remove-legacy-build.md`         |
 | T8  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T8-final-verification.md`          |
 
@@ -38,8 +38,8 @@ Date: 2026-05-08.
 - Compare visible and JSON-LD breadcrumbs now use `Главная > Сравнение тарифов`; settlement pages add the settlement name as the third item.
 - Shared visible breadcrumbs component is exported as `@shelkovo/ui/Breadcrumbs.astro` from `packages/ui/src/Breadcrumbs.astro`.
 - `apps/www/src/lib/breadcrumbs.ts` has a home breadcrumb helper, but it is app-local to `apps/www`; compare can either add its own small helper or inline the arrays.
-- `ops/nginx/kpshelkovo-online.conf` currently serves compare under `/compare/` with special handling for static assets, data, markdown negotiation, `.md`, `index.html` and API catalog.
-- `ops/nginx/sravni-shelkovo.conf` currently serves standalone compare HTML from `/var/www/sravni-shelkovo` and has old root-level page handling.
+- `ops/nginx/kpshelkovo-online.conf` serves compare under `/815/compare/` and keeps temporary `/compare/` public page redirects until `2026-08-08`.
+- `ops/nginx/sravni-shelkovo.conf` is redirect-only except ACME: public pages redirect to `/815/compare/...`; unmatched URLs redirect to `https://kpshelkovo.online/` by T6 decision.
 - Root `pnpm build` currently runs `build:main` and `build:legacy`; CI currently rsyncs both `dist/www/` and `dist/legacy/`.
 
 ## Intentional Scope Boundaries
@@ -47,7 +47,7 @@ Date: 2026-05-08.
 - Do not create a `/815/` landing page in this migration.
 - Do not add `Тариф 815` to breadcrumbs until a real `/815/` page exists.
 - Do not copy compare implementation into `apps/www`.
-- Do not redirect old machine-readable/API/asset URLs unless a new decision is documented.
+- Do not redirect old machine-readable/API/asset URLs unless a new decision is documented. T6 documents the old-domain unmatched URL redirect to the new root.
 - Do not keep `/compare/` as a permanent alias.
 
 ## External Validation Gaps
@@ -56,6 +56,31 @@ Date: 2026-05-08.
 - Target-host `nginx -t` is needed for final nginx validation unless a local nginx environment is available.
 
 ## Task Log
+
+### T6 - 2026-05-08 - nginx redirects
+
+Status: done.
+
+Context:
+
+- Replacing old compare public page serving with hardcoded redirects to `/815/compare/...`.
+- `ops/nginx/kpshelkovo-online.conf` now serves compare under `/815/compare` for static assets, data, public pages, markdown negotiation, `.md`, `index.html`, API catalog and fallback paths.
+- New-domain `/compare/`, `/compare/rating/` and `/compare/settlements/:slug/` redirects are temporary and carry TODO removal date `2026-08-08`.
+- `ops/nginx/sravni-shelkovo.conf` no longer serves standalone compare HTML. ACME handling remains; old public pages redirect to `/815/compare/...`.
+- T6 user decision: unmatched old-domain URLs redirect to `https://kpshelkovo.online/` instead of returning 404.
+- Settlement redirect source: `apps/compare/src/data/settlements/*.yaml`, excluding `_template.yaml`; generated slug count is 37.
+
+Verification:
+
+- `node -e ...`: pass; confirmed 37 settlement slugs, no missing new-domain redirects, no missing old-domain redirects, and no generic old-path settlement redirect regex.
+- `rg "return 301|/compare|/815/compare" ops/nginx`: reviewed for rule order and shadowing.
+- Specific `rg` checks found no old `/compare` serving rules left in `ops/nginx/kpshelkovo-online.conf`; only exact temporary redirects remain.
+- `git diff --check`: pass.
+- `nginx -v`: failed locally with `command not found`; target host must run `nginx -t` before reload/deploy.
+
+Commit:
+
+- `replace compare nginx redirects`
 
 ### T5 - 2026-05-08 - compare breadcrumbs
 
@@ -216,18 +241,19 @@ Commit:
 
 Add entries here when `rg` finds old strings that should remain.
 
-| Pattern     | Location                       | Why it remains                                   | Removal condition                                                 |
-| ----------- | ------------------------------ | ------------------------------------------------ | ----------------------------------------------------------------- |
-| `/compare/` | docs/history or redirect tasks | Historical/source context or old-path redirects. | Remove only if it stops documenting history or redirect behavior. |
+| Pattern     | Location                           | Why it remains                                   | Removal condition                                                 |
+| ----------- | ---------------------------------- | ------------------------------------------------ | ----------------------------------------------------------------- |
+| `/compare/` | docs/history or redirect tasks     | Historical/source context or old-path redirects. | Remove only if it stops documenting history or redirect behavior. |
+| `/compare/` | `ops/nginx/kpshelkovo-online.conf` | Temporary new-domain public page redirects.      | Remove after `2026-08-08` if migration traffic is clean.          |
 
 ## Verification Notes
 
 Add command results here when they affect later tasks.
 
 | Date       | Task | Command                                   | Result       | Notes                                                                       |
-| ---------- | ---- | ----------------------------------------- | ------------ | --------------------------------------------------------------------------- | ---------------- | ----------- | ------------ | ---------------- | ---- | ------------------------------------------------------------- |
+| ---------- | ---- | ----------------------------------------- | ------------ | --------------------------------------------------------------------------- | ---- | ------------------------------------------------------------- |
 | 2026-05-08 | T0   | Documentation review only                 | not run      | Planning docs only; no build/test needed.                                   |
-| 2026-05-08 | T1   | `rg "/compare                             | COMPARE_BASE | COMPARE_CANONICAL_BASE                                                      | dist/www/compare | dist/legacy | build:legacy | compose-legacy"` | pass | Reviewed repo-wide URL/build/deploy surfaces; docs-only task. |
+| 2026-05-08 | T1   | `rg "/compare                             | COMPARE_BASE | ..."`                                                                       | pass | Reviewed repo-wide URL/build/deploy surfaces; docs-only task. |
 | 2026-05-08 | T2   | `pnpm --dir=apps/compare test`            | pass         | 30 files / 238 tests.                                                       |
 | 2026-05-08 | T2   | `pnpm --dir=apps/compare typecheck`       | pass         | Astro sync and `tsc --noEmit` passed.                                       |
 | 2026-05-08 | T2   | `pnpm --dir=apps/compare build`           | pass         | Built `apps/compare/dist/section` with `/815/compare` canonical/base links. |
@@ -239,3 +265,7 @@ Add command results here when they affect later tasks.
 | 2026-05-08 | T5   | `pnpm --dir apps/compare typecheck`       | pass         | Astro sync and `tsc --noEmit` passed.                                       |
 | 2026-05-08 | T5   | `pnpm --dir apps/compare build`           | pass         | Built `apps/compare/dist/section` with compare breadcrumbs.                 |
 | 2026-05-08 | T5   | Built HTML breadcrumb sample check        | pass         | Checked index, rating and `settlements/shelkovo` HTML plus JSON-LD.         |
+| 2026-05-08 | T6   | `rg "return 301                           | /compare     | /815/compare" ops/nginx`                                                    | pass | Reviewed redirect order and `/815/compare` serving rules.     |
+| 2026-05-08 | T6   | Settlement redirect coverage script       | pass         | 37 slugs from settlement YAML files; no missing hardcoded redirects.        |
+| 2026-05-08 | T6   | `git diff --check`                        | pass         | No whitespace errors.                                                       |
+| 2026-05-08 | T6   | `nginx -v`                                | failed       | Local nginx is unavailable; run `nginx -t` on the target host.              |
