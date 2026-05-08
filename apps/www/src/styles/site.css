@@ -122,3 +122,17 @@
   color: var(--color-muted-foreground);
   font-size: 0.75rem;
 }
+
+.ui-root-site
+  .reglament-table-shell[data-reglament-table-stuck]
+  thead
+  th:first-child {
+  border-top-left-radius: 0;
+}
+
+.ui-root-site
+  .reglament-table-shell[data-reglament-table-stuck]
+  thead
+  th:last-child {
+  border-top-right-radius: 0;
+}

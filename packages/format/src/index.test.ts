@@ -5,8 +5,11 @@ import {
   formatDate,
   formatDistance,
   formatMonth,
+  formatNumberRu,
+  formatNumberUnitRu,
   formatPercentage,
   formatTariff,
+  parseNumberInputRu,
   pluralizeRu,
 } from './index';
 
@@ -22,6 +25,47 @@ describe('format package', () => {
     it('uses nearest integer rounding', () => {
       expect(formatCurrency(1234.4)).toBe('1\u00A0234 ₽');
       expect(formatCurrency(1234.5)).toBe('1\u00A0235 ₽');
+    });
+  });
+
+  describe('formatNumberRu', () => {
+    it('formats grouped decimal numbers with non-breaking spaces', () => {
+      expect(
+        formatNumberRu(3_418_555.1, {
+          maximumFractionDigits: 2,
+          minimumFractionDigits: 0,
+        }),
+      ).toBe('3\u00A0418\u00A0555,1');
+    });
+
+    it('supports signed number options', () => {
+      expect(
+        formatNumberRu(40.87, {
+          maximumFractionDigits: 2,
+          minimumFractionDigits: 0,
+          signDisplay: 'exceptZero',
+        }),
+      ).toBe('+40,87');
+    });
+  });
+
+  describe('formatNumberUnitRu', () => {
+    it('keeps number and unit together', () => {
+      expect(
+        formatNumberUnitRu(52.39, '₽', {
+          maximumFractionDigits: 2,
+          minimumFractionDigits: 0,
+        }),
+      ).toBe('52,39\u00A0₽');
+    });
+  });
+
+  describe('parseNumberInputRu', () => {
+    it('parses manually entered grouped numbers', () => {
+      expect(parseNumberInputRu('3 418 555,1')).toBe(3_418_555.1);
+      expect(parseNumberInputRu('3\u00A0418\u202F555,1')).toBe(3_418_555.1);
+      expect(parseNumberInputRu('')).toBeUndefined();
+      expect(parseNumberInputRu(Number.NaN)).toBeUndefined();
     });
   });
 

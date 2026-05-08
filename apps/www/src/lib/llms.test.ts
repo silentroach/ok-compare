@@ -43,16 +43,19 @@ beforeAll(async () => {
 });
 
 describe('root llms', () => {
-  it('mentions people discovery surfaces alongside other sections', async () => {
+  it('mentions people and reglament discovery surfaces alongside other sections', async () => {
     const short = await build('short');
     const full = await build('full');
     const home = await buildHomeMarkdown();
 
     expect(short).toContain('people.json');
     expect(short).toContain('Люди в Markdown');
+    expect(short).toContain('Регламент');
     expect(full).toContain('Раздел Люди');
     expect(full).toContain('/people/data/people.json');
+    expect(full).toContain('/815/regulation/data/estimate-2026.json');
     expect(home).toContain('Люди');
     expect(home).toContain('/people/.well-known/api-catalog');
+    expect(home).toContain('/815/regulation/.well-known/api-catalog');
   });
 });

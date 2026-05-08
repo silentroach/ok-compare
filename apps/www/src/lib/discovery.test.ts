@@ -46,6 +46,9 @@ describe('root api catalog', () => {
     const peopleEntry = payload.linkset.find(
       (entry) => entry.anchor === 'https://example.com/sub/people/index.md',
     );
+    const reglamentEntry = payload.linkset.find(
+      (entry) => entry.anchor === 'https://example.com/sub/815/regulation/',
+    );
 
     expect(peopleEntry?.item).toEqual(
       expect.arrayContaining([
@@ -57,6 +60,16 @@ describe('root api catalog', () => {
         }),
         expect.objectContaining({
           href: 'https://example.com/sub/people/llms.txt',
+        }),
+      ]),
+    );
+    expect(reglamentEntry?.item).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          href: 'https://example.com/sub/815/regulation/data/estimate-2026.json',
+        }),
+        expect.objectContaining({
+          href: 'https://example.com/sub/815/regulation/llms.txt',
         }),
       ]),
     );

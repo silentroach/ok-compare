@@ -119,7 +119,40 @@ const heroImage = isDaytime ? dayHeroImage : nightHeroImage;
               class="home-hero-nav flex items-center gap-5 text-sm font-medium md:gap-10 md:text-base"
             >
               <a href="/news/">Новости</a>
-              <a href="/compare/" data-astro-reload>Тариф</a>
+              <div class="group relative">
+                <button
+                  type="button"
+                  aria-haspopup="true"
+                  class="flex items-center gap-1.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-transparent"
+                >
+                  <span>Тариф 815</span>
+                  <span
+                    aria-hidden="true"
+                    class="size-0 border-x-[0.25rem] border-t-[0.3125rem] border-x-transparent border-t-current opacity-70 transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180"
+                  ></span>
+                </button>
+                <div
+                  class="home-hero-nav-submenu invisible pointer-events-none absolute right-0 top-full z-20 min-w-[11.75rem] -translate-y-1 pt-2 opacity-0 transition-[opacity,transform,visibility] duration-150 ease-out group-hover:visible group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100"
+                >
+                  <div
+                    class="rounded-xl border border-border bg-card px-1.5 py-1.5 shadow-[0_0.625rem_1.5rem_oklch(24%_0.04_145_/_0.08)]"
+                  >
+                    <a
+                      href="/compare/"
+                      data-astro-reload
+                      class="block rounded-lg px-3 py-2 text-sm leading-5 text-foreground transition-colors hover:bg-primary-soft-2 focus-visible:bg-primary-soft-2 focus-visible:outline-none"
+                    >
+                      Сравнение тарифов
+                    </a>
+                    <a
+                      href="/815/regulation/"
+                      class="block rounded-lg px-3 py-2 text-sm leading-5 text-foreground transition-colors hover:bg-primary-soft-2 focus-visible:bg-primary-soft-2 focus-visible:outline-none"
+                    >
+                      Регламент
+                    </a>
+                  </div>
+                </div>
+              </div>
               <a
                 href="/status/"
                 aria-label={`Статус: ${statusLabel}`}
@@ -219,14 +252,25 @@ const heroImage = isDaytime ? dayHeroImage : nightHeroImage;
     text-shadow: 0 0.0625rem 1rem oklch(100% 0 0 / 0.72);
   }
 
-  .home-hero-nav a {
+  .home-hero-nav a,
+  .home-hero-nav button {
     transition:
       color 0.2s ease,
       opacity 0.2s ease;
   }
 
-  .home-hero-nav a:is(:hover, :focus-visible) {
+  .home-hero-nav a:is(:hover, :focus-visible),
+  .home-hero-nav button:is(:hover, :focus-visible) {
     opacity: 0.78;
+  }
+
+  .home-hero-nav-submenu {
+    color: var(--color-foreground);
+    text-shadow: none;
+  }
+
+  .home-hero-nav-submenu a:is(:hover, :focus-visible) {
+    opacity: 1;
   }
 
   .home-hero-status-dot {

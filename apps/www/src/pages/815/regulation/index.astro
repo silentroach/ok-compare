@@ -1,0 +1,1147 @@
+---
+import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+
+import { estimate2026 } from '@/data/reglament/estimate-2026';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import {
+  withHomeBreadcrumbs,
+  withHomeSchemaBreadcrumbs,
+} from '@/lib/breadcrumbs';
+import { collectionPageSchema } from '@/lib/news/seo';
+import { buildReglamentPayload } from '@/lib/reglament/discovery';
+import {
+  formatReglamentAnnualMoney,
+  formatReglamentInputNumber,
+  formatReglamentMoney,
+  formatReglamentMoneyDelta,
+  formatReglamentNumber,
+  formatReglamentTariff,
+  formatReglamentTariffValue,
+} from '@/lib/reglament/format';
+import { reglamentNumberInputStep } from '@/lib/reglament/input-step';
+import {
+  reglamentAssetsUrl,
+  reglamentServicesUrl,
+  reglamentUrl,
+} from '@/lib/reglament/routes';
+import { reglamentSectionsByOfficialTariff } from '@/lib/reglament/section-order';
+import type { CostBreakdown, EditableFieldKey } from '@/lib/reglament/schema';
+import { formatEstimateSourceRefLabel } from '@/lib/reglament/source-labels';
+
+export const prerender = true;
+
+const payload = buildReglamentPayload(estimate2026);
+const htmlSections = reglamentSectionsByOfficialTariff(payload.sections);
+const title = 'Смета 2026: калькулятор тарифа — Шелково Онлайн';
+const description =
+  'Интерактивная смета регламента 2026: тариф за сотку в месяц, строки расходов, источники из PDF и быстрый пересчет итогов.';
+const breadcrumbs = withHomeBreadcrumbs([{ label: 'Регламент' }]);
+const schema = collectionPageSchema({
+  name: title,
+  description,
+  url: reglamentUrl(),
+  breadcrumbs: withHomeSchemaBreadcrumbs([
+    { name: 'Регламент', url: reglamentUrl() },
+  ]),
+  items: htmlSections.map((section) => ({
+    name: section.title,
+    url: `${reglamentUrl()}#${section.id}`,
+  })),
+});
+
+type ReglamentPayload = ReturnType<typeof buildReglamentPayload>;
+type PayloadRow = ReglamentPayload['sections'][number]['rows'][number];
+type DisplayValue =
+  ReglamentPayload['sections'][number]['rows'][number]['baseline']['base'];
+type BasicDisplayFieldKey = 'base' | 'frequency' | 'price';
+type BasicNumberFieldKey = Extract<
+  EditableFieldKey,
+  'volume' | 'frequency' | 'rate'
+>;
+type ExpertNumberFieldKey = Exclude<
+  EditableFieldKey,
+  'enabled' | BasicNumberFieldKey
+>;
+type BreakdownFieldKey = keyof CostBreakdown;
+
+interface NumberControl<Key extends EditableFieldKey = BasicNumberFieldKey> {
+  readonly key: Key;
+  readonly label: string;
+  readonly value: number;
+  readonly unit?: string;
+  readonly min?: number;
+  readonly max?: number;
+  readonly step: number;
+}
+
+interface MissingFieldHint {
+  readonly label: string;
+  readonly reason: string;
+  readonly detail?: string;
+  readonly tooltipId: string;
+}
+
+const formatDisplayValue = (value: NonNullable<DisplayValue>): string =>
+  `${formatReglamentNumber(value.value)} ${value.unit}${value.label ? `, ${value.label}` : ''}`;
+const missingFieldHint = (
+  row: PayloadRow,
+  key: BasicDisplayFieldKey,
+): MissingFieldHint => {
+  const tooltipId = `reglament-missing-${key}-${row.id}`;
+
+  if (key === 'price') {
+    return {
+      label: 'нет ставки',
+      reason:
+        'В исходной смете нет отдельной цены за единицу. Позиция хранится как официальная годовая сумма; менять ее можно в деталях через состав расчета.',
+      detail: formatReglamentAnnualMoney(row.baseline.annual_gross),
+      tooltipId,
+    };
+  }
+
+  if (key === 'frequency') {
+    return {
+      label: 'нет кратности',
+      reason:
+        'В исходной смете нет одной периодичности для всей строки. Строка считается по годовому расчету или составу работ.',
+      tooltipId,
+    };
+  }
+
+  return {
+    label: 'нет единой базы',
+    reason:
+      'В исходной смете эта позиция собрана из нескольких работ или объектов, поэтому нет одного объема, который можно безопасно менять как множитель.',
+    tooltipId,
+  };
+};
+const breakdownFields = [
+  { key: 'primary_salary', label: 'Основная зарплата' },
+  { key: 'machinist_salary', label: 'Зарплата машинистов' },
+  { key: 'fot', label: 'ФОТ' },
+  { key: 'machines', label: 'Машины и механизмы' },
+  { key: 'materials', label: 'Материалы' },
+  { key: 'contractors', label: 'Услуги подрядчиков' },
+  { key: 'insurance', label: 'Страховые взносы' },
+  { key: 'overhead', label: 'Общеэксплуатационные расходы' },
+  { key: 'profit', label: 'Прибыль' },
+  { key: 'usn', label: 'УСН' },
+  { key: 'income', label: 'Доходы всего' },
+  { key: 'vat', label: 'НДС' },
+  { key: 'gross', label: 'Итого с НДС' },
+] as const satisfies readonly {
+  readonly key: BreakdownFieldKey;
+  readonly label: string;
+}[];
+const inlineBreakdownFieldKeys = [
+  'primary_salary',
+  'machinist_salary',
+  'machines',
+  'materials',
+  'contractors',
+] as const satisfies readonly ExpertNumberFieldKey[];
+const inlineBreakdownFieldKeySet: ReadonlySet<EditableFieldKey> = new Set(
+  inlineBreakdownFieldKeys,
+);
+const expertFieldKeys = [
+  'fixed_price',
+  'primary_salary',
+  'machinist_salary',
+  'machines',
+  'materials',
+  'contractors',
+  'insurance_rate',
+  'overhead_rate',
+  'profit_rate',
+  'usn_rate',
+  'vat_rate',
+] as const satisfies readonly ExpertNumberFieldKey[];
+const expertFieldKeySet: ReadonlySet<EditableFieldKey> = new Set(
+  expertFieldKeys,
+);
+const isExpertNumberFieldKey = (
+  value: EditableFieldKey,
+): value is ExpertNumberFieldKey => expertFieldKeySet.has(value);
+const isInlineBreakdownControl = (
+  control: NumberControl<ExpertNumberFieldKey>,
+): boolean => inlineBreakdownFieldKeySet.has(control.key);
+const fieldValue = (
+  row: PayloadRow,
+  key: BasicNumberFieldKey,
+): number | undefined => {
+  if (key === 'volume') {
+    return row.baseline.base?.value;
+  }
+
+  if (key === 'frequency') {
+    return row.baseline.frequency?.value;
+  }
+
+  if (key === 'rate') {
+    return row.baseline.price?.value;
+  }
+
+  return undefined;
+};
+const fieldUnit = (
+  row: PayloadRow,
+  key: BasicNumberFieldKey,
+  fieldUnitValue?: string,
+): string | undefined => {
+  if (key === 'volume') {
+    return row.baseline.base?.unit;
+  }
+
+  if (key === 'frequency') {
+    return row.baseline.frequency?.unit;
+  }
+
+  if (key === 'rate') {
+    return row.baseline.price?.unit;
+  }
+
+  return fieldUnitValue;
+};
+const numberControl = (
+  row: PayloadRow,
+  key: BasicNumberFieldKey,
+): NumberControl<BasicNumberFieldKey> | undefined => {
+  const field = row.editable_fields.find(
+    (item) => item.key === key && item.level === 'basic',
+  );
+  const value = fieldValue(row, key);
+
+  if (!field || value === undefined) {
+    return undefined;
+  }
+
+  return {
+    key,
+    label: field.label,
+    value,
+    unit: fieldUnit(row, key, field.unit),
+    min: field.min,
+    max: field.max,
+    step: reglamentNumberInputStep(field, value),
+  };
+};
+const expertFieldValue = (
+  row: PayloadRow,
+  key: ExpertNumberFieldKey,
+): number => {
+  if (key === 'fixed_price') {
+    return row.baseline.annual_gross;
+  }
+
+  if (key === 'insurance_rate') {
+    return payload.coefficients.insurance_rate;
+  }
+
+  if (key === 'overhead_rate') {
+    return payload.coefficients.overhead_rate;
+  }
+
+  if (key === 'profit_rate') {
+    return payload.coefficients.profit_rate;
+  }
+
+  if (key === 'usn_rate') {
+    return payload.coefficients.usn_rate;
+  }
+
+  if (key === 'vat_rate') {
+    return payload.coefficients.vat_rate;
+  }
+
+  return row.baseline.breakdown[key];
+};
+const expertNumberControls = (
+  row: PayloadRow,
+): readonly NumberControl<ExpertNumberFieldKey>[] =>
+  row.editable_fields.flatMap((field) => {
+    if (field.level !== 'expert' || !isExpertNumberFieldKey(field.key)) {
+      return [];
+    }
+
+    const value = expertFieldValue(row, field.key);
+
+    return [
+      {
+        key: field.key,
+        label: field.label,
+        value,
+        unit: field.unit ?? (field.key.endsWith('_rate') ? 'доля' : '₽/год'),
+        min: field.min,
+        max: field.max,
+        step: reglamentNumberInputStep(field, value),
+      },
+    ];
+  });
+const inlineBreakdownControls = (
+  controls: readonly NumberControl<ExpertNumberFieldKey>[],
+): readonly NumberControl<ExpertNumberFieldKey>[] =>
+  controls.filter(isInlineBreakdownControl);
+const extraExpertControls = (
+  controls: readonly NumberControl<ExpertNumberFieldKey>[],
+): readonly NumberControl<ExpertNumberFieldKey>[] =>
+  controls.filter(
+    (control) =>
+      control.key !== 'fixed_price' && !isInlineBreakdownControl(control),
+  );
+const hasEnabledControl = (row: PayloadRow): boolean =>
+  row.editable_fields.some(
+    (field) => field.key === 'enabled' && field.level === 'basic',
+  );
+const viewSections = htmlSections.map((section) => ({
+  ...section,
+  rows: section.rows.map((row) => {
+    const expert = expertNumberControls(row);
+
+    return {
+      ...row,
+      titleId: `reglament-row-title-${row.id}`,
+      controls: {
+        enabled: hasEnabledControl(row),
+        base: numberControl(row, 'volume'),
+        frequency: numberControl(row, 'frequency'),
+        rate: numberControl(row, 'rate'),
+        breakdown: inlineBreakdownControls(expert),
+        expert: extraExpertControls(expert),
+      },
+      missing: {
+        base: missingFieldHint(row, 'base'),
+        frequency: missingFieldHint(row, 'frequency'),
+        rate: missingFieldHint(row, 'price'),
+      },
+    };
+  }),
+}));
+const inputShellClass =
+  'inline-flex max-w-full overflow-hidden rounded-lg border border-border bg-surface align-top transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20';
+const inputBaseClass =
+  'reglament-input min-w-0 bg-transparent px-2.5 py-1.5 text-sm font-semibold text-foreground outline-none';
+const inputClass = `${inputBaseClass} w-[6.25rem]`;
+const inlineInputClass = `${inputBaseClass} w-[7.5rem] text-right`;
+const inputUnitClass =
+  'flex shrink-0 items-center border-l border-border bg-muted px-2 text-[0.6875rem] font-semibold leading-none text-muted-foreground';
+const tableTextClass = 'block pt-[0.4375rem] leading-snug';
+const tableHeaderCellClass =
+  'sticky top-0 z-10 border-b border-border bg-muted px-4 py-2.5 align-bottom lg:top-[calc(2.875rem-1px)]';
+const tableHeaderCellRightClass = `${tableHeaderCellClass} text-right`;
+const formatInputUnit = (unit: string): string =>
+  unit === '₽/год' ? '₽' : unit;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={reglamentUrl()}
+  keywords={[
+    'смета 2026 Шелково',
+    'калькулятор тарифа Шелково',
+    'регламент Шелково',
+  ]}
+  schema={schema}
+>
+  <main class="ui-page pb-8 md:pb-12 lg:pb-16" data-reglament-calculator>
+    <section class="px-5 pb-6 pt-3 md:px-6 md:pb-8 md:pt-5 lg:pb-10 lg:pt-6">
+      <div class="max-w-5xl space-y-6">
+        <Breadcrumbs items={breadcrumbs} />
+
+        <div class="space-y-4">
+          <h1
+            class="max-w-4xl text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
+          >
+            Калькулятор тарифа по смете 2026
+          </h1>
+          <div
+            class="max-w-3xl space-y-3 text-sm leading-6 text-muted-foreground md:text-[0.9375rem]"
+          >
+            <p>
+              Смета разложена на разделы и строки. Меняйте объемы, периодичность
+              и цены: калькулятор сразу пересчитает тариф в{' '}
+              <span class="font-semibold text-foreground">₽/сотка за месяц</span
+              > и покажет, как изменилась итоговая сумма.
+            </p>
+            <p>
+              Для проверки по полному регламенту рядом есть справочники:{' '}
+              <a class="ui-link font-semibold" href={reglamentAssetsUrl()}>
+                что входит в общее имущество
+              </a>{' '}
+              и{' '}
+              <a class="ui-link font-semibold" href={reglamentServicesUrl()}>
+                какие услуги указаны в регламенте
+              </a>.
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="grid overflow-hidden rounded-xl border border-border bg-surface md:grid-cols-3"
+          aria-label="Итоги сметы"
+        >
+          <div
+            class="border-b border-border p-4 md:border-b-0 md:border-r md:p-5"
+          >
+            <p
+              class="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
+            >
+              Официальный тариф
+            </p>
+            <p class="mt-2 text-2xl font-bold tracking-tight text-foreground">
+              {formatReglamentTariff(payload.official.tariff_per_sotka_month)}
+            </p>
+            <p class="mt-1 text-xs text-muted-foreground">
+              {formatReglamentAnnualMoney(payload.official.annual_gross)}
+            </p>
+          </div>
+          <div
+            class="border-b border-border p-4 md:border-b-0 md:border-r md:p-5"
+          >
+            <p
+              class="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
+            >
+              Текущий пересчет
+            </p>
+            <p
+              class="mt-2 text-2xl font-bold tracking-tight text-foreground"
+              data-reglament-current-tariff
+            >
+              {formatReglamentTariff(payload.computed.tariff_per_sotka_month)}
+            </p>
+            <p
+              class="mt-1 text-xs text-muted-foreground"
+              data-reglament-current-annual
+            >
+              {formatReglamentAnnualMoney(payload.computed.annual_gross)}
+            </p>
+          </div>
+          <div class="p-4 md:p-5">
+            <p
+              class="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
+            >
+              Разница
+            </p>
+            <p
+              class="mt-2 text-2xl font-bold tracking-tight text-foreground"
+              data-reglament-current-delta
+            >
+              {
+                formatReglamentMoneyDelta(
+                  payload.computed.delta_tariff_per_sotka_month,
+                )
+              }
+            </p>
+            <p class="mt-1 text-xs text-muted-foreground">
+              к официальному тарифу
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div
+      class="reglament-sticky-total sticky top-0 z-20 border-y border-border px-5 py-1 md:px-6"
+    >
+      <div
+        class="flex h-9 w-full max-w-6xl items-center gap-3 overflow-hidden whitespace-nowrap text-xs text-muted-foreground md:text-sm"
+      >
+        <button
+          class="shrink-0 cursor-pointer rounded-full border border-border-strong bg-surface px-2.5 py-0.5 text-xs font-bold text-primary hover:border-primary hover:bg-muted md:px-3 md:text-sm"
+          type="button"
+          data-reglament-reset
+          hidden
+        >
+          <span class="hidden sm:inline">Сбросить</span><span class="sm:hidden"
+            >Сброс</span
+          >
+        </button>
+        <span class="sr-only">Текущий тариф</span>
+        <span
+          class="ml-auto flex min-w-0 items-baseline justify-end gap-1.5 text-right"
+        >
+          <span
+            class="reglament-sticky-total-original shrink-0 text-[0.8125rem] font-bold md:text-sm"
+            data-reglament-current-original-tariff
+            hidden
+          >
+            {formatReglamentNumber(payload.official.tariff_per_sotka_month)}
+          </span>
+          <span
+            class="reglament-sticky-total-arrow shrink-0 text-sm font-bold md:text-base"
+            data-reglament-current-tariff-arrow
+            aria-hidden="true"
+            hidden
+          >
+            →
+          </span>
+          <strong
+            class="min-w-0 truncate text-base text-foreground transition-colors md:text-lg"
+            data-reglament-current-tariff
+            data-reglament-current-tariff-tone
+          >
+            {formatReglamentTariff(payload.computed.tariff_per_sotka_month)}
+          </strong>
+        </span>
+      </div>
+    </div>
+
+    <section class="px-5 md:px-6" aria-labelledby="estimate-sections-title">
+      <div class="max-w-6xl space-y-10">
+        <div class="max-w-3xl space-y-2">
+          <h2
+            id="estimate-sections-title"
+            class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]"
+          >
+            Разделы сметы
+          </h2>
+          <p
+            class="text-sm leading-6 text-muted-foreground md:text-base md:leading-7"
+          >
+            В строках главным числом показан вклад в тариф. Годовые суммы
+            оставлены в деталях и источниках, чтобы можно было свериться с PDF.
+          </p>
+        </div>
+
+        {
+          viewSections.map((section) => (
+            <section id={section.id}>
+              <div class="mb-4 flex flex-col gap-3 md:mb-5 md:flex-row md:items-end md:justify-between">
+                <div class="space-y-1.5">
+                  <h3 class="text-xl font-semibold tracking-tight text-foreground md:text-2xl">
+                    {section.title}
+                  </h3>
+                  <p class="text-xs leading-5 text-muted-foreground">
+                    Источники раздела:{' '}
+                    {section.source_refs.map((ref, index) => (
+                      <>
+                        {index > 0 && '; '}
+                        <a
+                          class="ui-link text-primary"
+                          href={ref.pdf_url}
+                          type="application/pdf"
+                        >
+                          {formatEstimateSourceRefLabel(ref)}
+                        </a>
+                      </>
+                    ))}
+                  </p>
+                </div>
+                <div class="shrink-0 text-left md:text-right">
+                  <p
+                    class="text-lg font-bold tracking-tight text-foreground"
+                    data-reglament-section-tariff={section.id}
+                  >
+                    {formatReglamentTariff(
+                      section.official.tariff_per_sotka_month,
+                    )}
+                  </p>
+                  <p
+                    class="text-xs text-muted-foreground"
+                    data-reglament-section-annual={section.id}
+                  >
+                    {formatReglamentAnnualMoney(section.official.annual_gross)}
+                  </p>
+                  <p
+                    class="text-xs font-semibold text-muted-foreground"
+                    data-reglament-section-delta={section.id}
+                  >
+                    {formatReglamentMoneyDelta(
+                      section.computed.delta_tariff_per_sotka_month,
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              <div
+                class="reglament-table-shell -mx-5 overflow-x-auto border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0 lg:overflow-visible"
+                data-reglament-table-shell
+              >
+                <table class="min-w-[48rem] w-full border-separate border-spacing-0 text-left text-sm">
+                  <caption class="sr-only">{section.title}</caption>
+                  <thead class="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                    <tr>
+                      <th
+                        class:list={[
+                          tableHeaderCellClass,
+                          'w-[32%] sm:rounded-tl-xl',
+                        ]}
+                      >
+                        Работа
+                      </th>
+                      <th class:list={[tableHeaderCellClass, 'w-[18%]']}>
+                        База
+                      </th>
+                      <th class:list={[tableHeaderCellClass, 'w-[14%]']}>
+                        Периодичность
+                      </th>
+                      <th class:list={[tableHeaderCellClass, 'w-[14%]']}>
+                        Цена/ставка
+                      </th>
+                      <th
+                        class:list={[
+                          tableHeaderCellRightClass,
+                          'w-[22%] sm:rounded-tr-xl',
+                        ]}
+                      >
+                        Вклад в тариф
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {section.rows.map((row) => (
+                      <>
+                        <tr class="border-t border-border">
+                          <td class="border-t border-border px-4 py-2.5 align-top">
+                            <div class="space-y-1.5">
+                              <div class="flex items-start gap-2">
+                                {row.controls.enabled && (
+                                  <input
+                                    class="mt-2 h-4 w-4 shrink-0 rounded border-border text-primary focus:ring-primary"
+                                    type="checkbox"
+                                    checked={row.baseline.is_enabled}
+                                    aria-label="Включить позицию"
+                                    aria-describedby={row.titleId}
+                                    data-reglament-field="enabled"
+                                    data-reglament-row-id={row.id}
+                                    data-reglament-baseline={String(
+                                      row.baseline.is_enabled,
+                                    )}
+                                  />
+                                )}
+                                <p
+                                  id={row.titleId}
+                                  class:list={[
+                                    tableTextClass,
+                                    'min-w-0 flex-1 font-semibold text-foreground',
+                                  ]}
+                                >
+                                  {row.title}
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="border-t border-border px-4 py-2.5 align-top text-muted-foreground">
+                            {row.controls.base ? (
+                              <label class="block">
+                                <span class={inputShellClass}>
+                                  <input
+                                    class={inputClass}
+                                    type="text"
+                                    inputmode="decimal"
+                                    value={formatReglamentInputNumber(
+                                      row.controls.base.value,
+                                    )}
+                                    aria-label={`${row.title}: ${row.controls.base.label}`}
+                                    data-reglament-field={row.controls.base.key}
+                                    data-reglament-row-id={row.id}
+                                    data-reglament-baseline={String(
+                                      row.controls.base.value,
+                                    )}
+                                    data-reglament-min={row.controls.base.min}
+                                    data-reglament-max={row.controls.base.max}
+                                    data-reglament-step={row.controls.base.step}
+                                  />
+                                  {row.controls.base.unit && (
+                                    <span class={inputUnitClass}>
+                                      {row.controls.base.unit}
+                                    </span>
+                                  )}
+                                </span>
+                              </label>
+                            ) : row.baseline.base ? (
+                              <span class={tableTextClass}>
+                                {formatDisplayValue(row.baseline.base)}
+                              </span>
+                            ) : (
+                              <span class={`${tableTextClass} space-y-1`}>
+                                <span class="inline-flex items-center gap-1.5">
+                                  <span class="font-semibold">
+                                    {row.missing.base.label}
+                                  </span>
+                                  <span class="reglament-missing-help">
+                                    <button
+                                      class="reglament-missing-help-button"
+                                      type="button"
+                                      aria-label="Почему здесь нет поля ввода"
+                                      aria-describedby={
+                                        row.missing.base.tooltipId
+                                      }
+                                    >
+                                      ?
+                                    </button>
+                                    <span
+                                      id={row.missing.base.tooltipId}
+                                      class="reglament-missing-tooltip"
+                                      role="tooltip"
+                                    >
+                                      {row.missing.base.reason}
+                                    </span>
+                                  </span>
+                                </span>
+                              </span>
+                            )}
+                          </td>
+                          <td class="border-t border-border px-4 py-2.5 align-top text-muted-foreground">
+                            {row.controls.frequency ? (
+                              <label class="block">
+                                <span class={inputShellClass}>
+                                  <input
+                                    class={inputClass}
+                                    type="text"
+                                    inputmode="decimal"
+                                    value={formatReglamentInputNumber(
+                                      row.controls.frequency.value,
+                                    )}
+                                    aria-label={`${row.title}: ${row.controls.frequency.label}`}
+                                    data-reglament-field={
+                                      row.controls.frequency.key
+                                    }
+                                    data-reglament-row-id={row.id}
+                                    data-reglament-baseline={String(
+                                      row.controls.frequency.value,
+                                    )}
+                                    data-reglament-min={
+                                      row.controls.frequency.min
+                                    }
+                                    data-reglament-max={
+                                      row.controls.frequency.max
+                                    }
+                                    data-reglament-step={
+                                      row.controls.frequency.step
+                                    }
+                                  />
+                                  {row.controls.frequency.unit && (
+                                    <span class={inputUnitClass}>
+                                      {row.controls.frequency.unit}
+                                    </span>
+                                  )}
+                                </span>
+                              </label>
+                            ) : row.baseline.frequency ? (
+                              <span class={tableTextClass}>
+                                {formatDisplayValue(row.baseline.frequency)}
+                              </span>
+                            ) : (
+                              <span class={`${tableTextClass} space-y-1`}>
+                                <span class="inline-flex items-center gap-1.5">
+                                  <span class="font-semibold">
+                                    {row.missing.frequency.label}
+                                  </span>
+                                  <span class="reglament-missing-help">
+                                    <button
+                                      class="reglament-missing-help-button"
+                                      type="button"
+                                      aria-label="Почему здесь нет поля ввода"
+                                      aria-describedby={
+                                        row.missing.frequency.tooltipId
+                                      }
+                                    >
+                                      ?
+                                    </button>
+                                    <span
+                                      id={row.missing.frequency.tooltipId}
+                                      class="reglament-missing-tooltip"
+                                      role="tooltip"
+                                    >
+                                      {row.missing.frequency.reason}
+                                    </span>
+                                  </span>
+                                </span>
+                              </span>
+                            )}
+                          </td>
+                          <td class="border-t border-border px-4 py-2.5 align-top text-muted-foreground">
+                            {row.controls.rate ? (
+                              <label class="block">
+                                <span class={inputShellClass}>
+                                  <input
+                                    class={inputClass}
+                                    type="text"
+                                    inputmode="decimal"
+                                    value={formatReglamentInputNumber(
+                                      row.controls.rate.value,
+                                    )}
+                                    aria-label={`${row.title}: ${row.controls.rate.label}`}
+                                    data-reglament-field={row.controls.rate.key}
+                                    data-reglament-row-id={row.id}
+                                    data-reglament-baseline={String(
+                                      row.controls.rate.value,
+                                    )}
+                                    data-reglament-min={row.controls.rate.min}
+                                    data-reglament-max={row.controls.rate.max}
+                                    data-reglament-step={row.controls.rate.step}
+                                  />
+                                  {row.controls.rate.unit && (
+                                    <span class={inputUnitClass}>
+                                      {row.controls.rate.unit}
+                                    </span>
+                                  )}
+                                </span>
+                              </label>
+                            ) : row.baseline.price ? (
+                              <span class={tableTextClass}>
+                                {formatDisplayValue(row.baseline.price)}
+                              </span>
+                            ) : (
+                              <span class={`${tableTextClass} space-y-1`}>
+                                <span class="inline-flex items-center gap-1.5">
+                                  <span class="font-semibold">
+                                    {row.missing.rate.label}
+                                  </span>
+                                  <span class="reglament-missing-help">
+                                    <button
+                                      class="reglament-missing-help-button"
+                                      type="button"
+                                      aria-label="Почему здесь нет поля ввода"
+                                      aria-describedby={
+                                        row.missing.rate.tooltipId
+                                      }
+                                    >
+                                      ?
+                                    </button>
+                                    <span
+                                      id={row.missing.rate.tooltipId}
+                                      class="reglament-missing-tooltip"
+                                      role="tooltip"
+                                    >
+                                      {row.missing.rate.reason}
+                                    </span>
+                                  </span>
+                                </span>
+                                {row.missing.rate.detail && (
+                                  <span class="block text-xs font-semibold text-foreground">
+                                    {row.missing.rate.detail}
+                                  </span>
+                                )}
+                              </span>
+                            )}
+                          </td>
+                          <td class="border-t border-border px-4 py-2.5 text-right align-top font-semibold text-foreground">
+                            <span
+                              class={tableTextClass}
+                              data-reglament-row-tariff={row.id}
+                            >
+                              {formatReglamentTariffValue(
+                                row.computed.tariff_per_sotka_month,
+                              )}
+                            </span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="px-4 pb-3 pt-0 align-top" colspan="5">
+                            <details class="ml-1.5 max-w-[calc(100vw-2.875rem)] text-xs leading-5 text-muted-foreground sm:max-w-[calc(100vw-6.375rem)] lg:max-w-none">
+                              <summary class="reglament-details-summary inline-flex cursor-pointer list-none items-center gap-1.5 font-bold text-primary outline-none focus-visible:rounded-md focus-visible:ring-2 focus-visible:ring-primary/25">
+                                <svg
+                                  class="reglament-details-icon h-3 w-3 shrink-0 transition-transform"
+                                  viewBox="0 0 12 12"
+                                  aria-hidden="true"
+                                >
+                                  <path
+                                    d="M4.5 2.5 8 6l-3.5 3.5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="1.8"
+                                  />
+                                </svg>
+                                <span>Детали расчета и источники</span>
+                              </summary>
+                              <div class="mt-3 space-y-4 border-l border-border pl-3 md:pl-4">
+                                {row.description && (
+                                  <p class="text-muted-foreground">
+                                    {row.description}
+                                  </p>
+                                )}
+
+                                <div class="grid gap-3 sm:grid-cols-2">
+                                  <div class="space-y-1">
+                                    <p class="font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                                      Источники
+                                    </p>
+                                    <ul class="space-y-1">
+                                      {row.source_refs.map((ref) => (
+                                        <li>
+                                          <a
+                                            class="ui-link text-primary"
+                                            href={ref.pdf_url}
+                                            type="application/pdf"
+                                          >
+                                            {formatEstimateSourceRefLabel(ref)}
+                                          </a>
+                                          {ref.note && (
+                                            <span class="block text-muted-foreground">
+                                              {ref.note}
+                                            </span>
+                                          )}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                  <div class="space-y-1">
+                                    <p class="font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                                      Сумма за год
+                                    </p>
+                                    <p
+                                      class="font-semibold text-foreground"
+                                      data-reglament-row-annual={row.id}
+                                    >
+                                      {formatReglamentAnnualMoney(
+                                        row.computed.annual_gross,
+                                      )}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div class="space-y-2">
+                                  <p class="font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                                    Состав расчета
+                                  </p>
+                                  <dl class="grid gap-x-3 gap-y-2 sm:grid-cols-2">
+                                    {breakdownFields.map((field) => {
+                                      const control =
+                                        row.controls.breakdown.find(
+                                          (item) => item.key === field.key,
+                                        );
+
+                                      return (
+                                        <div class="flex items-start justify-between gap-3 border-b border-border pb-1">
+                                          <dt class="pt-1.5">{field.label}</dt>
+                                          <dd class="min-w-[10rem] text-right font-semibold text-foreground">
+                                            {control ? (
+                                              <label class="block">
+                                                <span class="sr-only">
+                                                  {row.title}: {control.label}
+                                                </span>
+                                                <span class={inputShellClass}>
+                                                  <input
+                                                    class={inlineInputClass}
+                                                    type="text"
+                                                    inputmode="decimal"
+                                                    value={formatReglamentInputNumber(
+                                                      control.value,
+                                                    )}
+                                                    aria-label={`${row.title}: ${control.label}`}
+                                                    data-reglament-field={
+                                                      control.key
+                                                    }
+                                                    data-reglament-row-id={
+                                                      row.id
+                                                    }
+                                                    data-reglament-baseline={String(
+                                                      control.value,
+                                                    )}
+                                                    data-reglament-min={
+                                                      control.min
+                                                    }
+                                                    data-reglament-max={
+                                                      control.max
+                                                    }
+                                                    data-reglament-step={
+                                                      control.step
+                                                    }
+                                                  />
+                                                  {control.unit && (
+                                                    <span
+                                                      class={inputUnitClass}
+                                                    >
+                                                      {formatInputUnit(
+                                                        control.unit,
+                                                      )}
+                                                    </span>
+                                                  )}
+                                                </span>
+                                              </label>
+                                            ) : (
+                                              <span
+                                                class="block pt-1.5"
+                                                data-reglament-row-breakdown={
+                                                  row.id
+                                                }
+                                                data-reglament-breakdown-field={
+                                                  field.key
+                                                }
+                                              >
+                                                {formatReglamentMoney(
+                                                  row.computed.breakdown[
+                                                    field.key
+                                                  ],
+                                                )}
+                                              </span>
+                                            )}
+                                          </dd>
+                                        </div>
+                                      );
+                                    })}
+                                  </dl>
+                                </div>
+
+                                {row.controls.expert.length > 0 && (
+                                  <fieldset class="space-y-2 border-t border-border pt-3">
+                                    <legend class="font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                                      Дополнительные поля
+                                    </legend>
+                                    <div class="grid gap-2 sm:grid-cols-2">
+                                      {row.controls.expert.map((control) => (
+                                        <label class="block space-y-1">
+                                          <span class="font-bold text-muted-foreground">
+                                            {control.label}
+                                          </span>
+                                          <span class={inputShellClass}>
+                                            <input
+                                              class={inputClass}
+                                              type="text"
+                                              inputmode="decimal"
+                                              value={formatReglamentInputNumber(
+                                                control.value,
+                                              )}
+                                              aria-label={`${row.title}: ${control.label}`}
+                                              data-reglament-field={control.key}
+                                              data-reglament-row-id={row.id}
+                                              data-reglament-baseline={String(
+                                                control.value,
+                                              )}
+                                              data-reglament-min={control.min}
+                                              data-reglament-max={control.max}
+                                              data-reglament-step={control.step}
+                                            />
+                                            {control.unit && (
+                                              <span class={inputUnitClass}>
+                                                {formatInputUnit(control.unit)}
+                                              </span>
+                                            )}
+                                          </span>
+                                        </label>
+                                      ))}
+                                    </div>
+                                  </fieldset>
+                                )}
+                              </div>
+                            </details>
+                          </td>
+                        </tr>
+                      </>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <style>
+    .reglament-sticky-total {
+      background: var(--color-surface-muted);
+      box-shadow: 0 0.45rem 1rem oklch(27% 0.05 142 / 0.055);
+    }
+
+    .reglament-sticky-total-original {
+      color: var(--color-text-muted);
+      opacity: 0.58;
+    }
+
+    .reglament-sticky-total-arrow {
+      color: var(--color-text-muted);
+      opacity: 0.52;
+      transform: translateY(-0.04em);
+    }
+
+    .reglament-details-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details[open] .reglament-details-icon {
+      transform: rotate(90deg);
+    }
+
+    .reglament-missing-help {
+      position: relative;
+      display: inline-flex;
+      vertical-align: middle;
+    }
+
+    .reglament-missing-help-button {
+      display: inline-flex;
+      height: 1rem;
+      width: 1rem;
+      cursor: help;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      border: 1px solid var(--color-border-strong);
+      background: var(--color-surface);
+      color: var(--color-text-muted);
+      font-size: 0.6875rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .reglament-missing-help-button:focus-visible {
+      outline: 2px solid
+        color-mix(in oklch, var(--color-primary), transparent 70%);
+      outline-offset: 2px;
+    }
+
+    .reglament-missing-tooltip {
+      position: absolute;
+      left: 0;
+      top: calc(100% + 0.35rem);
+      z-index: 30;
+      width: min(18rem, calc(100vw - 2rem));
+      border-radius: 0.625rem;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      box-shadow: 0 0.75rem 1.6rem oklch(27% 0.05 142 / 0.12);
+      color: var(--color-foreground);
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 1.45;
+      opacity: 0;
+      padding: 0.625rem 0.75rem;
+      pointer-events: none;
+      transform: translateY(-0.2rem);
+      transition:
+        opacity 120ms ease,
+        transform 120ms ease,
+        visibility 120ms ease;
+      visibility: hidden;
+    }
+
+    .reglament-missing-help:hover .reglament-missing-tooltip,
+    .reglament-missing-help:focus-within .reglament-missing-tooltip {
+      opacity: 1;
+      transform: translateY(0);
+      visibility: visible;
+    }
+
+    [data-reglament-delta-tone='negative'] {
+      color: var(--color-success);
+    }
+
+    [data-reglament-delta-tone='positive'] {
+      color: var(--color-danger);
+    }
+
+    [data-reglament-delta-tone='zero'] {
+      color: var(--color-text-muted);
+    }
+  </style>
+
+  <script>
+    import { hydrateReglamentCalculators } from '@/lib/reglament/calculator-controller';
+    import { hydrateReglamentStickyTableHeaders } from '@/lib/reglament/sticky-table-headers';
+
+    const hydrate = () => {
+      hydrateReglamentCalculators();
+      hydrateReglamentStickyTableHeaders();
+    };
+
+    hydrate();
+    document.addEventListener('astro:after-swap', hydrate);
+    document.addEventListener('astro:page-load', hydrate);
+  </script>
+</BaseLayout>

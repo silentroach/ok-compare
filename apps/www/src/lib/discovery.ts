@@ -19,6 +19,18 @@ import {
 } from './llms';
 import { siteSkillsUrl } from './skills';
 import {
+  reglamentApiCatalogPath,
+  reglamentEstimate2026DataPath,
+  reglamentAssetsPath,
+  reglamentFull2026DataPath,
+  reglamentFullMarkdownPath,
+  reglamentLlmsFullPath,
+  reglamentLlmsPath,
+  reglamentMarkdownPath,
+  reglamentPath,
+  reglamentServicesPath,
+} from './reglament/routes';
+import {
   statusApiCatalogPath,
   statusDataPath,
   statusLlmsPath,
@@ -121,6 +133,58 @@ export function catalog(root: string): Record<string, unknown> {
             href: abs(root, statusApiCatalogPath()),
             type: 'application/linkset+json',
             'title*': star('API catalog status-section'),
+          },
+        ],
+      },
+      {
+        anchor: abs(root, reglamentPath()),
+        item: [
+          {
+            href: abs(root, reglamentMarkdownPath()),
+            type: 'text/markdown',
+            'title*': star('Markdown companion reglament-section'),
+          },
+          {
+            href: abs(root, reglamentFullMarkdownPath()),
+            type: 'text/markdown',
+            'title*': star('Markdown companion полного регламента'),
+          },
+          {
+            href: abs(root, reglamentEstimate2026DataPath()),
+            type: 'application/json',
+            'title*': star('Основной машиночитаемый feed reglament-section'),
+          },
+          {
+            href: abs(root, reglamentFull2026DataPath()),
+            type: 'application/json',
+            'title*': star('Dataset полного регламента'),
+          },
+          {
+            href: abs(root, reglamentAssetsPath()),
+            type: 'text/html',
+            'title*': star('Общее имущество регламента'),
+          },
+          {
+            href: abs(root, reglamentServicesPath()),
+            type: 'text/html',
+            'title*': star('Услуги регламента'),
+          },
+          {
+            href: abs(root, reglamentLlmsPath()),
+            type: 'text/plain',
+            'title*': star('Агентный обзор reglament-section'),
+          },
+          {
+            href: abs(root, reglamentLlmsFullPath()),
+            type: 'text/plain',
+            'title*': star('Расширенный агентный обзор reglament-section'),
+          },
+        ],
+        'service-desc': [
+          {
+            href: abs(root, reglamentApiCatalogPath()),
+            type: 'application/linkset+json',
+            'title*': star('API catalog reglament-section'),
           },
         ],
       },

@@ -1,0 +1,270 @@
+---
+import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+
+import { fullReglamentDataset2026 } from '@/data/reglament/full-2026';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type {
+  FullReglamentService,
+  FullReglamentServiceToEstimateMapItem,
+} from '@/lib/reglament/full-schema';
+import {
+  withHomeBreadcrumbs,
+  withHomeSchemaBreadcrumbs,
+} from '@/lib/breadcrumbs';
+import { collectionPageSchema } from '@/lib/news/seo';
+import {
+  reglamentFullSourcePdfUrl,
+  reglamentServicesUrl,
+  reglamentUrl,
+} from '@/lib/reglament/routes';
+
+type ServiceGroup = FullReglamentService['group'];
+type MappingStatus = FullReglamentServiceToEstimateMapItem['status'];
+
+const title = 'Услуги регламента — Регламент — Шелково Онлайн';
+const description =
+  'Перечень услуг из полного регламента Шелково: периодичность работ и сверка со строками текущей сметы 2026.';
+const breadcrumbs = withHomeBreadcrumbs([
+  { label: 'Регламент', href: reglamentUrl() },
+  { label: 'Услуги' },
+]);
+const groupLabels = {
+  year_round: 'Круглогодично',
+  winter_period: 'В зимний период',
+  summer_period: 'В летний период',
+} as const satisfies Record<ServiceGroup, string>;
+const groupOrder = [
+  'year_round',
+  'winter_period',
+  'summer_period',
+] as const satisfies readonly ServiceGroup[];
+const statusLabels = {
+  explicit_found: 'явно найдено',
+  partial: 'частично сопоставлено',
+  not_found: 'не найдено в явной строке сметы',
+  needs_check: 'требует проверки',
+} as const satisfies Record<MappingStatus, string>;
+const statusClasses = {
+  explicit_found: 'ui-badge-success',
+  partial: 'ui-badge-info',
+  not_found: 'ui-badge-warning',
+  needs_check: 'ui-badge-danger',
+} as const satisfies Record<MappingStatus, string>;
+const mappingByService = new Map(
+  fullReglamentDataset2026.service_to_estimate_map.map((item) => [
+    item.service_id,
+    item,
+  ]),
+);
+const groups = groupOrder.map((group) => ({
+  group,
+  title: groupLabels[group],
+  services: fullReglamentDataset2026.services.filter(
+    (service) => service.group === group,
+  ),
+}));
+const schema = collectionPageSchema({
+  name: title,
+  description,
+  url: reglamentServicesUrl(),
+  breadcrumbs: withHomeSchemaBreadcrumbs([
+    { name: 'Регламент', url: reglamentUrl() },
+    { name: 'Услуги', url: reglamentServicesUrl() },
+  ]),
+  items: groups.map((group) => ({
+    name: group.title,
+    url: `${reglamentServicesUrl()}#${group.group}`,
+  })),
+});
+
+const estimateSourceLabel = (
+  mapping: FullReglamentServiceToEstimateMapItem,
+): string =>
+  mapping.estimate_source_refs.length > 0
+    ? `Смета: ${mapping.estimate_source_refs
+        .map((ref) => ref.fragment.replace(/^Сводная смета\s*\/\s*/u, ''))
+        .join(', ')}`
+    : 'Явная строка сметы не найдена';
+const mappingVerificationNote = (
+  mapping: FullReglamentServiceToEstimateMapItem,
+): string | null =>
+  mapping.verification_note === statusLabels[mapping.status]
+    ? null
+    : mapping.verification_note;
+const tableHeaderCellClass =
+  'sticky top-0 z-10 border-b border-border bg-muted px-4 py-2.5 align-bottom';
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={reglamentServicesUrl()}
+  keywords={[
+    'услуги регламента Шелково',
+    'смета 2026 услуги Шелково',
+    'Шелково полный регламент услуги',
+  ]}
+  schema={schema}
+>
+  <main class="ui-page pb-8 md:pb-12 lg:pb-16">
+    <section class="px-5 pb-6 pt-3 md:px-6 md:pb-8 md:pt-5 lg:pb-10 lg:pt-6">
+      <div class="max-w-5xl space-y-6">
+        <Breadcrumbs items={breadcrumbs} />
+
+        <div class="space-y-4">
+          <h1
+            class="max-w-4xl text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
+          >
+            Какие услуги указаны в регламенте
+          </h1>
+          <div
+            class="max-w-3xl space-y-3 text-sm leading-6 text-muted-foreground md:text-[0.9375rem]"
+          >
+            <p>
+              Перечень взят из Приложения №4 полного регламента, стр. 135. Ниже
+              показана сверка со строками текущей сметы. Частичное совпадение
+              или отсутствие явной строки не является юридическим выводом.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-5 md:px-6" aria-labelledby="services-title">
+      <div class="max-w-6xl space-y-10">
+        <h2 id="services-title" class="sr-only">Таблицы услуг регламента</h2>
+
+        {
+          groups.map((group) => (
+            <section id={group.group} class="space-y-4">
+              <div class="max-w-3xl space-y-1.5">
+                <h3 class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]">
+                  {group.title}
+                </h3>
+                <p class="text-sm leading-6 text-muted-foreground md:text-base md:leading-7">
+                  Источник:{' '}
+                  <a
+                    class="ui-link text-primary"
+                    href={reglamentFullSourcePdfUrl()}
+                    type="application/pdf"
+                  >
+                    полный регламент
+                  </a>
+                  , Приложение №4, стр. 135. Услуги и периодичность перенесены
+                  из полного регламента; годовые кратности сметы здесь не
+                  пересчитываются автоматически.
+                </p>
+              </div>
+
+              <div
+                class="reglament-table-shell -mx-5 overflow-x-auto border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0 lg:overflow-visible"
+                data-reglament-table-shell
+              >
+                <table class="min-w-[58rem] w-full border-separate border-spacing-0 text-left text-sm">
+                  <caption class="sr-only">{group.title}</caption>
+                  <thead class="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                    <tr>
+                      <th
+                        class:list={[
+                          tableHeaderCellClass,
+                          'w-[34%] sm:rounded-tl-xl',
+                        ]}
+                      >
+                        Услуга
+                      </th>
+                      <th class:list={[tableHeaderCellClass, 'w-[16%]']}>
+                        Периодичность
+                      </th>
+                      <th class:list={[tableHeaderCellClass, 'w-[18%]']}>
+                        Статус
+                      </th>
+                      <th
+                        class:list={[
+                          tableHeaderCellClass,
+                          'w-[32%] sm:rounded-tr-xl',
+                        ]}
+                      >
+                        Сопоставление
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {group.services.map((service) => {
+                      const mapping = mappingByService.get(service.id);
+                      const verificationNote = mapping
+                        ? mappingVerificationNote(mapping)
+                        : null;
+
+                      return (
+                        <tr class="border-t border-border">
+                          <td class="border-t border-border px-4 py-3 align-top">
+                            <div class="space-y-1.5">
+                              <p class="font-semibold text-foreground">
+                                {service.title}
+                              </p>
+                            </div>
+                          </td>
+                          <td class="border-t border-border px-4 py-3 align-top text-muted-foreground">
+                            <span class="font-semibold text-foreground">
+                              {service.frequency_raw}
+                            </span>
+                            {service.frequency_note && (
+                              <span class="mt-1 block text-xs leading-5">
+                                {service.frequency_note}
+                              </span>
+                            )}
+                          </td>
+                          <td class="border-t border-border px-4 py-3 align-top">
+                            {mapping && (
+                              <span
+                                class:list={[
+                                  'ui-badge',
+                                  statusClasses[mapping.status],
+                                ]}
+                              >
+                                {statusLabels[mapping.status]}
+                              </span>
+                            )}
+                          </td>
+                          <td class="border-t border-border px-4 py-3 align-top text-muted-foreground">
+                            {mapping && (
+                              <div class="space-y-1.5">
+                                <p>
+                                  <span class="font-semibold text-foreground">
+                                    {estimateSourceLabel(mapping)}
+                                  </span>
+                                </p>
+                                <p class="text-xs leading-5">
+                                  {mapping.explanation}
+                                </p>
+                                {verificationNote && (
+                                  <p class="text-xs font-semibold leading-5 text-primary">
+                                    {verificationNote}
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <script>
+    import { hydrateReglamentStickyTableHeaders } from '@/lib/reglament/sticky-table-headers';
+
+    const hydrate = () => hydrateReglamentStickyTableHeaders();
+
+    hydrate();
+    document.addEventListener('astro:after-swap', hydrate);
+    document.addEventListener('astro:page-load', hydrate);
+  </script>
+</BaseLayout>

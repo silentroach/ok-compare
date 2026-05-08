@@ -1,0 +1,381 @@
+// @vitest-environment happy-dom
+
+import { afterEach } from 'vitest';
+import { describe, expect, it } from 'vitest';
+
+import {
+  buildReglamentCalculatorChanges,
+  calculateReglamentCalculatorState,
+  hydrateReglamentCalculator,
+} from './calculator-controller';
+import type { CalculatedEstimate, CalculatedEstimateRow } from './calculate';
+import {
+  formatReglamentInputNumber,
+  formatReglamentAnnualMoney,
+  formatReglamentMoney,
+  formatReglamentTariffValue,
+} from './format';
+
+const findCalculatedRow = (
+  result: CalculatedEstimate,
+  rowId: string,
+): CalculatedEstimateRow => {
+  const rows = result.sections.flatMap((section) => section.rows);
+  const row = rows.find((item) => item.id === rowId);
+
+  if (!row) {
+    throw new Error(`Missing calculated row ${rowId}`);
+  }
+
+  return row;
+};
+
+afterEach(() => {
+  document.body.innerHTML = '';
+});
+
+describe('buildReglamentCalculatorChanges', () => {
+  it('omits unchanged baseline fields', () => {
+    expect(
+      buildReglamentCalculatorChanges([
+        {
+          rowId: 'lighting-electricity',
+          key: 'enabled',
+          baseline: true,
+          value: true,
+        },
+        {
+          rowId: 'lighting-electricity',
+          key: 'frequency',
+          baseline: 12,
+          value: '12',
+        },
+      ]),
+    ).toEqual({});
+  });
+
+  it('groups changed editable fields by estimate row', () => {
+    expect(
+      buildReglamentCalculatorChanges([
+        {
+          rowId: 'lighting-electricity',
+          key: 'enabled',
+          baseline: true,
+          value: false,
+        },
+        {
+          rowId: 'lighting-electricity',
+          key: 'volume',
+          baseline: 218_457.5,
+          value: '200000',
+        },
+        {
+          rowId: 'lighting-electricity',
+          key: 'rate',
+          baseline: 6.29,
+          value: '7.1',
+        },
+        {
+          rowId: 'security-access-control',
+          key: 'fixed_price',
+          baseline: 10_199_356,
+          value: '9000000',
+        },
+      ]),
+    ).toEqual({
+      rows: {
+        'lighting-electricity': {
+          enabled: false,
+          volume: 200_000,
+          rate: 7.1,
+        },
+        'security-access-control': {
+          fixed_price: 9_000_000,
+        },
+      },
+    });
+  });
+
+  it('keeps zero numeric changes and skips incomplete number input', () => {
+    expect(
+      buildReglamentCalculatorChanges([
+        {
+          rowId: 'lighting-electricity',
+          key: 'frequency',
+          baseline: 12,
+          value: '0',
+        },
+        {
+          rowId: 'lighting-electricity',
+          key: 'fixed_price',
+          baseline: 1_473_084,
+          value: '',
+        },
+      ]),
+    ).toEqual({
+      rows: {
+        'lighting-electricity': {
+          frequency: 0,
+        },
+      },
+    });
+  });
+
+  it('renders expert field changes into row annual total and breakdown details', () => {
+    const rowId = 'waste-transfer-from-homes';
+    document.body.innerHTML = `
+      <div data-reglament-calculator>
+        <input
+          type="number"
+          data-reglament-field="primary_salary"
+          data-reglament-row-id="${rowId}"
+          data-reglament-baseline="3418555.1"
+          value="3418555.1"
+        />
+        <span data-reglament-row-annual="${rowId}"></span>
+        <span
+          data-reglament-row-breakdown="${rowId}"
+          data-reglament-breakdown-field="primary_salary"
+        ></span>
+        <span
+          data-reglament-row-breakdown="${rowId}"
+          data-reglament-breakdown-field="gross"
+        ></span>
+      </div>
+    `;
+    const root = document.querySelector('[data-reglament-calculator]');
+    const input = document.querySelector('input');
+
+    if (
+      !(root instanceof HTMLElement) ||
+      !(input instanceof HTMLInputElement)
+    ) {
+      throw new Error('Missing calculator fixture nodes');
+    }
+
+    hydrateReglamentCalculator(root);
+    input.value = '3000000';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+
+    const expectedRow = findCalculatedRow(
+      calculateReglamentCalculatorState([
+        {
+          rowId,
+          key: 'primary_salary',
+          baseline: 3_418_555.1,
+          value: '3000000',
+        },
+      ]),
+      rowId,
+    );
+
+    expect(
+      document.querySelector('[data-reglament-row-annual]')?.textContent,
+    ).toBe(formatReglamentAnnualMoney(expectedRow.annual_gross));
+    expect(
+      document.querySelector(
+        '[data-reglament-breakdown-field="primary_salary"]',
+      )?.textContent,
+    ).toBe(formatReglamentMoney(expectedRow.breakdown.primary_salary));
+    expect(
+      document.querySelector('[data-reglament-breakdown-field="gross"]')
+        ?.textContent,
+    ).toBe(formatReglamentMoney(expectedRow.breakdown.gross));
+  });
+
+  it('renders fixed annual price changes from row details with short sotka unit', () => {
+    document.body.innerHTML = `
+      <div data-reglament-calculator>
+        <details open>
+          <summary>Детали расчета и источники</summary>
+          <input
+            type="number"
+            data-reglament-field="fixed_price"
+            data-reglament-row-id="lighting-electricity"
+            data-reglament-baseline="1473084"
+            value="1573084"
+          />
+        </details>
+        <span data-reglament-current-tariff></span>
+        <span data-reglament-section-tariff="lighting-power"></span>
+      </div>
+    `;
+    const root = document.querySelector('[data-reglament-calculator]');
+
+    if (!(root instanceof HTMLElement)) {
+      throw new Error('Missing calculator fixture root');
+    }
+
+    hydrateReglamentCalculator(root);
+
+    expect(
+      document.querySelector('[data-reglament-current-tariff]')?.textContent,
+    ).toMatchInlineSnapshot(`"902,48 ₽/сотка"`);
+    expect(
+      document.querySelector('[data-reglament-section-tariff]')?.textContent,
+    ).toMatchInlineSnapshot(`"48,27 ₽/сотка"`);
+  });
+
+  it('updates a single sticky current tariff and shows reset only while dirty', () => {
+    document.body.innerHTML = `
+      <div data-reglament-calculator>
+        <input
+          type="number"
+          data-reglament-field="fixed_price"
+          data-reglament-row-id="lighting-electricity"
+          data-reglament-baseline="1473084"
+          value="1473084"
+        />
+        <button type="button" data-reglament-reset>Сброс</button>
+        <span data-reglament-current-original-tariff hidden></span>
+        <span data-reglament-current-tariff-arrow hidden></span>
+        <strong
+          data-reglament-current-tariff
+          data-reglament-current-tariff-tone
+        ></strong>
+      </div>
+    `;
+    const root = document.querySelector('[data-reglament-calculator]');
+    const input = document.querySelector('input');
+    const reset = document.querySelector('[data-reglament-reset]');
+    const originalTariff = document.querySelector(
+      '[data-reglament-current-original-tariff]',
+    );
+    const arrow = document.querySelector(
+      '[data-reglament-current-tariff-arrow]',
+    );
+    const stickyTariff = document.querySelector(
+      '[data-reglament-current-tariff]',
+    );
+
+    if (
+      !(root instanceof HTMLElement) ||
+      !(input instanceof HTMLInputElement) ||
+      !(reset instanceof HTMLButtonElement) ||
+      !(originalTariff instanceof HTMLElement) ||
+      !(arrow instanceof HTMLElement) ||
+      !(stickyTariff instanceof HTMLElement)
+    ) {
+      throw new Error('Missing sticky calculator fixture nodes');
+    }
+
+    hydrateReglamentCalculator(root);
+
+    expect(reset.hidden).toBe(true);
+    expect(originalTariff.hidden).toBe(true);
+    expect(arrow.hidden).toBe(true);
+    expect(stickyTariff.dataset.reglamentDeltaTone).toBeUndefined();
+
+    input.value = '1573084';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+
+    expect(originalTariff.textContent).toMatchInlineSnapshot(`"902,07"`);
+    expect(originalTariff.hidden).toBe(false);
+    expect(arrow.textContent).toBe('→');
+    expect(arrow.hidden).toBe(false);
+    expect(stickyTariff.textContent).toMatchInlineSnapshot(`"902,48 ₽/сотка"`);
+    expect(stickyTariff.dataset.reglamentDeltaTone).toBe('positive');
+    expect(reset.hidden).toBe(false);
+
+    input.value = '1373084';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+
+    expect(originalTariff.hidden).toBe(false);
+    expect(arrow.hidden).toBe(false);
+    expect(stickyTariff.dataset.reglamentDeltaTone).toBe('negative');
+
+    reset.click();
+
+    expect(input.value).toBe(formatReglamentInputNumber(1_473_084));
+    expect(stickyTariff.textContent).toMatchInlineSnapshot(`"902,07 ₽/сотка"`);
+    expect(stickyTariff.dataset.reglamentDeltaTone).toBeUndefined();
+    expect(originalTariff.hidden).toBe(true);
+    expect(arrow.hidden).toBe(true);
+    expect(reset.hidden).toBe(true);
+  });
+
+  it('accepts readable grouped money input and resets to grouped baseline', () => {
+    document.body.innerHTML = `
+      <div data-reglament-calculator>
+        <input
+          type="text"
+          data-reglament-field="fixed_price"
+          data-reglament-row-id="lighting-electricity"
+          data-reglament-baseline="1473084"
+          value="${formatReglamentInputNumber(1_473_084)}"
+        />
+        <button type="button" data-reglament-reset>Сброс</button>
+        <strong data-reglament-current-tariff></strong>
+      </div>
+    `;
+    const root = document.querySelector('[data-reglament-calculator]');
+    const input = document.querySelector('input');
+    const reset = document.querySelector('[data-reglament-reset]');
+    const stickyTariff = document.querySelector(
+      '[data-reglament-current-tariff]',
+    );
+
+    if (
+      !(root instanceof HTMLElement) ||
+      !(input instanceof HTMLInputElement) ||
+      !(reset instanceof HTMLButtonElement) ||
+      !(stickyTariff instanceof HTMLElement)
+    ) {
+      throw new Error('Missing grouped money calculator fixture nodes');
+    }
+
+    hydrateReglamentCalculator(root);
+    input.value = formatReglamentInputNumber(1_573_084);
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+
+    expect(stickyTariff.textContent).toMatchInlineSnapshot(`"902,48 ₽/сотка"`);
+    expect(reset.hidden).toBe(false);
+
+    reset.click();
+
+    expect(input.value).toBe(formatReglamentInputNumber(1_473_084));
+    expect(stickyTariff.textContent).toMatchInlineSnapshot(`"902,07 ₽/сотка"`);
+    expect(reset.hidden).toBe(true);
+  });
+
+  it('renders changed row contribution in the tariff cell with delta tone', () => {
+    const rowId = 'cleaning-winter-mechanized';
+    document.body.innerHTML = `
+      <div data-reglament-calculator>
+        <input
+          type="number"
+          data-reglament-field="frequency"
+          data-reglament-row-id="${rowId}"
+          data-reglament-baseline="116"
+          value="100"
+        />
+        <span data-reglament-row-tariff="${rowId}"></span>
+      </div>
+    `;
+    const root = document.querySelector('[data-reglament-calculator]');
+    const rowTariff = document.querySelector('[data-reglament-row-tariff]');
+
+    if (!(root instanceof HTMLElement) || !(rowTariff instanceof HTMLElement)) {
+      throw new Error('Missing row tariff fixture nodes');
+    }
+
+    hydrateReglamentCalculator(root);
+
+    const expectedRow = findCalculatedRow(
+      calculateReglamentCalculatorState([
+        {
+          rowId,
+          key: 'frequency',
+          baseline: 116,
+          value: '100',
+        },
+      ]),
+      rowId,
+    );
+
+    expect(rowTariff.textContent).toBe(
+      formatReglamentTariffValue(expectedRow.tariff_per_sotka_month),
+    );
+    expect(rowTariff.dataset.reglamentDeltaTone).toBe('negative');
+  });
+});
