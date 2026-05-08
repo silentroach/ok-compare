@@ -254,6 +254,12 @@ describe('estimate detail markdown companions', () => {
       '/815/regulation/data/estimate-details-2026.json',
     );
     expect(markdown).toContain('/815/regulation/details/materials.md');
+    expect(markdown).toContain('/815/regulation/data/estimate-2026.json');
+    expect(markdown).toContain('/815/regulation/data/full-2026.json');
+    expect(markdown).toContain('/815/regulation/full/services.md');
+    expect(markdown).toContain('## Как соединять слои');
+    expect(markdown).toContain('`estimate_row_id` связывает work items');
+    expect(markdown).toContain('Какова периодичность полива дорог');
     expect(markdown).toContain('- Работы: 2');
     expect(markdown).toContain('- Ресурсы: 4');
     expect(markdown).toContain('- needs_check: 3');

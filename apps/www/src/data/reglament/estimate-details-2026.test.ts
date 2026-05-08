@@ -2479,6 +2479,44 @@ describe('estimate details 2026 dataset', () => {
     });
   });
 
+  it('keeps needs_check reasons and source refs actionable', () => {
+    const invalidNeedsCheck = [
+      ...estimateDetails2026.work_items.map((item) => ({
+        fact_id: `work_items:${item.id}`,
+        item,
+      })),
+      ...estimateDetails2026.resources.map((item) => ({
+        fact_id: `resources:${item.id}`,
+        item,
+      })),
+      ...estimateDetails2026.control_totals.map((item) => ({
+        fact_id: `control_totals:${item.id}`,
+        item,
+      })),
+    ].flatMap(({ fact_id, item }) => {
+      if (item.status !== 'needs_check') return [];
+
+      const checkSourceRefs = item.needs_check.source_refs ?? item.source_refs;
+      const errors = [
+        item.needs_check.reason.trim() ? null : 'empty reason',
+        checkSourceRefs.length > 0 ? null : 'empty check source refs',
+        checkSourceRefs.every(
+          (ref) =>
+            sourcePdfIds.has(ref.pdf) &&
+            Number.isInteger(ref.page) &&
+            ref.page > 0 &&
+            ref.fragment.trim().length > 0,
+        )
+          ? null
+          : 'invalid check source ref',
+      ].filter((error): error is string => error !== null);
+
+      return errors.length > 0 ? [{ fact_id, errors }] : [];
+    });
+
+    expect(invalidNeedsCheck).toEqual([]);
+  });
+
   it('keeps every estimate_row_id backed by estimate-2026 rows or sections', () => {
     const missingRows = [
       ...estimateDetails2026.work_items.map((item) => ({

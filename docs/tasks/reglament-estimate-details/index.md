@@ -63,15 +63,15 @@
 - [x] [Task 015: Cleaning summer manual](tasks/010-cleaning-summer-manual.md)
 - [x] [Task 016: Cleaning resource statement](tasks/011-cleaning-resource-statement.md)
 - [x] [Task 017: Final PDF controls](tasks/017-final-pdf-controls.md)
-- [ ] [Task 018: Final agent review](tasks/018-final-agent-review.md)
+- [x] [Task 018: Final agent review](tasks/018-final-agent-review.md)
 - [ ] [Task 019: Structured source quote items](tasks/019-structured-source-quote-items.md)
 
 ## Checkpoints
 
 - [x] After Tasks 001-006: empty dataset, endpoints and tests exist.
-- [ ] After Tasks 007-011: `cleaning.pdf` is fully represented and reconciled.
-- [ ] After Tasks 012-016: all small section PDFs have detail resources.
-- [ ] After Tasks 017-018: final controls, LLM docs and review are complete.
+- [x] After Tasks 007-011: `cleaning.pdf` is fully represented and reconciled.
+- [x] After Tasks 012-016: all small section PDFs have detail resources.
+- [x] After Tasks 017-018: final controls, LLM docs and review are complete.
 
 ## Open Questions
 

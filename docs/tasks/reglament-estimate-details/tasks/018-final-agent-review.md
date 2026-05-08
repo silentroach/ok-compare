@@ -1,6 +1,6 @@
 # Task 018: Final Agent Review
 
-Status: [ ] Not started
+Status: [x] Completed
 
 ## Description
 
@@ -8,16 +8,16 @@ Run a final review of the detail layer from an agent/LLM perspective: can it ans
 
 ## Acceptance Criteria
 
-- [ ] LLM docs explain where to look for aggregated estimate, full-reglament services and detail resources.
-- [ ] Sample questions are answerable from markdown/JSON without opening PDFs.
-- [ ] All task checkboxes in `index.md` are updated.
-- [ ] Remaining `needs_check` items are explicit and actionable.
+- [x] LLM docs explain where to look for aggregated estimate, full-reglament services and detail resources.
+- [x] Sample questions are answerable from markdown/JSON without opening PDFs.
+- [x] All task checkboxes in `index.md` are updated.
+- [x] Remaining `needs_check` items are explicit and actionable.
 
 ## Verification
 
-- [ ] `pnpm --filter @shelkovo/www test -- reglament`
-- [ ] `pnpm --filter @shelkovo/www build`
-- [ ] Manual query: road watering frequency from full service and detailed cleaning estimate.
+- [x] `pnpm --filter @shelkovo/www test -- reglament`
+- [x] `pnpm --filter @shelkovo/www build`
+- [x] Manual query: road watering frequency from full service and detailed cleaning estimate.
 
 ## Dependencies
 

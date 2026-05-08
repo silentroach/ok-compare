@@ -292,6 +292,14 @@ describe('reglament discovery route smoke', () => {
 
     expect(shortLlms).toContain(reglamentEstimateDetails2026DataPath());
     expect(shortLlms).toContain(reglamentEstimateDetailsMarkdownPath());
+    expect(shortLlms).toContain('Куда смотреть агенту');
+    expect(shortLlms).toContain('Агрегированная смета: `estimate-2026.json`');
+    expect(shortLlms).toContain('Услуги полного регламента: `full-2026.json`');
+    expect(shortLlms).toContain(
+      'Детальные ресурсы: `estimate-details-2026.json`',
+    );
+    expect(fullLlms).toContain('Как выбирать источник');
+    expect(fullLlms).toContain('Практический порядок ответа');
   });
 
   it('maps public source PDF URLs to public asset files', async () => {
