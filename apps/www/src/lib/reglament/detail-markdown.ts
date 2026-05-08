@@ -90,11 +90,8 @@ const sources = (refs: readonly EstimateDetailSourceRef[]): string =>
 const formatMoney = (money: EstimateDetailMoneyValue | undefined): string => {
   if (!money) return '-';
 
-  const value = money.raw
-    ? `${money.raw} руб.`
-    : money.value === null
-      ? 'нет данных'
-      : formatReglamentMoney(money.value);
+  const value =
+    money.value === null ? 'нет данных' : formatReglamentMoney(money.value);
   const note = money.note ? ` (${money.note})` : '';
 
   return `${value}${note}`;
@@ -105,9 +102,8 @@ const formatQuantity = (
 ): string => {
   if (!quantity) return '-';
 
-  const value = quantity.raw
-    ? quantity.raw
-    : quantity.value === null
+  const value =
+    quantity.value === null
       ? 'нет данных'
       : `${formatReglamentNumber(quantity.value)}${quantity.unit ? ` ${quantity.unit}` : ''}`;
   const note = quantity.note ? ` (${quantity.note})` : '';
@@ -350,6 +346,8 @@ export const buildEstimateDetailChecksMarkdown = (
   const workItems = needsCheckWorkItems(dataset);
   const resources = needsCheckResources(dataset);
   const controlTotals = needsCheckControlTotals(dataset);
+  const needsCheckTotal =
+    workItems.length + resources.length + controlTotals.length;
 
   return join([
     '# Детальная смета 2026: проверки',
@@ -359,7 +357,7 @@ export const buildEstimateDetailChecksMarkdown = (
     '',
     '## Сводка',
     `- Контрольные итоги: ${dataset.control_totals.length}`,
-    `- needs_check всего: ${needsCheckCount(dataset)}`,
+    `- needs_check всего: ${needsCheckTotal}`,
     `- Работы needs_check: ${workItems.length}`,
     `- Ресурсы needs_check: ${resources.length}`,
     `- Контрольные итоги needs_check: ${controlTotals.length}`,

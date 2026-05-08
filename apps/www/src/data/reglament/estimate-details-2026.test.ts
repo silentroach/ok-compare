@@ -804,7 +804,7 @@ describe('estimate details 2026 dataset', () => {
     expect(invalidItems).toEqual([]);
   });
 
-  it('keeps quote item public contract free of curation fragments', () => {
+  it('keeps public contract free of curation fragments', () => {
     const quoteItemLeaks = detailFactsWithSourceRefs()
       .flatMap((fact) =>
         fact.source_refs.map((ref) => ({ fact_id: fact.fact_id, ref })),
@@ -834,6 +834,7 @@ describe('estimate details 2026 dataset', () => {
       );
 
     expect(quoteItemLeaks).toEqual([]);
+    expect(hasOwnPropertyDeep(estimateDetails2026, 'raw')).toBe(false);
   });
 
   it('keeps obvious multi-position resource quotes structured', () => {
@@ -2366,7 +2367,7 @@ describe('estimate details 2026 dataset', () => {
     );
 
     expect(ditchCleaningResource).toMatchObject({
-      quantity: { value: 24_337.7, unit: 'чел-час', raw: '24337,7' },
+      quantity: { value: 24_337.7, unit: 'чел-час' },
     });
     expect(
       ditchCleaningResource?.source_refs

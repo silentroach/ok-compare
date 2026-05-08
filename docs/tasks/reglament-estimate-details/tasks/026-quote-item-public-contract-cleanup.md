@@ -9,7 +9,7 @@ Review the public `source_refs[].quote_items` contract after table-field enrichm
 ## Acceptance Criteria
 
 - [x] Decide whether `source_refs[].quote_items[].quote` should stay in the schema or be removed after `source_refs[].quote` remains available for source audit.
-- [x] Decide whether `EstimateDetailQuantityValue.raw` and `EstimateDetailMoneyValue.raw` should stay in public JSON/markdown or be removed/kept only in a non-public curation layer.
+- [x] Remove `EstimateDetailQuantityValue.raw` and `EstimateDetailMoneyValue.raw` from public JSON/markdown; detail values expose normalized `value`, `unit` and optional `note` only.
 - [x] If fields are removed, update `apps/www/src/lib/reglament/detail-schema.ts`, dataset modules, JSON/markdown output and tests consistently.
 - [x] LLM markdown keeps useful structured values: label, linked `resource_ids`, unit, numeric quantity, unit price, total and notes.
 - [x] No source provenance is lost: PDF id, page, fragment and legacy `source_refs[].quote` remain enough to audit the source row.

@@ -68,15 +68,12 @@ const fixtureDataset = {
       quantity: {
         value: 12.5,
         unit: 'т',
-        raw: '12,5 т',
       },
       unit_price_rub: {
         value: 1000,
-        raw: '1 000,00',
       },
       total_rub: {
         value: 12500,
-        raw: '12 500,00',
       },
       status: 'verified',
       status_label_ru: 'проверено',
@@ -114,7 +111,6 @@ const fixtureDataset = {
       cost_bucket: 'machines',
       total_rub: {
         value: 5000,
-        raw: '5 000,00',
       },
       status: 'verified',
       status_label_ru: 'проверено',
@@ -136,15 +132,12 @@ const fixtureDataset = {
       quantity: {
         value: 8,
         unit: 'чел.-ч',
-        raw: '8 чел.-ч',
       },
       unit_price_rub: {
         value: 2000,
-        raw: '2 000,00',
       },
       total_rub: {
         value: 16000,
-        raw: '16 000,00',
       },
       status: 'verified',
       status_label_ru: 'проверено',
@@ -165,7 +158,6 @@ const fixtureDataset = {
       cost_bucket: 'machinist_salary',
       total_rub: {
         value: 3000,
-        raw: '3 000,00',
       },
       status: 'needs_check',
       status_label_ru: 'требует проверки',
@@ -189,15 +181,12 @@ const fixtureDataset = {
       cost_bucket: 'materials',
       source_total_rub: {
         value: 12500,
-        raw: '12 500,00',
       },
       detail_total_rub: {
         value: 12500,
-        raw: '12 500,00',
       },
       aggregate_total_rub: {
         value: 12525,
-        raw: '12 525,00',
       },
       delta_rub: -25,
       tolerance_rub: 1,
@@ -293,7 +282,7 @@ describe('estimate detail markdown companions', () => {
     expect(machines).not.toContain('material-sand: Песок');
     expect(labor).toContain('labor-worker: Рабочий зеленого хозяйства');
     expect(labor).toContain('machinist-loader: Машинист погрузчика');
-    expect(labor).toContain('ставка: 2 000,00 руб.');
+    expect(labor).toContain('ставка: 2 000 ₽');
   });
 
   it('renders structured source quote items in Russian when present', () => {

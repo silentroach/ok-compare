@@ -19,16 +19,8 @@ type DetailSourceOptions = Pick<
   EstimateDetailSourceRef,
   'quote' | 'quote_items' | 'note'
 >;
-type DetailMoneyOptions = Pick<EstimateDetailMoneyValue, 'raw' | 'note'>;
-type DetailQuantityOptions = Pick<EstimateDetailQuantityValue, 'raw' | 'note'>;
-type DetailSourceQuoteItemInput = Omit<
-  EstimateDetailSourceQuoteItem,
-  'quantity' | 'unit_price_rub' | 'total_rub'
-> & {
-  readonly quantity?: EstimateDetailQuantityValue;
-  readonly unit_price_rub?: EstimateDetailMoneyValue;
-  readonly total_rub?: EstimateDetailMoneyValue;
-};
+type DetailMoneyOptions = Pick<EstimateDetailMoneyValue, 'note'>;
+type DetailQuantityOptions = Pick<EstimateDetailQuantityValue, 'note'>;
 
 const detailSourcePdfTitles = {
   final: 'Итоговая смета',
@@ -62,29 +54,6 @@ const assertFiniteOrNull = (value: number | null, field: string): void => {
   if (value !== null && !Number.isFinite(value)) {
     throw new Error(`${field}: ожидается конечное число или null`);
   }
-};
-
-const quoteItemQuantity = (
-  quantity: EstimateDetailQuantityValue | undefined,
-): EstimateDetailSourceQuoteItem['quantity'] => {
-  if (!quantity) return undefined;
-
-  return {
-    value: quantity.value,
-    unit: quantity.unit,
-    ...(quantity.note ? { note: quantity.note } : {}),
-  };
-};
-
-const quoteItemMoney = (
-  money: EstimateDetailMoneyValue | undefined,
-): EstimateDetailSourceQuoteItem['unit_price_rub'] => {
-  if (!money) return undefined;
-
-  return {
-    value: money.value,
-    ...(money.note ? { note: money.note } : {}),
-  };
 };
 
 export const estimateDetailSourcePdfs = ESTIMATE_DETAIL_SOURCE_PDFS.map(
@@ -123,7 +92,7 @@ export const detailSource = (
 };
 
 export const detailSourceQuoteItem = (
-  input: DetailSourceQuoteItemInput,
+  input: EstimateDetailSourceQuoteItem,
 ): EstimateDetailSourceQuoteItem => {
   if (!input.label.trim()) {
     throw new Error(
@@ -136,18 +105,7 @@ export const detailSourceQuoteItem = (
     );
   }
 
-  const quantity = quoteItemQuantity(input.quantity);
-  const unitPriceRub = quoteItemMoney(input.unit_price_rub);
-  const totalRub = quoteItemMoney(input.total_rub);
-
-  return {
-    label: input.label,
-    ...(input.resource_ids ? { resource_ids: input.resource_ids } : {}),
-    ...(quantity ? { quantity } : {}),
-    ...(unitPriceRub ? { unit_price_rub: unitPriceRub } : {}),
-    ...(totalRub ? { total_rub: totalRub } : {}),
-    ...(input.note ? { note: input.note } : {}),
-  };
+  return input;
 };
 
 export const detailSourceQuoteItems = (

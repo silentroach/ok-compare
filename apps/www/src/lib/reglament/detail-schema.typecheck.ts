@@ -56,15 +56,12 @@ export const validEstimateDetailDataset = {
       quantity: {
         value: 10,
         unit: 'маш.-ч',
-        raw: '10 маш.-ч',
       },
       unit_price_rub: {
         value: 1_000,
-        raw: '1 000,00',
       },
       total_rub: {
         value: 10_000,
-        raw: '10 000,00',
       },
       status: 'verified',
       status_label_ru: 'проверено',
@@ -85,7 +82,6 @@ export const validEstimateDetailDataset = {
       cost_bucket: 'machines',
       source_total_rub: {
         value: 10_000,
-        raw: '10 000,00',
       },
       detail_total_rub: {
         value: 10_000,
