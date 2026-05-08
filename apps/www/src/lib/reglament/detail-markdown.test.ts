@@ -276,13 +276,18 @@ describe('estimate detail markdown companions', () => {
     const machines = buildEstimateDetailMachinesMarkdown(fixtureDataset);
     const labor = buildEstimateDetailLaborMarkdown(fixtureDataset);
 
-    expect(materials).toContain('material-sand: Песок');
+    expect(materials).toContain('## Быстрый индекс по строкам сметы');
+    expect(materials).toContain('- `material-sand` — Песок');
+    expect(materials).toContain('  - Работа: `work-verified`');
     expect(materials).not.toContain('machine-loader: Погрузчик');
-    expect(machines).toContain('machine-loader: Погрузчик');
+    expect(machines).toContain('- `machine-loader` — Погрузчик');
     expect(machines).not.toContain('material-sand: Песок');
-    expect(labor).toContain('labor-worker: Рабочий зеленого хозяйства');
-    expect(labor).toContain('machinist-loader: Машинист погрузчика');
-    expect(labor).toContain('ставка: 2 000 ₽');
+    expect(labor).toContain('- `labor-worker` — Рабочий зеленого хозяйства');
+    expect(labor).toContain('  - Вид: труд');
+    expect(labor).toContain('- `machinist-loader` — Машинист погрузчика');
+    expect(labor).toContain('  - Вид: труд машинистов');
+    expect(labor).toContain('  - Ставка: 2 000 ₽');
+    expect(labor).toContain('  - Итог: 16 000 ₽');
   });
 
   it('renders structured source quote items in Russian when present', () => {

@@ -151,6 +151,181 @@ const resourcesByKind = (
 ): readonly EstimateDetailResource[] =>
   dataset.resources.filter((resource) => kinds.includes(resource.kind));
 
+const moneyValue = (
+  money: EstimateDetailMoneyValue | undefined,
+): number | undefined => money?.value ?? undefined;
+
+const resourceTotalSummary = (
+  resources: readonly EstimateDetailResource[],
+): string => {
+  let total = 0;
+  let withoutTotal = 0;
+
+  for (const resource of resources) {
+    const resourceTotal = moneyValue(resource.total_rub);
+
+    if (resourceTotal === undefined) {
+      withoutTotal += 1;
+      continue;
+    }
+
+    total += resourceTotal;
+  }
+
+  return withoutTotal > 0
+    ? `${formatReglamentMoney(total)}; без суммы: ${withoutTotal}`
+    : formatReglamentMoney(total);
+};
+
+const resourceGroupsByEstimateRow = (
+  resources: readonly EstimateDetailResource[],
+): readonly {
+  readonly estimateRowId: string;
+  readonly resources: readonly EstimateDetailResource[];
+}[] => {
+  const groups: {
+    readonly estimateRowId: string;
+    readonly resources: EstimateDetailResource[];
+  }[] = [];
+  const groupByEstimateRowId = new Map<string, EstimateDetailResource[]>();
+
+  for (const resource of resources) {
+    const estimateRowId = resource.estimate_row_id;
+    const existingGroup = groupByEstimateRowId.get(estimateRowId);
+
+    if (existingGroup) {
+      existingGroup.push(resource);
+      continue;
+    }
+
+    const groupResources = [resource];
+    groupByEstimateRowId.set(estimateRowId, groupResources);
+    groups.push({
+      estimateRowId,
+      resources: groupResources,
+    });
+  }
+
+  return groups;
+};
+
+const sourceLabelsByRenderedSource = (
+  resources: readonly EstimateDetailResource[],
+): ReadonlyMap<string, string> => {
+  const labels = new Map<string, string>();
+
+  for (const resource of resources) {
+    for (const ref of resource.source_refs) {
+      const renderedSource = source(ref);
+
+      if (!labels.has(renderedSource)) {
+        labels.set(renderedSource, `S${labels.size + 1}`);
+      }
+    }
+  }
+
+  return labels;
+};
+
+const sourceLabelsForResource = (
+  resource: EstimateDetailResource,
+  sourceLabels: ReadonlyMap<string, string>,
+): string =>
+  resource.source_refs
+    .map((ref) => sourceLabels.get(source(ref)) ?? '?')
+    .join(', ');
+
+const sourceLinesForLabels = (
+  sourceLabels: ReadonlyMap<string, string>,
+): readonly string[] =>
+  Array.from(sourceLabels.entries()).map(
+    ([renderedSource, label]) => `- \`${label}\`: ${renderedSource}`,
+  );
+
+const resourceWorkItemsLine = (
+  resources: readonly EstimateDetailResource[],
+  workItemsById: ReadonlyMap<string, EstimateDetailWorkItem>,
+): string => {
+  const workItemIds = Array.from(
+    new Set(resources.map((resource) => resource.work_item_id)),
+  );
+
+  return workItemIds
+    .map((id) => {
+      const workItem = workItemsById.get(id);
+
+      return workItem ? `\`${id}\`: ${workItem.title}` : `\`${id}\``;
+    })
+    .join('; ');
+};
+
+const resourceIndexLine = (
+  group: ReturnType<typeof resourceGroupsByEstimateRow>[number],
+): string =>
+  `- \`${group.estimateRowId}\`: ресурсов: ${group.resources.length}; итог: ${resourceTotalSummary(group.resources)}`;
+
+const resourceFieldLine = (label: string, value: string): string =>
+  `  - ${label}: ${value}`;
+
+const resourceLines = (
+  resources: readonly EstimateDetailResource[],
+  sourceLabels: ReadonlyMap<string, string>,
+  options: ResourceMarkdownOptions,
+): readonly string[] => {
+  const showKind = options.kinds.length > 1;
+  const priceLabel = options.priceLabel === 'ставка' ? 'Ставка' : 'Цена';
+
+  return resources.flatMap((resource) => {
+    const lines = [`- \`${resource.id}\` — ${resource.title}`];
+
+    if (showKind) {
+      lines.push(resourceFieldLine('Вид', RESOURCE_KIND_LABELS[resource.kind]));
+    }
+
+    lines.push(
+      resourceFieldLine('Работа', `\`${resource.work_item_id}\``),
+      resourceFieldLine('Строка сметы', `\`${resource.estimate_row_id}\``),
+      resourceFieldLine('Корзина затрат', resource.cost_bucket),
+      resourceFieldLine('Кол-во', formatQuantity(resource.quantity)),
+      resourceFieldLine(priceLabel, formatMoney(resource.unit_price_rub)),
+      resourceFieldLine('Итог', formatMoney(resource.total_rub)),
+      resourceFieldLine(
+        'Источники',
+        sourceLabelsForResource(resource, sourceLabels),
+      ),
+    );
+
+    if (resource.note) {
+      lines.push(resourceFieldLine('Примечание', resource.note));
+    }
+
+    return lines;
+  });
+};
+
+const resourceGroupLines = (
+  group: ReturnType<typeof resourceGroupsByEstimateRow>[number],
+  workItemsById: ReadonlyMap<string, EstimateDetailWorkItem>,
+  options: ResourceMarkdownOptions,
+): readonly string[] => {
+  const sourceLabels = sourceLabelsByRenderedSource(group.resources);
+
+  return [
+    `### \`${group.estimateRowId}\``,
+    '',
+    `- Ресурсов: ${group.resources.length}`,
+    `- Итог по ресурсам: ${resourceTotalSummary(group.resources)}`,
+    `- Работы: ${resourceWorkItemsLine(group.resources, workItemsById)}`,
+    '',
+    '#### Ресурсы',
+    ...resourceLines(group.resources, sourceLabels, options),
+    '',
+    '#### Источники группы',
+    ...sourceLinesForLabels(sourceLabels),
+    '',
+  ];
+};
+
 const topicLine = (title: string, path: string, description: string): string =>
   `- ${title}: ${absoluteUrl(path)}; ${description}`;
 
@@ -160,15 +335,6 @@ const sourcePdfLine = (
   const pages = pdf.pages_total ? `; страниц: ${pdf.pages_total}` : '';
 
   return `- ${pdf.pdf}.pdf: ${pdf.title}${pages}; URL: ${absoluteUrl(reglamentSourcePdfUrl(pdf.pdf))}`;
-};
-
-const resourceLine = (
-  resource: EstimateDetailResource,
-  priceLabel: 'цена' | 'ставка' = 'цена',
-): string => {
-  const note = resource.note ? `; примечание: ${resource.note}` : '';
-
-  return `- ${resource.id}: ${resource.title}; работа: ${resource.work_item_id}; строка сметы: ${resource.estimate_row_id}; вид: ${RESOURCE_KIND_LABELS[resource.kind]}; bucket: ${resource.cost_bucket}; кол-во: ${formatQuantity(resource.quantity)}; ${priceLabel}: ${formatMoney(resource.unit_price_rub)}; итог: ${formatMoney(resource.total_rub)}; статус: ${resource.status_label_ru}; source: ${sources(resource.source_refs)}${note}`;
 };
 
 type ResourceMarkdownOptions = {
@@ -184,6 +350,10 @@ const buildEstimateDetailResourcesMarkdown = (
   options: ResourceMarkdownOptions,
 ): string => {
   const resources = resourcesByKind(dataset, options.kinds);
+  const groups = resourceGroupsByEstimateRow(resources);
+  const workItemsById = new Map(
+    dataset.work_items.map((workItem) => [workItem.id, workItem]),
+  );
 
   return join([
     options.title,
@@ -191,13 +361,25 @@ const buildEstimateDetailResourcesMarkdown = (
     `- Индекс: ${absoluteUrl(reglamentEstimateDetailsMarkdownUrl())}`,
     `- JSON-набор данных: ${absoluteUrl(reglamentEstimateDetails2026DataUrl())}`,
     '',
+    '## Как читать',
+    '- Данные сгруппированы по `estimate_row_id`: сначала короткий индекс, ниже списки ресурсов по каждой строке сметы.',
+    '- В ресурсах поле `Источники` содержит короткие метки `S1`, `S2`; полные PDF-ссылки, цитаты и `quote_items` вынесены под список группы.',
+    '- Для машинной обработки используйте JSON: в markdown оставлены те же id, суммы и ссылки на источники.',
+    '',
     '## Сводка',
     `- ${options.summaryLabel}: ${resources.length}`,
+    `- Строк сметы: ${groups.length}`,
+    `- Итог по ресурсам: ${resourceTotalSummary(resources)}`,
     '',
-    `## ${options.sectionTitle}`,
-    ...linesOrEmpty(resources, (resource) =>
-      resourceLine(resource, options.priceLabel),
-    ),
+    '## Быстрый индекс по строкам сметы',
+    ...(groups.length > 0 ? groups.map(resourceIndexLine) : [EMPTY_LIST_LINE]),
+    '',
+    `## ${options.sectionTitle} по строкам сметы`,
+    ...(groups.length > 0
+      ? groups.flatMap((group) =>
+          resourceGroupLines(group, workItemsById, options),
+        )
+      : [EMPTY_LIST_LINE]),
   ]);
 };
 

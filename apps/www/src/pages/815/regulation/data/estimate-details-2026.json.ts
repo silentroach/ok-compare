@@ -1,13 +1,14 @@
 import type { APIRoute } from 'astro';
 
 import { estimateDetails2026 } from '@/data/reglament/estimate-details-2026';
+import { buildPublicEstimateDetails2026Json } from '@/lib/reglament/detail-json';
 import { reglamentApiCatalogPath } from '@/lib/reglament/routes';
 import { absoluteUrl } from '@/lib/site';
 
 export const prerender = true;
 
 export const GET: APIRoute = async () => {
-  const body = `${JSON.stringify(estimateDetails2026, null, 2)}\n`;
+  const body = buildPublicEstimateDetails2026Json(estimateDetails2026);
 
   return new Response(body, {
     headers: {
