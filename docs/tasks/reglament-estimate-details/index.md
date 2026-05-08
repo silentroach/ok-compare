@@ -52,7 +52,7 @@
 - [ ] [Task 013: Improvement details](tasks/013-improvement-details.md)
 - [ ] [Task 014: Lighting details](tasks/014-lighting-details.md)
 - [ ] [Task 015: Security details](tasks/015-security-details.md)
-- [ ] [Task 016: Waste details](tasks/016-waste-details.md)
+- [x] [Task 016: Waste details](tasks/016-waste-details.md)
 - [ ] [Task 017: Final PDF controls](tasks/017-final-pdf-controls.md)
 - [ ] [Task 018: Final agent review](tasks/018-final-agent-review.md)
 

@@ -1,6 +1,6 @@
 # Task 016: Waste Details
 
-Status: [ ] Not started
+Status: [x] Done
 
 ## Description
 
@@ -8,15 +8,15 @@ Extract waste-service details from `waste.pdf`: TKO/KGO handling, container site
 
 ## Acceptance Criteria
 
-- [ ] Waste work items are represented.
-- [ ] Contractor, labor and material resources are captured according to the PDF.
-- [ ] Work items link to `full-2026` services where possible.
-- [ ] Controls reconcile to waste rows in `estimate-2026`.
+- [x] Waste work items are represented.
+- [x] Contractor, labor and material resources are captured according to the PDF.
+- [x] Work items link to `full-2026` services where possible.
+- [x] Controls reconcile to waste rows in `estimate-2026`.
 
 ## Verification
 
-- [ ] `pnpm --filter @shelkovo/www test -- estimate-details-2026`
-- [ ] Manual spot-check against `waste.pdf`.
+- [x] `pnpm --filter @shelkovo/www test -- estimate-details-2026`
+- [x] Manual spot-check against `waste.pdf`.
 
 ## Dependencies
 
