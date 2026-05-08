@@ -119,7 +119,6 @@ const wasteTransferStaffSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Рабочий по уборке территории',
-        quote: 'Рабочий по уборке территории ... 2,6 ... 664,15',
         resource_ids: [wasteTransferWorkerLaborResourceId],
         quantity: detailQuantity(2.6, 'чел.', { raw: '2,6' }),
         unit_price_rub: detailMoney(664.15, { raw: '664,15' }),
@@ -130,7 +129,6 @@ const wasteTransferStaffSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Машинист',
-        quote: 'Машинист 0,7 ... 934,32',
         resource_ids: [wasteTransferMachinistLaborResourceId],
         quantity: detailQuantity(0.7, 'чел.', { raw: '0,7' }),
         unit_price_rub: detailMoney(934.32, { raw: '934,32' }),
@@ -183,7 +181,6 @@ const wasteTransferResourceStatementSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Рабочий по уборке территории',
-        quote: 'Рабочий ... 5147,3 664,15 3 418 555,10',
         resource_ids: [wasteTransferWorkerLaborResourceId],
         quantity: detailQuantity(5_147.3, 'чел-час', { raw: '5147,3' }),
         unit_price_rub: detailMoney(664.15, { raw: '664,15' }),
@@ -191,7 +188,6 @@ const wasteTransferResourceStatementSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Машинист',
-        quote: 'Машинист 1460,0 934,32 1 364 107,20',
         resource_ids: [wasteTransferMachinistLaborResourceId],
         quantity: detailQuantity(1_460, 'чел-час', { raw: '1460,0' }),
         unit_price_rub: detailMoney(934.32, { raw: '934,32' }),
@@ -199,7 +195,6 @@ const wasteTransferResourceStatementSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Газель (GAZ 330232)',
-        quote: 'Газель (GAZ 330232) 1460,0 318,02 464 303,42',
         resource_ids: [wasteTransferGazelMachineResourceId],
         quantity: detailQuantity(1_460, 'маш.-час', { raw: '1460,0' }),
         unit_price_rub: detailMoney(318.02, { raw: '318,02' }),

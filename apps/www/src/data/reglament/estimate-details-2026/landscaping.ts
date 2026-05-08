@@ -187,49 +187,41 @@ const landscapingProductionTreesPpeSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Костюм хлопчатобумажный',
-        quote: 'Костюм хлопчатобумажный 0,5',
         resource_ids: [landscapingTreesPpeCottonSuitResourceId],
         quantity: detailQuantity(0.5, 'шт.', { raw: '0,5' }),
       }),
       detailSourceQuoteItem({
         label: 'Куртка на утепляющей прокладке',
-        quote: 'Куртка 0,21',
         resource_ids: [landscapingTreesPpeInsulatedJacketResourceId],
         quantity: detailQuantity(0.21, 'шт.', { raw: '0,21' }),
       }),
       detailSourceQuoteItem({
         label: 'Жилет сигнальный',
-        quote: 'Жилет 0,5',
         resource_ids: [landscapingTreesPpeSignalVestResourceId],
         quantity: detailQuantity(0.5, 'шт.', { raw: '0,5' }),
       }),
       detailSourceQuoteItem({
         label: 'Сапоги утепленные',
-        quote: 'Сапоги утепленные 0,21',
         resource_ids: [landscapingTreesPpeInsulatedBootsResourceId],
         quantity: detailQuantity(0.21, 'шт.', { raw: '0,21' }),
       }),
       detailSourceQuoteItem({
         label: 'Перчатки с полимерным покрытием',
-        quote: 'Перчатки 2,1',
         resource_ids: [landscapingTreesPpePolymerGlovesResourceId],
         quantity: detailQuantity(2.1, 'шт.', { raw: '2,1' }),
       }),
       detailSourceQuoteItem({
         label: 'Рукавицы утепленные',
-        quote: 'Рукавицы 2,1',
         resource_ids: [landscapingTreesPpeInsulatedMittensResourceId],
         quantity: detailQuantity(2.1, 'шт.', { raw: '2,1' }),
       }),
       detailSourceQuoteItem({
         label: 'Сапоги резиновые',
-        quote: 'Сапоги резиновые 0,5',
         resource_ids: [landscapingTreesPpeRubberBootsResourceId],
         quantity: detailQuantity(0.5, 'шт.', { raw: '0,5' }),
       }),
       detailSourceQuoteItem({
         label: 'Мыло туалетное',
-        quote: 'Мыло 6,4',
         resource_ids: [landscapingTreesPpeSoapResourceId],
         quantity: detailQuantity(6.4, 'шт.', { raw: '6,4' }),
       }),
@@ -257,8 +249,6 @@ const landscapingProductionTicksHogweedSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Услуги сторонней организации: обработка от клещей',
-        quote:
-          'Обработка от клещей; V-X; кратность 1; услуга сторонней организации 34200,00',
         resource_ids: [landscapingTicksTreatmentContractorResourceId],
         quantity: detailQuantity(1, 'обработка', { raw: '1,0' }),
         unit_price_rub: detailMoney(34_200, { raw: '34200,00' }),
@@ -266,8 +256,6 @@ const landscapingProductionTicksHogweedSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Услуги сторонней организации: борьба с борщевиком',
-        quote:
-          'Борьба с борщевиком; V-X; кратность 3; услуга сторонней организации 5826000,00',
         resource_ids: [landscapingHogweedContractorResourceId],
         quantity: detailQuantity(1, 'обработка', { raw: '1,0' }),
         unit_price_rub: detailMoney(5_826_000, { raw: '5826000,00' }),
@@ -297,13 +285,11 @@ const landscapingStaffSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Рабочий по уборке территории',
-        quote: 'Рабочий по уборке территории ... 0,95 ... 664,15',
         quantity: detailQuantity(0.95, 'чел.', { raw: '0,95' }),
         unit_price_rub: detailMoney(664.15, { raw: '664,15' }),
       }),
       detailSourceQuoteItem({
         label: 'Машинист',
-        quote: 'Машинист 0,08 ... 934,32',
         quantity: detailQuantity(0.08, 'чел.', { raw: '0,08' }),
         unit_price_rub: detailMoney(934.32, { raw: '934,32' }),
       }),
@@ -371,7 +357,6 @@ const landscapingTreesWaterSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Машинист',
-        quote: 'Затраты труда Машинист; 164; 934,32; 153 163,08',
         resource_ids: [landscapingTreesWaterMachinistResourceId],
         quantity: detailQuantity(164, 'чел-час', {
           raw: '164',
@@ -382,7 +367,6 @@ const landscapingTreesWaterSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Трактор МТЗ 80',
-        quote: 'Трактор МТЗ 80 ... 241 964,04',
         resource_ids: [landscapingTreesWaterTractorResourceId],
         quantity: detailQuantity(164, 'маш-час', {
           raw: '164',
@@ -393,7 +377,6 @@ const landscapingTreesWaterSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'ОПМ-5,0',
-        quote: 'ОПМ-5,0 ... 17 769,76',
         resource_ids: [landscapingTreesWaterTankResourceId],
         quantity: detailQuantity(164, 'маш-час', {
           raw: '164',
@@ -485,7 +468,6 @@ const landscapingTreesPpeStartSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Костюм хлопчатобумажный',
-        quote: 'Костюм 2 915,00',
         resource_ids: [landscapingTreesPpeCottonSuitResourceId],
         quantity: detailQuantity(0.5, 'шт.', {
           raw: '0,5',
@@ -496,7 +478,6 @@ const landscapingTreesPpeStartSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Куртка на утепляющей прокладке',
-        quote: 'Куртка 1 272,00',
         resource_ids: [landscapingTreesPpeInsulatedJacketResourceId],
         quantity: detailQuantity(0.21, 'шт.', {
           raw: '0,21',
@@ -507,7 +488,6 @@ const landscapingTreesPpeStartSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Жилет сигнальный',
-        quote: 'Жилет 636,00',
         resource_ids: [landscapingTreesPpeSignalVestResourceId],
         quantity: detailQuantity(0.5, 'шт.', {
           raw: '0,5',
@@ -518,7 +498,6 @@ const landscapingTreesPpeStartSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Сапоги утепленные',
-        quote: 'Сапоги утепленные 742,00',
         resource_ids: [landscapingTreesPpeInsulatedBootsResourceId],
         quantity: detailQuantity(0.2, 'шт.', {
           raw: '0,2',
@@ -541,7 +520,6 @@ const landscapingTreesPpeSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Перчатки с полимерным покрытием',
-        quote: 'Перчатки 742,00',
         resource_ids: [landscapingTreesPpePolymerGlovesResourceId],
         quantity: detailQuantity(2.1, 'шт.', {
           raw: '2,1',
@@ -552,7 +530,6 @@ const landscapingTreesPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Рукавицы утепленные',
-        quote: 'Рукавицы 1 484,00',
         resource_ids: [landscapingTreesPpeInsulatedMittensResourceId],
         quantity: detailQuantity(2.1, 'шт.', {
           raw: '2,1',
@@ -563,7 +540,6 @@ const landscapingTreesPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Сапоги резиновые',
-        quote: 'Сапоги резиновые 1 060,00',
         resource_ids: [landscapingTreesPpeRubberBootsResourceId],
         quantity: detailQuantity(0.5, 'шт.', {
           raw: '0,5',
@@ -574,7 +550,6 @@ const landscapingTreesPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Мыло туалетное',
-        quote: 'Мыло 737,76',
         resource_ids: [landscapingTreesPpeSoapResourceId],
         quantity: detailQuantity(6.4, 'шт.', {
           raw: '6,4',
@@ -677,14 +652,12 @@ const landscapingResourceStatementSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Рабочий',
-        quote: 'Рабочий ... 1915,9 664,15 1 272 411,90',
         quantity: detailQuantity(1_915.9, 'чел-час', { raw: '1915,9' }),
         unit_price_rub: detailMoney(664.15, { raw: '664,15' }),
         total_rub: detailMoney(1_272_411.9, { raw: '1 272 411,90' }),
       }),
       detailSourceQuoteItem({
         label: 'Машинист',
-        quote: 'Машинист 163,9 934,32 153 163,08',
         resource_ids: [landscapingTreesWaterMachinistResourceId],
         quantity: detailQuantity(163.9, 'чел-час', { raw: '163,9' }),
         unit_price_rub: detailMoney(934.32, { raw: '934,32' }),
@@ -692,7 +665,6 @@ const landscapingResourceStatementSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Трактор МТЗ 80',
-        quote: 'Трактор МТЗ 80 ... 241 964,04',
         resource_ids: [landscapingTreesWaterTractorResourceId],
         quantity: detailQuantity(163.9, 'маш.-час', { raw: '163,9' }),
         unit_price_rub: detailMoney(1_476.02, { raw: '1476,02' }),
@@ -700,7 +672,6 @@ const landscapingResourceStatementSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'ОПМ-5,0',
-        quote: 'ОПМ-5,0 ... 17 769,76',
         resource_ids: [landscapingTreesWaterTankResourceId],
         quantity: detailQuantity(163.9, 'маш.-час', { raw: '163,9' }),
         unit_price_rub: detailMoney(108.4, { raw: '108,40' }),
@@ -708,7 +679,6 @@ const landscapingResourceStatementSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Триммер бензиновый',
-        quote: 'Триммер бензиновый ... 61 792,83',
         resource_ids: [landscapingMowingTrimmerMachineResourceId],
         quantity: detailQuantity(1_030.4, 'маш.-час', { raw: '1030,4' }),
         unit_price_rub: detailMoney(59.97, { raw: '59,97' }),
@@ -716,7 +686,6 @@ const landscapingResourceStatementSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Вода',
-        quote: 'Вода 291,0 13,56 3 945,96',
         resource_ids: [landscapingTreesWaterResourceId],
         quantity: detailQuantity(291, 'м³', { raw: '291,0' }),
         unit_price_rub: detailMoney(13.56, { raw: '13,56' }),

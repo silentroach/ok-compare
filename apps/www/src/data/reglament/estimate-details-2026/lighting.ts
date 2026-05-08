@@ -220,7 +220,6 @@ const lightingResourceStatementSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Электромонтажник',
-        quote: 'Электромонтажник 5767,1 664,15 3 830 217,03',
         resource_ids: [
           lightingStreetFixtureLaborResourceId,
           lightingStreetCableLaborResourceId,
@@ -237,7 +236,6 @@ const lightingResourceStatementSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Уличный светильник ЖКУ 16-100-001',
-        quote: 'Уличный светильник ЖКУ 16-100-001 146 670,00 97 820,00',
         resource_ids: [lightingStreetFixtureMaterialResourceId],
         quantity: detailQuantity(146, 'шт.', { raw: '146' }),
         unit_price_rub: detailMoney(670, { raw: '670,00' }),
@@ -245,7 +243,6 @@ const lightingResourceStatementSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Краска по металлу',
-        quote: 'Краска ... 453 612,50 277 692,80',
         resource_ids: [lightingPolesPaintMaterialResourceId],
         quantity: detailQuantity(453, 'кг.', {
           raw: '453',
@@ -256,7 +253,6 @@ const lightingResourceStatementSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Электроэнергия',
-        quote: 'Электроэнергия 218457 6,29 1 374 097,60',
         resource_ids: [lightingElectricityMaterialResourceId],
         quantity: detailQuantity(218_457, 'кВт*час', {
           raw: '218457',

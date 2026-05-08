@@ -25,7 +25,6 @@ type DetailSourceQuoteItemInput = Omit<
   EstimateDetailSourceQuoteItem,
   'quantity' | 'unit_price_rub' | 'total_rub'
 > & {
-  readonly quote: string;
   readonly quantity?: EstimateDetailQuantityValue;
   readonly unit_price_rub?: EstimateDetailMoneyValue;
   readonly total_rub?: EstimateDetailMoneyValue;
@@ -129,11 +128,6 @@ export const detailSourceQuoteItem = (
   if (!input.label.trim()) {
     throw new Error(
       'название позиции цитаты источника детализации не должно быть пустым',
-    );
-  }
-  if (!input.quote.trim()) {
-    throw new Error(
-      'цитата позиции источника детализации не должна быть пустой',
     );
   }
   if (input.resource_ids?.some((resourceId) => !resourceId.trim())) {

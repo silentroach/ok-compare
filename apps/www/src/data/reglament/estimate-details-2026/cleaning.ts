@@ -220,15 +220,12 @@ const cleaningStaffSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Рабочий по уборке территории (средний разряд 3.0)',
-        quote:
-          'Рабочий по уборке территории (средний разряд 3.0); 13,4; тарифная ставка 664,15; всего 8 899,55',
         quantity: detailQuantity(13.4, 'чел.', { raw: '13,4' }),
         unit_price_rub: detailMoney(664.15, { raw: '664,15' }),
         total_rub: detailMoney(8_899.55, { raw: '8 899,55' }),
       }),
       detailSourceQuoteItem({
         label: 'Машинист',
-        quote: 'Машинист; 14,1; тарифная ставка 934,32; всего 13 173,91',
         quantity: detailQuantity(14.1, 'чел.', { raw: '14,1' }),
         unit_price_rub: detailMoney(934.32, { raw: '934,32' }),
         total_rub: detailMoney(13_173.91, { raw: '13 173,91' }),
@@ -297,7 +294,6 @@ const cleaningWinterMechanizedPpeSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Костюм хлопчатобумажный',
-        quote: 'Костюм 14 850,00',
         resource_ids: [cleaningWinterMechanizedPpeCottonSuitResourceId],
         quantity: detailQuantity(2.7, 'шт.', { raw: '2,7' }),
         unit_price_rub: detailMoney(5_500, { raw: '5500,00' }),
@@ -305,7 +301,6 @@ const cleaningWinterMechanizedPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Куртка на утепляющей прокладке',
-        quote: 'Куртка 6 480,00',
         resource_ids: [cleaningWinterMechanizedPpeInsulatedJacketResourceId],
         quantity: detailQuantity(1.1, 'шт.', {
           raw: '1,1',
@@ -316,7 +311,6 @@ const cleaningWinterMechanizedPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Жилет сигнальный',
-        quote: 'Жилет 3 240,00',
         resource_ids: [cleaningWinterMechanizedPpeSignalVestResourceId],
         quantity: detailQuantity(2.7, 'шт.', { raw: '2,7' }),
         unit_price_rub: detailMoney(1_200, { raw: '1200,00' }),
@@ -324,7 +318,6 @@ const cleaningWinterMechanizedPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Сапоги утепленные',
-        quote: 'Сапоги утепленные 3 780,00',
         resource_ids: [cleaningWinterMechanizedPpeInsulatedBootsResourceId],
         quantity: detailQuantity(1.1, 'шт.', {
           raw: '1,1',
@@ -335,7 +328,6 @@ const cleaningWinterMechanizedPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Перчатки с полимерным покрытием',
-        quote: 'Перчатки 3 780,00',
         resource_ids: [cleaningWinterMechanizedPpePolymerGlovesResourceId],
         quantity: detailQuantity(10.8, 'шт.', { raw: '10,8' }),
         unit_price_rub: detailMoney(350, { raw: '350,00' }),
@@ -343,7 +335,6 @@ const cleaningWinterMechanizedPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Рукавицы утепленные',
-        quote: 'Рукавицы 7 560,00',
         resource_ids: [cleaningWinterMechanizedPpeInsulatedMittensResourceId],
         quantity: detailQuantity(10.8, 'шт.', { raw: '10,8' }),
         unit_price_rub: detailMoney(700, { raw: '700,00' }),
@@ -351,7 +342,6 @@ const cleaningWinterMechanizedPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Сапоги резиновые',
-        quote: 'Сапоги резиновые 5 400,00',
         resource_ids: [cleaningWinterMechanizedPpeRubberBootsResourceId],
         quantity: detailQuantity(2.7, 'шт.', { raw: '2,7' }),
         unit_price_rub: detailMoney(2_000, { raw: '2000,00' }),
@@ -359,7 +349,6 @@ const cleaningWinterMechanizedPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Мыло туалетное',
-        quote: 'Мыло 3 758,40',
         resource_ids: [cleaningWinterMechanizedPpeSoapResourceId],
         quantity: detailQuantity(32.4, 'шт.', { raw: '32,4' }),
         unit_price_rub: detailMoney(116, { raw: '116,00' }),
@@ -409,25 +398,21 @@ const cleaningWinterManualProductionInventorySource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Сапоги резиновые',
-        quote: 'Сапоги резиновые 0,9',
         resource_ids: [cleaningWinterManualPpeRubberBootsResourceId],
         quantity: detailQuantity(0.9, 'шт.', { raw: '0,9' }),
       }),
       detailSourceQuoteItem({
         label: 'Мыло туалетное',
-        quote: 'Мыло туалетное 10,8',
         resource_ids: [cleaningWinterManualPpeSoapResourceId],
         quantity: detailQuantity(10.8, 'шт.', { raw: '10,8' }),
       }),
       detailSourceQuoteItem({
         label: 'Ледоруб-топор',
-        quote: 'Ледоруб-топор 0,2',
         resource_ids: [cleaningWinterManualInventoryIceAxeResourceId],
         quantity: detailQuantity(0.2, 'шт.', { raw: '0,2' }),
       }),
       detailSourceQuoteItem({
         label: 'Метла',
-        quote: 'Метла 4,5',
         resource_ids: [
           cleaningWinterManualInventoryPolypropyleneBroomResourceId,
         ],
@@ -435,31 +420,26 @@ const cleaningWinterManualProductionInventorySource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Грабли',
-        quote: 'Грабли 0,3',
         resource_ids: [cleaningWinterManualInventoryRakeResourceId],
         quantity: detailQuantity(0.3, 'шт.', { raw: '0,3' }),
       }),
       detailSourceQuoteItem({
         label: 'Лопата снегоуборочная',
-        quote: 'Лопата снегоуборочная 0,5',
         resource_ids: [cleaningWinterManualInventorySnowShovelResourceId],
         quantity: detailQuantity(0.5, 'шт.', { raw: '0,5' }),
       }),
       detailSourceQuoteItem({
         label: 'Лопата совковая',
-        quote: 'Лопата совковая 0,5',
         resource_ids: [cleaningWinterManualInventoryScoopShovelResourceId],
         quantity: detailQuantity(0.5, 'шт.', { raw: '0,5' }),
       }),
       detailSourceQuoteItem({
         label: 'Тачка садовая',
-        quote: 'Тачка садовая 0,5',
         resource_ids: [cleaningWinterManualInventoryWheelbarrowResourceId],
         quantity: detailQuantity(0.5, 'шт.', { raw: '0,5' }),
       }),
       detailSourceQuoteItem({
         label: 'Ведро п\\э 12л',
-        quote: 'Ведро п\\э 12л 0,3',
         resource_ids: [cleaningWinterManualInventoryBucketResourceId],
         quantity: detailQuantity(0.3, 'шт.', { raw: '0,3' }),
       }),
@@ -517,7 +497,6 @@ const cleaningWinterManualPpeSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Костюм хлопчатобумажный',
-        quote: 'Костюм 4 950,00',
         resource_ids: [cleaningWinterManualPpeCottonSuitResourceId],
         quantity: detailQuantity(0.9, 'шт.', { raw: '0,9' }),
         unit_price_rub: detailMoney(5_500, { raw: '5500,00' }),
@@ -525,7 +504,6 @@ const cleaningWinterManualPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Куртка на утепляющей прокладке',
-        quote: 'Куртка 2 160,00',
         resource_ids: [cleaningWinterManualPpeInsulatedJacketResourceId],
         quantity: detailQuantity(0.4, 'шт.', {
           raw: '0,4',
@@ -536,7 +514,6 @@ const cleaningWinterManualPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Жилет сигнальный',
-        quote: 'Жилет 1 080,00',
         resource_ids: [cleaningWinterManualPpeSignalVestResourceId],
         quantity: detailQuantity(0.9, 'шт.', { raw: '0,9' }),
         unit_price_rub: detailMoney(1_200, { raw: '1200,00' }),
@@ -544,7 +521,6 @@ const cleaningWinterManualPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Сапоги утепленные',
-        quote: 'Сапоги утепленные 1 260,00',
         resource_ids: [cleaningWinterManualPpeInsulatedBootsResourceId],
         quantity: detailQuantity(0.4, 'шт.', {
           raw: '0,4',
@@ -555,7 +531,6 @@ const cleaningWinterManualPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Перчатки с полимерным покрытием',
-        quote: 'Перчатки 1 260,00',
         resource_ids: [cleaningWinterManualPpePolymerGlovesResourceId],
         quantity: detailQuantity(3.6, 'шт.', { raw: '3,6' }),
         unit_price_rub: detailMoney(350, { raw: '350,00' }),
@@ -563,7 +538,6 @@ const cleaningWinterManualPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Рукавицы утепленные',
-        quote: 'Рукавицы 2 520,00',
         resource_ids: [cleaningWinterManualPpeInsulatedMittensResourceId],
         quantity: detailQuantity(3.6, 'шт.', { raw: '3,6' }),
         unit_price_rub: detailMoney(700, { raw: '700,00' }),
@@ -571,7 +545,6 @@ const cleaningWinterManualPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Сапоги резиновые',
-        quote: 'Сапоги резиновые 1 800,00',
         resource_ids: [cleaningWinterManualPpeRubberBootsResourceId],
         quantity: detailQuantity(0.9, 'шт.', { raw: '0,9' }),
         unit_price_rub: detailMoney(2_000, { raw: '2000,00' }),
@@ -579,7 +552,6 @@ const cleaningWinterManualPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Мыло туалетное',
-        quote: 'Мыло 1 252,80',
         resource_ids: [cleaningWinterManualPpeSoapResourceId],
         quantity: detailQuantity(10.8, 'шт.', { raw: '10,8' }),
         unit_price_rub: detailMoney(116, { raw: '116,00' }),
@@ -599,7 +571,6 @@ const cleaningWinterManualInventorySource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Ледоруб-топор',
-        quote: 'Ледоруб-топор 126,00',
         resource_ids: [cleaningWinterManualInventoryIceAxeResourceId],
         quantity: detailQuantity(0.2, 'шт.', {
           raw: '0,2',
@@ -610,7 +581,6 @@ const cleaningWinterManualInventorySource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Метла полипропиленовая',
-        quote: 'Метла полипропиленовая 1 665,00',
         resource_ids: [
           cleaningWinterManualInventoryPolypropyleneBroomResourceId,
         ],
@@ -620,7 +590,6 @@ const cleaningWinterManualInventorySource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Грабли',
-        quote: 'Грабли 148,50',
         resource_ids: [cleaningWinterManualInventoryRakeResourceId],
         quantity: detailQuantity(0.3, 'шт.', {
           raw: '0,3',
@@ -631,7 +600,6 @@ const cleaningWinterManualInventorySource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Лопата снегоуборочная',
-        quote: 'Лопата снегоуборочная 1 125,00',
         resource_ids: [cleaningWinterManualInventorySnowShovelResourceId],
         quantity: detailQuantity(0.5, 'шт.', {
           raw: '0,5',
@@ -642,7 +610,6 @@ const cleaningWinterManualInventorySource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Лопата совковая',
-        quote: 'Лопата совковая 465,30',
         resource_ids: [cleaningWinterManualInventoryScoopShovelResourceId],
         quantity: detailQuantity(0.5, 'шт.', {
           raw: '0,5',
@@ -653,7 +620,6 @@ const cleaningWinterManualInventorySource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Тачка садовая',
-        quote: 'Тачка садовая 1 125,00',
         resource_ids: [cleaningWinterManualInventoryWheelbarrowResourceId],
         quantity: detailQuantity(0.5, 'шт.', {
           raw: '0,5',
@@ -664,7 +630,6 @@ const cleaningWinterManualInventorySource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Ведро п\\э 12л',
-        quote: 'Ведро п\\э 12л 59,40',
         resource_ids: [cleaningWinterManualInventoryBucketResourceId],
         quantity: detailQuantity(0.3, 'шт.', {
           raw: '0,3',
@@ -697,19 +662,16 @@ const cleaningSummerMechanizedProductionWateringSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Трактор МТЗ 80',
-        quote: 'Трактор МТЗ 80 ... 22389',
         resource_ids: [cleaningSummerMechanizedWateringTractorResourceId],
         quantity: detailQuantity(22_389, 'маш.-час', { raw: '22389' }),
       }),
       detailSourceQuoteItem({
         label: 'Оборудование поливомоечное ОПМ-5,0 (бочка)',
-        quote: 'Оборудование поливомоечное ОПМ-5,0 (бочка) 22389',
         resource_ids: [cleaningSummerMechanizedWateringOpm5ResourceId],
         quantity: detailQuantity(22_389, 'маш.-час', { raw: '22389' }),
       }),
       detailSourceQuoteItem({
         label: 'Вода',
-        quote: 'Вода 9568,0 м³',
         resource_ids: [cleaningSummerMechanizedWaterResourceId],
         quantity: detailQuantity(9_568, 'м³', { raw: '9568,0 м³' }),
       }),
@@ -728,49 +690,41 @@ const cleaningSummerMechanizedProductionPpeSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Костюм хлопчатобумажный',
-        quote: 'Костюм хлопчатобумажный 11,4',
         resource_ids: [cleaningSummerMechanizedPpeCottonSuitResourceId],
         quantity: detailQuantity(11.4, 'шт.', { raw: '11,4' }),
       }),
       detailSourceQuoteItem({
         label: 'Куртка на утепляющей прокладке',
-        quote: 'Куртка 4,6',
         resource_ids: [cleaningSummerMechanizedPpeInsulatedJacketResourceId],
         quantity: detailQuantity(4.6, 'шт.', { raw: '4,6' }),
       }),
       detailSourceQuoteItem({
         label: 'Жилет сигнальный',
-        quote: 'Жилет 11,4',
         resource_ids: [cleaningSummerMechanizedPpeSignalVestResourceId],
         quantity: detailQuantity(11.4, 'шт.', { raw: '11,4' }),
       }),
       detailSourceQuoteItem({
         label: 'Сапоги утепленные',
-        quote: 'Сапоги утепленные 4,6',
         resource_ids: [cleaningSummerMechanizedPpeInsulatedBootsResourceId],
         quantity: detailQuantity(4.6, 'шт.', { raw: '4,6' }),
       }),
       detailSourceQuoteItem({
         label: 'Перчатки с полимерным покрытием',
-        quote: 'Перчатки 45,6',
         resource_ids: [cleaningSummerMechanizedPpePolymerGlovesResourceId],
         quantity: detailQuantity(45.6, 'шт.', { raw: '45,6' }),
       }),
       detailSourceQuoteItem({
         label: 'Рукавицы утепленные',
-        quote: 'Рукавицы 45,6',
         resource_ids: [cleaningSummerMechanizedPpeInsulatedMittensResourceId],
         quantity: detailQuantity(45.6, 'шт.', { raw: '45,6' }),
       }),
       detailSourceQuoteItem({
         label: 'Сапоги резиновые',
-        quote: 'Сапоги резиновые 11,4',
         resource_ids: [cleaningSummerMechanizedPpeRubberBootsResourceId],
         quantity: detailQuantity(11.4, 'шт.', { raw: '11,4' }),
       }),
       detailSourceQuoteItem({
         label: 'Мыло туалетное',
-        quote: 'Мыло туалетное 136,8',
         resource_ids: [cleaningSummerMechanizedPpeSoapResourceId],
         quantity: detailQuantity(136.8, 'шт.', { raw: '136,8' }),
       }),
@@ -788,7 +742,6 @@ const cleaningSummerMechanizedWateringSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Машинист',
-        quote: 'Машинист 22389 934,32 20 918 659,44',
         resource_ids: [cleaningSummerMechanizedWateringMachinistResourceId],
         quantity: detailQuantity(22_389, 'чел-час', { raw: '22389' }),
         unit_price_rub: detailMoney(934.32, { raw: '934,32' }),
@@ -796,7 +749,6 @@ const cleaningSummerMechanizedWateringSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Трактор МТЗ 80',
-        quote: 'Трактор МТЗ 80 ... 33 046 889,80',
         resource_ids: [cleaningSummerMechanizedWateringTractorResourceId],
         quantity: detailQuantity(22_389, 'маш-час', { raw: '22389' }),
         unit_price_rub: detailMoney(1_476.02, { raw: '1476,02' }),
@@ -804,7 +756,6 @@ const cleaningSummerMechanizedWateringSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'ОПМ-5,0 (бочка)',
-        quote: 'ОПМ-5,0 (бочка) 2 426 952,22',
         resource_ids: [cleaningSummerMechanizedWateringOpm5ResourceId],
         quantity: detailQuantity(22_389, 'маш-час', { raw: '22389' }),
         unit_price_rub: detailMoney(108.4, { raw: '108,40' }),
@@ -812,7 +763,6 @@ const cleaningSummerMechanizedWateringSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Вода',
-        quote: 'Вода 9568 13,56 129 742,08',
         resource_ids: [cleaningSummerMechanizedWaterResourceId],
         quantity: detailQuantity(9_568, 'м³', { raw: '9568' }),
         unit_price_rub: detailMoney(13.56, { raw: '13,56' }),
@@ -842,7 +792,6 @@ const cleaningSummerMechanizedPpeMaterialsSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Костюм хлопчатобумажный',
-        quote: 'Костюм хлопчатобумажный 62 700,00',
         resource_ids: [cleaningSummerMechanizedPpeCottonSuitResourceId],
         quantity: detailQuantity(11.4, 'шт.', { raw: '11,4' }),
         unit_price_rub: detailMoney(5_500, { raw: '5500,00' }),
@@ -850,7 +799,6 @@ const cleaningSummerMechanizedPpeMaterialsSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Куртка на утепляющей прокладке',
-        quote: 'Куртка на утепляющей прокладке 27 360,00',
         resource_ids: [cleaningSummerMechanizedPpeInsulatedJacketResourceId],
         quantity: detailQuantity(4.6, 'шт.', {
           raw: '4,6',
@@ -861,7 +809,6 @@ const cleaningSummerMechanizedPpeMaterialsSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Жилет сигнальный',
-        quote: 'Жилет сигнальный 13 680,00',
         resource_ids: [cleaningSummerMechanizedPpeSignalVestResourceId],
         quantity: detailQuantity(11.4, 'шт.', { raw: '11,4' }),
         unit_price_rub: detailMoney(1_200, { raw: '1200,00' }),
@@ -869,7 +816,6 @@ const cleaningSummerMechanizedPpeMaterialsSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Сапоги утепленные',
-        quote: 'Сапоги утепленные 15 960,00',
         resource_ids: [cleaningSummerMechanizedPpeInsulatedBootsResourceId],
         quantity: detailQuantity(4.6, 'шт.', {
           raw: '4,6',
@@ -880,7 +826,6 @@ const cleaningSummerMechanizedPpeMaterialsSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Перчатки с полимерным покрытием',
-        quote: 'Перчатки 15 960,00',
         resource_ids: [cleaningSummerMechanizedPpePolymerGlovesResourceId],
         quantity: detailQuantity(45.6, 'шт.', { raw: '45,6' }),
         unit_price_rub: detailMoney(350, { raw: '350,00' }),
@@ -888,7 +833,6 @@ const cleaningSummerMechanizedPpeMaterialsSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Рукавицы утепленные',
-        quote: 'Рукавицы 31 920,00',
         resource_ids: [cleaningSummerMechanizedPpeInsulatedMittensResourceId],
         quantity: detailQuantity(45.6, 'шт.', { raw: '45,6' }),
         unit_price_rub: detailMoney(700, { raw: '700,00' }),
@@ -896,7 +840,6 @@ const cleaningSummerMechanizedPpeMaterialsSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Сапоги резиновые',
-        quote: 'Сапоги резиновые 22 800,00',
         resource_ids: [cleaningSummerMechanizedPpeRubberBootsResourceId],
         quantity: detailQuantity(11.4, 'шт.', { raw: '11,4' }),
         unit_price_rub: detailMoney(2_000, { raw: '2000,00' }),
@@ -904,7 +847,6 @@ const cleaningSummerMechanizedPpeMaterialsSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Мыло туалетное',
-        quote: 'Мыло туалетное 15 868,80',
         resource_ids: [cleaningSummerMechanizedPpeSoapResourceId],
         quantity: detailQuantity(136.8, 'шт.', { raw: '136,8' }),
         unit_price_rub: detailMoney(116, { raw: '116,00' }),
@@ -954,55 +896,46 @@ const cleaningSummerManualProductionPpeInventorySource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Костюм хлопчатобумажный',
-        quote: 'Костюм хлопчатобумажный 12,5',
         resource_ids: [cleaningSummerManualPpeCottonSuitResourceId],
         quantity: detailQuantity(12.5, 'шт.', { raw: '12,5' }),
       }),
       detailSourceQuoteItem({
         label: 'Куртка на утепляющей прокладке',
-        quote: 'Куртка 5,0',
         resource_ids: [cleaningSummerManualPpeInsulatedJacketResourceId],
         quantity: detailQuantity(5, 'шт.', { raw: '5,0' }),
       }),
       detailSourceQuoteItem({
         label: 'Жилет сигнальный',
-        quote: 'Жилет 12,5',
         resource_ids: [cleaningSummerManualPpeSignalVestResourceId],
         quantity: detailQuantity(12.5, 'шт.', { raw: '12,5' }),
       }),
       detailSourceQuoteItem({
         label: 'Сапоги утепленные',
-        quote: 'Сапоги утепленные 5,0',
         resource_ids: [cleaningSummerManualPpeInsulatedBootsResourceId],
         quantity: detailQuantity(5, 'шт.', { raw: '5,0' }),
       }),
       detailSourceQuoteItem({
         label: 'Перчатки с полимерным покрытием',
-        quote: 'Перчатки 50,0',
         resource_ids: [cleaningSummerManualPpePolymerGlovesResourceId],
         quantity: detailQuantity(50, 'шт.', { raw: '50,0' }),
       }),
       detailSourceQuoteItem({
         label: 'Рукавицы утепленные',
-        quote: 'Рукавицы 50,0',
         resource_ids: [cleaningSummerManualPpeInsulatedMittensResourceId],
         quantity: detailQuantity(50, 'шт.', { raw: '50,0' }),
       }),
       detailSourceQuoteItem({
         label: 'Сапоги резиновые',
-        quote: 'Сапоги резиновые 12,5',
         resource_ids: [cleaningSummerManualPpeRubberBootsResourceId],
         quantity: detailQuantity(12.5, 'шт.', { raw: '12,5' }),
       }),
       detailSourceQuoteItem({
         label: 'Мыло туалетное',
-        quote: 'Мыло 150,0',
         resource_ids: [cleaningSummerManualPpeSoapResourceId],
         quantity: detailQuantity(150, 'шт.', { raw: '150,0' }),
       }),
       detailSourceQuoteItem({
         label: 'Метла полипропиленовая',
-        quote: 'Метла 62,5',
         resource_ids: [
           cleaningSummerManualInventoryPolypropyleneBroomResourceId,
         ],
@@ -1010,25 +943,21 @@ const cleaningSummerManualProductionPpeInventorySource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Грабли',
-        quote: 'Грабли 4,1',
         resource_ids: [cleaningSummerManualInventoryRakeResourceId],
         quantity: detailQuantity(4.1, 'шт.', { raw: '4,1' }),
       }),
       detailSourceQuoteItem({
         label: 'Лопата совковая',
-        quote: 'Лопата совковая 6,3',
         resource_ids: [cleaningSummerManualInventoryScoopShovelResourceId],
         quantity: detailQuantity(6.3, 'шт.', { raw: '6,3' }),
       }),
       detailSourceQuoteItem({
         label: 'Тачка садовая',
-        quote: 'Тачка садовая 6,3',
         resource_ids: [cleaningSummerManualInventoryWheelbarrowResourceId],
         quantity: detailQuantity(6.3, 'шт.', { raw: '6,3' }),
       }),
       detailSourceQuoteItem({
         label: 'Ведро п\\э 12л',
-        quote: 'Ведро п\\э 12л 4,1',
         resource_ids: [cleaningSummerManualInventoryBucketResourceId],
         quantity: detailQuantity(4.1, 'шт.', { raw: '4,1' }),
       }),
@@ -1096,7 +1025,6 @@ const cleaningSummerManualPpeSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Костюм хлопчатобумажный',
-        quote: 'Костюм хлопчатобумажный 68 750,00',
         resource_ids: [cleaningSummerManualPpeCottonSuitResourceId],
         quantity: detailQuantity(12.5, 'шт.', { raw: '12,5' }),
         unit_price_rub: detailMoney(5_500, { raw: '5500,00' }),
@@ -1104,7 +1032,6 @@ const cleaningSummerManualPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Куртка на утепляющей прокладке',
-        quote: 'Куртка на утепляющей прокладке 30 000,00',
         resource_ids: [cleaningSummerManualPpeInsulatedJacketResourceId],
         quantity: detailQuantity(5, 'шт.', { raw: '5,0' }),
         unit_price_rub: detailMoney(6_000, { raw: '6000,00' }),
@@ -1112,7 +1039,6 @@ const cleaningSummerManualPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Жилет сигнальный',
-        quote: 'Жилет сигнальный 15 000,00',
         resource_ids: [cleaningSummerManualPpeSignalVestResourceId],
         quantity: detailQuantity(12.5, 'шт.', { raw: '12,5' }),
         unit_price_rub: detailMoney(1_200, { raw: '1200,00' }),
@@ -1120,7 +1046,6 @@ const cleaningSummerManualPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Сапоги утепленные',
-        quote: 'Сапоги утепленные 17 500,00',
         resource_ids: [cleaningSummerManualPpeInsulatedBootsResourceId],
         quantity: detailQuantity(5, 'шт.', { raw: '5,0' }),
         unit_price_rub: detailMoney(3_500, { raw: '3500,00' }),
@@ -1128,7 +1053,6 @@ const cleaningSummerManualPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Перчатки с полимерным покрытием',
-        quote: 'Перчатки 17 500,00',
         resource_ids: [cleaningSummerManualPpePolymerGlovesResourceId],
         quantity: detailQuantity(50, 'шт.', { raw: '50,0' }),
         unit_price_rub: detailMoney(350, { raw: '350,00' }),
@@ -1136,7 +1060,6 @@ const cleaningSummerManualPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Рукавицы утепленные',
-        quote: 'Рукавицы 35 000,00',
         resource_ids: [cleaningSummerManualPpeInsulatedMittensResourceId],
         quantity: detailQuantity(50, 'шт.', { raw: '50,0' }),
         unit_price_rub: detailMoney(700, { raw: '700,00' }),
@@ -1144,7 +1067,6 @@ const cleaningSummerManualPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Сапоги резиновые',
-        quote: 'Сапоги резиновые 25 000,00',
         resource_ids: [cleaningSummerManualPpeRubberBootsResourceId],
         quantity: detailQuantity(12.5, 'шт.', { raw: '12,5' }),
         unit_price_rub: detailMoney(2_000, { raw: '2000,00' }),
@@ -1152,7 +1074,6 @@ const cleaningSummerManualPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Мыло туалетное',
-        quote: 'Мыло туалетное 17 400,00',
         resource_ids: [cleaningSummerManualPpeSoapResourceId],
         quantity: detailQuantity(150, 'шт.', { raw: '150,0' }),
         unit_price_rub: detailMoney(116, { raw: '116,00' }),
@@ -1172,7 +1093,6 @@ const cleaningSummerManualInventorySource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Метла полипропиленовая',
-        quote: 'Метла полипропиленовая 23 125,00',
         resource_ids: [
           cleaningSummerManualInventoryPolypropyleneBroomResourceId,
         ],
@@ -1182,7 +1102,6 @@ const cleaningSummerManualInventorySource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Грабли с черенком',
-        quote: 'Грабли с черенком 2 062,50',
         resource_ids: [cleaningSummerManualInventoryRakeResourceId],
         quantity: detailQuantity(4.1, 'шт.', {
           raw: '4,1',
@@ -1193,7 +1112,6 @@ const cleaningSummerManualInventorySource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Лопата совковая',
-        quote: 'Лопата совковая 6 462,50',
         resource_ids: [cleaningSummerManualInventoryScoopShovelResourceId],
         quantity: detailQuantity(6.3, 'шт.', {
           raw: '6,3',
@@ -1204,7 +1122,6 @@ const cleaningSummerManualInventorySource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Тачка садовая',
-        quote: 'Тачка садовая 15 625,00',
         resource_ids: [cleaningSummerManualInventoryWheelbarrowResourceId],
         quantity: detailQuantity(6.3, 'шт.', {
           raw: '6,3',
@@ -1215,7 +1132,6 @@ const cleaningSummerManualInventorySource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Ведро п\\э 12л',
-        quote: 'Ведро п\\э 12л 825,00',
         resource_ids: [cleaningSummerManualInventoryBucketResourceId],
         quantity: detailQuantity(4.1, 'шт.', {
           raw: '4,1',
@@ -1257,14 +1173,12 @@ const cleaningResourceStatementLaborSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Рабочий по уборке территории',
-        quote: 'Рабочий по уборке территории 26563,3 664,15 17 641 901,84',
         quantity: detailQuantity(26_563.3, 'чел-час', { raw: '26563,3' }),
         unit_price_rub: detailMoney(664.15, { raw: '664,15' }),
         total_rub: detailMoney(17_641_901.84, { raw: '17 641 901,84' }),
       }),
       detailSourceQuoteItem({
         label: 'Машинист',
-        quote: 'Машинист 27739,3 934,32 25 917 429,40',
         quantity: detailQuantity(27_739.3, 'чел-час', { raw: '27739,3' }),
         unit_price_rub: detailMoney(934.32, { raw: '934,32' }),
         total_rub: detailMoney(25_917_429.4, { raw: '25 917 429,40' }),
@@ -1283,8 +1197,6 @@ const cleaningResourceStatementMachinesSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Трактор МТЗ 80 с навесным оборудованием',
-        quote:
-          'Трактор МТЗ 80 с навесным оборудованием 27739,3 1476,02 40 943 848,99',
         resource_ids: [
           cleaningWinterMechanizedSnow2cmTractorResourceId,
           cleaningWinterMechanizedHeavySnowTractorResourceId,
@@ -1297,7 +1209,6 @@ const cleaningResourceStatementMachinesSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Навесной разбрасыватель песка РПМ-01',
-        quote: 'Навесной разбрасыватель песка РПМ-01 210,4 40,8 8 574,51',
         resource_ids: [cleaningWinterMechanizedSandSpreaderResourceId],
         quantity: detailQuantity(210.4, 'маш.-час', { raw: '210,4' }),
         unit_price_rub: detailMoney(40.8, { raw: '40,8' }),
@@ -1305,7 +1216,6 @@ const cleaningResourceStatementMachinesSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'ОПМ-5,0 (бочка)',
-        quote: 'ОПМ-5,0 (бочка) 22389,2 108,4 2 426 952,22',
         resource_ids: [cleaningSummerMechanizedWateringOpm5ResourceId],
         quantity: detailQuantity(22_389.2, 'маш.-час', { raw: '22389,2' }),
         unit_price_rub: detailMoney(108.4, { raw: '108,4' }),
@@ -1325,69 +1235,59 @@ const cleaningResourceStatementMaterialsSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Костюм',
-        quote: 'Костюм 151 250,00',
         quantity: detailQuantity(27.5, 'шт.', { raw: '27,5' }),
         unit_price_rub: detailMoney(5_500, { raw: '5500,00' }),
         total_rub: detailMoney(151_250, { raw: '151 250,00' }),
       }),
       detailSourceQuoteItem({
         label: 'Куртка',
-        quote: 'Куртка 66 000,00',
         quantity: detailQuantity(11, 'шт.', { raw: '11,0' }),
         unit_price_rub: detailMoney(6_000, { raw: '6000,00' }),
         total_rub: detailMoney(66_000, { raw: '66 000,00' }),
       }),
       detailSourceQuoteItem({
         label: 'Жилет',
-        quote: 'Жилет 33 000,00',
         quantity: detailQuantity(27.5, 'шт.', { raw: '27,5' }),
         unit_price_rub: detailMoney(1_200, { raw: '1200,00' }),
         total_rub: detailMoney(33_000, { raw: '33 000,00' }),
       }),
       detailSourceQuoteItem({
         label: 'Сапоги утепленные',
-        quote: 'Сапоги утепленные 38 500,00',
         quantity: detailQuantity(11, 'шт.', { raw: '11,0' }),
         unit_price_rub: detailMoney(3_500, { raw: '3500,00' }),
         total_rub: detailMoney(38_500, { raw: '38 500,00' }),
       }),
       detailSourceQuoteItem({
         label: 'Перчатки',
-        quote: 'Перчатки 38 500,00',
         quantity: detailQuantity(110, 'шт.', { raw: '110,0' }),
         unit_price_rub: detailMoney(350, { raw: '350,00' }),
         total_rub: detailMoney(38_500, { raw: '38 500,00' }),
       }),
       detailSourceQuoteItem({
         label: 'Рукавицы',
-        quote: 'Рукавицы 77 000,00',
         quantity: detailQuantity(110, 'шт.', { raw: '110,0' }),
         unit_price_rub: detailMoney(700, { raw: '700,00' }),
         total_rub: detailMoney(77_000, { raw: '77 000,00' }),
       }),
       detailSourceQuoteItem({
         label: 'Сапоги резиновые',
-        quote: 'Сапоги резиновые 55 000,00',
         quantity: detailQuantity(27.5, 'шт.', { raw: '27,5' }),
         unit_price_rub: detailMoney(2_000, { raw: '2000,00' }),
         total_rub: detailMoney(55_000, { raw: '55 000,00' }),
       }),
       detailSourceQuoteItem({
         label: 'Мыло',
-        quote: 'Мыло 38 280,00',
         quantity: detailQuantity(330, 'шт.', { raw: '330,0' }),
         unit_price_rub: detailMoney(116, { raw: '116,00' }),
         total_rub: detailMoney(38_280, { raw: '38 280,00' }),
       }),
       detailSourceQuoteItem({
         label: 'Инвентарь',
-        quote: 'инвентарь 52 194,20',
         total_rub: detailMoney(52_194.2, { raw: '52 194,20' }),
         note: 'Это сводная строка legacy quote для инвентаря; в PDF инвентарь раскрыт строками 9-15, поэтому единой единицы, количества и цены нет.',
       }),
       detailSourceQuoteItem({
         label: 'Песок для посыпки дорог',
-        quote: 'Песок для посыпки дорог кг. 76,3 1800,00 137 329,56',
         resource_ids: [
           cleaningWinterMechanizedSandResourceId,
           cleaningWinterManualSandResourceId,
@@ -1401,7 +1301,6 @@ const cleaningResourceStatementMaterialsSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Вода',
-        quote: 'Вода 9568,0 13,56 129 742,08',
         resource_ids: [cleaningSummerMechanizedWaterResourceId],
         quantity: detailQuantity(9_568, 'м³', { raw: '9568,0' }),
         unit_price_rub: detailMoney(13.56, { raw: '13,56' }),

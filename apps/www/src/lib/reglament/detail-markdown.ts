@@ -175,6 +175,36 @@ const resourceLine = (
   return `- ${resource.id}: ${resource.title}; работа: ${resource.work_item_id}; строка сметы: ${resource.estimate_row_id}; вид: ${RESOURCE_KIND_LABELS[resource.kind]}; bucket: ${resource.cost_bucket}; кол-во: ${formatQuantity(resource.quantity)}; ${priceLabel}: ${formatMoney(resource.unit_price_rub)}; итог: ${formatMoney(resource.total_rub)}; статус: ${resource.status_label_ru}; source: ${sources(resource.source_refs)}${note}`;
 };
 
+type ResourceMarkdownOptions = {
+  readonly title: string;
+  readonly summaryLabel: string;
+  readonly sectionTitle: string;
+  readonly kinds: readonly EstimateDetailResourceKind[];
+  readonly priceLabel?: 'цена' | 'ставка';
+};
+
+const buildEstimateDetailResourcesMarkdown = (
+  dataset: EstimateDetailDataset,
+  options: ResourceMarkdownOptions,
+): string => {
+  const resources = resourcesByKind(dataset, options.kinds);
+
+  return join([
+    options.title,
+    '',
+    `- Индекс: ${absoluteUrl(reglamentEstimateDetailsMarkdownUrl())}`,
+    `- JSON-набор данных: ${absoluteUrl(reglamentEstimateDetails2026DataUrl())}`,
+    '',
+    '## Сводка',
+    `- ${options.summaryLabel}: ${resources.length}`,
+    '',
+    `## ${options.sectionTitle}`,
+    ...linesOrEmpty(resources, (resource) =>
+      resourceLine(resource, options.priceLabel),
+    ),
+  ]);
+};
+
 const controlTotalLine = (control: EstimateDetailControlTotal): string => {
   const detail = `detail: ${formatMoney(control.detail_total_rub)}`;
   const aggregate = `aggregate: ${formatMoney(control.aggregate_total_rub)}`;
@@ -285,60 +315,34 @@ export const buildEstimateDetailMarkdown = (
 
 export const buildEstimateDetailMaterialsMarkdown = (
   dataset: EstimateDetailDataset = estimateDetails2026,
-): string => {
-  const materials = resourcesByKind(dataset, ['material']);
-
-  return join([
-    '# Детальная смета 2026: материалы',
-    '',
-    `- Индекс: ${absoluteUrl(reglamentEstimateDetailsMarkdownUrl())}`,
-    `- JSON-набор данных: ${absoluteUrl(reglamentEstimateDetails2026DataUrl())}`,
-    '',
-    '## Сводка',
-    `- Материальных ресурсов: ${materials.length}`,
-    '',
-    '## Материалы',
-    ...linesOrEmpty(materials, (resource) => resourceLine(resource)),
-  ]);
-};
+): string =>
+  buildEstimateDetailResourcesMarkdown(dataset, {
+    title: '# Детальная смета 2026: материалы',
+    summaryLabel: 'Материальных ресурсов',
+    sectionTitle: 'Материалы',
+    kinds: ['material'],
+  });
 
 export const buildEstimateDetailMachinesMarkdown = (
   dataset: EstimateDetailDataset = estimateDetails2026,
-): string => {
-  const machines = resourcesByKind(dataset, ['machine']);
-
-  return join([
-    '# Детальная смета 2026: машины',
-    '',
-    `- Индекс: ${absoluteUrl(reglamentEstimateDetailsMarkdownUrl())}`,
-    `- JSON-набор данных: ${absoluteUrl(reglamentEstimateDetails2026DataUrl())}`,
-    '',
-    '## Сводка',
-    `- Машинных ресурсов: ${machines.length}`,
-    '',
-    '## Машины',
-    ...linesOrEmpty(machines, (resource) => resourceLine(resource)),
-  ]);
-};
+): string =>
+  buildEstimateDetailResourcesMarkdown(dataset, {
+    title: '# Детальная смета 2026: машины',
+    summaryLabel: 'Машинных ресурсов',
+    sectionTitle: 'Машины',
+    kinds: ['machine'],
+  });
 
 export const buildEstimateDetailLaborMarkdown = (
   dataset: EstimateDetailDataset = estimateDetails2026,
-): string => {
-  const labor = resourcesByKind(dataset, ['labor', 'machinist_labor']);
-
-  return join([
-    '# Детальная смета 2026: труд',
-    '',
-    `- Индекс: ${absoluteUrl(reglamentEstimateDetailsMarkdownUrl())}`,
-    `- JSON-набор данных: ${absoluteUrl(reglamentEstimateDetails2026DataUrl())}`,
-    '',
-    '## Сводка',
-    `- Трудовых ресурсов: ${labor.length}`,
-    '',
-    '## Труд и ставки',
-    ...linesOrEmpty(labor, (resource) => resourceLine(resource, 'ставка')),
-  ]);
-};
+): string =>
+  buildEstimateDetailResourcesMarkdown(dataset, {
+    title: '# Детальная смета 2026: труд',
+    summaryLabel: 'Трудовых ресурсов',
+    sectionTitle: 'Труд и ставки',
+    kinds: ['labor', 'machinist_labor'],
+    priceLabel: 'ставка',
+  });
 
 export const buildEstimateDetailChecksMarkdown = (
   dataset: EstimateDetailDataset = estimateDetails2026,

@@ -281,7 +281,6 @@ const improvementPpeSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Костюм хлопчатобумажный',
-        quote: 'Костюм 7 150,00',
         resource_ids: [improvementPpeCottonSuitResourceId],
         quantity: detailQuantity(1.3, 'шт.', { raw: '1,3' }),
         unit_price_rub: detailMoney(5_500, { raw: '5500,00' }),
@@ -289,7 +288,6 @@ const improvementPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Куртка на утепляющей прокладке',
-        quote: 'Куртка 3 120,00',
         resource_ids: [improvementPpeInsulatedJacketResourceId],
         quantity: detailQuantity(0.5, 'шт.', {
           raw: '0,5',
@@ -300,7 +298,6 @@ const improvementPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Жилет сигнальный',
-        quote: 'Жилет 1 560,00',
         resource_ids: [improvementPpeSignalVestResourceId],
         quantity: detailQuantity(1.3, 'шт.', { raw: '1,3' }),
         unit_price_rub: detailMoney(1_200, { raw: '1200,00' }),
@@ -308,7 +305,6 @@ const improvementPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Сапоги утепленные',
-        quote: 'Сапоги утепленные 1 820,00',
         resource_ids: [improvementPpeInsulatedBootsResourceId],
         quantity: detailQuantity(0.5, 'шт.', {
           raw: '0,5',
@@ -319,7 +315,6 @@ const improvementPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Перчатки с полимерным покрытием',
-        quote: 'Перчатки 1 820,00',
         resource_ids: [improvementPpePolymerGlovesResourceId],
         quantity: detailQuantity(5.2, 'шт.', { raw: '5,2' }),
         unit_price_rub: detailMoney(350, { raw: '350,00' }),
@@ -327,7 +322,6 @@ const improvementPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Рукавицы утепленные',
-        quote: 'Рукавицы 3 640,00',
         resource_ids: [improvementPpeInsulatedMittensResourceId],
         quantity: detailQuantity(5.2, 'шт.', { raw: '5,2' }),
         unit_price_rub: detailMoney(700, { raw: '700,00' }),
@@ -335,7 +329,6 @@ const improvementPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Сапоги резиновые',
-        quote: 'Сапоги резиновые 2 600,00',
         resource_ids: [improvementPpeRubberBootsResourceId],
         quantity: detailQuantity(1.3, 'шт.', { raw: '1,3' }),
         unit_price_rub: detailMoney(2_000, { raw: '2000,00' }),
@@ -343,7 +336,6 @@ const improvementPpeSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Мыло туалетное',
-        quote: 'Мыло 1 809,60',
         resource_ids: [improvementPpeSoapResourceId],
         quantity: detailQuantity(15.6, 'шт.', { raw: '15,6' }),
         unit_price_rub: detailMoney(116, { raw: '116,00' }),
@@ -363,7 +355,6 @@ const improvementToolsSource = detailSource(
     quote_items: detailSourceQuoteItems(
       detailSourceQuoteItem({
         label: 'Ледоруб-топор с металлической ручкой',
-        quote: 'Ледоруб-топор 182,00',
         resource_ids: [improvementIceAxeResourceId],
         quantity: detailQuantity(0.3, 'шт.', { raw: '0,3' }),
         unit_price_rub: detailMoney(700, { raw: '700,00' }),
@@ -371,7 +362,6 @@ const improvementToolsSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Метла полипропиленовая с черенком',
-        quote: 'Метла 2 405,00',
         resource_ids: [improvementBroomResourceId],
         quantity: detailQuantity(6.5, 'шт.', { raw: '6,5' }),
         unit_price_rub: detailMoney(370, { raw: '370,00' }),
@@ -379,7 +369,6 @@ const improvementToolsSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Лопата снегоуборочная оцинкованная',
-        quote: 'Лопата снегоуборочная 1 625,00',
         resource_ids: [improvementSnowShovelResourceId],
         quantity: detailQuantity(0.7, 'шт.', { raw: '0,7' }),
         unit_price_rub: detailMoney(2_500, { raw: '2500,00' }),
@@ -387,7 +376,6 @@ const improvementToolsSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Лопата совковая',
-        quote: 'Лопата совковая 672,10',
         resource_ids: [improvementScoopShovelResourceId],
         quantity: detailQuantity(0.7, 'шт.', { raw: '0,7' }),
         unit_price_rub: detailMoney(1_034, { raw: '1034,00' }),
@@ -395,7 +383,6 @@ const improvementToolsSource = detailSource(
       }),
       detailSourceQuoteItem({
         label: 'Тачка садовая',
-        quote: 'Тачка садовая 1 625,00',
         resource_ids: [improvementGardenWheelbarrowResourceId],
         quantity: detailQuantity(0.7, 'шт.', { raw: '0,7' }),
         unit_price_rub: detailMoney(2_500, { raw: '2500,00' }),
