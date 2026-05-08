@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { estimate2026 } from '@/data/reglament/estimate-2026';
@@ -68,7 +70,7 @@ describe('reglament discovery payload', () => {
     ).toBe(true);
     expect(payload.sections[0]?.rows[0]?.source_refs[0]).toMatchObject({
       pdf: 'final',
-      pdf_path: 'docs/reglament/original/final.pdf',
+      pdf_path: 'apps/www/public/reglament/original/final.pdf',
       pdf_url: reglamentSourcePdfPath('final'),
       page: 1,
     });
@@ -76,7 +78,7 @@ describe('reglament discovery payload', () => {
       expect.arrayContaining([
         expect.objectContaining({
           pdf: 'final',
-          pdf_path: 'docs/reglament/original/final.pdf',
+          pdf_path: 'apps/www/public/reglament/original/final.pdf',
           pdf_url: reglamentSourcePdfPath('final'),
         }),
       ]),
@@ -211,30 +213,26 @@ describe('reglament discovery route smoke', () => {
     expect(apiCatalog).toContain(`${root}${reglamentFullSourcePdfPath()}`);
   });
 
-  it('serves public source PDFs from stable reglament URLs', async () => {
-    const route = await import('../../pages/reglament/original/[pdf].pdf');
-    const paths = route.getStaticPaths();
-    const response = await route.GET({ params: { pdf: 'final' } } as never);
-    const fullResponse = await route.GET({ params: { pdf: 'full' } } as never);
-    const marker = new TextDecoder().decode(
-      (await response.arrayBuffer()).slice(0, 4),
-    );
-    const fullMarker = new TextDecoder().decode(
-      (await fullResponse.arrayBuffer()).slice(0, 4),
+  it('maps public source PDF URLs to public asset files', async () => {
+    const pdfPaths = REGLAMENT_PUBLIC_PATHS.filter((path) =>
+      path.endsWith('.pdf'),
     );
 
-    expect(paths).toEqual(
+    expect(pdfPaths).toEqual(
       expect.arrayContaining([
-        { params: { pdf: 'full' } },
-        { params: { pdf: 'final' } },
+        reglamentFullSourcePdfPath(),
+        reglamentSourcePdfPath('final'),
       ]),
     );
-    expect(response.headers.get('Content-Type')).toContain('application/pdf');
-    expect(fullResponse.headers.get('Content-Type')).toContain(
-      'application/pdf',
-    );
-    expect(marker).toBe('%PDF');
-    expect(fullMarker).toBe('%PDF');
+
+    for (const path of pdfPaths) {
+      const file = await readFile(
+        new URL(`../../../public${path}`, import.meta.url),
+      );
+      const marker = new TextDecoder().decode(file.subarray(0, 4));
+
+      expect(marker, path).toBe('%PDF');
+    }
   });
 
   it('explains the short UI tariff unit without renaming machine fields', async () => {
@@ -281,7 +279,7 @@ describe('reglament discovery route smoke', () => {
     );
     expect(json.source_refs[0]).toMatchObject({
       pdf: 'final',
-      pdf_path: 'docs/reglament/original/final.pdf',
+      pdf_path: 'apps/www/public/reglament/original/final.pdf',
       pdf_url: '/reglament/original/final.pdf',
     });
   });

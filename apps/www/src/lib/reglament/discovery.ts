@@ -54,7 +54,7 @@ export const REGLAMENT_FORMULAS = {
 } as const;
 
 export const REGLAMENT_CAVEATS = [
-  'PDF-таблицы нормализованы вручную; публичные PDF доступны под /reglament/original/*.pdf, repo path сохранен для аудита.',
+  'PDF-таблицы нормализованы вручную; исходные PDF лежат в apps/www/public/reglament/original и доступны под /reglament/original/*.pdf.',
   'final.pdf сходится с полной строкой «Доходов всего» из калькуляции, умноженной на НДС 5%, а не только с локальной строкой «Сметная стоимость».',
   'Строки с тегом «требует проверки» стоит перепроверить по исходным PDF перед юридическими или финансовыми выводами.',
 ] as const;
@@ -190,7 +190,7 @@ function rewriteSchemaRefs(value: unknown, schemaRef: string): unknown {
 }
 
 export const estimateSourcePdfPath = (pdf: EstimateSourcePdf): string =>
-  `docs/reglament/original/${pdf}.pdf`;
+  `apps/www/public/reglament/original/${pdf}.pdf`;
 
 const sourceRef = (ref: EstimateSourceRef): ReglamentDiscoverySourceRef => ({
   ...ref,
