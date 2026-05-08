@@ -6,7 +6,7 @@
 
 ```text
 apps/
-  compare/   # compare-приложение: standalone legacy + section build для /815/compare
+  compare/   # compare-приложение: section build для /815/compare
   www/       # корневой сайт kpshelkovo.online
 packages/    # shared утилиты и UI
 docs/        # документация и дизайн-гайды
@@ -56,16 +56,14 @@ pnpm typecheck
 pnpm test
 
 # builds
-pnpm build          # dist/www + dist/legacy
+pnpm build          # dist/www + compare section
 pnpm build:main     # dist/www
-pnpm build:legacy   # dist/legacy
 ```
 
 ## Артефакты сборки
 
 - `dist/www` — корневой сайт `kpshelkovo.online`.
 - `dist/www/815/compare` — compare-раздел внутри нового сайта.
-- `dist/legacy` — standalone compare для старого домена.
 
 ## Local dev ports
 

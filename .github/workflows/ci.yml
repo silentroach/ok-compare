@@ -106,7 +106,6 @@ jobs:
       DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
       DEPLOY_USER: ${{ secrets.DEPLOY_USER || 'deploy' }}
       DEPLOY_WWW_PATH: ${{ secrets.DEPLOY_WWW_PATH }}
-      DEPLOY_COMPARE_PATH: ${{ secrets.DEPLOY_COMPARE_PATH }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -122,7 +121,6 @@ jobs:
           host="$(printf '%s' "$DEPLOY_HOST" | tr -d '\r\n' | xargs)"
           user="$(printf '%s' "$DEPLOY_USER" | tr -d '\r\n' | xargs)"
           www_path="$(printf '%s' "$DEPLOY_WWW_PATH" | tr -d '\r\n')"
-          compare_path="$(printf '%s' "$DEPLOY_COMPARE_PATH" | tr -d '\r\n')"
           port="$(printf '%s' "$DEPLOY_PORT" | tr -d '\r\n' | xargs)"
 
           host="${host#http://}"
@@ -132,7 +130,6 @@ jobs:
           test -n "$host"
           test -n "$user"
           test -n "$www_path"
-          test -n "$compare_path"
 
           case "$host" in
             *[[:space:]]*|*/*|*@*)
@@ -160,16 +157,10 @@ jobs:
             exit 1
           fi
 
-          if [ "${compare_path#/}" = "$compare_path" ]; then
-            echo "DEPLOY_COMPARE_PATH must be absolute: $compare_path"
-            exit 1
-          fi
-
           {
             echo "DEPLOY_HOST=$host"
             echo "DEPLOY_USER=$user"
             echo "DEPLOY_WWW_PATH=$www_path"
-            echo "DEPLOY_COMPARE_PATH=$compare_path"
             echo "DEPLOY_PORT=$port"
           } >> "$GITHUB_ENV"
 
@@ -203,10 +194,6 @@ jobs:
           rsync $rsync_opts \
             -e "$ssh_opts" \
             dist/www/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_WWW_PATH/"
-
-          rsync $rsync_opts \
-            -e "$ssh_opts" \
-            dist/legacy/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_COMPARE_PATH/"
 
       - name: Deploy nginx config
         run: |

@@ -11,9 +11,6 @@ pnpm dev
 # section build для нового сайта
 pnpm build
 
-# legacy standalone build для старого домена
-pnpm build:legacy
-
 # checks
 pnpm typecheck
 pnpm test
@@ -49,15 +46,11 @@ src/
 public/
 ```
 
-## Build modes
+## Build Mode
 
 - `pnpm build` использует section mode:
   - deploy path: `/815/compare`
   - canonical: `https://kpshelkovo.online/815/compare/...`
-- `pnpm build:legacy` использует standalone mode:
-  - deploy path: `/`
-  - canonical остается новым: `https://kpshelkovo.online/815/compare/...`
-  - sitemap на legacy intentionally отключен
 
 ## Path aliases
 
@@ -135,4 +128,4 @@ public/
 
 - Astro content cache лежит в общем workspace-кэше `node_modules/.astro/compare`.
 - Не запускать `pnpm dev` из root без явной просьбы.
-- Compare публикуется в двух формах; при изменениях URL всегда проверять оба билда.
+- Compare публикуется как section build; старый домен обслуживается редиректами.

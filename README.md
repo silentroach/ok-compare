@@ -6,7 +6,7 @@
 
 ```text
 apps/
-  compare/   # compare-приложение: /815/compare + legacy standalone
+  compare/   # compare-приложение: /815/compare section build
   www/       # корневой сайт kpshelkovo.online
 packages/
   ui/        # shared styles / UI primitives
@@ -36,19 +36,17 @@ pnpm test
 # сборка
 pnpm build
 pnpm build:main
-pnpm build:legacy
 ```
 
 ## Выходы сборки
 
 - `dist/www` — основной сайт `kpshelkovo.online`
 - `dist/www/815/compare` — compare-раздел на новом домене
-- `dist/legacy` — standalone compare на старом домене
 
 ## Деплой
 
 - `kpshelkovo.online` получает содержимое `dist/www`
-- старый compare-домен получает содержимое `dist/legacy`
+- старый compare-домен обслуживается nginx-редиректами
 - nginx-конфиги лежат в `ops/nginx/`
 
 ## Где искать детали

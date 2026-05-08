@@ -22,12 +22,12 @@ Use it to pass forward facts that are not obvious from the current task diff: co
 | T4  | done   | `update root compare references`        | `docs/tasks/compare-as-815-section-migration/T4-update-root-links-discovery.md` |
 | T5  | done   | `add compare breadcrumbs`               | `docs/tasks/compare-as-815-section-migration/T5-add-compare-breadcrumbs.md`     |
 | T6  | done   | `replace compare nginx redirects`       | `docs/tasks/compare-as-815-section-migration/T6-nginx-redirects.md`             |
-| T7  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T7-remove-legacy-build.md`         |
+| T7  | done   | `remove legacy compare build`           | `docs/tasks/compare-as-815-section-migration/T7-remove-legacy-build.md`         |
 | T8  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T8-final-verification.md`          |
 
 ## Current Context Snapshot
 
-Date: 2026-05-08.
+Date: 2026-05-09.
 
 - Source idea: `docs/ideas/compare-as-815-section-migration.md`.
 - Root app is `apps/www`; compare app is `apps/compare`; compare must remain a separate section build.
@@ -40,7 +40,7 @@ Date: 2026-05-08.
 - `apps/www/src/lib/breadcrumbs.ts` has a home breadcrumb helper, but it is app-local to `apps/www`; compare can either add its own small helper or inline the arrays.
 - `ops/nginx/kpshelkovo-online.conf` serves compare under `/815/compare/` and keeps temporary `/compare/` public page redirects until `2026-08-08`.
 - `ops/nginx/sravni-shelkovo.conf` is redirect-only except ACME: public pages redirect to `/815/compare/...`; unmatched URLs redirect to `https://kpshelkovo.online/` by T6 decision.
-- Root `pnpm build` currently runs `build:main` and `build:legacy`; CI currently rsyncs both `dist/www/` and `dist/legacy/`.
+- Root `pnpm build` now runs only `build:main`; CI rsyncs only `dist/www/` and still deploys both nginx configs.
 
 ## Intentional Scope Boundaries
 
@@ -56,6 +56,31 @@ Date: 2026-05-08.
 - Target-host `nginx -t` is needed for final nginx validation unless a local nginx environment is available.
 
 ## Task Log
+
+### T7 - 2026-05-09 - remove legacy build
+
+Status: done.
+
+Context:
+
+- Removing standalone legacy build and deploy wiring now that the old domain is redirect-only.
+- Root `package.json`, `apps/compare/package.json` and `turbo.json` no longer expose `build:legacy`.
+- `scripts/compose-legacy.mjs` was deleted.
+- `.github/workflows/ci.yml` no longer reads `DEPLOY_COMPARE_PATH` and no longer rsyncs `dist/legacy/`; nginx deploy still uploads/applies both configs.
+- Workspace docs now describe only `dist/www` and `dist/www/815/compare` as current build outputs.
+
+Verification:
+
+- `pnpm build`: pass; command ran `build:main` only.
+- `test ! -e "dist/legacy" && test ! -e "apps/compare/dist/legacy"`: pass.
+- `pnpm typecheck`: pass.
+- `pnpm test`: pass, 31 compare files / 241 tests and 38 www files / 228 tests.
+- `rg "build:legacy|compose-legacy|dist/legacy|DEPLOY_COMPARE_PATH"` with generated/cache exclusions: reviewed; remaining hits are migration task docs, T1 audit history and T8 verification checklist.
+- `git diff --check`: pass.
+
+Commit:
+
+- `remove legacy compare build`
 
 ### T6 - 2026-05-08 - nginx redirects
 
@@ -241,10 +266,11 @@ Commit:
 
 Add entries here when `rg` finds old strings that should remain.
 
-| Pattern     | Location                           | Why it remains                                   | Removal condition                                                 |
-| ----------- | ---------------------------------- | ------------------------------------------------ | ----------------------------------------------------------------- |
-| `/compare/` | docs/history or redirect tasks     | Historical/source context or old-path redirects. | Remove only if it stops documenting history or redirect behavior. |
-| `/compare/` | `ops/nginx/kpshelkovo-online.conf` | Temporary new-domain public page redirects.      | Remove after `2026-08-08` if migration traffic is clean.          |
+| Pattern                                                                | Location                                 | Why it remains                                                | Removal condition                                                              |
+| ---------------------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `/compare/`                                                            | docs/history or redirect tasks           | Historical/source context or old-path redirects.              | Remove only if it stops documenting history or redirect behavior.              |
+| `/compare/`                                                            | `ops/nginx/kpshelkovo-online.conf`       | Temporary new-domain public page redirects.                   | Remove after `2026-08-08` if migration traffic is clean.                       |
+| `build:legacy`, `compose-legacy`, `dist/legacy`, `DEPLOY_COMPARE_PATH` | migration task docs and T1 audit history | Historical task context and future T8 verification checklist. | Clean up only during T8 documentation pass if the context is no longer useful. |
 
 ## Verification Notes
 
@@ -269,3 +295,9 @@ Add command results here when they affect later tasks.
 | 2026-05-08 | T6   | Settlement redirect coverage script       | pass         | 37 slugs from settlement YAML files; no missing hardcoded redirects.        |
 | 2026-05-08 | T6   | `git diff --check`                        | pass         | No whitespace errors.                                                       |
 | 2026-05-08 | T6   | `nginx -v`                                | failed       | Local nginx is unavailable; run `nginx -t` on the target host.              |
+| 2026-05-09 | T7   | `pnpm build`                              | pass         | Built root site and compare section through `build:main` only.              |
+| 2026-05-09 | T7   | Legacy artifact existence check           | pass         | `dist/legacy` and `apps/compare/dist/legacy` were absent after build.       |
+| 2026-05-09 | T7   | `pnpm typecheck`                          | pass         | Workspace typecheck passed.                                                 |
+| 2026-05-09 | T7   | `pnpm test`                               | pass         | 31 compare files / 241 tests; 38 www files / 228 tests.                     |
+| 2026-05-09 | T7   | Legacy reference rg review                | pass         | Remaining hits are migration docs/history and T8 checklist only.            |
+| 2026-05-09 | T7   | `git diff --check`                        | pass         | No whitespace errors.                                                       |

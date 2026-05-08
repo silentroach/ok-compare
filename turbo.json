@@ -8,9 +8,6 @@
     "build:section": {
       "outputs": ["dist/section/**"]
     },
-    "build:legacy": {
-      "outputs": ["dist/legacy/**"]
-    },
     "dev": {
       "cache": false,
       "persistent": true

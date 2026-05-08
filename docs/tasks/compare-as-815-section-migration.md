@@ -38,7 +38,7 @@ Commit message format: кратко и по смыслу, например `move
 | T4  | [Update root-site links and agent discovery references](compare-as-815-section-migration/T4-update-root-links-discovery.md)                  | done   | T3             |
 | T5  | [Add compare breadcrumbs and breadcrumb JSON-LD](compare-as-815-section-migration/T5-add-compare-breadcrumbs.md)                             | done   | T2             |
 | T6  | [Replace nginx compare page handling with old-path redirects](compare-as-815-section-migration/T6-nginx-redirects.md)                        | done   | T2, T3, T4     |
-| T7  | [Remove standalone legacy build and deploy path](compare-as-815-section-migration/T7-remove-legacy-build.md)                                 | todo   | T6             |
+| T7  | [Remove standalone legacy build and deploy path](compare-as-815-section-migration/T7-remove-legacy-build.md)                                 | done   | T6             |
 | T8  | [Final migration verification and documentation cleanup](compare-as-815-section-migration/T8-final-verification.md)                          | todo   | T4, T5, T6, T7 |
 
 ## Checkpoints

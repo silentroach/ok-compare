@@ -1,6 +1,6 @@
 # T7: Remove Standalone Legacy Build And Deploy Path
 
-Status: todo
+Status: done
 
 Index: `../compare-as-815-section-migration.md`
 Handoff: `../compare-as-815-section-handoff.md`
@@ -11,18 +11,18 @@ Handoff: `../compare-as-815-section-handoff.md`
 
 ## Acceptance Criteria
 
-- [ ] Root `pnpm build` no longer runs `build:legacy` and no longer produces required `dist/legacy` artifact.
-- [ ] `scripts/compose-legacy.mjs` is deleted if unused.
-- [ ] `apps/compare/package.json` and `turbo.json` no longer expose unused legacy build task unless another concrete consumer remains.
-- [ ] `.github/workflows/ci.yml` no longer validates or rsyncs `DEPLOY_COMPARE_PATH`, but still deploys both nginx configs.
-- [ ] Workspace docs no longer describe `dist/legacy` as a current build artifact.
+- [x] Root `pnpm build` no longer runs `build:legacy` and no longer produces required `dist/legacy` artifact.
+- [x] `scripts/compose-legacy.mjs` is deleted if unused.
+- [x] `apps/compare/package.json` and `turbo.json` no longer expose unused legacy build task unless another concrete consumer remains.
+- [x] `.github/workflows/ci.yml` no longer validates or rsyncs `DEPLOY_COMPARE_PATH`, but still deploys both nginx configs.
+- [x] Workspace docs no longer describe `dist/legacy` as a current build artifact.
 
 ## Verification
 
-- [ ] `pnpm build`
-- [ ] `pnpm typecheck`
-- [ ] `pnpm test`
-- [ ] `rg "build:legacy|compose-legacy|dist/legacy|DEPLOY_COMPARE_PATH"` reviewed; intentional leftovers documented.
+- [x] `pnpm build`
+- [x] `pnpm typecheck`
+- [x] `pnpm test`
+- [x] `rg "build:legacy|compose-legacy|dist/legacy|DEPLOY_COMPARE_PATH"` reviewed; intentional leftovers documented.
 
 ## Dependencies
 
@@ -47,7 +47,7 @@ M.
 
 ## Completion
 
-- [ ] Mark this file `Status: done`.
-- [ ] Update task index status.
-- [ ] Update handoff task registry and task log.
-- [ ] Commit this task separately.
+- [x] Mark this file `Status: done`.
+- [x] Update task index status.
+- [x] Update handoff task registry and task log.
+- [x] Commit this task separately.
