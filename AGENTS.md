@@ -21,6 +21,12 @@ scripts/     # compose/build helper scripts
 - Если меняются shared стили, примитивы ссылок или URL-утилиты, проверить оба app-а.
 - Не парься с форматированием кода - prettier все отформатирует автоматом при коммите
 
+## Skills
+
+- Правишь что-то на фронте - подключай `frontend-ui-engineering` и `tailwind-design-system`
+- При редактировании/создании любого видимого текста используй скилл `copy-editing` и `web-typography`
+- Меняешь/изучаешь конфиги nginx в папке ops - `nginx-expert`
+
 ## Дизайн
 
 - За визуальными решениями, палитрой и UI-правилами идти в `docs/design/design-code-shelkovo.md`.
