@@ -68,7 +68,7 @@
 - [x] [Task 020: Cleaning quote item table fields](tasks/020-cleaning-quote-item-table-fields.md)
 - [x] [Task 021: Landscaping quote item table fields](tasks/021-landscaping-quote-item-table-fields.md)
 - [x] [Task 022: Improvement quote item table fields](tasks/022-improvement-quote-item-table-fields.md)
-- [ ] [Task 023: Lighting quote item table fields](tasks/023-lighting-quote-item-table-fields.md)
+- [x] [Task 023: Lighting quote item table fields](tasks/023-lighting-quote-item-table-fields.md)
 - [ ] [Task 024: Security quote item table fields](tasks/024-security-quote-item-table-fields.md)
 - [ ] [Task 025: Waste quote item table fields](tasks/025-waste-quote-item-table-fields.md)
 - [ ] [Task 026: Quote item public contract cleanup](tasks/026-quote-item-public-contract-cleanup.md)

@@ -660,6 +660,45 @@ describe('estimate details 2026 dataset', () => {
     `);
   });
 
+  it('keeps lighting quote items enriched with source table fields', () => {
+    const resourceStatementSource = resourcesById
+      .get('lighting-poles-paint-material')
+      ?.source_refs.find(
+        (ref) =>
+          ref.pdf === 'lighting' &&
+          ref.page === 13 &&
+          ref.fragment ===
+            'ресурсная ведомость по локальному ресурсному сметному расчету',
+      );
+    const paintItem = resourceStatementSource?.quote_items?.find(
+      (item) => item.label === 'Краска по металлу',
+    );
+
+    expect(paintItem).toMatchInlineSnapshot(`
+      {
+        "label": "Краска по металлу",
+        "quantity": {
+          "note": "ресурсная ведомость округляет количество; итог сохранен по исходной строке",
+          "raw": "453",
+          "unit": "кг.",
+          "value": 453,
+        },
+        "quote": "Краска ... 453 612,50 277 692,80",
+        "resource_ids": [
+          "lighting-poles-paint-material",
+        ],
+        "total_rub": {
+          "raw": "277 692,80",
+          "value": 277692.8,
+        },
+        "unit_price_rub": {
+          "raw": "612,50",
+          "value": 612.5,
+        },
+      }
+    `);
+  });
+
   it('migrates multi-position quote items in every section detail module', () => {
     const sectionPdfs = [
       'cleaning',

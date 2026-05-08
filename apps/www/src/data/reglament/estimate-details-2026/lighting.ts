@@ -48,6 +48,9 @@ const lightingPowerSystemProfitResourceId = 'lighting-power-system-profit';
 const lightingPowerSystemUsnResourceId = 'lighting-power-system-usn-derived';
 const lightingPowerSystemVatResourceId = 'lighting-power-system-vat-derived';
 
+const lightingResourceStatementRoundedQuantityNote =
+  'ресурсная ведомость округляет количество; итог сохранен по исходной строке';
+
 const lightingProductionStreetSource = detailSource(
   'lighting',
   1,
@@ -225,7 +228,10 @@ const lightingResourceStatementSource = detailSource(
           lightingPowerSystemKtpKrnLaborResourceId,
           lightingPowerSystemTransformerLaborResourceId,
         ],
-        quantity: detailQuantity(5_767.1, 'чел-час', { raw: '5767,1' }),
+        quantity: detailQuantity(5_767.1, 'чел-час', {
+          raw: '5767,1',
+          note: lightingResourceStatementRoundedQuantityNote,
+        }),
         unit_price_rub: detailMoney(664.15, { raw: '664,15' }),
         total_rub: detailMoney(3_830_217.03, { raw: '3 830 217,03' }),
       }),
@@ -241,7 +247,10 @@ const lightingResourceStatementSource = detailSource(
         label: 'Краска по металлу',
         quote: 'Краска ... 453 612,50 277 692,80',
         resource_ids: [lightingPolesPaintMaterialResourceId],
-        quantity: detailQuantity(453, 'кг.', { raw: '453' }),
+        quantity: detailQuantity(453, 'кг.', {
+          raw: '453',
+          note: lightingResourceStatementRoundedQuantityNote,
+        }),
         unit_price_rub: detailMoney(612.5, { raw: '612,50' }),
         total_rub: detailMoney(277_692.8, { raw: '277 692,80' }),
       }),
@@ -249,7 +258,10 @@ const lightingResourceStatementSource = detailSource(
         label: 'Электроэнергия',
         quote: 'Электроэнергия 218457 6,29 1 374 097,60',
         resource_ids: [lightingElectricityMaterialResourceId],
-        quantity: detailQuantity(218_457, 'кВт*час', { raw: '218457' }),
+        quantity: detailQuantity(218_457, 'кВт*час', {
+          raw: '218457',
+          note: lightingResourceStatementRoundedQuantityNote,
+        }),
         unit_price_rub: detailMoney(6.29, { raw: '6,29' }),
         total_rub: detailMoney(1_374_097.6, { raw: '1 374 097,60' }),
       }),
