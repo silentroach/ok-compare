@@ -50,7 +50,7 @@ vi.mock('./site', () => ({
   canon: (path: string) =>
     new URL(
       path.replace(/^\//, ''),
-      'https://kpshelkovo.online/compare/',
+      'https://kpshelkovo.online/815/compare/',
     ).toString(),
 }));
 
@@ -63,13 +63,13 @@ describe('compare markdown navigation', () => {
 
     expect(body).toContain('## Навигация');
     expect(body).toContain(
-      'Методика рейтинга: https://kpshelkovo.online/compare/rating/index.md',
+      'Методика рейтинга: https://kpshelkovo.online/815/compare/rating/index.md',
     );
     expect(body).toContain(
-      'Полный structured feed: https://kpshelkovo.online/compare/data/settlements.json',
+      'Полный structured feed: https://kpshelkovo.online/815/compare/data/settlements.json',
     );
     expect(body).toContain(
-      'Explorer feed: https://kpshelkovo.online/compare/data/explorer.json',
+      'Explorer feed: https://kpshelkovo.online/815/compare/data/explorer.json',
     );
   });
 
@@ -79,13 +79,13 @@ describe('compare markdown navigation', () => {
 
     expect(body).toContain('## Навигация');
     expect(body).toContain(
-      'Главная в Markdown: https://kpshelkovo.online/compare/index.md',
+      'Главная в Markdown: https://kpshelkovo.online/815/compare/index.md',
     );
     expect(body).toContain(
-      'Полный structured feed: https://kpshelkovo.online/compare/data/settlements.json',
+      'Полный structured feed: https://kpshelkovo.online/815/compare/data/settlements.json',
     );
     expect(body).toContain(
-      'Explorer feed: https://kpshelkovo.online/compare/data/explorer.json',
+      'Explorer feed: https://kpshelkovo.online/815/compare/data/explorer.json',
     );
   });
 });

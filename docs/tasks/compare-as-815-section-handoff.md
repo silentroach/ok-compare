@@ -14,16 +14,16 @@ Use it to pass forward facts that are not obvious from the current task diff: co
 
 ## Task Registry
 
-| ID  | Status | Commit                                | Notes                                                                           |
-| --- | ------ | ------------------------------------- | ------------------------------------------------------------------------------- |
-| T1  | done   | `audit compare 815 migration surface` | `docs/tasks/compare-as-815-section-migration/T1-audit-url-surface.md`           |
-| T2  | todo   |                                       | `docs/tasks/compare-as-815-section-migration/T2-move-compare-base.md`           |
-| T3  | todo   |                                       | `docs/tasks/compare-as-815-section-migration/T3-compose-www-section.md`         |
-| T4  | todo   |                                       | `docs/tasks/compare-as-815-section-migration/T4-update-root-links-discovery.md` |
-| T5  | todo   |                                       | `docs/tasks/compare-as-815-section-migration/T5-add-compare-breadcrumbs.md`     |
-| T6  | todo   |                                       | `docs/tasks/compare-as-815-section-migration/T6-nginx-redirects.md`             |
-| T7  | todo   |                                       | `docs/tasks/compare-as-815-section-migration/T7-remove-legacy-build.md`         |
-| T8  | todo   |                                       | `docs/tasks/compare-as-815-section-migration/T8-final-verification.md`          |
+| ID  | Status | Commit                                  | Notes                                                                           |
+| --- | ------ | --------------------------------------- | ------------------------------------------------------------------------------- |
+| T1  | done   | `audit compare 815 migration surface`   | `docs/tasks/compare-as-815-section-migration/T1-audit-url-surface.md`           |
+| T2  | done   | `move compare section base to 815 path` | `docs/tasks/compare-as-815-section-migration/T2-move-compare-base.md`           |
+| T3  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T3-compose-www-section.md`         |
+| T4  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T4-update-root-links-discovery.md` |
+| T5  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T5-add-compare-breadcrumbs.md`     |
+| T6  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T6-nginx-redirects.md`             |
+| T7  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T7-remove-legacy-build.md`         |
+| T8  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T8-final-verification.md`          |
 
 ## Current Context Snapshot
 
@@ -31,7 +31,7 @@ Date: 2026-05-08.
 
 - Source idea: `docs/ideas/compare-as-815-section-migration.md`.
 - Root app is `apps/www`; compare app is `apps/compare`; compare must remain a separate section build.
-- Current compare section build uses `COMPARE_BASE=/compare` and `COMPARE_CANONICAL_BASE=/compare` in `apps/compare/package.json`.
+- Current compare section build and compare dev server use `COMPARE_BASE=/815/compare` and `COMPARE_CANONICAL_BASE=/815/compare` in `apps/compare/package.json`.
 - `scripts/compose-www.mjs` currently copies `apps/compare/dist/section` to `dist/www/compare`.
 - Root `apps/www/astro.config.ts` currently proxies dev requests whose URL starts with `/compare` and points `customSitemaps` at `https://kpshelkovo.online/compare/sitemap.xml`.
 - Root-site compare references are known in `apps/www/src/lib/discovery.ts`, `apps/www/src/lib/llms.ts`, `apps/www/src/pages/index.astro`, `apps/www/public/.well-known/agent-skills/site-sections/SKILL.md` and `apps/www/AGENTS.md`.
@@ -124,6 +124,28 @@ Commit:
 
 - `audit compare 815 migration surface`
 
+### T2 - 2026-05-08 - move compare base
+
+Status: done.
+
+Context:
+
+- Switched compare app `dev`, `build:section` base/canonical and legacy canonical to `/815/compare` in `apps/compare/package.json`; legacy base remains `/` and standalone removal remains for T7.
+- Updated compare-local markdown tests and `apps/compare/AGENTS.md` to the new section path.
+- Root compose output, root dev proxy and root sitemap still point at `/compare` and remain in T3 scope.
+
+Verification:
+
+- `pnpm --dir=apps/compare exec vitest run src/lib/markdown.test.ts`: failed before implementation, then passed after switching the mock canonical base.
+- `pnpm --dir=apps/compare test`: pass, 30 files / 238 tests.
+- `pnpm --dir=apps/compare typecheck`: pass.
+- `pnpm --dir=apps/compare build`: pass.
+- Sample grep under `apps/compare/dist/section` confirmed `https://kpshelkovo.online/815/compare`, `/815/compare/static` and sitemap `<loc>` entries; `https://kpshelkovo.online/compare` was not found.
+
+Commit:
+
+- `move compare section base to 815 path`
+
 ## Intentional Leftovers
 
 Add entries here when `rg` finds old strings that should remain.
@@ -136,7 +158,10 @@ Add entries here when `rg` finds old strings that should remain.
 
 Add command results here when they affect later tasks.
 
-| Date       | Task | Command                   | Result       | Notes                                     |
-| ---------- | ---- | ------------------------- | ------------ | ----------------------------------------- | ---------------- | ----------- | ------------ | ---------------- | ---- | ------------------------------------------------------------- |
-| 2026-05-08 | T0   | Documentation review only | not run      | Planning docs only; no build/test needed. |
-| 2026-05-08 | T1   | `rg "/compare             | COMPARE_BASE | COMPARE_CANONICAL_BASE                    | dist/www/compare | dist/legacy | build:legacy | compose-legacy"` | pass | Reviewed repo-wide URL/build/deploy surfaces; docs-only task. |
+| Date       | Task | Command                             | Result       | Notes                                                                       |
+| ---------- | ---- | ----------------------------------- | ------------ | --------------------------------------------------------------------------- | ---------------- | ----------- | ------------ | ---------------- | ---- | ------------------------------------------------------------- |
+| 2026-05-08 | T0   | Documentation review only           | not run      | Planning docs only; no build/test needed.                                   |
+| 2026-05-08 | T1   | `rg "/compare                       | COMPARE_BASE | COMPARE_CANONICAL_BASE                                                      | dist/www/compare | dist/legacy | build:legacy | compose-legacy"` | pass | Reviewed repo-wide URL/build/deploy surfaces; docs-only task. |
+| 2026-05-08 | T2   | `pnpm --dir=apps/compare test`      | pass         | 30 files / 238 tests.                                                       |
+| 2026-05-08 | T2   | `pnpm --dir=apps/compare typecheck` | pass         | Astro sync and `tsc --noEmit` passed.                                       |
+| 2026-05-08 | T2   | `pnpm --dir=apps/compare build`     | pass         | Built `apps/compare/dist/section` with `/815/compare` canonical/base links. |

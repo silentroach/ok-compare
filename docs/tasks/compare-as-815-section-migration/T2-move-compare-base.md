@@ -1,6 +1,6 @@
 # T2: Move Compare Section Base And Canonical To `/815/compare`
 
-Status: todo
+Status: done
 
 Index: `../compare-as-815-section-migration.md`
 Handoff: `../compare-as-815-section-handoff.md`
@@ -11,17 +11,17 @@ Handoff: `../compare-as-815-section-handoff.md`
 
 ## Acceptance Criteria
 
-- [ ] `apps/compare/package.json` использует `COMPARE_BASE=/815/compare` и `COMPARE_CANONICAL_BASE=/815/compare` для `dev` и `build:section`.
-- [ ] Legacy build script не расширяется и не получает новые обязанности; его удаление остается для T7.
-- [ ] Compare tests/snapshots обновлены так, чтобы canonical, markdown companions, feeds и generated links ожидали `/815/compare`.
-- [ ] `apps/compare/AGENTS.md` отражает новый section path для dev/build и больше не говорит, что canonical section path равен `/compare`.
+- [x] `apps/compare/package.json` использует `COMPARE_BASE=/815/compare` и `COMPARE_CANONICAL_BASE=/815/compare` для `dev` и `build:section`.
+- [x] Legacy build script не расширяется и не получает новые обязанности; его удаление остается для T7.
+- [x] Compare tests/snapshots обновлены так, чтобы canonical, markdown companions, feeds и generated links ожидали `/815/compare`.
+- [x] `apps/compare/AGENTS.md` отражает новый section path для dev/build и больше не говорит, что canonical section path равен `/compare`.
 
 ## Verification
 
-- [ ] `pnpm --dir apps/compare test`
-- [ ] `pnpm --dir apps/compare typecheck`
-- [ ] `pnpm --dir apps/compare build`
-- [ ] Sample built files under `apps/compare/dist/section` contain `/815/compare` canonical/base links where expected.
+- [x] `pnpm --dir=apps/compare test`
+- [x] `pnpm --dir=apps/compare typecheck`
+- [x] `pnpm --dir=apps/compare build`
+- [x] Sample built files under `apps/compare/dist/section` contain `/815/compare` canonical/base links where expected.
 
 ## Dependencies
 
@@ -43,7 +43,7 @@ M.
 
 ## Completion
 
-- [ ] Mark this file `Status: done`.
-- [ ] Update task index status.
-- [ ] Update handoff task registry and task log.
-- [ ] Commit this task separately.
+- [x] Mark this file `Status: done`.
+- [x] Update task index status.
+- [x] Update handoff task registry and task log.
+- [x] Commit this task separately.

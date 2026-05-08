@@ -22,8 +22,8 @@ pnpm test:watch
 
 ## Local dev
 
-- `pnpm dev` внутри app поднимает compare dev-server на `http://localhost:4322/compare`.
-- Интегрированный root workflow `pnpm dev` в workspace проксирует этот app на `http://localhost:4321/compare`.
+- `pnpm dev` внутри app поднимает compare dev-server на `http://localhost:4322/815/compare`.
+- Интегрированный root workflow должен проксировать этот app на `http://localhost:4321/815/compare`.
 - Если порт `4322` занят, команда должна завершиться ошибкой, а не молча уехать на другой порт.
 
 ## Стек
@@ -52,11 +52,11 @@ public/
 ## Build modes
 
 - `pnpm build` использует section mode:
-  - deploy path: `/compare`
-  - canonical: `https://kpshelkovo.online/compare/...`
+  - deploy path: `/815/compare`
+  - canonical: `https://kpshelkovo.online/815/compare/...`
 - `pnpm build:legacy` использует standalone mode:
   - deploy path: `/`
-  - canonical остается новым: `https://kpshelkovo.online/compare/...`
+  - canonical остается новым: `https://kpshelkovo.online/815/compare/...`
   - sitemap на legacy intentionally отключен
 
 ## Path aliases
@@ -119,7 +119,7 @@ public/
   - `src/lib/skills.ts`
   - `public/.well-known/agent-skills/*/SKILL.md`
 
-Если меняются canonical URL, `/compare` base, feed routes, rating docs или settlement schema, эти файлы нужно синхронно пересматривать.
+Если меняются canonical URL, `/815/compare` base, feed routes, rating docs или settlement schema, эти файлы нужно синхронно пересматривать.
 
 ## YAML и рейтинг
 

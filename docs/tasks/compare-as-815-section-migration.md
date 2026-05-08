@@ -33,7 +33,7 @@ Commit message format: кратко и по смыслу, например `move
 | ID  | Task                                                                                                                                         | Status | Dependencies   |
 | --- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------ | -------------- |
 | T1  | [Audit URL surface and migration assumptions](compare-as-815-section-migration/T1-audit-url-surface.md)                                      | done   | None           |
-| T2  | [Move compare section base and canonical to `/815/compare`](compare-as-815-section-migration/T2-move-compare-base.md)                        | todo   | T1             |
+| T2  | [Move compare section base and canonical to `/815/compare`](compare-as-815-section-migration/T2-move-compare-base.md)                        | done   | T1             |
 | T3  | [Compose compare into `dist/www/815/compare` and update root dev/sitemap wiring](compare-as-815-section-migration/T3-compose-www-section.md) | todo   | T2             |
 | T4  | [Update root-site links and agent discovery references](compare-as-815-section-migration/T4-update-root-links-discovery.md)                  | todo   | T3             |
 | T5  | [Add compare breadcrumbs and breadcrumb JSON-LD](compare-as-815-section-migration/T5-add-compare-breadcrumbs.md)                             | todo   | T2             |
