@@ -3,6 +3,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { visibleWhitespace } from '../test/visible-whitespace';
+import type { StatusService } from './schema';
 import { hydrateStatusTimeline, hydrateStatusTimelines } from './timeline.dom';
 
 interface TooltipInput {
@@ -26,6 +27,7 @@ const AREA_TEMPLATES = `
 interface ProblemNodeInput {
   readonly id: string;
   readonly kind?: 'incident' | 'maintenance';
+  readonly service?: StatusService;
   readonly start: string;
   readonly end?: string;
   readonly hidden?: boolean;
@@ -76,6 +78,7 @@ const renderTimeline = (
               hidden = false,
               id,
               kind = 'incident',
+              service = 'water',
               start,
               tone = 'red',
               tooltip: rawTooltip,
@@ -89,6 +92,7 @@ const renderTimeline = (
                 data-incident-id="${id}"
                 data-status-problem
                 data-status-kind="${kind}"
+                data-status-service="${service}"
                 data-start="${start}"
                 ${end ? `data-end="${end}"` : ''}
                 data-tooltip-service-label="${escapeAttribute(tooltip.serviceLabel)}"
@@ -390,6 +394,33 @@ describe('hydrateStatusTimeline', () => {
     expect(tooltip.hidden).toBe(true);
     expect(root.dataset.statusTooltipOpen).toBeUndefined();
     expect(node.hasAttribute('aria-describedby')).toBe(false);
+  });
+
+  it('keeps service-specific completed incident phase labels after hydration', () => {
+    const root = renderTimeline([
+      {
+        id: 'dam',
+        service: 'dam',
+        start: '2026-05-01T00:00:00Z',
+        end: '2026-05-02T00:00:00Z',
+        tooltip: {
+          serviceLabel: 'Дамба',
+          title: 'Проезд через дамбу закрыт',
+          phaseLabel: 'проезд открыт',
+          phaseIcon: 'check',
+          periodLabel: '1 мая - 2 мая',
+        },
+      },
+    ]);
+
+    hydrateStatusTimeline(root, {
+      nowMs: Date.parse('2026-05-10T00:00:00Z'),
+    });
+
+    const node = getProblemNode('dam');
+
+    expect(node.dataset.tooltipPhaseLabel).toBe('проезд открыт');
+    expect(node.getAttribute('aria-label')).toContain('Статус: проезд открыт');
   });
 
   it('opens on focus and closes on focusout and Escape', () => {

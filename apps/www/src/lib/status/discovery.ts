@@ -324,7 +324,7 @@ export function schema(root: string): Record<string, unknown> {
     $id: abs(root, statusSchemaPath()),
     title: 'StatusPayload',
     description:
-      'Read-only полный feed status-section с incident history, derive-сводками сервисов и markdown companions.',
+      'Read-only feed раздела /status с историей инцидентов, производными сводками сервисов и markdown companion-страницами.',
     type: 'object',
     additionalProperties: false,
     required: ['stats', 'active', 'incidents', 'services'],
@@ -523,7 +523,7 @@ export function openapi(root: string): Record<string, unknown> {
       title: 'Шелково Status Feed',
       version: '1.0.0',
       description:
-        'Read-only OpenAPI wrapper для /status/data/status.json с историей incidents и derive-сводками сервисов.',
+        'Read-only OpenAPI wrapper для /status/data/status.json с историей инцидентов и производными сводками сервисов.',
     },
     servers: [
       {
@@ -536,7 +536,7 @@ export function openapi(root: string): Record<string, unknown> {
           operationId: 'getStatusFeed',
           summary: 'Read full status feed',
           description:
-            'Возвращает основной structured feed status-section с активными и историческими incidents, а также derive-сводками по сервисам.',
+            'Возвращает основной структурированный feed раздела /status с активными и историческими инцидентами, а также производными сводками по сервисам.',
           responses: {
             200: {
               description: 'Full status feed',
@@ -569,7 +569,7 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, statusDataPath()),
             type: 'application/json',
-            'title*': star('Основной машиночитаемый feed status-section'),
+            'title*': star('Основной машиночитаемый feed раздела /status'),
           },
           {
             href: abs(root, statusFeedPath()),

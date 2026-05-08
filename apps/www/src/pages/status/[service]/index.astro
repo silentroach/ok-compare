@@ -63,7 +63,7 @@ const schemaItems = latestIncidents
   .filter((item) => item.has_page)
   .map((item) => ({ name: item.title, url: item.url }));
 const title = `${serviceLabel} — Статус — Шелково Онлайн`;
-const description = `Текущее состояние сервиса ${serviceLabel.toLowerCase()} в поселке Шелково: последние инциденты, плановые работы и история изменений.`;
+const description = `Текущее состояние сервиса ${serviceLabel.toLowerCase()} в КП Шелково: последние инциденты, плановые работы и история изменений.`;
 const breadcrumbs = withHomeBreadcrumbs([
   { label: 'Статус', href: statusUrl() },
   { label: serviceLabel },

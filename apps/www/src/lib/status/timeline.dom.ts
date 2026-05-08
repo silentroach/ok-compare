@@ -8,9 +8,10 @@ import {
 import {
   buildStatusTimelineTooltipListItemData,
   formatStatusTimelineTooltipGroupLabel,
+  getStatusIncidentPhase,
   type StatusTimelineTooltipListItemData,
 } from './view';
-import type { StatusArea } from './schema';
+import { STATUS_SERVICES, type StatusArea, type StatusService } from './schema';
 
 export interface StatusTimelineHydrationOptions {
   readonly nowMs?: number;
@@ -19,6 +20,9 @@ export interface StatusTimelineHydrationOptions {
 interface StatusTimelineProblemNode {
   readonly element: HTMLElement;
   readonly kind?: 'incident' | 'maintenance';
+  readonly service?: StatusService;
+  readonly startIso: string;
+  readonly endIso?: string;
   readonly startMs: number;
   readonly endMs?: number;
   readonly geometryStartMs?: number;
@@ -80,6 +84,7 @@ const STATUS_TIMELINE_AREAS = [
   'village',
 ] as const satisfies readonly StatusArea[];
 const STATUS_TIMELINE_AREA_SET = new Set<string>(STATUS_TIMELINE_AREAS);
+const STATUS_TIMELINE_SERVICE_SET = new Set<string>(STATUS_SERVICES);
 
 const isFiniteNumber = (value: unknown): value is number =>
   typeof value === 'number' && Number.isFinite(value);
@@ -155,6 +160,9 @@ const getStatusTimelineTooltip = (
 
 const isStatusTimelineArea = (value: unknown): value is StatusArea =>
   typeof value === 'string' && STATUS_TIMELINE_AREA_SET.has(value);
+
+const isStatusTimelineService = (value: unknown): value is StatusService =>
+  typeof value === 'string' && STATUS_TIMELINE_SERVICE_SET.has(value);
 
 const parseStatusTimelineTooltipAreas = (
   value?: string,
@@ -420,8 +428,20 @@ const syncStatusTimelineProblemPhase = (
     return;
   }
 
-  problemNode.element.dataset.tooltipPhaseLabel =
-    problemNode.kind === 'maintenance' ? 'завершено' : 'восстановлено';
+  if (!problemNode.endIso) {
+    return;
+  }
+
+  problemNode.element.dataset.tooltipPhaseLabel = getStatusIncidentPhase(
+    {
+      kind: problemNode.kind,
+      is_active: false,
+      started_iso: problemNode.startIso,
+      ended_iso: problemNode.endIso,
+      ...(problemNode.service ? { service: problemNode.service } : {}),
+    },
+    { nowMs },
+  ).label;
 
   if (problemNode.kind === 'incident') {
     problemNode.element.dataset.tooltipPhaseIcon = 'check';
@@ -560,9 +580,11 @@ const bindStatusTimelineTooltipTrigger = (
 const parseStatusTimelineProblemNode = (
   element: HTMLElement,
 ): StatusTimelineProblemNode | undefined => {
-  const startMs = Date.parse(element.dataset.start ?? '');
+  const startIso = element.dataset.start ?? '';
+  const startMs = Date.parse(startIso);
   const geometryStartMs = Date.parse(element.dataset.geometryStart ?? '');
   const geometryEndMs = Date.parse(element.dataset.geometryEnd ?? '');
+  const service = element.dataset.statusService;
 
   if (!Number.isFinite(startMs)) {
     return undefined;
@@ -578,6 +600,8 @@ const parseStatusTimelineProblemNode = (
         element.dataset.statusKind === 'maintenance'
           ? element.dataset.statusKind
           : undefined,
+      ...(isStatusTimelineService(service) ? { service } : {}),
+      startIso,
       startMs,
       ...(Number.isFinite(geometryStartMs) ? { geometryStartMs } : {}),
       ...(Number.isFinite(geometryEndMs) ? { geometryEndMs } : {}),
@@ -597,6 +621,9 @@ const parseStatusTimelineProblemNode = (
       element.dataset.statusKind === 'maintenance'
         ? element.dataset.statusKind
         : undefined,
+    ...(isStatusTimelineService(service) ? { service } : {}),
+    startIso,
+    endIso: rawEnd,
     startMs,
     endMs,
     ...(Number.isFinite(geometryStartMs) ? { geometryStartMs } : {}),

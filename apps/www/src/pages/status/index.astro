@@ -19,9 +19,9 @@ const plannedWorks = data.incidents.filter(
     item.kind === 'maintenance' &&
     (item.is_active || item.started_at.valueOf() > now),
 );
-const title = 'Статус сервисов — Шелково Онлайн';
+const title = 'Статус поселка — Шелково Онлайн';
 const description =
-  'Текущее состояние сервисов поселка Шелково: инциденты, плановые работы и история изменений.';
+  'Текущее состояние сервисов КП Шелково: отключения, ограничения, плановые работы и история изменений.';
 const breadcrumbs = withHomeBreadcrumbs([{ label: 'Статус' }]);
 const schemaItems = data.incidents
   .filter((item) => item.has_page)
@@ -50,11 +50,18 @@ const schema = collectionPageSchema({
         <Breadcrumbs items={breadcrumbs} />
 
         <div>
-          <h1
-            class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
-          >
-            Статус поселка
-          </h1>
+          <div class="space-y-3">
+            <h1
+              class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
+            >
+              Статус КП Шелково
+            </h1>
+            <p class="max-w-3xl text-base leading-7 text-muted-foreground">
+              Журнал отключений и ограничений в КП Шелково: электричество, вода
+              и проезд через дамбу. Фиксируем время, зону, источник и ход
+              восстановления.
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -62,6 +69,12 @@ const schema = collectionPageSchema({
     <section class="mt-8">
       <div class="max-w-6xl">
         <div class="relative">
+          <p
+            class="px-5 pb-3 text-sm leading-6 text-muted-foreground md:px-6 md:text-[0.9375rem]"
+          >
+            В шкале за 90 дней: красное — инциденты, желтое — плановые работы,
+            зеленое — без активных проблем.
+          </p>
           <div
             class="hidden lg:grid lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)_minmax(0,11rem)_minmax(0,21rem)] lg:gap-6 lg:px-6 lg:py-3"
           >
@@ -69,7 +82,7 @@ const schema = collectionPageSchema({
               Сервис
             </p>
             <p class="text-[0.875rem] font-semibold text-muted-foreground">
-              Последние 90 дней
+              Хронология за 90 дней
             </p>
             <p class="text-[0.875rem] font-semibold text-muted-foreground">
               Статус
@@ -99,10 +112,10 @@ const schema = collectionPageSchema({
           <div class="space-y-4">
             <div class="space-y-1.5">
               <h2 class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]">
-                Актуальные проблемы
+                Активные инциденты
               </h2>
               <p class="text-sm leading-6 text-muted-foreground md:text-[0.9375rem]">
-                То, что влияет на сервисы прямо сейчас.
+                Отключения и ограничения, которые еще не закрыты.
               </p>
             </div>
 
@@ -124,6 +137,9 @@ const schema = collectionPageSchema({
               <h2 class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]">
                 Плановые работы
               </h2>
+              <p class="mt-1.5 text-sm leading-6 text-muted-foreground md:text-[0.9375rem]">
+                Запланированные или уже идущие работы по сервисам поселка.
+              </p>
             </div>
 
             <div class="-mx-5 md:-mx-6">

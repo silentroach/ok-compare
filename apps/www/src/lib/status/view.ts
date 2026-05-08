@@ -37,9 +37,9 @@ const MAINTENANCE_TITLE_LABELS: Record<StatusService, string> = {
 };
 
 const SERVICE_STATE_LABELS: Record<StatusServiceState, string> = {
-  green: 'В норме',
-  amber: 'Плановые работы',
-  red: 'Есть проблемы',
+  green: 'Без активных проблем',
+  amber: 'Идут плановые работы',
+  red: 'Есть активный инцидент',
 };
 
 interface StatusIncidentPhase {
@@ -87,6 +87,7 @@ type StatusTimelineTooltipIncident = Pick<
   | 'ended_has_time'
   | 'duration'
 > & {
+  readonly service?: StatusService;
   readonly areas?: readonly StatusArea[];
 };
 
@@ -291,7 +292,7 @@ export const buildStatusTimelineTooltipData = (input: {
   kindLabel: formatStatusTooltipText(formatStatusKind(input.incident.kind)),
   title: formatStatusTooltipText(input.incident.title),
   phaseLabel: formatStatusTooltipText(
-    getStatusIncidentPhase(input.incident).label,
+    getStatusIncidentPhase({ ...input.incident, service: input.service }).label,
   ),
   periodLabel: formatStatusTooltipText(
     formatStatusIncidentPeriodText(input.incident, {
@@ -389,7 +390,12 @@ export const getStatusIncidentPhase = (
   incident: Pick<
     StatusIncident,
     'kind' | 'is_active' | 'started_iso' | 'ended_iso'
-  >,
+  > & {
+    readonly service?: StatusService;
+  },
+  opts?: {
+    readonly nowMs?: number;
+  },
 ): StatusIncidentPhase => {
   if (incident.is_active) {
     return {
@@ -398,7 +404,7 @@ export const getStatusIncidentPhase = (
     };
   }
 
-  if (Date.parse(incident.started_iso) > Date.now()) {
+  if (Date.parse(incident.started_iso) > (opts?.nowMs ?? Date.now())) {
     return {
       label: incident.kind === 'maintenance' ? 'запланировано' : 'ожидается',
       tone: incident.kind === 'maintenance' ? 'warning' : 'info',
@@ -407,7 +413,12 @@ export const getStatusIncidentPhase = (
 
   if (incident.ended_iso) {
     return {
-      label: incident.kind === 'maintenance' ? 'завершено' : 'восстановлено',
+      label:
+        incident.kind === 'maintenance'
+          ? 'завершено'
+          : incident.service === 'dam'
+            ? 'проезд открыт'
+            : 'восстановлено',
       tone: incident.kind === 'maintenance' ? 'muted' : 'success',
     };
   }

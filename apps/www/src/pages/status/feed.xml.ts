@@ -39,9 +39,9 @@ export const GET: APIRoute = async (context) => {
   const data = await loadStatusData();
 
   return rss({
-    title: 'Статус Шелково',
+    title: 'Статус КП Шелково',
     description:
-      'Статическая RSS-лента статуса Шелково: summary-first RSS, полный machine-readable контракт живет в /status/data/status.json.',
+      'RSS-лента статуса КП Шелково: краткие записи об отключениях, плановых работах и восстановлении.',
     site: context.site ?? 'https://kpshelkovo.online',
     items: data.incidents.map((item) => ({
       title: item.title,
