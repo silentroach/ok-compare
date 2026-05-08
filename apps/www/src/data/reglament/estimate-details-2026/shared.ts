@@ -37,6 +37,7 @@ const detailSourcePdfPagesTotal: Partial<
   Record<EstimateDetailSourcePdf, number>
 > = {
   landscaping: 22,
+  improvement: 18,
   lighting: 14,
   security: 13,
   waste: 13,

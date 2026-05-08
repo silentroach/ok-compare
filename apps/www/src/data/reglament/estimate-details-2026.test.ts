@@ -1208,6 +1208,94 @@ describe('estimate details 2026 dataset', () => {
     `);
   });
 
+  it('captures improvement details and the road/fence mismatch', () => {
+    const improvementRowIds = new Set([
+      'improvement-objects-maintenance',
+      'improvement-road-surface-repair',
+    ]);
+    const workItems = estimateDetails2026.work_items
+      .filter((item) => improvementRowIds.has(item.estimate_row_id))
+      .map((item) => ({
+        id: item.id,
+        estimate_row_id: item.estimate_row_id,
+        service_ids: item.service_ids ?? [],
+        status: item.status,
+      }));
+    const resources = estimateDetails2026.resources.filter((resource) =>
+      improvementRowIds.has(resource.estimate_row_id),
+    );
+    const grossControlTotals = estimateDetails2026.control_totals
+      .filter(
+        (controlTotal) =>
+          improvementRowIds.has(controlTotal.estimate_row_id) &&
+          controlTotal.cost_bucket === 'gross',
+      )
+      .map((controlTotal) => ({
+        id: controlTotal.id,
+        aggregate_total_rub: controlTotal.aggregate_total_rub?.value ?? null,
+        status: controlTotal.status,
+      }));
+    const needsCheckIds = [
+      ...estimateDetails2026.work_items,
+      ...estimateDetails2026.resources,
+      ...estimateDetails2026.control_totals,
+    ]
+      .filter(
+        (item) =>
+          improvementRowIds.has(item.estimate_row_id) &&
+          item.status === 'needs_check',
+      )
+      .map((item) => item.id);
+
+    expect(workItems).toMatchInlineSnapshot(`
+      [
+        {
+          "estimate_row_id": "improvement-objects-maintenance",
+          "id": "improvement-objects-maintenance",
+          "service_ids": [
+            "year-round-common-area-repair",
+            "summer-waterbody-cleaning",
+            "summer-curbstone-painting",
+          ],
+          "status": "verified",
+        },
+        {
+          "estimate_row_id": "improvement-road-surface-repair",
+          "id": "improvement-road-surface-repair",
+          "service_ids": [
+            "year-round-perimeter-fence-repair",
+          ],
+          "status": "needs_check",
+        },
+      ]
+    `);
+    expect(resources).toHaveLength(35);
+    expect(grossControlTotals).toMatchInlineSnapshot(`
+      [
+        {
+          "aggregate_total_rub": 4366756,
+          "id": "improvement-objects-gross",
+          "status": "derived",
+        },
+        {
+          "aggregate_total_rub": 320424,
+          "id": "improvement-fence-repair-gross",
+          "status": "needs_check",
+        },
+      ]
+    `);
+    expect(needsCheckIds).toEqual([
+      'improvement-road-surface-repair',
+      'improvement-fence-profile-sheet-repair',
+      'improvement-fence-repair-usn-derived',
+      'improvement-fence-repair-vat-derived',
+      'improvement-fence-repair-materials',
+      'improvement-fence-repair-usn',
+      'improvement-fence-repair-vat',
+      'improvement-fence-repair-gross',
+    ]);
+  });
+
   it('keeps PDF source refs on every detail fact', () => {
     const facts = detailFactsWithSourceRefs();
     const missingRefs = facts

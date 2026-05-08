@@ -281,4 +281,12 @@ describe('estimate detail markdown companions', () => {
     expect(checks).toContain('machinist-loader: Машинист погрузчика');
     expect(checks).toContain('Расхождение больше допуска.');
   });
+
+  it('mentions the improvement road/fence mismatch in real checks markdown', () => {
+    const checks = buildEstimateDetailChecksMarkdown();
+
+    expect(checks).toContain('Текущий ремонт покрытия дорог и площадок');
+    expect(checks).toContain('ремонт периметрального ограждения');
+    expect(checks).toContain('Профнастил оцинкованный');
+  });
 });

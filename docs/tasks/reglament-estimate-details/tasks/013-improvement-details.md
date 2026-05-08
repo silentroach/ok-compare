@@ -1,6 +1,6 @@
 # Task 013: Improvement Details
 
-Status: [ ] Not started
+Status: [x] Done
 
 ## Description
 
@@ -8,15 +8,15 @@ Extract details from `improvement.pdf`, with special attention to the mismatch b
 
 ## Acceptance Criteria
 
-- [ ] Improvement work items and resources are represented.
-- [ ] The disputed repair line is captured with `needs_check` status and explicit source refs.
-- [ ] Resources explain why the detailed source looks like perimeter fence repair, not road-surface repair.
-- [ ] Controls reconcile where possible and expose deltas where not possible.
+- [x] Improvement work items and resources are represented.
+- [x] The disputed repair line is captured with `needs_check` status and explicit source refs.
+- [x] Resources explain why the detailed source looks like perimeter fence repair, not road-surface repair.
+- [x] Controls reconcile where possible and expose deltas where not possible.
 
 ## Verification
 
-- [ ] `pnpm --filter @shelkovo/www test -- estimate-details-2026`
-- [ ] `/815/regulation/details/checks.md` mentions the improvement mismatch.
+- [x] `pnpm --filter @shelkovo/www test -- estimate-details-2026`
+- [x] `/815/regulation/details/checks.md` mentions the improvement mismatch.
 
 ## Dependencies
 

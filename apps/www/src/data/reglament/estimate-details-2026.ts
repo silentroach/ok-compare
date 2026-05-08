@@ -1,5 +1,10 @@
 import type { EstimateDetailDataset } from '@/lib/reglament/detail-schema';
 import {
+  improvementControlTotals,
+  improvementResources,
+  improvementWorkItems,
+} from '@/data/reglament/estimate-details-2026/improvement';
+import {
   landscapingControlTotals,
   landscapingResources,
   landscapingWorkItems,
@@ -37,17 +42,20 @@ export const estimateDetails2026 = {
     ...securityWorkItems,
     ...lightingWorkItems,
     ...landscapingWorkItems,
+    ...improvementWorkItems,
   ],
   resources: [
     ...wasteResources,
     ...securityResources,
     ...lightingResources,
     ...landscapingResources,
+    ...improvementResources,
   ],
   control_totals: [
     ...wasteControlTotals,
     ...securityControlTotals,
     ...lightingControlTotals,
     ...landscapingControlTotals,
+    ...improvementControlTotals,
   ],
 } satisfies EstimateDetailDataset;
