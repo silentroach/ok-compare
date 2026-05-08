@@ -29,3 +29,6 @@
 - User confirmed: page 13 is the correct page for the winter mechanized section total; page 12 contains only intermediate totals for preceding positions.
 - User confirmed: derived row-level VAT/USN for `cleaning-winter-mechanized` is acceptable, but should remain documented as a derived reconciliation note.
 - User confirmed: rounding of winter mechanized sand from `73,6 т` in the production program to `74 т` in the local estimate row is acceptable.
+- For `cleaning-winter-manual`, the production program spans PDF pages 2-4; the local estimate rows are on PDF pages 13-17, and the section totals are on PDF page 17.
+- For `cleaning-winter-manual`, the local estimate displays rounded labor, sand, PPE and inventory quantities; the dataset keeps production-program quantities where available, local money totals, and explicit rounding notes.
+- Row-level USN/VAT for `cleaning-winter-manual` are derived from `estimate-2026`: income `2 989 256,19`, USN `51 588,99`, VAT `149 462,81`. VAT/gross remain `needs_check` because `cleaning.pdf` has the same document-level VAT conflict as `cleaning-winter-mechanized`.

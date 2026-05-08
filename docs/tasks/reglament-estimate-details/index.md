@@ -58,7 +58,7 @@
 - [x] [Task 010: Landscaping details](tasks/012-landscaping-details.md)
 - [x] [Task 011: Improvement details](tasks/013-improvement-details.md)
 - [x] [Task 012: Cleaning winter mechanized](tasks/007-cleaning-winter-mechanized.md)
-- [ ] [Task 013: Cleaning winter manual](tasks/008-cleaning-winter-manual.md)
+- [x] [Task 013: Cleaning winter manual](tasks/008-cleaning-winter-manual.md)
 - [ ] [Task 014: Cleaning summer mechanized](tasks/009-cleaning-summer-mechanized.md)
 - [ ] [Task 015: Cleaning summer manual](tasks/010-cleaning-summer-manual.md)
 - [ ] [Task 016: Cleaning resource statement](tasks/011-cleaning-resource-statement.md)

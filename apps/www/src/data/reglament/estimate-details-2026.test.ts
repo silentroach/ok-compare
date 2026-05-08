@@ -1559,6 +1559,289 @@ describe('estimate details 2026 dataset', () => {
     `);
   });
 
+  it('captures winter manual cleaning details from cleaning.pdf', () => {
+    const cleaningRowIds = new Set(['cleaning-winter-manual']);
+    const workItems = estimateDetails2026.work_items
+      .filter((item) => cleaningRowIds.has(item.estimate_row_id))
+      .map((item) => ({
+        id: item.id,
+        estimate_row_id: item.estimate_row_id,
+        service_ids: item.service_ids ?? [],
+        status: item.status,
+      }));
+    const resources = estimateDetails2026.resources
+      .filter((resource) => cleaningRowIds.has(resource.estimate_row_id))
+      .map((resource) => ({
+        id: resource.id,
+        kind: resource.kind,
+        cost_bucket: resource.cost_bucket,
+        total_rub: resource.total_rub.value,
+        status: resource.status,
+      }));
+    const controlTotals = estimateDetails2026.control_totals
+      .filter((controlTotal) =>
+        cleaningRowIds.has(controlTotal.estimate_row_id),
+      )
+      .map((controlTotal) => ({
+        id: controlTotal.id,
+        cost_bucket: controlTotal.cost_bucket,
+        source_total_rub: controlTotal.source_total_rub.value,
+        aggregate_total_rub: controlTotal.aggregate_total_rub?.value ?? null,
+        status: controlTotal.status,
+      }));
+
+    expect({ workItems, resources, controlTotals }).toMatchInlineSnapshot(`
+      {
+        "controlTotals": [
+          {
+            "aggregate_total_rub": 1212248.55,
+            "cost_bucket": "primary_salary",
+            "id": "cleaning-winter-manual-primary-salary",
+            "source_total_rub": 1212248.55,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 25846.2,
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-manual-materials",
+            "source_total_rub": 25846.2,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 366099.05,
+            "cost_bucket": "insurance",
+            "id": "cleaning-winter-manual-insurance",
+            "source_total_rub": 366099.05,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 848573.98,
+            "cost_bucket": "overhead",
+            "id": "cleaning-winter-manual-overhead",
+            "source_total_rub": 848573.98,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 484899.42,
+            "cost_bucket": "profit",
+            "id": "cleaning-winter-manual-profit",
+            "source_total_rub": 484899.42,
+            "status": "verified",
+          },
+          {
+            "aggregate_total_rub": 51588.99,
+            "cost_bucket": "usn",
+            "id": "cleaning-winter-manual-usn",
+            "source_total_rub": 51588.99,
+            "status": "derived",
+          },
+          {
+            "aggregate_total_rub": 149462.81,
+            "cost_bucket": "vat",
+            "id": "cleaning-winter-manual-vat",
+            "source_total_rub": 149462.81,
+            "status": "needs_check",
+          },
+          {
+            "aggregate_total_rub": 3138719,
+            "cost_bucket": "gross",
+            "id": "cleaning-winter-manual-gross",
+            "source_total_rub": 3138719,
+            "status": "needs_check",
+          },
+        ],
+        "resources": [
+          {
+            "cost_bucket": "primary_salary",
+            "id": "cleaning-winter-manual-snow-sweeping-worker-labor",
+            "kind": "labor",
+            "status": "verified",
+            "total_rub": 48706.24,
+          },
+          {
+            "cost_bucket": "primary_salary",
+            "id": "cleaning-winter-manual-anti-ice-worker-labor",
+            "kind": "labor",
+            "status": "verified",
+            "total_rub": 19383.1,
+          },
+          {
+            "cost_bucket": "primary_salary",
+            "id": "cleaning-winter-manual-road-snow-ice-worker-labor",
+            "kind": "labor",
+            "status": "verified",
+            "total_rub": 840033.57,
+          },
+          {
+            "cost_bucket": "primary_salary",
+            "id": "cleaning-winter-manual-container-site-worker-labor",
+            "kind": "labor",
+            "status": "verified",
+            "total_rub": 304125.64,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-manual-sand",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 4849.2,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-manual-ppe-cotton-suit",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 4950,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-manual-ppe-insulated-jacket",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 2160,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-manual-ppe-signal-vest",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 1080,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-manual-ppe-insulated-boots",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 1260,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-manual-ppe-polymer-gloves",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 1260,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-manual-ppe-insulated-mittens",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 2520,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-manual-ppe-rubber-boots",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 1800,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-manual-ppe-soap",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 1252.8,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-manual-inventory-ice-axe",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 126,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-manual-inventory-polypropylene-broom",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 1665,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-manual-inventory-rake",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 148.5,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-manual-inventory-snow-shovel",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 1125,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-manual-inventory-scoop-shovel",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 465.3,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-manual-inventory-wheelbarrow",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 1125,
+          },
+          {
+            "cost_bucket": "materials",
+            "id": "cleaning-winter-manual-inventory-bucket-12l",
+            "kind": "material",
+            "status": "verified",
+            "total_rub": 59.4,
+          },
+          {
+            "cost_bucket": "insurance",
+            "id": "cleaning-winter-manual-insurance",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 366099.05,
+          },
+          {
+            "cost_bucket": "overhead",
+            "id": "cleaning-winter-manual-overhead",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 848573.98,
+          },
+          {
+            "cost_bucket": "profit",
+            "id": "cleaning-winter-manual-profit",
+            "kind": "other_cost",
+            "status": "verified",
+            "total_rub": 484899.42,
+          },
+          {
+            "cost_bucket": "usn",
+            "id": "cleaning-winter-manual-usn-derived",
+            "kind": "other_cost",
+            "status": "derived",
+            "total_rub": 51588.99,
+          },
+          {
+            "cost_bucket": "vat",
+            "id": "cleaning-winter-manual-vat-derived",
+            "kind": "other_cost",
+            "status": "needs_check",
+            "total_rub": 149462.81,
+          },
+        ],
+        "workItems": [
+          {
+            "estimate_row_id": "cleaning-winter-manual",
+            "id": "cleaning-winter-manual",
+            "service_ids": [
+              "winter-paths-playgrounds-clearing",
+              "winter-anti-ice-spreading",
+            ],
+            "status": "verified",
+          },
+        ],
+      }
+    `);
+  });
+
   it('keeps PDF source refs on every detail fact', () => {
     const facts = detailFactsWithSourceRefs();
     const missingRefs = facts

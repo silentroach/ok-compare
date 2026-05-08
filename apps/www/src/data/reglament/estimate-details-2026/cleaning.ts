@@ -59,6 +59,52 @@ const cleaningWinterMechanizedUsnResourceId =
 const cleaningWinterMechanizedVatResourceId =
   'cleaning-winter-mechanized-vat-derived';
 
+const cleaningWinterManualSnowSweepingWorkerResourceId =
+  'cleaning-winter-manual-snow-sweeping-worker-labor';
+const cleaningWinterManualAntiIceWorkerResourceId =
+  'cleaning-winter-manual-anti-ice-worker-labor';
+const cleaningWinterManualRoadSnowIceWorkerResourceId =
+  'cleaning-winter-manual-road-snow-ice-worker-labor';
+const cleaningWinterManualContainerSiteWorkerResourceId =
+  'cleaning-winter-manual-container-site-worker-labor';
+const cleaningWinterManualSandResourceId = 'cleaning-winter-manual-sand';
+const cleaningWinterManualPpeCottonSuitResourceId =
+  'cleaning-winter-manual-ppe-cotton-suit';
+const cleaningWinterManualPpeInsulatedJacketResourceId =
+  'cleaning-winter-manual-ppe-insulated-jacket';
+const cleaningWinterManualPpeSignalVestResourceId =
+  'cleaning-winter-manual-ppe-signal-vest';
+const cleaningWinterManualPpeInsulatedBootsResourceId =
+  'cleaning-winter-manual-ppe-insulated-boots';
+const cleaningWinterManualPpePolymerGlovesResourceId =
+  'cleaning-winter-manual-ppe-polymer-gloves';
+const cleaningWinterManualPpeInsulatedMittensResourceId =
+  'cleaning-winter-manual-ppe-insulated-mittens';
+const cleaningWinterManualPpeRubberBootsResourceId =
+  'cleaning-winter-manual-ppe-rubber-boots';
+const cleaningWinterManualPpeSoapResourceId = 'cleaning-winter-manual-ppe-soap';
+const cleaningWinterManualInventoryIceAxeResourceId =
+  'cleaning-winter-manual-inventory-ice-axe';
+const cleaningWinterManualInventoryPolypropyleneBroomResourceId =
+  'cleaning-winter-manual-inventory-polypropylene-broom';
+const cleaningWinterManualInventoryRakeResourceId =
+  'cleaning-winter-manual-inventory-rake';
+const cleaningWinterManualInventorySnowShovelResourceId =
+  'cleaning-winter-manual-inventory-snow-shovel';
+const cleaningWinterManualInventoryScoopShovelResourceId =
+  'cleaning-winter-manual-inventory-scoop-shovel';
+const cleaningWinterManualInventoryWheelbarrowResourceId =
+  'cleaning-winter-manual-inventory-wheelbarrow';
+const cleaningWinterManualInventoryBucketResourceId =
+  'cleaning-winter-manual-inventory-bucket-12l';
+const cleaningWinterManualInsuranceResourceId =
+  'cleaning-winter-manual-insurance';
+const cleaningWinterManualOverheadResourceId =
+  'cleaning-winter-manual-overhead';
+const cleaningWinterManualProfitResourceId = 'cleaning-winter-manual-profit';
+const cleaningWinterManualUsnResourceId = 'cleaning-winter-manual-usn-derived';
+const cleaningWinterManualVatResourceId = 'cleaning-winter-manual-vat-derived';
+
 const cleaningWinterMechanizedProductionSnowSource = detailSource(
   'cleaning',
   1,
@@ -84,7 +130,8 @@ const cleaningStaffSource = detailSource(
   8,
   'нормативное штатное расписание по уборке территории',
   {
-    quote: 'Машинист; 14,1; тарифная ставка 934,32; всего 13 173,91',
+    quote:
+      'Рабочий по уборке территории (средний разряд 3.0); 13,4; тарифная ставка 664,15; всего 8 899,55; Машинист; 14,1; тарифная ставка 934,32; всего 13 173,91',
   },
 );
 
@@ -158,6 +205,106 @@ const cleaningWinterMechanizedTotalsSource = detailSource(
   },
 );
 
+const cleaningWinterManualProductionSnowSource = detailSource(
+  'cleaning',
+  2,
+  'производственная программа / зимняя ручная уборка / подметание снега',
+  {
+    quote:
+      'Зимняя ручная уборка территории; трудозатраты 1 825,3; Подметание свежевыпавшего снега ... кратность 70; объем 449; трудозатраты 73,3',
+  },
+);
+
+const cleaningWinterManualProductionWorksSource = detailSource(
+  'cleaning',
+  3,
+  'производственная программа / зимняя ручная уборка / подсыпка, дороги и контейнерная площадка',
+  {
+    quote:
+      'Подсыпка территории противогололедным материалом ... кратность 30; объем 449; трудозатраты 29,2; Песок 2,7 т.; Очистка участков территорий от снега и наледи ... кратность 116; объем 8 178; трудозатраты 1264,8; Очистка контейнерной площадки ... кратность 212; объем 36,0; трудозатраты 457,9',
+  },
+);
+
+const cleaningWinterManualProductionInventorySource = detailSource(
+  'cleaning',
+  4,
+  'производственная программа / зимняя ручная уборка / СИЗ и инвентарь',
+  {
+    quote:
+      'Сапоги резиновые 0,9; Мыло туалетное 10,8; Износ оборудования, инструментов: Ледоруб-топор 0,2; Метла 4,5; Грабли 0,3; Лопата снегоуборочная 0,5; Лопата совковая 0,5; Тачка садовая 0,5; Ведро п\\э 12л 0,3',
+  },
+);
+
+const cleaningWinterManualSnowSweepingSource = detailSource(
+  'cleaning',
+  13,
+  'позиция 2.1 / подметание свежевыпавшего снега вручную',
+  {
+    quote:
+      'Подметание свежевыпавшего снега ... 48 706,24; Затраты труда Рабочий по уборке территории 73 664,15 48 706,24',
+  },
+);
+
+const cleaningWinterManualAntiIceSource = detailSource(
+  'cleaning',
+  14,
+  'позиция 2.2 / подсыпка противогололедным материалом',
+  {
+    quote:
+      'Подсыпка территории противогололедным материалом ... 24 232,30; Рабочий по уборке территории 29 664,15 19 383,10; Песок для посыпки дорог 3 т. 1800,00 4 849,20; ИТОГО ПО ПОЗИЦИИ 51 407,39',
+  },
+);
+
+const cleaningWinterManualRoadSnowIceSource = detailSource(
+  'cleaning',
+  15,
+  'позиция 2.3 / очистка участков территорий от снега и наледи',
+  {
+    quote:
+      'Рабочий по уборке территории 1265 664,15 840 033,57; страховые взносы 253 690,14; общеэксплуатационные расходы 588 023,50; прибыль 336 013,43; ИТОГО ПО ПОЗИЦИИ 2 017 760,64',
+  },
+);
+
+const cleaningWinterManualContainerSiteSource = detailSource(
+  'cleaning',
+  15,
+  'позиция 2.4 / очистка контейнерной площадки в холодный период',
+  {
+    quote:
+      'Очистка контейнерной площадки в холодный период - ежедневно ... 304 125,64; Рабочий по уборке территории 458 664,15 304 125,64; ИТОГО ПО ПОЗИЦИИ 730 509,79',
+  },
+);
+
+const cleaningWinterManualPpeSource = detailSource(
+  'cleaning',
+  16,
+  'позиция 2.5 / средства охраны труда для зимней ручной уборки',
+  {
+    quote:
+      'Костюм 4 950,00; Куртка 2 160,00; Жилет 1 080,00; Сапоги утепленные 1 260,00; Перчатки 1 260,00; Рукавицы 2 520,00; Сапоги резиновые 1 800,00; Мыло 1 252,80; ИТОГО 16 282,80',
+  },
+);
+
+const cleaningWinterManualInventorySource = detailSource(
+  'cleaning',
+  17,
+  'позиция 2.7 / износ оборудования и инструментов для зимней ручной уборки',
+  {
+    quote:
+      'Ледоруб-топор 126,00; Метла полипропиленовая 1 665,00; Грабли 148,50; Лопата снегоуборочная 1 125,00; Лопата совковая 465,30; Тачка садовая 1 125,00; Ведро п\\э 12л 59,40; ИТОГО 4 714,20',
+  },
+);
+
+const cleaningWinterManualTotalsSource = detailSource(
+  'cleaning',
+  17,
+  'итого по разделу зимней ручной уборки территории',
+  {
+    quote:
+      'Прямые затраты 1 238 094,75; страховые взносы 366 099,05; общеэксплуатационные расходы 848 573,98; прибыль 484 899,42; Итого 2 937 667,20; Основная зарплата 1 212 248,55; Материальные затраты 25 846,20',
+  },
+);
+
 const cleaningDocumentVatSource = detailSource(
   'cleaning',
   25,
@@ -185,6 +332,11 @@ const cleaningDerivedVatNeedsCheckReason =
   'cleaning.pdf показывает НДС 5% двумя несовпадающими способами: прямой НДС в локальном расчете и расчетный НДС от калькуляционных доходов; строковая доля выведена для сверки с estimate-2026.';
 const cleaningDerivedVatNeedsCheckRefs = detailSourceRefs(
   cleaningWinterMechanizedTotalsSource,
+  cleaningDocumentVatSource,
+  cleaningCalculationSource,
+);
+const cleaningWinterManualDerivedVatNeedsCheckRefs = detailSourceRefs(
+  cleaningWinterManualTotalsSource,
   cleaningDocumentVatSource,
   cleaningCalculationSource,
 );
@@ -222,6 +374,46 @@ const cleaningWinterMechanizedGrossResourceIds = [
   cleaningWinterMechanizedVatResourceId,
 ] as const;
 
+const cleaningWinterManualLaborResourceIds = [
+  cleaningWinterManualSnowSweepingWorkerResourceId,
+  cleaningWinterManualAntiIceWorkerResourceId,
+  cleaningWinterManualRoadSnowIceWorkerResourceId,
+  cleaningWinterManualContainerSiteWorkerResourceId,
+] as const;
+const cleaningWinterManualPpeResourceIds = [
+  cleaningWinterManualPpeCottonSuitResourceId,
+  cleaningWinterManualPpeInsulatedJacketResourceId,
+  cleaningWinterManualPpeSignalVestResourceId,
+  cleaningWinterManualPpeInsulatedBootsResourceId,
+  cleaningWinterManualPpePolymerGlovesResourceId,
+  cleaningWinterManualPpeInsulatedMittensResourceId,
+  cleaningWinterManualPpeRubberBootsResourceId,
+  cleaningWinterManualPpeSoapResourceId,
+] as const;
+const cleaningWinterManualInventoryResourceIds = [
+  cleaningWinterManualInventoryIceAxeResourceId,
+  cleaningWinterManualInventoryPolypropyleneBroomResourceId,
+  cleaningWinterManualInventoryRakeResourceId,
+  cleaningWinterManualInventorySnowShovelResourceId,
+  cleaningWinterManualInventoryScoopShovelResourceId,
+  cleaningWinterManualInventoryWheelbarrowResourceId,
+  cleaningWinterManualInventoryBucketResourceId,
+] as const;
+const cleaningWinterManualMaterialResourceIds = [
+  cleaningWinterManualSandResourceId,
+  ...cleaningWinterManualPpeResourceIds,
+  ...cleaningWinterManualInventoryResourceIds,
+] as const;
+const cleaningWinterManualGrossResourceIds = [
+  ...cleaningWinterManualLaborResourceIds,
+  ...cleaningWinterManualMaterialResourceIds,
+  cleaningWinterManualInsuranceResourceId,
+  cleaningWinterManualOverheadResourceId,
+  cleaningWinterManualProfitResourceId,
+  cleaningWinterManualUsnResourceId,
+  cleaningWinterManualVatResourceId,
+] as const;
+
 export const cleaningWorkItems = [
   detailWorkItem({
     id: 'cleaning-winter-mechanized',
@@ -238,6 +430,23 @@ export const cleaningWorkItems = [
       cleaningWinterMechanizedTotalsSource,
     ),
     note: 'Внутри агрегированной строки сохранены позиции 1.1-1.4: обычное подметание снега, подметание при обильном снегопаде, посыпка песком и СИЗ.',
+    ...detailStatus('verified'),
+  }),
+  detailWorkItem({
+    id: 'cleaning-winter-manual',
+    title: 'Зимняя ручная уборка территории',
+    estimate_row_id: 'cleaning-winter-manual',
+    service_ids: [
+      'winter-paths-playgrounds-clearing',
+      'winter-anti-ice-spreading',
+    ],
+    source_refs: detailSourceRefs(
+      cleaningWinterManualProductionSnowSource,
+      cleaningWinterManualProductionWorksSource,
+      cleaningWinterManualProductionInventorySource,
+      cleaningWinterManualTotalsSource,
+    ),
+    note: 'Внутри агрегированной строки сохранены позиции 2.1-2.7: ручное подметание снега, подсыпка песком, очистка участков дорог от снега и наледи, контейнерная площадка, СИЗ и инвентарь. В PDF нет позиции 2.6.',
     ...detailStatus('verified'),
   }),
 ] satisfies readonly EstimateDetailWorkItem[];
@@ -605,6 +814,427 @@ export const cleaningResources = [
       cleaningDerivedVatNeedsCheckRefs,
     ),
   }),
+  detailResource({
+    id: cleaningWinterManualSnowSweepingWorkerResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'labor',
+    title:
+      'Рабочий по уборке территории: подметание свежевыпавшего снега вручную',
+    cost_bucket: 'primary_salary',
+    quantity: detailQuantity(73.3, 'чел-час', {
+      raw: '73,3',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(664.15, { raw: '664,15' }),
+    total_rub: detailMoney(48_706.24, { raw: '48 706,24' }),
+    source_refs: detailSourceRefs(
+      cleaningWinterManualProductionSnowSource,
+      cleaningStaffSource,
+      cleaningWinterManualSnowSweepingSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualAntiIceWorkerResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'labor',
+    title:
+      'Рабочий по уборке территории: подсыпка противогололедным материалом',
+    cost_bucket: 'primary_salary',
+    quantity: detailQuantity(29.2, 'чел-час', {
+      raw: '29,2',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(664.15, { raw: '664,15' }),
+    total_rub: detailMoney(19_383.1, { raw: '19 383,10' }),
+    source_refs: detailSourceRefs(
+      cleaningWinterManualProductionWorksSource,
+      cleaningStaffSource,
+      cleaningWinterManualAntiIceSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualRoadSnowIceWorkerResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'labor',
+    title:
+      'Рабочий по уборке территории: очистка участков от снега и наледи при механизированной уборке',
+    cost_bucket: 'primary_salary',
+    quantity: detailQuantity(1_264.8, 'чел-час', {
+      raw: '1264,8',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(664.15, { raw: '664,15' }),
+    total_rub: detailMoney(840_033.57, { raw: '840 033,57' }),
+    source_refs: detailSourceRefs(
+      cleaningWinterManualProductionWorksSource,
+      cleaningStaffSource,
+      cleaningWinterManualRoadSnowIceSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualContainerSiteWorkerResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'labor',
+    title:
+      'Рабочий по уборке территории: очистка контейнерной площадки в холодный период',
+    cost_bucket: 'primary_salary',
+    quantity: detailQuantity(457.9, 'чел-час', {
+      raw: '457,9',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(664.15, { raw: '664,15' }),
+    total_rub: detailMoney(304_125.64, { raw: '304 125,64' }),
+    source_refs: detailSourceRefs(
+      cleaningWinterManualProductionWorksSource,
+      cleaningStaffSource,
+      cleaningWinterManualContainerSiteSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualSandResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'material',
+    title: 'Песок для посыпки дорог',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(2.7, 'т.', {
+      raw: '2,7',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(1_800, { raw: '1800,00' }),
+    total_rub: detailMoney(4_849.2, { raw: '4 849,20' }),
+    source_refs: detailSourceRefs(
+      cleaningWinterManualProductionWorksSource,
+      cleaningWinterManualAntiIceSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualPpeCottonSuitResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'material',
+    title: 'Костюм хлопчатобумажный',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(0.9, 'шт.', { raw: '0,9' }),
+    unit_price_rub: detailMoney(5_500, { raw: '5500,00' }),
+    total_rub: detailMoney(4_950, { raw: '4 950,00' }),
+    source_refs: detailSourceRefs(cleaningWinterManualPpeSource),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualPpeInsulatedJacketResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'material',
+    title: 'Куртка на утепляющей прокладке',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(0.4, 'шт.', {
+      raw: '0,4',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(6_000, { raw: '6000,00' }),
+    total_rub: detailMoney(2_160, { raw: '2 160,00' }),
+    source_refs: detailSourceRefs(cleaningWinterManualPpeSource),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualPpeSignalVestResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'material',
+    title: 'Жилет сигнальный',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(0.9, 'шт.', { raw: '0,9' }),
+    unit_price_rub: detailMoney(1_200, { raw: '1200,00' }),
+    total_rub: detailMoney(1_080, { raw: '1 080,00' }),
+    source_refs: detailSourceRefs(cleaningWinterManualPpeSource),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualPpeInsulatedBootsResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'material',
+    title: 'Сапоги утепленные',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(0.4, 'шт.', {
+      raw: '0,4',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(3_500, { raw: '3500,00' }),
+    total_rub: detailMoney(1_260, { raw: '1 260,00' }),
+    source_refs: detailSourceRefs(cleaningWinterManualPpeSource),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualPpePolymerGlovesResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'material',
+    title: 'Перчатки с полимерным покрытием',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(3.6, 'шт.', { raw: '3,6' }),
+    unit_price_rub: detailMoney(350, { raw: '350,00' }),
+    total_rub: detailMoney(1_260, { raw: '1 260,00' }),
+    source_refs: detailSourceRefs(cleaningWinterManualPpeSource),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualPpeInsulatedMittensResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'material',
+    title: 'Рукавицы утепленные',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(3.6, 'шт.', { raw: '3,6' }),
+    unit_price_rub: detailMoney(700, { raw: '700,00' }),
+    total_rub: detailMoney(2_520, { raw: '2 520,00' }),
+    source_refs: detailSourceRefs(cleaningWinterManualPpeSource),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualPpeRubberBootsResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'material',
+    title: 'Сапоги резиновые',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(0.9, 'шт.', { raw: '0,9' }),
+    unit_price_rub: detailMoney(2_000, { raw: '2000,00' }),
+    total_rub: detailMoney(1_800, { raw: '1 800,00' }),
+    source_refs: detailSourceRefs(
+      cleaningWinterManualProductionInventorySource,
+      cleaningWinterManualPpeSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualPpeSoapResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'material',
+    title: 'Мыло туалетное',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(10.8, 'шт.', { raw: '10,8' }),
+    unit_price_rub: detailMoney(116, { raw: '116,00' }),
+    total_rub: detailMoney(1_252.8, { raw: '1 252,80' }),
+    source_refs: detailSourceRefs(
+      cleaningWinterManualProductionInventorySource,
+      cleaningWinterManualPpeSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualInventoryIceAxeResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'material',
+    title: 'Ледоруб-топор с металлической ручкой',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(0.2, 'шт.', {
+      raw: '0,2',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(700, { raw: '700,00' }),
+    total_rub: detailMoney(126, { raw: '126,00' }),
+    source_refs: detailSourceRefs(
+      cleaningWinterManualProductionInventorySource,
+      cleaningWinterManualInventorySource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualInventoryPolypropyleneBroomResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'material',
+    title: 'Метла полипропиленовая с черенком',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(4.5, 'шт.', { raw: '4,5' }),
+    unit_price_rub: detailMoney(370, { raw: '370,00' }),
+    total_rub: detailMoney(1_665, { raw: '1 665,00' }),
+    source_refs: detailSourceRefs(
+      cleaningWinterManualProductionInventorySource,
+      cleaningWinterManualInventorySource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualInventoryRakeResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'material',
+    title: 'Грабли с черенком',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(0.3, 'шт.', {
+      raw: '0,3',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(500, { raw: '500,00' }),
+    total_rub: detailMoney(148.5, { raw: '148,50' }),
+    source_refs: detailSourceRefs(
+      cleaningWinterManualProductionInventorySource,
+      cleaningWinterManualInventorySource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualInventorySnowShovelResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'material',
+    title: 'Лопата снегоуборочная оцинкованная',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(0.5, 'шт.', {
+      raw: '0,5',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(2_500, { raw: '2500,00' }),
+    total_rub: detailMoney(1_125, { raw: '1 125,00' }),
+    source_refs: detailSourceRefs(
+      cleaningWinterManualProductionInventorySource,
+      cleaningWinterManualInventorySource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualInventoryScoopShovelResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'material',
+    title: 'Лопата совковая',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(0.5, 'шт.', {
+      raw: '0,5',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(1_034, { raw: '1034,00' }),
+    total_rub: detailMoney(465.3, { raw: '465,30' }),
+    source_refs: detailSourceRefs(
+      cleaningWinterManualProductionInventorySource,
+      cleaningWinterManualInventorySource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualInventoryWheelbarrowResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'material',
+    title: 'Тачка садовая',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(0.5, 'шт.', {
+      raw: '0,5',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(2_500, { raw: '2500,00' }),
+    total_rub: detailMoney(1_125, { raw: '1 125,00' }),
+    source_refs: detailSourceRefs(
+      cleaningWinterManualProductionInventorySource,
+      cleaningWinterManualInventorySource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualInventoryBucketResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'material',
+    title: 'Ведро п\\э 12 л',
+    cost_bucket: 'materials',
+    quantity: detailQuantity(0.3, 'шт.', {
+      raw: '0,3',
+      note: cleaningRoundedQuantityNote,
+    }),
+    unit_price_rub: detailMoney(200, { raw: '200,00' }),
+    total_rub: detailMoney(59.4, { raw: '59,40' }),
+    source_refs: detailSourceRefs(
+      cleaningWinterManualProductionInventorySource,
+      cleaningWinterManualInventorySource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualInsuranceResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'other_cost',
+    title: 'Страховые взносы по зимней ручной уборке',
+    cost_bucket: 'insurance',
+    total_rub: detailMoney(366_099.05, { raw: '366 099,05' }),
+    source_refs: detailSourceRefs(cleaningWinterManualTotalsSource),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualOverheadResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'other_cost',
+    title: 'Общеэксплуатационные расходы по зимней ручной уборке',
+    cost_bucket: 'overhead',
+    total_rub: detailMoney(848_573.98, { raw: '848 573,98' }),
+    source_refs: detailSourceRefs(cleaningWinterManualTotalsSource),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualProfitResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'other_cost',
+    title: 'Прибыль по зимней ручной уборке',
+    cost_bucket: 'profit',
+    total_rub: detailMoney(484_899.42, { raw: '484 899,42' }),
+    source_refs: detailSourceRefs(cleaningWinterManualTotalsSource),
+    ...detailStatus('verified'),
+  }),
+  detailResource({
+    id: cleaningWinterManualUsnResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'other_cost',
+    title: 'Расчетная доля УСН по зимней ручной уборке',
+    cost_bucket: 'usn',
+    total_rub: detailMoney(51_588.99, {
+      raw: '2 989 256,19 - 2 937 667,20',
+      note: 'выведено из строки estimate-2026 и итога раздела cleaning.pdf',
+    }),
+    source_refs: detailSourceRefs(
+      cleaningWinterManualTotalsSource,
+      cleaningCalculationSource,
+    ),
+    note: 'В cleaning.pdf УСН показан только общей суммой по услуге, без распределения по строкам.',
+    ...detailStatus('derived'),
+  }),
+  detailResource({
+    id: cleaningWinterManualVatResourceId,
+    work_item_id: 'cleaning-winter-manual',
+    estimate_row_id: 'cleaning-winter-manual',
+    kind: 'other_cost',
+    title: 'Расчетный НДС 5% по зимней ручной уборке',
+    cost_bucket: 'vat',
+    total_rub: detailMoney(149_462.81, {
+      raw: '3 138 719 - 2 989 256,19',
+      note: 'выведено из строки estimate-2026',
+    }),
+    source_refs: detailSourceRefs(
+      cleaningDocumentVatSource,
+      cleaningCalculationSource,
+    ),
+    note: cleaningVatNeedsCheckNote,
+    ...detailNeedsCheckStatus(
+      cleaningDerivedVatNeedsCheckReason,
+      cleaningWinterManualDerivedVatNeedsCheckRefs,
+    ),
+  }),
 ] satisfies readonly EstimateDetailResource[];
 
 export const cleaningControlTotals = [
@@ -624,7 +1254,9 @@ export const cleaningControlTotals = [
     source_refs: detailSourceRefs(
       cleaningWinterMechanizedSnow2cmSource,
       cleaningWinterMechanizedHeavySnowSource,
+      cleaningWinterMechanizedHeavySnowTotalSource,
       cleaningWinterMechanizedSandSource,
+      cleaningWinterMechanizedSandTotalSource,
       cleaningWinterMechanizedTotalsSource,
     ),
     ...detailStatus('verified'),
@@ -642,7 +1274,9 @@ export const cleaningControlTotals = [
     source_refs: detailSourceRefs(
       cleaningWinterMechanizedSnow2cmSource,
       cleaningWinterMechanizedHeavySnowSource,
+      cleaningWinterMechanizedHeavySnowTotalSource,
       cleaningWinterMechanizedSandSource,
+      cleaningWinterMechanizedSandTotalSource,
       cleaningWinterMechanizedTotalsSource,
     ),
     ...detailStatus('verified'),
@@ -659,6 +1293,7 @@ export const cleaningControlTotals = [
     resource_ids: cleaningWinterMechanizedMaterialResourceIds,
     source_refs: detailSourceRefs(
       cleaningWinterMechanizedSandSource,
+      cleaningWinterMechanizedSandTotalSource,
       cleaningWinterMechanizedPpeSource,
       cleaningWinterMechanizedTotalsSource,
     ),
@@ -765,6 +1400,146 @@ export const cleaningControlTotals = [
     ...detailNeedsCheckStatus(
       cleaningDerivedVatNeedsCheckReason,
       cleaningDerivedVatNeedsCheckRefs,
+    ),
+  }),
+  detailControlTotal({
+    id: 'cleaning-winter-manual-primary-salary',
+    estimate_row_id: 'cleaning-winter-manual',
+    cost_bucket: 'primary_salary',
+    source_total_rub: detailMoney(1_212_248.55, { raw: '1 212 248,55' }),
+    detail_total_rub: detailMoney(1_212_248.55, { raw: '1 212 248,55' }),
+    aggregate_total_rub: detailMoney(1_212_248.55),
+    delta_rub: 0,
+    tolerance_rub: 0.01,
+    resource_ids: cleaningWinterManualLaborResourceIds,
+    source_refs: detailSourceRefs(
+      cleaningWinterManualSnowSweepingSource,
+      cleaningWinterManualAntiIceSource,
+      cleaningWinterManualRoadSnowIceSource,
+      cleaningWinterManualContainerSiteSource,
+      cleaningWinterManualTotalsSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailControlTotal({
+    id: 'cleaning-winter-manual-materials',
+    estimate_row_id: 'cleaning-winter-manual',
+    cost_bucket: 'materials',
+    source_total_rub: detailMoney(25_846.2, { raw: '25 846,20' }),
+    detail_total_rub: detailMoney(25_846.2, { raw: '25 846,20' }),
+    aggregate_total_rub: detailMoney(25_846.2),
+    delta_rub: 0,
+    tolerance_rub: 0.01,
+    resource_ids: cleaningWinterManualMaterialResourceIds,
+    source_refs: detailSourceRefs(
+      cleaningWinterManualAntiIceSource,
+      cleaningWinterManualPpeSource,
+      cleaningWinterManualInventorySource,
+      cleaningWinterManualTotalsSource,
+    ),
+    ...detailStatus('verified'),
+  }),
+  detailControlTotal({
+    id: 'cleaning-winter-manual-insurance',
+    estimate_row_id: 'cleaning-winter-manual',
+    cost_bucket: 'insurance',
+    source_total_rub: detailMoney(366_099.05, { raw: '366 099,05' }),
+    detail_total_rub: detailMoney(366_099.05, { raw: '366 099,05' }),
+    aggregate_total_rub: detailMoney(366_099.05),
+    delta_rub: 0,
+    tolerance_rub: 0.01,
+    resource_ids: [cleaningWinterManualInsuranceResourceId],
+    source_refs: detailSourceRefs(cleaningWinterManualTotalsSource),
+    ...detailStatus('verified'),
+  }),
+  detailControlTotal({
+    id: 'cleaning-winter-manual-overhead',
+    estimate_row_id: 'cleaning-winter-manual',
+    cost_bucket: 'overhead',
+    source_total_rub: detailMoney(848_573.98, { raw: '848 573,98' }),
+    detail_total_rub: detailMoney(848_573.98, { raw: '848 573,98' }),
+    aggregate_total_rub: detailMoney(848_573.98),
+    delta_rub: 0,
+    tolerance_rub: 0.01,
+    resource_ids: [cleaningWinterManualOverheadResourceId],
+    source_refs: detailSourceRefs(cleaningWinterManualTotalsSource),
+    ...detailStatus('verified'),
+  }),
+  detailControlTotal({
+    id: 'cleaning-winter-manual-profit',
+    estimate_row_id: 'cleaning-winter-manual',
+    cost_bucket: 'profit',
+    source_total_rub: detailMoney(484_899.42, { raw: '484 899,42' }),
+    detail_total_rub: detailMoney(484_899.42, { raw: '484 899,42' }),
+    aggregate_total_rub: detailMoney(484_899.42),
+    delta_rub: 0,
+    tolerance_rub: 0.01,
+    resource_ids: [cleaningWinterManualProfitResourceId],
+    source_refs: detailSourceRefs(cleaningWinterManualTotalsSource),
+    ...detailStatus('verified'),
+  }),
+  detailControlTotal({
+    id: 'cleaning-winter-manual-usn',
+    estimate_row_id: 'cleaning-winter-manual',
+    cost_bucket: 'usn',
+    source_total_rub: detailMoney(51_588.99, {
+      raw: '2 989 256,19 - 2 937 667,20',
+    }),
+    detail_total_rub: detailMoney(51_588.99),
+    aggregate_total_rub: detailMoney(51_588.99),
+    delta_rub: 0,
+    tolerance_rub: 0.01,
+    resource_ids: [cleaningWinterManualUsnResourceId],
+    source_refs: detailSourceRefs(
+      cleaningWinterManualTotalsSource,
+      cleaningCalculationSource,
+    ),
+    note: 'УСН выведен для строки, потому что cleaning.pdf показывает УСН только общей суммой по услуге.',
+    ...detailStatus('derived'),
+  }),
+  detailControlTotal({
+    id: 'cleaning-winter-manual-vat',
+    estimate_row_id: 'cleaning-winter-manual',
+    cost_bucket: 'vat',
+    source_total_rub: detailMoney(149_462.81, {
+      raw: '3 138 719 - 2 989 256,19',
+    }),
+    detail_total_rub: detailMoney(149_462.81),
+    aggregate_total_rub: detailMoney(149_462.81),
+    delta_rub: 0,
+    tolerance_rub: 0.01,
+    resource_ids: [cleaningWinterManualVatResourceId],
+    source_refs: detailSourceRefs(
+      cleaningDocumentVatSource,
+      cleaningCalculationSource,
+    ),
+    note: cleaningVatNeedsCheckNote,
+    ...detailNeedsCheckStatus(
+      cleaningDerivedVatNeedsCheckReason,
+      cleaningWinterManualDerivedVatNeedsCheckRefs,
+    ),
+  }),
+  detailControlTotal({
+    id: 'cleaning-winter-manual-gross',
+    estimate_row_id: 'cleaning-winter-manual',
+    cost_bucket: 'gross',
+    source_total_rub: detailMoney(3_138_719, {
+      raw: '2 937 667,20 + 51 588,99 + 149 462,81',
+    }),
+    detail_total_rub: detailMoney(3_138_719),
+    aggregate_total_rub: detailMoney(3_138_719),
+    delta_rub: 0,
+    tolerance_rub: 0.01,
+    resource_ids: cleaningWinterManualGrossResourceIds,
+    source_refs: detailSourceRefs(
+      cleaningWinterManualTotalsSource,
+      cleaningDocumentVatSource,
+      cleaningCalculationSource,
+    ),
+    note: cleaningVatNeedsCheckNote,
+    ...detailNeedsCheckStatus(
+      cleaningDerivedVatNeedsCheckReason,
+      cleaningWinterManualDerivedVatNeedsCheckRefs,
     ),
   }),
 ] satisfies readonly EstimateDetailControlTotal[];
