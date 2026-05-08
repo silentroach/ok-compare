@@ -156,12 +156,20 @@ const tableHeaderCellClass =
                 </p>
               </div>
 
-              <div class="-mx-5 overflow-x-auto border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0 lg:overflow-visible">
+              <div
+                class="reglament-table-shell -mx-5 overflow-x-auto border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0 lg:overflow-visible"
+                data-reglament-table-shell
+              >
                 <table class="min-w-[58rem] w-full border-separate border-spacing-0 text-left text-sm">
                   <caption class="sr-only">{group.title}</caption>
-                  <thead class="bg-muted text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                  <thead class="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
                     <tr>
-                      <th class:list={[tableHeaderCellClass, 'w-[34%]']}>
+                      <th
+                        class:list={[
+                          tableHeaderCellClass,
+                          'w-[34%] sm:rounded-tl-xl',
+                        ]}
+                      >
                         Услуга
                       </th>
                       <th class:list={[tableHeaderCellClass, 'w-[16%]']}>
@@ -170,7 +178,12 @@ const tableHeaderCellClass =
                       <th class:list={[tableHeaderCellClass, 'w-[18%]']}>
                         Статус
                       </th>
-                      <th class:list={[tableHeaderCellClass, 'w-[32%]']}>
+                      <th
+                        class:list={[
+                          tableHeaderCellClass,
+                          'w-[32%] sm:rounded-tr-xl',
+                        ]}
+                      >
                         Сопоставление
                       </th>
                     </tr>
@@ -244,4 +257,14 @@ const tableHeaderCellClass =
       </div>
     </section>
   </main>
+
+  <script>
+    import { hydrateReglamentStickyTableHeaders } from '@/lib/reglament/sticky-table-headers';
+
+    const hydrate = () => hydrateReglamentStickyTableHeaders();
+
+    hydrate();
+    document.addEventListener('astro:after-swap', hydrate);
+    document.addEventListener('astro:page-load', hydrate);
+  </script>
 </BaseLayout>

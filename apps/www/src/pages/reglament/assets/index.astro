@@ -159,12 +159,20 @@ const tableHeaderCellRightClass = `${tableHeaderCellClass} text-right`;
                 </p>
               </div>
 
-              <div class="-mx-5 overflow-x-auto border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0 lg:overflow-visible">
+              <div
+                class="reglament-table-shell -mx-5 overflow-x-auto border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0 lg:overflow-visible"
+                data-reglament-table-shell
+              >
                 <table class="min-w-[58rem] w-full border-separate border-spacing-0 text-left text-sm">
                   <caption class="sr-only">{group.title}</caption>
-                  <thead class="bg-muted text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                  <thead class="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
                     <tr>
-                      <th class:list={[tableHeaderCellClass, 'w-[24%]']}>
+                      <th
+                        class:list={[
+                          tableHeaderCellClass,
+                          'w-[24%] sm:rounded-tl-xl',
+                        ]}
+                      >
                         Объект
                       </th>
                       <th class={tableHeaderCellClass}>Ед. изм.</th>
@@ -182,7 +190,14 @@ const tableHeaderCellRightClass = `${tableHeaderCellClass} text-right`;
                           </th>
                         );
                       })}
-                      <th class={tableHeaderCellRightClass}>Всего</th>
+                      <th
+                        class:list={[
+                          tableHeaderCellRightClass,
+                          'sm:rounded-tr-xl',
+                        ]}
+                      >
+                        Всего
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -230,4 +245,14 @@ const tableHeaderCellRightClass = `${tableHeaderCellClass} text-right`;
       </div>
     </section>
   </main>
+
+  <script>
+    import { hydrateReglamentStickyTableHeaders } from '@/lib/reglament/sticky-table-headers';
+
+    const hydrate = () => hydrateReglamentStickyTableHeaders();
+
+    hydrate();
+    document.addEventListener('astro:after-swap', hydrate);
+    document.addEventListener('astro:page-load', hydrate);
+  </script>
 </BaseLayout>

@@ -53,6 +53,7 @@ type ReglamentPayload = ReturnType<typeof buildReglamentPayload>;
 type PayloadRow = ReglamentPayload['sections'][number]['rows'][number];
 type DisplayValue =
   ReglamentPayload['sections'][number]['rows'][number]['baseline']['base'];
+type BasicDisplayFieldKey = 'base' | 'frequency' | 'price';
 type BasicNumberFieldKey = Extract<
   EditableFieldKey,
   'volume' | 'frequency' | 'rate'
@@ -73,10 +74,47 @@ interface NumberControl<Key extends EditableFieldKey = BasicNumberFieldKey> {
   readonly step: number;
 }
 
-const formatDisplayValue = (value: DisplayValue): string =>
-  value
-    ? `${formatReglamentNumber(value.value)} ${value.unit}${value.label ? `, ${value.label}` : ''}`
-    : 'по строке сметы';
+interface MissingFieldHint {
+  readonly label: string;
+  readonly reason: string;
+  readonly detail?: string;
+  readonly tooltipId: string;
+}
+
+const formatDisplayValue = (value: NonNullable<DisplayValue>): string =>
+  `${formatReglamentNumber(value.value)} ${value.unit}${value.label ? `, ${value.label}` : ''}`;
+const missingFieldHint = (
+  row: PayloadRow,
+  key: BasicDisplayFieldKey,
+): MissingFieldHint => {
+  const tooltipId = `reglament-missing-${key}-${row.id}`;
+
+  if (key === 'price') {
+    return {
+      label: 'нет ставки',
+      reason:
+        'В исходной смете нет отдельной цены за единицу. Позиция хранится как официальная годовая сумма; менять ее можно в деталях через состав расчета.',
+      detail: formatReglamentAnnualMoney(row.baseline.annual_gross),
+      tooltipId,
+    };
+  }
+
+  if (key === 'frequency') {
+    return {
+      label: 'нет кратности',
+      reason:
+        'В исходной смете нет одной периодичности для всей строки. Строка считается по годовому расчету или составу работ.',
+      tooltipId,
+    };
+  }
+
+  return {
+    label: 'нет единой базы',
+    reason:
+      'В исходной смете эта позиция собрана из нескольких работ или объектов, поэтому нет одного объема, который можно безопасно менять как множитель.',
+    tooltipId,
+  };
+};
 const breakdownFields = [
   { key: 'primary_salary', label: 'Основная зарплата' },
   { key: 'machinist_salary', label: 'Зарплата машинистов' },
@@ -270,6 +308,11 @@ const viewSections = htmlSections.map((section) => ({
         breakdown: inlineBreakdownControls(expert),
         expert: extraExpertControls(expert),
       },
+      missing: {
+        base: missingFieldHint(row, 'base'),
+        frequency: missingFieldHint(row, 'frequency'),
+        rate: missingFieldHint(row, 'price'),
+      },
     };
   }),
 }));
@@ -283,7 +326,7 @@ const inputUnitClass =
   'flex shrink-0 items-center border-l border-border bg-muted px-2 text-[0.6875rem] font-semibold leading-none text-muted-foreground';
 const tableTextClass = 'block pt-[0.4375rem] leading-snug';
 const tableHeaderCellClass =
-  'sticky top-12 z-10 border-b border-border bg-muted px-4 py-2.5 align-bottom';
+  'sticky top-0 z-10 border-b border-border bg-muted px-4 py-2.5 align-bottom lg:top-[calc(2.875rem-1px)]';
 const tableHeaderCellRightClass = `${tableHeaderCellClass} text-right`;
 const formatInputUnit = (unit: string): string =>
   unit === '₽/год' ? '₽' : unit;
@@ -510,12 +553,20 @@ const formatInputUnit = (unit: string): string =>
                 </div>
               </div>
 
-              <div class="-mx-5 overflow-x-auto border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0 lg:overflow-visible">
+              <div
+                class="reglament-table-shell -mx-5 overflow-x-auto border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0 lg:overflow-visible"
+                data-reglament-table-shell
+              >
                 <table class="min-w-[48rem] w-full border-separate border-spacing-0 text-left text-sm">
                   <caption class="sr-only">{section.title}</caption>
-                  <thead class="bg-muted text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                  <thead class="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
                     <tr>
-                      <th class:list={[tableHeaderCellClass, 'w-[32%]']}>
+                      <th
+                        class:list={[
+                          tableHeaderCellClass,
+                          'w-[32%] sm:rounded-tl-xl',
+                        ]}
+                      >
                         Работа
                       </th>
                       <th class:list={[tableHeaderCellClass, 'w-[18%]']}>
@@ -527,7 +578,12 @@ const formatInputUnit = (unit: string): string =>
                       <th class:list={[tableHeaderCellClass, 'w-[14%]']}>
                         Цена/ставка
                       </th>
-                      <th class:list={[tableHeaderCellRightClass, 'w-[22%]']}>
+                      <th
+                        class:list={[
+                          tableHeaderCellRightClass,
+                          'w-[22%] sm:rounded-tr-xl',
+                        ]}
+                      >
                         Вклад в тариф
                       </th>
                     </tr>
@@ -593,9 +649,36 @@ const formatInputUnit = (unit: string): string =>
                                   )}
                                 </span>
                               </label>
-                            ) : (
+                            ) : row.baseline.base ? (
                               <span class={tableTextClass}>
                                 {formatDisplayValue(row.baseline.base)}
+                              </span>
+                            ) : (
+                              <span class={`${tableTextClass} space-y-1`}>
+                                <span class="inline-flex items-center gap-1.5">
+                                  <span class="font-semibold">
+                                    {row.missing.base.label}
+                                  </span>
+                                  <span class="reglament-missing-help">
+                                    <button
+                                      class="reglament-missing-help-button"
+                                      type="button"
+                                      aria-label="Почему здесь нет поля ввода"
+                                      aria-describedby={
+                                        row.missing.base.tooltipId
+                                      }
+                                    >
+                                      ?
+                                    </button>
+                                    <span
+                                      id={row.missing.base.tooltipId}
+                                      class="reglament-missing-tooltip"
+                                      role="tooltip"
+                                    >
+                                      {row.missing.base.reason}
+                                    </span>
+                                  </span>
+                                </span>
                               </span>
                             )}
                           </td>
@@ -635,9 +718,36 @@ const formatInputUnit = (unit: string): string =>
                                   )}
                                 </span>
                               </label>
-                            ) : (
+                            ) : row.baseline.frequency ? (
                               <span class={tableTextClass}>
                                 {formatDisplayValue(row.baseline.frequency)}
+                              </span>
+                            ) : (
+                              <span class={`${tableTextClass} space-y-1`}>
+                                <span class="inline-flex items-center gap-1.5">
+                                  <span class="font-semibold">
+                                    {row.missing.frequency.label}
+                                  </span>
+                                  <span class="reglament-missing-help">
+                                    <button
+                                      class="reglament-missing-help-button"
+                                      type="button"
+                                      aria-label="Почему здесь нет поля ввода"
+                                      aria-describedby={
+                                        row.missing.frequency.tooltipId
+                                      }
+                                    >
+                                      ?
+                                    </button>
+                                    <span
+                                      id={row.missing.frequency.tooltipId}
+                                      class="reglament-missing-tooltip"
+                                      role="tooltip"
+                                    >
+                                      {row.missing.frequency.reason}
+                                    </span>
+                                  </span>
+                                </span>
                               </span>
                             )}
                           </td>
@@ -669,9 +779,41 @@ const formatInputUnit = (unit: string): string =>
                                   )}
                                 </span>
                               </label>
-                            ) : (
+                            ) : row.baseline.price ? (
                               <span class={tableTextClass}>
                                 {formatDisplayValue(row.baseline.price)}
+                              </span>
+                            ) : (
+                              <span class={`${tableTextClass} space-y-1`}>
+                                <span class="inline-flex items-center gap-1.5">
+                                  <span class="font-semibold">
+                                    {row.missing.rate.label}
+                                  </span>
+                                  <span class="reglament-missing-help">
+                                    <button
+                                      class="reglament-missing-help-button"
+                                      type="button"
+                                      aria-label="Почему здесь нет поля ввода"
+                                      aria-describedby={
+                                        row.missing.rate.tooltipId
+                                      }
+                                    >
+                                      ?
+                                    </button>
+                                    <span
+                                      id={row.missing.rate.tooltipId}
+                                      class="reglament-missing-tooltip"
+                                      role="tooltip"
+                                    >
+                                      {row.missing.rate.reason}
+                                    </span>
+                                  </span>
+                                </span>
+                                {row.missing.rate.detail && (
+                                  <span class="block text-xs font-semibold text-foreground">
+                                    {row.missing.rate.detail}
+                                  </span>
+                                )}
                               </span>
                             )}
                           </td>
@@ -716,19 +858,6 @@ const formatInputUnit = (unit: string): string =>
                                 <div class="grid gap-3 sm:grid-cols-2">
                                   <div class="space-y-1">
                                     <p class="font-bold uppercase tracking-[0.06em] text-muted-foreground">
-                                      Сумма за год
-                                    </p>
-                                    <p
-                                      class="font-semibold text-foreground"
-                                      data-reglament-row-annual={row.id}
-                                    >
-                                      {formatReglamentAnnualMoney(
-                                        row.computed.annual_gross,
-                                      )}
-                                    </p>
-                                  </div>
-                                  <div class="space-y-1">
-                                    <p class="font-bold uppercase tracking-[0.06em] text-muted-foreground">
                                       Источники
                                     </p>
                                     <ul class="space-y-1">
@@ -749,6 +878,19 @@ const formatInputUnit = (unit: string): string =>
                                         </li>
                                       ))}
                                     </ul>
+                                  </div>
+                                  <div class="space-y-1">
+                                    <p class="font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                                      Сумма за год
+                                    </p>
+                                    <p
+                                      class="font-semibold text-foreground"
+                                      data-reglament-row-annual={row.id}
+                                    >
+                                      {formatReglamentAnnualMoney(
+                                        row.computed.annual_gross,
+                                      )}
+                                    </p>
                                   </div>
                                 </div>
 
@@ -916,6 +1058,66 @@ const formatInputUnit = (unit: string): string =>
       transform: rotate(90deg);
     }
 
+    .reglament-missing-help {
+      position: relative;
+      display: inline-flex;
+      vertical-align: middle;
+    }
+
+    .reglament-missing-help-button {
+      display: inline-flex;
+      height: 1rem;
+      width: 1rem;
+      cursor: help;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      border: 1px solid var(--color-border-strong);
+      background: var(--color-surface);
+      color: var(--color-text-muted);
+      font-size: 0.6875rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .reglament-missing-help-button:focus-visible {
+      outline: 2px solid
+        color-mix(in oklch, var(--color-primary), transparent 70%);
+      outline-offset: 2px;
+    }
+
+    .reglament-missing-tooltip {
+      position: absolute;
+      left: 0;
+      top: calc(100% + 0.35rem);
+      z-index: 30;
+      width: min(18rem, calc(100vw - 2rem));
+      border-radius: 0.625rem;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      box-shadow: 0 0.75rem 1.6rem oklch(27% 0.05 142 / 0.12);
+      color: var(--color-foreground);
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 1.45;
+      opacity: 0;
+      padding: 0.625rem 0.75rem;
+      pointer-events: none;
+      transform: translateY(-0.2rem);
+      transition:
+        opacity 120ms ease,
+        transform 120ms ease,
+        visibility 120ms ease;
+      visibility: hidden;
+    }
+
+    .reglament-missing-help:hover .reglament-missing-tooltip,
+    .reglament-missing-help:focus-within .reglament-missing-tooltip {
+      opacity: 1;
+      transform: translateY(0);
+      visibility: visible;
+    }
+
     [data-reglament-delta-tone='negative'] {
       color: var(--color-success);
     }
@@ -931,8 +1133,12 @@ const formatInputUnit = (unit: string): string =>
 
   <script>
     import { hydrateReglamentCalculators } from '@/lib/reglament/calculator-controller';
+    import { hydrateReglamentStickyTableHeaders } from '@/lib/reglament/sticky-table-headers';
 
-    const hydrate = () => hydrateReglamentCalculators();
+    const hydrate = () => {
+      hydrateReglamentCalculators();
+      hydrateReglamentStickyTableHeaders();
+    };
 
     hydrate();
     document.addEventListener('astro:after-swap', hydrate);

@@ -525,6 +525,7 @@ export const estimate2026 = {
           coefficient_policy: 'fot',
           annual_gross: 438_041,
           tariff_per_sotka_month: 1.79,
+          base: { value: 129_606, unit: 'м²', label: 'площадь леса' },
           frequency: { value: 22, unit: 'раз/год' },
           breakdown: {
             primary_salary: 172_154.56,
@@ -833,6 +834,7 @@ export const estimate2026 = {
           coefficient_policy: 'fot',
           annual_gross: 869_527,
           tariff_per_sotka_month: 3.54,
+          base: { value: 1_416.8, unit: 'м²', label: 'опоры освещения' },
           frequency: { value: 0.2, unit: 'раз/год' },
           breakdown: {
             primary_salary: 222_066.98,
