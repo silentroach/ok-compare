@@ -10,5 +10,10 @@ export {
   formatPercentage,
   formatTariff,
 } from './currency';
-export { padNumber } from './number';
+export {
+  formatNumberRu,
+  formatNumberUnitRu,
+  padNumber,
+  parseNumberInputRu,
+} from './number';
 export { pluralizeRu } from './plural';

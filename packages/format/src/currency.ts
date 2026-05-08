@@ -1,9 +1,8 @@
+import { formatNumberRu } from './number';
+
 function rub(value: number, suffix: string): string {
   const rounded = Math.round(value);
-  const text = rounded.toLocaleString('ru-RU', {
-    style: 'decimal',
-    maximumFractionDigits: 0,
-  });
+  const text = formatNumberRu(rounded, { maximumFractionDigits: 0 });
 
   return `${text} ₽${suffix}`;
 }
