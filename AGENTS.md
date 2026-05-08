@@ -6,19 +6,17 @@
 
 ```text
 apps/
-  compare/   # compare-приложение: section build для /815/compare
-  www/       # корневой сайт kpshelkovo.online
+  www/       # единое Astro-приложение kpshelkovo.online, включая /815/compare
 packages/    # shared утилиты и UI
 docs/        # документация и дизайн-гайды
 ops/         # nginx и deploy-инфраструктура
-scripts/     # compose/build helper scripts
+scripts/     # build/deploy helper scripts
 ```
 
 ## Локальные инструкции
 
-- Перед работой в `apps/compare` обязательно читать `apps/compare/AGENTS.md`.
 - Перед работой в `apps/www` обязательно читать `apps/www/AGENTS.md`.
-- Если меняются shared стили, примитивы ссылок или URL-утилиты, проверить оба app-а.
+- Если меняются shared стили, примитивы ссылок или URL-утилиты, проверить все затронутые разделы в `apps/www`.
 - Не парься с форматированием кода - prettier все отформатирует автоматом при коммите
 
 ## Skills
@@ -49,14 +47,13 @@ scripts/     # compose/build helper scripts
 # dev
 pnpm dev
 pnpm dev:www
-pnpm dev:compare
 
 # typecheck / tests
 pnpm typecheck
 pnpm test
 
 # builds
-pnpm build          # dist/www + compare section
+pnpm build          # dist/www
 pnpm build:main     # dist/www
 ```
 
@@ -68,8 +65,7 @@ pnpm build:main     # dist/www
 ## Local dev ports
 
 - `pnpm dev` поднимает интегрированный dev-стек на `http://localhost:4321`.
-- compare в этом режиме живет за прокси по `http://localhost:4321/815/compare`.
-- внутренний compare dev-server слушает `http://localhost:4322/815/compare`.
+- compare живет в том же Astro-приложении по `http://localhost:4321/815/compare`.
 
 ## Правила Typescript
 
@@ -85,12 +81,12 @@ pnpm build:main     # dist/www
 
 ## Правила workspace
 
-- Не дублировать compare-логику в `apps/www`; compare должен приезжать туда как отдельный section build.
+- Compare-логика живет в `apps/www/src/compare`, а маршруты — в `apps/www/src/pages/815/compare`.
 - Общие стили и UI-примитивы выносить в `packages/ui`.
 - Общие URL/build helper-утилиты выносить в `packages/url` или `scripts/`.
 - При изменениях deploy-потока синхронно обновлять `.github/workflows/*` и `ops/nginx/*`.
 - Если добавляется внешний ресурс или запрос вовне (`fetch`/`connect`, iframe, script, image, font, style, analytics, карты и т.п.), синхронно проверить и при необходимости обновить CSP в `ops/nginx/*`.
-- Не запускать `pnpm dev` без явной просьбы: использовать точечные `pnpm dev:www` или `pnpm dev:compare`.
+- Не запускать `pnpm dev` без явной просьбы: для локальной разработки использовать `pnpm dev:www`.
 
 ## Плавила MCP
 

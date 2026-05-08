@@ -1,5 +1,7 @@
 # Compare as 815 Section Migration
 
+> Historical note, 2026-05-09: this plan was completed as a section-build migration, but that architecture was superseded. Compare now lives inside the single `apps/www` Astro application under `apps/www/src/compare` and routes are under `apps/www/src/pages/815/compare`.
+
 ## Problem Statement
 
 How might we move the compare experience under `/815/compare/` so residents, search engines, and old links land on the right content without keeping two separately deployed compare sites?

@@ -1,5 +1,7 @@
 # Compare as `/815/compare` Migration Task Index
 
+> Historical note, 2026-05-09: these tasks describe the completed intermediate section-build migration. Current architecture no longer uses `apps/compare`; compare lives inside `apps/www`.
+
 Источник идеи: `docs/ideas/compare-as-815-section-migration.md`.
 
 Цель: перенести compare из `/compare/` в `/815/compare/`, оставить compare отдельным section build, убрать standalone legacy-сборку и заменить старые публичные page URL редиректами.

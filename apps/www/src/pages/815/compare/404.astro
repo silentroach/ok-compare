@@ -1,0 +1,44 @@
+---
+import '@/compare/styles/global.css';
+import Link from '@/compare/components/Link.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { withBase } from '@/compare/lib/url';
+
+const title = 'Страница не найдена — Сравни с Шелково';
+const description =
+  'Такой страницы нет или ее адрес изменился. Вернитесь к списку поселков и сравнению тарифов.';
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  robots="noindex, nofollow"
+  canonical={withBase('404.html')}
+  bodyClass="ui-root-compare"
+>
+  <main class="ui-page max-w-2xl py-16 text-center">
+    <div class="mb-8">
+      <h1 class="mb-4 text-6xl font-bold text-muted-foreground">404</h1>
+      <h2 class="mb-4 text-2xl font-semibold text-foreground">
+        Страница не найдена
+      </h2>
+      <p class="mb-8 text-muted-foreground">
+        Запрашиваемая страница не существует или была перемещена.
+      </p>
+    </div>
+
+    <div class="space-y-4">
+      <Link href="/" class="ui-btn ui-btn-md ui-btn-solid ui-btn-primary">
+        На главную
+      </Link>
+
+      <div class="text-sm text-muted-foreground">
+        <p>
+          Или посмотрите <Link href="/" class="ui-link"
+            >список всех посёлков</Link
+          >
+        </p>
+      </div>
+    </div>
+  </main>
+</BaseLayout>

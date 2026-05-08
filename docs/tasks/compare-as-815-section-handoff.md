@@ -1,5 +1,7 @@
 # Compare as `/815/compare` Migration Handoff
 
+> Historical note, 2026-05-09: this handoff documents the previous section-build migration. Current architecture has a single app: compare source is in `apps/www/src/compare`, routes are in `apps/www/src/pages/815/compare`, and root `pnpm dev` starts only `apps/www`.
+
 This file is the shared context log for agents working through `docs/tasks/compare-as-815-section-migration.md` and the task files in `docs/tasks/compare-as-815-section-migration/`.
 
 Use it to pass forward facts that are not obvious from the current task diff: command results, path decisions, redirect counts, discovered gotchas, intentional leftovers and external validation gaps.

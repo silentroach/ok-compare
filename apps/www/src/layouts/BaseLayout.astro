@@ -24,6 +24,8 @@ interface Props {
   imageAlt?: string;
   type?: string;
   schema?: SchemaDoc | readonly SchemaDoc[];
+  preconnectYandexMaps?: boolean;
+  bodyClass?: string;
 }
 
 const {
@@ -36,6 +38,8 @@ const {
   imageAlt,
   type = 'website',
   schema,
+  preconnectYandexMaps = false,
+  bodyClass,
 } = Astro.props;
 
 const canonical = canon(href ?? Astro.url.pathname);
@@ -50,6 +54,13 @@ const ym = `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).p
 const ymTransitions = `(() => {if (window.__shelkovoYmTransitions) return;window.__shelkovoYmTransitions = true;let href = location.href;document.addEventListener('astro:page-load', () => {if (location.href === href) return;href = location.href;if (typeof window.ym === 'function') window.ym(${ymId}, 'hit', href, { title: document.title });});})();`;
 const navigationProgress = `(() => {if (window.__shelkovoNavigationProgress) return;window.__shelkovoNavigationProgress = true;const attr = 'data-site-navigation-pending';const delay = 50;const root = document.documentElement;const show = () => {root.setAttribute(attr, '');document.body?.setAttribute('aria-busy', 'true');};const hide = () => {root.removeAttribute(attr);document.body?.removeAttribute('aria-busy');};document.addEventListener('astro:before-preparation', (event) => {const loader = event.loader;let timer;event.loader = async () => {timer = window.setTimeout(show, delay);try {await loader();} finally {window.clearTimeout(timer);hide();}};});document.addEventListener('astro:page-load', hide);window.addEventListener('pageshow', hide);})();`;
 const contentTransition = fade({ duration: '60ms' });
+const bodyClasses = [
+  'ui-root-site',
+  bodyClass,
+  'flex min-h-screen flex-col text-foreground',
+]
+  .filter(Boolean)
+  .join(' ');
 ---
 
 <!doctype html>
@@ -98,6 +109,11 @@ const contentTransition = fade({ duration: '60ms' });
     {socialAlt && <meta name="twitter:image:alt" content={socialAlt} />}
 
     <link rel="preconnect" href="https://mc.yandex.ru" />
+    {
+      preconnectYandexMaps && (
+        <link rel="preconnect" href="https://api-maps.yandex.ru" />
+      )
+    }
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="any" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
@@ -120,7 +136,7 @@ const contentTransition = fade({ duration: '60ms' });
       )
     }
   </head>
-  <body class="ui-root-site flex min-h-screen flex-col text-foreground">
+  <body class={bodyClasses}>
     <div class="site-navigation-progress" aria-hidden="true"></div>
     {
       prod && (
