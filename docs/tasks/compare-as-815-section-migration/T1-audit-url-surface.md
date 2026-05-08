@@ -1,6 +1,6 @@
 # T1: Audit URL Surface And Migration Assumptions
 
-Status: todo
+Status: done
 
 Index: `../compare-as-815-section-migration.md`
 Handoff: `../compare-as-815-section-handoff.md`
@@ -11,13 +11,13 @@ Handoff: `../compare-as-815-section-handoff.md`
 
 ## Acceptance Criteria
 
-- [ ] В `docs/tasks/compare-as-815-section-handoff.md` добавлен audit note со списком найденных URL surfaces и выводом по каждому.
-- [ ] Подтверждено, что public page redirects ограничены page URL из идеи, а machine-readable/API/assets surfaces не входят в scope.
-- [ ] Если nginx logs/Search Console недоступны локально, это явно записано как external validation gap.
+- [x] В `docs/tasks/compare-as-815-section-handoff.md` добавлен audit note со списком найденных URL surfaces и выводом по каждому.
+- [x] Подтверждено, что public page redirects ограничены page URL из идеи, а machine-readable/API/assets surfaces не входят в scope.
+- [x] Если nginx logs/Search Console недоступны локально, это явно записано как external validation gap.
 
 ## Verification
 
-- [ ] `rg "/compare|COMPARE_BASE|COMPARE_CANONICAL_BASE|dist/www/compare|dist/legacy|build:legacy|compose-legacy"` просмотрен и важные результаты перенесены в handoff.
+- [x] `rg "/compare|COMPARE_BASE|COMPARE_CANONICAL_BASE|dist/www/compare|dist/legacy|build:legacy|compose-legacy"` просмотрен и важные результаты перенесены в handoff.
 
 ## Dependencies
 
@@ -35,7 +35,7 @@ S.
 
 ## Completion
 
-- [ ] Mark this file `Status: done`.
-- [ ] Update task index status.
-- [ ] Update handoff task registry and task log.
-- [ ] Commit this task separately.
+- [x] Mark this file `Status: done`.
+- [x] Update task index status.
+- [x] Update handoff task registry and task log.
+- [x] Commit this task separately.

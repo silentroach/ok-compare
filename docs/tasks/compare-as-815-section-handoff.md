@@ -14,16 +14,16 @@ Use it to pass forward facts that are not obvious from the current task diff: co
 
 ## Task Registry
 
-| ID  | Status | Commit | Notes                                                                           |
-| --- | ------ | ------ | ------------------------------------------------------------------------------- |
-| T1  | todo   |        | `docs/tasks/compare-as-815-section-migration/T1-audit-url-surface.md`           |
-| T2  | todo   |        | `docs/tasks/compare-as-815-section-migration/T2-move-compare-base.md`           |
-| T3  | todo   |        | `docs/tasks/compare-as-815-section-migration/T3-compose-www-section.md`         |
-| T4  | todo   |        | `docs/tasks/compare-as-815-section-migration/T4-update-root-links-discovery.md` |
-| T5  | todo   |        | `docs/tasks/compare-as-815-section-migration/T5-add-compare-breadcrumbs.md`     |
-| T6  | todo   |        | `docs/tasks/compare-as-815-section-migration/T6-nginx-redirects.md`             |
-| T7  | todo   |        | `docs/tasks/compare-as-815-section-migration/T7-remove-legacy-build.md`         |
-| T8  | todo   |        | `docs/tasks/compare-as-815-section-migration/T8-final-verification.md`          |
+| ID  | Status | Commit                                | Notes                                                                           |
+| --- | ------ | ------------------------------------- | ------------------------------------------------------------------------------- |
+| T1  | done   | `audit compare 815 migration surface` | `docs/tasks/compare-as-815-section-migration/T1-audit-url-surface.md`           |
+| T2  | todo   |                                       | `docs/tasks/compare-as-815-section-migration/T2-move-compare-base.md`           |
+| T3  | todo   |                                       | `docs/tasks/compare-as-815-section-migration/T3-compose-www-section.md`         |
+| T4  | todo   |                                       | `docs/tasks/compare-as-815-section-migration/T4-update-root-links-discovery.md` |
+| T5  | todo   |                                       | `docs/tasks/compare-as-815-section-migration/T5-add-compare-breadcrumbs.md`     |
+| T6  | todo   |                                       | `docs/tasks/compare-as-815-section-migration/T6-nginx-redirects.md`             |
+| T7  | todo   |                                       | `docs/tasks/compare-as-815-section-migration/T7-remove-legacy-build.md`         |
+| T8  | todo   |                                       | `docs/tasks/compare-as-815-section-migration/T8-final-verification.md`          |
 
 ## Current Context Snapshot
 
@@ -75,6 +75,55 @@ Commit:
 
 - `plan compare 815 section migration tasks`
 
+### T1 - 2026-05-08 - audit URL surface
+
+Status: done.
+
+Context:
+
+- Reviewed the current `/compare`, build, compose, discovery, deployment and nginx surfaces before changing the section base.
+
+Audit:
+
+| Surface                                   | Current state                                                                                                                                                                                                                                                                                                                    | Covered by         |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| Compare section base/canonical            | `apps/compare/package.json` sets `COMPARE_BASE=/compare` and `COMPARE_CANONICAL_BASE=/compare` for `dev` and `build:section`; `apps/compare/src/lib/site.ts` and `src/lib/url.ts` derive generated canonical/internal URLs from those values.                                                                                    | T2                 |
+| Compare markdown/discovery URL generation | `apps/compare/src/lib/markdown.ts`, `src/lib/llms.ts`, `src/lib/discovery.ts` build URLs from canonical/base helpers; hardcoded `/compare` expectations are currently in `apps/compare/src/lib/markdown.test.ts`.                                                                                                                | T2                 |
+| Compare route inventory                   | Current compare pages include public HTML `/`, `/rating/`, `/settlements/:slug/`; companions/machine surfaces include `/index.md`, `/rating/index.md`, `/settlements/:slug/index.md`, `/data/*.json`, `/schemas/*.json`, `/openapi/*.json`, `/llms*.txt`, `/.well-known/api-catalog` and `/.well-known/agent-skills/index.json`. | T2, T6, T8         |
+| Compare settlement slugs                  | Current source for redirect slug generation is `apps/compare/src/data/settlements/*.yaml`, excluding `_template.yaml`; local audit found 37 current settlement files.                                                                                                                                                            | T6                 |
+| Root compose output                       | `scripts/compose-www.mjs` copies `apps/compare/dist/section` into `dist/www/compare`.                                                                                                                                                                                                                                            | T3                 |
+| Root dev and sitemap wiring               | `apps/www/astro.config.ts` proxies URLs matching `/compare` and compare-origin dev assets; root sitemap points to `https://kpshelkovo.online/compare/sitemap.xml`.                                                                                                                                                               | T3                 |
+| Root visible links                        | `apps/www/src/pages/index.astro` links to `/compare/`.                                                                                                                                                                                                                                                                           | T4                 |
+| Root agent discovery                      | `apps/www/src/lib/discovery.ts`, `apps/www/src/lib/llms.ts` and `apps/www/public/.well-known/agent-skills/site-sections/SKILL.md` describe compare under `/compare/` and its machine-readable surfaces.                                                                                                                          | T4                 |
+| Compare breadcrumbs                       | `apps/compare/src/pages/rating.astro` and `apps/compare/src/pages/settlements/[slug]/index.astro` have JSON-LD breadcrumbs rooted at `Сравнение поселков`; compare index has no visible breadcrumb.                                                                                                                              | T5                 |
+| New-domain nginx compare serving          | `ops/nginx/kpshelkovo-online.conf` has `/compare/` locations for static assets, data, public pages, markdown negotiation, `.md`, `index.html`, API catalog and fallback serving.                                                                                                                                                 | T6                 |
+| Old-domain nginx serving                  | `ops/nginx/sravni-shelkovo.conf` serves standalone compare HTML from `/var/www/sravni-shelkovo` for `/`, `/rating/`, `/settlements/:slug/`, markdown, data/assets and fallback paths.                                                                                                                                            | T6                 |
+| Legacy build artifact                     | Root `package.json`, `apps/compare/package.json`, `turbo.json` and `scripts/compose-legacy.mjs` still build/copy `dist/legacy`.                                                                                                                                                                                                  | T7                 |
+| Legacy deploy path                        | `.github/workflows/ci.yml` still validates `DEPLOY_COMPARE_PATH` and rsyncs `dist/legacy/` to it, while deploying both nginx configs.                                                                                                                                                                                            | T7                 |
+| Workspace docs                            | `AGENTS.md`, `README.md`, `apps/compare/AGENTS.md` and `apps/www/AGENTS.md` still document `/compare`, `dist/www/compare`, `dist/legacy` and old-domain standalone behavior as current.                                                                                                                                          | T2, T3, T4, T7, T8 |
+| Migration docs and historical references  | `docs/ideas/*`, task files and this handoff intentionally contain old `/compare` references as source context and task tracking.                                                                                                                                                                                                 | T8                 |
+
+Redirect scope confirmation:
+
+| Host                | In redirect scope                                                                                     | Out of redirect scope                                                                                                                                                          |
+| ------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `сравни.шелково.рф` | `/`, `/rating/`, `/settlements/:slug/` only.                                                          | `.md`, JSON/data, OpenAPI, schemas, `llms.txt`, agent skills, assets, sitemap and other fallback paths.                                                                        |
+| `kpshelkovo.online` | Temporary old-path redirects for `/compare/`, `/compare/rating/`, `/compare/settlements/:slug/` only. | `/compare/*.md`, `/compare/data/*`, `/compare/openapi/*`, `/compare/schemas/*`, `/compare/llms*.txt`, `/compare/.well-known/*`, `/compare/static/*`, sitemap and other assets. |
+
+Verification:
+
+- Ran `rg "/compare|COMPARE_BASE|COMPARE_CANONICAL_BASE|dist/www/compare|dist/legacy|build:legacy|compose-legacy"` and reviewed the important results above.
+- No build, typecheck or test was needed for T1 because it only updates task/handoff documentation.
+
+External validation gaps:
+
+- Local workspace does not include production nginx logs or Search Console access; validating real traffic for old machine-readable/API/asset URLs remains external/manual.
+- Target-host `nginx -t` remains required during T6/T8 deployment validation unless a local equivalent nginx environment is added.
+
+Commit:
+
+- `audit compare 815 migration surface`
+
 ## Intentional Leftovers
 
 Add entries here when `rg` finds old strings that should remain.
@@ -87,6 +136,7 @@ Add entries here when `rg` finds old strings that should remain.
 
 Add command results here when they affect later tasks.
 
-| Date       | Task | Command                   | Result  | Notes                                     |
-| ---------- | ---- | ------------------------- | ------- | ----------------------------------------- |
-| 2026-05-08 | T0   | Documentation review only | not run | Planning docs only; no build/test needed. |
+| Date       | Task | Command                   | Result       | Notes                                     |
+| ---------- | ---- | ------------------------- | ------------ | ----------------------------------------- | ---------------- | ----------- | ------------ | ---------------- | ---- | ------------------------------------------------------------- |
+| 2026-05-08 | T0   | Documentation review only | not run      | Planning docs only; no build/test needed. |
+| 2026-05-08 | T1   | `rg "/compare             | COMPARE_BASE | COMPARE_CANONICAL_BASE                    | dist/www/compare | dist/legacy | build:legacy | compose-legacy"` | pass | Reviewed repo-wide URL/build/deploy surfaces; docs-only task. |
