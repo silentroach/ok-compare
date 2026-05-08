@@ -25,7 +25,7 @@ describe('full reglament 2026 dataset', () => {
       },
     });
     expect(fullReglamentDataset2026.villages).toHaveLength(4);
-    expect(fullReglamentDataset2026.common_assets).toHaveLength(40);
+    expect(fullReglamentDataset2026.common_assets).toHaveLength(33);
     expect(fullReglamentDataset2026.services).toHaveLength(24);
     expect(fullReglamentDataset2026.service_to_estimate_map).toHaveLength(24);
     expect(fullReglamentDataset2026.audit_notes.length).toBeGreaterThanOrEqual(
@@ -35,15 +35,15 @@ describe('full reglament 2026 dataset', () => {
 
   it('keeps empty common-asset cells as null instead of zero', () => {
     const asset = fullReglamentDataset2026.common_assets.find(
-      (item) => item.id === 'improvement-playground-rubber',
+      (item) => item.id === 'roads-parking-sites',
     );
 
-    expect(asset?.values_by_village['shelkovo-village']).toEqual({
+    expect(asset?.values_by_village['shelkovo-park']).toEqual({
       raw: '-',
       value: null,
       status: 'empty_cell',
     });
-    expect(asset?.total_mode).toBe('empty');
+    expect(asset?.total_mode).toBe('sum_explicit_values');
   });
 
   it('normalizes service mapping statuses for machine readers', () => {

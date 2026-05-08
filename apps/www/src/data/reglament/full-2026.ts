@@ -188,7 +188,7 @@ const commonAssets = [
     id: 'roads-speed-bumps',
     category: 'roads',
     title: 'Искусственные дорожные неровности (ИДН)',
-    unit: null,
+    unit: 'шт.',
     values_by_village: [
       quantity('3', 3),
       quantity('3', 3),
@@ -199,11 +199,10 @@ const commonAssets = [
     total_mode: 'sum_explicit_values',
     source_refs: [
       source(128, 'Приложение №2 / Дороги и тротуары / строка 3', {
-        note: 'Единица измерения не указана; требуется визуальная сверка.',
+        note: 'Единица измерения не указана; по смыслу это количество в штуках.',
       }),
     ],
-    verification_note:
-      'требует визуальной сверки: единица измерения не указана',
+    verification_note: 'единица в PDF не указана; по смыслу шт.',
   }),
   asset({
     id: 'roads-parking-sites',
@@ -302,26 +301,6 @@ const commonAssets = [
     verification_note: 'пустая ячейка в PDF',
   }),
   asset({
-    id: 'improvement-playground-rubber',
-    category: 'improvement',
-    title: 'Детская площадка на резиновом основании',
-    unit: 'м²',
-    values_by_village: [
-      quantity('-', null),
-      quantity('-', null),
-      quantity('-', null),
-      quantity('-', null),
-    ],
-    total: quantity('-', null),
-    total_mode: 'empty',
-    source_refs: [
-      source(128, 'Приложение №2 / Объекты благоустройства / строка 1', {
-        note: 'Все значения пустые в PDF; требуется визуальная сверка.',
-      }),
-    ],
-    verification_note: 'требует визуальной сверки: все значения пустые в PDF',
-  }),
-  asset({
     id: 'improvement-playground-ground',
     category: 'improvement',
     title: 'Детская площадка на земляном основании',
@@ -396,42 +375,6 @@ const commonAssets = [
     verification_note: 'OCR-искажение в текстовом слое',
   }),
   asset({
-    id: 'improvement-volleyball-sand',
-    category: 'improvement',
-    title: 'Волейбольная площадка на песчаном основании',
-    unit: 'м²',
-    values_by_village: [
-      quantity('-', null),
-      quantity('-', null),
-      quantity('-', null),
-      quantity('-', null),
-    ],
-    total: quantity('-', null),
-    total_mode: 'empty',
-    source_refs: [
-      source(129, 'Приложение №2 / Объекты благоустройства / строка 6'),
-    ],
-    verification_note: 'требует визуальной сверки: все значения пустые в PDF',
-  }),
-  asset({
-    id: 'improvement-football-grass',
-    category: 'improvement',
-    title: 'Спортивная площадка на основании из травы (футбольное поле)',
-    unit: 'м²',
-    values_by_village: [
-      quantity('-', null),
-      quantity('-', null),
-      quantity('-', null),
-      quantity('-', null),
-    ],
-    total: quantity('-', null),
-    total_mode: 'empty',
-    source_refs: [
-      source(129, 'Приложение №2 / Объекты благоустройства / строка 7'),
-    ],
-    verification_note: 'требует визуальной сверки: все значения пустые в PDF',
-  }),
-  asset({
     id: 'improvement-sports-elements',
     category: 'improvement',
     title: 'Элементы спортивного комплекса',
@@ -448,42 +391,6 @@ const commonAssets = [
       source(129, 'Приложение №2 / Объекты благоустройства / строка 8'),
     ],
     verification_note: 'пустые ячейки в PDF',
-  }),
-  asset({
-    id: 'improvement-movable-maf-loungers',
-    category: 'improvement',
-    title: 'Перемещаемые МАФ: шезлонги',
-    unit: 'шт.',
-    values_by_village: [
-      quantity('-', null),
-      quantity('-', null),
-      quantity('-', null),
-      quantity('-', null),
-    ],
-    total: quantity('-', null),
-    total_mode: 'empty',
-    source_refs: [
-      source(129, 'Приложение №2 / Объекты благоустройства / строка 9'),
-    ],
-    verification_note: 'требует визуальной сверки: все значения пустые в PDF',
-  }),
-  asset({
-    id: 'improvement-beach-zone',
-    category: 'improvement',
-    title: 'Пляжная зона',
-    unit: 'м²',
-    values_by_village: [
-      quantity('-', null),
-      quantity('-', null),
-      quantity('-', null),
-      quantity('-', null),
-    ],
-    total: quantity('-', null),
-    total_mode: 'empty',
-    source_refs: [
-      source(129, 'Приложение №2 / Объекты благоустройства / строка 10'),
-    ],
-    verification_note: 'требует визуальной сверки: все значения пустые в PDF',
   }),
   asset({
     id: 'improvement-water-area',
@@ -541,7 +448,7 @@ const commonAssets = [
     id: 'electric-street-light-zhku-16-100-001',
     category: 'electricity',
     title: 'Уличный светильник ЖКУ 16-100-001',
-    unit: '100',
+    unit: 'шт.',
     values_by_village: [
       quantity('50', 50),
       quantity('72', 72),
@@ -552,11 +459,10 @@ const commonAssets = [
     total_mode: 'sum_explicit_values',
     source_refs: [
       source(129, 'Приложение №2 / Электроснабжение / строка 1.1', {
-        note: 'В колонке единицы стоит «100»; единица мощности не указана.',
+        note: 'Значение «100» относится к мощности светильника, 100 Вт; количество учтено в штуках.',
       }),
     ],
-    verification_note:
-      'требует визуальной сверки: единица/мощность неоднозначна',
+    verification_note: 'мощность 100 Вт; количество в штуках',
   }),
   asset({
     id: 'electric-cable-line-length',
@@ -589,11 +495,10 @@ const commonAssets = [
     total_mode: 'sum_explicit_values',
     source_refs: [
       source(129, 'Приложение №2 / Электроснабжение / строка 3', {
-        note: 'Единица «м²» выглядит нетипично для опор, но так указано в PDF.',
+        note: 'Единица «м²» подтверждена по PDF.',
       }),
     ],
-    verification_note:
-      'требует визуальной сверки: единица `м²` выглядит нетипично',
+    verification_note: null,
   }),
   asset({
     id: 'electric-krn-10kv',
@@ -626,27 +531,11 @@ const commonAssets = [
     total_mode: 'sum_explicit_values',
     source_refs: [
       source(129, 'Приложение №2 / Электроснабжение / строка 5', {
-        note: 'Наименование может быть OCR-искажено.',
+        note: 'В PDF указано именно «КТППНккк»; вероятно это обозначение КТППН с суффиксом кабельного исполнения, но источник не раскрывает расшифровку.',
       }),
     ],
     verification_note:
-      'требует визуальной сверки: наименование может быть OCR-искажено',
-  }),
-  asset({
-    id: 'electric-ktp-250-10',
-    category: 'electricity',
-    title: 'КТП-250/10',
-    unit: 'шт.',
-    values_by_village: [
-      quantity('-', null),
-      quantity('-', null),
-      quantity('-', null),
-      quantity('-', null),
-    ],
-    total: quantity('-', null),
-    total_mode: 'empty',
-    source_refs: [source(129, 'Приложение №2 / Электроснабжение / строка 6')],
-    verification_note: 'требует визуальной сверки: все значения пустые в PDF',
+      'в PDF указано именно «КТППНккк»; вероятно обозначение КТППН с суффиксом кабельного исполнения, но источник не раскрывает расшифровку',
   }),
   asset({
     id: 'electric-transformer-10kv-160kva',
@@ -663,22 +552,6 @@ const commonAssets = [
     total_mode: 'sum_explicit_values',
     source_refs: [source(129, 'Приложение №2 / Электроснабжение / строка 7')],
     verification_note: 'пустые ячейки в PDF',
-  }),
-  asset({
-    id: 'electric-transformer-10kv-100kva',
-    category: 'electricity',
-    title: 'Трансформатор 10 кВ 100 кВа',
-    unit: 'шт.',
-    values_by_village: [
-      quantity('-', null),
-      quantity('-', null),
-      quantity('-', null),
-      quantity('-', null),
-    ],
-    total: quantity('-', null),
-    total_mode: 'empty',
-    source_refs: [source(129, 'Приложение №2 / Электроснабжение / строка 8')],
-    verification_note: 'требует визуальной сверки: все значения пустые в PDF',
   }),
   asset({
     id: 'security-post-24h',
@@ -714,7 +587,7 @@ const commonAssets = [
         note: 'Строка продолжает таблицу после разрыва страницы.',
       }),
     ],
-    verification_note: 'требует визуальной сверки: разрыв страницы',
+    verification_note: 'разрыв страницы в PDF; строка продолжена ниже',
   }),
   asset({
     id: 'security-patrol-times-per-day',
@@ -1473,8 +1346,8 @@ const auditNotes = [
     public_wording: 'нет значения в таблице PDF',
     severity: 'watch',
     related_fact_ids: [
-      'common_assets:improvement-playground-rubber',
-      'common_assets:electric-ktp-250-10',
+      'common_assets:roads-parking-sites',
+      'common_assets:electric-transformer-10kv-160kva',
     ],
     source_refs: [
       source(128, 'Приложение №2 / таблицы общего имущества'),
