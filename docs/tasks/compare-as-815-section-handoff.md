@@ -20,7 +20,7 @@ Use it to pass forward facts that are not obvious from the current task diff: co
 | T2  | done   | `move compare section base to 815 path` | `docs/tasks/compare-as-815-section-migration/T2-move-compare-base.md`           |
 | T3  | done   | `compose compare into 815 section`      | `docs/tasks/compare-as-815-section-migration/T3-compose-www-section.md`         |
 | T4  | done   | `update root compare references`        | `docs/tasks/compare-as-815-section-migration/T4-update-root-links-discovery.md` |
-| T5  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T5-add-compare-breadcrumbs.md`     |
+| T5  | done   | `add compare breadcrumbs`               | `docs/tasks/compare-as-815-section-migration/T5-add-compare-breadcrumbs.md`     |
 | T6  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T6-nginx-redirects.md`             |
 | T7  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T7-remove-legacy-build.md`         |
 | T8  | todo   |                                         | `docs/tasks/compare-as-815-section-migration/T8-final-verification.md`          |
@@ -35,7 +35,7 @@ Date: 2026-05-08.
 - `scripts/compose-www.mjs` copies `apps/compare/dist/section` to `dist/www/815/compare`.
 - Root `apps/www/astro.config.ts` proxies dev requests whose URL starts with `/815/compare` and points `customSitemaps` at `https://kpshelkovo.online/815/compare/sitemap.xml`.
 - Root-site visible links and agent-facing discovery references now use `/815/compare/` in `apps/www/src/lib/discovery.ts`, `apps/www/src/lib/llms.ts`, `apps/www/src/pages/index.astro`, `apps/www/public/.well-known/agent-skills/site-sections/SKILL.md`, `apps/www/AGENTS.md` and root `AGENTS.md`.
-- Compare JSON-LD breadcrumbs currently use `Сравнение поселков` as root-ish label on rating and settlement pages. The migration idea wants `Главная > Сравнение тарифов` and settlement pages adding the settlement name.
+- Compare visible and JSON-LD breadcrumbs now use `Главная > Сравнение тарифов`; settlement pages add the settlement name as the third item.
 - Shared visible breadcrumbs component is exported as `@shelkovo/ui/Breadcrumbs.astro` from `packages/ui/src/Breadcrumbs.astro`.
 - `apps/www/src/lib/breadcrumbs.ts` has a home breadcrumb helper, but it is app-local to `apps/www`; compare can either add its own small helper or inline the arrays.
 - `ops/nginx/kpshelkovo-online.conf` currently serves compare under `/compare/` with special handling for static assets, data, markdown negotiation, `.md`, `index.html` and API catalog.
@@ -56,6 +56,28 @@ Date: 2026-05-08.
 - Target-host `nginx -t` is needed for final nginx validation unless a local nginx environment is available.
 
 ## Task Log
+
+### T5 - 2026-05-08 - compare breadcrumbs
+
+Status: done.
+
+Context:
+
+- Added `apps/compare/src/lib/breadcrumbs.ts` as the compare-local source for visible breadcrumbs and `BreadcrumbList` schema.
+- Compare index and rating pages render `Главная > Сравнение тарифов`; rating intentionally does not add `Методика рейтинга` or `Тариф 815`.
+- Settlement pages render `Главная > Сравнение тарифов > [Название поселка]` and add only the settlement item to JSON-LD after the compare item.
+- Existing `К списку поселков` and `Назад к списку` links remain and point back to the compare index, so they do not contradict the breadcrumbs.
+
+Verification:
+
+- `pnpm --dir apps/compare test`: pass, 31 files / 241 tests.
+- `pnpm --dir apps/compare typecheck`: pass.
+- `pnpm --dir apps/compare build`: pass.
+- Built HTML samples checked: `apps/compare/dist/section/index.html`, `apps/compare/dist/section/rating/index.html`, `apps/compare/dist/section/settlements/shelkovo/index.html` contain breadcrumb nav and expected JSON-LD names/URLs.
+
+Commit:
+
+- `add compare breadcrumbs`
 
 ### T4 - 2026-05-08 - update root links and discovery
 
@@ -213,3 +235,7 @@ Add command results here when they affect later tasks.
 | 2026-05-08 | T3   | `test -f dist/www/815/compare/index.html` | pass         | Confirmed composed compare index exists.                                    |
 | 2026-05-08 | T4   | `pnpm --dir apps/www test`                | pass         | 38 files / 228 tests.                                                       |
 | 2026-05-08 | T4   | `pnpm --dir apps/www typecheck`           | pass         | Astro sync and `tsc --noEmit` passed.                                       |
+| 2026-05-08 | T5   | `pnpm --dir apps/compare test`            | pass         | 31 files / 241 tests.                                                       |
+| 2026-05-08 | T5   | `pnpm --dir apps/compare typecheck`       | pass         | Astro sync and `tsc --noEmit` passed.                                       |
+| 2026-05-08 | T5   | `pnpm --dir apps/compare build`           | pass         | Built `apps/compare/dist/section` with compare breadcrumbs.                 |
+| 2026-05-08 | T5   | Built HTML breadcrumb sample check        | pass         | Checked index, rating and `settlements/shelkovo` HTML plus JSON-LD.         |

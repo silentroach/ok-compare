@@ -4,6 +4,11 @@ import Hero from '../components/Hero.svelte';
 import KPIStats from '../components/KPIStats.svelte';
 import SettlementCard from '../components/SettlementCard.svelte';
 import SettlementsExplorer from '../components/SettlementsExplorer.svelte';
+import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+import {
+  compareBreadcrumbs,
+  compareBreadcrumbSchema,
+} from '../lib/breadcrumbs';
 import { loadAllData } from '../lib/data';
 import { toExplorer } from '../lib/explorer';
 import { canon } from '../lib/site';
@@ -30,6 +35,8 @@ const cards = [...list].sort((a, b) => {
 const pageTitle = 'Сравнение поселков — Сравни с Шелково';
 const pageDescription = `Сравните ${stats.totalSettlements} поселков по тарифам, инфраструктуре и сервисам: карточки, карта и разница с Шелково в одном месте.`;
 const pageUrl = canon('/');
+const breadcrumbs = compareBreadcrumbs();
+const breadcrumb = compareBreadcrumbSchema();
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
@@ -50,8 +57,16 @@ const schema = {
 };
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription} schema={schema}>
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  schema={[schema, breadcrumb]}
+>
   <main class="ui-page py-6 md:py-10">
+    <div class="mb-4 md:mb-6">
+      <Breadcrumbs items={breadcrumbs} />
+    </div>
+
     <Hero
       title="Сравнение тарифов поселков с Шелково"
       subtitle="Структурированное сравнение поселков по цене, инфраструктуре, сервисам и"

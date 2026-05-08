@@ -1,6 +1,6 @@
 # T5: Add Compare Breadcrumbs And Breadcrumb JSON-LD
 
-Status: todo
+Status: done
 
 Index: `../compare-as-815-section-migration.md`
 Handoff: `../compare-as-815-section-handoff.md`
@@ -11,18 +11,18 @@ Handoff: `../compare-as-815-section-handoff.md`
 
 ## Acceptance Criteria
 
-- [ ] Compare index shows visible breadcrumbs `Главная > Сравнение тарифов`.
-- [ ] Rating page shows visible breadcrumbs for the same hierarchy, without adding `Методика рейтинга` or `Тариф 815` breadcrumb.
-- [ ] Settlement pages show `Главная > Сравнение тарифов > [Название поселка]`.
-- [ ] JSON-LD `BreadcrumbList` uses `Главная` at `https://kpshelkovo.online/`, `Сравнение тарифов` at `https://kpshelkovo.online/815/compare/`, and settlement item only on settlement pages.
-- [ ] Existing back links can remain if useful, but they must not contradict breadcrumbs.
+- [x] Compare index shows visible breadcrumbs `Главная > Сравнение тарифов`.
+- [x] Rating page shows visible breadcrumbs for the same hierarchy, without adding `Методика рейтинга` or `Тариф 815` breadcrumb.
+- [x] Settlement pages show `Главная > Сравнение тарифов > [Название поселка]`.
+- [x] JSON-LD `BreadcrumbList` uses `Главная` at `https://kpshelkovo.online/`, `Сравнение тарифов` at `https://kpshelkovo.online/815/compare/`, and settlement item only on settlement pages.
+- [x] Existing back links can remain if useful, but they must not contradict breadcrumbs.
 
 ## Verification
 
-- [ ] `pnpm --dir apps/compare test`
-- [ ] `pnpm --dir apps/compare typecheck`
-- [ ] `pnpm --dir apps/compare build`
-- [ ] Sample built HTML for index, rating and one settlement contains visible breadcrumb nav and JSON-LD breadcrumb names/URLs.
+- [x] `pnpm --dir apps/compare test`
+- [x] `pnpm --dir apps/compare typecheck`
+- [x] `pnpm --dir apps/compare build`
+- [x] Sample built HTML for index, rating and one settlement contains visible breadcrumb nav and JSON-LD breadcrumb names/URLs.
 
 ## Dependencies
 
@@ -44,7 +44,7 @@ M.
 
 ## Completion
 
-- [ ] Mark this file `Status: done`.
-- [ ] Update task index status.
-- [ ] Update handoff task registry and task log.
-- [ ] Commit this task separately.
+- [x] Mark this file `Status: done`.
+- [x] Update task index status.
+- [x] Update handoff task registry and task log.
+- [x] Commit this task separately.

@@ -1,5 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+import {
+  compareBreadcrumbs,
+  compareBreadcrumbSchema,
+} from '../lib/breadcrumbs';
 import { canon } from '../lib/site';
 import { withBase } from '../lib/url';
 
@@ -7,6 +12,7 @@ const title = 'Как считается уровень поселка — Ср�
 const description =
   'Методика расчета уровня поселка: какие факторы входят в оценку, как учитываются неизвестные данные и почему тариф не влияет на формулу.';
 const pageUrl = canon('/rating/');
+const breadcrumbs = compareBreadcrumbs();
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'WebPage',
@@ -15,24 +21,7 @@ const schema = {
   url: pageUrl,
   inLanguage: 'ru-RU',
 };
-const breadcrumb = {
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: [
-    {
-      '@type': 'ListItem',
-      position: 1,
-      name: 'Сравнение поселков',
-      item: canon('/'),
-    },
-    {
-      '@type': 'ListItem',
-      position: 2,
-      name: 'Методика рейтинга',
-      item: pageUrl,
-    },
-  ],
-};
+const breadcrumb = compareBreadcrumbSchema();
 
 const nav = [
   ['summary', 'Что это вообще такое'],
@@ -60,6 +49,10 @@ const weights = [
   schema={[schema, breadcrumb]}
 >
   <main class="ui-page py-6 md:py-10 lg:py-12">
+    <div class="mb-4 md:mb-6">
+      <Breadcrumbs items={breadcrumbs} />
+    </div>
+
     <section
       class="ui-shell-strong relative overflow-hidden p-6 md:p-8 lg:p-10"
     >
