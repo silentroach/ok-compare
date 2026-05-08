@@ -420,8 +420,7 @@ const syncStatusTimelineProblemPhase = (
     return;
   }
 
-  problemNode.element.dataset.tooltipPhaseLabel =
-    problemNode.kind === 'maintenance' ? 'завершено' : 'восстановлено';
+  problemNode.element.dataset.tooltipPhaseLabel = 'завершено';
 
   if (problemNode.kind === 'incident') {
     problemNode.element.dataset.tooltipPhaseIcon = 'check';

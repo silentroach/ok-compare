@@ -127,16 +127,16 @@ export function buildStatusHomeMarkdown(
   );
 
   return join([
-    '# Статус поселка Шелково',
+    '# Статус КП Шелково',
     '',
-    'Текстовое представление статуса сервисов, актуальных проблем, плановых работ и истории поселка.',
+    'Текстовая сводка состояния сервисов КП Шелково: активные инциденты, плановые работы и история отключений.',
     '',
     ...section('Сервисы', data.services.map(serviceLine)),
     ...(activeIncidents.length > 0
       ? incidentSection({
-          title: 'Актуальные проблемы',
+          title: 'Активные инциденты',
           items: activeIncidents,
-          empty: 'Сейчас нет актуальных проблем.',
+          empty: 'Сейчас нет активных инцидентов.',
           hideIncidentPhase: true,
         })
       : []),
@@ -186,9 +186,9 @@ export function buildStatusServiceMarkdown(
     ),
     ...(summary.active_incidents.length > 0
       ? incidentSection({
-          title: 'Актуальные проблемы',
+          title: 'Активные инциденты',
           items: summary.active_incidents,
-          empty: 'Сейчас нет актуальных проблем по этому сервису.',
+          empty: 'Сейчас нет активных инцидентов по этому сервису.',
           hideIncidentPhase: true,
         })
       : []),
