@@ -24,7 +24,7 @@
     "@shelkovo/seo": "workspace:*",
     "@shelkovo/ui": "workspace:*",
     "@shelkovo/url": "workspace:*",
-    "astro": "^6.1.7"
+    "astro": "^6.1.9"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
