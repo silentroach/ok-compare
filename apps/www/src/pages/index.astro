@@ -119,19 +119,28 @@ const heroImage = isDaytime ? dayHeroImage : nightHeroImage;
               class="home-hero-nav flex items-center gap-5 text-sm font-medium md:gap-10 md:text-base"
             >
               <a href="/news/">Новости</a>
-              <div class="group relative">
+              <div
+                class="home-hero-nav-dropdown group relative"
+                data-home-nav-dropdown
+              >
                 <button
                   type="button"
                   aria-haspopup="true"
+                  aria-expanded="false"
+                  aria-controls="home-hero-tariff-menu"
+                  data-home-nav-dropdown-button
                   class="flex items-center gap-1.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-transparent"
                 >
                   <span>Тариф 815</span>
                   <span
                     aria-hidden="true"
+                    data-home-nav-dropdown-icon
                     class="size-0 border-x-[0.25rem] border-t-[0.3125rem] border-x-transparent border-t-current opacity-70 transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180"
                   ></span>
                 </button>
                 <div
+                  id="home-hero-tariff-menu"
+                  data-home-nav-dropdown-menu
                   class="home-hero-nav-submenu invisible pointer-events-none absolute right-0 top-full z-20 min-w-[11.75rem] -translate-y-1 pt-2 opacity-0 transition-[opacity,transform,visibility] duration-150 ease-out group-hover:visible group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100"
                 >
                   <div
@@ -194,6 +203,60 @@ const heroImage = isDaytime ? dayHeroImage : nightHeroImage;
               image.src = src;
               image.srcset = srcset;
             }
+          })();
+
+          (() => {
+            const dropdown = document.querySelector('[data-home-nav-dropdown]');
+            if (!(dropdown instanceof HTMLElement)) return;
+
+            const button = dropdown.querySelector(
+              '[data-home-nav-dropdown-button]',
+            );
+            if (!(button instanceof HTMLButtonElement)) return;
+
+            const setOpen = (isOpen) => {
+              dropdown.toggleAttribute('data-open', isOpen);
+              button.setAttribute('aria-expanded', String(isOpen));
+            };
+
+            button.addEventListener('click', () => {
+              setOpen(!dropdown.hasAttribute('data-open'));
+            });
+
+            dropdown.addEventListener('focusout', (event) => {
+              if (
+                event.relatedTarget instanceof Node &&
+                dropdown.contains(event.relatedTarget)
+              ) {
+                return;
+              }
+
+              setOpen(false);
+            });
+
+            document.addEventListener('pointerdown', (event) => {
+              if (!dropdown.hasAttribute('data-open')) return;
+              if (
+                event.target instanceof Node &&
+                dropdown.contains(event.target)
+              ) {
+                return;
+              }
+
+              setOpen(false);
+            });
+
+            document.addEventListener('keydown', (event) => {
+              if (
+                event.key !== 'Escape' ||
+                !dropdown.hasAttribute('data-open')
+              ) {
+                return;
+              }
+
+              setOpen(false);
+              button.focus();
+            });
           })();
         </script>
       </div>
@@ -267,6 +330,17 @@ const heroImage = isDaytime ? dayHeroImage : nightHeroImage;
   .home-hero-nav-submenu {
     color: var(--color-foreground);
     text-shadow: none;
+  }
+
+  .home-hero-nav-dropdown[data-open] .home-hero-nav-submenu {
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .home-hero-nav-dropdown[data-open] [data-home-nav-dropdown-icon] {
+    transform: rotate(180deg);
   }
 
   .home-hero-nav-submenu a:is(:hover, :focus-visible) {

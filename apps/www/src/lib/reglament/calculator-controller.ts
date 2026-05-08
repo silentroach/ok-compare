@@ -28,10 +28,15 @@ export interface ReglamentCalculatorFieldState {
   readonly key: EditableFieldKey;
   readonly baseline: boolean | number;
   readonly value: boolean | number | string;
+  readonly forceChange?: boolean;
 }
 
 type NumberEditableFieldKey = Exclude<EditableFieldKey, 'enabled'>;
 type BreakdownFieldKey = keyof CostBreakdown;
+type EditableBreakdownFieldKey = Extract<
+  NumberEditableFieldKey,
+  BreakdownFieldKey
+>;
 type MutableEstimateRowChange = {
   -readonly [Key in keyof EstimateRowChange]?: EstimateRowChange[Key];
 };
@@ -58,6 +63,16 @@ const NUMBER_EDITABLE_FIELD_KEYS = EDITABLE_FIELD_KEYS.filter(
 const NUMBER_EDITABLE_FIELD_KEY_SET: ReadonlySet<string> = new Set(
   NUMBER_EDITABLE_FIELD_KEYS,
 );
+const AUTO_SYNC_BREAKDOWN_FIELD_KEYS = [
+  'primary_salary',
+  'machinist_salary',
+  'machines',
+  'materials',
+  'contractors',
+] as const satisfies readonly EditableBreakdownFieldKey[];
+const AUTO_SYNC_BREAKDOWN_FIELD_KEY_SET: ReadonlySet<string> = new Set(
+  AUTO_SYNC_BREAKDOWN_FIELD_KEYS,
+);
 const BREAKDOWN_FIELD_KEYS = [
   'primary_salary',
   'machinist_salary',
@@ -82,6 +97,11 @@ const isEditableFieldKey = (
 const isNumberEditableFieldKey = (
   value: EditableFieldKey,
 ): value is NumberEditableFieldKey => NUMBER_EDITABLE_FIELD_KEY_SET.has(value);
+
+const isAutoSyncedBreakdownFieldKey = (
+  value: string | undefined,
+): value is EditableBreakdownFieldKey =>
+  value !== undefined && AUTO_SYNC_BREAKDOWN_FIELD_KEY_SET.has(value);
 
 const toFiniteNumber = (
   value: boolean | number | string,
@@ -154,7 +174,11 @@ export const buildReglamentCalculatorChanges = (
     const baseline = toFiniteNumber(field.baseline);
     const value = toFiniteNumber(field.value);
 
-    if (baseline !== undefined && value !== undefined && value !== baseline) {
+    if (
+      baseline !== undefined &&
+      value !== undefined &&
+      (value !== baseline || field.forceChange === true)
+    ) {
       setNumberRowChange(getRowChange(rows, field.rowId), field.key, value);
     }
   }
@@ -184,7 +208,10 @@ const isReglamentCalculatorFieldDirty = (
   const baseline = toFiniteNumber(field.baseline);
   const value = toFiniteNumber(field.value);
 
-  return baseline !== undefined && (value === undefined || value !== baseline);
+  return (
+    baseline !== undefined &&
+    (field.forceChange === true || value === undefined || value !== baseline)
+  );
 };
 
 const deltaTone = (value: number): 'negative' | 'positive' | 'zero' => {
@@ -330,6 +357,29 @@ const setMatchingBreakdownText = (
     });
 };
 
+const setMatchingBreakdownInputValue = (
+  root: ParentNode,
+  rowId: string,
+  field: BreakdownFieldKey,
+  value: number,
+): void => {
+  if (!isAutoSyncedBreakdownFieldKey(field)) {
+    return;
+  }
+
+  root.querySelectorAll(FIELD_SELECTOR).forEach((node) => {
+    if (
+      node instanceof HTMLInputElement &&
+      node.dataset.reglamentRowId === rowId &&
+      node.dataset.reglamentField === field &&
+      node.dataset.reglamentManualValue !== 'true' &&
+      (typeof document === 'undefined' || document.activeElement !== node)
+    ) {
+      node.value = formatReglamentInputNumber(value);
+    }
+  });
+};
+
 const renderRow = (root: ParentNode, row: CalculatedEstimateRow): void => {
   setMatchingText(
     root,
@@ -339,14 +389,12 @@ const renderRow = (root: ParentNode, row: CalculatedEstimateRow): void => {
     formatReglamentAnnualMoney(row.annual_gross),
   );
   setMatchingRowTariffText(root, row);
-  BREAKDOWN_FIELD_KEYS.forEach((field) =>
-    setMatchingBreakdownText(
-      root,
-      row.id,
-      field,
-      formatReglamentMoney(row.breakdown[field]),
-    ),
-  );
+  BREAKDOWN_FIELD_KEYS.forEach((field) => {
+    const value = row.breakdown[field];
+
+    setMatchingBreakdownText(root, row.id, field, formatReglamentMoney(value));
+    setMatchingBreakdownInputValue(root, row.id, field, value);
+  });
 
   row.children?.forEach((child) => renderRow(root, child));
 };
@@ -413,6 +461,9 @@ const readReglamentCalculatorField = (
   }
 
   const baseline = toFiniteNumber(input.dataset.reglamentBaseline ?? '');
+  const isManualBreakdownOverride =
+    isAutoSyncedBreakdownFieldKey(key) &&
+    input.dataset.reglamentManualValue === 'true';
 
   return baseline === undefined
     ? undefined
@@ -420,7 +471,11 @@ const readReglamentCalculatorField = (
         rowId,
         key,
         baseline,
-        value: input.value,
+        value:
+          isAutoSyncedBreakdownFieldKey(key) && !isManualBreakdownOverride
+            ? baseline
+            : input.value,
+        forceChange: isManualBreakdownOverride,
       };
 };
 
@@ -447,6 +502,8 @@ const resetReglamentCalculatorFields = (root: ParentNode): void => {
       node.checked = node.dataset.reglamentBaseline === 'true';
       return;
     }
+
+    delete node.dataset.reglamentManualValue;
 
     const baseline = toFiniteNumber(node.dataset.reglamentBaseline ?? '');
 
@@ -475,6 +532,12 @@ const setResetVisibility = (root: ParentNode, isDirty: boolean): void => {
   });
 };
 
+const markManualBreakdownInput = (input: HTMLInputElement): void => {
+  if (isAutoSyncedBreakdownFieldKey(input.dataset.reglamentField)) {
+    input.dataset.reglamentManualValue = 'true';
+  }
+};
+
 export const hydrateReglamentCalculator = (root: HTMLElement): void => {
   const render = (): void => {
     const fields = readReglamentCalculatorFields(root);
@@ -491,11 +554,13 @@ export const hydrateReglamentCalculator = (root: HTMLElement): void => {
   root.dataset.reglamentCalculatorHydrated = 'true';
   root.addEventListener('input', (event) => {
     if (event.target instanceof HTMLInputElement) {
+      markManualBreakdownInput(event.target);
       render();
     }
   });
   root.addEventListener('change', (event) => {
     if (event.target instanceof HTMLInputElement) {
+      markManualBreakdownInput(event.target);
       render();
     }
   });

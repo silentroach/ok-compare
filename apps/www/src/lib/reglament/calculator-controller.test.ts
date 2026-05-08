@@ -183,6 +183,108 @@ describe('buildReglamentCalculatorChanges', () => {
     ).toBe(formatReglamentMoney(expectedRow.breakdown.gross));
   });
 
+  it('syncs editable breakdown inputs after basic multiplier changes', () => {
+    const rowId = 'waste-transfer-from-homes';
+    document.body.innerHTML = `
+      <div data-reglament-calculator>
+        <input
+          type="number"
+          data-reglament-field="volume"
+          data-reglament-row-id="${rowId}"
+          data-reglament-baseline="6201.6"
+          value="6201.6"
+        />
+        <input
+          type="number"
+          data-reglament-field="frequency"
+          data-reglament-row-id="${rowId}"
+          data-reglament-baseline="365"
+          value="365"
+        />
+        <input
+          type="text"
+          data-reglament-field="primary_salary"
+          data-reglament-row-id="${rowId}"
+          data-reglament-baseline="3418555.1"
+          value="${formatReglamentInputNumber(3_418_555.1)}"
+        />
+        <span data-reglament-row-annual="${rowId}"></span>
+      </div>
+    `;
+    const root = document.querySelector('[data-reglament-calculator]');
+    const volumeInput = document.querySelector(
+      '[data-reglament-field="volume"]',
+    );
+    const frequencyInput = document.querySelector(
+      '[data-reglament-field="frequency"]',
+    );
+    const primarySalaryInput = document.querySelector(
+      '[data-reglament-field="primary_salary"]',
+    );
+    const rowAnnual = document.querySelector('[data-reglament-row-annual]');
+
+    if (
+      !(root instanceof HTMLElement) ||
+      !(volumeInput instanceof HTMLInputElement) ||
+      !(frequencyInput instanceof HTMLInputElement) ||
+      !(primarySalaryInput instanceof HTMLInputElement) ||
+      !(rowAnnual instanceof HTMLElement)
+    ) {
+      throw new Error('Missing breakdown sync calculator fixture nodes');
+    }
+
+    hydrateReglamentCalculator(root);
+
+    volumeInput.value = '3100.8';
+    volumeInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+    const volumeResultRow = findCalculatedRow(
+      calculateReglamentCalculatorState([
+        {
+          rowId,
+          key: 'volume',
+          baseline: 6_201.6,
+          value: '3100.8',
+        },
+      ]),
+      rowId,
+    );
+
+    expect(primarySalaryInput.value).toBe(
+      formatReglamentInputNumber(volumeResultRow.breakdown.primary_salary),
+    );
+
+    frequencyInput.value = '182.5';
+    frequencyInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+    const volumeAndFrequencyResultRow = findCalculatedRow(
+      calculateReglamentCalculatorState([
+        {
+          rowId,
+          key: 'volume',
+          baseline: 6_201.6,
+          value: '3100.8',
+        },
+        {
+          rowId,
+          key: 'frequency',
+          baseline: 365,
+          value: '182.5',
+        },
+      ]),
+      rowId,
+    );
+
+    expect(primarySalaryInput.value).toBe(
+      formatReglamentInputNumber(
+        volumeAndFrequencyResultRow.breakdown.primary_salary,
+      ),
+    );
+    expect(rowAnnual.textContent).toBe(
+      formatReglamentAnnualMoney(volumeAndFrequencyResultRow.annual_gross),
+    );
+  });
+
   it('renders fixed annual price changes from row details with short sotka unit', () => {
     document.body.innerHTML = `
       <div data-reglament-calculator>
