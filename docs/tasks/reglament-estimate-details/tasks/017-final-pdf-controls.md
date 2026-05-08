@@ -1,6 +1,6 @@
 # Task 017: Final PDF Controls
 
-Status: [ ] Not started
+Status: [x] Done
 
 ## Description
 
@@ -8,15 +8,15 @@ Use `final.pdf` as the top-level control index for detail rows and section total
 
 ## Acceptance Criteria
 
-- [ ] Each detail estimate row maps to a row or section in `final.pdf` where applicable.
-- [ ] Top-level annual gross controls reconcile to `estimate-2026`.
-- [ ] Control totals distinguish final-PDF controls from section-PDF detail controls.
-- [ ] Any final/detail mismatch is listed in checks markdown.
+- [x] Each detail estimate row maps to a row or section in `final.pdf` where applicable.
+- [x] Top-level annual gross controls reconcile to `estimate-2026`.
+- [x] Control totals distinguish final-PDF controls from section-PDF detail controls.
+- [x] Any final/detail mismatch is listed in checks markdown.
 
 ## Verification
 
-- [ ] `pnpm --filter @shelkovo/www test -- estimate-details-2026`
-- [ ] `/815/regulation/details/checks.md` includes final controls.
+- [x] `pnpm --filter @shelkovo/www test -- estimate-details-2026`
+- [x] `/815/regulation/details/checks.md` includes final controls.
 
 ## Dependencies
 

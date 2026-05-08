@@ -168,6 +168,7 @@ const fixtureDataset = {
     {
       id: 'cleaning-materials-total',
       estimate_row_id: 'cleaning-row',
+      control_source: 'section_pdf',
       cost_bucket: 'materials',
       source_total_rub: {
         value: 12500,
@@ -276,6 +277,7 @@ describe('estimate detail markdown companions', () => {
     const checks = buildEstimateDetailChecksMarkdown(fixtureDataset);
 
     expect(checks).toContain('cleaning-materials-total: materials');
+    expect(checks).toContain('источник контроля: секционный PDF');
     expect(checks).toContain('дельта: -25 ₽');
     expect(checks).toContain('Работа для сверки');
     expect(checks).toContain('machinist-loader: Машинист погрузчика');
@@ -314,5 +316,14 @@ describe('estimate detail markdown companions', () => {
       'ресурсная ведомость по локальному ресурсному сметному расчету',
     );
     expect(checks).toContain('Песок для посыпки дорог');
+  });
+
+  it('exposes final PDF controls in real checks markdown', () => {
+    const checks = buildEstimateDetailChecksMarkdown();
+
+    expect(checks).toContain('final-estimate-gross: gross');
+    expect(checks).toContain('источник контроля: итоговый PDF');
+    expect(checks).toContain('final-cleaning-gross');
+    expect(checks).toContain('Сумма дочерних строк отличается');
   });
 });

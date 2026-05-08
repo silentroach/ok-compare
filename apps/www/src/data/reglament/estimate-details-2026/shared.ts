@@ -1,6 +1,7 @@
 import {
   ESTIMATE_DETAIL_SOURCE_PDFS,
   type EstimateDetailControlTotal,
+  type EstimateDetailControlTotalInput,
   type EstimateDetailMoneyValue,
   type EstimateDetailQuantityValue,
   type EstimateDetailResource,
@@ -36,6 +37,7 @@ const detailStatusLabels = {
 const detailSourcePdfPagesTotal: Partial<
   Record<EstimateDetailSourcePdf, number>
 > = {
+  final: 2,
   cleaning: 27,
   landscaping: 22,
   improvement: 18,
@@ -134,5 +136,9 @@ export const detailResource = (
 ): EstimateDetailResource => input;
 
 export const detailControlTotal = (
-  input: EstimateDetailControlTotal,
-): EstimateDetailControlTotal => input;
+  input: EstimateDetailControlTotalInput,
+): EstimateDetailControlTotal => {
+  const { control_source, ...rest } = input;
+
+  return { ...rest, control_source: control_source ?? 'section_pdf' };
+};

@@ -37,6 +37,14 @@ const RESOURCE_KIND_LABELS = {
   other_cost: 'прочие затраты',
 } as const satisfies Record<EstimateDetailResourceKind, string>;
 
+const CONTROL_SOURCE_LABELS = {
+  section_pdf: 'секционный PDF',
+  final_pdf: 'итоговый PDF',
+} as const satisfies Record<
+  EstimateDetailControlTotal['control_source'],
+  string
+>;
+
 const EMPTY_LIST_LINE = '- Нет данных в текущей версии dataset.';
 
 const join = (lines: readonly string[]): string => `${lines.join('\n')}\n`;
@@ -150,7 +158,7 @@ const controlTotalLine = (control: EstimateDetailControlTotal): string => {
   const resources = control.resource_ids?.join(', ') ?? '-';
   const note = control.note ? `; примечание: ${control.note}` : '';
 
-  return `- ${control.id}: ${control.cost_bucket}; строка сметы: ${control.estimate_row_id}; source total: ${formatMoney(control.source_total_rub)}; ${detail}; ${aggregate}; дельта: ${formatDelta(control.delta_rub)}; допуск: ${tolerance}; ресурсы: ${resources}; статус: ${control.status_label_ru}; source: ${sources(control.source_refs)}${note}`;
+  return `- ${control.id}: ${control.cost_bucket}; строка сметы: ${control.estimate_row_id}; источник контроля: ${CONTROL_SOURCE_LABELS[control.control_source]}; source total: ${formatMoney(control.source_total_rub)}; ${detail}; ${aggregate}; дельта: ${formatDelta(control.delta_rub)}; допуск: ${tolerance}; ресурсы: ${resources}; статус: ${control.status_label_ru}; source: ${sources(control.source_refs)}${note}`;
 };
 
 const workItemNeedsCheckLine = (item: EstimateDetailWorkItem): string => {

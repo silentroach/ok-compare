@@ -4,6 +4,7 @@ import {
   cleaningResources,
   cleaningWorkItems,
 } from '@/data/reglament/estimate-details-2026/cleaning';
+import { finalControlTotals } from '@/data/reglament/estimate-details-2026/final';
 import {
   improvementControlTotals,
   improvementResources,
@@ -41,6 +42,7 @@ export const estimateDetails2026 = {
     'Детальные факты извлекаются только из маленьких PDF в apps/www/public/815/regulation/original/; full.pdf для detail-данных не используется.',
     'PDF не парсятся во время runtime или build страницы: этот файл является curated dataset для ручного пополнения.',
     'Каждый будущий work item, resource и control total должен иметь source_refs с PDF, страницей и фрагментом; неоднозначные строки помечаются needs_check.',
+    'Итоги с control_source=final_pdf сверяют строки и разделы final.pdf с estimate-2026; control_source=section_pdf сверяет ресурсы и итоги секционных PDF.',
   ],
   work_items: [
     ...cleaningWorkItems,
@@ -59,6 +61,7 @@ export const estimateDetails2026 = {
     ...improvementResources,
   ],
   control_totals: [
+    ...finalControlTotals,
     ...cleaningControlTotals,
     ...wasteControlTotals,
     ...securityControlTotals,

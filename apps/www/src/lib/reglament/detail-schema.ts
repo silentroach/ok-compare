@@ -54,6 +54,14 @@ export const ESTIMATE_DETAIL_STATUSES = [
 
 export type EstimateDetailStatus = (typeof ESTIMATE_DETAIL_STATUSES)[number];
 
+export const ESTIMATE_DETAIL_CONTROL_SOURCES = [
+  'section_pdf',
+  'final_pdf',
+] as const;
+
+export type EstimateDetailControlSource =
+  (typeof ESTIMATE_DETAIL_CONTROL_SOURCES)[number];
+
 export interface EstimateDetailSourceRef {
   readonly pdf: EstimateDetailSourcePdf;
   readonly page: number;
@@ -121,9 +129,10 @@ export type EstimateDetailResource = {
   readonly note?: string;
 } & EstimateDetailStatusInfo;
 
-export type EstimateDetailControlTotal = {
+export type EstimateDetailControlTotalBase = {
   readonly id: EstimateDetailControlTotalId;
   readonly estimate_row_id: EstimateRowId;
+  readonly control_source: EstimateDetailControlSource;
   readonly cost_bucket: EstimateDetailCostBucket;
   readonly source_total_rub: EstimateDetailMoneyValue;
   readonly detail_total_rub?: EstimateDetailMoneyValue;
@@ -133,7 +142,17 @@ export type EstimateDetailControlTotal = {
   readonly resource_ids?: readonly EstimateDetailResourceId[];
   readonly source_refs: NonEmptyReadonlyArray<EstimateDetailSourceRef>;
   readonly note?: string;
-} & EstimateDetailStatusInfo;
+};
+
+export type EstimateDetailControlTotalInput = Omit<
+  EstimateDetailControlTotalBase,
+  'control_source'
+> &
+  Partial<Pick<EstimateDetailControlTotalBase, 'control_source'>> &
+  EstimateDetailStatusInfo;
+
+export type EstimateDetailControlTotal = EstimateDetailControlTotalBase &
+  EstimateDetailStatusInfo;
 
 export interface EstimateDetailDataset {
   readonly schema_version: string;

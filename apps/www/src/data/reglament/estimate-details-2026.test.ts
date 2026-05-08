@@ -34,6 +34,7 @@ const flattenRows = (rows: readonly EstimateRow[]): readonly EstimateRow[] =>
   rows.flatMap((row) => [row, ...flattenRows(row.children ?? [])]);
 
 const estimateItemIds = new Set([
+  estimate2026.id,
   ...estimate2026.sections.map((section) => section.id),
   ...flattenRows(estimate2026.sections.flatMap((section) => section.rows)).map(
     (row) => row.id,
@@ -86,6 +87,23 @@ const resourcesForControlTotal = (
 };
 
 describe('estimate details 2026 dataset', () => {
+  it('uses final.pdf as a gross control index', () => {
+    const finalControls = estimateDetails2026.control_totals
+      .filter((controlTotal) => controlTotal.control_source === 'final_pdf')
+      .map((controlTotal) => ({
+        id: controlTotal.id,
+        estimate_row_id: controlTotal.estimate_row_id,
+        source_total_rub: controlTotal.source_total_rub.value,
+        detail_total_rub: controlTotal.detail_total_rub?.value ?? null,
+        aggregate_total_rub: controlTotal.aggregate_total_rub?.value ?? null,
+        delta_rub: controlTotal.delta_rub ?? null,
+        status: controlTotal.status,
+        source_pdf: controlTotal.source_refs[0].pdf,
+      }));
+
+    expect(finalControls).toMatchSnapshot();
+  });
+
   it('captures waste details from waste.pdf', () => {
     const wasteRowIds = new Set([
       'waste-operator-service',
@@ -109,7 +127,11 @@ describe('estimate details 2026 dataset', () => {
         status: resource.status,
       }));
     const controlTotals = estimateDetails2026.control_totals
-      .filter((controlTotal) => wasteRowIds.has(controlTotal.estimate_row_id))
+      .filter(
+        (controlTotal) =>
+          controlTotal.control_source === 'section_pdf' &&
+          wasteRowIds.has(controlTotal.estimate_row_id),
+      )
       .map((controlTotal) => ({
         id: controlTotal.id,
         cost_bucket: controlTotal.cost_bucket,
@@ -360,8 +382,10 @@ describe('estimate details 2026 dataset', () => {
         status: resource.status,
       }));
     const controlTotals = estimateDetails2026.control_totals
-      .filter((controlTotal) =>
-        securityRowIds.has(controlTotal.estimate_row_id),
+      .filter(
+        (controlTotal) =>
+          controlTotal.control_source === 'section_pdf' &&
+          securityRowIds.has(controlTotal.estimate_row_id),
       )
       .map((controlTotal) => ({
         id: controlTotal.id,
@@ -729,8 +753,10 @@ describe('estimate details 2026 dataset', () => {
         status: resource.status,
       }));
     const controlTotals = estimateDetails2026.control_totals
-      .filter((controlTotal) =>
-        lightingRowIds.has(controlTotal.estimate_row_id),
+      .filter(
+        (controlTotal) =>
+          controlTotal.control_source === 'section_pdf' &&
+          lightingRowIds.has(controlTotal.estimate_row_id),
       )
       .map((controlTotal) => ({
         id: controlTotal.id,
@@ -1161,6 +1187,7 @@ describe('estimate details 2026 dataset', () => {
       .filter(
         (controlTotal) =>
           landscapingRowIds.has(controlTotal.estimate_row_id) &&
+          controlTotal.control_source === 'section_pdf' &&
           controlTotal.cost_bucket === 'gross',
       )
       .map((controlTotal) => ({
@@ -1229,6 +1256,7 @@ describe('estimate details 2026 dataset', () => {
       .filter(
         (controlTotal) =>
           improvementRowIds.has(controlTotal.estimate_row_id) &&
+          controlTotal.control_source === 'section_pdf' &&
           controlTotal.cost_bucket === 'gross',
       )
       .map((controlTotal) => ({
@@ -1244,6 +1272,8 @@ describe('estimate details 2026 dataset', () => {
       .filter(
         (item) =>
           improvementRowIds.has(item.estimate_row_id) &&
+          (!('control_source' in item) ||
+            item.control_source === 'section_pdf') &&
           item.status === 'needs_check',
       )
       .map((item) => item.id);
@@ -1317,8 +1347,10 @@ describe('estimate details 2026 dataset', () => {
         status: resource.status,
       }));
     const controlTotals = estimateDetails2026.control_totals
-      .filter((controlTotal) =>
-        cleaningRowIds.has(controlTotal.estimate_row_id),
+      .filter(
+        (controlTotal) =>
+          controlTotal.control_source === 'section_pdf' &&
+          cleaningRowIds.has(controlTotal.estimate_row_id),
       )
       .map((controlTotal) => ({
         id: controlTotal.id,
@@ -1580,8 +1612,10 @@ describe('estimate details 2026 dataset', () => {
         status: resource.status,
       }));
     const controlTotals = estimateDetails2026.control_totals
-      .filter((controlTotal) =>
-        cleaningRowIds.has(controlTotal.estimate_row_id),
+      .filter(
+        (controlTotal) =>
+          controlTotal.control_source === 'section_pdf' &&
+          cleaningRowIds.has(controlTotal.estimate_row_id),
       )
       .map((controlTotal) => ({
         id: controlTotal.id,
@@ -1814,8 +1848,10 @@ describe('estimate details 2026 dataset', () => {
         status: resource.status,
       }));
     const controlTotals = estimateDetails2026.control_totals
-      .filter((controlTotal) =>
-        cleaningRowIds.has(controlTotal.estimate_row_id),
+      .filter(
+        (controlTotal) =>
+          controlTotal.control_source === 'section_pdf' &&
+          cleaningRowIds.has(controlTotal.estimate_row_id),
       )
       .map((controlTotal) => ({
         id: controlTotal.id,
@@ -2095,8 +2131,10 @@ describe('estimate details 2026 dataset', () => {
         status: resource.status,
       }));
     const controlTotals = estimateDetails2026.control_totals
-      .filter((controlTotal) =>
-        cleaningRowIds.has(controlTotal.estimate_row_id),
+      .filter(
+        (controlTotal) =>
+          controlTotal.control_source === 'section_pdf' &&
+          cleaningRowIds.has(controlTotal.estimate_row_id),
       )
       .map((controlTotal) => ({
         id: controlTotal.id,
@@ -2494,6 +2532,10 @@ describe('estimate details 2026 dataset', () => {
     const sumMismatches: readonly ControlTotalSumMismatch[] =
       estimateDetails2026.control_totals.flatMap(
         (controlTotal): readonly ControlTotalSumMismatch[] => {
+          if (controlTotal.control_source === 'final_pdf') {
+            return [];
+          }
+
           if (controlTotal.tolerance_rub === undefined) {
             return [];
           }
