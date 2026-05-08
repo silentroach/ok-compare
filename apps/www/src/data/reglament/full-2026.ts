@@ -182,7 +182,7 @@ const commonAssets = [
     total: quantity('36', 36, 'sum_explicit_values'),
     total_mode: 'sum_explicit_values',
     source_refs: [source(128, 'Приложение №2 / Дороги и тротуары / строка 2')],
-    verification_note: 'пустые ячейки в PDF',
+    verification_note: null,
   }),
   asset({
     id: 'roads-speed-bumps',
@@ -202,7 +202,7 @@ const commonAssets = [
         note: 'Единица измерения не указана; по смыслу это количество в штуках.',
       }),
     ],
-    verification_note: 'единица в PDF не указана; по смыслу шт.',
+    verification_note: null,
   }),
   asset({
     id: 'roads-parking-sites',
@@ -218,7 +218,7 @@ const commonAssets = [
     total: quantity('449', 449, 'sum_explicit_values'),
     total_mode: 'sum_explicit_values',
     source_refs: [source(128, 'Приложение №2 / Дороги и тротуары / строка 4')],
-    verification_note: 'пустая ячейка в PDF',
+    verification_note: null,
   }),
   asset({
     id: 'stormwater-open-ditches',
@@ -250,7 +250,7 @@ const commonAssets = [
     total: quantity('110', 110, 'sum_explicit_values'),
     total_mode: 'sum_explicit_values',
     source_refs: [source(128, 'Приложение №2 / Дороги и тротуары / строка 6')],
-    verification_note: 'пустые ячейки в PDF',
+    verification_note: null,
   }),
   asset({
     id: 'green-mowing-area',
@@ -298,7 +298,7 @@ const commonAssets = [
     total: quantity('129 606', 129606, 'sum_explicit_values'),
     total_mode: 'sum_explicit_values',
     source_refs: [source(128, 'Приложение №2 / Зеленые насаждения / строка 3')],
-    verification_note: 'пустая ячейка в PDF',
+    verification_note: null,
   }),
   asset({
     id: 'improvement-playground-ground',
@@ -316,7 +316,7 @@ const commonAssets = [
     source_refs: [
       source(128, 'Приложение №2 / Объекты благоустройства / строка 2'),
     ],
-    verification_note: 'пустые ячейки в PDF',
+    verification_note: null,
   }),
   asset({
     id: 'improvement-playground-elements',
@@ -334,7 +334,7 @@ const commonAssets = [
     source_refs: [
       source(128, 'Приложение №2 / Объекты благоустройства / строка 3'),
     ],
-    verification_note: 'пустые ячейки в PDF',
+    verification_note: null,
   }),
   asset({
     id: 'improvement-sandbox-sand',
@@ -352,7 +352,7 @@ const commonAssets = [
     source_refs: [
       source(128, 'Приложение №2 / Объекты благоустройства / строка 4'),
     ],
-    verification_note: 'пустые ячейки в PDF',
+    verification_note: null,
   }),
   asset({
     id: 'improvement-sports-ground',
@@ -368,11 +368,9 @@ const commonAssets = [
     total: quantity('775', 775, 'sum_explicit_values'),
     total_mode: 'sum_explicit_values',
     source_refs: [
-      source(129, 'Приложение №2 / Объекты благоустройства / строка 5', {
-        note: 'OCR в текстовом слое искажает слово «Спортивная».',
-      }),
+      source(129, 'Приложение №2 / Объекты благоустройства / строка 5'),
     ],
-    verification_note: 'OCR-искажение в текстовом слое',
+    verification_note: null,
   }),
   asset({
     id: 'improvement-sports-elements',
@@ -390,7 +388,7 @@ const commonAssets = [
     source_refs: [
       source(129, 'Приложение №2 / Объекты благоустройства / строка 8'),
     ],
-    verification_note: 'пустые ячейки в PDF',
+    verification_note: null,
   }),
   asset({
     id: 'improvement-water-area',
@@ -408,7 +406,7 @@ const commonAssets = [
     source_refs: [
       source(129, 'Приложение №2 / Объекты благоустройства / строка 11'),
     ],
-    verification_note: 'пустые ячейки в PDF',
+    verification_note: null,
   }),
   asset({
     id: 'improvement-fence-profile-sheet',
@@ -442,7 +440,7 @@ const commonAssets = [
     total: quantity('-', null, 'group_row'),
     total_mode: 'group_row',
     source_refs: [source(129, 'Приложение №2 / Электроснабжение / строка 1')],
-    verification_note: 'группирующая строка; конкретная строка ниже',
+    verification_note: null,
   }),
   asset({
     id: 'electric-street-light-zhku-16-100-001',
@@ -462,7 +460,7 @@ const commonAssets = [
         note: 'Значение «100» относится к мощности светильника, 100 Вт; количество учтено в штуках.',
       }),
     ],
-    verification_note: 'мощность 100 Вт; количество в штуках',
+    verification_note: null,
   }),
   asset({
     id: 'electric-cable-line-length',
@@ -514,7 +512,7 @@ const commonAssets = [
     total: quantity('1', 1, 'sum_explicit_values'),
     total_mode: 'sum_explicit_values',
     source_refs: [source(129, 'Приложение №2 / Электроснабжение / строка 4')],
-    verification_note: 'пустые ячейки в PDF',
+    verification_note: null,
   }),
   asset({
     id: 'electric-ktppnkkk',
@@ -534,8 +532,7 @@ const commonAssets = [
         note: 'В PDF указано именно «КТППНккк»; вероятно это обозначение КТППН с суффиксом кабельного исполнения, но источник не раскрывает расшифровку.',
       }),
     ],
-    verification_note:
-      'в PDF указано именно «КТППНккк»; вероятно обозначение КТППН с суффиксом кабельного исполнения, но источник не раскрывает расшифровку',
+    verification_note: null,
   }),
   asset({
     id: 'electric-transformer-10kv-160kva',
@@ -551,7 +548,7 @@ const commonAssets = [
     total: quantity('5', 5, 'sum_explicit_values'),
     total_mode: 'sum_explicit_values',
     source_refs: [source(129, 'Приложение №2 / Электроснабжение / строка 7')],
-    verification_note: 'пустые ячейки в PDF',
+    verification_note: null,
   }),
   asset({
     id: 'security-post-24h',
@@ -587,7 +584,7 @@ const commonAssets = [
         note: 'Строка продолжает таблицу после разрыва страницы.',
       }),
     ],
-    verification_note: 'разрыв страницы в PDF; строка продолжена ниже',
+    verification_note: null,
   }),
   asset({
     id: 'security-patrol-times-per-day',
@@ -607,7 +604,7 @@ const commonAssets = [
         note: 'Показатель является периодичностью, а не инвентарной суммой.',
       }),
     ],
-    verification_note: 'не суммировать как инвентарный объект',
+    verification_note: null,
   }),
   asset({
     id: 'security-barrier',
@@ -623,7 +620,7 @@ const commonAssets = [
     total: quantity('3', 3, 'sum_explicit_values'),
     total_mode: 'sum_explicit_values',
     source_refs: [source(130, 'Приложение №2 / Охрана / строка 2')],
-    verification_note: 'пустая ячейка в PDF',
+    verification_note: null,
   }),
   asset({
     id: 'security-skud-trassir',
@@ -639,7 +636,7 @@ const commonAssets = [
     total: quantity('5', 5, 'sum_explicit_values'),
     total_mode: 'sum_explicit_values',
     source_refs: [source(130, 'Приложение №2 / Охрана / строка 3')],
-    verification_note: 'пустые ячейки в PDF',
+    verification_note: null,
   }),
   asset({
     id: 'security-cameras',
@@ -655,7 +652,7 @@ const commonAssets = [
     total: quantity('34', 34, 'sum_explicit_values'),
     total_mode: 'sum_explicit_values',
     source_refs: [source(130, 'Приложение №2 / Охрана / строка 4')],
-    verification_note: 'пустая ячейка в PDF',
+    verification_note: null,
   }),
   asset({
     id: 'security-monitors',
@@ -671,7 +668,7 @@ const commonAssets = [
     total: quantity('3', 3, 'sum_explicit_values'),
     total_mode: 'sum_explicit_values',
     source_refs: [source(130, 'Приложение №2 / Охрана / строка 5')],
-    verification_note: 'пустая ячейка в PDF',
+    verification_note: null,
   }),
   asset({
     id: 'security-server',
@@ -687,7 +684,7 @@ const commonAssets = [
     total: quantity('3', 3, 'sum_explicit_values'),
     total_mode: 'sum_explicit_values',
     source_refs: [source(130, 'Приложение №2 / Охрана / строка 6')],
-    verification_note: 'пустая ячейка в PDF',
+    verification_note: null,
   }),
   asset({
     id: 'security-crm-domilend',
@@ -1359,11 +1356,11 @@ const auditNotes = [
   {
     id: 'sotka-vs-m2-unit',
     category: 'calculation_check',
-    title: 'Единицы формулы: м² против соток',
+    title: 'Единицы формулы: м² и сотки согласуются через пересчет',
     summary:
-      'Формула описывает общую площадь как м², но сводная смета считает тариф за 1 сотку.',
-    public_wording: 'требует проверки единиц',
-    severity: 'needs_check',
+      'Формула описывает общую площадь как м², а сводная смета публикует тариф за 1 сотку; расчет совпадает при переводе 1 сотки в 100 м².',
+    public_wording: 'единицы согласованы через перевод м² в сотки',
+    severity: 'info',
     related_fact_ids: [
       'villages:shelkovo-village',
       'audit_notes:tariff-summary',
@@ -1378,15 +1375,16 @@ const auditNotes = [
       source(126, 'ИТОГО', { quote: '221 264 198 ... 902,07' }),
     ],
     next_step:
-      'Сверить рабочий расчет и понять, является ли м² технической ошибкой в описании единиц.',
+      'Контрольный расчет: 221 264 198 / 20 440,54 / 12 = 902,064 ₽/сотка/мес; в м² это 9,02064 ₽/м²/мес.',
   },
   {
     id: 'waste-temporary-residence-0-5',
     category: 'calculation_check',
-    title: 'Коэффициент временного проживания 0,50 в ТКО',
+    title:
+      'Коэффициент временного проживания 0,50 в ТКО не подтвержден внешним нормативом',
     summary:
-      'В расчете ТКО используется коэффициент временного проживания 0,50, уменьшающий расчетный объем.',
-    public_wording: 'требует отдельной сверки',
+      'В расчете ТКО норматив 0,1000 и К1=0,5252 отделены от коэффициента временного проживания 0,50; публичное нормативное основание для 0,50 не найдено.',
+    public_wording: 'требует основания для коэффициента 0,50',
     severity: 'needs_check',
     related_fact_ids: [
       'services:year-round-solid-waste-removal',
@@ -1398,7 +1396,7 @@ const auditNotes = [
       }),
     ],
     next_step:
-      'Запросить основание коэффициента и проверить актуальность для 2026 года.',
+      'Запросить у составителя сметы основание коэффициента 0,50; без него расчетный объем ТКО меняется с 6 202 до 12 403 м³ в год.',
   },
   {
     id: 'perimeter-fence-estimate-conflict',

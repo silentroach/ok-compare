@@ -79,14 +79,9 @@ const displayQuantity = (
   quantity.value === null
     ? quantity.raw
     : formatReglamentNumber(quantity.value);
-const hiddenVerificationNotes = new Set([
-  'пустые ячейки в PDF',
-  'пустая ячейка в PDF',
-  'требует визуальной сверки: единица измерения не указана',
-]);
 const publicVerificationNote = (
   note: FullReglamentCommonAsset['verification_note'],
-): string | null => (note && !hiddenVerificationNotes.has(note) ? note : null);
+): string | null => note;
 const villageIcons = {
   'shelkovo-village': VillageIcon,
   'shelkovo-forest': ForestIcon,
@@ -154,8 +149,7 @@ const tableHeaderCellRightClass = `${tableHeaderCellClass} text-right`;
                     полный регламент
                   </a>
                   , Приложение №2, стр. 128-130. Значения перенесены как
-                  справочные факты; спорные или неоднозначные строки отмечены
-                  отдельно.
+                  справочные факты; пустые ячейки сохранены пустыми.
                 </p>
               </div>
 
