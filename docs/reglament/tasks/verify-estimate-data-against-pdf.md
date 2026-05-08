@@ -1,8 +1,10 @@
 # Сверить данные регламента с PDF
 
-Статус: task.
+Статус: done.
 Дата: 2026-05-07.
 Поверхность: `/reglament/`, `apps/www/src/data/reglament/estimate-2026.ts`, `docs/reglament/original/*.pdf`.
+
+Результат: `docs/reglament/verification/estimate-2026-pdf-audit.md`, усилены тесты `estimate-2026.test.ts` и `calculate.test.ts`.
 
 ## Проблема
 

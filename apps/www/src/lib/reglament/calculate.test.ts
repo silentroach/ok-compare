@@ -5,6 +5,15 @@ import type { Estimate } from '@/lib/reglament/schema';
 
 import { calculateEstimate } from './calculate';
 
+type CalculatedRow = ReturnType<
+  typeof calculateEstimate
+>['sections'][number]['rows'][number];
+
+const flattenCalculatedRows = (
+  rows: readonly CalculatedRow[],
+): readonly CalculatedRow[] =>
+  rows.flatMap((row) => [row, ...flattenCalculatedRows(row.children ?? [])]);
+
 const sourceRefs = [
   { pdf: 'final', page: 1, fragment: 'test fixture' },
 ] as const;
@@ -135,6 +144,31 @@ describe('calculateEstimate', () => {
     expect(
       result.sections.every((section) => section.delta_annual_gross === 0),
     ).toBe(true);
+  });
+
+  it('keeps calculated baseline rows identical to the feed baseline', () => {
+    const result = calculateEstimate(estimate2026);
+    const calculatedRowsById = new Map<string, CalculatedRow>(
+      result.sections.flatMap((section) =>
+        flattenCalculatedRows(section.rows).map(
+          (row) => [row.id, row] as const,
+        ),
+      ),
+    );
+
+    for (const section of estimate2026.sections) {
+      for (const row of section.rows) {
+        const calculated = calculatedRowsById.get(row.id);
+
+        expect(calculated).toMatchObject({
+          annual_gross: row.baseline.annual_gross,
+          tariff_per_sotka_month: row.baseline.tariff_per_sotka_month,
+          delta_annual_gross: 0,
+          delta_tariff_per_sotka_month: 0,
+          breakdown: row.baseline.breakdown,
+        });
+      }
+    }
   });
 
   it('applies a fixed annual price override to the row, section and total', () => {
