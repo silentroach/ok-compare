@@ -141,6 +141,7 @@ export interface EstimateDetailDataset {
   readonly title: string;
   readonly year: 2026;
   readonly source_pdfs: readonly EstimateDetailSourcePdfInfo[];
+  readonly curation_notes: readonly string[];
   readonly work_items: readonly EstimateDetailWorkItem[];
   readonly resources: readonly EstimateDetailResource[];
   readonly control_totals: readonly EstimateDetailControlTotal[];

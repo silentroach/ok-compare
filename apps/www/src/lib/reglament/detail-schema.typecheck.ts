@@ -26,6 +26,7 @@ export const validEstimateDetailDataset = {
       pages_total: 12,
     },
   ],
+  curation_notes: ['Проверочный dataset для typecheck контракта.'],
   work_items: [
     {
       id: 'cleaning-winter-mechanized-snow-removal',

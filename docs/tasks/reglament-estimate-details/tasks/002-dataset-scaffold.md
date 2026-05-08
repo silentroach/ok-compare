@@ -1,6 +1,6 @@
 # Task 002: Dataset Scaffold
 
-Status: [ ] Not started
+Status: [x] Done
 
 ## Description
 
@@ -8,14 +8,14 @@ Add the initial curated dataset file and helper constructors for `estimate-detai
 
 ## Acceptance Criteria
 
-- [ ] Dataset exists, likely `apps/www/src/data/reglament/estimate-details-2026.ts`.
-- [ ] Dataset has `schema_version`, `dataset_id`, source PDFs, curation notes and empty or minimal collections.
-- [ ] Helper constructors keep source refs, money values and quantities consistent.
-- [ ] Dataset exports typed value using the schema from Task 001.
+- [x] Dataset exists, likely `apps/www/src/data/reglament/estimate-details-2026.ts`.
+- [x] Dataset has `schema_version`, `dataset_id`, source PDFs, curation notes and empty or minimal collections.
+- [x] Helper constructors keep source refs, money values and quantities consistent.
+- [x] Dataset exports typed value using the schema from Task 001.
 
 ## Verification
 
-- [ ] `pnpm --filter @shelkovo/www typecheck`
+- [x] `pnpm --filter @shelkovo/www typecheck`
 
 ## Dependencies
 
