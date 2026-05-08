@@ -15,6 +15,13 @@
 - Текущий слой полного регламента: `apps/www/src/data/reglament/full-2026.ts`.
 - Текущие публичные поверхности: `apps/www/src/lib/reglament/routes.ts`, `discovery.ts`, `full-markdown.ts`, `llms.ts`.
 - MVP: JSON + markdown для LLM, без HTML UI.
+- Можешь подсматривать в /regulation/assets и связанные уже распаршенные данные для уточнения того, чего нет в твоих данных
+
+## Структура Dataset-Файлов
+
+- `apps/www/src/data/reglament/estimate-details-2026.ts` — только точка сборки `estimateDetails2026`.
+- Общие helper-ы и metadata PDF держать в `apps/www/src/data/reglament/estimate-details-2026/shared.ts`.
+- Секционные detail-данные держать в `apps/www/src/data/reglament/estimate-details-2026/{section}.ts`; новые задачи должны добавлять/расширять секционный модуль, а не наращивать сборочный файл.
 
 ## Правила Для Агентов
 

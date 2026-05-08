@@ -782,7 +782,7 @@ describe('estimate details 2026 dataset', () => {
             "cost_bucket": "usn",
             "id": "lighting-street-usn",
             "source_total_rub": 130601.32,
-            "status": "needs_check",
+            "status": "derived",
           },
           {
             "aggregate_total_rub": 317665.67,
@@ -810,7 +810,7 @@ describe('estimate details 2026 dataset', () => {
             "cost_bucket": "usn",
             "id": "lighting-electricity-usn",
             "source_total_rub": 28839.54,
-            "status": "needs_check",
+            "status": "derived",
           },
           {
             "aggregate_total_rub": 70146.86,
@@ -866,7 +866,7 @@ describe('estimate details 2026 dataset', () => {
             "cost_bucket": "usn",
             "id": "lighting-poles-usn",
             "source_total_rub": 17023.27,
-            "status": "needs_check",
+            "status": "derived",
           },
           {
             "aggregate_total_rub": 41406.05,
@@ -915,7 +915,7 @@ describe('estimate details 2026 dataset', () => {
             "cost_bucket": "usn",
             "id": "lighting-power-system-usn",
             "source_total_rub": 53348.94,
-            "status": "needs_check",
+            "status": "derived",
           },
           {
             "aggregate_total_rub": 129761.67,
@@ -979,7 +979,7 @@ describe('estimate details 2026 dataset', () => {
             "cost_bucket": "usn",
             "id": "lighting-street-usn-derived",
             "kind": "other_cost",
-            "status": "needs_check",
+            "status": "derived",
             "total_rub": 130601.32,
           },
           {
@@ -1000,7 +1000,7 @@ describe('estimate details 2026 dataset', () => {
             "cost_bucket": "usn",
             "id": "lighting-electricity-usn-derived",
             "kind": "other_cost",
-            "status": "needs_check",
+            "status": "derived",
             "total_rub": 28839.54,
           },
           {
@@ -1049,7 +1049,7 @@ describe('estimate details 2026 dataset', () => {
             "cost_bucket": "usn",
             "id": "lighting-poles-usn-derived",
             "kind": "other_cost",
-            "status": "needs_check",
+            "status": "derived",
             "total_rub": 17023.27,
           },
           {
@@ -1098,7 +1098,7 @@ describe('estimate details 2026 dataset', () => {
             "cost_bucket": "usn",
             "id": "lighting-power-system-usn-derived",
             "kind": "other_cost",
-            "status": "needs_check",
+            "status": "derived",
             "total_rub": 53348.94,
           },
           {
