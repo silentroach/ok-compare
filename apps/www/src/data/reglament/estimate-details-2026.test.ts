@@ -699,6 +699,43 @@ describe('estimate details 2026 dataset', () => {
     `);
   });
 
+  it('keeps security quote items enriched with source table fields', () => {
+    const skudSource = resourcesById
+      .get('security-equipment-skud-labor')
+      ?.source_refs.find(
+        (ref) =>
+          ref.pdf === 'security' &&
+          ref.page === 9 &&
+          ref.fragment === 'позиция 3.1 / обслуживание системы СКУД TRASSIR',
+      );
+    const skudItem = skudSource?.quote_items?.find(
+      (item) => item.label === 'Труд по обслуживанию системы СКУД TRASSIR',
+    );
+
+    expect(skudItem).toMatchInlineSnapshot(`
+      {
+        "label": "Труд по обслуживанию системы СКУД TRASSIR",
+        "quantity": {
+          "raw": "35,1",
+          "unit": "чел-час",
+          "value": 35.1,
+        },
+        "quote": "Затраты труда ... 35,1; 749,01; 26 252,91",
+        "resource_ids": [
+          "security-equipment-skud-labor",
+        ],
+        "total_rub": {
+          "raw": "26 252,91",
+          "value": 26252.91,
+        },
+        "unit_price_rub": {
+          "raw": "749,01",
+          "value": 749.01,
+        },
+      }
+    `);
+  });
+
   it('migrates multi-position quote items in every section detail module', () => {
     const sectionPdfs = [
       'cleaning',

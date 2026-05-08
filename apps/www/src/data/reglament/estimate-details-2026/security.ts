@@ -153,6 +153,16 @@ const securityEquipmentMonitorSource = detailSource(
   {
     quote:
       'Затраты труда ... 38,6; 749,01; 28 919,40; ИТОГО ПО ПОЗИЦИИ 69 464,40',
+    quote_items: detailSourceQuoteItems(
+      detailSourceQuoteItem({
+        label: 'Труд по обслуживанию монитора',
+        quote: 'Затраты труда ... 38,6; 749,01; 28 919,40',
+        resource_ids: [securityEquipmentMonitorLaborResourceId],
+        quantity: detailQuantity(38.6, 'чел-час', { raw: '38,6' }),
+        unit_price_rub: detailMoney(749.01, { raw: '749,01' }),
+        total_rub: detailMoney(28_919.4, { raw: '28 919,40' }),
+      }),
+    ),
   },
 );
 
@@ -163,6 +173,16 @@ const securityEquipmentServerPowerSource = detailSource(
   {
     quote:
       'Затраты труда ... 14,0; 749,01; 10 516,15; ИТОГО ПО ПОЗИЦИИ 25 259,79',
+    quote_items: detailSourceQuoteItems(
+      detailSourceQuoteItem({
+        label: 'Труд по обслуживанию блока питания сервера',
+        quote: 'Затраты труда ... 14,0; 749,01; 10 516,15',
+        resource_ids: [securityEquipmentServerPowerLaborResourceId],
+        quantity: detailQuantity(14, 'чел-час', { raw: '14,0' }),
+        unit_price_rub: detailMoney(749.01, { raw: '749,01' }),
+        total_rub: detailMoney(10_516.15, { raw: '10 516,15' }),
+      }),
+    ),
   },
 );
 
@@ -173,6 +193,16 @@ const securityEquipmentSkudSource = detailSource(
   {
     quote:
       'Затраты труда ... 35,1; 749,01; 26 252,91; ИТОГО ПО ПОЗИЦИИ 63 059,49',
+    quote_items: detailSourceQuoteItems(
+      detailSourceQuoteItem({
+        label: 'Труд по обслуживанию системы СКУД TRASSIR',
+        quote: 'Затраты труда ... 35,1; 749,01; 26 252,91',
+        resource_ids: [securityEquipmentSkudLaborResourceId],
+        quantity: detailQuantity(35.1, 'чел-час', { raw: '35,1' }),
+        unit_price_rub: detailMoney(749.01, { raw: '749,01' }),
+        total_rub: detailMoney(26_252.91, { raw: '26 252,91' }),
+      }),
+    ),
   },
 );
 
@@ -182,6 +212,16 @@ const securityEquipmentBarrierSource = detailSource(
   'позиция 4.1 / обслуживание автоматического гидравлического шлагбаума',
   {
     quote: 'Договорная цена; мес; 12,0; 30000,00; 360 000,00',
+    quote_items: detailSourceQuoteItems(
+      detailSourceQuoteItem({
+        label: 'Услуги сторонней организации по обслуживанию шлагбаумов',
+        quote: 'Договорная цена; мес; 12,0; 30000,00; 360 000,00',
+        resource_ids: [securityEquipmentBarrierContractorResourceId],
+        quantity: detailQuantity(12, 'мес', { raw: '12,0' }),
+        unit_price_rub: detailMoney(30_000, { raw: '30000,00' }),
+        total_rub: detailMoney(360_000, { raw: '360 000,00' }),
+      }),
+    ),
   },
 );
 
@@ -191,6 +231,16 @@ const securityEquipmentDomilendSource = detailSource(
   'позиция 5.1 / обслуживание CRM Домиленд',
   {
     quote: 'Договорная цена; мес; 12,0; 11215,38; 134 584,56',
+    quote_items: detailSourceQuoteItems(
+      detailSourceQuoteItem({
+        label: 'Услуги сторонней организации по обслуживанию CRM Домиленд',
+        quote: 'Договорная цена; мес; 12,0; 11215,38; 134 584,56',
+        resource_ids: [securityEquipmentDomilendContractorResourceId],
+        quantity: detailQuantity(12, 'мес', { raw: '12,0' }),
+        unit_price_rub: detailMoney(11_215.38, { raw: '11215,38' }),
+        total_rub: detailMoney(134_584.56, { raw: '134 584,56' }),
+      }),
+    ),
   },
 );
 
