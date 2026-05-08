@@ -8,6 +8,7 @@ import {
   REGLAMENT_PUBLIC_PATHS,
   reglamentApiCatalogPath,
   reglamentAssetsPath,
+  reglamentEstimateDetails2026DataPath,
   reglamentEstimate2026DataPath,
   reglamentFull2026DataPath,
   reglamentFullAssetsMarkdownPath,
@@ -151,6 +152,13 @@ describe('reglament discovery route smoke', () => {
         marker: '"id": "estimate-2026"',
       },
       {
+        name: 'estimate details json feed',
+        load: () =>
+          import('../../pages/815/regulation/data/estimate-details-2026.json'),
+        contentType: 'application/json',
+        marker: '"dataset_id": "estimate-details-2026"',
+      },
+      {
         name: 'full reglament markdown companion',
         load: () => import('../../pages/815/regulation/full.md'),
         contentType: 'text/markdown',
@@ -238,6 +246,9 @@ describe('reglament discovery route smoke', () => {
     const apiCatalog = JSON.stringify(catalog(root));
 
     expect(apiCatalog).toContain(`${root}${reglamentFull2026DataPath()}`);
+    expect(apiCatalog).toContain(
+      `${root}${reglamentEstimateDetails2026DataPath()}`,
+    );
     expect(apiCatalog).toContain(`${root}${reglamentFullAssetsMarkdownPath()}`);
     expect(apiCatalog).toContain(
       `${root}${reglamentFullServicesMarkdownPath()}`,

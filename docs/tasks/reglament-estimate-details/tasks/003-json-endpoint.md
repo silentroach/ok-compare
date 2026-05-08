@@ -1,6 +1,6 @@
 # Task 003: JSON Endpoint
 
-Status: [ ] Not started
+Status: [x] Done
 
 ## Description
 
@@ -8,15 +8,15 @@ Expose the detail dataset as a public JSON endpoint for agents and external chec
 
 ## Acceptance Criteria
 
-- [ ] New route exists: `/815/regulation/data/estimate-details-2026.json`.
-- [ ] Route returns the curated dataset with JSON content type.
-- [ ] Route path is added to reglament public paths.
-- [ ] Dataset URL helper exists in `routes.ts`.
+- [x] New route exists: `/815/regulation/data/estimate-details-2026.json`.
+- [x] Route returns the curated dataset with JSON content type.
+- [x] Route path is added to reglament public paths.
+- [x] Dataset URL helper exists in `routes.ts`.
 
 ## Verification
 
-- [ ] `pnpm --filter @shelkovo/www typecheck`
-- [ ] Build output contains the JSON route after `pnpm --filter @shelkovo/www build`.
+- [x] `pnpm --filter @shelkovo/www typecheck`
+- [x] Build output contains the JSON route after `pnpm --filter @shelkovo/www build`.
 
 ## Dependencies
 

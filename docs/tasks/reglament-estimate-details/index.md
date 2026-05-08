@@ -38,7 +38,7 @@
 
 - [x] [Task 001: Detail schema](tasks/001-detail-schema.md)
 - [x] [Task 002: Dataset scaffold](tasks/002-dataset-scaffold.md)
-- [ ] [Task 003: JSON endpoint](tasks/003-json-endpoint.md)
+- [x] [Task 003: JSON endpoint](tasks/003-json-endpoint.md)
 - [ ] [Task 004: Markdown companions](tasks/004-markdown-companions.md)
 - [ ] [Task 005: Discovery and LLM links](tasks/005-discovery-llm-links.md)
 - [ ] [Task 006: Dataset tests](tasks/006-dataset-tests.md)

@@ -1,6 +1,7 @@
 import { calculateEstimate } from './calculate';
 import {
   reglamentApiCatalogPath,
+  reglamentEstimateDetails2026DataPath,
   reglamentEstimate2026DataPath,
   reglamentEstimate2026OpenApiPath,
   reglamentEstimate2026SchemaPath,
@@ -663,6 +664,13 @@ export function catalog(root: string): Record<string, unknown> {
             type: 'application/json',
             'title*': star(
               'Основной машиночитаемый JSON сметы регламента 2026',
+            ),
+          },
+          {
+            href: abs(root, reglamentEstimateDetails2026DataPath()),
+            type: 'application/json',
+            'title*': star(
+              'Детальный машиночитаемый JSON сметы регламента 2026',
             ),
           },
           {

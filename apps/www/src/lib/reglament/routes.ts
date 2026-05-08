@@ -10,6 +10,8 @@ const REGLAMENT_FULL_SERVICE_MAP_MARKDOWN =
   '/815/regulation/full/service-map.md';
 const REGLAMENT_FULL_CHECKS_MARKDOWN = '/815/regulation/full/checks.md';
 const REGLAMENT_DATA_ESTIMATE_2026 = '/815/regulation/data/estimate-2026.json';
+const REGLAMENT_DATA_ESTIMATE_DETAILS_2026 =
+  '/815/regulation/data/estimate-details-2026.json';
 const REGLAMENT_DATA_FULL_2026 = '/815/regulation/data/full-2026.json';
 const REGLAMENT_ASSETS = '/815/regulation/assets/';
 const REGLAMENT_SERVICES = '/815/regulation/services/';
@@ -45,6 +47,7 @@ export const REGLAMENT_PUBLIC_PATHS = [
   REGLAMENT_FULL_SERVICE_MAP_MARKDOWN,
   REGLAMENT_FULL_CHECKS_MARKDOWN,
   REGLAMENT_DATA_ESTIMATE_2026,
+  REGLAMENT_DATA_ESTIMATE_DETAILS_2026,
   REGLAMENT_DATA_FULL_2026,
   REGLAMENT_ASSETS,
   REGLAMENT_SERVICES,
@@ -79,6 +82,9 @@ export const reglamentFullChecksMarkdownPath = (): string =>
 
 export const reglamentEstimate2026DataPath = (): string =>
   REGLAMENT_DATA_ESTIMATE_2026;
+
+export const reglamentEstimateDetails2026DataPath = (): string =>
+  REGLAMENT_DATA_ESTIMATE_DETAILS_2026;
 
 export const reglamentFull2026DataPath = (): string => REGLAMENT_DATA_FULL_2026;
 
@@ -123,6 +129,9 @@ export const reglamentFullChecksMarkdownUrl = (): string =>
 
 export const reglamentEstimate2026DataUrl = (): string =>
   withBase(REGLAMENT_DATA_ESTIMATE_2026);
+
+export const reglamentEstimateDetails2026DataUrl = (): string =>
+  withBase(REGLAMENT_DATA_ESTIMATE_DETAILS_2026);
 
 export const reglamentFull2026DataUrl = (): string =>
   withBase(REGLAMENT_DATA_FULL_2026);
