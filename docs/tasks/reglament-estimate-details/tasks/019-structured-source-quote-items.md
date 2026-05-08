@@ -1,6 +1,6 @@
 # Task 019: Structured Source Quote Items
 
-Status: [ ] Not started
+Status: [x] Completed
 
 ## Description
 
@@ -8,16 +8,16 @@ Add a structured representation for source quote fragments that currently pack m
 
 ## Acceptance Criteria
 
-- [ ] `EstimateDetailSourceRef` supports optional structured items without breaking current JSON consumers.
-- [ ] Shared helper API can build structured source refs consistently across detail modules.
-- [ ] Cleaning, landscaping, improvement, lighting, security and waste detail modules can migrate multi-position quotes incrementally.
-- [ ] Markdown companions render structured items clearly in Russian when present.
-- [ ] Tests cover JSON shape and markdown rendering for at least one migrated multi-position source ref.
+- [x] `EstimateDetailSourceRef` supports optional structured items without breaking current JSON consumers.
+- [x] Shared helper API can build structured source refs consistently across detail modules.
+- [x] Cleaning, landscaping, improvement, lighting, security and waste detail modules can migrate multi-position quotes incrementally.
+- [x] Markdown companions render structured items clearly in Russian when present.
+- [x] Tests cover JSON shape and markdown rendering for at least one migrated multi-position source ref.
 
 ## Verification
 
-- [ ] `pnpm --filter @shelkovo/www test -- estimate-details-2026`
-- [ ] `pnpm --filter @shelkovo/www test -- detail-markdown`
+- [x] `pnpm --filter @shelkovo/www test -- estimate-details-2026`
+- [x] `pnpm --filter @shelkovo/www test -- detail-markdown`
 
 ## Dependencies
 

@@ -6,6 +6,7 @@ import type {
   EstimateDetailQuantityValue,
   EstimateDetailResource,
   EstimateDetailResourceKind,
+  EstimateDetailSourceQuoteItem,
   EstimateDetailSourceRef,
   EstimateDetailWorkItem,
 } from '@/lib/reglament/detail-schema';
@@ -53,12 +54,34 @@ const EMPTY_LIST_LINE = '- Нет данных в текущей версии da
 
 const join = (lines: readonly string[]): string => `${lines.join('\n')}\n`;
 
+const sourceQuoteItem = (
+  item: EstimateDetailSourceQuoteItem,
+  index: number,
+): string => {
+  const resourceIds = item.resource_ids?.length
+    ? `; ресурсы: ${item.resource_ids.join(', ')}`
+    : '';
+  const quantity = item.quantity
+    ? `; кол-во: ${formatQuantity(item.quantity)}`
+    : '';
+  const unitPrice = item.unit_price_rub
+    ? `; цена: ${formatMoney(item.unit_price_rub)}`
+    : '';
+  const total = item.total_rub ? `; итог: ${formatMoney(item.total_rub)}` : '';
+  const note = item.note ? `; примечание: ${item.note}` : '';
+
+  return `${index + 1}) ${item.label}: «${item.quote}»${resourceIds}${quantity}${unitPrice}${total}${note}`;
+};
+
 const source = (ref: EstimateDetailSourceRef): string => {
   const fragment = ref.fragment ? `, ${ref.fragment}` : '';
   const quote = ref.quote ? `; цитата: «${ref.quote}»` : '';
+  const quoteItems = ref.quote_items
+    ? `; позиции цитаты: ${ref.quote_items.map(sourceQuoteItem).join(' | ')}`
+    : '';
   const note = ref.note ? `; примечание: ${ref.note}` : '';
 
-  return `[${ref.pdf}.pdf стр. ${ref.page}${fragment}](${absoluteUrl(reglamentSourcePdfUrl(ref.pdf))})${quote}${note}`;
+  return `[${ref.pdf}.pdf стр. ${ref.page}${fragment}](${absoluteUrl(reglamentSourcePdfUrl(ref.pdf))})${quote}${quoteItems}${note}`;
 };
 
 const sources = (refs: readonly EstimateDetailSourceRef[]): string =>

@@ -53,6 +53,15 @@ const resourcesById = new Map(
   estimateDetails2026.resources.map((resource) => [resource.id, resource]),
 );
 
+const obviousMultiPositionQuotePatterns = [
+  /Костюм .*; Куртка/,
+  /Ледоруб.*; Метла/,
+  /Метла .*; Грабли/,
+  /Рабочий.*; Машинист/,
+  /Трактор .*; ОПМ/,
+  /Видеокамера/,
+] as const;
+
 const detailFactsWithSourceRefs = (): readonly DetailFactWithSourceRefs[] => [
   ...estimateDetails2026.work_items.map((item) => ({
     fact_id: `work_items:${item.id}`,
@@ -356,6 +365,152 @@ describe('estimate details 2026 dataset', () => {
         ],
       }
     `);
+  });
+
+  it('exposes structured source quote items beside legacy quote text', () => {
+    const sourceRef = resourcesById
+      .get('waste-transfer-worker-labor')
+      ?.source_refs.find(
+        (ref) =>
+          ref.pdf === 'waste' &&
+          ref.page === 12 &&
+          ref.fragment ===
+            'ресурсная ведомость по локальному ресурсному сметному расчету',
+      );
+
+    expect(sourceRef?.quote).toBe(
+      'Рабочий ... 5147,3 664,15 3 418 555,10; Машинист 1460,0 934,32 1 364 107,20; Газель (GAZ 330232) 1460,0 318,02 464 303,42',
+    );
+    expect(sourceRef?.quote_items).toMatchInlineSnapshot(`
+      [
+        {
+          "label": "Рабочий по уборке территории",
+          "quantity": {
+            "raw": "5147,3",
+            "unit": "чел-час",
+            "value": 5147.3,
+          },
+          "quote": "Рабочий ... 5147,3 664,15 3 418 555,10",
+          "resource_ids": [
+            "waste-transfer-worker-labor",
+          ],
+          "total_rub": {
+            "raw": "3 418 555,10",
+            "value": 3418555.1,
+          },
+          "unit_price_rub": {
+            "raw": "664,15",
+            "value": 664.15,
+          },
+        },
+        {
+          "label": "Машинист",
+          "quantity": {
+            "raw": "1460,0",
+            "unit": "чел-час",
+            "value": 1460,
+          },
+          "quote": "Машинист 1460,0 934,32 1 364 107,20",
+          "resource_ids": [
+            "waste-transfer-machinist-labor",
+          ],
+          "total_rub": {
+            "raw": "1 364 107,20",
+            "value": 1364107.2,
+          },
+          "unit_price_rub": {
+            "raw": "934,32",
+            "value": 934.32,
+          },
+        },
+        {
+          "label": "Газель (GAZ 330232)",
+          "quantity": {
+            "raw": "1460,0",
+            "unit": "маш.-час",
+            "value": 1460,
+          },
+          "quote": "Газель (GAZ 330232) 1460,0 318,02 464 303,42",
+          "resource_ids": [
+            "waste-transfer-gazel-machine",
+          ],
+          "total_rub": {
+            "raw": "464 303,42",
+            "value": 464303.42,
+          },
+          "unit_price_rub": {
+            "raw": "318,02",
+            "value": 318.02,
+          },
+        },
+      ]
+    `);
+  });
+
+  it('migrates multi-position quote items in every section detail module', () => {
+    const sectionPdfs = [
+      'cleaning',
+      'improvement',
+      'landscaping',
+      'lighting',
+      'security',
+      'waste',
+    ] as const;
+    const refsWithItems = detailFactsWithSourceRefs()
+      .flatMap((fact) => fact.source_refs)
+      .filter((ref) => ref.quote_items !== undefined);
+    const migratedPdfs = [
+      ...new Set(refsWithItems.map((ref) => ref.pdf)),
+    ].sort();
+    const invalidItems = refsWithItems.flatMap((ref) =>
+      (ref.quote_items ?? []).flatMap((item, itemIndex) => {
+        const errors = [
+          item.label.trim() ? null : 'empty label',
+          item.quote.trim() ? null : 'empty quote',
+          ref.quote?.includes(item.quote)
+            ? null
+            : 'item quote missing in quote',
+          item.resource_ids?.length === 0 ? 'empty resource ids' : null,
+        ].filter((error): error is string => error !== null);
+
+        return errors.length > 0
+          ? [
+              {
+                pdf: ref.pdf,
+                page: ref.page,
+                fragment: ref.fragment,
+                item_index: itemIndex,
+                errors,
+              },
+            ]
+          : [];
+      }),
+    );
+
+    expect(migratedPdfs).toEqual([...sectionPdfs].sort());
+    expect(invalidItems).toEqual([]);
+  });
+
+  it('keeps obvious multi-position resource quotes structured', () => {
+    const missingStructuredItems = detailFactsWithSourceRefs()
+      .flatMap((fact) =>
+        fact.source_refs.map((ref) => ({ fact_id: fact.fact_id, ref })),
+      )
+      .filter(({ ref }) =>
+        obviousMultiPositionQuotePatterns.some((pattern) =>
+          pattern.test(ref.quote ?? ''),
+        ),
+      )
+      .filter(({ ref }) => ref.quote_items === undefined)
+      .map(({ fact_id, ref }) => ({
+        fact_id,
+        pdf: ref.pdf,
+        page: ref.page,
+        fragment: ref.fragment,
+        quote: ref.quote,
+      }));
+
+    expect(missingStructuredItems).toEqual([]);
   });
 
   it('captures security details from security.pdf', () => {

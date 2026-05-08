@@ -62,11 +62,22 @@ export const ESTIMATE_DETAIL_CONTROL_SOURCES = [
 export type EstimateDetailControlSource =
   (typeof ESTIMATE_DETAIL_CONTROL_SOURCES)[number];
 
+export interface EstimateDetailSourceQuoteItem {
+  readonly label: string;
+  readonly quote: string;
+  readonly resource_ids?: readonly EstimateDetailResourceId[];
+  readonly quantity?: EstimateDetailQuantityValue;
+  readonly unit_price_rub?: EstimateDetailMoneyValue;
+  readonly total_rub?: EstimateDetailMoneyValue;
+  readonly note?: string;
+}
+
 export interface EstimateDetailSourceRef {
   readonly pdf: EstimateDetailSourcePdf;
   readonly page: number;
   readonly fragment: string;
   readonly quote?: string;
+  readonly quote_items?: NonEmptyReadonlyArray<EstimateDetailSourceQuoteItem>;
   readonly note?: string;
 }
 

@@ -11,6 +11,8 @@ import {
   detailQuantity,
   detailResource,
   detailSource,
+  detailSourceQuoteItem,
+  detailSourceQuoteItems,
   detailSourceRefs,
   detailStatus,
   detailWorkItem,
@@ -212,6 +214,46 @@ const lightingResourceStatementSource = detailSource(
   {
     quote:
       'Электромонтажник 5767,1 664,15 3 830 217,03; Уличный светильник ЖКУ 16-100-001 146 670,00 97 820,00; Краска ... 453 612,50 277 692,80; Электроэнергия 218457 6,29 1 374 097,60',
+    quote_items: detailSourceQuoteItems(
+      detailSourceQuoteItem({
+        label: 'Электромонтажник',
+        quote: 'Электромонтажник 5767,1 664,15 3 830 217,03',
+        resource_ids: [
+          lightingStreetFixtureLaborResourceId,
+          lightingStreetCableLaborResourceId,
+          lightingPolesPaintLaborResourceId,
+          lightingPowerSystemKtpKrnLaborResourceId,
+          lightingPowerSystemTransformerLaborResourceId,
+        ],
+        quantity: detailQuantity(5_767.1, 'чел-час', { raw: '5767,1' }),
+        unit_price_rub: detailMoney(664.15, { raw: '664,15' }),
+        total_rub: detailMoney(3_830_217.03, { raw: '3 830 217,03' }),
+      }),
+      detailSourceQuoteItem({
+        label: 'Уличный светильник ЖКУ 16-100-001',
+        quote: 'Уличный светильник ЖКУ 16-100-001 146 670,00 97 820,00',
+        resource_ids: [lightingStreetFixtureMaterialResourceId],
+        quantity: detailQuantity(146, 'шт.', { raw: '146' }),
+        unit_price_rub: detailMoney(670, { raw: '670,00' }),
+        total_rub: detailMoney(97_820, { raw: '97 820,00' }),
+      }),
+      detailSourceQuoteItem({
+        label: 'Краска по металлу',
+        quote: 'Краска ... 453 612,50 277 692,80',
+        resource_ids: [lightingPolesPaintMaterialResourceId],
+        quantity: detailQuantity(453, 'кг.', { raw: '453' }),
+        unit_price_rub: detailMoney(612.5, { raw: '612,50' }),
+        total_rub: detailMoney(277_692.8, { raw: '277 692,80' }),
+      }),
+      detailSourceQuoteItem({
+        label: 'Электроэнергия',
+        quote: 'Электроэнергия 218457 6,29 1 374 097,60',
+        resource_ids: [lightingElectricityMaterialResourceId],
+        quantity: detailQuantity(218_457, 'кВт*час', { raw: '218457' }),
+        unit_price_rub: detailMoney(6.29, { raw: '6,29' }),
+        total_rub: detailMoney(1_374_097.6, { raw: '1 374 097,60' }),
+      }),
+    ),
   },
 );
 

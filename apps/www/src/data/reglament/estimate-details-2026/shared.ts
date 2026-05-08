@@ -7,6 +7,7 @@ import {
   type EstimateDetailResource,
   type EstimateDetailSourcePdf,
   type EstimateDetailSourcePdfInfo,
+  type EstimateDetailSourceQuoteItem,
   type EstimateDetailSourceRef,
   type EstimateDetailStatus,
   type EstimateDetailStatusInfo,
@@ -14,7 +15,10 @@ import {
 } from '@/lib/reglament/detail-schema';
 import type { NonEmptyReadonlyArray } from '@/lib/reglament/schema';
 
-type DetailSourceOptions = Pick<EstimateDetailSourceRef, 'quote' | 'note'>;
+type DetailSourceOptions = Pick<
+  EstimateDetailSourceRef,
+  'quote' | 'quote_items' | 'note'
+>;
 type DetailMoneyOptions = Pick<EstimateDetailMoneyValue, 'raw' | 'note'>;
 type DetailQuantityOptions = Pick<EstimateDetailQuantityValue, 'raw' | 'note'>;
 
@@ -76,9 +80,33 @@ export const detailSource = (
   if (!fragment.trim()) {
     throw new Error('detail source fragment must not be empty');
   }
+  if (options.quote_items?.length === 0) {
+    throw new Error('detail source quote items must not be empty');
+  }
 
   return { pdf, page, fragment, ...options };
 };
+
+export const detailSourceQuoteItem = (
+  input: EstimateDetailSourceQuoteItem,
+): EstimateDetailSourceQuoteItem => {
+  if (!input.label.trim()) {
+    throw new Error('detail source quote item label must not be empty');
+  }
+  if (!input.quote.trim()) {
+    throw new Error('detail source quote item quote must not be empty');
+  }
+  if (input.resource_ids?.some((resourceId) => !resourceId.trim())) {
+    throw new Error('detail source quote item resource ids must not be empty');
+  }
+
+  return input;
+};
+
+export const detailSourceQuoteItems = (
+  first: EstimateDetailSourceQuoteItem,
+  ...rest: readonly EstimateDetailSourceQuoteItem[]
+): NonEmptyReadonlyArray<EstimateDetailSourceQuoteItem> => [first, ...rest];
 
 export const detailSourceRefs = (
   first: EstimateDetailSourceRef,

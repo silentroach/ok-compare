@@ -85,6 +85,27 @@ const fixtureDataset = {
           pdf: 'cleaning',
           page: 4,
           fragment: 'Ведомость ресурсов / материалы / строка 1',
+          quote: 'Песок 12,5 т 1 000,00 12 500,00',
+          quote_items: [
+            {
+              label: 'Песок',
+              quote: 'Песок 12,5 т 1 000,00 12 500,00',
+              resource_ids: ['material-sand'],
+              quantity: {
+                value: 12.5,
+                unit: 'т',
+                raw: '12,5 т',
+              },
+              unit_price_rub: {
+                value: 1000,
+                raw: '1 000,00',
+              },
+              total_rub: {
+                value: 12500,
+                raw: '12 500,00',
+              },
+            },
+          ],
         },
       ],
     },
@@ -277,6 +298,14 @@ describe('estimate detail markdown companions', () => {
     expect(labor).toContain('labor-worker: Рабочий зеленого хозяйства');
     expect(labor).toContain('machinist-loader: Машинист погрузчика');
     expect(labor).toContain('ставка: 2 000,00 руб.');
+  });
+
+  it('renders structured source quote items in Russian when present', () => {
+    const materials = buildEstimateDetailMaterialsMarkdown(fixtureDataset);
+
+    expect(materials).toContain(
+      'позиции цитаты: 1) Песок: «Песок 12,5 т 1 000,00 12 500,00»; ресурсы: material-sand; кол-во: 12,5 т; цена: 1 000,00 руб.; итог: 12 500,00 руб.',
+    );
   });
 
   it('lists control totals, deltas and needs_check items', () => {

@@ -81,6 +81,7 @@ export const validEstimateDetailDataset = {
     {
       id: 'cleaning-winter-mechanized-machines-total',
       estimate_row_id: 'cleaning-winter-mechanized',
+      control_source: 'section_pdf',
       cost_bucket: 'machines',
       source_total_rub: {
         value: 10_000,

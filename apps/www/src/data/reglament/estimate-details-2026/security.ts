@@ -11,6 +11,8 @@ import {
   detailQuantity,
   detailResource,
   detailSource,
+  detailSourceQuoteItem,
+  detailSourceQuoteItems,
   detailSourceRefs,
   detailStatus,
   detailWorkItem,
@@ -123,6 +125,24 @@ const securityEquipmentVideoSource = detailSource(
   {
     quote:
       '584,1; 749,01; 437 513,59; Видеокамера; шт.; 2,0; 5000,00; 10 000,00; ИТОГО ПО ПОЗИЦИИ 1 060 907,64',
+    quote_items: detailSourceQuoteItems(
+      detailSourceQuoteItem({
+        label: 'Труд по обслуживанию охранного видеонаблюдения',
+        quote: '584,1; 749,01; 437 513,59',
+        resource_ids: [securityEquipmentVideoLaborResourceId],
+        quantity: detailQuantity(584.1, 'чел-час', { raw: '584,1' }),
+        unit_price_rub: detailMoney(749.01, { raw: '749,01' }),
+        total_rub: detailMoney(437_513.59, { raw: '437 513,59' }),
+      }),
+      detailSourceQuoteItem({
+        label: 'Видеокамера',
+        quote: 'Видеокамера; шт.; 2,0; 5000,00; 10 000,00',
+        resource_ids: [securityEquipmentVideoCamerasResourceId],
+        quantity: detailQuantity(2, 'шт.', { raw: '2,0' }),
+        unit_price_rub: detailMoney(5_000, { raw: '5000,00' }),
+        total_rub: detailMoney(10_000, { raw: '10 000,00' }),
+      }),
+    ),
   },
 );
 

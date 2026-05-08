@@ -64,7 +64,13 @@
 - [x] [Task 016: Cleaning resource statement](tasks/011-cleaning-resource-statement.md)
 - [x] [Task 017: Final PDF controls](tasks/017-final-pdf-controls.md)
 - [x] [Task 018: Final agent review](tasks/018-final-agent-review.md)
-- [ ] [Task 019: Structured source quote items](tasks/019-structured-source-quote-items.md)
+- [x] [Task 019: Structured source quote items](tasks/019-structured-source-quote-items.md)
+- [ ] [Task 020: Cleaning quote item table fields](tasks/020-cleaning-quote-item-table-fields.md)
+- [ ] [Task 021: Landscaping quote item table fields](tasks/021-landscaping-quote-item-table-fields.md)
+- [ ] [Task 022: Improvement quote item table fields](tasks/022-improvement-quote-item-table-fields.md)
+- [ ] [Task 023: Lighting quote item table fields](tasks/023-lighting-quote-item-table-fields.md)
+- [ ] [Task 024: Security quote item table fields](tasks/024-security-quote-item-table-fields.md)
+- [ ] [Task 025: Waste quote item table fields](tasks/025-waste-quote-item-table-fields.md)
 
 ## Checkpoints
 
@@ -72,6 +78,7 @@
 - [x] After Tasks 007-011: `cleaning.pdf` is fully represented and reconciled.
 - [x] After Tasks 012-016: all small section PDFs have detail resources.
 - [x] After Tasks 017-018: final controls, LLM docs and review are complete.
+- [ ] After Tasks 020-025: structured quote items include source table units, quantities, unit prices and totals where the PDF rows expose them.
 
 ## Open Questions
 
