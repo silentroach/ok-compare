@@ -393,6 +393,9 @@ export const getStatusIncidentPhase = (
   > & {
     readonly service?: StatusService;
   },
+  opts?: {
+    readonly nowMs?: number;
+  },
 ): StatusIncidentPhase => {
   if (incident.is_active) {
     return {
@@ -401,7 +404,7 @@ export const getStatusIncidentPhase = (
     };
   }
 
-  if (Date.parse(incident.started_iso) > Date.now()) {
+  if (Date.parse(incident.started_iso) > (opts?.nowMs ?? Date.now())) {
     return {
       label: incident.kind === 'maintenance' ? 'запланировано' : 'ожидается',
       tone: incident.kind === 'maintenance' ? 'warning' : 'info',
