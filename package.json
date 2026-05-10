@@ -10,20 +10,16 @@
     }
   },
   "scripts": {
-    "clean": "rm -rf dist apps/www/dist node_modules/.astro apps/www/.astro",
-    "prebuild": "pnpm run clean",
-    "predev": "pnpm run clean",
-    "dev": "pnpm dev:www",
-    "dev:www": "pnpm --dir apps/www dev",
+    "clean": "rm -rf dist apps/www/dist apps/www/.astro node_modules/.astro",
+    "dev": "turbo dev",
     "start": "pnpm dev",
-    "build": "pnpm run build:main",
-    "build:main": "pnpm --dir apps/www build",
-    "preview": "pnpm --dir apps/www exec astro preview",
-    "typecheck": "pnpm --dir apps/www typecheck",
+    "build": "turbo build",
+    "preview": "turbo preview",
+    "typecheck": "turbo typecheck",
     "format": "prettier --write .",
     "format:changed": "lint-staged",
-    "test": "pnpm --dir apps/www test",
-    "test:watch": "pnpm --dir apps/www exec vitest",
+    "test": "turbo test",
+    "test:watch": "turbo test:watch",
     "postinstall": "node scripts/hooks.mjs"
   },
   "lint-staged": {

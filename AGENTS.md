@@ -46,7 +46,6 @@ scripts/     # build/deploy helper scripts
 ```bash
 # dev
 pnpm dev
-pnpm dev:www
 
 # typecheck / tests
 pnpm typecheck
@@ -54,7 +53,6 @@ pnpm test
 
 # builds
 pnpm build          # dist/www
-pnpm build:main     # dist/www
 ```
 
 ## Артефакты сборки
@@ -86,7 +84,7 @@ pnpm build:main     # dist/www
 - Общие URL/build helper-утилиты выносить в `packages/url` или `scripts/`.
 - При изменениях deploy-потока синхронно обновлять `.github/workflows/*` и `ops/nginx/*`.
 - Если добавляется внешний ресурс или запрос вовне (`fetch`/`connect`, iframe, script, image, font, style, analytics, карты и т.п.), синхронно проверить и при необходимости обновить CSP в `ops/nginx/*`.
-- Не запускать `pnpm dev` без явной просьбы: для локальной разработки использовать `pnpm dev:www`.
+- Не запускать `pnpm dev` без явной просьбы: команда поднимает локальный dev-server на `:4321`.
 
 ## Плавила MCP
 

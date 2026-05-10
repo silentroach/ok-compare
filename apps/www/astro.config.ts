@@ -14,6 +14,7 @@ import {
 import { loadSitemapMetadataIndex } from './src/lib/sitemap-data';
 
 const plugins = [tailwindcss()];
+const devServerPort = 4321;
 const site = 'https://kpshelkovo.online';
 let sitemapMetadataIndex: Promise<SitemapMetadataIndex> | undefined;
 
@@ -29,6 +30,9 @@ const serializeSitemapItem = async (item: SitemapItem): Promise<SitemapItem> =>
 export default defineConfig({
   output: 'static',
   site,
+  server: {
+    port: devServerPort,
+  },
   cacheDir: '../../node_modules/.astro/www',
   markdown: {
     rehypePlugins: [rehypeTypograf],
@@ -42,6 +46,9 @@ export default defineConfig({
   publicDir: 'public',
   vite: {
     envDir: '../..',
+    server: {
+      strictPort: true,
+    },
     plugins,
     resolve: {
       alias: {

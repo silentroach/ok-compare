@@ -1,19 +1,10 @@
 {
   "$schema": "https://v2-9-8.turborepo.dev/schema.json",
-  "globalDependencies": [".env*", "apps/*/.env*"],
-  "tasks": {
-    "build": {
-      "outputs": ["dist/site/**"]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "test": {
-      "outputs": []
-    },
-    "typecheck": {
-      "outputs": []
-    }
-  }
+  "globalDependencies": [
+    ".env*",
+    "apps/*/.env*",
+    "packages/*/package.json",
+    "packages/*/src/**",
+    "packages/*/styles.css"
+  ]
 }

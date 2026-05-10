@@ -36,7 +36,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-${{ github.head_ref || github.ref_name }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'turbo.json', 'apps/*/package.json', 'packages/*/package.json') }}
+          key: ${{ runner.os }}-turbo-${{ github.head_ref || github.ref_name }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'turbo.json', 'apps/*/package.json', 'apps/*/turbo.json', 'packages/*/package.json', 'packages/*/turbo.json') }}
           restore-keys: |
             ${{ runner.os }}-turbo-${{ github.head_ref || github.ref_name }}-
             ${{ runner.os }}-turbo-
@@ -73,7 +73,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-${{ github.ref_name }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'turbo.json', 'apps/*/package.json', 'packages/*/package.json') }}
+          key: ${{ runner.os }}-turbo-${{ github.ref_name }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'turbo.json', 'apps/*/package.json', 'apps/*/turbo.json', 'packages/*/package.json', 'packages/*/turbo.json') }}
           restore-keys: |
             ${{ runner.os }}-turbo-${{ github.ref_name }}-
             ${{ runner.os }}-turbo-

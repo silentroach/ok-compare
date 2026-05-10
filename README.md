@@ -22,16 +22,12 @@ ops/         # nginx и deploy-конфиги
 # локальный сайт на :4321, включая /815/compare
 pnpm dev
 
-# то же самое, явно через app
-pnpm dev:www
-
 # проверки
 pnpm typecheck
 pnpm test
 
 # сборка
 pnpm build
-pnpm build:main
 ```
 
 ## Выходы сборки
