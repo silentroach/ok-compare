@@ -3,45 +3,16 @@ import ShelkovoAreaIcon from '../ShelkovoAreaIcon.astro';
 import LinkWithIcon from '@shelkovo/ui/LinkWithIcon.astro';
 
 import type { StatusIncident } from '../../lib/status/schema';
-import {
-  formatStatusKind,
-  formatStatusService,
-  getStatusIncidentPhase,
-} from '../../lib/status/view';
 import StatusIncidentPeriod from './StatusIncidentPeriod.astro';
 
 interface Props {
   readonly incident: StatusIncident;
   readonly className?: string;
-  readonly hideIncidentKind?: boolean;
-  readonly hideIncidentPhase?: boolean;
 }
 
-const {
-  incident,
-  className,
-  hideIncidentKind = false,
-  hideIncidentPhase = false,
-} = Astro.props;
+const { incident, className } = Astro.props;
 
-const phase = getStatusIncidentPhase(incident);
 const sourceUrl = incident.source_url;
-const showPhase =
-  !incident.is_active && !(hideIncidentPhase && incident.kind === 'incident');
-const phaseClass = {
-  danger: 'ui-badge-danger',
-  warning: 'ui-badge-warning',
-  success: 'ui-badge-success',
-  muted: 'ui-badge-muted',
-  info: 'ui-badge-info',
-} as const;
-const serviceClass = {
-  electricity: 'ui-badge-muted',
-  water: 'ui-badge-water',
-  internet: 'ui-badge-info',
-  dam: 'ui-badge-muted',
-} as const;
-const showKindBadge = !(hideIncidentKind && incident.kind === 'incident');
 ---
 
 <div
@@ -50,31 +21,6 @@ const showKindBadge = !(hideIncidentKind && incident.kind === 'incident');
     className,
   ]}
 >
-  <span class:list={['ui-badge', serviceClass[incident.service]]}>
-    {formatStatusService(incident.service)}
-  </span>
-  {
-    showKindBadge && (
-      <span
-        class:list={[
-          'ui-badge',
-          incident.kind === 'maintenance'
-            ? 'ui-badge-warning'
-            : 'ui-badge-muted',
-        ]}
-      >
-        {formatStatusKind(incident.kind)}
-      </span>
-    )
-  }
-  {
-    showPhase && (
-      <span class:list={['ui-badge', phaseClass[phase.tone]]}>
-        {phase.label}
-      </span>
-    )
-  }
-
   <StatusIncidentPeriod incident={incident} />
 
   {
