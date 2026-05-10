@@ -18,7 +18,12 @@ export {
 export const STATUS_AREAS = NEWS_AREAS;
 export type StatusArea = (typeof STATUS_AREAS)[number];
 
-export const STATUS_SERVICES = ['electricity', 'water', 'dam'] as const;
+export const STATUS_SERVICES = [
+  'electricity',
+  'water',
+  'internet',
+  'dam',
+] as const;
 export type StatusService = (typeof STATUS_SERVICES)[number];
 
 export const STATUS_KINDS = ['incident', 'maintenance'] as const;

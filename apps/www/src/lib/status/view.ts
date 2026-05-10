@@ -16,6 +16,7 @@ import type {
 const SERVICE_LABELS: Record<StatusService, string> = {
   electricity: 'Электричество',
   water: 'Вода',
+  internet: 'Интернет',
   dam: 'Дамба',
 };
 
@@ -27,19 +28,21 @@ const KIND_LABELS: Record<StatusKind, string> = {
 const INCIDENT_TITLE_LABELS: Record<StatusService, string> = {
   electricity: 'Нет электричества',
   water: 'Нет воды',
+  internet: 'Нет интернета',
   dam: 'Проезд через дамбу закрыт',
 };
 
 const MAINTENANCE_TITLE_LABELS: Record<StatusService, string> = {
   electricity: 'Плановые работы: электричество',
   water: 'Плановые работы: вода',
+  internet: 'Плановые работы: интернет',
   dam: 'Плановые работы: дамба',
 };
 
 const SERVICE_STATE_LABELS: Record<StatusServiceState, string> = {
-  green: 'Без активных проблем',
-  amber: 'Идут плановые работы',
-  red: 'Есть активный инцидент',
+  green: 'В норме',
+  amber: 'Работы',
+  red: 'Инцидент',
 };
 
 interface StatusIncidentPhase {

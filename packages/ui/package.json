@@ -19,6 +19,7 @@
     "./icons/areas/River.astro": "./src/icons/areas/River.astro",
     "./icons/areas/Village.astro": "./src/icons/areas/Village.astro",
     "./icons/services/Dam.astro": "./src/icons/services/Dam.astro",
+    "./icons/services/Fiber.astro": "./src/icons/services/Fiber.astro",
     "./icons/services/Lightning.astro": "./src/icons/services/Lightning.astro",
     "./icons/services/WaterDrop.astro": "./src/icons/services/WaterDrop.astro",
     "./icons/system/AlertCircle.astro": "./src/icons/system/AlertCircle.astro",

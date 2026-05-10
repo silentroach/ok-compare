@@ -131,6 +131,12 @@ describe('buildStatusDataset', () => {
       '2026/05/water-filter-maintenance',
       '2026/04/dam-closure-ongoing',
     ]);
+    expect(data.services.map((item) => item.service)).toEqual([
+      'electricity',
+      'water',
+      'internet',
+      'dam',
+    ]);
 
     const damHistory = data.by_id.get('2026/03/dam-flood-closure');
 
@@ -167,6 +173,13 @@ describe('buildStatusDataset', () => {
 
     expect(data.by_service.get('water')).toMatchObject({
       service_status: 'amber',
+      days_without_incidents: {
+        mode: 'no_incidents',
+      },
+    });
+
+    expect(data.by_service.get('internet')).toMatchObject({
+      service_status: 'green',
       days_without_incidents: {
         mode: 'no_incidents',
       },

@@ -35,8 +35,12 @@ const phaseClass = {
   muted: 'ui-badge-muted',
   info: 'ui-badge-info',
 } as const;
-const serviceClass =
-  incident.service === 'water' ? 'ui-badge-water' : 'ui-badge-muted';
+const serviceClass = {
+  electricity: 'ui-badge-muted',
+  water: 'ui-badge-water',
+  internet: 'ui-badge-info',
+  dam: 'ui-badge-muted',
+} as const;
 const showKindBadge = !(hideIncidentKind && incident.kind === 'incident');
 ---
 
@@ -46,7 +50,7 @@ const showKindBadge = !(hideIncidentKind && incident.kind === 'incident');
     className,
   ]}
 >
-  <span class:list={['ui-badge', serviceClass]}>
+  <span class:list={['ui-badge', serviceClass[incident.service]]}>
     {formatStatusService(incident.service)}
   </span>
   {

@@ -89,7 +89,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         `- Пример incident HTML: ${incidentHtml}`,
         `- Пример incident Markdown: ${incidentMarkdown}`,
         '- В status.json сервисные сводки derive-ятся из массива incidents.',
-        '- Сервисы: `electricity`, `water`, `dam`.',
+        '- Сервисы: `electricity`, `water`, `internet`, `dam`.',
         '- Типы записей: `incident`, `maintenance`.',
         '- Текущий статус сервиса derive-ится как `red`, `amber` или `green`.',
       ])
@@ -129,7 +129,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         'HTML и Markdown surfaces',
         '- HTML home `/status/` остается каноническим человекочитаемым представлением сводки по поселку.',
         '- Markdown companion `/status/index.md` дает text-first слой для терминалов и агентов.',
-        '- Страницы сервисов `/status/[service]/` и их companions `/status/[service]/index.md` удобны для фокусного чтения одной линии: электричество, вода или дамба.',
+        '- Страницы сервисов `/status/[service]/` и их companions `/status/[service]/index.md` удобны для фокусного чтения одной линии: электричество, вода, интернет или дамба.',
         '- Страницы incidents `/status/incidents/YYYY/MM/[entry]/` и их companions `/status/incidents/.../index.md` публикуются только для записей с body и тогда же появляются в `html_url`/`markdown_url`.',
         '',
         'RSS',
