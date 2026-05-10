@@ -2,6 +2,7 @@
 service: internet
 kind: incident
 started_at: 10.05.2026 15:30
+ended_at: 10.05.2026 17:02
 source_url: https://t.me/shelkovoecoclub/1/45305
 ---
 
