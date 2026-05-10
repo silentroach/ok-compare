@@ -1,0 +1,335 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-10T19:47:41Z",
+  "title": "Design System: Шелково Онлайн",
+  "extensions": {
+    "colorMeta": {
+      "bg": {
+        "role": "neutral",
+        "displayName": "Теплый фон",
+        "canonical": "oklch(99.1% 0.002 125)",
+        "tonalRamp": [
+          "oklch(15% 0.002 125)",
+          "oklch(25% 0.002 125)",
+          "oklch(35% 0.002 125)",
+          "oklch(50% 0.002 125)",
+          "oklch(65% 0.002 125)",
+          "oklch(80% 0.002 125)",
+          "oklch(92% 0.002 125)",
+          "oklch(99.1% 0.002 125)"
+        ]
+      },
+      "surface-muted": {
+        "role": "neutral",
+        "displayName": "Приглушенная поверхность",
+        "canonical": "oklch(96.8% 0.008 135)",
+        "tonalRamp": [
+          "oklch(16% 0.008 135)",
+          "oklch(26% 0.008 135)",
+          "oklch(38% 0.008 135)",
+          "oklch(52% 0.008 135)",
+          "oklch(66% 0.008 135)",
+          "oklch(80% 0.008 135)",
+          "oklch(91% 0.008 135)",
+          "oklch(96.8% 0.008 135)"
+        ]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Чернильный текст",
+        "canonical": "oklch(24% 0.04 145)",
+        "tonalRamp": [
+          "oklch(14% 0.04 145)",
+          "oklch(24% 0.04 145)",
+          "oklch(36% 0.04 145)",
+          "oklch(50% 0.04 145)",
+          "oklch(64% 0.04 145)",
+          "oklch(76% 0.04 145)",
+          "oklch(88% 0.025 145)",
+          "oklch(95% 0.015 145)"
+        ]
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "Поселковый зеленый",
+        "canonical": "oklch(36% 0.115 143)",
+        "tonalRamp": [
+          "oklch(15% 0.08 143)",
+          "oklch(24% 0.1 143)",
+          "oklch(36% 0.115 143)",
+          "oklch(48% 0.105 143)",
+          "oklch(62% 0.085 143)",
+          "oklch(76% 0.06 143)",
+          "oklch(88% 0.035 143)",
+          "oklch(96.5% 0.014 140)"
+        ]
+      },
+      "accent": {
+        "role": "tertiary",
+        "displayName": "Янтарная метка",
+        "canonical": "oklch(83% 0.155 78)",
+        "tonalRamp": [
+          "oklch(18% 0.07 78)",
+          "oklch(30% 0.095 78)",
+          "oklch(44% 0.12 78)",
+          "oklch(58% 0.14 78)",
+          "oklch(70% 0.15 78)",
+          "oklch(83% 0.155 78)",
+          "oklch(91% 0.09 78)",
+          "oklch(95.3% 0.045 82)"
+        ]
+      },
+      "earth": {
+        "role": "secondary",
+        "displayName": "Теплая земля",
+        "canonical": "oklch(45% 0.06 72)",
+        "tonalRamp": [
+          "oklch(16% 0.04 72)",
+          "oklch(28% 0.05 72)",
+          "oklch(45% 0.06 72)",
+          "oklch(58% 0.052 72)",
+          "oklch(70% 0.04 72)",
+          "oklch(82% 0.03 72)",
+          "oklch(91% 0.018 72)",
+          "oklch(96% 0.01 72)"
+        ]
+      },
+      "success": {
+        "role": "state",
+        "displayName": "Норма",
+        "canonical": "oklch(53% 0.12 145)",
+        "tonalRamp": [
+          "oklch(16% 0.07 145)",
+          "oklch(28% 0.09 145)",
+          "oklch(40% 0.11 145)",
+          "oklch(53% 0.12 145)",
+          "oklch(66% 0.1 145)",
+          "oklch(78% 0.07 145)",
+          "oklch(88% 0.05 145)",
+          "oklch(94.5% 0.04 145)"
+        ]
+      },
+      "warning": {
+        "role": "state",
+        "displayName": "Внимание",
+        "canonical": "oklch(73% 0.15 73)",
+        "tonalRamp": [
+          "oklch(18% 0.07 73)",
+          "oklch(32% 0.09 73)",
+          "oklch(46% 0.12 73)",
+          "oklch(60% 0.14 73)",
+          "oklch(73% 0.15 73)",
+          "oklch(84% 0.11 76)",
+          "oklch(91% 0.08 78)",
+          "oklch(95% 0.065 78)"
+        ]
+      },
+      "danger": {
+        "role": "state",
+        "displayName": "Проблема",
+        "canonical": "oklch(54% 0.145 28)",
+        "tonalRamp": [
+          "oklch(17% 0.07 28)",
+          "oklch(30% 0.1 28)",
+          "oklch(42% 0.125 28)",
+          "oklch(54% 0.145 28)",
+          "oklch(66% 0.12 28)",
+          "oklch(78% 0.08 25)",
+          "oklch(88% 0.055 25)",
+          "oklch(95.2% 0.045 25)"
+        ]
+      },
+      "water": {
+        "role": "secondary",
+        "displayName": "Вода",
+        "canonical": "oklch(46% 0.09 235)",
+        "tonalRamp": [
+          "oklch(17% 0.06 235)",
+          "oklch(30% 0.08 235)",
+          "oklch(46% 0.09 235)",
+          "oklch(60% 0.08 235)",
+          "oklch(72% 0.06 235)",
+          "oklch(84% 0.045 232)",
+          "oklch(92% 0.03 230)",
+          "oklch(95.6% 0.022 230)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Крупный заголовок",
+        "purpose": "Главные h1 страниц и большие смысловые блоки."
+      },
+      "headline": {
+        "displayName": "Заголовок раздела",
+        "purpose": "h2, группы данных, крупные справочные секции."
+      },
+      "title": {
+        "displayName": "Название элемента",
+        "purpose": "Карточки, строки сервисов, компактные блоки."
+      },
+      "body": {
+        "displayName": "Интерфейсный текст",
+        "purpose": "Обычный UI, списки, метаданные."
+      },
+      "copy": {
+        "displayName": "Длинное чтение",
+        "purpose": "Новости, объяснения, регламентные описания."
+      },
+      "label": {
+        "displayName": "Служебная подпись",
+        "purpose": "Метки, таблицы, короткие системные ярлыки."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ambient-low",
+        "value": "0 0.25rem 0.75rem oklch(27% 0.05 142 / 0.055)",
+        "purpose": "Легкая тень для спокойных карточек и вспомогательных панелей."
+      },
+      {
+        "name": "ambient-raised",
+        "value": "0 0.75rem 2rem oklch(27% 0.05 142 / 0.085)",
+        "purpose": "Поверхности, которые действительно всплывают над документом."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-fast",
+        "value": "120ms ease",
+        "purpose": "Короткие переходы видимости и состояния."
+      },
+      {
+        "name": "state-standard",
+        "value": "200ms ease",
+        "purpose": "Цвет, подчеркивание, hover и focus состояния."
+      },
+      {
+        "name": "navigation-progress",
+        "value": "1.6s cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Индикатор перехода между страницами."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "md",
+        "value": "48rem"
+      },
+      {
+        "name": "lg",
+        "value": "64rem"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Основное действие: прямоугольная зеленая кнопка без декоративного радиуса.",
+      "html": "<button class=\"ds-btn-primary\">Сохранить изменение</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; border: 1px solid var(--color-primary); border-radius: 0; background: var(--color-primary); color: var(--color-surface-raised); padding: 0.6rem 1rem; font: 600 0.875rem/1.25 var(--font-body); cursor: pointer; transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease; } .ds-btn-primary:hover { border-color: var(--color-primary-hover); background: var(--color-primary-hover); } .ds-btn-primary:focus-visible { outline: 2px solid color-mix(in oklab, var(--color-ring) 64%, transparent); outline-offset: 2px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Вторичное действие: тихая кнопка с границей и мягким зеленым hover.",
+      "html": "<button class=\"ds-btn-outline\">Показать источники</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; border: 1px solid color-mix(in oklab, var(--color-border) 86%, var(--color-foreground) 14%); border-radius: 0; background: var(--color-surface-raised); color: color-mix(in oklab, var(--color-foreground) 88%, var(--color-muted-foreground) 12%); padding: 0.6rem 1rem; font: 600 0.875rem/1.25 var(--font-body); cursor: pointer; transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease; } .ds-btn-outline:hover { border-color: var(--color-primary); background: var(--color-primary-tint); color: var(--color-primary); } .ds-btn-outline:focus-visible { outline: 2px solid color-mix(in oklab, var(--color-ring) 64%, transparent); outline-offset: 2px; }"
+    },
+    {
+      "name": "Section Shell",
+      "kind": "card",
+      "refersTo": "shell",
+      "description": "Базовая root-секция: плоская, с верхним разделителем, без карточной тяжести.",
+      "html": "<section class=\"ds-shell\"><p class=\"ds-label\">Статус</p><h2>История изменений</h2><p>Факты идут с датой, источником и понятной расшифровкой.</p></section>",
+      "css": ".ds-shell { border-top: 1px solid color-mix(in oklab, var(--color-border) 92%, transparent); border-inline: 0; border-bottom: 0; border-radius: 0; background: transparent; color: var(--color-foreground); padding: 1.5rem 0; box-shadow: none; } .ds-shell h2 { margin: 0.25rem 0 0.5rem; font-family: var(--font-heading); font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 600; line-height: 1.15; letter-spacing: -0.025em; } .ds-shell p { margin: 0; max-width: 70ch; color: var(--color-muted-foreground); font: 400 1rem/1.75 var(--font-body); } .ds-label { color: var(--color-muted-foreground); font: 700 0.75rem/1.3 var(--font-body); letter-spacing: 0.16em; text-transform: uppercase; }"
+    },
+    {
+      "name": "Status Badge",
+      "kind": "chip",
+      "refersTo": "badge-success",
+      "description": "Статусная плашка с текстом. Цвет не является единственным сигналом.",
+      "html": "<span class=\"ds-badge-success\">В норме</span>",
+      "css": ".ds-badge-success { display: inline-flex; align-items: center; gap: 0.35rem; border: 1px solid var(--color-success-border); border-radius: 999px; background: var(--color-success-soft); color: var(--color-success-text); padding: 0.25rem 0.65rem; font: 800 0.75rem/1 var(--font-body); } .ds-badge-success::before { width: 0.45rem; height: 0.45rem; border-radius: 999px; background: currentColor; content: ''; }"
+    },
+    {
+      "name": "Breadcrumbs",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "Тихая навигационная цепочка: маленький размер, ясный текущий пункт, компактные разделители.",
+      "html": "<nav class=\"ds-breadcrumbs\" aria-label=\"Хлебные крошки\"><ol><li><a href=\"#\">Главная</a></li><li aria-hidden=\"true\">›</li><li><span aria-current=\"page\">Статус</span></li></ol></nav>",
+      "css": ".ds-breadcrumbs ol { display: flex; flex-wrap: wrap; align-items: center; gap: 0.375rem; margin: 0; padding: 0; list-style: none; color: var(--color-muted-foreground); font: 400 0.875rem/1.5 var(--font-body); } .ds-breadcrumbs a { color: var(--color-primary); font-weight: 500; text-decoration-line: underline; text-decoration-color: transparent; text-decoration-thickness: 0.08em; text-underline-offset: 0.22em; transition: color 0.2s ease, text-decoration-color 0.2s ease; } .ds-breadcrumbs a:hover { color: var(--color-primary-hover); text-decoration-color: color-mix(in oklab, currentColor 30%, transparent); } .ds-breadcrumbs span { color: var(--color-foreground); font-weight: 500; }"
+    },
+    {
+      "name": "News Event Card",
+      "kind": "custom",
+      "refersTo": "news-event-card",
+      "description": "Выразительная карточка события. Это исключение для календарных событий, не общий стиль карточек.",
+      "html": "<article class=\"ds-event-card\"><div class=\"ds-event-date\"><strong>9</strong><span>мая</span><time>13:00</time></div><div><h3>Бессмертный полк в Гринвуде</h3><p>КПП Гринвуд 2</p><a href=\"#\">Добавить в календарь</a></div></article>",
+      "css": ".ds-event-card { position: relative; display: grid; grid-template-columns: minmax(5.75rem, 6.5rem) minmax(0, 1fr); gap: 1rem; max-width: 43rem; border: 1px solid color-mix(in oklab, var(--color-border-strong) 74%, var(--color-primary) 26%); border-radius: 1.35rem; background: radial-gradient(circle at 22% 18%, oklch(83% 0.155 78 / 0.18), transparent 15rem), var(--color-primary-soft-2); padding: 1rem; color: var(--color-foreground); box-shadow: var(--shadow-2); } .ds-event-date { display: grid; align-content: center; min-height: 7.5rem; border: 1px solid color-mix(in oklab, var(--color-accent) 40%, var(--color-border) 60%); border-radius: 0.9rem; background: color-mix(in oklab, var(--color-surface-raised) 82%, var(--color-accent-soft) 18%); padding: 0.8rem; } .ds-event-date strong { font-family: var(--font-heading); font-size: 3rem; font-weight: 700; letter-spacing: -0.075em; line-height: 0.88; } .ds-event-date span { color: color-mix(in oklab, var(--color-earth) 76%, var(--color-text) 24%); font: 850 0.72rem/1 var(--font-body); letter-spacing: 0.18em; text-transform: uppercase; } .ds-event-date time { margin-top: 0.85rem; color: var(--color-text-muted); font: 800 0.78rem/1 var(--font-body); } .ds-event-card h3 { margin: 0; max-width: 16ch; font-family: var(--font-heading); font-size: clamp(1.35rem, 3vw, 2rem); font-weight: 700; line-height: 1.08; letter-spacing: -0.045em; } .ds-event-card p { margin: 0.6rem 0 0.9rem; color: var(--color-muted-foreground); font: 650 0.98rem/1.45 var(--font-body); } .ds-event-card a { display: inline-flex; align-items: center; border: 1px solid var(--color-accent); border-radius: 999px; background: var(--color-accent); color: color-mix(in oklab, var(--color-text) 78%, var(--color-earth) 22%); padding: 0.55rem 0.95rem; font: 600 0.875rem/1.25 var(--font-body); text-decoration: none; transition: background-color 0.2s ease, border-color 0.2s ease; } .ds-event-card a:hover { border-color: var(--color-accent-hover); background: var(--color-accent-hover); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Полевой журнал поселка",
+    "overview": "Визуальная система должна ощущаться как аккуратный локальный журнал: не рекламная витрина, не чиновничий кабинет, не активистский плакат. Это рабочая среда для фактов, тарифов, источников, статусов и человеческих пояснений. Она должна быстро давать ответ, но оставлять след: откуда взялась информация, что именно сравнивается, где есть неопределенность.",
+    "keyCharacteristics": [
+      "Проверяемая локальная редактура, а не маркетинговая презентация.",
+      "Теплые зеленые нейтрали с редким янтарным акцентом.",
+      "Крупные, спокойные заголовки на PT Sans Caption и читабельный текст на Fira Sans.",
+      "Плоские поверхности, тонкие линии, минимум декоративной глубины.",
+      "Статусы всегда дублируются текстом, формой или иконкой, не только цветом."
+    ],
+    "rules": [
+      {
+        "name": "The Evidence Color Rule",
+        "body": "Цвет подтверждает смысл, но никогда не создает его один. Любой зеленый, желтый или красный статус обязан иметь текстовую подпись или иконку.",
+        "section": "colors"
+      },
+      {
+        "name": "The Amber Rarity Rule",
+        "body": "Янтарный акцент должен оставаться редким. Если он встречается в каждом блоке, интерфейс становится рекламным и теряет доверие.",
+        "section": "colors"
+      },
+      {
+        "name": "The Resident Reading Rule",
+        "body": "Если текст нужен обычному жителю, он должен читаться как объяснение, а не как таблица из внутренней системы.",
+        "section": "typography"
+      },
+      {
+        "name": "The Number Discipline Rule",
+        "body": "Деньги, проценты, длительности и тарифы должны использовать tabular-nums, неразрывные пробелы и одинаковые единицы измерения.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat First Rule",
+        "body": "Новая поверхность сначала должна работать без тени. Тень добавляется только после доказанной функциональной причины.",
+        "section": "elevation"
+      },
+      {
+        "name": "The No Nested Cards Rule",
+        "body": "Вложенные карточки запрещены как основной layout-прием. Для вложенности использовать строки, таблицы, details, тональные зоны и границы.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do писать и проектировать как для жителя, который пришел за ответом, а не как для инвестора на лендинге.",
+      "Do сохранять источник, дату, статус и оговорку рядом с фактом, если они влияют на доверие.",
+      "Do использовать primary для действий и ссылок, а accent только для редкого фокуса.",
+      "Do держать длинный текст в пределах 65-75ch и давать таблицам достаточно горизонтального пространства.",
+      "Do проверять цветовые статусы текстом, иконкой или подписью.",
+      "Do использовать details, inline-пояснения и раскрывающиеся строки до того, как появится идея модального окна."
+    ],
+    "donts": [
+      "Don't делать проект похожим на рекламный сайт коттеджного поселка: никаких глянцевых promise-блоков, декоративной роскоши и продажной интонации.",
+      "Don't делать проект похожим на крикливый активизм: никаких агрессивных красных заливок по умолчанию, обвинительного тона без доказательства и визуального перегрева.",
+      "Don't делать проект похожим на бездушный госпортал: не прятать смысл за сухими таблицами, непонятными ярлыками и канцелярскими формулировками.",
+      "Don't делать проект похожим на типовой SaaS-лендинг: не использовать hero-metric template, градиентный текст, одинаковые карточные сетки и декоративный оптимизм.",
+      "Don't использовать /815/compare как эталон будущего визуального направления, пока этот раздел не приведен к желаемому виду.",
+      "Don't использовать цветную border-left или border-right толще 1px как акцент на карточках, списках, callout или alert.",
+      "Don't добавлять glassmorphism, blur и translucent cards как default-прием. Если нужен слой, сначала использовать обычную поверхность и границу.",
+      "Don't заменять подписи одними иконками, особенно в статусах, источниках, календарях и сравнительных таблицах."
+    ]
+  }
+}
