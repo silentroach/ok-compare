@@ -22,9 +22,7 @@
 </script>
 
 <section
-  class={embed
-    ? 'max-w-3xl border-y border-border py-3 lg:border-y-0 lg:py-0'
-    : 'ui-shell p-4 md:p-5'}
+  class={embed ? 'max-w-3xl' : 'ui-shell p-4 md:p-5'}
   data-testid="kpi-stats"
 >
   {#if !embed}

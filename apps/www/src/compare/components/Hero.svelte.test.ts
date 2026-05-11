@@ -64,7 +64,7 @@ describe('Hero', () => {
     const sectionClass = container
       .querySelector('section')
       ?.getAttribute('class');
-    expect(sectionClass?.split(/\s+/)).toContain('border-y');
+    expect(sectionClass?.split(/\s+/)).toContain('border-b');
     expect(sectionClass).not.toContain('ui-shell-strong');
     expect(sectionClass).not.toMatch(/rounded|shadow/);
   });

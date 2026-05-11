@@ -66,7 +66,7 @@ Out:
 Completed notes:
 
 - Future agents should treat the component as a settlement result item, not a decorative raised card.
-- The result item keeps `ui-shell`, but its hierarchy now comes from spacing, a tariff divider and typography, not hover lift or elevation.
+- The result item now uses a quiet, lightly rounded bordered surface; hierarchy comes from spacing and typography, not hover lift or elevation.
 - `TariffRank` remains a compact visual strip with an accessible text summary; markers use flat borders/fills instead of shadow, ring or `bg-card` treatments.
 
 ## Commit Message Suggestion

@@ -31,7 +31,7 @@
 
 <article
   data-testid="settlement-card"
-  class="ui-shell flex min-h-full flex-col gap-4 p-5 md:p-6"
+  class="flex min-h-full flex-col gap-3 rounded-sm border border-border bg-[color:var(--color-surface)] p-4 md:p-5"
 >
   <div class="flex items-start justify-between gap-3">
     <div class="min-w-0 space-y-1">
@@ -66,7 +66,7 @@
         <span class="ui-badge ui-badge-info px-2 py-1 text-[11px]"> наш </span>
       {/if}
       <p
-        class="ui-num border-l border-border pl-2 text-xs font-semibold text-muted-foreground"
+        class="ui-num text-xs font-semibold text-muted-foreground"
         data-testid="tariff-rank-label"
         title="Ранг по возрастанию тарифа (1 — самый дешевый)"
       >
@@ -75,8 +75,10 @@
     </div>
   </div>
 
-  <div class="mt-auto space-y-3 border-t border-border pt-4">
-    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+  <div class="mt-auto space-y-3 pt-1">
+    <div
+      class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1.5"
+    >
       <span
         class="ui-num text-2xl font-bold leading-none text-foreground"
         title={getTariffHint(settlement.tariff)}

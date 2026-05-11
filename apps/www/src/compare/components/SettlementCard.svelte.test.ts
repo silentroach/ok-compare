@@ -108,7 +108,9 @@ describe('SettlementCard', () => {
         .querySelector('[data-testid="settlement-card"]')
         ?.getAttribute('class') ?? '';
 
-    expect(cardClass).toContain('ui-shell');
+    expect(cardClass).toContain('bg-[color:var(--color-surface)]');
+    expect(cardClass).toContain('rounded-sm');
+    expect(cardClass).not.toContain('ui-shell');
     expect(cardClass).not.toMatch(/hover:-translate|hover:shadow|shadow-lg/);
   });
 

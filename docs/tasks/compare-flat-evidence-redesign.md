@@ -9,7 +9,7 @@
 - Сохраняем текущую структуру: hero, KPI summary, фильтры, карта, счетчик/сортировка, карточки поселков.
 - Не переносим карту и не делаем ее вторичным табом в этой пачке.
 - Не добавляем search, presets, URL state или fast narrowing в этой пачке.
-- Убираем островизатость: тени на обычных секциях, большие радиусы, nested cards, hover lift, glass/blur как декоративный default.
+- Убираем островизатость: тени на обычных секциях, большие радиусы, nested cards, hover lift, glass/blur как декоративный default. Функциональное стекло поверх карты в hero страницы поселка допустимо как осознанное исключение, если оно улучшает читаемость.
 - Делаем блоки похожими на рабочий локальный реестр фактов, но без смены data model и без полной таблицы.
 
 ## Agent Workflow
@@ -63,6 +63,7 @@ After T5:
 - [x] `pnpm --dir apps/www test`, `pnpm --dir apps/www typecheck` and `pnpm build` pass or gaps are documented.
 - [x] Every completed implementation task has its own commit.
 - [x] Handoff records residual risks and follow-up ideas.
+- [x] Post-closeout browser review on the running dev server checked `/815/compare/` at desktop and mobile widths; list readability and selected filter visibility were corrected.
 
 ## Open Questions
 

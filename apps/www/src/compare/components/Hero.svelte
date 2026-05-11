@@ -19,7 +19,7 @@
 </script>
 
 <section
-  class="border-y border-border bg-[color:var(--color-bg-soft)] py-6 md:py-8"
+  class="border-b border-border bg-[color:var(--color-bg-soft)] py-6 md:py-8"
 >
   <div
     class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,28rem)] lg:items-end"

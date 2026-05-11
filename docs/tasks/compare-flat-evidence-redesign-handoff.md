@@ -28,11 +28,13 @@ Date: 2026-05-11.
 
 - Source idea originally suggested a table-like evidence register, but discussion refined the first implementation to preserving current blocks and flattening their visual treatment.
 - Current `/815/compare/` entrypoint is `apps/www/src/pages/815/compare/index.astro`.
+- `/815/compare` is no longer treated as a legacy visual exception: compare pages are part of `Шелково Онлайн` and should follow the site design concept.
 - Current interactive compare UI is in Svelte 5 under `apps/www/src/compare/components`.
 - Current page order: breadcrumbs, `Hero`, embedded `KPIStats`, `SettlementsExplorer`; static fallback renders `SettlementCard` grid until the explorer is ready.
 - `SettlementsExplorer.svelte` currently owns price filters, map toggle, map placement, result count, sort select and rendered card grid.
 - `SettlementMap.svelte` popup now uses an opaque bordered surface; old `bg-card/42`, `backdrop-blur-sm` and `backdrop-saturate` treatment was removed in T3.
-- `SettlementCard.svelte` now uses a flat `ui-shell` result-item treatment without hover translate or hover shadow.
+- `SettlementCard.svelte` now uses a flat, lightly rounded result-item treatment without hover translate or hover shadow.
+- Settlement detail hero glass is intentionally preserved as a functional map overlay because it improves readability over the map background.
 - Compare-local shell overrides live in `apps/www/src/compare/styles/global.css` and are guarded by `apps/www/src/compare/lib/styles.architecture.test.ts`.
 
 ## Intentional Scope Boundaries
@@ -45,11 +47,57 @@ Date: 2026-05-11.
 
 ## Validation Gaps To Track
 
-- Real browser visual review was not run in T5 because no dev server was already available and the workflow forbids `pnpm dev` without explicit approval.
-- Yandex Maps visual behavior still needs manual review because unit tests use mocks and T5 did not run a browser session.
+- Post-closeout browser review covered `/815/compare/` desktop and mobile plus the settlement detail hero map layer, but did not exercise every settlement detail variant.
+- Map popup placement still needs a focused click-through check if popup behavior changes; unit tests use mocks.
 - No compare-specific visual snapshot suite exists yet; future visual diffs should capture before/after notes or screenshots.
 
 ## Task Log
+
+### Post-closeout polish - 2026-05-11 - browser readability pass
+
+Status: done.
+
+Context:
+
+- User started the dev server, so browser verification became available after T5.
+- Desktop `/815/compare/` kept the strong KPI-at-right intro direction, which was approved.
+- The settlement list under the map was too hard to scan after the first flat pass, and the selected tariff filter was not visually obvious.
+- The settlement detail page glass treatment was reviewed and intentionally kept as a functional overlay over the map.
+
+Verification:
+
+- Browser screenshots reviewed `/815/compare/` at 1440px and 390px widths.
+- Result items now use quiet full bordered surfaces with slight rounding and less internal divider noise.
+- The selected price filter now uses slight rounding, primary border, primary-soft background and primary text.
+- Settlement detail table sections no longer add an extra `ui-shell` top divider between each table; the tables keep their own evidence surfaces.
+- `pnpm --dir apps/www test src/compare/components/Hero.svelte.test.ts src/compare/components/KPIStats.svelte.test.ts src/compare/components/SettlementCard.svelte.test.ts src/compare/components/SettlementsExplorer.svelte.test.ts` passed: 4 files, 36 tests.
+
+Residual risks:
+
+- Full `pnpm --dir apps/www typecheck` and build still need to run for the final session closeout.
+
+### Post-closeout polish - 2026-05-11 - filter density and rating nav
+
+Status: done.
+
+Context:
+
+- User asked to reduce the top/bottom padding in the compare filters by about half after the first density pass.
+- Rating method page still had `ui-shell` in the right rail, so the rail was flattened and given an explicit active section state.
+
+Verification:
+
+- `SettlementsExplorer.svelte` controls now use `py-1.5` instead of `py-3`; the component test guards this density.
+- Rating right rail no longer uses `ui-shell`; nav links use `aria-current="true"` with a restrained primary-soft selected state.
+- Svelte autofixer passed for `SettlementsExplorer.svelte` with no issues.
+- `pnpm --dir apps/www test src/compare/components/SettlementsExplorer.svelte.test.ts` passed: 1 file, 12 tests.
+- `pnpm --dir apps/www typecheck` passed.
+- `git diff --check` passed.
+- `pnpm build` passed and regenerated `dist/www`.
+
+Residual risks:
+
+- Browser visual check was skipped because `http://127.0.0.1:4321/815/compare/` was not running; do not start `pnpm dev` without explicit user approval.
 
 ### T5 - 2026-05-11 - integrated QA and closeout
 
@@ -74,9 +122,9 @@ Verification:
 
 Residual risks:
 
-- Mobile and desktop browser visual review remains a validation gap until someone approves or starts a dev/preview server.
-- Yandex Maps runtime rendering and popup placement still need real-browser review with the API script available.
-- The settlement detail `SourcesList.svelte` still uses raised source rows, but it is outside the T2-T5 root compare page closeout scope.
+- Mobile and desktop browser visual review gap was closed in the post-closeout polish pass for `/815/compare/`.
+- Yandex Maps popup placement still needs focused real-browser click-through if popup behavior changes.
+- Settlement detail source rows remain quiet bordered evidence rows; they no longer sit inside an extra top-divided section wrapper.
 
 Recommended follow-up:
 
@@ -93,7 +141,7 @@ Context:
 - Scope is limited to `SettlementCard.svelte`, `TariffRank.svelte` if needed, related tests and this task documentation.
 - Preserve article semantics, settlement links, district, badges, rank label, tariff, delta text, `TariffRank` meaning and explorer/static grid behavior.
 - Do not introduce table mode, new evidence fields, filter/sort behavior changes, search, presets or URL state.
-- Settlement result items now use `ui-shell flex min-h-full`, a plain tariff divider and typography for hierarchy instead of hover lift or raised-card affordance.
+- Settlement result items now use a lightly rounded bordered surface and typography for hierarchy instead of hover lift or raised-card affordance.
 - The `rabstvo` badge uses the standard danger badge treatment by default, with the stronger danger fill only on hover.
 - `TariffRank` markers now use flat border/fill classes; `shadow`, `ring` and `bg-card` marker vocabulary was removed.
 

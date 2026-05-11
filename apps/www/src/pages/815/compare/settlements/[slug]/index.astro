@@ -841,7 +841,7 @@ const heroMap = hasPoint
     </section>
 
     <section
-      class="ui-shell mb-6 p-6 md:mb-8"
+      class="mb-4 px-5 py-3 md:mb-5 md:px-6"
       data-testid="infrastructure-section"
     >
       <InfrastructureTable
@@ -855,7 +855,7 @@ const heroMap = hasPoint
     </section>
 
     <section
-      class="ui-shell mb-6 p-6 md:mb-8"
+      class="mb-4 px-5 py-3 md:mb-5 md:px-6"
       data-testid="common-spaces-section"
     >
       <CommonSpacesTable
@@ -868,7 +868,10 @@ const heroMap = hasPoint
       />
     </section>
 
-    <section class="ui-shell mb-6 p-6 md:mb-8" data-testid="services-section">
+    <section
+      class="mb-4 px-5 py-3 md:mb-5 md:px-6"
+      data-testid="services-section"
+    >
       <ServiceTable
         title="Модель обслуживания"
         services={settlement.service_model}
@@ -882,7 +885,7 @@ const heroMap = hasPoint
     {
       settlement.sources.length > 0 && (
         <section
-          class="ui-shell mb-6 p-6 md:mb-8"
+          class="mb-4 px-5 py-3 md:mb-5 md:px-6"
           data-testid="sources-section"
         >
           <h2 class="mb-4 text-xl font-bold text-foreground">Источники</h2>

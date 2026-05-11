@@ -221,7 +221,7 @@
 
   <div class="space-y-6">
     <section
-      class="border-y border-border bg-[color:var(--color-bg-soft)] px-4 py-4 md:px-5"
+      class="bg-[color:var(--color-bg-soft)] px-4 py-0.5 md:px-5"
       data-testid="explorer-controls"
     >
       <div
@@ -248,10 +248,10 @@
               />
               <label
                 for={allid}
-                class="inline-flex min-h-9 cursor-pointer items-center border border-transparent px-2.5 py-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:border-border hover:text-foreground peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-accent)] {priceFilter ===
+                class="inline-flex min-h-8 cursor-pointer items-center rounded-sm border px-2.5 py-1 text-sm font-semibold transition-colors hover:border-border-strong hover:text-foreground peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-accent)] {priceFilter ===
                 'all'
-                  ? 'border-border-strong bg-[color:var(--color-surface)] text-foreground'
-                  : ''}"
+                  ? 'border-primary bg-[color:var(--color-primary-soft)] text-primary'
+                  : 'border-transparent text-muted-foreground'}"
               >
                 Все
               </label>
@@ -268,10 +268,10 @@
               />
               <label
                 for={cheapid}
-                class="inline-flex min-h-9 cursor-pointer items-center border border-transparent px-2.5 py-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:border-border hover:text-foreground peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-accent)] {priceFilter ===
+                class="inline-flex min-h-8 cursor-pointer items-center rounded-sm border px-2.5 py-1 text-sm font-semibold transition-colors hover:border-border-strong hover:text-foreground peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-accent)] {priceFilter ===
                 'cheaper'
-                  ? 'border-border-strong bg-[color:var(--color-surface)] text-foreground'
-                  : ''}"
+                  ? 'border-primary bg-[color:var(--color-primary-soft)] text-primary'
+                  : 'border-transparent text-muted-foreground'}"
               >
                 {mobile ? 'Дешевле' : 'Дешевле Шелково'}
                 {#if stats}
@@ -297,10 +297,10 @@
               />
               <label
                 for={moreid}
-                class="inline-flex min-h-9 cursor-pointer items-center border border-transparent px-2.5 py-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:border-border hover:text-foreground peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-accent)] {priceFilter ===
+                class="inline-flex min-h-8 cursor-pointer items-center rounded-sm border px-2.5 py-1 text-sm font-semibold transition-colors hover:border-border-strong hover:text-foreground peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-accent)] {priceFilter ===
                 'more_expensive'
-                  ? 'border-border-strong bg-[color:var(--color-surface)] text-foreground'
-                  : ''}"
+                  ? 'border-primary bg-[color:var(--color-primary-soft)] text-primary'
+                  : 'border-transparent text-muted-foreground'}"
               >
                 {mobile ? 'Дороже' : 'Дороже Шелково'}
                 {#if stats}
@@ -318,7 +318,7 @@
         </fieldset>
         <button
           type="button"
-          class="inline-flex h-9 w-9 shrink-0 items-center justify-center border px-2.5 py-1.5 text-sm font-semibold transition-colors hover:border-border-strong hover:bg-[color:var(--color-surface)] md:w-auto md:px-3 {showMap
+          class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border px-2.5 py-1 text-sm font-semibold transition-colors hover:border-border-strong hover:bg-[color:var(--color-surface)] md:w-auto md:px-2.5 {showMap
             ? 'border-border-strong bg-[color:var(--color-surface)] text-foreground'
             : 'border-border text-muted-foreground'}"
           onclick={() => {
@@ -353,7 +353,7 @@
     {/if}
 
     <div
-      class="flex flex-col gap-3 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between"
+      class="flex flex-col gap-3 pb-1 sm:flex-row sm:items-center sm:justify-between"
       data-testid="explorer-summary-row"
     >
       <p
@@ -388,7 +388,7 @@
               sortBy = (e.currentTarget as HTMLSelectElement)
                 .value as typeof sortBy;
             }}
-            class="block w-auto border border-border bg-[color:var(--color-surface)] px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            class="block w-auto rounded-sm border border-border bg-[color:var(--color-surface)] px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             data-testid="sort-select"
           >
             <option value="rating_desc">Условный уровень (↓)</option>
@@ -438,7 +438,7 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {#each displayedSettlements as settlement (settlement.slug)}
         <SettlementCard
           {settlement}

@@ -23,13 +23,13 @@
   };
 </script>
 
-<div data-testid="sources-list" class="space-y-3">
+<ul data-testid="sources-list" class="border-y border-border">
   {#each sources as source (source.url)}
-    <div
-      class="flex flex-col rounded-xl border border-border bg-[color:var(--color-surface-raised)] p-3 transition-colors hover:bg-primary-soft-2 sm:flex-row sm:items-center sm:justify-between"
+    <li
+      class="flex flex-col gap-2 border-t border-border py-3 first:border-t-0 sm:flex-row sm:items-center sm:justify-between"
     >
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-2 mb-1">
+      <div class="min-w-0 flex-1">
+        <div class="mb-1 flex items-center gap-2">
           <a
             href={source.url}
             target="_blank"
@@ -47,11 +47,9 @@
           <p class="mt-1 text-sm text-muted-foreground">{source.comment}</p>
         {/if}
       </div>
-      <div
-        class="mt-2 whitespace-nowrap text-sm text-muted-foreground sm:ml-4 sm:mt-0"
-      >
+      <div class="whitespace-nowrap text-sm text-muted-foreground sm:ml-4">
         {formatDate(source.date_checked)}
       </div>
-    </div>
+    </li>
   {/each}
-</div>
+</ul>

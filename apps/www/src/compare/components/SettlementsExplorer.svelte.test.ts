@@ -411,11 +411,20 @@ describe('SettlementsExplorer', () => {
       'class',
     );
     const sortClass = getByTestId('sort-select').getAttribute('class');
+    const activeFilterClass = getByTestId('price-all')
+      .closest('span')
+      ?.querySelector('label')
+      ?.getAttribute('class');
 
-    expect(controlsClass).toContain('border-y');
-    expect(summaryClass).toContain('border-b');
+    expect(controlsClass).toContain('bg-[color:var(--color-bg-soft)]');
+    expect(controlsClass).toContain('py-0.5');
+    expect(summaryClass).not.toContain('border-b');
+    expect(activeFilterClass).toContain('bg-[color:var(--color-primary-soft)]');
+    expect(activeFilterClass).toContain('border-primary');
+    expect(activeFilterClass).toContain('rounded-sm');
+    expect(activeFilterClass).toContain('min-h-8');
     expect(`${controlsClass} ${sortClass}`).not.toMatch(
-      /ui-shell|rounded|shadow|bg-card/,
+      /ui-shell|shadow|bg-card/,
     );
   });
 

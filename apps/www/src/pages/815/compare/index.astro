@@ -71,8 +71,8 @@ const schema = {
         <Breadcrumbs items={breadcrumbs} />
 
         <Hero
-          title="Сравнение тарифов поселков с Шелково"
-          subtitle="Структурированное сравнение поселков по цене, инфраструктуре, сервисам и"
+          title="Сравнение тарифов"
+          subtitle="Структурированное сравнение поселков по цене, инфраструктуре, сервисам, расстоянию до Москвы и"
           subtitleLinkHref={ratingUrl}
           subtitleLinkText="рейтингу"
         >
@@ -92,7 +92,7 @@ const schema = {
       <SettlementsExplorer dataUrl={dataUrl} client:only="svelte" />
 
       <div id="settlements-static">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {
             cards.map((settlement) => (
               <SettlementCard

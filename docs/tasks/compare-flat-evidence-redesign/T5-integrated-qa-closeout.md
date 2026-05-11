@@ -60,7 +60,8 @@ Completed notes:
 
 - Integrated static QA confirmed the `/815/compare/` flow keeps the current order: breadcrumbs, hero with embedded KPI summary, filters, map, count/sort row and settlement results.
 - `impeccable` product polish pass found no required UI fixes before closeout: the page remains a restrained, flat evidence tool rather than a SaaS hero-metric surface.
-- Browser verification was not run because no dev server was already available on `127.0.0.1:4321`, and the workflow forbids starting `pnpm dev` without explicit approval.
+- Post-closeout browser verification later ran against the user-started dev server on `localhost:4321`; desktop and mobile review found list readability and selected-filter visibility issues, which were corrected.
+- Settlement detail hero glass remains intentional because it acts as a readable layer over the map, not as decorative default glass on evidence rows.
 - Recommended next package: refine `docs/ideas/ui-ux-critique-2026-05-11/03-compare-fast-narrowing.md` into tasks for search, presets, visible reset and optional URL state decisions.
 
 ## Handoff Notes
