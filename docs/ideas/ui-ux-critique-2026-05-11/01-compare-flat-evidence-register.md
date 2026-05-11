@@ -2,7 +2,7 @@
 
 ## Status
 
-Idea for discussion.
+Refined into task plan: `docs/tasks/compare-flat-evidence-redesign.md`.
 
 ## Source
 
@@ -30,6 +30,22 @@ Make the desktop default closer to a sortable evidence register:
 - source or methodology link.
 
 Keep the map and card view as secondary modes, not the main reading structure.
+
+## 2026-05-11 Refinement
+
+After discussion, the first implementation should not rebuild `/815/compare/` into a table-first register.
+
+Keep the current blocks, content and order:
+
+- hero with summary metrics;
+- filter/sort controls;
+- map in its current place;
+- settlement result cards/grid;
+- current comparison data fields and links.
+
+The near-term goal is a flat evidence redesign of the existing structure: remove the island-heavy dashboard feel, decorative card elevation, hover lift and glass/blur treatments, while preserving the current reading flow and behavior.
+
+Fast narrowing from `03-compare-fast-narrowing.md` remains a separate follow-up idea until the product direction is clearer.
 
 ## Likely Scope
 
