@@ -65,7 +65,8 @@ describe('Hero', () => {
       .querySelector('section')
       ?.getAttribute('class');
     expect(sectionClass?.split(/\s+/)).toContain('border-b');
-    expect(sectionClass?.split(/\s+/)).toContain('pb-6');
+    expect(sectionClass?.split(/\s+/)).toContain('pb-4');
+    expect(sectionClass?.split(/\s+/)).toContain('md:pb-8');
     expect(sectionClass).not.toContain('py-6');
     expect(sectionClass).not.toContain('ui-shell-strong');
     expect(sectionClass).not.toMatch(/rounded|shadow/);
