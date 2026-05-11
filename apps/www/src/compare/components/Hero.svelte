@@ -19,10 +19,10 @@
 </script>
 
 <section
-  class="border-b border-border bg-[color:var(--color-bg-soft)] pb-6 md:pb-8"
+  class="border-b border-transparent bg-[color:var(--color-bg-soft)] pb-4 md:border-border md:pb-8"
 >
   <div
-    class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,28rem)] lg:items-end"
+    class="grid gap-4 md:gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,28rem)] lg:items-end"
   >
     <div>
       <h1
@@ -31,7 +31,7 @@
         {title}
       </h1>
       <p
-        class="mt-3 max-w-3xl text-base leading-7 text-muted-foreground md:text-lg md:leading-8"
+        class="mt-2 max-w-2xl text-[1.0625rem] leading-7 text-muted-foreground md:mt-3 md:max-w-3xl md:text-lg md:leading-8"
       >
         {subtitle}
         {#if subtitleLinkHref && subtitleLinkText}
@@ -46,7 +46,7 @@
     </div>
 
     {#if children}
-      <div class="pt-4 md:pt-5 lg:border-l lg:border-border lg:pl-6 lg:pt-0">
+      <div class="pt-3 md:pt-5 lg:border-l lg:border-border lg:pl-6 lg:pt-0">
         {@render children()}
       </div>
     {/if}

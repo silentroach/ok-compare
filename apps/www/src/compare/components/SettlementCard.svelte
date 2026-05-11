@@ -31,7 +31,7 @@
 
 <article
   data-testid="settlement-card"
-  class="flex min-h-full flex-col gap-3 rounded-sm border border-border bg-[color:var(--color-surface)] p-4 md:p-5"
+  class="grid min-h-full gap-3 rounded-sm border border-border bg-[color:var(--color-surface)] p-3.5 md:flex md:flex-col md:p-5"
 >
   <div class="flex items-start justify-between gap-3">
     <div class="min-w-0 space-y-1">
@@ -75,23 +75,29 @@
     </div>
   </div>
 
-  <div class="mt-auto space-y-3 pt-1">
+  <div
+    class="border-t border-border pt-3 md:mt-auto md:space-y-3 md:border-t-0 md:pt-1"
+  >
     <div
-      class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1.5"
+      class="flex items-end justify-between gap-3 md:flex-wrap md:items-baseline md:gap-x-4 md:gap-y-1.5"
     >
       <span
-        class="ui-num text-2xl font-bold leading-none text-foreground"
+        class="ui-num text-[1.65rem] font-bold leading-none text-foreground md:text-2xl"
         title={getTariffHint(settlement.tariff)}
       >
         {formatTariffAuto(settlement.tariff)}
       </span>
       {#if !isBaseline && comparison && comparison.tariffDelta !== 0}
         {#if comparison.isCheaper}
-          <span class="ui-num text-sm font-semibold ui-delta-success">
+          <span
+            class="ui-num max-w-[9rem] text-right text-sm font-semibold leading-tight ui-delta-success"
+          >
             дешевле на {formatCurrency(Math.abs(comparison.tariffDelta))}
           </span>
         {:else}
-          <span class="ui-num text-sm font-semibold ui-delta-warning">
+          <span
+            class="ui-num max-w-[9rem] text-right text-sm font-semibold leading-tight ui-delta-warning"
+          >
             дороже на {formatCurrency(Math.abs(comparison.tariffDelta))}
           </span>
         {/if}
@@ -102,6 +108,8 @@
       {/if}
     </div>
 
-    <TariffRank {rank} {base} {total} {tone} />
+    <div class="hidden md:block">
+      <TariffRank {rank} {base} {total} {tone} />
+    </div>
   </div>
 </article>
