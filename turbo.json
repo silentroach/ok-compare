@@ -1,15 +1,35 @@
 {
   "$schema": "https://v2-9-12.turborepo.dev/schema.json",
-  "globalDependencies": [
-    ".env*",
-    "apps/*/.env*",
-    "packages/*/package.json",
-    "packages/*/src/**",
-    "packages/*/styles.css"
-  ],
   "tasks": {
+    "transit": {
+      "dependsOn": ["^transit"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!playwright*.config.*",
+        "!vitest.config.*",
+        "!vitest.*.setup.*",
+        "!**/*.test.*",
+        "!**/*.spec.*",
+        "!tests/**",
+        "!**/__snapshots__/**",
+        "!**/*-snapshots/**"
+      ]
+    },
     "build": {
       "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/.env*",
+        "!playwright*.config.*",
+        "!vitest.config.*",
+        "!vitest.*.setup.*",
+        "!**/*.test.*",
+        "!**/*.spec.*",
+        "!tests/**",
+        "!**/__snapshots__/**",
+        "!**/*-snapshots/**"
+      ],
+      "env": ["PUBLIC_YANDEX_MAPS_API_KEY"],
       "outputs": ["dist/**"]
     },
     "dev": {
@@ -21,6 +41,7 @@
       "persistent": true
     },
     "test": {
+      "dependsOn": ["transit"],
       "outputs": []
     },
     "test:watch": {
@@ -28,6 +49,18 @@
       "persistent": true
     },
     "typecheck": {
+      "dependsOn": ["transit"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!playwright*.config.*",
+        "!vitest.config.*",
+        "!vitest.*.setup.*",
+        "!**/*.test.*",
+        "!**/*.spec.*",
+        "!tests/**",
+        "!**/__snapshots__/**",
+        "!**/*-snapshots/**"
+      ],
       "outputs": []
     }
   }

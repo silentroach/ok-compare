@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6.0.3
@@ -33,22 +35,41 @@ jobs:
           cache: pnpm
 
       - name: Restore Turbo cache
-        uses: actions/cache@v5
+        id: restore-turbo-cache
+        uses: actions/cache/restore@v5
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-${{ github.head_ref || github.ref_name }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'turbo.json', 'apps/*/package.json', 'apps/*/turbo.json', 'packages/*/package.json', 'packages/*/turbo.json') }}
+          key: ${{ runner.os }}-turbo-test-${{ github.head_ref || github.ref_name }}-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-turbo-${{ github.head_ref || github.ref_name }}-
+            ${{ runner.os }}-turbo-test-${{ github.head_ref || github.ref_name }}-
+            ${{ runner.os }}-turbo-test-
             ${{ runner.os }}-turbo-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Run affected typecheck
+        if: ${{ github.event_name == 'pull_request' }}
+        run: pnpm typecheck -- --affected
+
       - name: Run typecheck
+        if: ${{ github.event_name != 'pull_request' }}
         run: pnpm typecheck
 
+      - name: Run affected tests
+        if: ${{ github.event_name == 'pull_request' }}
+        run: pnpm test -- --affected
+
       - name: Run tests
+        if: ${{ github.event_name != 'pull_request' }}
         run: pnpm test
+
+      - name: Save Turbo cache
+        if: ${{ steps.restore-turbo-cache.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v5
+        with:
+          path: .turbo
+          key: ${{ steps.restore-turbo-cache.outputs.cache-primary-key }}
 
   build:
     needs: test
@@ -70,12 +91,14 @@ jobs:
           cache: pnpm
 
       - name: Restore Turbo cache
-        uses: actions/cache@v5
+        id: restore-turbo-cache
+        uses: actions/cache/restore@v5
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-${{ github.ref_name }}-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'turbo.json', 'apps/*/package.json', 'apps/*/turbo.json', 'packages/*/package.json', 'packages/*/turbo.json') }}
+          key: ${{ runner.os }}-turbo-build-${{ github.ref_name }}-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-turbo-${{ github.ref_name }}-
+            ${{ runner.os }}-turbo-build-${{ github.ref_name }}-
+            ${{ runner.os }}-turbo-build-
             ${{ runner.os }}-turbo-
 
       - name: Install dependencies
@@ -85,6 +108,13 @@ jobs:
         env:
           PUBLIC_YANDEX_MAPS_API_KEY: ${{ secrets.YANDEX_MAPS_API_KEY }}
         run: pnpm build
+
+      - name: Save Turbo cache
+        if: ${{ steps.restore-turbo-cache.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v5
+        with:
+          path: .turbo
+          key: ${{ steps.restore-turbo-cache.outputs.cache-primary-key }}
 
       - name: Upload VPS artifact
         uses: actions/upload-artifact@v7
