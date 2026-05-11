@@ -50,8 +50,8 @@
     >
       <div
         class={embed
-          ? 'mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground'
-          : 'mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground'}
+          ? 'mb-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground'
+          : 'mb-2 text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground'}
       >
         Похожие по уровню
       </div>
@@ -81,8 +81,8 @@
     >
       <div
         class={embed
-          ? 'mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] ui-muted'
-          : 'mb-2 text-xs font-semibold uppercase tracking-[0.18em] ui-muted'}
+          ? 'mb-2 text-[11px] font-semibold uppercase tracking-[0.06em] ui-muted'
+          : 'mb-2 text-xs font-semibold uppercase tracking-[0.06em] ui-muted'}
       >
         Все поселки на сайте
       </div>
