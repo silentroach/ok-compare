@@ -87,7 +87,7 @@ describe('KPIStats', () => {
       .querySelector('[data-testid="kpi-stats"]')
       ?.getAttribute('class');
 
-    expect(sectionClass).toBe('max-w-3xl');
+    expect(sectionClass).toBe('max-w-3xl text-sm');
     expect(allClass).toMatch(/border/);
     expect(`${sectionClass} ${peerClass} ${allClass}`).not.toMatch(
       /rounded|shadow|bg-card|surface-raised/,
