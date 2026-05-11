@@ -259,13 +259,15 @@ const heroMap = hasPoint
           </div>
         </div>
 
-        <div class="mt-12 w-full max-w-3xl self-start xl:mt-14">
+        <div
+          class={`w-full max-w-3xl self-start ${hasLabels ? 'mt-0' : 'mt-8'}`}
+        >
           <div class="mb-4">
             <div class="flex items-start gap-4">
               <div class="min-w-0">
                 <div
                   aria-hidden="true"
-                  class="settlement-hero-title-shadow text-4xl font-bold leading-[1.06] text-foreground xl:text-[2.7rem]"
+                  class="settlement-hero-title-shadow text-4xl font-bold tracking-tight text-foreground xl:text-5xl xl:leading-[1.08]"
                 >
                   {settlement.name}
                 </div>
@@ -531,35 +533,9 @@ const heroMap = hasPoint
       </div>
     </section>
 
-    <header class="ui-shell-strong mb-6 p-6 md:mb-8 md:p-8 lg:hidden">
-      {
-        hasLabels && (
-          <div class="mb-4 flex flex-wrap justify-end gap-2">
-            {waterInc && (
-              <span
-                class="inline-flex items-center rounded-md border border-[color:var(--color-water-border)] bg-[color:var(--color-water-soft)] px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.06em] text-[color:var(--color-water)]"
-                title={waterTitle}
-              >
-                Вода в тарифе
-              </span>
-            )}
-            {obman && (
-              <a
-                href={obmanUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center rounded-md border border-danger bg-danger px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.06em] text-danger-foreground transition-opacity hover:opacity-90"
-                title="Открыть Telegram-канал Коттеджное рабство"
-              >
-                Коттеджное рабство
-              </a>
-            )}
-            {settlement.is_baseline && (
-              <span class="ui-badge ui-badge-info">Наш посёлок</span>
-            )}
-          </div>
-        )
-      }
+    <header
+      class="ui-shell-strong mb-6 px-6 pb-6 pt-1 md:mb-8 md:px-8 md:pb-8 md:pt-1 lg:hidden"
+    >
       <div
         class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between"
       >
@@ -568,7 +544,7 @@ const heroMap = hasPoint
             <div class="min-w-0 flex-1">
               <div
                 aria-hidden="true"
-                class="text-3xl font-bold leading-[1.08] text-foreground md:text-4xl"
+                class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
               >
                 {settlement.name}
               </div>
@@ -694,8 +670,31 @@ const heroMap = hasPoint
       </div>
 
       {
-        settlement.is_baseline && (
-          <span class="ui-badge ui-badge-info">Наш посёлок</span>
+        hasLabels && (
+          <div class="mt-4 flex flex-wrap gap-2">
+            {waterInc && (
+              <span
+                class="inline-flex items-center rounded-md border border-[color:var(--color-water-border)] bg-[color:var(--color-water-soft)] px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.06em] text-[color:var(--color-water)]"
+                title={waterTitle}
+              >
+                Вода в тарифе
+              </span>
+            )}
+            {obman && (
+              <a
+                href={obmanUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center rounded-md border border-danger bg-danger px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.06em] text-danger-foreground transition-opacity hover:opacity-90"
+                title="Открыть Telegram-канал Коттеджное рабство"
+              >
+                Коттеджное рабство
+              </a>
+            )}
+            {settlement.is_baseline && (
+              <span class="ui-badge ui-badge-info">Наш посёлок</span>
+            )}
+          </div>
         )
       }
     </header>

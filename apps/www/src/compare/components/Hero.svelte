@@ -19,18 +19,20 @@
 </script>
 
 <section
-  class="border-b border-border bg-[color:var(--color-bg-soft)] py-6 md:py-8"
+  class="border-b border-border bg-[color:var(--color-bg-soft)] pb-6 md:pb-8"
 >
   <div
     class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,28rem)] lg:items-end"
   >
     <div>
       <h1
-        class="max-w-3xl text-3xl font-bold leading-tight text-foreground md:text-4xl"
+        class="max-w-3xl text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
       >
         {title}
       </h1>
-      <p class="mt-3 max-w-3xl text-base text-muted-foreground md:text-lg">
+      <p
+        class="mt-3 max-w-3xl text-base leading-7 text-muted-foreground md:text-lg md:leading-8"
+      >
         {subtitle}
         {#if subtitleLinkHref && subtitleLinkText}
           <a
