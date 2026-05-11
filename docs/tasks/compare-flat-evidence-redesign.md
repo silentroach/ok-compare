@@ -38,13 +38,13 @@ Commit message format: кратко и по смыслу, например `flat
 
 ## Task Status
 
-| ID  | Task                                                                                                           | Status  | Dependencies |
-| --- | -------------------------------------------------------------------------------------------------------------- | ------- | ------------ |
-| T1  | [Flatten compare surface primitives](compare-flat-evidence-redesign/T1-flatten-surface-primitives.md)          | done    | None         |
-| T2  | [Redesign hero and KPI summary as flat evidence intro](compare-flat-evidence-redesign/T2-redesign-hero-kpi.md) | done    | T1           |
-| T3  | [Flatten explorer controls and map panel](compare-flat-evidence-redesign/T3-flatten-explorer-map.md)           | done    | T1           |
-| T4  | [Flatten settlement result cards](compare-flat-evidence-redesign/T4-flatten-settlement-cards.md)               | done    | T1           |
-| T5  | [Run integrated QA and close out redesign docs](compare-flat-evidence-redesign/T5-integrated-qa-closeout.md)   | pending | T2, T3, T4   |
+| ID  | Task                                                                                                           | Status | Dependencies |
+| --- | -------------------------------------------------------------------------------------------------------------- | ------ | ------------ |
+| T1  | [Flatten compare surface primitives](compare-flat-evidence-redesign/T1-flatten-surface-primitives.md)          | done   | None         |
+| T2  | [Redesign hero and KPI summary as flat evidence intro](compare-flat-evidence-redesign/T2-redesign-hero-kpi.md) | done   | T1           |
+| T3  | [Flatten explorer controls and map panel](compare-flat-evidence-redesign/T3-flatten-explorer-map.md)           | done   | T1           |
+| T4  | [Flatten settlement result cards](compare-flat-evidence-redesign/T4-flatten-settlement-cards.md)               | done   | T1           |
+| T5  | [Run integrated QA and close out redesign docs](compare-flat-evidence-redesign/T5-integrated-qa-closeout.md)   | done   | T2, T3, T4   |
 
 ## Checkpoints
 
@@ -60,9 +60,9 @@ After T4:
 
 After T5:
 
-- [ ] `pnpm --dir apps/www test`, `pnpm --dir apps/www typecheck` and `pnpm build` pass or gaps are documented.
-- [ ] Every completed implementation task has its own commit.
-- [ ] Handoff records residual risks and follow-up ideas.
+- [x] `pnpm --dir apps/www test`, `pnpm --dir apps/www typecheck` and `pnpm build` pass or gaps are documented.
+- [x] Every completed implementation task has its own commit.
+- [x] Handoff records residual risks and follow-up ideas.
 
 ## Open Questions
 

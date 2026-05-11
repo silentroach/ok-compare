@@ -1,6 +1,6 @@
 # T5 - Run Integrated QA And Close Out Redesign Docs
 
-Status: pending.
+Status: done.
 
 Dependencies: T2, T3, T4.
 
@@ -42,19 +42,26 @@ Out:
 
 ## Acceptance Criteria
 
-- [ ] Compare page keeps current block order and map placement.
-- [ ] Normal compare surfaces are flat-first: no default raised shells, no hover-lift result cards, no decorative glass popup.
-- [ ] User-facing data and behavior from before the redesign remain available.
-- [ ] Handoff records final verification, residual risks and recommended follow-up for `03-compare-fast-narrowing.md`.
-- [ ] Task registry and task files are in sync.
+- [x] Compare page keeps current block order and map placement.
+- [x] Normal compare surfaces are flat-first: no default raised shells, no hover-lift result cards, no decorative glass popup.
+- [x] User-facing data and behavior from before the redesign remain available.
+- [x] Handoff records final verification, residual risks and recommended follow-up for `03-compare-fast-narrowing.md`.
+- [x] Task registry and task files are in sync.
 
 ## Verification
 
-- [ ] Run `pnpm --dir apps/www test`.
-- [ ] Run `pnpm --dir apps/www typecheck`.
-- [ ] Run `pnpm build`.
-- [ ] Run `git diff --check`.
-- [ ] If browser verification is approved, check `/815/compare/` at mobile and desktop widths and record results. If not approved, document the gap.
+- [x] Run `pnpm --dir apps/www test`.
+- [x] Run `pnpm --dir apps/www typecheck`.
+- [x] Run `pnpm build`.
+- [x] Run `git diff --check`.
+- [x] If browser verification is approved, check `/815/compare/` at mobile and desktop widths and record results. If not approved, document the gap.
+
+Completed notes:
+
+- Integrated static QA confirmed the `/815/compare/` flow keeps the current order: breadcrumbs, hero with embedded KPI summary, filters, map, count/sort row and settlement results.
+- `impeccable` product polish pass found no required UI fixes before closeout: the page remains a restrained, flat evidence tool rather than a SaaS hero-metric surface.
+- Browser verification was not run because no dev server was already available on `127.0.0.1:4321`, and the workflow forbids starting `pnpm dev` without explicit approval.
+- Recommended next package: refine `docs/ideas/ui-ux-critique-2026-05-11/03-compare-fast-narrowing.md` into tasks for search, presets, visible reset and optional URL state decisions.
 
 ## Handoff Notes
 

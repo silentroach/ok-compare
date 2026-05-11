@@ -14,13 +14,13 @@ Use it to pass forward facts that are not obvious from the current task diff: co
 
 ## Task Registry
 
-| ID  | Status  | Commit | Notes                                                                        |
-| --- | ------- | ------ | ---------------------------------------------------------------------------- |
-| T1  | done    |        | `docs/tasks/compare-flat-evidence-redesign/T1-flatten-surface-primitives.md` |
-| T2  | done    |        | `docs/tasks/compare-flat-evidence-redesign/T2-redesign-hero-kpi.md`          |
-| T3  | done    |        | `docs/tasks/compare-flat-evidence-redesign/T3-flatten-explorer-map.md`       |
-| T4  | done    |        | `docs/tasks/compare-flat-evidence-redesign/T4-flatten-settlement-cards.md`   |
-| T5  | pending |        | `docs/tasks/compare-flat-evidence-redesign/T5-integrated-qa-closeout.md`     |
+| ID  | Status | Commit | Notes                                                                        |
+| --- | ------ | ------ | ---------------------------------------------------------------------------- |
+| T1  | done   |        | `docs/tasks/compare-flat-evidence-redesign/T1-flatten-surface-primitives.md` |
+| T2  | done   |        | `docs/tasks/compare-flat-evidence-redesign/T2-redesign-hero-kpi.md`          |
+| T3  | done   |        | `docs/tasks/compare-flat-evidence-redesign/T3-flatten-explorer-map.md`       |
+| T4  | done   |        | `docs/tasks/compare-flat-evidence-redesign/T4-flatten-settlement-cards.md`   |
+| T5  | done   |        | `docs/tasks/compare-flat-evidence-redesign/T5-integrated-qa-closeout.md`     |
 
 ## Current Context Snapshot
 
@@ -45,11 +45,44 @@ Date: 2026-05-11.
 
 ## Validation Gaps To Track
 
-- Real browser visual review may need explicit approval to run a dev server.
-- Yandex Maps visual behavior may need manual review because unit tests use mocks.
-- If visual diffs are large, capture before/after notes in task logs because no compare-specific visual snapshot suite exists yet.
+- Real browser visual review was not run in T5 because no dev server was already available and the workflow forbids `pnpm dev` without explicit approval.
+- Yandex Maps visual behavior still needs manual review because unit tests use mocks and T5 did not run a browser session.
+- No compare-specific visual snapshot suite exists yet; future visual diffs should capture before/after notes or screenshots.
 
 ## Task Log
+
+### T5 - 2026-05-11 - integrated QA and closeout
+
+Status: done.
+
+Context:
+
+- Scope is limited to integrated QA, small consistency fixes if needed and closing out the redesign docs.
+- Preserve current block order, map placement, user-facing data and compare behavior.
+- Do not add fast narrowing, search, presets, URL state or a table-first redesign.
+- Static code review found no required integration fixes in the root `/815/compare/` flow: block order remains breadcrumbs, `Hero`, embedded `KPIStats`, `SettlementsExplorer`, and static fallback `SettlementCard` grid.
+- `impeccable` was applied as a product polish pass. Context loaded from `PRODUCT.md` and `DESIGN.md`; canonical design rules came from `docs/design/design-code-shelkovo.md`. The pass confirmed the restrained, flat evidence-register direction and found no mandatory UI changes before closeout.
+- Static grep of old surface vocabulary found only test assertions, compare primitive definitions and `SourcesList.svelte` on settlement detail pages, not a T2-T4 root compare regression.
+
+Verification:
+
+- `pnpm --dir apps/www test` passed: 65 files, 431 tests.
+- `pnpm --dir apps/www typecheck` passed.
+- `pnpm build` passed and generated `/815/compare/index.html` plus compare data/routes.
+- `curl --fail --silent --show-error --max-time 2 "http://127.0.0.1:4321/815/compare/" >/dev/null` failed because no local server was running; T5 did not start `pnpm dev` without explicit approval.
+- `git diff --check` passed.
+
+Residual risks:
+
+- Mobile and desktop browser visual review remains a validation gap until someone approves or starts a dev/preview server.
+- Yandex Maps runtime rendering and popup placement still need real-browser review with the API script available.
+- The settlement detail `SourcesList.svelte` still uses raised source rows, but it is outside the T2-T5 root compare page closeout scope.
+
+Recommended follow-up:
+
+- Turn `docs/ideas/ui-ux-critique-2026-05-11/03-compare-fast-narrowing.md` into a separate task package.
+- Decide whether fast narrowing gets URL state before implementation; this affects sharing and browser history behavior.
+- Keep search/presets restrained: settlement, company, district, clear reset and visible count, without turning the page into an analytics dashboard.
 
 ### T4 - 2026-05-11 - flatten settlement result cards
 
