@@ -44,15 +44,15 @@ Follow-up tasks for applying `docs/design/design-code-shelkovo.md` to the live s
 
 **Acceptance criteria:**
 
-- [ ] Shared `.ui-chip` and prose table headers use `0.06em` to `0.08em` tracking, not `0.16em` to `0.18em`.
-- [ ] Page-level `tracking-[0.14em]`, `tracking-[0.16em]` and `tracking-[0.18em]` usages are reduced where they render uppercase Cyrillic labels.
-- [ ] Small labels remain visually distinct without becoming harder to read.
+- [x] Shared `.ui-chip` and prose table headers use `0.06em` to `0.08em` tracking, not `0.16em` to `0.18em`.
+- [x] Page-level `tracking-[0.14em]`, `tracking-[0.16em]` and `tracking-[0.18em]` usages are reduced where they render uppercase Cyrillic labels.
+- [x] Small labels remain visually distinct without becoming harder to read.
 
 **Verification:**
 
-- [ ] Search for `tracking-[0.14em]`, `tracking-[0.16em]`, `tracking-[0.18em]`, `letter-spacing: 0.16em` and `letter-spacing: 0.18em` has only intentional exceptions.
-- [ ] `pnpm typecheck` passes.
-- [ ] Manual visual check of status, compare rating, settlement detail and regulation pages.
+- [x] Search for `tracking-[0.14em]`, `tracking-[0.16em]`, `tracking-[0.18em]`, `letter-spacing: 0.16em` and `letter-spacing: 0.18em` has only intentional exceptions.
+- [x] `pnpm typecheck` passes.
+- [x] Manual visual check of status, compare rating, settlement detail and regulation pages.
 
 **Dependencies:** Task 1 preferred, but not required.
 
