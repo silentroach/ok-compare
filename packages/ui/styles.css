@@ -34,6 +34,7 @@
   --color-accent: oklch(83% 0.155 78);
   --color-accent-hover: oklch(76% 0.165 72);
   --color-accent-soft: oklch(95.3% 0.045 82);
+  --color-accent-text: oklch(43% 0.075 72);
 
   --color-earth: oklch(45% 0.06 72);
   --color-focus: var(--color-accent);
@@ -138,6 +139,7 @@
   --color-accent: oklch(81% 0.13 78);
   --color-accent-hover: oklch(75% 0.13 74);
   --color-accent-soft: oklch(38% 0.055 80);
+  --color-accent-text: var(--color-accent);
 
   --color-earth: oklch(70% 0.05 72);
   --color-focus: var(--color-accent);
@@ -766,21 +768,21 @@ a.ui-chip:hover {
 }
 
 .ui-btn-warning.ui-btn-solid {
-  border-color: var(--color-warning);
-  background: var(--color-warning);
-  color: var(--color-warning-foreground);
+  border-color: var(--color-warning-border);
+  background: var(--color-warning-soft);
+  color: var(--color-warning-text);
 }
 
 .ui-btn-warning.ui-btn-solid:hover {
   border-color: color-mix(
     in oklab,
-    var(--color-warning) 82%,
+    var(--color-warning-border) 82%,
     var(--color-text) 18%
   );
   background: color-mix(
     in oklab,
-    var(--color-warning) 82%,
-    var(--color-text) 18%
+    var(--color-warning-soft) 88%,
+    var(--color-warning-border) 12%
   );
 }
 
@@ -1027,5 +1029,6 @@ a.ui-chip:hover {
   cards -> --color-card / --color-card-foreground -> bg-card / text-card-foreground
   separators -> --color-border -> border-border
   focus -> --color-ring -> ring-ring / focus-visible:outline
+  accent foreground -> --color-accent-text -> foreground utility
   state success|warning|danger|info -> --color-{state} -> bg-{state} / text-{state}
 */

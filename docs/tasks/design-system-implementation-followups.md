@@ -98,15 +98,15 @@ Follow-up tasks for applying `docs/design/design-code-shelkovo.md` to the live s
 
 **Acceptance criteria:**
 
-- [ ] `accent` and `accent-hover` are not used as normal text on white/surface backgrounds.
-- [ ] Warning states use dark readable text on a soft background, not raw `warning` as small text on white.
-- [ ] Status colors are paired with text, icon, shape or position, never color alone.
+- [x] `accent` and `accent-hover` are not used as normal text on white/surface backgrounds.
+- [x] Warning states use dark readable text on a soft background, not raw `warning` as small text on white.
+- [x] Status colors are paired with text, icon, shape or position, never color alone.
 
 **Verification:**
 
-- [ ] Search/audit all `text-accent`, `text-warning`, `text-success`, `text-danger`, raw `var(--color-accent)` and raw `var(--color-warning)` usages.
-- [ ] Manual check of common status and alert states.
-- [ ] `pnpm typecheck` passes.
+- [x] Search/audit all `text-accent`, `text-warning`, `text-success`, `text-danger`, raw `var(--color-accent)` and raw `var(--color-warning)` usages.
+- [x] Manual check of common status and alert states.
+- [x] `pnpm typecheck` passes.
 
 **Dependencies:** None
 

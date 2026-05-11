@@ -38,7 +38,7 @@
       }
 
       if (tone === 'warning') {
-        return 'h-3 w-3 rounded-full bg-warning shadow-[0_0_0_3px_color-mix(in_oklab,var(--color-warning)_14%,transparent)]';
+        return 'h-3 w-3 rounded-full bg-warning-text shadow-[0_0_0_3px_color-mix(in_oklab,var(--color-warning-border)_28%,transparent)]';
       }
 
       return 'h-3 w-3 rounded-full bg-info shadow-[0_0_0_3px_color-mix(in_oklab,var(--color-info)_14%,transparent)]';
