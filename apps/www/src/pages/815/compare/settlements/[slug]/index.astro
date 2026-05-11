@@ -7,7 +7,6 @@ import SettlementMap from '@/compare/components/SettlementMap.svelte';
 import SourcesList from '@/compare/components/SourcesList.svelte';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
-import { collectKeywords } from '@shelkovo/seo';
 import {
   compareBreadcrumbSchema,
   settlementBreadcrumbs,
@@ -24,6 +23,7 @@ import {
   calculateDistance,
 } from '@/compare/lib/format';
 import type { Settlement } from '@/compare/lib/schema';
+import { settlementPageMeta } from '@/compare/lib/seo';
 import { canon } from '@/compare/lib/site';
 import { telegram } from '@/compare/lib/url';
 
@@ -70,17 +70,9 @@ const distanceFromShelkovo =
 const hasPoint =
   Number.isFinite(settlement.location.lat) &&
   Number.isFinite(settlement.location.lng);
-const SHORT_COMPANY_LENGTH = 18;
 const company = settlement.management_company;
 const companyTitle =
   typeof company === 'string' ? company : (company?.title ?? '');
-const companyName = companyTitle
-  .replaceAll('"', '')
-  .replace(/\s+/g, ' ')
-  .trim();
-const companyKeywords = companyName
-  ? Array.from(new Set([companyTitle, companyName]))
-  : [];
 const companyUrl = typeof company === 'object' ? company.url : '';
 const tg = settlement.telegram ? telegram(settlement.telegram) : undefined;
 const waterInc = settlement.water_in_tariff === true;
@@ -92,7 +84,7 @@ const waterTitle =
 const hasDelta =
   !settlement.is_baseline && !!comparison && comparison.tariffDelta !== 0;
 const pageUrl = canon(`/settlements/${settlement.slug}/`);
-const pageTitle = `${settlement.name}: тариф и инфраструктура — Сравни с Шелково`;
+const pageMeta = settlementPageMeta(settlement, comparison);
 const delta =
   hasDelta && comparison
     ? `${comparison.isCheaper ? 'Дешевле' : 'Дороже'} Шелково на ${formatCurrency(Math.abs(comparison.tariffDelta))}.`
@@ -101,26 +93,6 @@ const delta =
       : comparison
         ? 'Тариф как в Шелково.'
         : '';
-const companyDescription =
-  companyName && companyName.length <= SHORT_COMPANY_LENGTH
-    ? `Обслуживает ${companyName}.`
-    : '';
-const pageDescription = [
-  `${settlement.name}, ${settlement.location.district}.`,
-  companyDescription,
-  `Тариф ${formatTariffAuto(settlement.tariff)}.`,
-  delta,
-  'Сравнение тарифа и инфраструктуры.',
-]
-  .filter(Boolean)
-  .join(' ');
-const pageKeywords = collectKeywords(
-  settlement.name,
-  settlement.short_name,
-  `коттеджный поселок ${settlement.short_name}`,
-  settlement.location.district,
-  companyKeywords,
-);
 const breadcrumbs = settlementBreadcrumbs(settlement.name);
 const breadcrumb = compareBreadcrumbSchema([
   {
@@ -134,8 +106,8 @@ const schema = {
   '@type': 'Place',
   name: settlement.name,
   url: pageUrl,
-  description: pageDescription,
-  keywords: pageKeywords.join(', '),
+  description: pageMeta.description,
+  keywords: pageMeta.keywords.join(', '),
   address: settlement.location.address_text,
   mainEntityOfPage: pageUrl,
   ...(same.length ? { sameAs: same } : {}),
@@ -179,9 +151,9 @@ const heroMap = hasPoint
 ---
 
 <BaseLayout
-  title={pageTitle}
-  description={pageDescription}
-  keywords={pageKeywords}
+  title={pageMeta.title}
+  description={pageMeta.description}
+  keywords={pageMeta.keywords}
   schema={[schema, breadcrumb]}
   preconnectYandexMaps
   bodyClass="ui-root-compare"

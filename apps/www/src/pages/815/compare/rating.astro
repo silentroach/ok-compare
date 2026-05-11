@@ -6,20 +6,19 @@ import {
   compareBreadcrumbs,
   compareBreadcrumbSchema,
 } from '@/compare/lib/breadcrumbs';
+import { compareRatingMeta } from '@/compare/lib/seo';
 import { canon } from '@/compare/lib/site';
 import { withBase } from '@/compare/lib/url';
 
-const title = 'Как считается уровень поселка — Сравни с Шелково';
-const description =
-  'Методика расчета уровня поселка: какие факторы входят в оценку, как учитываются неизвестные данные и почему тариф не влияет на формулу.';
+const pageMeta = compareRatingMeta();
 const pageUrl = canon('/rating/');
 const breadcrumbLabel = 'Как считается уровень';
 const breadcrumbs = [...compareBreadcrumbs(), { label: breadcrumbLabel }];
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'WebPage',
-  name: title,
-  description,
+  name: pageMeta.title,
+  description: pageMeta.description,
   url: pageUrl,
   inLanguage: 'ru-RU',
 };
@@ -49,8 +48,9 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
 ---
 
 <BaseLayout
-  title={title}
-  description={description}
+  title={pageMeta.title}
+  description={pageMeta.description}
+  keywords={pageMeta.keywords}
   schema={[schema, breadcrumb]}
   bodyClass="ui-root-compare"
 >
