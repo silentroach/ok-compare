@@ -31,77 +31,75 @@
 
 <article
   data-testid="settlement-card"
-  class="ui-shell overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+  class="ui-shell flex min-h-full flex-col gap-4 p-5 md:p-6"
 >
-  <div class="p-5 md:p-6">
-    <div class="mb-4 flex items-start justify-between gap-3">
-      <div class="min-w-0">
-        <h3 class="text-xl font-bold text-foreground">
-          <Link
-            href={withBase(`settlements/${settlement.slug}/`)}
-            class="ui-link"
-          >
-            {settlement.short_name}
-          </Link>
-        </h3>
-        <p class="mt-1 text-sm text-muted-foreground">
-          {settlement.location.district}
-        </p>
-      </div>
-      <div class="shrink-0 flex items-center justify-end gap-1.5 text-right">
-        {#if settlement.rabstvo}
-          <a
-            href="https://t.me/obmandachniki"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="ui-badge border-danger bg-danger px-2 py-1 text-[11px] text-danger-foreground transition-opacity hover:opacity-90"
-            title="Открыть канал Коттеджное рабство"
-            data-testid="rabstvo-badge"
-          >
-            рабство
-          </a>
-        {/if}
-        {#if isBaseline}
-          <span class="ui-badge ui-badge-info px-2 py-1 text-[11px] opacity-75">
-            наш
+  <div class="flex items-start justify-between gap-3">
+    <div class="min-w-0 space-y-1">
+      <h3 class="text-lg font-bold leading-tight text-foreground md:text-xl">
+        <Link
+          href={withBase(`settlements/${settlement.slug}/`)}
+          class="ui-link"
+        >
+          {settlement.short_name}
+        </Link>
+      </h3>
+      <p class="text-sm leading-snug text-muted-foreground">
+        {settlement.location.district}
+      </p>
+    </div>
+    <div
+      class="flex shrink-0 flex-wrap items-center justify-end gap-1.5 text-right"
+    >
+      {#if settlement.rabstvo}
+        <a
+          href="https://t.me/obmandachniki"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="ui-badge ui-badge-danger px-2 py-1 text-[11px] transition-colors hover:border-danger hover:bg-danger hover:text-danger-foreground"
+          title="Открыть канал Коттеджное рабство"
+          data-testid="rabstvo-badge"
+        >
+          рабство
+        </a>
+      {/if}
+      {#if isBaseline}
+        <span class="ui-badge ui-badge-info px-2 py-1 text-[11px]"> наш </span>
+      {/if}
+      <p
+        class="ui-num border-l border-border pl-2 text-xs font-semibold text-muted-foreground"
+        data-testid="tariff-rank-label"
+        title="Ранг по возрастанию тарифа (1 — самый дешевый)"
+      >
+        {rank} / {total}
+      </p>
+    </div>
+  </div>
+
+  <div class="mt-auto space-y-3 border-t border-border pt-4">
+    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+      <span
+        class="ui-num text-2xl font-bold leading-none text-foreground"
+        title={getTariffHint(settlement.tariff)}
+      >
+        {formatTariffAuto(settlement.tariff)}
+      </span>
+      {#if !isBaseline && comparison && comparison.tariffDelta !== 0}
+        {#if comparison.isCheaper}
+          <span class="ui-num text-sm font-semibold ui-delta-success">
+            дешевле на {formatCurrency(Math.abs(comparison.tariffDelta))}
+          </span>
+        {:else}
+          <span class="ui-num text-sm font-semibold ui-delta-warning">
+            дороже на {formatCurrency(Math.abs(comparison.tariffDelta))}
           </span>
         {/if}
-        <p
-          class="ui-num text-sm font-medium text-muted-foreground/50"
-          data-testid="tariff-rank-label"
-          title="Ранг по возрастанию тарифа (1 — самый дешевый)"
+      {:else if isBaseline}
+        <span class="text-sm font-medium text-muted-foreground"
+          >базовый тариф</span
         >
-          {rank} / {total}
-        </p>
-      </div>
+      {/if}
     </div>
 
-    <div class="space-y-3">
-      <div class="flex items-center justify-between">
-        <span
-          class="ui-num text-2xl font-bold text-foreground"
-          title={getTariffHint(settlement.tariff)}
-        >
-          {formatTariffAuto(settlement.tariff)}
-        </span>
-        {#if !isBaseline && comparison && comparison.tariffDelta !== 0}
-          {#if comparison.isCheaper}
-            <span class="ui-num text-sm font-semibold ui-delta-success">
-              дешевле на {formatCurrency(Math.abs(comparison.tariffDelta))}
-            </span>
-          {:else}
-            <span class="ui-num text-sm font-semibold ui-delta-warning">
-              дороже на {formatCurrency(Math.abs(comparison.tariffDelta))}
-            </span>
-          {/if}
-        {:else if isBaseline}
-          <span class="text-sm font-medium text-muted-foreground"
-            >базовый тариф</span
-          >
-        {/if}
-      </div>
-
-      <TariffRank {rank} {base} {total} {tone} />
-    </div>
+    <TariffRank {rank} {base} {total} {tone} />
   </div>
 </article>

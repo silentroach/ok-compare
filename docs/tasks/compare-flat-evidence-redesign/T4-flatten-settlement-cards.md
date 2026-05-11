@@ -1,6 +1,6 @@
 # T4 - Flatten Settlement Result Cards
 
-Status: pending.
+Status: done.
 
 Dependencies: T1.
 
@@ -45,23 +45,29 @@ Out:
 
 ## Acceptance Criteria
 
-- [ ] Settlement cards no longer use hover translate, hover lift or default raised shadow as their primary affordance.
-- [ ] Card hierarchy still makes settlement name, tariff and delta scannable.
-- [ ] Rank and baseline markers remain textual or have accessible labels; meaning is not color-only.
-- [ ] Static fallback grid in `index.astro` still renders the same `SettlementCard` component.
-- [ ] Existing settlement card behavior and links remain covered by tests.
+- [x] Settlement cards no longer use hover translate, hover lift or default raised shadow as their primary affordance.
+- [x] Card hierarchy still makes settlement name, tariff and delta scannable.
+- [x] Rank and baseline markers remain textual or have accessible labels; meaning is not color-only.
+- [x] Static fallback grid in `index.astro` still renders the same `SettlementCard` component.
+- [x] Existing settlement card behavior and links remain covered by tests.
 
 ## Verification
 
-- [ ] Run Svelte autofixer on touched `.svelte` files.
-- [ ] Run `pnpm --dir apps/www test src/compare/components/SettlementCard.svelte.test.ts src/compare/components/TariffRank.svelte.test.ts src/compare/components/SettlementsExplorer.svelte.test.ts`.
-- [ ] Run `pnpm --dir apps/www typecheck`.
-- [ ] Confirm old hover-lift vocabulary is gone with `rg "hover:-translate|hover:shadow-lg|shadow-lg" apps/www/src/compare/components/SettlementCard.svelte` or document any intentional exception.
-- [ ] Run `git diff --check`.
+- [x] Run Svelte autofixer on touched `.svelte` files.
+- [x] Run `pnpm --dir apps/www test src/compare/components/SettlementCard.svelte.test.ts src/compare/components/TariffRank.svelte.test.ts src/compare/components/SettlementsExplorer.svelte.test.ts`.
+- [x] Run `pnpm --dir apps/www typecheck`.
+- [x] Confirm old hover-lift vocabulary is gone with `rg "hover:-translate|hover:shadow-lg|shadow-lg" apps/www/src/compare/components/SettlementCard.svelte` or document any intentional exception.
+- [x] Run `git diff --check`.
 
 ## Handoff Notes
 
 - Record whether the final result should still be called a card in future tasks, or whether agents should treat it as a result row/item.
+
+Completed notes:
+
+- Future agents should treat the component as a settlement result item, not a decorative raised card.
+- The result item keeps `ui-shell`, but its hierarchy now comes from spacing, a tariff divider and typography, not hover lift or elevation.
+- `TariffRank` remains a compact visual strip with an accessible text summary; markers use flat borders/fills instead of shadow, ring or `bg-card` treatments.
 
 ## Commit Message Suggestion
 

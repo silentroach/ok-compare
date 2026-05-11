@@ -19,7 +19,7 @@ Use it to pass forward facts that are not obvious from the current task diff: co
 | T1  | done    |        | `docs/tasks/compare-flat-evidence-redesign/T1-flatten-surface-primitives.md` |
 | T2  | done    |        | `docs/tasks/compare-flat-evidence-redesign/T2-redesign-hero-kpi.md`          |
 | T3  | done    |        | `docs/tasks/compare-flat-evidence-redesign/T3-flatten-explorer-map.md`       |
-| T4  | pending |        | `docs/tasks/compare-flat-evidence-redesign/T4-flatten-settlement-cards.md`   |
+| T4  | done    |        | `docs/tasks/compare-flat-evidence-redesign/T4-flatten-settlement-cards.md`   |
 | T5  | pending |        | `docs/tasks/compare-flat-evidence-redesign/T5-integrated-qa-closeout.md`     |
 
 ## Current Context Snapshot
@@ -32,7 +32,7 @@ Date: 2026-05-11.
 - Current page order: breadcrumbs, `Hero`, embedded `KPIStats`, `SettlementsExplorer`; static fallback renders `SettlementCard` grid until the explorer is ready.
 - `SettlementsExplorer.svelte` currently owns price filters, map toggle, map placement, result count, sort select and rendered card grid.
 - `SettlementMap.svelte` popup now uses an opaque bordered surface; old `bg-card/42`, `backdrop-blur-sm` and `backdrop-saturate` treatment was removed in T3.
-- `SettlementCard.svelte` currently uses `ui-shell`, hover translate and hover shadow.
+- `SettlementCard.svelte` now uses a flat `ui-shell` result-item treatment without hover translate or hover shadow.
 - Compare-local shell overrides live in `apps/www/src/compare/styles/global.css` and are guarded by `apps/www/src/compare/lib/styles.architecture.test.ts`.
 
 ## Intentional Scope Boundaries
@@ -50,6 +50,32 @@ Date: 2026-05-11.
 - If visual diffs are large, capture before/after notes in task logs because no compare-specific visual snapshot suite exists yet.
 
 ## Task Log
+
+### T4 - 2026-05-11 - flatten settlement result cards
+
+Status: done.
+
+Context:
+
+- Scope is limited to `SettlementCard.svelte`, `TariffRank.svelte` if needed, related tests and this task documentation.
+- Preserve article semantics, settlement links, district, badges, rank label, tariff, delta text, `TariffRank` meaning and explorer/static grid behavior.
+- Do not introduce table mode, new evidence fields, filter/sort behavior changes, search, presets or URL state.
+- Settlement result items now use `ui-shell flex min-h-full`, a plain tariff divider and typography for hierarchy instead of hover lift or raised-card affordance.
+- The `rabstvo` badge uses the standard danger badge treatment by default, with the stronger danger fill only on hover.
+- `TariffRank` markers now use flat border/fill classes; `shadow`, `ring` and `bg-card` marker vocabulary was removed.
+
+Verification:
+
+- Svelte autofixer passed for `SettlementCard.svelte` and `TariffRank.svelte` with no issues.
+- `pnpm --dir apps/www test src/compare/components/SettlementCard.svelte.test.ts src/compare/components/TariffRank.svelte.test.ts src/compare/components/SettlementsExplorer.svelte.test.ts` passed: 3 files, 31 tests.
+- `pnpm --dir apps/www typecheck` passed.
+- `rg "hover:-translate|hover:shadow-lg|shadow-lg" apps/www/src/compare/components/SettlementCard.svelte` produced no matches.
+- `git diff --check` passed.
+
+Intentional leftovers:
+
+- No browser visual review was run because the workflow forbids `pnpm dev` without explicit approval.
+- Integrated page QA remains for T5.
 
 ### T3 - 2026-05-11 - flatten explorer controls and map panel
 

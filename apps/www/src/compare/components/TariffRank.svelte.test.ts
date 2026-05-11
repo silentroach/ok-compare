@@ -81,4 +81,19 @@ describe('TariffRank', () => {
       container.querySelector('[aria-label="Ранг 6 из 10. Дороже базового."]'),
     ).toBeTruthy();
   });
+
+  it('uses flat markers without decorative elevation vocabulary', () => {
+    const { container } = render(TariffRank, {
+      props: {
+        rank: 2,
+        base: 4,
+        total: 9,
+        tone: 'success',
+      },
+    });
+
+    expect(container.innerHTML).not.toMatch(
+      /shadow|ring-\[|bg-card|border-card/,
+    );
+  });
 });
