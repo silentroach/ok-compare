@@ -99,6 +99,25 @@ Residual risks:
 
 - Browser visual check was skipped because `http://127.0.0.1:4321/815/compare/` was not running; do not start `pnpm dev` without explicit user approval.
 
+### Post-closeout polish - 2026-05-11 - page header standardization
+
+Status: done.
+
+Context:
+
+- User noticed `/news` and `/status` shared one breadcrumb-to-title rhythm, while `/815/compare/` and compare subpages had different title sizes and extra nested hero padding.
+- `impeccable` product-context pass was applied; the standard is now documented in `docs/design/design-code-shelkovo.md` under `Page Headers`.
+
+Verification:
+
+- Browser measurements before: `/news/` and `/status/` used 48px desktop h1 with 20px breadcrumb gap; `/815/compare/` used 36px and 52px; `/815/compare/rating/` used 48px and 60px.
+- Browser measurements after: `/815/compare/` and `/815/compare/rating/` both use 48px desktop h1 with 20px breadcrumb gap; mobile `/815/compare/` matches `/news/` at 36px and 20px gap.
+- Settlement detail visible title now uses the same Display scale; measured `/settlements/shelkovo/` at 48px with ~18px desktop gap and 36px with ~22px mobile gap. The map hero remains a documented media-hero exception.
+- `pnpm --dir apps/www test src/compare/components/Hero.svelte.test.ts src/compare/components/SettlementsExplorer.svelte.test.ts` passed: 2 files, 18 tests.
+- `pnpm --dir apps/www typecheck` passed.
+- `git diff --check` passed.
+- `pnpm build` passed and regenerated `dist/www`.
+
 ### T5 - 2026-05-11 - integrated QA and closeout
 
 Status: done.
