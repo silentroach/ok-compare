@@ -394,6 +394,40 @@ describe('SettlementsExplorer', () => {
     expect(container.querySelector(`#${mapid}`)).toBeTruthy();
   });
 
+  it('renders controls as flat evidence rows', async () => {
+    setScreen(false);
+
+    const { getByTestId } = render(SettlementsExplorer, {
+      props: { settlements, comparisons, stats },
+    });
+
+    await waitFor(() => {
+      expect(getByTestId('explorer-controls')).toBeTruthy();
+    });
+
+    const controlsClass =
+      getByTestId('explorer-controls').getAttribute('class');
+    const summaryClass = getByTestId('explorer-summary-row').getAttribute(
+      'class',
+    );
+    const sortClass = getByTestId('sort-select').getAttribute('class');
+    const activeFilterClass = getByTestId('price-all')
+      .closest('span')
+      ?.querySelector('label')
+      ?.getAttribute('class');
+
+    expect(controlsClass).toContain('bg-[color:var(--color-bg-soft)]');
+    expect(controlsClass).toContain('py-0.5');
+    expect(summaryClass).not.toContain('border-b');
+    expect(activeFilterClass).toContain('bg-[color:var(--color-primary-soft)]');
+    expect(activeFilterClass).toContain('border-primary');
+    expect(activeFilterClass).toContain('rounded-sm');
+    expect(activeFilterClass).toContain('min-h-8');
+    expect(`${controlsClass} ${sortClass}`).not.toMatch(
+      /ui-shell|shadow|bg-card/,
+    );
+  });
+
   it('uses one rank for duplicate tariffs', async () => {
     setScreen(false);
 

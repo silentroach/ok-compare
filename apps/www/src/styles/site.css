@@ -89,8 +89,16 @@ html[data-site-navigation-pending] .site-navigation-progress::before {
   --news-hero-muted-foreground: oklch(88.8% 0.012 130);
   --news-hero-primary: oklch(90.5% 0.022 142);
   --news-hero-primary-hover: oklch(96.4% 0.01 140);
-  --news-hero-border: color-mix(in oklab, white 24%, transparent);
-  --news-hero-border-strong: color-mix(in oklab, white 52%, transparent);
+  --news-hero-border: color-mix(
+    in oklab,
+    var(--news-hero-foreground) 24%,
+    transparent
+  );
+  --news-hero-border-strong: color-mix(
+    in oklab,
+    var(--news-hero-foreground) 52%,
+    transparent
+  );
   --news-hero-ring: oklch(97% 0.01 140);
   --news-hero-overlay-top: oklch(24% 0.04 145 / 0.14);
   --news-hero-overlay-side-strong: oklch(24% 0.04 145 / 0.36);
@@ -169,18 +177,4 @@ html[data-site-navigation-pending] .site-navigation-progress::before {
 .ui-root-site .news-tag-count {
   color: var(--color-muted-foreground);
   font-size: 0.75rem;
-}
-
-.ui-root-site
-  .reglament-table-shell[data-reglament-table-stuck]
-  thead
-  th:first-child {
-  border-top-left-radius: 0;
-}
-
-.ui-root-site
-  .reglament-table-shell[data-reglament-table-stuck]
-  thead
-  th:last-child {
-  border-top-right-radius: 0;
 }

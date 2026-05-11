@@ -281,7 +281,7 @@ const heroImage = isDaytime ? dayHeroImage : nightHeroImage;
                   </p>
 
                   <div class="max-w-3xl space-y-3">
-                    <h2 class="flex items-start gap-2 text-xl font-semibold leading-snug tracking-tight text-foreground">
+                    <h2 class="flex items-start gap-2 text-xl font-bold leading-snug tracking-tight text-foreground">
                       <a href={articleUrl(article)} class="ui-link">
                         {article.title}
                       </a>
@@ -304,15 +304,16 @@ const heroImage = isDaytime ? dayHeroImage : nightHeroImage;
   .home-hero-overlay {
     background: linear-gradient(
       to bottom,
-      oklch(100% 0 0 / 0.36),
-      oklch(100% 0 0 / 0.1) 54%,
+      color-mix(in oklab, var(--color-bg) 36%, transparent),
+      color-mix(in oklab, var(--color-bg) 10%, transparent) 54%,
       transparent
     );
   }
 
   .home-hero-nav {
     color: var(--color-text);
-    text-shadow: 0 0.0625rem 1rem oklch(100% 0 0 / 0.72);
+    text-shadow: 0 0.0625rem 1rem
+      color-mix(in oklab, var(--color-bg) 72%, transparent);
   }
 
   .home-hero-nav a,
@@ -348,7 +349,7 @@ const heroImage = isDaytime ? dayHeroImage : nightHeroImage;
   }
 
   .home-hero-status-dot {
-    box-shadow: 0 0 0 1px oklch(100% 0 0 / 0.72);
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-bg) 72%, transparent);
   }
 
   .home-hero[data-home-hero-mode='night'] .home-hero-overlay {

@@ -358,7 +358,7 @@ const renderStatusTimelineTooltipItems = (
     if (index > 0) {
       shell.style.paddingTop = '0.7rem';
       shell.style.borderTop =
-        '1px solid color-mix(in oklab, var(--color-border) 76%, white 24%)';
+        '1px solid color-mix(in oklab, var(--color-border) 76%, var(--color-surface-raised) 24%)';
     }
 
     title.hidden = false;

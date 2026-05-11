@@ -58,6 +58,7 @@ const titleId = `news-event-title-${event.slug}`;
           <div class="news-event-compact-map-layer">
             <iframe
               src={mapEmbedUrl}
+              title={`Фоновая карта места события: ${event.location ?? event.title}`}
               loading="lazy"
               tabindex="-1"
               class="news-event-compact-map-frame"
@@ -220,6 +221,55 @@ const titleId = `news-event-title-${event.slug}`;
 }
 
 <style>
+  .news-event-card,
+  .news-event-compact-card {
+    --news-event-wash-strong: color-mix(
+      in oklab,
+      var(--color-surface-raised) 96%,
+      transparent
+    );
+    --news-event-wash-base: color-mix(
+      in oklab,
+      var(--color-surface-raised) 92%,
+      transparent
+    );
+    --news-event-wash-mid: color-mix(
+      in oklab,
+      var(--color-surface-raised) 56%,
+      transparent
+    );
+    --news-event-wash-soft: color-mix(
+      in oklab,
+      var(--color-surface-raised) 28%,
+      transparent
+    );
+    --news-event-map-line: color-mix(
+      in oklab,
+      var(--color-border) 58%,
+      transparent
+    );
+    --news-event-map-road-strong: color-mix(
+      in oklab,
+      var(--color-surface-raised) 88%,
+      transparent
+    );
+    --news-event-map-road: color-mix(
+      in oklab,
+      var(--color-surface-raised) 70%,
+      transparent
+    );
+    --news-event-panel-border: color-mix(
+      in oklab,
+      var(--color-surface-raised) 72%,
+      transparent
+    );
+    --news-event-panel-bg: color-mix(
+      in oklab,
+      var(--color-surface-raised) 88%,
+      transparent
+    );
+  }
+
   .news-event-card {
     position: relative;
     isolation: isolate;
@@ -246,14 +296,14 @@ const titleId = `news-event-title-${event.slug}`;
     background:
       linear-gradient(
         90deg,
-        oklch(100% 0 0 / 0.96) 0%,
-        oklch(100% 0 0 / 0.92) 43%,
-        oklch(100% 0 0 / 0.56) 70%,
-        oklch(100% 0 0 / 0.28) 100%
+        var(--news-event-wash-strong) 0%,
+        var(--news-event-wash-base) 43%,
+        var(--news-event-wash-mid) 70%,
+        var(--news-event-wash-soft) 100%
       ),
       radial-gradient(
         circle at 22% 18%,
-        oklch(83% 0.155 78 / 0.18),
+        color-mix(in oklab, var(--color-accent) 18%, transparent),
         transparent 15rem
       );
     content: '';
@@ -279,34 +329,34 @@ const titleId = `news-event-title-${event.slug}`;
     background:
       radial-gradient(
         circle at 73% 34%,
-        oklch(83% 0.155 78 / 0.24),
+        color-mix(in oklab, var(--color-accent) 24%, transparent),
         transparent 10rem
       ),
       radial-gradient(
         circle at 24% 78%,
-        oklch(36% 0.115 143 / 0.14),
+        color-mix(in oklab, var(--color-primary) 14%, transparent),
         transparent 10rem
       ),
       linear-gradient(
         34deg,
         transparent 45%,
-        oklch(100% 0 0 / 0.88) 46%,
-        oklch(100% 0 0 / 0.88) 49%,
+        var(--news-event-map-road-strong) 46%,
+        var(--news-event-map-road-strong) 49%,
         transparent 50%
       ),
       linear-gradient(
         118deg,
         transparent 48%,
-        oklch(100% 0 0 / 0.7) 49%,
-        oklch(100% 0 0 / 0.7) 51%,
+        var(--news-event-map-road) 49%,
+        var(--news-event-map-road) 51%,
         transparent 52%
       ),
-      linear-gradient(oklch(88% 0.012 135 / 0.5) 1px, transparent 1px),
-      linear-gradient(90deg, oklch(88% 0.012 135 / 0.5) 1px, transparent 1px),
+      linear-gradient(var(--news-event-map-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--news-event-map-line) 1px, transparent 1px),
       linear-gradient(
         135deg,
         var(--color-primary-soft-2),
-        oklch(96.8% 0.008 135)
+        var(--color-surface-muted)
       );
     background-size:
       auto,
@@ -335,8 +385,8 @@ const titleId = `news-event-title-${event.slug}`;
     border-radius: 999px;
     background: var(--color-accent);
     box-shadow:
-      0 0 0 0.5rem oklch(83% 0.155 78 / 0.22),
-      0 0.75rem 1.5rem oklch(24% 0.04 145 / 0.18);
+      0 0 0 0.5rem color-mix(in oklab, var(--color-accent) 22%, transparent),
+      0 0.75rem 1.5rem var(--color-shadow);
   }
 
   .news-event-map-pin::after {
@@ -358,10 +408,10 @@ const titleId = `news-event-title-${event.slug}`;
     gap: clamp(0.9rem, 2vw, 1.25rem);
     width: min(100%, 43rem);
     padding: clamp(0.9rem, 2vw, 1.2rem);
-    border: 1px solid oklch(100% 0 0 / 0.72);
+    border: 1px solid var(--news-event-panel-border);
     border-radius: 1.1rem;
-    background: oklch(100% 0 0 / 0.88);
-    box-shadow: 0 1rem 2.2rem oklch(27% 0.05 142 / 0.1);
+    background: var(--news-event-panel-bg);
+    box-shadow: 0 1rem 2.2rem var(--color-shadow);
     backdrop-filter: blur(2px);
   }
 
@@ -377,7 +427,7 @@ const titleId = `news-event-title-${event.slug}`;
     background:
       radial-gradient(
         circle at 85% 18%,
-        oklch(83% 0.155 78 / 0.22),
+        color-mix(in oklab, var(--color-accent) 22%, transparent),
         transparent 4rem
       ),
       color-mix(
@@ -404,7 +454,7 @@ const titleId = `news-event-title-${event.slug}`;
     color: color-mix(in oklab, var(--color-earth) 76%, var(--color-text) 24%);
     font-size: 0.72rem;
     font-weight: 850;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.08em;
     line-height: 1;
     text-transform: uppercase;
   }
@@ -449,7 +499,7 @@ const titleId = `news-event-title-${event.slug}`;
   }
 
   .news-event-details-divider {
-    color: var(--color-accent-hover);
+    color: var(--color-accent-text);
     font-weight: 900;
   }
 
@@ -472,7 +522,8 @@ const titleId = `news-event-title-${event.slug}`;
     border-color: var(--color-accent);
     background: var(--color-accent);
     color: color-mix(in oklab, var(--color-text) 78%, var(--color-earth) 22%);
-    box-shadow: 0 0.55rem 1.2rem oklch(83% 0.155 78 / 0.18);
+    box-shadow: 0 0.55rem 1.2rem
+      color-mix(in oklab, var(--color-accent) 18%, transparent);
   }
 
   .news-event-action--calendar:hover {
@@ -482,7 +533,11 @@ const titleId = `news-event-title-${event.slug}`;
   }
 
   .news-event-action--map {
-    background: oklch(100% 0 0 / 0.82);
+    background: color-mix(
+      in oklab,
+      var(--color-surface-raised) 82%,
+      transparent
+    );
   }
 
   :global(.news-event-calendar-icon) {
@@ -503,13 +558,13 @@ const titleId = `news-event-title-${event.slug}`;
       background:
         linear-gradient(
           180deg,
-          oklch(100% 0 0 / 0.95) 0%,
-          oklch(100% 0 0 / 0.9) 58%,
-          oklch(100% 0 0 / 0.52) 100%
+          var(--news-event-wash-strong) 0%,
+          var(--news-event-wash-base) 58%,
+          var(--news-event-wash-mid) 100%
         ),
         radial-gradient(
           circle at 18% 14%,
-          oklch(83% 0.155 78 / 0.18),
+          color-mix(in oklab, var(--color-accent) 18%, transparent),
           transparent 12rem
         );
     }
@@ -519,7 +574,7 @@ const titleId = `news-event-title-${event.slug}`;
       gap: 0.9rem;
       padding: 0.85rem;
       border-radius: 0.95rem;
-      background: oklch(100% 0 0 / 0.9);
+      background: var(--news-event-panel-bg);
     }
 
     .news-event-date-card {
@@ -579,16 +634,16 @@ const titleId = `news-event-title-${event.slug}`;
       );
     border-radius: 1rem;
     background: var(--color-surface-raised);
-    box-shadow: 0 0.65rem 1.55rem oklch(24% 0.04 145 / 0.07);
+    box-shadow: 0 0.65rem 1.55rem var(--color-shadow);
   }
 
   .news-event-compact-card--mapped {
     background:
       linear-gradient(
         110deg,
-        oklch(100% 0 0 / 0.98) 0%,
-        oklch(100% 0 0 / 0.95) 52%,
-        oklch(100% 0 0 / 0.72) 100%
+        var(--news-event-wash-strong) 0%,
+        var(--news-event-wash-base) 52%,
+        var(--news-event-map-road) 100%
       ),
       var(--color-surface-raised);
   }
@@ -624,7 +679,7 @@ const titleId = `news-event-title-${event.slug}`;
 
   .news-event-compact-map-pin {
     --ui-map-marker-size: 18px;
-    --ui-map-marker-color: #064b08;
+    --ui-map-marker-color: var(--color-primary);
     position: absolute;
     top: 50%;
     left: 50%;
@@ -705,7 +760,11 @@ const titleId = `news-event-title-${event.slug}`;
     height: 2.45rem;
     border: 1px solid var(--color-border-strong);
     border-radius: 0.62rem;
-    background: oklch(100% 0 0 / 0.82);
+    background: color-mix(
+      in oklab,
+      var(--color-surface-raised) 82%,
+      transparent
+    );
     color: var(--color-foreground);
     text-decoration: none;
     transition:
@@ -725,7 +784,7 @@ const titleId = `news-event-title-${event.slug}`;
       var(--color-accent) 62%,
       var(--color-border) 38%
     );
-    color: color-mix(in oklab, var(--color-accent) 72%, var(--color-earth) 28%);
+    color: var(--color-accent-text);
   }
 
   .news-event-compact-icon {

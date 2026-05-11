@@ -193,10 +193,10 @@
   );
 </script>
 
-<div class="overflow-x-auto">
+<div>
   {#if title}
     <div class="mb-5 flex items-center justify-between gap-4">
-      <h2 class="text-xl font-semibold text-foreground">
+      <h2 class="text-xl font-bold text-foreground">
         {title}
       </h2>
       {#if shelkovoInfra}
@@ -237,49 +237,61 @@
     </span>
   {/snippet}
 
-  <table class="ui-table table-fixed">
-    <thead>
-      <tr class="ui-table-head">
-        <th>Инфраструктура</th>
-        <th class="w-24 text-center sm:w-48">Статус</th>
-        {#if shelkovoInfra}
-          <th class="w-24 text-center sm:w-48">Шелково</th>
-        {/if}
-      </tr>
-    </thead>
-    <tbody>
-      {#if rows.length === 0}
-        <tr class="ui-table-row">
-          <td
-            class="ui-table-cell text-center text-sm text-muted-foreground"
-            colspan={shelkovoInfra ? 3 : 2}
-          >
-            Отличий с Шелково не найдено
-          </td>
+  <!-- Keyboard focus is intentional so arrow keys can scroll the table. -->
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+  <div
+    class="ui-sticky-table-shell ui-sticky-table-surface"
+    data-ui-sticky-table-shell
+    role="region"
+    tabindex="0"
+    aria-label={title ? `${title}: таблица сравнения` : 'Таблица сравнения'}
+    style="--ui-sticky-table-min-width: 30rem"
+  >
+    <table class="ui-table ui-sticky-table table-fixed">
+      <thead>
+        <tr class="ui-table-head ui-sticky-table-head">
+          <th>Инфраструктура</th>
+          <th class="w-24 text-center sm:w-48">Статус</th>
+          {#if shelkovoInfra}
+            <th class="w-24 text-center sm:w-48">Шелково</th>
+          {/if}
         </tr>
-      {:else}
-        {#each rows as key (key)}
-          {@const value = infra[key as keyof Infrastructure]}
-          {@const shelkovoValue = shelkovoInfra?.[key as keyof Infrastructure]}
-          {@const display = getDisplayConfig(key, value)}
-          {@const shelkovoDisplay = shelkovoInfra
-            ? getDisplayConfig(key, shelkovoValue)
-            : undefined}
-          <tr data-testid="infra-row" class="ui-table-row">
-            <td class="ui-table-cell text-sm text-foreground">
-              {labels[key] || key}
+      </thead>
+      <tbody>
+        {#if rows.length === 0}
+          <tr class="ui-table-row">
+            <td
+              class="ui-table-cell text-center text-sm text-muted-foreground"
+              colspan={shelkovoInfra ? 3 : 2}
+            >
+              Отличий с Шелково не найдено
             </td>
-            <td class="ui-table-cell ui-table-cell-center">
-              {@render badge(display, 'infra-status')}
-            </td>
-            {#if shelkovoInfra && shelkovoDisplay}
-              <td class="ui-table-cell ui-table-cell-center">
-                {@render badge(shelkovoDisplay, 'shelkovo-status')}
-              </td>
-            {/if}
           </tr>
-        {/each}
-      {/if}
-    </tbody>
-  </table>
+        {:else}
+          {#each rows as key (key)}
+            {@const value = infra[key as keyof Infrastructure]}
+            {@const shelkovoValue =
+              shelkovoInfra?.[key as keyof Infrastructure]}
+            {@const display = getDisplayConfig(key, value)}
+            {@const shelkovoDisplay = shelkovoInfra
+              ? getDisplayConfig(key, shelkovoValue)
+              : undefined}
+            <tr data-testid="infra-row" class="ui-table-row">
+              <td class="ui-table-cell text-sm text-foreground">
+                {labels[key] || key}
+              </td>
+              <td class="ui-table-cell ui-table-cell-center">
+                {@render badge(display, 'infra-status')}
+              </td>
+              {#if shelkovoInfra && shelkovoDisplay}
+                <td class="ui-table-cell ui-table-cell-center">
+                  {@render badge(shelkovoDisplay, 'shelkovo-status')}
+                </td>
+              {/if}
+            </tr>
+          {/each}
+        {/if}
+      </tbody>
+    </table>
+  </div>
 </div>

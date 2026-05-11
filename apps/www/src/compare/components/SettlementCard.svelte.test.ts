@@ -91,6 +91,29 @@ describe('SettlementCard', () => {
     ).toContain('1 / 3');
   });
 
+  it('renders as a flat result item without hover-lift vocabulary', () => {
+    const { container } = render(SettlementCard, {
+      props: {
+        settlement: mockSettlement,
+        comparison: mockComparisonCheaper,
+        rank: 1,
+        base: 2,
+        total: 3,
+        isBaseline: false,
+      },
+    });
+
+    const cardClass =
+      container
+        .querySelector('[data-testid="settlement-card"]')
+        ?.getAttribute('class') ?? '';
+
+    expect(cardClass).toContain('bg-[color:var(--color-surface)]');
+    expect(cardClass).toContain('rounded-sm');
+    expect(cardClass).not.toContain('ui-shell');
+    expect(cardClass).not.toMatch(/hover:-translate|hover:shadow|shadow-lg/);
+  });
+
   it('renders estimated tariff with tilde and hint', () => {
     const settlement = {
       ...mockSettlement,

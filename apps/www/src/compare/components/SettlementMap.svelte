@@ -531,7 +531,7 @@
 
 <div
   data-testid="settlement-map"
-  class={`relative w-full overflow-hidden ${shell ? 'ui-shell' : ''}`}
+  class={`relative w-full overflow-hidden ${shell ? 'border border-border bg-[color:var(--color-surface)]' : ''}`}
   style={`height: ${height}px; min-height: ${height}px;`}
 >
   {#if isLoading}
@@ -570,7 +570,8 @@
       <div class="relative">
         <div
           bind:this={popupEl}
-          class="pointer-events-auto w-64 rounded-lg border border-border/70 bg-card/42 p-3 shadow-xl backdrop-blur-sm backdrop-saturate-[1.03]"
+          class="pointer-events-auto w-64 border border-border bg-[color:var(--color-surface)] p-3"
+          data-testid="map-popup-panel"
         >
           <div class="mb-0 flex items-start justify-between gap-3">
             <a
@@ -583,7 +584,7 @@
             </a>
             <button
               type="button"
-              class="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+              class="p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
               aria-label="Закрыть попап"
               onclick={() => {
                 tip = undefined;
@@ -602,9 +603,7 @@
             </button>
           </div>
           {#if tip.item.companyText}
-            <p
-              class="mb-2 text-xs leading-tight text-muted-foreground opacity-80"
-            >
+            <p class="mb-2 text-xs leading-tight text-muted-foreground">
               {tip.item.companyText}
             </p>
           {/if}
@@ -619,7 +618,8 @@
           </p>
         </div>
         <div
-          class={`absolute left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border border-border/70 bg-card/42 backdrop-blur-sm backdrop-saturate-[1.03] ${tip.up ? '-bottom-1.5 border-t-0 border-l-0' : '-top-1.5 border-b-0 border-r-0'}`}
+          class={`absolute left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border border-border bg-[color:var(--color-surface)] ${tip.up ? '-bottom-1.5 border-t-0 border-l-0' : '-top-1.5 border-b-0 border-r-0'}`}
+          data-testid="map-popup-arrow"
           aria-hidden="true"
         ></div>
       </div>
@@ -649,9 +649,16 @@
 
   .map-placeholder {
     background:
-      linear-gradient(oklch(88% 0.012 135 / 0.35) 1px, transparent 1px),
-      linear-gradient(90deg, oklch(88% 0.012 135 / 0.35) 1px, transparent 1px),
-      oklch(98.8% 0.003 125);
+      linear-gradient(
+        color-mix(in oklab, var(--color-border) 62%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        90deg,
+        color-mix(in oklab, var(--color-border) 62%, transparent) 1px,
+        transparent 1px
+      ),
+      var(--color-bg-soft);
     background-size: 32px 32px;
   }
 </style>

@@ -38,4 +38,51 @@ describe('Hero', () => {
     expect(h1).toBeTruthy();
     expect(h1?.textContent).toContain('Test Title');
   });
+
+  it('renders subtitle link when provided', () => {
+    const { container } = render(Hero, {
+      props: {
+        title: 'Test Title',
+        subtitle: 'Сравнение по цене и',
+        subtitleLinkHref: '/815/compare/rating/',
+        subtitleLinkText: 'рейтингу',
+      },
+    });
+
+    const link = container.querySelector('a[href="/815/compare/rating/"]');
+    expect(link?.textContent).toContain('рейтингу');
+  });
+
+  it('uses a flat intro surface instead of the strong shell treatment', () => {
+    const { container } = render(Hero, {
+      props: {
+        title: 'Test Title',
+        subtitle: 'Test Subtitle',
+      },
+    });
+
+    const sectionClass = container
+      .querySelector('section')
+      ?.getAttribute('class');
+    expect(sectionClass?.split(/\s+/)).toContain('border-b');
+    expect(sectionClass?.split(/\s+/)).toContain('pb-4');
+    expect(sectionClass?.split(/\s+/)).toContain('md:pb-8');
+    expect(sectionClass).not.toContain('py-6');
+    expect(sectionClass).not.toContain('ui-shell-strong');
+    expect(sectionClass).not.toMatch(/rounded|shadow/);
+  });
+
+  it('uses the shared page header title scale', () => {
+    const { container } = render(Hero, {
+      props: {
+        title: 'Test Title',
+        subtitle: 'Test Subtitle',
+      },
+    });
+
+    const h1Class = container.querySelector('h1')?.getAttribute('class');
+    expect(h1Class).toContain('text-4xl');
+    expect(h1Class).toContain('md:text-5xl');
+    expect(h1Class).toContain('md:leading-[1.08]');
+  });
 });

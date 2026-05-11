@@ -136,7 +136,7 @@ const tableHeaderCellRightClass = `${tableHeaderCellClass} text-right`;
           groups.map((group) => (
             <section id={group.category} class="space-y-4">
               <div class="max-w-3xl space-y-1.5">
-                <h3 class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]">
+                <h3 class="text-2xl font-bold tracking-tight text-foreground md:text-[2rem]">
                   {group.title}
                 </h3>
                 <p class="text-sm leading-6 text-muted-foreground md:text-base md:leading-7">
@@ -154,8 +154,8 @@ const tableHeaderCellRightClass = `${tableHeaderCellClass} text-right`;
               </div>
 
               <div
-                class="reglament-table-shell -mx-5 overflow-x-auto border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0 lg:overflow-visible"
-                data-reglament-table-shell
+                class="reglament-table-shell ui-sticky-table-shell -mx-5 border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0"
+                data-ui-sticky-table-shell
               >
                 <table class="min-w-[58rem] w-full border-separate border-spacing-0 text-left text-sm">
                   <caption class="sr-only">{group.title}</caption>
@@ -241,9 +241,9 @@ const tableHeaderCellRightClass = `${tableHeaderCellClass} text-right`;
   </main>
 
   <script>
-    import { hydrateReglamentStickyTableHeaders } from '@/lib/reglament/sticky-table-headers';
+    import { hydrateStickyTableHeaders } from '@/lib/sticky-table-headers';
 
-    const hydrate = () => hydrateReglamentStickyTableHeaders();
+    const hydrate = () => hydrateStickyTableHeaders();
 
     hydrate();
     document.addEventListener('astro:after-swap', hydrate);

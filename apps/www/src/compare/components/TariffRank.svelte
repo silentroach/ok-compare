@@ -29,23 +29,23 @@
     const base = i === marker;
 
     if (now && base) {
-      return 'h-3 w-3 rounded-full border border-card bg-info shadow-sm ring-[2px] ring-info/18';
+      return 'h-3 w-3 rounded-full border-2 border-info bg-[color:var(--color-surface)]';
     }
 
     if (now) {
       if (tone === 'success') {
-        return 'h-3 w-3 rounded-full bg-success shadow-[0_0_0_3px_color-mix(in_oklab,var(--color-success)_14%,transparent)]';
+        return 'h-3 w-3 rounded-full border border-success bg-success';
       }
 
       if (tone === 'warning') {
-        return 'h-3 w-3 rounded-full bg-warning shadow-[0_0_0_3px_color-mix(in_oklab,var(--color-warning)_14%,transparent)]';
+        return 'h-3 w-3 rounded-full border border-warning-text bg-warning-text';
       }
 
-      return 'h-3 w-3 rounded-full bg-info shadow-[0_0_0_3px_color-mix(in_oklab,var(--color-info)_14%,transparent)]';
+      return 'h-3 w-3 rounded-full border border-info bg-info';
     }
 
     if (base) {
-      return 'h-2 w-2 rounded-full border border-info/60 bg-card shadow-sm';
+      return 'h-2.5 w-2.5 rounded-full border border-info/70 bg-[color:var(--color-surface)]';
     }
 
     return 'h-1.5 w-1.5 rounded-full bg-border/72';

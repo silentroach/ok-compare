@@ -384,7 +384,7 @@ const formatInputUnit = (unit: string): string =>
             class="border-b border-border p-4 md:border-b-0 md:border-r md:p-5"
           >
             <p
-              class="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
+              class="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground"
             >
               Официальный тариф
             </p>
@@ -399,7 +399,7 @@ const formatInputUnit = (unit: string): string =>
             class="border-b border-border p-4 md:border-b-0 md:border-r md:p-5"
           >
             <p
-              class="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
+              class="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground"
             >
               Текущий пересчет
             </p>
@@ -418,7 +418,7 @@ const formatInputUnit = (unit: string): string =>
           </div>
           <div class="p-4 md:p-5">
             <p
-              class="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
+              class="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground"
             >
               Разница
             </p>
@@ -491,7 +491,7 @@ const formatInputUnit = (unit: string): string =>
         <div class="max-w-3xl space-y-2">
           <h2
             id="estimate-sections-title"
-            class="text-2xl font-semibold tracking-tight text-foreground md:text-[2rem]"
+            class="text-2xl font-bold tracking-tight text-foreground md:text-[2rem]"
           >
             Разделы сметы
           </h2>
@@ -508,7 +508,7 @@ const formatInputUnit = (unit: string): string =>
             <section id={section.id}>
               <div class="mb-4 flex flex-col gap-3 md:mb-5 md:flex-row md:items-end md:justify-between">
                 <div class="space-y-1.5">
-                  <h3 class="text-xl font-semibold tracking-tight text-foreground md:text-2xl">
+                  <h3 class="text-xl font-bold tracking-tight text-foreground md:text-2xl">
                     {section.title}
                   </h3>
                   <p class="text-xs leading-5 text-muted-foreground">
@@ -554,8 +554,8 @@ const formatInputUnit = (unit: string): string =>
               </div>
 
               <div
-                class="reglament-table-shell -mx-5 overflow-x-auto border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0 lg:overflow-visible"
-                data-reglament-table-shell
+                class="reglament-table-shell ui-sticky-table-shell -mx-5 border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0"
+                data-ui-sticky-table-shell
               >
                 <table class="min-w-[48rem] w-full border-separate border-spacing-0 text-left text-sm">
                   <caption class="sr-only">{section.title}</caption>
@@ -1133,11 +1133,11 @@ const formatInputUnit = (unit: string): string =>
 
   <script>
     import { hydrateReglamentCalculators } from '@/lib/reglament/calculator-controller';
-    import { hydrateReglamentStickyTableHeaders } from '@/lib/reglament/sticky-table-headers';
+    import { hydrateStickyTableHeaders } from '@/lib/sticky-table-headers';
 
     const hydrate = () => {
       hydrateReglamentCalculators();
-      hydrateReglamentStickyTableHeaders();
+      hydrateStickyTableHeaders();
     };
 
     hydrate();
