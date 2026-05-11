@@ -58,6 +58,7 @@ const titleId = `news-event-title-${event.slug}`;
           <div class="news-event-compact-map-layer">
             <iframe
               src={mapEmbedUrl}
+              title={`Фоновая карта места события: ${event.location ?? event.title}`}
               loading="lazy"
               tabindex="-1"
               class="news-event-compact-map-frame"
