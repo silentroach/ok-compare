@@ -1,0 +1,293 @@
+---
+import '@shelkovo/ui/styles.css';
+import '@/styles/site.css';
+
+const estimateRows = [
+  {
+    work: 'Круглосуточный пост охраны',
+    base: '4 поста',
+    frequency: '365 дней/год',
+    rate: 'нет ставки',
+    contribution: '41,59 ₽',
+  },
+  {
+    work: 'Техническое обслуживание камер и шлагбаумов',
+    base: 'нет единой базы',
+    frequency: '12 раз/год',
+    rate: '1 811 185 ₽/год',
+    contribution: '7,38 ₽',
+  },
+  {
+    work: 'Диспетчерское обслуживание заявок',
+    base: 'нет единой базы',
+    frequency: '365 дней/год',
+    rate: '2 742 409 ₽/год',
+    contribution: '11,18 ₽',
+  },
+  {
+    work: 'Обход территории и журнал инцидентов',
+    base: '1 маршрут',
+    frequency: '730 раз/год',
+    rate: 'нет ставки',
+    contribution: '4,12 ₽',
+  },
+  {
+    work: 'Замена расходных материалов КПП',
+    base: '12 месяцев',
+    frequency: '12 раз/год',
+    rate: '18 500 ₽/мес',
+    contribution: '0,91 ₽',
+  },
+  {
+    work: 'Плановая проверка системы доступа',
+    base: '6 узлов',
+    frequency: '4 раз/год',
+    rate: '95 000 ₽/год',
+    contribution: '0,39 ₽',
+  },
+] as const;
+
+const comparisonRows = [
+  ['Дороги', 'Асфальт', 'Асфальт'],
+  ['Тротуары', 'Частично', 'Есть'],
+  ['Уличное освещение', 'Есть', 'Есть'],
+  ['Центральная вода', 'Нет', 'Есть'],
+  ['Охрана', 'Есть', 'Есть'],
+  ['Видеонаблюдение', 'Только КПП', 'Есть'],
+  ['КПП', 'Есть', 'Есть'],
+  ['Магазины', 'Нет', 'Частично'],
+] as const;
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sticky table visual fixture</title>
+  </head>
+  <body class="ui-root-site sticky-table-visual-page">
+    <main class="sticky-table-visual-shell">
+      <section class="sticky-table-visual-intro" aria-label="Fixture intro">
+        <p class="sticky-table-visual-label">Shared UI fixture</p>
+        <h1>Липкие таблицы с тестовыми данными</h1>
+        <p>
+          Страница проверяет общий table pattern без зависимости от реальных
+          данных регламента или compare-раздела.
+        </p>
+      </section>
+
+      <section data-testid="sticky-table-wide-section" class="space-y-4">
+        <div>
+          <p class="sticky-table-visual-label">Estimate-like</p>
+          <h2>Охрана и обслуживание, тестовая смета</h2>
+        </div>
+
+        <div
+          class="ui-sticky-table-shell ui-sticky-table-surface sticky-table-visual-card"
+          data-ui-sticky-table-shell
+          data-testid="sticky-table-wide-shell"
+        >
+          <table
+            class="ui-sticky-table sticky-table-visual-wide-table border-separate border-spacing-0 text-sm"
+          >
+            <caption class="sr-only">Тестовая смета охраны</caption>
+            <thead
+              class="ui-sticky-table-head text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground"
+            >
+              <tr>
+                <th class="sticky-table-visual-th w-[32%] rounded-tl-xl">
+                  Работа
+                </th>
+                <th class="sticky-table-visual-th w-[18%]">База</th>
+                <th class="sticky-table-visual-th w-[18%]">Периодичность</th>
+                <th class="sticky-table-visual-th w-[18%]">Цена/ставка</th>
+                <th
+                  class="sticky-table-visual-th w-[14%] rounded-tr-xl text-right"
+                >
+                  Вклад
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                estimateRows.map((row) => (
+                  <tr class="border-t border-border">
+                    <td class="sticky-table-visual-td font-semibold text-foreground">
+                      <span
+                        class="sticky-table-visual-check"
+                        aria-hidden="true"
+                      >
+                        ✓
+                      </span>
+                      {row.work}
+                    </td>
+                    <td class="sticky-table-visual-td text-muted-foreground">
+                      {row.base}
+                    </td>
+                    <td class="sticky-table-visual-td text-muted-foreground">
+                      {row.frequency}
+                    </td>
+                    <td class="sticky-table-visual-td text-muted-foreground">
+                      {row.rate}
+                    </td>
+                    <td class="sticky-table-visual-td text-right font-semibold text-foreground">
+                      {row.contribution}
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section data-testid="sticky-table-compare-section" class="space-y-4">
+        <div>
+          <p class="sticky-table-visual-label">Comparison-like</p>
+          <h2>Сравнение инфраструктуры, тестовые поселки</h2>
+        </div>
+
+        <div
+          class="ui-sticky-table-shell ui-sticky-table-surface sticky-table-visual-card"
+          data-ui-sticky-table-shell
+          data-testid="sticky-table-compare-shell"
+          style="--ui-sticky-table-min-width: 30rem"
+        >
+          <table class="ui-table ui-sticky-table table-fixed">
+            <caption class="sr-only">Тестовое сравнение инфраструктуры</caption>
+            <thead>
+              <tr class="ui-table-head ui-sticky-table-head">
+                <th>Инфраструктура</th>
+                <th class="w-48 text-center">Тестовый поселок</th>
+                <th class="w-48 text-center">Шелково</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                comparisonRows.map(([label, current, base]) => (
+                  <tr class="ui-table-row">
+                    <td class="ui-table-cell text-sm font-semibold text-foreground">
+                      {label}
+                    </td>
+                    <td class="ui-table-cell ui-table-cell-center">
+                      <span class="ui-badge ui-badge-info">{current}</span>
+                    </td>
+                    <td class="ui-table-cell ui-table-cell-center">
+                      <span class="ui-badge ui-badge-success">{base}</span>
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="sticky-table-visual-scroll-tail" aria-hidden="true"></div>
+    </main>
+  </body>
+</html>
+
+<script>
+  import { hydrateStickyTableHeaders } from '@/lib/sticky-table-headers';
+
+  hydrateStickyTableHeaders();
+</script>
+
+<style>
+  .sticky-table-visual-page {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+  }
+
+  .sticky-table-visual-shell {
+    display: grid;
+    gap: 5rem;
+    width: min(100% - 3rem, 72rem);
+    margin: 0 auto;
+    padding: 4rem 0 8rem;
+  }
+
+  .sticky-table-visual-intro {
+    max-width: 44rem;
+    padding-top: 10rem;
+  }
+
+  .sticky-table-visual-shell > * {
+    min-width: 0;
+  }
+
+  .sticky-table-visual-intro h1,
+  .sticky-table-visual-shell h2 {
+    margin: 0;
+    color: var(--color-foreground);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  .sticky-table-visual-intro h1 {
+    font-size: 2.5rem;
+    line-height: 1.1;
+  }
+
+  .sticky-table-visual-shell h2 {
+    font-size: 2rem;
+    line-height: 1.15;
+  }
+
+  .sticky-table-visual-intro p:not(.sticky-table-visual-label) {
+    color: var(--color-muted-foreground);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+  }
+
+  .sticky-table-visual-label {
+    margin: 0 0 0.5rem;
+    color: var(--color-muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .sticky-table-visual-card {
+    --ui-sticky-table-min-width: 58rem;
+  }
+
+  .sticky-table-visual-scroll-tail {
+    min-height: 80vh;
+  }
+
+  .sticky-table-visual-wide-table {
+    width: 100%;
+    text-align: left;
+  }
+
+  .sticky-table-visual-th {
+    padding: 0.85rem 1rem;
+    vertical-align: bottom;
+  }
+
+  .sticky-table-visual-td {
+    border-top: 1px solid var(--color-border);
+    padding: 1.1rem 1rem;
+    vertical-align: top;
+  }
+
+  .sticky-table-visual-check {
+    display: inline-flex;
+    width: 1.25rem;
+    height: 1.25rem;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.65rem;
+    border-radius: 0.35rem;
+    background: oklch(58% 0.2 255);
+    color: white;
+    font-weight: 800;
+    line-height: 1;
+  }
+</style>

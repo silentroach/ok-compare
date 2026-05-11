@@ -71,15 +71,15 @@ Follow-up tasks for applying `docs/design/design-code-shelkovo.md` to the live s
 
 **Acceptance criteria:**
 
-- [ ] Comparative tables keep column comparison usable on mobile, using horizontal scroll and edge affordance when needed.
-- [ ] Row-oriented tables may use stacked rows only when column comparison is not the primary task.
-- [ ] Important table context, source, method and updated date stay adjacent to the table or inside a nearby disclosure.
+- [x] Comparative tables keep column comparison usable on mobile, using horizontal scroll and edge affordance when needed.
+- [x] Row-oriented tables may use stacked rows only when column comparison is not the primary task.
+- [x] Important table context, source, method and updated date stay adjacent to the table or inside a nearby disclosure.
 
 **Verification:**
 
-- [ ] Manual check at 320px and 390px widths for compare, regulation and markdown/prose tables.
-- [ ] Keyboard focus remains usable inside scroll containers and disclosures.
-- [ ] `pnpm typecheck` passes.
+- [x] Manual check at 320px and 390px widths for compare, regulation and markdown/prose tables.
+- [x] Keyboard focus remains usable inside scroll containers and disclosures.
+- [x] `pnpm typecheck` passes.
 
 **Dependencies:** None
 
@@ -153,4 +153,3 @@ Follow-up tasks for applying `docs/design/design-code-shelkovo.md` to the live s
 ## Open Questions
 
 - Should PT Sans Caption remain heading-only everywhere, or should some compact card titles use Fira Sans semibold for calmer density?
-- Should table scroll containers get a shared utility in `packages/ui/styles.css`, or stay local until the third repeated use?

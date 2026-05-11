@@ -554,8 +554,8 @@ const formatInputUnit = (unit: string): string =>
               </div>
 
               <div
-                class="reglament-table-shell -mx-5 overflow-x-auto border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0 lg:overflow-visible"
-                data-reglament-table-shell
+                class="reglament-table-shell ui-sticky-table-shell -mx-5 border-y border-border bg-surface sm:mx-0 sm:rounded-xl sm:border md:mx-0"
+                data-ui-sticky-table-shell
               >
                 <table class="min-w-[48rem] w-full border-separate border-spacing-0 text-left text-sm">
                   <caption class="sr-only">{section.title}</caption>
@@ -1133,11 +1133,11 @@ const formatInputUnit = (unit: string): string =>
 
   <script>
     import { hydrateReglamentCalculators } from '@/lib/reglament/calculator-controller';
-    import { hydrateReglamentStickyTableHeaders } from '@/lib/reglament/sticky-table-headers';
+    import { hydrateStickyTableHeaders } from '@/lib/sticky-table-headers';
 
     const hydrate = () => {
       hydrateReglamentCalculators();
-      hydrateReglamentStickyTableHeaders();
+      hydrateStickyTableHeaders();
     };
 
     hydrate();

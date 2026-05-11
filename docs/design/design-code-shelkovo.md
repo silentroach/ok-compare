@@ -290,6 +290,7 @@ PT Sans Caption использовать в реальных весах семе
 - **Sticky Context:** для широких сравнительных таблиц закреплять первый смысловой столбец, если без него пользователь теряет, что именно сравнивает.
 - **Numeric Discipline:** деньги, проценты, длительности, площади и тарифы выравнивать consistently; единицы измерения не прятать в заголовке, если без них значение неоднозначно.
 - **Source Access:** источник, методика и дата обновления должны быть рядом с таблицей или в раскрывающейся строке, а не в отдельном далеком разделе.
+- **Shared Implementation:** новые сравнительные таблицы должны начинаться с shared-паттерна `ui-sticky-table-shell ui-sticky-table-surface` + `ui-sticky-table`/`ui-table` + `ui-sticky-table-head`. Он задает внешний вид как у регламентных и compare-таблиц: `surface-muted` header, тонкие разделители, плотные строки, mobile horizontal scroll с edge affordance и sticky header на desktop.
 
 ### Evidence Blocks
 

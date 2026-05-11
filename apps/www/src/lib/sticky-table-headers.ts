@@ -1,4 +1,4 @@
-const tableShellSelector = '[data-reglament-table-shell]';
+const tableShellSelector = '[data-ui-sticky-table-shell]';
 
 let stickyTableRaf = 0;
 let stickyTableListenersBound = false;
@@ -14,44 +14,44 @@ const isTableHeaderStuck = (
   return shellRect.top < top && shellRect.bottom > top + headerHeight;
 };
 
-const updateReglamentStickyTableHeaders = (): void => {
+const updateStickyTableHeaders = (): void => {
   document
     .querySelectorAll<HTMLElement>(tableShellSelector)
     .forEach((shell) => {
       const headerCell = shell.querySelector<HTMLElement>('thead th');
 
       if (!headerCell) {
-        shell.removeAttribute('data-reglament-table-stuck');
+        shell.removeAttribute('data-ui-sticky-table-stuck');
         return;
       }
 
       shell.toggleAttribute(
-        'data-reglament-table-stuck',
+        'data-ui-sticky-table-stuck',
         isTableHeaderStuck(shell, headerCell),
       );
     });
 };
 
-const scheduleReglamentStickyTableHeadersUpdate = (): void => {
+const scheduleStickyTableHeadersUpdate = (): void => {
   if (stickyTableRaf) return;
 
   stickyTableRaf = requestAnimationFrame(() => {
     stickyTableRaf = 0;
-    updateReglamentStickyTableHeaders();
+    updateStickyTableHeaders();
   });
 };
 
-const bindReglamentStickyTableHeaderListeners = (): void => {
+const bindStickyTableHeaderListeners = (): void => {
   if (stickyTableListenersBound) return;
 
-  window.addEventListener('scroll', scheduleReglamentStickyTableHeadersUpdate, {
+  window.addEventListener('scroll', scheduleStickyTableHeadersUpdate, {
     passive: true,
   });
-  window.addEventListener('resize', scheduleReglamentStickyTableHeadersUpdate);
+  window.addEventListener('resize', scheduleStickyTableHeadersUpdate);
   stickyTableListenersBound = true;
 };
 
-export const hydrateReglamentStickyTableHeaders = (): void => {
-  bindReglamentStickyTableHeaderListeners();
-  updateReglamentStickyTableHeaders();
+export const hydrateStickyTableHeaders = (): void => {
+  bindStickyTableHeaderListeners();
+  updateStickyTableHeaders();
 };

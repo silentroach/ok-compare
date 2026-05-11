@@ -89,7 +89,7 @@
   );
 </script>
 
-<div class="overflow-x-auto">
+<div>
   {#if title}
     <div class="mb-5 flex items-center justify-between gap-4">
       <h2 class="text-xl font-bold text-foreground">
@@ -133,49 +133,61 @@
     </span>
   {/snippet}
 
-  <table class="ui-table table-fixed">
-    <thead>
-      <tr class="ui-table-head">
-        <th>Услуга</th>
-        <th class="w-24 text-center sm:w-48">Статус</th>
-        {#if shelkovoServices}
-          <th class="w-24 text-center sm:w-48">Шелково</th>
-        {/if}
-      </tr>
-    </thead>
-    <tbody>
-      {#if rows.length === 0}
-        <tr class="ui-table-row">
-          <td
-            class="ui-table-cell text-center text-sm text-muted-foreground"
-            colspan={shelkovoServices ? 3 : 2}
-          >
-            Отличий с Шелково не найдено
-          </td>
+  <!-- Keyboard focus is intentional so arrow keys can scroll the table. -->
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+  <div
+    class="ui-sticky-table-shell ui-sticky-table-surface"
+    data-ui-sticky-table-shell
+    role="region"
+    tabindex="0"
+    aria-label={title ? `${title}: таблица сравнения` : 'Таблица сравнения'}
+    style="--ui-sticky-table-min-width: 30rem"
+  >
+    <table class="ui-table ui-sticky-table table-fixed">
+      <thead>
+        <tr class="ui-table-head ui-sticky-table-head">
+          <th>Услуга</th>
+          <th class="w-24 text-center sm:w-48">Статус</th>
+          {#if shelkovoServices}
+            <th class="w-24 text-center sm:w-48">Шелково</th>
+          {/if}
         </tr>
-      {:else}
-        {#each rows as key (key)}
-          {@const value = services[key as keyof ServiceModel]}
-          {@const shelkovoValue = shelkovoServices?.[key as keyof ServiceModel]}
-          {@const display = getDisplay(value)}
-          {@const shelkovoDisplay = shelkovoServices
-            ? getDisplay(shelkovoValue)
-            : undefined}
-          <tr data-testid="service-row" class="ui-table-row">
-            <td class="ui-table-cell text-sm text-foreground">
-              {labels[key] || key}
+      </thead>
+      <tbody>
+        {#if rows.length === 0}
+          <tr class="ui-table-row">
+            <td
+              class="ui-table-cell text-center text-sm text-muted-foreground"
+              colspan={shelkovoServices ? 3 : 2}
+            >
+              Отличий с Шелково не найдено
             </td>
-            <td class="ui-table-cell ui-table-cell-center">
-              {@render badge(display, 'service-status')}
-            </td>
-            {#if shelkovoServices && shelkovoDisplay}
-              <td class="ui-table-cell ui-table-cell-center">
-                {@render badge(shelkovoDisplay, 'shelkovo-service-status')}
-              </td>
-            {/if}
           </tr>
-        {/each}
-      {/if}
-    </tbody>
-  </table>
+        {:else}
+          {#each rows as key (key)}
+            {@const value = services[key as keyof ServiceModel]}
+            {@const shelkovoValue =
+              shelkovoServices?.[key as keyof ServiceModel]}
+            {@const display = getDisplay(value)}
+            {@const shelkovoDisplay = shelkovoServices
+              ? getDisplay(shelkovoValue)
+              : undefined}
+            <tr data-testid="service-row" class="ui-table-row">
+              <td class="ui-table-cell text-sm text-foreground">
+                {labels[key] || key}
+              </td>
+              <td class="ui-table-cell ui-table-cell-center">
+                {@render badge(display, 'service-status')}
+              </td>
+              {#if shelkovoServices && shelkovoDisplay}
+                <td class="ui-table-cell ui-table-cell-center">
+                  {@render badge(shelkovoDisplay, 'shelkovo-service-status')}
+                </td>
+              {/if}
+            </tr>
+          {/each}
+        {/if}
+      </tbody>
+    </table>
+  </div>
 </div>

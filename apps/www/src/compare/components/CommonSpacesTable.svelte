@@ -98,7 +98,7 @@
   );
 </script>
 
-<div class="overflow-x-auto">
+<div>
   {#if title}
     <div class="mb-5 flex items-center justify-between gap-4">
       <h2 class="text-xl font-bold text-foreground">
@@ -142,49 +142,60 @@
     </span>
   {/snippet}
 
-  <table class="ui-table table-fixed">
-    <thead>
-      <tr class="ui-table-head">
-        <th>Общие пространства</th>
-        <th class="w-24 text-center sm:w-48">Статус</th>
-        {#if shelkovoSpaces}
-          <th class="w-24 text-center sm:w-48">Шелково</th>
-        {/if}
-      </tr>
-    </thead>
-    <tbody>
-      {#if rows.length === 0}
-        <tr class="ui-table-row">
-          <td
-            class="ui-table-cell text-center text-sm text-muted-foreground"
-            colspan={shelkovoSpaces ? 3 : 2}
-          >
-            Отличий с Шелково не найдено
-          </td>
+  <!-- Keyboard focus is intentional so arrow keys can scroll the table. -->
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+  <div
+    class="ui-sticky-table-shell ui-sticky-table-surface"
+    data-ui-sticky-table-shell
+    role="region"
+    tabindex="0"
+    aria-label={title ? `${title}: таблица сравнения` : 'Таблица сравнения'}
+    style="--ui-sticky-table-min-width: 30rem"
+  >
+    <table class="ui-table ui-sticky-table table-fixed">
+      <thead>
+        <tr class="ui-table-head ui-sticky-table-head">
+          <th>Общие пространства</th>
+          <th class="w-24 text-center sm:w-48">Статус</th>
+          {#if shelkovoSpaces}
+            <th class="w-24 text-center sm:w-48">Шелково</th>
+          {/if}
         </tr>
-      {:else}
-        {#each rows as key (key)}
-          {@const value = spaces[key as keyof CommonSpaces]}
-          {@const shelkovoValue = shelkovoSpaces?.[key as keyof CommonSpaces]}
-          {@const display = getDisplay(value)}
-          {@const shelkovoDisplay = shelkovoSpaces
-            ? getDisplay(shelkovoValue)
-            : undefined}
-          <tr data-testid="space-row" class="ui-table-row">
-            <td class="ui-table-cell text-sm text-foreground">
-              {labels[key] || key}
+      </thead>
+      <tbody>
+        {#if rows.length === 0}
+          <tr class="ui-table-row">
+            <td
+              class="ui-table-cell text-center text-sm text-muted-foreground"
+              colspan={shelkovoSpaces ? 3 : 2}
+            >
+              Отличий с Шелково не найдено
             </td>
-            <td class="ui-table-cell ui-table-cell-center">
-              {@render badge(display, 'space-status')}
-            </td>
-            {#if shelkovoSpaces && shelkovoDisplay}
-              <td class="ui-table-cell ui-table-cell-center">
-                {@render badge(shelkovoDisplay, 'shelkovo-space-status')}
-              </td>
-            {/if}
           </tr>
-        {/each}
-      {/if}
-    </tbody>
-  </table>
+        {:else}
+          {#each rows as key (key)}
+            {@const value = spaces[key as keyof CommonSpaces]}
+            {@const shelkovoValue = shelkovoSpaces?.[key as keyof CommonSpaces]}
+            {@const display = getDisplay(value)}
+            {@const shelkovoDisplay = shelkovoSpaces
+              ? getDisplay(shelkovoValue)
+              : undefined}
+            <tr data-testid="space-row" class="ui-table-row">
+              <td class="ui-table-cell text-sm text-foreground">
+                {labels[key] || key}
+              </td>
+              <td class="ui-table-cell ui-table-cell-center">
+                {@render badge(display, 'space-status')}
+              </td>
+              {#if shelkovoSpaces && shelkovoDisplay}
+                <td class="ui-table-cell ui-table-cell-center">
+                  {@render badge(shelkovoDisplay, 'shelkovo-space-status')}
+                </td>
+              {/if}
+            </tr>
+          {/each}
+        {/if}
+      </tbody>
+    </table>
+  </div>
 </div>
