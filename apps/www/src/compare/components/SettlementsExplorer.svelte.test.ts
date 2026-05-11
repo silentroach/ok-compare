@@ -394,6 +394,31 @@ describe('SettlementsExplorer', () => {
     expect(container.querySelector(`#${mapid}`)).toBeTruthy();
   });
 
+  it('renders controls as flat evidence rows', async () => {
+    setScreen(false);
+
+    const { getByTestId } = render(SettlementsExplorer, {
+      props: { settlements, comparisons, stats },
+    });
+
+    await waitFor(() => {
+      expect(getByTestId('explorer-controls')).toBeTruthy();
+    });
+
+    const controlsClass =
+      getByTestId('explorer-controls').getAttribute('class');
+    const summaryClass = getByTestId('explorer-summary-row').getAttribute(
+      'class',
+    );
+    const sortClass = getByTestId('sort-select').getAttribute('class');
+
+    expect(controlsClass).toContain('border-y');
+    expect(summaryClass).toContain('border-b');
+    expect(`${controlsClass} ${sortClass}`).not.toMatch(
+      /ui-shell|rounded|shadow|bg-card/,
+    );
+  });
+
   it('uses one rank for duplicate tariffs', async () => {
     setScreen(false);
 

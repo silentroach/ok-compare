@@ -18,7 +18,7 @@ Use it to pass forward facts that are not obvious from the current task diff: co
 | --- | ------- | ------ | ---------------------------------------------------------------------------- |
 | T1  | done    |        | `docs/tasks/compare-flat-evidence-redesign/T1-flatten-surface-primitives.md` |
 | T2  | done    |        | `docs/tasks/compare-flat-evidence-redesign/T2-redesign-hero-kpi.md`          |
-| T3  | pending |        | `docs/tasks/compare-flat-evidence-redesign/T3-flatten-explorer-map.md`       |
+| T3  | done    |        | `docs/tasks/compare-flat-evidence-redesign/T3-flatten-explorer-map.md`       |
 | T4  | pending |        | `docs/tasks/compare-flat-evidence-redesign/T4-flatten-settlement-cards.md`   |
 | T5  | pending |        | `docs/tasks/compare-flat-evidence-redesign/T5-integrated-qa-closeout.md`     |
 
@@ -31,7 +31,7 @@ Date: 2026-05-11.
 - Current interactive compare UI is in Svelte 5 under `apps/www/src/compare/components`.
 - Current page order: breadcrumbs, `Hero`, embedded `KPIStats`, `SettlementsExplorer`; static fallback renders `SettlementCard` grid until the explorer is ready.
 - `SettlementsExplorer.svelte` currently owns price filters, map toggle, map placement, result count, sort select and rendered card grid.
-- `SettlementMap.svelte` currently uses translucent blurred popup surfaces: `bg-card/42`, `backdrop-blur-sm` and `backdrop-saturate`.
+- `SettlementMap.svelte` popup now uses an opaque bordered surface; old `bg-card/42`, `backdrop-blur-sm` and `backdrop-saturate` treatment was removed in T3.
 - `SettlementCard.svelte` currently uses `ui-shell`, hover translate and hover shadow.
 - Compare-local shell overrides live in `apps/www/src/compare/styles/global.css` and are guarded by `apps/www/src/compare/lib/styles.architecture.test.ts`.
 
@@ -50,6 +50,31 @@ Date: 2026-05-11.
 - If visual diffs are large, capture before/after notes in task logs because no compare-specific visual snapshot suite exists yet.
 
 ## Task Log
+
+### T3 - 2026-05-11 - flatten explorer controls and map panel
+
+Status: done.
+
+Context:
+
+- Scope is limited to `SettlementsExplorer.svelte`, `SettlementMap.svelte`, related tests if needed and this task documentation.
+- Preserve filter behavior, count/sort behavior, map placement and desktop/mobile map defaults.
+- Explorer controls now use a flat `border-y` evidence row, with filter radio labels, count/sort row and map toggle kept in the same page flow.
+- Active filters are marked by a text marker with a divider, not a pill.
+- `SettlementMap` shell now uses a plain border and opaque surface; map popup panel and arrow use `bg-[color:var(--color-surface)]` with `border-border`, without blur/saturate/glass classes.
+
+Verification:
+
+- Svelte autofixer passed for `SettlementsExplorer.svelte` and `SettlementMap.svelte` with no issues; remaining suggestions were pre-existing state/effect and bind:this patterns outside T3 scope.
+- `pnpm --dir apps/www test src/compare/components/SettlementsExplorer.svelte.test.ts src/compare/components/SettlementMap.svelte.test.ts` passed.
+- `pnpm --dir apps/www typecheck` passed.
+- `rg "backdrop-blur|backdrop-saturate|bg-card/" apps/www/src/compare/components/SettlementMap.svelte` produced no matches.
+- `git diff --check` passed.
+
+Intentional leftovers:
+
+- No browser visual review was run because the workflow forbids `pnpm dev` without explicit approval.
+- Settlement result cards remain for T4.
 
 ### T2 - 2026-05-11 - redesign hero and KPI summary as flat evidence intro
 
