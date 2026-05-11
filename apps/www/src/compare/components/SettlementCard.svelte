@@ -36,7 +36,7 @@
   <div class="p-5 md:p-6">
     <div class="mb-4 flex items-start justify-between gap-3">
       <div class="min-w-0">
-        <h3 class="text-xl font-semibold text-foreground">
+        <h3 class="text-xl font-bold text-foreground">
           <Link
             href={withBase(`settlements/${settlement.slug}/`)}
             class="ui-link"

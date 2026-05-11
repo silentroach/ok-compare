@@ -28,7 +28,7 @@
   {#if !embed}
     <div class="mb-3 flex items-end justify-between gap-3">
       <h2
-        class="text-sm font-semibold uppercase tracking-wide ui-muted"
+        class="font-body text-sm font-semibold uppercase tracking-wide ui-muted"
         data-testid="kpi-stats-title"
       >
         Ключевые показатели

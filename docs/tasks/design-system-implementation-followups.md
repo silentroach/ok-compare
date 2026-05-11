@@ -18,15 +18,15 @@ Follow-up tasks for applying `docs/design/design-code-shelkovo.md` to the live s
 
 **Acceptance criteria:**
 
-- [ ] `packages/ui/styles.css` does not cause PT Sans Caption headings to render with synthesized `600`.
-- [ ] Page and component headings that use `var(--font-heading)` use the intended heading weight, or explicitly use body font when semibold text is needed.
-- [ ] The result preserves hierarchy on home, news, status and compare pages.
+- [x] `packages/ui/styles.css` does not cause PT Sans Caption headings to render with synthesized `600`.
+- [x] Page and component headings that use `var(--font-heading)` use the intended heading weight, or explicitly use body font when semibold text is needed.
+- [x] The result preserves hierarchy on home, news, status and compare pages.
 
 **Verification:**
 
-- [ ] Search confirms no unintended `font-weight: 600` remains on PT Sans Caption headings.
-- [ ] `pnpm typecheck` passes.
-- [ ] Manual visual check at 320px, 768px, 1024px and 1440px.
+- [x] Search confirms no unintended `font-weight: 600` remains on PT Sans Caption headings.
+- [x] `pnpm typecheck` passes.
+- [x] Manual visual check at 320px, 768px, 1024px and 1440px.
 
 **Dependencies:** None
 

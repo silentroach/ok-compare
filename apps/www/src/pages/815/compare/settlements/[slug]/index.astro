@@ -712,7 +712,7 @@ const heroMap = hasPoint
       class="ui-shell mb-6 p-6 md:mb-8 lg:hidden"
       data-testid="base-info-section"
     >
-      <h2 class="mb-6 text-xl font-semibold text-foreground">
+      <h2 class="mb-6 text-xl font-bold text-foreground">
         Основная информация
       </h2>
 
@@ -721,7 +721,7 @@ const heroMap = hasPoint
           class="relative z-20 rounded-xl border border-border bg-[color:var(--color-surface-raised)] p-4"
         >
           <h3
-            class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground"
+            class="mb-2 font-body text-sm font-semibold uppercase tracking-wide text-muted-foreground"
           >
             Тариф на обслуживание
           </h3>
@@ -809,7 +809,7 @@ const heroMap = hasPoint
         {
           hasDelta && comparison && (
             <div class="rounded-xl border border-border bg-[color:var(--color-surface-raised)] p-4">
-              <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              <h3 class="mb-2 font-body text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Сравнение с Шелково
               </h3>
               <div
@@ -832,7 +832,7 @@ const heroMap = hasPoint
           class="rounded-xl border border-border bg-[color:var(--color-surface-raised)] p-4 md:col-span-2"
         >
           <h3
-            class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground"
+            class="mb-2 font-body text-sm font-semibold uppercase tracking-wide text-muted-foreground"
           >
             Расположение
           </h3>
@@ -893,7 +893,7 @@ const heroMap = hasPoint
           class="ui-shell mb-6 p-6 md:mb-8"
           data-testid="sources-section"
         >
-          <h2 class="mb-4 text-xl font-semibold text-foreground">Источники</h2>
+          <h2 class="mb-4 text-xl font-bold text-foreground">Источники</h2>
           <SourcesList sources={settlement.sources} />
         </section>
       )

@@ -156,7 +156,7 @@ const weights = [
     <div
       class="mt-6 grid gap-6 px-5 md:px-6 lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-start"
     >
-      <div class="space-y-6">
+      <div class="min-w-0 space-y-6">
         <section id="summary" class="ui-shell p-6 md:p-7">
           <div class="max-w-3xl space-y-4">
             <p
@@ -165,7 +165,7 @@ const weights = [
               Что это вообще такое
             </p>
             <h2
-              class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
+              class="text-2xl font-bold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
             >
               Это индекс качества среды, а не интегральная цена жизни
             </h2>
@@ -192,7 +192,7 @@ const weights = [
               Формула и веса
             </p>
             <h2
-              class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
+              class="text-2xl font-bold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
             >
               Как складывается итоговая цифра
             </h2>
@@ -217,7 +217,7 @@ const weights = [
                   <div class="rounded-2xl border border-border bg-card p-4">
                     <div class="flex items-start justify-between gap-4">
                       <div>
-                        <h3 class="text-sm font-semibold text-foreground">
+                        <h3 class="font-body text-sm font-semibold text-foreground">
                           {label}
                         </h3>
                         <p class="mt-1 text-sm leading-6 text-muted-foreground">
@@ -243,7 +243,7 @@ const weights = [
               Дополнительные корректировки
             </p>
             <h2
-              class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
+              class="text-2xl font-bold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
             >
               После основной формулы есть еще два специальных сигнала
             </h2>
@@ -262,7 +262,7 @@ const weights = [
                 >
                   Плюс к рейтингу
                 </p>
-                <h3 class="mt-2 text-lg font-semibold text-success-text">
+                <h3 class="mt-2 text-lg font-bold text-success-text">
                   +4 балла, если вода уже включена в тариф
                 </h3>
                 <p class="mt-3 text-sm leading-7 text-success-text">
@@ -279,7 +279,7 @@ const weights = [
                 >
                   Минус к рейтингу
                 </p>
-                <h3 class="mt-2 text-lg font-semibold text-danger-text">
+                <h3 class="mt-2 text-lg font-bold text-danger-text">
                   −15 баллов за упоминание в «Коттеджном рабстве»
                 </h3>
                 <p class="mt-3 text-sm leading-7 text-danger-text">
@@ -300,7 +300,7 @@ const weights = [
               1. Инфраструктура
             </p>
             <h2
-              class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
+              class="text-2xl font-bold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
             >
               Самый важный блок
             </h2>
@@ -313,7 +313,7 @@ const weights = [
               <div
                 class="rounded-2xl border border-border bg-[color:var(--color-surface-raised)] p-5"
               >
-                <h3 class="text-base font-semibold text-foreground">
+                <h3 class="text-base font-bold text-foreground">
                   Максимально влияют
                 </h3>
                 <ul
@@ -331,7 +331,7 @@ const weights = [
               <div
                 class="rounded-2xl border border-border bg-[color:var(--color-surface-raised)] p-5"
               >
-                <h3 class="text-base font-semibold text-foreground">
+                <h3 class="text-base font-bold text-foreground">
                   Дополняют картину
                 </h3>
                 <ul
@@ -374,7 +374,7 @@ const weights = [
               2. Общественные пространства
             </p>
             <h2
-              class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
+              class="text-2xl font-bold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
             >
               Комфорт среды, а не только премиальные опции
             </h2>
@@ -386,7 +386,7 @@ const weights = [
             </p>
             <div class="grid gap-4 md:grid-cols-2">
               <div class="rounded-2xl border border-border bg-card p-5">
-                <h3 class="text-base font-semibold text-foreground">
+                <h3 class="text-base font-bold text-foreground">
                   Более значимые признаки
                 </h3>
                 <ul
@@ -400,7 +400,7 @@ const weights = [
                 </ul>
               </div>
               <div class="rounded-2xl border border-border bg-card p-5">
-                <h3 class="text-base font-semibold text-foreground">
+                <h3 class="text-base font-bold text-foreground">
                   Менее значимые признаки
                 </h3>
                 <ul
@@ -432,7 +432,7 @@ const weights = [
               3. Сервисная модель
             </p>
             <h2
-              class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
+              class="text-2xl font-bold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
             >
               Насколько поселок поддерживается в рабочем состоянии
             </h2>
@@ -470,7 +470,7 @@ const weights = [
               4. Удаленность от Москвы
             </p>
             <h2
-              class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
+              class="text-2xl font-bold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
             >
               Приближенная оценка расстояния, а не времени в пути
             </h2>
@@ -508,7 +508,7 @@ const weights = [
               Неизвестные данные
             </p>
             <h2
-              class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
+              class="text-2xl font-bold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
             >
               Отсутствие данных не считается автоматическим минусом, но и не
               превращается в скрытый плюс
@@ -568,7 +568,7 @@ const weights = [
               Как читать результат
             </p>
             <h2
-              class="text-2xl font-semibold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
+              class="text-2xl font-bold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
             >
               Что означает высокий или низкий уровень
             </h2>
@@ -576,7 +576,7 @@ const weights = [
               <div
                 class="rounded-2xl border border-border bg-[color:var(--color-surface-raised)] p-5"
               >
-                <h3 class="text-base font-semibold text-foreground">Высокий</h3>
+                <h3 class="text-base font-bold text-foreground">Высокий</h3>
                 <p class="mt-2 text-sm leading-6 text-muted-foreground">
                   Обычно это сильная базовая инфраструктура, понятная среда и
                   неплохая близость к Москве.
@@ -585,7 +585,7 @@ const weights = [
               <div
                 class="rounded-2xl border border-border bg-[color:var(--color-surface-raised)] p-5"
               >
-                <h3 class="text-base font-semibold text-foreground">Средний</h3>
+                <h3 class="text-base font-bold text-foreground">Средний</h3>
                 <p class="mt-2 text-sm leading-6 text-muted-foreground">
                   Обычно это сочетание сильных и слабых сторон или заметная
                   удаленность при неплохой внутренней среде.
@@ -594,7 +594,7 @@ const weights = [
               <div
                 class="rounded-2xl border border-border bg-[color:var(--color-surface-raised)] p-5"
               >
-                <h3 class="text-base font-semibold text-foreground">Низкий</h3>
+                <h3 class="text-base font-bold text-foreground">Низкий</h3>
                 <p class="mt-2 text-sm leading-6 text-muted-foreground">
                   Чаще всего это не один минус, а комбинация проблем в
                   инженерии, среде и общих условиях жизни.
