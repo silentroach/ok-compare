@@ -177,86 +177,93 @@ const heroImage = isDaytime ? dayHeroImage : nightHeroImage;
             </nav>
           </div>
         </div>
-        <script is:inline>
-          (() => {
-            const shell = document.querySelector('[data-home-hero-mode]');
-            const image = document.querySelector('[data-home-hero-image]');
-            if (!(image instanceof HTMLImageElement)) return;
+        <script>
+          import { installHomeHeroHydration } from '@/lib/home/hero';
 
-            const hour = Number(
-              new Intl.DateTimeFormat('en-GB', {
-                hour: '2-digit',
-                hour12: false,
-                timeZone: 'Europe/Moscow',
-              }).format(new Date()),
-            );
-            const mode = hour >= 6 && hour < 22 ? 'day' : 'night';
-            const src = image.dataset[`${mode}Src`];
-            const srcset = image.dataset[`${mode}Srcset`];
-
-            if (shell instanceof HTMLElement) {
-              shell.dataset.homeHeroMode = mode;
-            }
-
-            if (src && srcset) {
-              image.src = src;
-              image.srcset = srcset;
-            }
-          })();
-
-          (() => {
+          const hydrateHomeNavDropdown = () => {
             const dropdown = document.querySelector('[data-home-nav-dropdown]');
             if (!(dropdown instanceof HTMLElement)) return;
+            if (dropdown.dataset.homeNavDropdownHydrated) return;
+            dropdown.dataset.homeNavDropdownHydrated = 'true';
 
             const button = dropdown.querySelector(
               '[data-home-nav-dropdown-button]',
             );
             if (!(button instanceof HTMLButtonElement)) return;
+            const controller = new AbortController();
+            const { signal } = controller;
 
             const setOpen = (isOpen) => {
               dropdown.toggleAttribute('data-open', isOpen);
               button.setAttribute('aria-expanded', String(isOpen));
             };
 
-            button.addEventListener('click', () => {
-              setOpen(!dropdown.hasAttribute('data-open'));
-            });
+            button.addEventListener(
+              'click',
+              () => {
+                setOpen(!dropdown.hasAttribute('data-open'));
+              },
+              { signal },
+            );
 
-            dropdown.addEventListener('focusout', (event) => {
-              if (
-                event.relatedTarget instanceof Node &&
-                dropdown.contains(event.relatedTarget)
-              ) {
-                return;
-              }
+            dropdown.addEventListener(
+              'focusout',
+              (event) => {
+                if (
+                  event.relatedTarget instanceof Node &&
+                  dropdown.contains(event.relatedTarget)
+                ) {
+                  return;
+                }
 
-              setOpen(false);
-            });
+                setOpen(false);
+              },
+              { signal },
+            );
 
-            document.addEventListener('pointerdown', (event) => {
-              if (!dropdown.hasAttribute('data-open')) return;
-              if (
-                event.target instanceof Node &&
-                dropdown.contains(event.target)
-              ) {
-                return;
-              }
+            document.addEventListener(
+              'pointerdown',
+              (event) => {
+                if (!dropdown.hasAttribute('data-open')) return;
+                if (
+                  event.target instanceof Node &&
+                  dropdown.contains(event.target)
+                ) {
+                  return;
+                }
 
-              setOpen(false);
-            });
+                setOpen(false);
+              },
+              { signal },
+            );
 
-            document.addEventListener('keydown', (event) => {
-              if (
-                event.key !== 'Escape' ||
-                !dropdown.hasAttribute('data-open')
-              ) {
-                return;
-              }
+            document.addEventListener(
+              'keydown',
+              (event) => {
+                if (
+                  event.key !== 'Escape' ||
+                  !dropdown.hasAttribute('data-open')
+                ) {
+                  return;
+                }
 
-              setOpen(false);
-              button.focus();
-            });
-          })();
+                setOpen(false);
+                button.focus();
+              },
+              { signal },
+            );
+
+            document.addEventListener(
+              'astro:before-swap',
+              () => controller.abort(),
+              { once: true, signal },
+            );
+          };
+
+          installHomeHeroHydration();
+          hydrateHomeNavDropdown();
+          document.addEventListener('astro:after-swap', hydrateHomeNavDropdown);
+          document.addEventListener('astro:page-load', hydrateHomeNavDropdown);
         </script>
       </div>
     </section>
