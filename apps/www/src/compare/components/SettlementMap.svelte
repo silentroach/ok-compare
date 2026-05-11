@@ -649,9 +649,16 @@
 
   .map-placeholder {
     background:
-      linear-gradient(oklch(88% 0.012 135 / 0.35) 1px, transparent 1px),
-      linear-gradient(90deg, oklch(88% 0.012 135 / 0.35) 1px, transparent 1px),
-      oklch(98.8% 0.003 125);
+      linear-gradient(
+        color-mix(in oklab, var(--color-border) 62%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        90deg,
+        color-mix(in oklab, var(--color-border) 62%, transparent) 1px,
+        transparent 1px
+      ),
+      var(--color-bg-soft);
     background-size: 32px 32px;
   }
 </style>

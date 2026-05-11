@@ -468,9 +468,18 @@ const timelineGroups = incidents
   .status-service-timeline__track {
     position: relative;
     overflow: hidden;
-    border: 1px solid color-mix(in oklab, var(--color-border) 92%, white 8%);
+    border: 1px solid
+      color-mix(
+        in oklab,
+        var(--color-border) 92%,
+        var(--color-surface-raised) 8%
+      );
     border-radius: 999px;
-    background: color-mix(in oklab, var(--color-success) 14%, white 86%);
+    background: color-mix(
+      in oklab,
+      var(--color-success) 14%,
+      var(--color-surface-raised) 86%
+    );
     box-shadow: inset 0 1px 2px oklch(24% 0.04 145 / 0.05);
     height: 1rem;
   }
@@ -509,7 +518,11 @@ const timelineGroups = incidents
   }
 
   .status-service-timeline__segment--green {
-    background: color-mix(in oklab, var(--color-success) 82%, white 18%);
+    background: color-mix(
+      in oklab,
+      var(--color-success) 82%,
+      var(--color-surface-raised) 18%
+    );
     pointer-events: none;
     z-index: 1;
   }
@@ -526,7 +539,11 @@ const timelineGroups = incidents
 
   .status-service-timeline__segment--problem {
     box-shadow: 0 0 0 1px
-      color-mix(in oklab, var(--color-success) 14%, white 86%);
+      color-mix(
+        in oklab,
+        var(--color-success) 14%,
+        var(--color-surface-raised) 86%
+      );
     transition:
       filter 160ms ease,
       transform 160ms ease;
@@ -561,9 +578,18 @@ const timelineGroups = incidents
     width: min(22rem, calc(100% - 0.5rem));
     max-width: calc(100vw - 1.5rem);
     padding: 0.75rem 0.85rem;
-    border: 1px solid oklch(100% 0 0 / 0.44);
+    border: 1px solid
+      color-mix(
+        in oklab,
+        var(--color-border) 56%,
+        var(--color-surface-raised) 44%
+      );
     border-radius: 1rem;
-    background: oklch(100% 0 0 / 0.9);
+    background: color-mix(
+      in oklab,
+      var(--color-surface-raised) 90%,
+      transparent
+    );
     color: var(--color-text);
     backdrop-filter: blur(5px);
     box-shadow: 0 1.1rem 2.5rem oklch(24% 0.03 230 / 0.18);
@@ -609,7 +635,11 @@ const timelineGroups = incidents
     inline-size: 1.15rem;
     block-size: 1.15rem;
     border-radius: 999px;
-    background: color-mix(in oklab, var(--color-surface-muted) 78%, white 22%);
+    background: color-mix(
+      in oklab,
+      var(--color-surface-muted) 78%,
+      var(--color-surface-raised) 22%
+    );
   }
 
   .status-service-timeline__tooltip-areas :global(svg) {
@@ -631,7 +661,11 @@ const timelineGroups = incidents
     + .status-service-timeline__tooltip-item {
     padding-top: 0.7rem;
     border-top: 1px solid
-      color-mix(in oklab, var(--color-border) 76%, white 24%);
+      color-mix(
+        in oklab,
+        var(--color-border) 76%,
+        var(--color-surface-raised) 24%
+      );
   }
 
   .status-service-timeline__tooltip-phase-icon {
