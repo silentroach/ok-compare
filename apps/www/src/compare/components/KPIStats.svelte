@@ -22,7 +22,9 @@
 </script>
 
 <section
-  class={embed ? 'max-w-3xl p-1' : 'ui-shell p-4 md:p-5'}
+  class={embed
+    ? 'max-w-3xl border-y border-border py-3 lg:border-y-0 lg:py-0'
+    : 'ui-shell p-4 md:p-5'}
   data-testid="kpi-stats"
 >
   {#if !embed}
@@ -39,13 +41,11 @@
 
   <div
     class={embed
-      ? 'grid grid-cols-1 gap-2 sm:grid-cols-2'
-      : 'grid grid-cols-1 gap-3 sm:grid-cols-2'}
+      ? 'grid grid-cols-1 sm:grid-cols-2'
+      : 'grid grid-cols-1 border-y border-border sm:grid-cols-2'}
   >
     <article
-      class={embed
-        ? 'mx-auto w-[96%] rounded-2xl border border-border bg-[color:var(--color-surface-raised)] px-3.5 py-3 shadow-[var(--shadow-1)]'
-        : 'rounded-xl border border-border bg-[color:var(--color-surface-raised)] p-4 shadow-[var(--shadow-1)]'}
+      class={embed ? 'sm:pr-4' : 'py-4 sm:pr-4'}
       data-testid="kpi-median"
     >
       <div
@@ -75,8 +75,8 @@
 
     <article
       class={embed
-        ? 'mx-auto w-[96%] rounded-2xl border border-border bg-card px-3.5 py-3 shadow-[var(--shadow-1)]'
-        : 'rounded-xl border border-border bg-card p-4 shadow-[var(--shadow-1)]'}
+        ? 'mt-3 border-t border-border pt-3 sm:mt-0 sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0'
+        : 'border-t border-border py-4 sm:border-l sm:border-t-0 sm:pl-4'}
       data-testid="kpi-all-median"
     >
       <div

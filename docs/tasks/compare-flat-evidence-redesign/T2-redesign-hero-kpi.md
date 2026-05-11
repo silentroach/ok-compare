@@ -1,6 +1,6 @@
 # T2 - Redesign Hero And KPI Summary As Flat Evidence Intro
 
-Status: pending.
+Status: done.
 
 Dependencies: T1.
 
@@ -44,22 +44,27 @@ Out:
 
 ## Acceptance Criteria
 
-- [ ] The hero no longer depends on a raised `ui-shell-strong` treatment for its primary visual hierarchy.
-- [ ] Embedded KPI stats render as flat evidence items or rows, not as nested rounded/shadowed tiles.
-- [ ] Standalone `KPIStats` remains valid if used outside the hero.
-- [ ] Existing Russian labels remain understandable and correctly associated with their numbers.
-- [ ] Existing tests still cover semantic `h1`, subtitle/link rendering and KPI values after the redesign.
+- [x] The hero no longer depends on a raised `ui-shell-strong` treatment for its primary visual hierarchy.
+- [x] Embedded KPI stats render as flat evidence items or rows, not as nested rounded/shadowed tiles.
+- [x] Standalone `KPIStats` remains valid if used outside the hero.
+- [x] Existing Russian labels remain understandable and correctly associated with their numbers.
+- [x] Existing tests still cover semantic `h1`, subtitle/link rendering and KPI values after the redesign.
 
 ## Verification
 
-- [ ] Run Svelte autofixer on touched `.svelte` files.
-- [ ] Run `pnpm --dir apps/www test src/compare/components/Hero.svelte.test.ts src/compare/components/KPIStats.svelte.test.ts`.
-- [ ] Run `pnpm --dir apps/www typecheck`.
-- [ ] Run `git diff --check`.
+- [x] Run Svelte autofixer on touched `.svelte` files.
+- [x] Run `pnpm --dir apps/www test src/compare/components/Hero.svelte.test.ts src/compare/components/KPIStats.svelte.test.ts`.
+- [x] Run `pnpm --dir apps/www typecheck`.
+- [x] Run `git diff --check`.
 
 ## Handoff Notes
 
 - Record any new reusable intro/KPI class pattern in `docs/tasks/compare-flat-evidence-redesign-handoff.md` for T5 review.
+
+Completed notes:
+
+- Hero now uses a flat `border-y` intro surface with `bg-[color:var(--color-bg-soft)]`, typography and responsive grid hierarchy instead of `ui-shell-strong`.
+- KPI metrics now render as flat divided evidence items. Avoid reintroducing inner `rounded`, `shadow`, `bg-card` or `surface-raised` tiles for the embedded or standalone variants.
 
 ## Commit Message Suggestion
 

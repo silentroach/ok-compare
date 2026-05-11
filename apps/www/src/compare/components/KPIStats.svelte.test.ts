@@ -71,4 +71,48 @@ describe('KPIStats', () => {
 
     expect(container.textContent).toContain('%');
   });
+
+  it('keeps embedded metrics flat without nested raised tiles', () => {
+    const { container } = render(KPIStats, {
+      props: { stats: mockStats, embed: true },
+    });
+
+    const peerClass = container
+      .querySelector('[data-testid="kpi-median"]')
+      ?.getAttribute('class');
+    const allClass = container
+      .querySelector('[data-testid="kpi-all-median"]')
+      ?.getAttribute('class');
+    const sectionClass = container
+      .querySelector('[data-testid="kpi-stats"]')
+      ?.getAttribute('class');
+
+    expect(sectionClass?.split(/\s+/)).toContain('border-y');
+    expect(allClass).toMatch(/border/);
+    expect(`${sectionClass} ${peerClass} ${allClass}`).not.toMatch(
+      /rounded|shadow|bg-card|surface-raised/,
+    );
+  });
+
+  it('keeps standalone metrics semantically titled without raised inner tiles', () => {
+    const { container } = render(KPIStats, {
+      props: { stats: mockStats },
+    });
+
+    const sectionClass = container
+      .querySelector('[data-testid="kpi-stats"]')
+      ?.getAttribute('class');
+    const peerClass = container
+      .querySelector('[data-testid="kpi-median"]')
+      ?.getAttribute('class');
+    const allClass = container
+      .querySelector('[data-testid="kpi-all-median"]')
+      ?.getAttribute('class');
+
+    expect(sectionClass).toContain('ui-shell');
+    expect(container.textContent).toContain('Ключевые показатели');
+    expect(`${peerClass} ${allClass}`).not.toMatch(
+      /rounded|shadow|bg-card|surface-raised/,
+    );
+  });
 });

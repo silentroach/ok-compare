@@ -38,4 +38,34 @@ describe('Hero', () => {
     expect(h1).toBeTruthy();
     expect(h1?.textContent).toContain('Test Title');
   });
+
+  it('renders subtitle link when provided', () => {
+    const { container } = render(Hero, {
+      props: {
+        title: 'Test Title',
+        subtitle: 'Сравнение по цене и',
+        subtitleLinkHref: '/815/compare/rating/',
+        subtitleLinkText: 'рейтингу',
+      },
+    });
+
+    const link = container.querySelector('a[href="/815/compare/rating/"]');
+    expect(link?.textContent).toContain('рейтингу');
+  });
+
+  it('uses a flat intro surface instead of the strong shell treatment', () => {
+    const { container } = render(Hero, {
+      props: {
+        title: 'Test Title',
+        subtitle: 'Test Subtitle',
+      },
+    });
+
+    const sectionClass = container
+      .querySelector('section')
+      ?.getAttribute('class');
+    expect(sectionClass?.split(/\s+/)).toContain('border-y');
+    expect(sectionClass).not.toContain('ui-shell-strong');
+    expect(sectionClass).not.toMatch(/rounded|shadow/);
+  });
 });

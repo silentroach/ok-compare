@@ -17,7 +17,7 @@ Use it to pass forward facts that are not obvious from the current task diff: co
 | ID  | Status  | Commit | Notes                                                                        |
 | --- | ------- | ------ | ---------------------------------------------------------------------------- |
 | T1  | done    |        | `docs/tasks/compare-flat-evidence-redesign/T1-flatten-surface-primitives.md` |
-| T2  | pending |        | `docs/tasks/compare-flat-evidence-redesign/T2-redesign-hero-kpi.md`          |
+| T2  | done    |        | `docs/tasks/compare-flat-evidence-redesign/T2-redesign-hero-kpi.md`          |
 | T3  | pending |        | `docs/tasks/compare-flat-evidence-redesign/T3-flatten-explorer-map.md`       |
 | T4  | pending |        | `docs/tasks/compare-flat-evidence-redesign/T4-flatten-settlement-cards.md`   |
 | T5  | pending |        | `docs/tasks/compare-flat-evidence-redesign/T5-integrated-qa-closeout.md`     |
@@ -50,6 +50,31 @@ Date: 2026-05-11.
 - If visual diffs are large, capture before/after notes in task logs because no compare-specific visual snapshot suite exists yet.
 
 ## Task Log
+
+### T2 - 2026-05-11 - redesign hero and KPI summary as flat evidence intro
+
+Status: done.
+
+Context:
+
+- Scope is limited to `Hero.svelte`, `KPIStats.svelte`, related component tests and this task documentation.
+- Preserve current title, subtitle, rating link, peer median, all-settlements median and delta text; redesign only the visual hierarchy and surface treatment.
+- Hero now uses a flat `border-y` intro surface, `bg-[color:var(--color-bg-soft)]`, typography and a desktop grid instead of `ui-shell-strong`.
+- Embedded `KPIStats` now sits as divided evidence items inside the hero, not as nested rounded/shadowed tiles.
+- Standalone `KPIStats` keeps the flat compare `ui-shell` wrapper and uses inner dividers rather than raised cards.
+- Component tests now guard subtitle link rendering and reject `rounded`, `shadow`, `bg-card` and `surface-raised` inner KPI tile vocabulary.
+
+Verification:
+
+- Svelte autofixer passed for `Hero.svelte` and `KPIStats.svelte` with no issues.
+- `pnpm --dir apps/www test src/compare/components/Hero.svelte.test.ts src/compare/components/KPIStats.svelte.test.ts` passed.
+- `pnpm --dir apps/www typecheck` passed.
+- `git diff --check` passed.
+
+Intentional leftovers:
+
+- No browser visual review was run because the workflow forbids `pnpm dev` without explicit approval.
+- Explorer controls, map popup and settlement cards remain for T3-T4.
 
 ### T1 - 2026-05-11 - flatten compare surface primitives
 
