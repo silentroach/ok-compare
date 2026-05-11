@@ -1,20 +1,18 @@
+import { isCivilDaylight, type Coordinates } from '@shelkovo/geo';
+
 declare global {
   interface Window {
     __shelkovoHomeHeroHydration?: boolean;
   }
 }
 
-const moscowHourFormatter = new Intl.DateTimeFormat('en-GB', {
-  hour: '2-digit',
-  hour12: false,
-  timeZone: 'Europe/Moscow',
-});
+const SHELKOVO_COORDINATES = {
+  lat: 55.065422,
+  lng: 37.733096,
+} satisfies Coordinates;
 
-export const getHomeHeroMode = (date = new Date()): 'day' | 'night' => {
-  const hour = Number(moscowHourFormatter.format(date));
-
-  return hour >= 6 && hour < 22 ? 'day' : 'night';
-};
+export const getHomeHeroMode = (date = new Date()): 'day' | 'night' =>
+  isCivilDaylight(date, SHELKOVO_COORDINATES) ? 'day' : 'night';
 
 export const hydrateHomeHero = (
   root: ParentNode = document,

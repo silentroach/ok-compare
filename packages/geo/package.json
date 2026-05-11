@@ -3,10 +3,18 @@
   "version": "0.1.0",
   "type": "module",
   "private": true,
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
   "exports": {
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@turf/distance": "^7.3.5"
+    "@turf/distance": "^7.3.5",
+    "suncalc": "^1.9.0"
+  },
+  "devDependencies": {
+    "@types/suncalc": "^1.9.2"
   }
 }

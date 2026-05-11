@@ -4,6 +4,8 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
     "test:visual:icons": "playwright test -c playwright.icons-visual.local.config.ts",
     "test:visual:icons:update": "playwright test -c playwright.icons-visual.local.config.ts --update-snapshots",
     "test:visual:icons:serve": "astro build --root tests/icons-visual && astro preview --root tests/icons-visual --host 127.0.0.1 --port 4328",

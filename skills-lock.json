@@ -139,6 +139,12 @@
       "skillPath": "skills/test-driven-development/SKILL.md",
       "computedHash": "2a541c517efcf3ebc1c0fb8cb644bab1690724fb9d2f67bb6d075d6a73876ba8"
     },
+    "turborepo": {
+      "source": "vercel/turborepo",
+      "sourceType": "github",
+      "skillPath": "skills/turborepo/SKILL.md",
+      "computedHash": "0842224bbbbe564586e3361fb8e9a53c5bda34f704fb0ea20f2adf0189454192"
+    },
     "ui-ux-pro-max": {
       "source": "nextlevelbuilder/ui-ux-pro-max-skill",
       "sourceType": "github",

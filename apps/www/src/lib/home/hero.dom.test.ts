@@ -34,11 +34,9 @@ afterEach(() => {
 });
 
 describe('getHomeHeroMode', () => {
-  it('uses the day hero between 06:00 and 21:59 Moscow time', () => {
-    expect(getHomeHeroMode(new Date('2026-05-11T02:59:00Z'))).toBe('night');
-    expect(getHomeHeroMode(new Date('2026-05-11T03:00:00Z'))).toBe('day');
-    expect(getHomeHeroMode(new Date('2026-05-11T18:59:00Z'))).toBe('day');
-    expect(getHomeHeroMode(new Date('2026-05-11T19:00:00Z'))).toBe('night');
+  it('maps Shelkovo civil daylight to hero modes', () => {
+    expect(getHomeHeroMode(new Date('2026-05-11T12:00:00Z'))).toBe('day');
+    expect(getHomeHeroMode(new Date('2026-05-11T21:00:00Z'))).toBe('night');
   });
 });
 

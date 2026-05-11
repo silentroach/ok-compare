@@ -5,6 +5,7 @@ import type { SchemaDoc } from '@shelkovo/seo';
 import dayHero from '@/assets/home/home-hero-day.png';
 import nightHero from '@/assets/home/home-hero-night.png';
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getHomeHeroMode } from '@/lib/home/hero';
 import { loadNewsArticles } from '@/lib/news/load';
 import { articleUrl } from '@/lib/news/routes';
 import { formatNewsDate } from '@/lib/news/view';
@@ -51,14 +52,6 @@ const statusLabel = hasActiveIncidents
   ? 'есть активные проблемы'
   : 'все сервисы работают';
 
-const hourInMoscow = Number(
-  new Intl.DateTimeFormat('en-GB', {
-    hour: '2-digit',
-    hour12: false,
-    timeZone: 'Europe/Moscow',
-  }).format(new Date()),
-);
-const isDaytime = hourInMoscow >= 6 && hourInMoscow < 22;
 const heroWidths = [960, 1280, 1536, 1916, 2172] as const;
 const heroSizes = '100vw';
 const buildHeroImage = async (src: ImageMetadata) => {
@@ -79,8 +72,8 @@ const [dayHeroImage, nightHeroImage] = await Promise.all([
   buildHeroImage(dayHero),
   buildHeroImage(nightHero),
 ]);
-const heroMode = isDaytime ? 'day' : 'night';
-const heroImage = isDaytime ? dayHeroImage : nightHeroImage;
+const heroMode = getHomeHeroMode();
+const heroImage = heroMode === 'day' ? dayHeroImage : nightHeroImage;
 ---
 
 <BaseLayout title={title} description={description} schema={schema}>

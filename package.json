@@ -11,15 +11,15 @@
   },
   "scripts": {
     "clean": "rm -rf dist apps/www/dist apps/www/.astro node_modules/.astro",
-    "dev": "turbo dev",
+    "dev": "turbo run dev",
     "start": "pnpm dev",
-    "build": "turbo build",
-    "preview": "turbo preview",
-    "typecheck": "turbo typecheck",
+    "build": "turbo run build",
+    "preview": "turbo run preview",
+    "typecheck": "turbo run typecheck",
     "format": "prettier --write .",
     "format:changed": "lint-staged",
-    "test": "turbo test",
-    "test:watch": "turbo test:watch",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
     "postinstall": "node scripts/hooks.mjs"
   },
   "lint-staged": {
@@ -50,7 +50,7 @@
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-svelte": "^3.5.1",
     "tailwindcss": "^4.2.4",
-    "turbo": "^2.9.8",
+    "turbo": "^2.9.12",
     "typescript": "^6.0.3",
     "vite": "^8.0.10",
     "vitest": "^4.1.5"
