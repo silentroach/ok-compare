@@ -1,6 +1,6 @@
 # T1 - Flatten Compare Surface Primitives
 
-Status: pending.
+Status: done.
 
 Dependencies: None.
 
@@ -37,17 +37,17 @@ Out:
 
 ## Acceptance Criteria
 
-- [ ] `ui-shell` and `ui-shell-strong` no longer encode raised-card elevation as the default compare section treatment.
-- [ ] Default compare shell radius and shadow choices match `docs/design/design-code-shelkovo.md` Flat First, No Nested Cards and Cards / Containers rules.
-- [ ] Chip/button overrides stay usable for interactive filters but do not make every control look like a decorative pill.
-- [ ] Architecture test fails if the old heavy shell vocabulary is reintroduced accidentally.
-- [ ] Page structure, routes, data loading and user-facing copy remain unchanged.
+- [x] `ui-shell` and `ui-shell-strong` no longer encode raised-card elevation as the default compare section treatment.
+- [x] Default compare shell radius and shadow choices match `docs/design/design-code-shelkovo.md` Flat First, No Nested Cards and Cards / Containers rules.
+- [x] Chip/button overrides stay usable for interactive filters but do not make every control look like a decorative pill.
+- [x] Architecture test fails if the old heavy shell vocabulary is reintroduced accidentally.
+- [x] Page structure, routes, data loading and user-facing copy remain unchanged.
 
 ## Verification
 
-- [ ] Run `pnpm --dir apps/www test src/compare/lib/styles.architecture.test.ts`.
-- [ ] Run `pnpm --dir apps/www typecheck`.
-- [ ] Run `git diff --check`.
+- [x] Run `pnpm --dir apps/www test src/compare/lib/styles.architecture.test.ts`.
+- [x] Run `pnpm --dir apps/www typecheck`.
+- [x] Run `git diff --check`.
 
 ## Handoff Notes
 

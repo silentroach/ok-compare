@@ -40,7 +40,7 @@ Commit message format: кратко и по смыслу, например `flat
 
 | ID  | Task                                                                                                           | Status  | Dependencies |
 | --- | -------------------------------------------------------------------------------------------------------------- | ------- | ------------ |
-| T1  | [Flatten compare surface primitives](compare-flat-evidence-redesign/T1-flatten-surface-primitives.md)          | pending | None         |
+| T1  | [Flatten compare surface primitives](compare-flat-evidence-redesign/T1-flatten-surface-primitives.md)          | done    | None         |
 | T2  | [Redesign hero and KPI summary as flat evidence intro](compare-flat-evidence-redesign/T2-redesign-hero-kpi.md) | pending | T1           |
 | T3  | [Flatten explorer controls and map panel](compare-flat-evidence-redesign/T3-flatten-explorer-map.md)           | pending | T1           |
 | T4  | [Flatten settlement result cards](compare-flat-evidence-redesign/T4-flatten-settlement-cards.md)               | pending | T1           |
@@ -50,8 +50,8 @@ Commit message format: кратко и по смыслу, например `flat
 
 After T1:
 
-- [ ] Compare-local surface contract is flat by default and covered by an architecture test.
-- [ ] No page structure or user-facing data changed.
+- [x] Compare-local surface contract is flat by default and covered by an architecture test.
+- [x] No page structure or user-facing data changed.
 
 After T4:
 

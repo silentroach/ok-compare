@@ -16,7 +16,7 @@ Use it to pass forward facts that are not obvious from the current task diff: co
 
 | ID  | Status  | Commit | Notes                                                                        |
 | --- | ------- | ------ | ---------------------------------------------------------------------------- |
-| T1  | pending |        | `docs/tasks/compare-flat-evidence-redesign/T1-flatten-surface-primitives.md` |
+| T1  | done    |        | `docs/tasks/compare-flat-evidence-redesign/T1-flatten-surface-primitives.md` |
 | T2  | pending |        | `docs/tasks/compare-flat-evidence-redesign/T2-redesign-hero-kpi.md`          |
 | T3  | pending |        | `docs/tasks/compare-flat-evidence-redesign/T3-flatten-explorer-map.md`       |
 | T4  | pending |        | `docs/tasks/compare-flat-evidence-redesign/T4-flatten-settlement-cards.md`   |
@@ -50,6 +50,29 @@ Date: 2026-05-11.
 - If visual diffs are large, capture before/after notes in task logs because no compare-specific visual snapshot suite exists yet.
 
 ## Task Log
+
+### T1 - 2026-05-11 - flatten compare surface primitives
+
+Status: done.
+
+Context:
+
+- Compare-local `ui-shell` now uses a transparent surface, top divider, zero radius and no shadow.
+- Compare-local `ui-shell-strong` now differs only by a stronger top divider, not by elevation.
+- Compare-local `ui-chip` is text-like by default: no background, border, radius or pill padding.
+- Compare-local `ui-btn` explicitly keeps square corners so filters remain usable without making every control a decorative pill.
+- Architecture test snapshots guard these four primitive rules and reject the old raised shell vocabulary: `var(--shadow-1)`, `var(--shadow-2)`, `border-radius: 1rem`, `background: var(--color-card)` and `background: var(--color-elevated)` inside shell rules.
+
+Verification:
+
+- `pnpm --dir apps/www test src/compare/lib/styles.architecture.test.ts` passed.
+- `pnpm --dir apps/www typecheck` passed.
+- `git diff --check` passed.
+
+Intentional leftovers:
+
+- Hero, KPI, explorer, map popup and settlement-card layout remain for T2-T4.
+- No browser visual review was run because T1 only changes local primitives and the workflow forbids `pnpm dev` without explicit approval.
 
 ### T0 - 2026-05-11 - planning docs created
 
