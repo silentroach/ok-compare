@@ -1,6 +1,6 @@
 import type { CollectionEntry } from 'astro:content';
+import { extractFirstMarkdownText } from '@shelkovo/markdown';
 
-import { extractFirstMarkdownText } from '../markdown/plain-text';
 import { statusIncidentMarkdownUrl } from '../status/routes';
 import type { NewsDataset } from '../news/schema';
 import type { StatusDataset } from '../status/schema';

@@ -83,6 +83,10 @@ function visitText(node: HastNode, readonlyParents: readonly string[]): void {
   }
 }
 
+/**
+ * Rehype plugin for typography inside markdown/HTML AST text nodes.
+ * Exported for framework markdown pipelines, for example Astro config.
+ */
 export function rehypeTypograf() {
   return (tree: HastNode): void => {
     visitText(tree, []);

@@ -1,18 +1,37 @@
-import rehypeStringify from 'rehype-stringify';
-import remarkGfm from 'remark-gfm';
-import remarkParse from 'remark-parse';
-import remarkRehype from 'remark-rehype';
-import { unified } from 'unified';
+import { render, type MarkdownPreprocessor } from '@shelkovo/markdown';
 
-import { rehypeTypograf } from '../typography';
+import {
+  normalizePeopleMentions,
+  type PeopleMentionRegistry,
+} from '../people/mentions';
 
-const processor = unified()
-  .use(remarkParse)
-  .use(remarkGfm)
-  // Raw HTML stays inert text so markdown content cannot inject executable markup.
-  .use(remarkRehype)
-  .use(rehypeTypograf)
-  .use(rehypeStringify);
+export interface RenderPeopleMentionsOptions {
+  readonly registry: PeopleMentionRegistry;
+  readonly context: string;
+}
 
-export const renderMarkdown = (markdown: string): string =>
-  String(processor.processSync(markdown));
+export interface RenderSiteMarkdownOptions {
+  readonly people?: RenderPeopleMentionsOptions;
+}
+
+const peoplePreprocessor =
+  (people: RenderPeopleMentionsOptions): MarkdownPreprocessor =>
+  (markdown) =>
+    normalizePeopleMentions({
+      markdown,
+      context: people.context,
+      registry: people.registry,
+    }).markdown;
+
+export const renderMarkdown = (
+  markdown: string,
+  options?: RenderSiteMarkdownOptions,
+): string => {
+  if (!options?.people) {
+    return render(markdown);
+  }
+
+  return render(markdown, {
+    preprocess: peoplePreprocessor(options.people),
+  });
+};

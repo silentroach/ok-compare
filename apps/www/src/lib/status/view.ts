@@ -1,8 +1,10 @@
 import { dateTimeFromISO, pluralizeRu } from '@shelkovo/format';
+import {
+  extractFirstMarkdownText,
+  formatDynamicHtml,
+} from '@shelkovo/markdown';
 
-import { extractFirstMarkdownText } from '../markdown/plain-text';
 import { formatNewsArea } from '../news/view';
-import { formatDynamicHtml } from '../typography';
 import type {
   StatusArea,
   StatusDaysWithoutIncidents,

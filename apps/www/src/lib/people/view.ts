@@ -1,4 +1,5 @@
-import { extractFirstMarkdownText } from '../markdown/plain-text';
+import { extractFirstMarkdownText } from '@shelkovo/markdown';
+
 import { MARKDOWN_ROBOTS } from '../news/seo';
 import { formatNewsDate, NEWS_PROSE } from '../news/view';
 import { absoluteUrl } from '../site';

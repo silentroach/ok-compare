@@ -1,6 +1,7 @@
 ---
 import type { GetStaticPaths } from 'astro';
 
+import { formatDynamicHtml } from '@shelkovo/markdown';
 import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import {
@@ -8,7 +9,6 @@ import {
   withHomeSchemaBreadcrumbs,
 } from '@/lib/breadcrumbs';
 import { renderMarkdown } from '@/lib/markdown/render';
-import { formatDynamicHtml } from '@/lib/typography';
 import PhoneIcon from '@shelkovo/ui/icons/system/Phone.astro';
 import TelegramIcon from '@shelkovo/ui/icons/system/Telegram.astro';
 import {

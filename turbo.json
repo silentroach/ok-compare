@@ -16,7 +16,7 @@
       ]
     },
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "transit"],
       "inputs": [
         "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/.env*",

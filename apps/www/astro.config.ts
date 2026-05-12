@@ -6,7 +6,7 @@ import sitemap from '@astrojs/sitemap';
 import svelte from '@astrojs/svelte';
 import compressor from 'astro-compressor';
 import tailwindcss from '@tailwindcss/vite';
-import { rehypeTypograf } from './src/lib/typography';
+import { rehypeTypograf } from '@shelkovo/markdown';
 import {
   applySitemapMetadata,
   type SitemapMetadataIndex,
