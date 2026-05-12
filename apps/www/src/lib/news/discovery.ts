@@ -387,7 +387,7 @@ export function schema(root: string): Record<string, unknown> {
     $id: abs(root, articlesSchemaPath()),
     title: 'NewsArticlesPayload',
     description:
-      'Read-only полный feed news-section с canonical HTML URL, markdown companions, full body_markdown, optional events metadata с article-local ics_url и отдельным массивом addenda.',
+      'Read-only полный feed новостей с canonical HTML URL, markdown companions, full body_markdown, optional events metadata с article-local ics_url и отдельным массивом addenda.',
     type: 'object',
     additionalProperties: false,
     required: ['articles', 'archives', 'tags'],
@@ -635,7 +635,7 @@ export function openapi(root: string): Record<string, unknown> {
           operationId: 'getNewsArticles',
           summary: 'Read full news feed',
           description:
-            'Возвращает основной structured feed news-section со статьями, полным body_markdown, optional events metadata с article-local ics_url, addenda, тегами и архивами.',
+            'Возвращает основной structured feed новостей со статьями, полным body_markdown, optional events metadata с article-local ics_url, addenda, тегами и архивами.',
           responses: {
             200: {
               description: 'Full news feed',
@@ -669,7 +669,7 @@ export function catalog(root: string): Record<string, unknown> {
             href: abs(root, articlesDataPath()),
             type: 'application/json',
             'title*': star(
-              'Основной машиночитаемый feed news-section, включая optional events',
+              'Основной машиночитаемый feed новостей, включая optional events',
             ),
           },
           {

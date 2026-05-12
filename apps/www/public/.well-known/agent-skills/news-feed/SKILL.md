@@ -1,6 +1,6 @@
 ---
 name: news-feed
-description: Используй для чтения статического news-section через articles.json, событийных metadata и перехода к detail-страницам новостей.
+description: Используй для чтения новостей через articles.json, metadata событий и перехода к detail-страницам.
 ---
 
 # news-feed
@@ -28,6 +28,6 @@ description: Используй для чтения статического new
 
 ## Ограничения
 
-- Полный machine-readable контент живет в `articles.json`; RSS остается summary-first surface.
+- Полный machine-readable контент живет в `articles.json`; RSS остается summary-first лентой.
 - HTML detail page остается каноническим представлением для людей.
 - `articles[].events[]` есть только у новостей, которые объявляют календарные события; глобального events calendar feed нет.

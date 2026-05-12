@@ -62,8 +62,7 @@ export function buildReglamentMarkdown(estimate: Estimate): string {
     `- llms.txt: ${absoluteUrl(reglamentLlmsUrl())}`,
     `- llms-full.txt: ${absoluteUrl(reglamentLlmsFullUrl())}`,
     ...payload.sources.map(
-      (item) =>
-        `- Исходный PDF ${item.pdf}.pdf: ${absoluteUrl(item.pdf_url)} (repo: ${item.pdf_path})`,
+      (item) => `- Исходный PDF ${item.pdf}.pdf: ${absoluteUrl(item.pdf_url)}`,
     ),
     '',
     '## Итог',

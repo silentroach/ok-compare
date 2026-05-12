@@ -101,20 +101,20 @@ export function catalog(root: string): Record<string, unknown> {
             href: abs(root, articlesDataPath()),
             type: 'application/json',
             'title*': star(
-              'Основной машиночитаемый feed news-section, включая optional events',
+              'Основной машиночитаемый feed новостей, включая optional events',
             ),
           },
           {
             href: abs(root, newsLlmsPath()),
             type: 'text/plain',
-            'title*': star('Агентный обзор news-section'),
+            'title*': star('Агентный обзор новостей'),
           },
         ],
         'service-desc': [
           {
             href: abs(root, newsApiCatalogPath()),
             type: 'application/linkset+json',
-            'title*': star('API catalog news-section'),
+            'title*': star('API catalog новостей'),
           },
         ],
       },
@@ -124,19 +124,19 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, statusDataPath()),
             type: 'application/json',
-            'title*': star('Основной машиночитаемый feed status-section'),
+            'title*': star('Основной машиночитаемый feed статуса'),
           },
           {
             href: abs(root, statusLlmsPath()),
             type: 'text/plain',
-            'title*': star('Агентный обзор status-section'),
+            'title*': star('Агентный обзор статуса'),
           },
         ],
         'service-desc': [
           {
             href: abs(root, statusApiCatalogPath()),
             type: 'application/linkset+json',
-            'title*': star('API catalog status-section'),
+            'title*': star('API catalog статуса'),
           },
         ],
       },
@@ -146,7 +146,7 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, reglamentMarkdownPath()),
             type: 'text/markdown',
-            'title*': star('Markdown companion reglament-section'),
+            'title*': star('Markdown companion регламента'),
           },
           {
             href: abs(root, reglamentFullMarkdownPath()),
@@ -178,7 +178,7 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, reglamentEstimate2026DataPath()),
             type: 'application/json',
-            'title*': star('Основной машиночитаемый feed reglament-section'),
+            'title*': star('Основной машиночитаемый feed регламента'),
           },
           {
             href: abs(root, reglamentFull2026DataPath()),
@@ -198,19 +198,19 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, reglamentLlmsPath()),
             type: 'text/plain',
-            'title*': star('Агентный обзор reglament-section'),
+            'title*': star('Агентный обзор регламента'),
           },
           {
             href: abs(root, reglamentLlmsFullPath()),
             type: 'text/plain',
-            'title*': star('Расширенный агентный обзор reglament-section'),
+            'title*': star('Расширенный агентный обзор регламента'),
           },
         ],
         'service-desc': [
           {
             href: abs(root, reglamentApiCatalogPath()),
             type: 'application/linkset+json',
-            'title*': star('API catalog reglament-section'),
+            'title*': star('API catalog регламента'),
           },
         ],
       },
@@ -221,30 +221,30 @@ export function catalog(root: string): Record<string, unknown> {
             href: abs(root, peopleMarkdownPath()),
             type: 'text/markdown',
             'title*': star(
-              'Markdown overview people-section без публичного HTML index',
+              'Markdown overview профилей людей без публичного HTML index',
             ),
           },
           {
             href: abs(root, peopleDataPath()),
             type: 'application/json',
-            'title*': star('Основной машиночитаемый feed people-section'),
+            'title*': star('Основной машиночитаемый feed профилей людей'),
           },
           {
             href: abs(root, peopleLlmsPath()),
             type: 'text/plain',
-            'title*': star('Агентный обзор people-section'),
+            'title*': star('Агентный обзор профилей людей'),
           },
           {
             href: abs(root, peopleLlmsFullPath()),
             type: 'text/plain',
-            'title*': star('Расширенный агентный обзор people-section'),
+            'title*': star('Расширенный агентный обзор профилей людей'),
           },
         ],
         'service-desc': [
           {
             href: abs(root, peopleApiCatalogPath()),
             type: 'application/linkset+json',
-            'title*': star('API catalog people-section'),
+            'title*': star('API catalog профилей людей'),
           },
         ],
       },
@@ -254,24 +254,28 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, COMPARE_DATA),
             type: 'application/json',
-            'title*': star('Основной машиночитаемый feed compare-section'),
+            'title*': star(
+              'Основной машиночитаемый feed сравнения тарифов поселков',
+            ),
           },
           {
             href: abs(root, COMPARE_LLMS),
             type: 'text/plain',
-            'title*': star('Агентный обзор compare-section'),
+            'title*': star('Агентный обзор сравнения тарифов поселков'),
           },
           {
             href: abs(root, COMPARE_SKILLS),
             type: 'application/json',
-            'title*': star('Индекс public agent skills compare-section'),
+            'title*': star(
+              'Индекс public agent skills сравнения тарифов поселков',
+            ),
           },
         ],
         'service-desc': [
           {
             href: abs(root, COMPARE_CATALOG),
             type: 'application/linkset+json',
-            'title*': star('API catalog compare-section'),
+            'title*': star('API catalog сравнения тарифов поселков'),
           },
         ],
       },

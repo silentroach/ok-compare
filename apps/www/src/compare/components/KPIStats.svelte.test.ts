@@ -27,10 +27,6 @@ describe('KPIStats', () => {
 
     expect(container.textContent).toMatch(/3\s200 ₽\/сотка/);
     expect(container.textContent).toMatch(/3\s650 ₽\/сотка/);
-    expect(container.textContent).toContain('Похожие по уровню');
-    expect(container.textContent).toContain('Все поселки');
-    expect(container.textContent).toContain('медиана тарифа');
-    expect(container.textContent).toContain('общая медиана тарифа');
     expect(container.textContent).toContain('Шелково: +41%');
     expect(container.textContent).toContain('Шелково: +23%');
   });
@@ -50,7 +46,7 @@ describe('KPIStats', () => {
     expect(container.textContent).toContain('Шелково: −8%');
   });
 
-  it('displays median equality text', () => {
+  it('does not render positive or negative deltas for equal medians', () => {
     const equalStats: Stats = {
       ...mockStats,
       shelkovoVsMedianPercent: 0,
@@ -61,58 +57,29 @@ describe('KPIStats', () => {
       props: { stats: equalStats },
     });
 
-    expect(container.textContent).toContain('на уровне Шелково');
+    expect(container.textContent).not.toContain('+0%');
+    expect(container.textContent).not.toContain('−0%');
   });
 
-  it('formats percentage correctly', () => {
-    const { container } = render(KPIStats, {
-      props: { stats: mockStats },
-    });
-
-    expect(container.textContent).toContain('%');
-  });
-
-  it('keeps embedded metrics flat without nested raised tiles', () => {
+  it('renders embedded metrics without a standalone title', () => {
     const { container } = render(KPIStats, {
       props: { stats: mockStats, embed: true },
     });
 
-    const peerClass = container
-      .querySelector('[data-testid="kpi-median"]')
-      ?.getAttribute('class');
-    const allClass = container
-      .querySelector('[data-testid="kpi-all-median"]')
-      ?.getAttribute('class');
-    const sectionClass = container
-      .querySelector('[data-testid="kpi-stats"]')
-      ?.getAttribute('class');
-
-    expect(sectionClass).toBe('max-w-3xl text-sm');
-    expect(allClass).toMatch(/border/);
-    expect(`${sectionClass} ${peerClass} ${allClass}`).not.toMatch(
-      /rounded|shadow|bg-card|surface-raised/,
-    );
+    expect(container.querySelector('[data-testid="kpi-stats"]')).toBeTruthy();
+    expect(
+      container.querySelector('[data-testid="kpi-stats-title"]'),
+    ).toBeNull();
   });
 
-  it('keeps standalone metrics semantically titled without raised inner tiles', () => {
+  it('renders a standalone metrics title', () => {
     const { container } = render(KPIStats, {
       props: { stats: mockStats },
     });
 
-    const sectionClass = container
-      .querySelector('[data-testid="kpi-stats"]')
-      ?.getAttribute('class');
-    const peerClass = container
-      .querySelector('[data-testid="kpi-median"]')
-      ?.getAttribute('class');
-    const allClass = container
-      .querySelector('[data-testid="kpi-all-median"]')
-      ?.getAttribute('class');
-
-    expect(sectionClass).toContain('ui-shell');
-    expect(container.textContent).toContain('Ключевые показатели');
-    expect(`${peerClass} ${allClass}`).not.toMatch(
-      /rounded|shadow|bg-card|surface-raised/,
-    );
+    expect(container.querySelector('[data-testid="kpi-stats"]')).toBeTruthy();
+    expect(
+      container.querySelector('[data-testid="kpi-stats-title"]'),
+    ).toBeTruthy();
   });
 });

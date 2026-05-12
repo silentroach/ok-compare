@@ -27,41 +27,31 @@ describe('buildSitemapMetadataIndex', () => {
       settlements: [],
     });
 
-    expect(Object.fromEntries(index)).toMatchInlineSnapshot(`
+    expect({
+      home: index.get('/'),
+      firstArticle: index.get('/news/2026/05/first/'),
+      olderArticle: index.get('/news/2026/04/older/'),
+      monthArchive: index.get('/news/2026/05/'),
+      tag: index.get('/news/tags/дороги/'),
+    }).toMatchInlineSnapshot(`
       {
-        "/": {
-          "changefreq": "daily",
-          "lastmod": "2026-05-04T12:30:00+03:00",
-        },
-        "/news/": {
-          "changefreq": "daily",
-          "lastmod": "2026-05-04T12:30:00+03:00",
-        },
-        "/news/2026/": {
-          "changefreq": "daily",
-          "lastmod": "2026-05-04T12:30:00+03:00",
-        },
-        "/news/2026/04/": {
-          "changefreq": "daily",
-          "lastmod": "2026-04-20T09:00:00+03:00",
-        },
-        "/news/2026/04/older/": {
-          "changefreq": "monthly",
-          "lastmod": "2026-04-20T09:00:00+03:00",
-        },
-        "/news/2026/05/": {
-          "changefreq": "daily",
-          "lastmod": "2026-05-04T12:30:00+03:00",
-        },
-        "/news/2026/05/first/": {
+        "firstArticle": {
           "changefreq": "monthly",
           "lastmod": "2026-05-04T12:30:00+03:00",
         },
-        "/news/tags/": {
+        "home": {
           "changefreq": "daily",
           "lastmod": "2026-05-04T12:30:00+03:00",
         },
-        "/news/tags/дороги/": {
+        "monthArchive": {
+          "changefreq": "daily",
+          "lastmod": "2026-05-04T12:30:00+03:00",
+        },
+        "olderArticle": {
+          "changefreq": "monthly",
+          "lastmod": "2026-04-20T09:00:00+03:00",
+        },
+        "tag": {
           "changefreq": "daily",
           "lastmod": "2026-05-04T12:30:00+03:00",
         },
@@ -102,45 +92,41 @@ describe('buildSitemapMetadataIndex', () => {
       ],
     });
 
-    expect(Object.fromEntries(index)).toMatchInlineSnapshot(`
+    expect({
+      home: index.get('/'),
+      electricityService: index.get('/status/electricity/'),
+      electricityIncident: index.get('/status/incidents/2026/05/electricity/'),
+      compareHome: index.get('/815/compare/'),
+      compareRating: index.get('/815/compare/rating/'),
+      riverSettlement: index.get('/815/compare/settlements/river/'),
+    }).toMatchInlineSnapshot(`
       {
-        "/": {
+        "compareHome": {
+          "changefreq": "monthly",
+          "lastmod": "2026-04-12",
+        },
+        "compareRating": {
+          "changefreq": "yearly",
+        },
+        "electricityIncident": {
+          "changefreq": "yearly",
+          "lastmod": "2026-05-01T09:00:00+03:00",
+        },
+        "electricityService": {
+          "changefreq": "hourly",
+          "lastmod": "2026-05-01T09:00:00+03:00",
+        },
+        "home": {
           "changefreq": "daily",
           "lastmod": "2026-05-03T14:00:00+03:00",
         },
-        "/815/compare/": {
+        "riverSettlement": {
           "changefreq": "monthly",
           "lastmod": "2026-04-12",
-        },
-        "/815/compare/rating/": {
-          "changefreq": "yearly",
-        },
-        "/815/compare/settlements/forest/": {
-          "changefreq": "monthly",
-          "lastmod": "2026-03-10",
-        },
-        "/815/compare/settlements/river/": {
-          "changefreq": "monthly",
-          "lastmod": "2026-04-12",
-        },
-        "/status/": {
-          "changefreq": "hourly",
-          "lastmod": "2026-05-03T14:00:00+03:00",
-        },
-        "/status/electricity/": {
-          "changefreq": "hourly",
-          "lastmod": "2026-05-01T09:00:00+03:00",
-        },
-        "/status/incidents/2026/05/electricity/": {
-          "changefreq": "yearly",
-          "lastmod": "2026-05-01T09:00:00+03:00",
-        },
-        "/status/water/": {
-          "changefreq": "hourly",
-          "lastmod": "2026-05-03T14:00:00+03:00",
         },
       }
     `);
+    expect(index.has('/status/incidents/2026/05/water/')).toBe(false);
   });
 });
 

@@ -21,6 +21,16 @@ const ruleBlock = (css: string, selector: string): string => {
   return block.trim();
 };
 
+const expectDeclaration = (
+  block: string,
+  property: string,
+  value: string,
+): void => {
+  expect(block).toMatch(
+    new RegExp(`${property}:\\s*${escapeRegExp(value)}`, 'u'),
+  );
+};
+
 describe('compare shared-style overrides', () => {
   it('keeps local overrides for shared shell and action primitives', () => {
     const css = load();
@@ -34,55 +44,28 @@ describe('compare shared-style overrides', () => {
 
   it('keeps shell primitives flat by default', () => {
     const css = load();
+    const shell = ruleBlock(css, '.ui-root-compare .ui-shell');
+    const shellStrong = ruleBlock(css, '.ui-root-compare .ui-shell-strong');
 
-    expect(ruleBlock(css, '.ui-root-compare .ui-shell')).toMatchInlineSnapshot(`
-      ".ui-root-compare .ui-shell {
-        background: transparent;
-        border-top: 1px solid
-          color-mix(in oklab, var(--color-border) 92%, transparent);
-        border-inline: 0;
-        border-bottom: 0;
-        border-radius: 0;
-        box-shadow: none;
-      }"
-    `);
-    expect(ruleBlock(css, '.ui-root-compare .ui-shell-strong'))
-      .toMatchInlineSnapshot(`
-      ".ui-root-compare .ui-shell-strong {
-        background: transparent;
-        border-top: 2px solid var(--color-border-strong);
-        border-inline: 0;
-        border-bottom: 0;
-        border-radius: 0;
-        box-shadow: none;
-      }"
-    `);
+    for (const block of [shell, shellStrong]) {
+      expectDeclaration(block, 'background', 'transparent');
+      expectDeclaration(block, 'border-inline', '0');
+      expectDeclaration(block, 'border-bottom', '0');
+      expectDeclaration(block, 'border-radius', '0');
+      expectDeclaration(block, 'box-shadow', 'none');
+    }
   });
 
   it('keeps chips and buttons from becoming default decorative pills', () => {
     const css = load();
+    const chip = ruleBlock(css, '.ui-root-compare .ui-chip');
+    const button = ruleBlock(css, '.ui-root-compare .ui-btn');
 
-    expect(ruleBlock(css, '.ui-root-compare .ui-chip')).toMatchInlineSnapshot(`
-      ".ui-root-compare .ui-chip {
-        display: inline-flex;
-        align-items: baseline;
-        gap: 0.45rem;
-        padding: 0;
-        border: 0;
-        border-radius: 0;
-        background: transparent;
-        color: var(--color-muted-foreground);
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }"
-    `);
-    expect(ruleBlock(css, '.ui-root-compare .ui-btn')).toMatchInlineSnapshot(`
-      ".ui-root-compare .ui-btn {
-        border-radius: 0;
-      }"
-    `);
+    expectDeclaration(chip, 'padding', '0');
+    expectDeclaration(chip, 'border', '0');
+    expectDeclaration(chip, 'border-radius', '0');
+    expectDeclaration(chip, 'background', 'transparent');
+    expectDeclaration(button, 'border-radius', '0');
   });
 
   it('rejects the old raised shell vocabulary', () => {

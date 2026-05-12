@@ -32,7 +32,7 @@ const statusIncidentsDir = fileURLToPath(
   new URL('../data/status/incidents/', import.meta.url),
 );
 const settlementsDir = fileURLToPath(
-  new URL('../compare/data/settlements/', import.meta.url),
+  new URL('../data/compare/settlements/', import.meta.url),
 );
 
 const scalarField = (source: string, name: string): string | undefined => {

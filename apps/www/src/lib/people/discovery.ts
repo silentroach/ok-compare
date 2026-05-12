@@ -237,7 +237,7 @@ export function schema(root: string): Record<string, unknown> {
     $id: abs(root, peopleSchemaPath()),
     title: 'PeoplePayload',
     description:
-      'Read-only полный feed people-section с публичными профилями, контактами, mentions и backlinks по всему сайту.',
+      'Read-only полный feed профилей людей с публичными контактами, mentions и backlinks по всему сайту.',
     type: 'object',
     additionalProperties: false,
     required: ['stats', 'profiles'],
@@ -402,7 +402,7 @@ export function openapi(root: string): Record<string, unknown> {
           operationId: 'getPeopleProfiles',
           summary: 'Read full people feed',
           description:
-            'Возвращает основной structured feed people-section с профилями, контактами, mentions и backlinks.',
+            'Возвращает основной structured feed профилей людей с контактами, mentions и backlinks.',
           responses: {
             200: {
               description: 'Full people feed',
@@ -436,13 +436,13 @@ export function catalog(root: string): Record<string, unknown> {
             href: abs(root, peopleMarkdownPath()),
             type: 'text/markdown',
             'title*': star(
-              'Markdown overview people-section без публичного HTML index',
+              'Markdown overview профилей людей без публичного HTML index',
             ),
           },
           {
             href: abs(root, peopleDataPath()),
             type: 'application/json',
-            'title*': star('Основной машиночитаемый feed people-section'),
+            'title*': star('Основной машиночитаемый feed профилей людей'),
           },
           {
             href: abs(root, peopleLlmsPath()),

@@ -6,7 +6,7 @@
 
 ```text
 apps/
-  www/       # единое Astro-приложение kpshelkovo.online, включая /815/compare
+  www/       # единое Astro-приложение kpshelkovo.online
 packages/    # shared утилиты и UI
 docs/        # документация и дизайн-гайды
 ops/         # nginx и deploy-инфраструктура
@@ -58,12 +58,10 @@ pnpm build          # dist/www
 ## Артефакты сборки
 
 - `dist/www` — корневой сайт `kpshelkovo.online`.
-- `dist/www/815/compare` — compare-раздел внутри нового сайта.
 
 ## Local dev ports
 
 - `pnpm dev` поднимает интегрированный dev-стек на `http://localhost:4321`.
-- compare живет в том же Astro-приложении по `http://localhost:4321/815/compare`.
 
 ## Правила Typescript
 
@@ -76,10 +74,10 @@ pnpm build          # dist/www
 
 - Если ожидаемый результат не супермелкий и важна точная строка/структура, предпочитай `toMatchInlineSnapshot() / toMatchSnapshot()` (в зависимости от размера снапшота) вместо длинного `toBe(...)`/`toEqual(...)`
 - Если в строке важны неразрывные пробелы, в snapshot показывай их видимым символом, например через test-helper, который заменяет `\u00A0` на `·`.
+- Не генерируй тесты, которые проверяют случайную статику: точный текст заголовков/лейблов, полный generated markdown/llms output, большие snapshots или Tailwind-классы. Исключение — когда это явно публичный контракт, аудируемые данные или важная типографика/форматирование. Для generated discovery/llms проверяй наличие стабильных URL, схем, фидов и отсутствие внутренних путей; для UI — поведение, доступность и data/URL-контракты, а не классы.
 
 ## Правила workspace
 
-- Compare-логика живет в `apps/www/src/compare`, а маршруты — в `apps/www/src/pages/815/compare`.
 - Общие стили и UI-примитивы выносить в `packages/ui`.
 - Общие URL/build helper-утилиты выносить в `packages/url` или `scripts/`.
 - При изменениях deploy-потока синхронно обновлять `.github/workflows/*` и `ops/nginx/*`.

@@ -34,10 +34,10 @@ describe('seo package', () => {
   it('serializes schema docs and escapes html-breaking less-than signs', () => {
     expect(serializeSchema([{ name: '<script>' }, { name: 'safe' }]))
       .toMatchInlineSnapshot(`
-      [
-        "{\"name\":\"\\u003cscript>\"}",
-        "{\"name\":\"safe\"}",
-      ]
-    `);
+        [
+          "{\"name\":\"\\u003cscript>\"}",
+          "{\"name\":\"safe\"}",
+        ]
+      `);
   });
 });

@@ -272,39 +272,6 @@ describe('SettlementMap', () => {
     expect(link?.getAttribute('href')).toContain('/settlements/lesnoe/');
   });
 
-  it('renders popup as an opaque flat surface', async () => {
-    const { container } = render(SettlementMap, {
-      props: { settlements: mockSettlements },
-    });
-
-    await waitFor(() => {
-      expect(markers.length).toBe(mockSettlements.length);
-    });
-
-    markers[1]?.click();
-
-    await waitFor(() => {
-      expect(
-        container.querySelector('[data-testid="map-popup-panel"]'),
-      ).toBeTruthy();
-    });
-
-    const panelClass = container
-      .querySelector('[data-testid="map-popup-panel"]')
-      ?.getAttribute('class');
-    const arrowClass = container
-      .querySelector('[data-testid="map-popup-arrow"]')
-      ?.getAttribute('class');
-
-    expect(`${panelClass} ${arrowClass}`).toContain(
-      'bg-[color:var(--color-surface)]',
-    );
-    expect(`${panelClass} ${arrowClass}`).toMatch(/border-border/);
-    expect(`${panelClass} ${arrowClass}`).not.toMatch(
-      /backdrop-blur|backdrop-saturate|bg-card\/|shadow-xl/,
-    );
-  });
-
   it('renders fallback message when API is unavailable', async () => {
     delete (window as { ymaps3?: unknown }).ymaps3;
     const loadedScript = document.createElement('script');

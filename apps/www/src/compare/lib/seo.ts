@@ -56,7 +56,7 @@ const deltaDescription = (
 };
 
 export const compareHomeMeta = (totalSettlements: number) => ({
-  title: compareTitle('Сравнение поселков'),
+  title: compareTitle('Сравнение тарифов поселков'),
   description: `Сравните ${totalSettlements} поселков по тарифам, инфраструктуре и сервисам: карточки, карта и разница с Шелково в одном месте.`,
   keywords: collectKeywords(COMPARE_KEYWORDS),
 });

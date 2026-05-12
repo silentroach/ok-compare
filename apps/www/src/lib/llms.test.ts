@@ -43,19 +43,32 @@ beforeAll(async () => {
 });
 
 describe('root llms', () => {
-  it('mentions people and reglament discovery surfaces alongside other sections', async () => {
+  it('publishes public discovery endpoints without relying on section copy', async () => {
     const short = await build('short');
     const full = await build('full');
     const home = await buildHomeMarkdown();
+    const combined = [short, full, home].join('\n');
 
-    expect(short).toContain('people.json');
-    expect(short).toContain('Люди в Markdown');
-    expect(short).toContain('Регламент');
-    expect(full).toContain('Раздел Люди');
-    expect(full).toContain('/people/data/people.json');
-    expect(full).toContain('/815/regulation/data/estimate-2026.json');
-    expect(home).toContain('Люди');
-    expect(home).toContain('/people/.well-known/api-catalog');
-    expect(home).toContain('/815/regulation/.well-known/api-catalog');
+    for (const url of [
+      'https://example.com/.well-known/api-catalog',
+      'https://example.com/.well-known/agent-skills/index.json',
+      'https://example.com/news/llms.txt',
+      'https://example.com/news/data/articles.json',
+      'https://example.com/status/llms.txt',
+      'https://example.com/status/data/status.json',
+      'https://example.com/815/regulation/llms.txt',
+      'https://example.com/815/regulation/data/estimate-2026.json',
+      'https://example.com/815/regulation/data/full-2026.json',
+      'https://example.com/people/llms.txt',
+      'https://example.com/people/data/people.json',
+      'https://example.com/people/kschemelinin/',
+      'https://example.com/people/kschemelinin/index.md',
+      'https://example.com/815/compare/llms.txt',
+      'https://example.com/815/compare/data/settlements.json',
+    ]) {
+      expect(combined).toContain(url);
+    }
+
+    expect(combined).not.toMatch(/apps\/www|src\/|repo:/u);
   });
 });

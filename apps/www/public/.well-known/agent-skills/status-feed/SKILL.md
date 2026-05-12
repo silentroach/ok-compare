@@ -1,6 +1,6 @@
 ---
 name: status-feed
-description: Используй для чтения status-section через status.json и перехода к service pages или к опубликованным incident pages.
+description: Используй для чтения статуса сервисов через status.json и перехода к страницам сервисов или опубликованным incident pages.
 ---
 
 # status-feed
@@ -31,7 +31,7 @@ description: Используй для чтения status-section через st
 ## Что важно помнить
 
 - `service_status` derive-ится из активных записей, а не задается вручную.
-- Если `areas` не указаны в source file, feed трактует запись как относящуюся ко всем частям поселка.
+- Если `areas` не указаны, feed трактует запись как относящуюся ко всем частям поселка.
 
 ## Ограничения
 

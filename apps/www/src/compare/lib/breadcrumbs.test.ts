@@ -15,79 +15,82 @@ vi.mock('./url', () => ({
 
 const loadBreadcrumbs = () => import('./breadcrumbs');
 
+interface BreadcrumbListItem {
+  readonly position: number;
+  readonly item: string;
+  readonly name: string;
+}
+
+const href = <T extends { readonly label: string }>(
+  item: T,
+): string | undefined => ('href' in item ? String(item.href) : undefined);
+
+const schemaItems = (schema: {
+  readonly itemListElement?: unknown;
+}): readonly BreadcrumbListItem[] => {
+  if (!Array.isArray(schema.itemListElement)) {
+    throw new Error('Breadcrumb schema must include itemListElement');
+  }
+
+  return schema.itemListElement as readonly BreadcrumbListItem[];
+};
+
 describe('compare breadcrumbs', () => {
   it('builds visible compare breadcrumbs for index and rating pages', async () => {
     const { compareBreadcrumbs } = await loadBreadcrumbs();
 
-    expect(compareBreadcrumbs()).toMatchInlineSnapshot(`
-      [
-        {
-          "href": "/",
-          "label": "Главная",
-        },
-        {
-          "href": "/815/compare/",
-          "label": "Сравнение тарифов",
-        },
-      ]
-    `);
+    expect(compareBreadcrumbs().map(href)).toMatchInlineSnapshot(`
+        [
+          "/",
+          "/815/compare/",
+        ]
+      `);
   });
 
   it('adds the settlement name only on settlement pages', async () => {
     const { settlementBreadcrumbs } = await loadBreadcrumbs();
 
-    expect(settlementBreadcrumbs('КП Шелково')).toMatchInlineSnapshot(`
+    const breadcrumbs = settlementBreadcrumbs('КП Шелково');
+
+    expect(breadcrumbs).toHaveLength(3);
+    expect(breadcrumbs.map(href)).toMatchInlineSnapshot(`
       [
-        {
-          "href": "/",
-          "label": "Главная",
-        },
-        {
-          "href": "/815/compare/",
-          "label": "Сравнение тарифов",
-        },
-        {
-          "label": "КП Шелково",
-        },
+        "/",
+        "/815/compare/",
+        undefined,
       ]
     `);
+    expect(breadcrumbs.at(-1)?.label).toBe('КП Шелково');
   });
 
   it('builds schema breadcrumbs with canonical URLs', async () => {
     const { compareBreadcrumbSchema } = await loadBreadcrumbs();
 
-    expect(
-      compareBreadcrumbSchema([
-        {
-          name: 'КП Шелково',
-          item: 'https://kpshelkovo.online/815/compare/settlements/shelkovo/',
-        },
-      ]),
-    ).toMatchInlineSnapshot(`
+    const schema = compareBreadcrumbSchema([
       {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "item": "https://kpshelkovo.online/",
-            "name": "Главная",
-            "position": 1,
-          },
-          {
-            "@type": "ListItem",
-            "item": "https://kpshelkovo.online/815/compare/",
-            "name": "Сравнение тарифов",
-            "position": 2,
-          },
-          {
-            "@type": "ListItem",
-            "item": "https://kpshelkovo.online/815/compare/settlements/shelkovo/",
-            "name": "КП Шелково",
-            "position": 3,
-          },
-        ],
-      }
-    `);
+        name: 'КП Шелково',
+        item: 'https://kpshelkovo.online/815/compare/settlements/shelkovo/',
+      },
+    ]);
+
+    expect(schema['@context']).toBe('https://schema.org');
+    expect(schema['@type']).toBe('BreadcrumbList');
+    const items = schemaItems(schema);
+
+    expect(items.map((item) => item.position)).toMatchInlineSnapshot(`
+        [
+          1,
+          2,
+          3,
+        ]
+      `);
+    expect(items.map((item) => item.item)).toMatchInlineSnapshot(`
+        [
+          "https://kpshelkovo.online/",
+          "https://kpshelkovo.online/815/compare/",
+          "https://kpshelkovo.online/815/compare/settlements/shelkovo/",
+        ]
+      `);
+    expect(items.at(-1)?.name).toBe('КП Шелково');
   });
 });

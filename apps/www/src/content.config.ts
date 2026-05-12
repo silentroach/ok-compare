@@ -567,7 +567,7 @@ const peopleProfiles = defineCollection({
 const settlements = defineCollection({
   loader: glob({
     pattern: '[!_]*.yaml',
-    base: './src/compare/data/settlements',
+    base: './src/data/compare/settlements',
   }),
   schema: SettlementSchema,
 });
