@@ -87,9 +87,36 @@ describe('normalizePeopleMentions', () => {
     });
   });
 
-  it('skips inline code, existing links, and autolink-like urls', () => {
+  it('fails on unknown labelled person mentions', () => {
+    expect(() =>
+      normalizePeopleMentions({
+        markdown: 'Текст с [подрядчиком](@unknown) внутри.',
+        context: 'news article "2026/05/test" body',
+        registry,
+      }),
+    ).toThrow(
+      'news article "2026/05/test" body contains unknown person mention "@unknown"',
+    );
+  });
+
+  it('dedupes labelled and canonical mentions in metadata', () => {
+    expect(
+      normalizePeopleMentions({
+        markdown:
+          '[главный по электричеству](@kschemelinin) сообщил, что @kschemelinin проверил сеть.',
+        context: 'news article "2026/05/test" body',
+        registry,
+      }),
+    ).toEqual({
+      markdown:
+        '[главный по электричеству](/people/kschemelinin/) сообщил, что [Кирилл Щемелинин](/people/kschemelinin/) проверил сеть.',
+      mentions: [registry.get('kschemelinin')],
+    });
+  });
+
+  it('skips inline code, images, existing links, and autolink-like urls', () => {
     const markdown =
-      'Код `@kschemelinin`, ссылка [@kschemelinin](/docs) и https://example.com/@kschemelinin.\n\n```txt\n@kschemelinin\n```';
+      'Код `@kschemelinin`, картинка ![@kschemelinin](@kschemelinin), ссылка [@kschemelinin](/docs) и https://example.com/@kschemelinin.\n\n```txt\n@kschemelinin\n```';
 
     expect(
       normalizePeopleMentions({

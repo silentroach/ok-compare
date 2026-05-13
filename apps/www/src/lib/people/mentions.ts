@@ -43,12 +43,13 @@ interface MarkdownNode {
   readonly type: string;
   readonly children?: readonly MarkdownNode[];
   readonly position?: MarkdownPosition;
+  readonly url?: string;
 }
 
 interface MentionReplacement {
   readonly start: number;
   readonly end: number;
-  readonly name_case: PersonNameCase;
+  readonly markdown: string;
   readonly target: PersonMentionTarget;
 }
 
@@ -169,6 +170,83 @@ function collectTextNodes(
   );
 }
 
+const labelledMentionSlug = (url: string): string | undefined => {
+  if (url[0] !== '@') {
+    return undefined;
+  }
+
+  const slug = url.slice(1);
+
+  return slug.length > 0 &&
+    SLUG_START.test(slug[0] ?? '') &&
+    [...slug].every((char) => SLUG_CHAR.test(char))
+    ? slug
+    : undefined;
+};
+
+const linkDestinationOffsets = (
+  markdown: string,
+  node: MarkdownNode,
+  context: string,
+): {
+  readonly start: number;
+  readonly end: number;
+} => {
+  const { start, end } = absoluteOffsets(node, context);
+  const source = markdown.slice(start, end);
+  const destinationStartMarker = source.lastIndexOf('](');
+
+  if (destinationStartMarker === -1) {
+    throw new Error(
+      `${context} contains a labelled person mention with unsupported link syntax`,
+    );
+  }
+
+  const destinationStart = destinationStartMarker + 2;
+  const isAngleWrapped = source[destinationStart] === '<';
+  const urlStart = start + destinationStart + (isAngleWrapped ? 1 : 0);
+
+  return {
+    start: urlStart,
+    end: urlStart + (node.url?.length ?? 0),
+  };
+};
+
+function collectLabelledMentionReplacements(
+  node: MarkdownNode,
+  markdown: string,
+  context: string,
+  registry: PeopleMentionRegistry,
+): readonly MentionReplacement[] {
+  if (SKIPPED_NODE_TYPES.has(node.type) && node.type !== 'link') {
+    return [];
+  }
+
+  if (node.type === 'link' && node.url !== undefined) {
+    const slug = labelledMentionSlug(node.url);
+
+    if (slug === undefined) {
+      return [];
+    }
+
+    const target =
+      registry.get(slug) ??
+      failMention(context, `contains unknown person mention "@${slug}"`);
+
+    return [
+      {
+        ...linkDestinationOffsets(markdown, node, context),
+        markdown: target.html_url,
+        target,
+      },
+    ];
+  }
+
+  return (node.children ?? []).flatMap((child) =>
+    collectLabelledMentionReplacements(child, markdown, context, registry),
+  );
+}
+
 const invalidMentionTail = (
   tail: string | undefined,
   next: string | undefined,
@@ -283,7 +361,7 @@ function mentionReplacements(
     replacements.push({
       start: absoluteStart + index,
       end: absoluteStart + nameCase.end,
-      name_case: nameCase.name_case,
+      markdown: mentionLink(target!, nameCase.name_case, context),
       target: target!,
     });
 
@@ -322,16 +400,22 @@ export const normalizePeopleMentions = (input: {
   }
 
   const tree = parser.parse(input.markdown) as MarkdownNode;
-  const replacements = collectTextNodes(tree, input.context)
-    .flatMap(({ start, end }) =>
+  const replacements = [
+    ...collectTextNodes(tree, input.context).flatMap(({ start, end }) =>
       mentionReplacements(
         input.markdown.slice(start, end),
         start,
         input.context,
         input.registry,
       ),
-    )
-    .sort((a, b) => a.start - b.start || a.end - b.end);
+    ),
+    ...collectLabelledMentionReplacements(
+      tree,
+      input.markdown,
+      input.context,
+      input.registry,
+    ),
+  ].sort((a, b) => a.start - b.start || a.end - b.end);
 
   if (replacements.length === 0) {
     return {
@@ -345,7 +429,7 @@ export const normalizePeopleMentions = (input: {
   const mentions = new Map<string, PersonMentionTarget>();
 
   for (const replacement of replacements) {
-    markdown += `${input.markdown.slice(cursor, replacement.start)}${mentionLink(replacement.target, replacement.name_case, input.context)}`;
+    markdown += `${input.markdown.slice(cursor, replacement.start)}${replacement.markdown}`;
     cursor = replacement.end;
 
     if (!mentions.has(replacement.target.slug)) {
