@@ -344,6 +344,44 @@ describe('buildStatusDataset', () => {
     );
   });
 
+  it('normalizes labelled mentions and keeps excerpts human-readable', () => {
+    const data = buildStatusDataset(
+      [
+        entry({
+          id: '2026/05/electricity-labelled-mention',
+          title: 'Инцидент с комментарием',
+          service: 'electricity',
+          kind: 'incident',
+          started_at: '01.05.2026 07:32',
+          body: 'После [осмотра линии](@kschemelinin) повреждение признали редким.\n\nВторой абзац.',
+        }),
+      ],
+      {
+        people_registry: new Map([
+          [
+            'kschemelinin',
+            createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),
+          ],
+        ]),
+      },
+    );
+
+    expect(
+      data.by_id.get('2026/05/electricity-labelled-mention'),
+    ).toMatchObject({
+      body: 'После [осмотра линии](/people/kschemelinin/) повреждение признали редким.\n\nВторой абзац.',
+      excerpt: 'После осмотра линии повреждение признали редким.',
+      mentions: [
+        {
+          slug: 'kschemelinin',
+        },
+      ],
+    });
+    expect(
+      data.by_id.get('2026/05/electricity-labelled-mention')?.excerpt,
+    ).not.toContain('@kschemelinin');
+  });
+
   it('prefers incidents over maintenance when deriving service status', () => {
     const data = buildStatusDataset(
       [
