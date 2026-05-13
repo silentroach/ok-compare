@@ -1,3 +1,9 @@
 packages:
   - apps/*
   - packages/*
+
+minimumReleaseAge: 10080
+ignoreScripts: true
+
+overrides:
+  vite: ^7
