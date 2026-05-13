@@ -8,7 +8,7 @@
 apps/
   www/       # единое Astro-приложение kpshelkovo.online
 packages/    # shared утилиты и UI
-docs/        # документация и дизайн-гайды
+docs/        # документация, дизайн-гайды и ADR
 ops/         # nginx и deploy-инфраструктура
 scripts/     # build/deploy helper scripts
 ```
@@ -17,6 +17,7 @@ scripts/     # build/deploy helper scripts
 
 - Перед работой в `apps/www` обязательно читать `apps/www/AGENTS.md`.
 - Если меняются shared стили, примитивы ссылок или URL-утилиты, проверить все затронутые разделы в `apps/www`.
+- Архитектурные решения искать и фиксировать в `docs/decisions`; список ADR лежит в `docs/decisions/README.md`.
 - Не парься с форматированием кода - prettier все отформатирует автоматом при коммите
 - В документации и ответах не использовать markdown-таблицы; писать списками.
 
