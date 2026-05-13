@@ -42,6 +42,51 @@ describe('normalizePeopleMentions', () => {
     });
   });
 
+  it('replaces labelled mention destinations with stable person links', () => {
+    expect(
+      normalizePeopleMentions({
+        markdown:
+          'По словам [главного по электричеству](@kschemelinin), работы идут.',
+        context: 'news article "2026/05/test" body',
+        registry,
+      }),
+    ).toEqual({
+      markdown:
+        'По словам [главного по электричеству](/people/kschemelinin/), работы идут.',
+      mentions: [registry.get('kschemelinin')],
+    });
+  });
+
+  it('keeps normal links unchanged while normalizing labelled mentions', () => {
+    expect(
+      normalizePeopleMentions({
+        markdown:
+          '[канал](https://example.com) подтвердил [главному по электричеству](@kschemelinin) детали.',
+        context: 'news article "2026/05/test" body',
+        registry,
+      }),
+    ).toEqual({
+      markdown:
+        '[канал](https://example.com) подтвердил [главному по электричеству](/people/kschemelinin/) детали.',
+      mentions: [registry.get('kschemelinin')],
+    });
+  });
+
+  it('does not support name cases in labelled mention destinations', () => {
+    const markdown = '[главного по электричеству](@kschemelinin:gen)';
+
+    expect(
+      normalizePeopleMentions({
+        markdown,
+        context: 'news article "2026/05/test" body',
+        registry,
+      }),
+    ).toEqual({
+      markdown,
+      mentions: [],
+    });
+  });
+
   it('skips inline code, existing links, and autolink-like urls', () => {
     const markdown =
       'Код `@kschemelinin`, ссылка [@kschemelinin](/docs) и https://example.com/@kschemelinin.\n\n```txt\n@kschemelinin\n```';
