@@ -131,6 +131,7 @@ describe('people discovery payload', () => {
   it('keeps schema, openapi, and catalog aligned around markdown-first section discovery', () => {
     const root = 'https://example.com';
     const jsonSchema = schema(root) as {
+      readonly description?: string;
       readonly $defs?: Record<
         string,
         { readonly required?: readonly string[] }
@@ -141,10 +142,12 @@ describe('people discovery payload', () => {
       { readonly required?: readonly string[] }
     >;
     const api = openapi(root) as {
+      readonly info?: { readonly description?: string };
       readonly paths?: Record<
         string,
         {
           readonly get?: {
+            readonly description?: string;
             readonly responses?: {
               readonly 200?: {
                 readonly content?: {
@@ -183,6 +186,12 @@ describe('people discovery payload', () => {
     };
     const openapiDefs = api.components?.schemas?.PeoplePayload?.$defs ?? {};
 
+    expect(jsonSchema.description).toContain('`@slug`, `@slug:case`');
+    expect(jsonSchema.description).toContain('`[текст](@slug)`');
+    expect(api.info?.description).toContain('`[текст](@slug)`');
+    expect(api.paths?.['/people/data/people.json']?.get?.description).toContain(
+      '`[текст](@slug)`',
+    );
     expect(defs.profile?.required).toEqual(
       expect.arrayContaining([
         'contacts',
