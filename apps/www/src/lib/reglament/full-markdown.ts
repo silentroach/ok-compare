@@ -94,11 +94,27 @@ const manualCheckCount =
   manualCalculationAssumptions.length +
   manualAuditNotes.length;
 
+const SERVICE_MAP_STATUS_LABELS = {
+  explicit_found: 'найдено явно',
+  partial: 'найдено частично',
+  not_found: 'не найдено',
+  needs_check: 'требует проверки',
+} as const satisfies Record<
+  FullReglamentServiceToEstimateMapItem['status'],
+  string
+>;
+
+const AUDIT_SEVERITY_LABELS = {
+  info: 'информация',
+  watch: 'наблюдение',
+  needs_check: 'требует проверки',
+} as const satisfies Record<FullReglamentAuditNote['severity'], string>;
+
 const estimateManualLine = (row: EstimateRow): string =>
-  `- estimate_rows:${row.id}: ${row.title}; source: ${row.source_refs.map(estimateSource).join('; ')}; причина: ${row.description ?? row.tags?.join(', ') ?? 'требует проверки'}`;
+  `- estimate_rows:${row.id}: ${row.title}; источник: ${row.source_refs.map(estimateSource).join('; ')}; причина: ${row.description ?? row.tags?.join(', ') ?? 'требует проверки'}`;
 
 const assetManualLine = (asset: FullReglamentCommonAsset): string =>
-  `- common_assets:${asset.id}: ${asset.title}; source: ${asset.source_refs.map(fullSource).join('; ')}; причина: ${asset.verification_note}`;
+  `- common_assets:${asset.id}: ${asset.title}; источник: ${asset.source_refs.map(fullSource).join('; ')}; причина: ${asset.verification_note}`;
 
 const serviceManualLine = (
   item: FullReglamentServiceToEstimateMapItem,
@@ -106,45 +122,50 @@ const serviceManualLine = (
   const serviceTitle = serviceTitleById.get(item.service_id) ?? item.service_id;
   const estimateRows = item.estimate_row_ids.join(', ') || '-';
 
-  return `- service_to_estimate_map:${item.service_id}: ${serviceTitle}; статус: ${item.status_label_ru}; строки сметы: ${estimateRows}; source: ${item.source_refs.map(fullSource).join('; ')}; причина: ${item.verification_note ?? item.explanation}`;
+  return `- service_to_estimate_map:${item.service_id}: ${serviceTitle}; статус: ${item.status_label_ru}; строки сметы: ${estimateRows}; источник: ${item.source_refs.map(fullSource).join('; ')}; причина: ${item.verification_note ?? item.explanation}`;
 };
 
 const calculationManualLine = (
   item: FullReglamentCalculationAssumption,
 ): string =>
-  `- calculation_assumptions:${item.id}: ${item.title}; статус: ${item.status_label_ru}; source: ${item.source_refs.map(fullSource).join('; ')}; как проверить: ${item.how_to_verify}`;
+  `- calculation_assumptions:${item.id}: ${item.title}; статус: ${item.status_label_ru}; источник: ${item.source_refs.map(fullSource).join('; ')}; как проверить: ${item.how_to_verify}`;
 
 const auditManualLine = (item: FullReglamentAuditNote): string =>
-  `- audit_notes:${item.id}: ${item.title}; ${item.public_wording}; source: ${fullSources(item.source_refs)}; следующий шаг: ${item.next_step}`;
+  `- audit_notes:${item.id}: ${item.title}; ${item.public_wording}; источник: ${fullSources(item.source_refs)}; следующий шаг: ${item.next_step}`;
 
 const assetLine = (asset: FullReglamentCommonAsset): string =>
-  `- ${asset.id}: ${asset.title}; единица: ${asset.unit ?? '-'}; итог: ${asset.total.raw}; source: ${fullSources(asset.source_refs)}`;
+  `- ${asset.id}: ${asset.title}; единица: ${asset.unit ?? '-'}; итог: ${asset.total.raw}; источник: ${fullSources(asset.source_refs)}`;
 
 const serviceLine = (service: FullReglamentService): string => {
   const note = service.frequency_note
     ? `; примечание: ${service.frequency_note}`
     : '';
 
-  return `- ${service.id}: ${service.title}; группа: ${service.group}; периодичность: ${service.frequency_raw}${note}; source: ${fullSources(service.source_refs)}`;
+  return `- ${service.id}: ${service.title}; группа: ${service.group}; периодичность: ${service.frequency_raw}${note}; источник: ${fullSources(service.source_refs)}`;
 };
 
 const mappingLine = (item: FullReglamentServiceToEstimateMapItem): string =>
-  `- ${item.service_id}: ${item.status} (${item.status_label_ru}); строки сметы: ${item.estimate_row_ids.join(', ') || '-'}; ${item.explanation}`;
+  `- ${item.service_id}: ${item.status_label_ru} (\`${item.status}\`); строки сметы: ${item.estimate_row_ids.join(', ') || '-'}; ${item.explanation}`;
 
 const calculationLine = (item: FullReglamentCalculationAssumption): string =>
-  `- ${item.id}: ${item.title}; статус: ${item.status_label_ru}; ${item.summary}; source: ${fullSources(item.source_refs)}`;
+  `- ${item.id}: ${item.title}; статус: ${item.status_label_ru}; ${item.summary}; источник: ${fullSources(item.source_refs)}`;
 
 const auditLine = (item: FullReglamentAuditNote): string =>
-  `- ${item.id}: ${item.severity}; ${item.title}; ${item.public_wording}; следующий шаг: ${item.next_step}; source: ${fullSources(item.source_refs)}`;
+  `- ${item.id}: ${AUDIT_SEVERITY_LABELS[item.severity]} (\`${item.severity}\`); ${item.title}; ${item.public_wording}; следующий шаг: ${item.next_step}; источник: ${fullSources(item.source_refs)}`;
 
 const topicLine = (title: string, url: string, description: string): string =>
   `- ${title}: ${absoluteUrl(url)}; ${description}`;
+
+const serviceMapStatusLine = (
+  status: FullReglamentServiceToEstimateMapItem['status'],
+): string =>
+  `- ${SERVICE_MAP_STATUS_LABELS[status]} (\`${status}\`): ${statusCounts[status]}`;
 
 export const buildFullReglamentMarkdown = (): string =>
   join([
     '# Полный регламент содержания Шелково',
     '',
-    'Курируемый слой фактов из полного регламента для LLM и публичных справочных страниц. PDF не парсится во время запроса.',
+    'Курируемый слой фактов из полного регламента для агентов и публичных справочных страниц. PDF не парсится во время запроса.',
     'Этот файл оставлен как обзор и индекс тематических файлов; подробные списки вынесены ниже по ссылкам.',
     '',
     '## Главные URL',
@@ -167,12 +188,12 @@ export const buildFullReglamentMarkdown = (): string =>
     topicLine(
       'Сопоставление услуг со сметой',
       reglamentFullServiceMapMarkdownUrl(),
-      'статусы explicit_found, partial, not_found и needs_check',
+      'статусы сопоставления услуг со сметой и ссылки на строки сметы',
     ),
     topicLine(
       'Проверки и допущения',
       reglamentFullChecksMarkdownUrl(),
-      'ручная перепроверка, расчетные допущения и audit notes',
+      'ручная перепроверка, расчетные допущения и заметки аудита',
     ),
     '',
     '## Контрольные числа',
@@ -188,10 +209,10 @@ export const buildFullReglamentMarkdown = (): string =>
     `- Заметки аудита: ${fullReglamentDataset2026.audit_notes.length}`,
     '',
     '## Статусы сопоставления услуг',
-    `- explicit_found: ${statusCounts.explicit_found}`,
-    `- partial: ${statusCounts.partial}`,
-    `- not_found: ${statusCounts.not_found}`,
-    `- needs_check: ${statusCounts.needs_check}`,
+    serviceMapStatusLine('explicit_found'),
+    serviceMapStatusLine('partial'),
+    serviceMapStatusLine('not_found'),
+    serviceMapStatusLine('needs_check'),
     '',
     '## Ручная перепроверка',
     `- Всего позиций: ${manualCheckCount}`,
@@ -243,10 +264,10 @@ export const buildFullReglamentServiceMapMarkdown = (): string =>
     `- JSON-набор данных: ${absoluteUrl(reglamentFull2026DataUrl())}`,
     '',
     '## Статусы сопоставления услуг',
-    `- explicit_found: ${statusCounts.explicit_found}`,
-    `- partial: ${statusCounts.partial}`,
-    `- not_found: ${statusCounts.not_found}`,
-    `- needs_check: ${statusCounts.needs_check}`,
+    serviceMapStatusLine('explicit_found'),
+    serviceMapStatusLine('partial'),
+    serviceMapStatusLine('not_found'),
+    serviceMapStatusLine('needs_check'),
     '',
     '## Сопоставления',
     ...fullReglamentDataset2026.service_to_estimate_map.map(mappingLine),
@@ -265,7 +286,7 @@ export const buildFullReglamentChecksMarkdown = (): string =>
     `- Объектов общего имущества с открытой проверкой: ${manualCommonAssets.length}`,
     `- Сопоставлений услуг, где нужна сверка: ${manualServiceMappings.length}`,
     `- Расчетных допущений, требующих проверки: ${manualCalculationAssumptions.length}`,
-    `- Audit notes с severity=needs_check: ${manualAuditNotes.length}`,
+    `- Заметок аудита со статусом \`needs_check\`: ${manualAuditNotes.length}`,
     '',
     '## Ручная перепроверка',
     '',
@@ -281,12 +302,12 @@ export const buildFullReglamentChecksMarkdown = (): string =>
     '### Расчетные допущения, требующие проверки',
     ...manualCalculationAssumptions.map(calculationManualLine),
     '',
-    '### Audit notes с severity=needs_check',
+    '### Заметки аудита со статусом `needs_check`',
     ...manualAuditNotes.map(auditManualLine),
     '',
     '## Расчетные допущения',
     ...fullReglamentDataset2026.calculation_assumptions.map(calculationLine),
     '',
-    '## Audit notes',
+    '## Заметки аудита',
     ...fullReglamentDataset2026.audit_notes.map(auditLine),
   ]);

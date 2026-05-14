@@ -90,7 +90,7 @@ const breadcrumbs = withHomeBreadcrumbs([
   { label: article.title },
 ]);
 const author = {
-  '@type': article.author.is_official ? 'Organization' : 'Person',
+  '@type': article.author.kind === 'official' ? 'Organization' : 'Person',
   name: article.author.name,
   ...(article.author.url ? { url: article.author.url } : {}),
 };
@@ -172,12 +172,9 @@ const schema = newsArticleSchema({
 
                 <NewsMeta
                   publishedIso={article.published_iso}
-                  time={article.time}
                   updatedIso={article.updated_iso}
                   author={article.author}
-                  isOfficial={article.is_official}
                   fullAuthorName
-                  showOfficial={false}
                   showUpdated={false}
                   areas={article.areas}
                   appliesToAllAreas={article.applies_to_all_areas}
@@ -217,12 +214,9 @@ const schema = newsArticleSchema({
 
             <NewsMeta
               publishedIso={article.published_iso}
-              time={article.time}
               updatedIso={article.updated_iso}
               author={article.author}
-              isOfficial={article.is_official}
               fullAuthorName
-              showOfficial={false}
               showUpdated={false}
               areas={article.areas}
               appliesToAllAreas={article.applies_to_all_areas}

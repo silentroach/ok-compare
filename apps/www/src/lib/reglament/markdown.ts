@@ -37,7 +37,7 @@ const rowLines = (
     typeof buildReglamentPayload
   >['sections'][number]['rows'][number],
 ): readonly string[] => [
-  `- ${row.title} — ${formatReglamentTariff(row.baseline.tariff_per_sotka_month)}; ${formatReglamentAnnualMoney(row.baseline.annual_gross)}; source: ${row.source_refs.map(source).join('; ')}`,
+  `- ${row.title} — ${formatReglamentTariff(row.baseline.tariff_per_sotka_month)}; ${formatReglamentAnnualMoney(row.baseline.annual_gross)}; источник: ${row.source_refs.map(source).join('; ')}`,
   ...(row.description ? [`  ${row.description}`] : []),
   ...(row.tags && row.tags.length > 0
     ? [`  Теги: ${row.tags.map((tag) => `\`${tag}\``).join(', ')}`]
@@ -51,7 +51,7 @@ export function buildReglamentMarkdown(estimate: Estimate): string {
     '# Калькулятор тарифа по смете 2026',
     '',
     'Текстовая версия интерактивной сметы регламента.',
-    'UI-лейбл: ₽/сотка; машинное поле `tariff_per_sotka_month` остается месячным тарифом.',
+    'В интерфейсе тариф показывается как ₽/сотка; машинное поле `tariff_per_sotka_month` остается месячным тарифом.',
     '',
     '## Главные URL',
     `- Раздел: ${absoluteUrl(reglamentUrl())}`,
@@ -68,7 +68,7 @@ export function buildReglamentMarkdown(estimate: Estimate): string {
     '## Итог',
     `- Официальный годовой итог: ${formatReglamentAnnualMoney(payload.official.annual_gross)}`,
     `- Официальный тариф: ${formatReglamentTariff(payload.official.tariff_per_sotka_month)}`,
-    `- Расчетный baseline в JSON: ${formatReglamentAnnualMoney(payload.computed.annual_gross)}; ${formatReglamentTariff(payload.computed.tariff_per_sotka_month)}`,
+    `- Расчетная база в JSON: ${formatReglamentAnnualMoney(payload.computed.annual_gross)}; ${formatReglamentTariff(payload.computed.tariff_per_sotka_month)}`,
     `- Тарифицируемая площадь: ${formatReglamentNumber(payload.tariff_area_sotki)} сотки`,
     '',
     '## Формулы',

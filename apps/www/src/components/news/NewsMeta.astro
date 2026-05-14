@@ -6,12 +6,9 @@ import { formatNewsAuthor, formatNewsDate } from '../../lib/news/view';
 
 interface Props {
   readonly publishedIso: string;
-  readonly time?: string;
   readonly updatedIso?: string;
   readonly author?: Pick<NewsAuthor, 'name' | 'short_name' | 'url'>;
-  readonly isOfficial?: boolean;
   readonly fullAuthorName?: boolean;
-  readonly showOfficial?: boolean;
   readonly showUpdated?: boolean;
   readonly areas?: readonly NewsArea[];
   readonly appliesToAllAreas?: boolean;
@@ -21,12 +18,9 @@ interface Props {
 
 const {
   publishedIso,
-  time,
   updatedIso,
   author,
-  isOfficial = false,
   fullAuthorName = false,
-  showOfficial = true,
   showUpdated = true,
   areas = [],
   appliesToAllAreas = true,
@@ -46,7 +40,6 @@ const visibleAreas = appliesToAllAreas ? [] : areas;
   <time datetime={publishedIso} class="font-medium text-foreground">
     {formatNewsDate(publishedIso)}
   </time>
-  {time && <span class="ui-num">{time}</span>}
   {
     author &&
       (author.url ? (
@@ -62,7 +55,6 @@ const visibleAreas = appliesToAllAreas ? [] : areas;
         <span>{formatNewsAuthor(author, { short: !fullAuthorName })}</span>
       ))
   }
-  {showOfficial && isOfficial && <span class="ui-chip">Официально</span>}
   {
     showUpdated && updatedIso && (
       <span class="ui-chip">

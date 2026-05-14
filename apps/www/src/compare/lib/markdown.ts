@@ -204,8 +204,8 @@ function nav(page: 'home' | 'rating'): readonly string[] {
     ...(page === 'home'
       ? [`- Методика рейтинга: ${abs('/rating/index.md')}`]
       : [`- Главная в Markdown: ${abs('/index.md')}`]),
-    `- Полный structured feed: ${abs('/data/settlements.json')}`,
-    `- Explorer feed: ${abs('/data/explorer.json')}`,
+    `- Полный JSON-файл: ${abs('/data/settlements.json')}`,
+    `- JSON для списка и карты: ${abs('/data/explorer.json')}`,
     '',
   ];
 }
@@ -241,14 +241,14 @@ export async function buildHomeMd(): Promise<string> {
         `- [${item.name}](${abs(`/settlements/${item.slug}/index.md`)}) — тариф ${formatTariffAuto(item.tariff)}; рейтинг ${num(item.rating)}/100; ${item.location.district}`,
     ),
     '',
-    '## Markdown negotiation',
+    '## Markdown-доступ',
     '- HTML-маршруты `/`, `/rating/` и `/settlements/[slug]/` поддерживают `Accept: text/markdown`.',
-    '- Прямые companion URLs: `/index.md`, `/rating/index.md`, `/settlements/[slug]/index.md`.',
+    '- Прямые Markdown-адреса: `/index.md`, `/rating/index.md`, `/settlements/[slug]/index.md`.',
     '',
     '## Ограничения данных',
     '- Если факт не подтвержден источником, поле опускается.',
     '- Отсутствие поля обычно означает «неизвестно», а не «точно нет».',
-    '- `data/settlements.json` является основным полным structured feed поселков.',
+    '- `data/settlements.json` является основным полным JSON-файлом поселков.',
     '- `data/explorer.json` сокращен для списка, карты и массового сравнения.',
     '- Тариф намеренно не входит в формулу условного рейтинга.',
   ];
@@ -260,7 +260,7 @@ export async function buildRatingMd(): Promise<string> {
   const lines = [
     '# Методика условного рейтинга поселков',
     '',
-    'Markdown-версия страницы с публичным объяснением того, как считается условный уровень поселка.',
+    'Текстовая версия страницы с публичным объяснением того, как считается условный уровень поселка.',
     '',
     ...nav('rating'),
     '## Базовая формула',

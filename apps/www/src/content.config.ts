@@ -454,7 +454,6 @@ const newsAuthors = defineCollection({
     short_name: text('short_name').optional(),
     url: absoluteUrl('url').optional(),
     role: text('role').optional(),
-    is_official: z.boolean().optional(),
   }),
 });
 

@@ -25,7 +25,6 @@ export interface NewsAuthor {
   readonly short_name?: string;
   readonly url?: string;
   readonly role?: string;
-  readonly is_official: boolean;
 }
 
 export interface NewsTag {
@@ -100,7 +99,6 @@ export interface NewsArticle {
   readonly time?: string;
   readonly updated_at?: Date;
   readonly updated_iso?: string;
-  readonly is_official: boolean;
   readonly applies_to_all_areas: boolean;
   readonly areas: readonly NewsArea[];
   readonly tags: readonly NewsTag[];
@@ -136,7 +134,6 @@ export interface NewsListArticle {
   readonly time?: string;
   readonly updated_at?: Date;
   readonly updated_iso?: string;
-  readonly is_official: boolean;
   readonly applies_to_all_areas: boolean;
   readonly areas: readonly NewsArea[];
   readonly tags: readonly NewsTag[];

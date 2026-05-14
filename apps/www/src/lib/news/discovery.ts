@@ -99,7 +99,6 @@ export interface NewsDiscoveryArticle {
   readonly markdown_url: string;
   readonly source_url?: string;
   readonly pinned: boolean;
-  readonly is_official: boolean;
   readonly author: NewsDiscoveryAuthor;
   readonly areas: readonly string[];
   readonly tags: readonly NewsDiscoveryTag[];
@@ -336,7 +335,6 @@ function article(item: NewsArticle): NewsDiscoveryArticle {
     markdown_url: fullUrl(item.markdown_url),
     ...(item.source_url ? { source_url: fullUrl(item.source_url) } : {}),
     pinned: item.pinned,
-    is_official: item.is_official,
     author: author(item.author),
     areas: [...item.areas],
     tags: item.tags.map(tag),
@@ -520,7 +518,6 @@ export function schema(root: string): Record<string, unknown> {
           markdown_url: uri(),
           source_url: uri(),
           pinned: flag(),
-          is_official: flag(),
           author: {
             $ref: '#/$defs/author',
           },
@@ -570,7 +567,6 @@ export function schema(root: string): Record<string, unknown> {
           'html_url',
           'markdown_url',
           'pinned',
-          'is_official',
           'author',
           'areas',
           'tags',

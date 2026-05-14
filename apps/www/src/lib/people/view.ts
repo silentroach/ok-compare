@@ -222,7 +222,7 @@ export const describePersonProfile = (
   return (
     first ??
     (headline ? `${profile.name} — ${headline}.` : undefined) ??
-    `${profile.name} — публичный профиль человека из раздела people на сайте Шелково Онлайн.`
+    `${profile.name} — публичный профиль человека из раздела профилей на сайте Шелково Онлайн.`
   );
 };
 

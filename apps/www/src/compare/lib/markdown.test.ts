@@ -66,10 +66,10 @@ describe('compare markdown navigation', () => {
       'Методика рейтинга: https://kpshelkovo.online/815/compare/rating/index.md',
     );
     expect(body).toContain(
-      'Полный structured feed: https://kpshelkovo.online/815/compare/data/settlements.json',
+      'Полный JSON-файл: https://kpshelkovo.online/815/compare/data/settlements.json',
     );
     expect(body).toContain(
-      'Explorer feed: https://kpshelkovo.online/815/compare/data/explorer.json',
+      'JSON для списка и карты: https://kpshelkovo.online/815/compare/data/explorer.json',
     );
   });
 
@@ -82,10 +82,10 @@ describe('compare markdown navigation', () => {
       'Главная в Markdown: https://kpshelkovo.online/815/compare/index.md',
     );
     expect(body).toContain(
-      'Полный structured feed: https://kpshelkovo.online/815/compare/data/settlements.json',
+      'Полный JSON-файл: https://kpshelkovo.online/815/compare/data/settlements.json',
     );
     expect(body).toContain(
-      'Explorer feed: https://kpshelkovo.online/815/compare/data/explorer.json',
+      'JSON для списка и карты: https://kpshelkovo.online/815/compare/data/explorer.json',
     );
   });
 });

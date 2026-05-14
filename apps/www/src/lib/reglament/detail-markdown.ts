@@ -50,7 +50,7 @@ const CONTROL_SOURCE_LABELS = {
   string
 >;
 
-const EMPTY_LIST_LINE = '- Нет данных в текущей версии dataset.';
+const EMPTY_LIST_LINE = '- Нет данных в текущей версии набора.';
 
 const join = (lines: readonly string[]): string => `${lines.join('\n')}\n`;
 
@@ -285,7 +285,7 @@ const resourceLines = (
     lines.push(
       resourceFieldLine('Работа', `\`${resource.work_item_id}\``),
       resourceFieldLine('Строка сметы', `\`${resource.estimate_row_id}\``),
-      resourceFieldLine('Корзина затрат', resource.cost_bucket),
+      resourceFieldLine('Статья затрат', resource.cost_bucket),
       resourceFieldLine('Кол-во', formatQuantity(resource.quantity)),
       resourceFieldLine(priceLabel, formatMoney(resource.unit_price_rub)),
       resourceFieldLine('Итог', formatMoney(resource.total_rub)),
@@ -334,7 +334,7 @@ const sourcePdfLine = (
 ): string => {
   const pages = pdf.pages_total ? `; страниц: ${pdf.pages_total}` : '';
 
-  return `- ${pdf.pdf}.pdf: ${pdf.title}${pages}; URL: ${absoluteUrl(reglamentSourcePdfUrl(pdf.pdf))}`;
+  return `- ${pdf.pdf}.pdf: ${pdf.title}${pages}; ссылка: ${absoluteUrl(reglamentSourcePdfUrl(pdf.pdf))}`;
 };
 
 type ResourceMarkdownOptions = {
@@ -384,8 +384,8 @@ const buildEstimateDetailResourcesMarkdown = (
 };
 
 const controlTotalLine = (control: EstimateDetailControlTotal): string => {
-  const detail = `detail: ${formatMoney(control.detail_total_rub)}`;
-  const aggregate = `aggregate: ${formatMoney(control.aggregate_total_rub)}`;
+  const detail = `детальная сумма: ${formatMoney(control.detail_total_rub)}`;
+  const aggregate = `агрегированная сумма: ${formatMoney(control.aggregate_total_rub)}`;
   const tolerance =
     control.tolerance_rub === undefined
       ? '-'
@@ -393,7 +393,7 @@ const controlTotalLine = (control: EstimateDetailControlTotal): string => {
   const resources = control.resource_ids?.join(', ') ?? '-';
   const note = control.note ? `; примечание: ${control.note}` : '';
 
-  return `- ${control.id}: ${control.cost_bucket}; строка сметы: ${control.estimate_row_id}; источник контроля: ${CONTROL_SOURCE_LABELS[control.control_source]}; source total: ${formatMoney(control.source_total_rub)}; ${detail}; ${aggregate}; дельта: ${formatDelta(control.delta_rub)}; допуск: ${tolerance}; ресурсы: ${resources}; статус: ${control.status_label_ru}; source: ${sources(control.source_refs)}${note}`;
+  return `- ${control.id}: ${control.cost_bucket}; строка сметы: ${control.estimate_row_id}; источник контроля: ${CONTROL_SOURCE_LABELS[control.control_source]}; сумма в источнике: ${formatMoney(control.source_total_rub)}; ${detail}; ${aggregate}; дельта: ${formatDelta(control.delta_rub)}; допуск: ${tolerance}; ресурсы: ${resources}; статус: ${control.status_label_ru}; источник: ${sources(control.source_refs)}${note}`;
 };
 
 const workItemNeedsCheckLine = (item: EstimateDetailWorkItem): string => {
@@ -401,7 +401,7 @@ const workItemNeedsCheckLine = (item: EstimateDetailWorkItem): string => {
 
   const checkSources = item.needs_check.source_refs ?? item.source_refs;
 
-  return `- work_items:${item.id}: ${item.title}; строка сметы: ${item.estimate_row_id}; причина: ${item.needs_check.reason}; source: ${sources(checkSources)}`;
+  return `- work_items:${item.id}: ${item.title}; строка сметы: ${item.estimate_row_id}; причина: ${item.needs_check.reason}; источник: ${sources(checkSources)}`;
 };
 
 const resourceNeedsCheckLine = (item: EstimateDetailResource): string => {
@@ -409,7 +409,7 @@ const resourceNeedsCheckLine = (item: EstimateDetailResource): string => {
 
   const checkSources = item.needs_check.source_refs ?? item.source_refs;
 
-  return `- resources:${item.id}: ${item.title}; работа: ${item.work_item_id}; bucket: ${item.cost_bucket}; причина: ${item.needs_check.reason}; source: ${sources(checkSources)}`;
+  return `- resources:${item.id}: ${item.title}; работа: ${item.work_item_id}; статья затрат: ${item.cost_bucket}; причина: ${item.needs_check.reason}; источник: ${sources(checkSources)}`;
 };
 
 const controlNeedsCheckLine = (item: EstimateDetailControlTotal): string => {
@@ -417,7 +417,7 @@ const controlNeedsCheckLine = (item: EstimateDetailControlTotal): string => {
 
   const checkSources = item.needs_check.source_refs ?? item.source_refs;
 
-  return `- control_totals:${item.id}: ${item.cost_bucket}; строка сметы: ${item.estimate_row_id}; причина: ${item.needs_check.reason}; source: ${sources(checkSources)}`;
+  return `- control_totals:${item.id}: ${item.cost_bucket}; строка сметы: ${item.estimate_row_id}; причина: ${item.needs_check.reason}; источник: ${sources(checkSources)}`;
 };
 
 export const buildEstimateDetailMarkdown = (
@@ -426,24 +426,24 @@ export const buildEstimateDetailMarkdown = (
   join([
     '# Детальная смета 2026',
     '',
-    'Машиночитаемый markdown-индекс curated dataset `estimate-details-2026` для маленьких PDF сметы. PDF не парсятся во время runtime или build страницы.',
+    'Машиночитаемый Markdown-индекс набора данных `estimate-details-2026` для маленьких PDF сметы. PDF не парсятся во время запроса или сборки страницы.',
     '',
     '## Главные URL',
     `- JSON-набор данных: ${absoluteUrl(reglamentEstimateDetails2026DataUrl())}`,
     `- Агрегированная смета: ${absoluteUrl(reglamentEstimate2026DataUrl())}`,
-    `- Dataset полного регламента: ${absoluteUrl(reglamentFull2026DataUrl())}`,
+    `- Набор данных полного регламента: ${absoluteUrl(reglamentFull2026DataUrl())}`,
     `- Услуги полного регламента: ${absoluteUrl(reglamentFullServicesMarkdownUrl())}`,
     `- Сопоставление услуг со сметой: ${absoluteUrl(reglamentFullServiceMapMarkdownUrl())}`,
     `- Этот индекс: ${absoluteUrl(reglamentEstimateDetailsMarkdownUrl())}`,
     '',
     '## Как соединять слои',
-    '- `estimate-2026.json` — агрегированная смета: разделы, строки, итоговые суммы, базовые частоты и breakdown.',
+    '- `estimate-2026.json` — агрегированная смета: разделы, строки, итоговые суммы, базовые частоты и разбивка сумм (`breakdown`).',
     '- `full-2026.json` и `full/services.md` — услуги полного регламента, периодичность и исходные формулировки услуг.',
-    '- `estimate-details-2026.json` и `details/*.md` — детальные работы, материалы, машины, труд, контрольные итоги и `needs_check` из маленьких PDF.',
-    '- `estimate_row_id` связывает work items, resources и control totals с агрегированной сметой; `service_ids` связывают work items с услугами полного регламента.',
-    '- Для ответа сначала берите формулировку и периодичность услуги из полного регламента, затем строку и сумму из агрегированной сметы, затем ресурсы и проверки из detail-слоя.',
+    '- `estimate-details-2026.json` и `details/*.md` — детальные работы, материалы, машины, труд, контрольные итоги и позиции со статусом `needs_check` из маленьких PDF.',
+    '- `estimate_row_id` связывает работы, ресурсы и контрольные итоги с агрегированной сметой; `service_ids` связывает работы с услугами полного регламента.',
+    '- Для ответа сначала берите формулировку и периодичность услуги из полного регламента, затем строку и сумму из агрегированной сметы, затем ресурсы и проверки из детального слоя.',
     '',
-    '## Проверочные вопросы для LLM',
+    '## Проверочные вопросы для агента',
     '- Какова периодичность полива дорог: сравните услуги `summer-road-dust-suppression` и `summer-road-watering`, строку `cleaning-summer-mechanized` и ресурсы детальной сметы по поливу.',
     '- Какие материалы, машины и труд входят в выбранную строку сметы: найдите строку по `estimate_row_id`, затем смотрите тематические файлы `materials.md`, `machines.md` и `labor.md`.',
     '- Какие суммы требуют ручной перепроверки: откройте `checks.md` и сверяйте причины `needs_check` с `source_refs`.',
@@ -452,31 +452,31 @@ export const buildEstimateDetailMarkdown = (
     topicLine(
       'Материалы',
       reglamentEstimateDetailsMaterialsMarkdownUrl(),
-      'ресурсы kind=material, количество, цена и итог',
+      'ресурсы с `kind=material`: количество, цена и итог',
     ),
     topicLine(
       'Машины',
       reglamentEstimateDetailsMachinesMarkdownUrl(),
-      'ресурсы kind=machine и машинные затраты',
+      'ресурсы с `kind=machine` и машинные затраты',
     ),
     topicLine(
       'Труд',
       reglamentEstimateDetailsLaborMarkdownUrl(),
-      'ресурсы kind=labor и kind=machinist_labor, ставки и итоги',
+      'ресурсы с `kind=labor` и `kind=machinist_labor`: ставки и итоги',
     ),
     topicLine(
       'Проверки',
       reglamentEstimateDetailsChecksMarkdownUrl(),
-      'control totals, дельты и все позиции needs_check',
+      'контрольные итоги, дельты и все позиции со статусом `needs_check`',
     ),
     '',
     '## Сводка',
-    `- Dataset: ${dataset.dataset_id}; schema_version: ${dataset.schema_version}; год: ${dataset.year}`,
+    `- Набор данных: ${dataset.dataset_id}; версия схемы: ${dataset.schema_version}; год: ${dataset.year}`,
     `- PDF-источники: ${dataset.source_pdfs.length}`,
     `- Работы: ${dataset.work_items.length}`,
     `- Ресурсы: ${dataset.resources.length}`,
     `- Контрольные итоги: ${dataset.control_totals.length}`,
-    `- needs_check: ${needsCheckCount(dataset)}`,
+    `- Со статусом \`needs_check\`: ${needsCheckCount(dataset)}`,
     '',
     '## Ресурсы по видам',
     ...ESTIMATE_DETAIL_RESOURCE_KINDS.map(
@@ -487,7 +487,7 @@ export const buildEstimateDetailMarkdown = (
     '## PDF-источники',
     ...linesOrEmpty(dataset.source_pdfs, sourcePdfLine),
     '',
-    '## Curation notes',
+    '## Кураторские заметки',
     ...linesOrEmpty(dataset.curation_notes, (note) => `- ${note}`),
   ]);
 
@@ -539,15 +539,15 @@ export const buildEstimateDetailChecksMarkdown = (
     '',
     '## Сводка',
     `- Контрольные итоги: ${dataset.control_totals.length}`,
-    `- needs_check всего: ${needsCheckTotal}`,
-    `- Работы needs_check: ${workItems.length}`,
-    `- Ресурсы needs_check: ${resources.length}`,
-    `- Контрольные итоги needs_check: ${controlTotals.length}`,
+    `- Всего со статусом \`needs_check\`: ${needsCheckTotal}`,
+    `- Работы со статусом \`needs_check\`: ${workItems.length}`,
+    `- Ресурсы со статусом \`needs_check\`: ${resources.length}`,
+    `- Контрольные итоги со статусом \`needs_check\`: ${controlTotals.length}`,
     '',
     '## Контрольные итоги',
     ...linesOrEmpty(dataset.control_totals, controlTotalLine),
     '',
-    '## needs_check',
+    '## Позиции со статусом `needs_check`',
     '',
     '### Работы',
     ...linesOrEmpty(workItems, workItemNeedsCheckLine),

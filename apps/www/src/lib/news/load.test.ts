@@ -137,6 +137,45 @@ describe('buildNewsDataset', () => {
     ]);
   });
 
+  it('sorts same-day news with publish time above date-only news', () => {
+    const data = buildNewsDataset(
+      [author({ id: 'ig', name: 'Редакция' })],
+      [
+        article({
+          id: '2026/05/no-time',
+          title: 'Новость без времени',
+          summary: 'Только дата',
+          date: '14.05.2026',
+        }),
+        article({
+          id: '2026/05/early',
+          title: 'Утренняя новость',
+          summary: 'С ранним временем',
+          date: '14.05.2026 09:00',
+        }),
+        article({
+          id: '2026/05/late',
+          title: 'Вечерняя новость',
+          summary: 'С поздним временем',
+          date: '14.05.2026 20:30',
+        }),
+        article({
+          id: '2026/05/older',
+          title: 'Вчерашняя новость',
+          summary: 'Предыдущий день',
+          date: '13.05.2026 23:00',
+        }),
+      ],
+    );
+
+    expect(data.articles.map((item) => item.id)).toEqual([
+      '2026/05/late',
+      '2026/05/early',
+      '2026/05/no-time',
+      '2026/05/older',
+    ]);
+  });
+
   it('normalizes mentions in article and addendum bodies', () => {
     const data = buildNewsDataset(
       [author({ id: 'ig', name: 'Редакция' })],

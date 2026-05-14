@@ -1,4 +1,10 @@
 import { absoluteUrl } from '../site';
+import {
+  frontmatterArray,
+  frontmatterBlock,
+  frontmatterField,
+  frontmatterScalar,
+} from '../markdown/frontmatter';
 import type {
   StatusDataset,
   StatusIncident,
@@ -40,6 +46,9 @@ function section(title: string, rows: readonly string[]): readonly string[] {
 
 const inline = (value: string): string => value.replace(/\s+/gu, ' ').trim();
 
+const statusDate = (iso: string, hasTime: boolean): string =>
+  hasTime ? iso : iso.slice(0, 10);
+
 const sourceMarkdownLink = (url: string): string => `[источник](${abs(url)})`;
 
 const incidentMarkdownLabel = (incident: StatusIncident): string =>
@@ -51,12 +60,44 @@ const incidentMarkdownHref = (
   incident: Pick<StatusIncident, 'year' | 'month' | 'slug'>,
 ): string => abs(statusIncidentMarkdownUrl(incident));
 
-const areas = (
+const areaLabels = (
   incident: Pick<StatusIncident, 'applies_to_all_areas' | 'areas'>,
-): string =>
+): readonly string[] =>
   incident.applies_to_all_areas
-    ? 'все части поселка'
-    : incident.areas.map((area) => formatStatusArea(area)).join(', ');
+    ? []
+    : incident.areas.map((area) => formatStatusArea(area));
+
+function incidentFrontmatter(incident: StatusIncident): readonly string[] {
+  return frontmatterBlock([
+    ...frontmatterField('title', incident.title),
+    'service:',
+    `  id: ${frontmatterScalar(incident.service)}`,
+    `  name: ${frontmatterScalar(formatStatusService(incident.service))}`,
+    'kind:',
+    `  id: ${frontmatterScalar(incident.kind)}`,
+    `  name: ${frontmatterScalar(formatStatusKind(incident.kind))}`,
+    ...frontmatterField('phase', getStatusIncidentPhase(incident).label),
+    ...frontmatterField(
+      'started_at',
+      statusDate(incident.started_iso, incident.started_has_time),
+    ),
+    ...frontmatterField('started_has_time', incident.started_has_time),
+    ...frontmatterField(
+      'ended_at',
+      incident.ended_iso
+        ? statusDate(incident.ended_iso, incident.ended_has_time)
+        : undefined,
+    ),
+    ...(incident.ended_iso
+      ? frontmatterField('ended_has_time', incident.ended_has_time)
+      : []),
+    ...frontmatterArray('areas', areaLabels(incident)),
+    ...frontmatterField(
+      'source_url',
+      incident.source_url ? abs(incident.source_url) : undefined,
+    ),
+  ]);
+}
 
 function incidentLine(
   incident: StatusIncident,
@@ -206,7 +247,7 @@ export function buildStatusServiceMarkdown(
       empty: 'Пока без записей по этому сервису.',
       intro:
         summary.incidents.length > 10
-          ? 'В markdown companion показаны 10 последних записей сервиса.'
+          ? 'В Markdown-файле показаны 10 последних записей сервиса.'
           : undefined,
     }),
   ]);
@@ -214,22 +255,9 @@ export function buildStatusServiceMarkdown(
 
 export function buildStatusIncidentMarkdown(incident: StatusIncident): string {
   return join([
+    ...incidentFrontmatter(incident),
     `# ${incident.title}`,
     '',
-    ...section(
-      'Метаданные',
-      pick([
-        row('Сервис', formatStatusService(incident.service)),
-        row('Тип', formatStatusKind(incident.kind)),
-        row('Статус', getStatusIncidentPhase(incident).label),
-        row('Период', formatStatusIncidentPeriodText(incident)),
-        row('Затронутые участки', areas(incident)),
-        row(
-          'Источник',
-          incident.source_url ? abs(incident.source_url) : undefined,
-        ),
-      ]),
-    ),
-    ...(incident.body ? ['## Описание', '', incident.body.trim(), ''] : []),
+    ...(incident.body ? [incident.body.trim(), ''] : []),
   ]);
 }

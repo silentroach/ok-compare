@@ -37,8 +37,8 @@
 3. `addenda` в v1 хранятся в frontmatter-массиве статьи.
    Marker-синтаксис внутри markdown body не используется.
 
-4. Официальность определяется author entry.
-   Канонический признак официального источника - `kind: official`. Дополнительный флаг `is_official: true` допустим как явное дублирование/override. Рендер считает автора официальным, если у него `kind: official` или `is_official: true`; это должно отражаться в карточках, detail page, markdown companions и machine-readable outputs.
+4. Тип источника определяется author entry.
+   Канонический признак официального источника - `kind: official`. Отдельный boolean `is_official` не используется: если нужен официальный источник, автор должен иметь `kind: official`.
 
 5. `cover`, `photos` и `attachments` имеют разные роли.
    `cover` отвечает за карточку, detail hero и social preview. `photos` идут отдельным photo block. `attachments` должны вести на стабильные public URL.

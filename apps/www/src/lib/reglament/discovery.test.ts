@@ -336,9 +336,9 @@ describe('reglament discovery route smoke', () => {
     const fullLlms = await (await fullLlmsRoute.GET({} as never)).text();
     const json = await (await jsonRoute.GET({} as never)).text();
 
-    expect(markdown).toContain('UI-лейбл: ₽/сотка');
-    expect(shortLlms).toContain('UI-лейбл: ₽/сотка');
-    expect(fullLlms).toContain('UI-лейбл: ₽/сотка');
+    expect(markdown).toContain('В интерфейсе тариф показывается как ₽/сотка');
+    expect(shortLlms).toContain('В интерфейсе тариф показывается как ₽/сотка');
+    expect(fullLlms).toContain('В интерфейсе тариф показывается как ₽/сотка');
     expect(`${markdown}\n${shortLlms}\n${fullLlms}`).not.toContain(
       '₽/сотка/мес',
     );

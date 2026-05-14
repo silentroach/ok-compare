@@ -147,8 +147,6 @@ function authorData(entry: AuthorEntry): NewsAuthor {
     ...(entry.data.short_name ? { short_name: entry.data.short_name } : {}),
     ...(entry.data.url ? { url: entry.data.url } : {}),
     ...(entry.data.role ? { role: entry.data.role } : {}),
-    is_official:
-      entry.data.is_official === true || entry.data.kind === 'official',
   };
 }
 
@@ -501,7 +499,6 @@ function normalizeArticle(
           updated_iso: addenda.updated_iso,
         }
       : {}),
-    is_official: author.is_official,
     applies_to_all_areas: area.applies_to_all_areas,
     areas: area.areas,
     tags: buildArticleTags(entry.data.tags),
@@ -557,7 +554,6 @@ const toListArticle = (article: NewsArticle): NewsListArticle => ({
         updated_iso: article.updated_iso,
       }
     : {}),
-  is_official: article.is_official,
   applies_to_all_areas: article.applies_to_all_areas,
   areas: article.areas,
   tags: article.tags,

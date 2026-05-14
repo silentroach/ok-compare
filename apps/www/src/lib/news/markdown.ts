@@ -1,5 +1,11 @@
 import { pluralizeRu } from '@shelkovo/format';
 
+import {
+  frontmatterArray,
+  frontmatterBlock,
+  frontmatterField,
+  frontmatterScalar,
+} from '../markdown/frontmatter';
 import { absoluteUrl } from '../site';
 import { NEWS_LATEST_LIMIT } from './config';
 import type {
@@ -46,30 +52,29 @@ function section(title: string, rows: readonly string[]): readonly string[] {
 
 const inline = (value: string): string => value.replace(/\s+/g, ' ').trim();
 
-function areas(
+function areaLabels(
   item: Pick<NewsArticle, 'applies_to_all_areas' | 'areas'>,
-): string {
+): readonly string[] {
   if (item.applies_to_all_areas) {
-    return 'все части поселка';
+    return [];
   }
 
-  return item.areas.map((area) => formatNewsArea(area)).join(', ');
+  return item.areas.map((area) => formatNewsArea(area));
 }
 
-function tags(
+function tagLabels(
   items:
     | Pick<NewsListArticle, 'tags'>['tags']
     | Pick<NewsArticle, 'tags'>['tags'],
-): string {
-  if (items.length === 0) {
-    return 'нет';
-  }
-
-  return items.map((item) => item.label).join(', ');
+): readonly string[] {
+  return items.map((item) => item.label);
 }
 
 const when = (iso: string, time?: string): string =>
   time ? `${formatNewsDate(iso)}, ${time}` : formatNewsDate(iso);
+
+const machineDate = (iso: string, time?: string): string =>
+  time ? iso : iso.slice(0, 10);
 
 const photoLine = (label: string, photo: NewsPhoto): string =>
   `- ${label}: ${pick([
@@ -151,30 +156,31 @@ function articleBlock(input: {
   ];
 }
 
-function articleMeta(article: NewsArticle): readonly string[] {
-  return section(
-    'Метаданные',
-    pick([
-      row('Дата', formatNewsDate(article.published_iso)),
-      row('Время', article.time),
-      row('Автор', formatNewsAuthor(article.author, { short: false })),
-      row(
-        'Официальность',
-        article.is_official
-          ? 'официальная новость'
-          : 'неофициальная публикация',
-      ),
-      row('Areas', areas(article)),
-      row('Теги', tags(article.tags)),
-      row('Источник', article.source_url ? abs(article.source_url) : undefined),
-      row(
-        'Обновлено',
-        article.updated_iso
-          ? when(article.updated_iso, article.addenda.at(-1)?.time)
-          : undefined,
-      ),
-    ]),
-  );
+function articleFrontmatter(article: NewsArticle): readonly string[] {
+  return frontmatterBlock([
+    ...frontmatterField('title', article.title),
+    ...frontmatterField('summary', article.summary),
+    ...frontmatterField(
+      'published_at',
+      machineDate(article.published_iso, article.time),
+    ),
+    ...frontmatterField(
+      'updated_at',
+      article.updated_iso
+        ? machineDate(article.updated_iso, article.addenda.at(-1)?.time)
+        : undefined,
+    ),
+    'author:',
+    `  id: ${frontmatterScalar(article.author.id)}`,
+    `  name: ${frontmatterScalar(formatNewsAuthor(article.author, { short: false }))}`,
+    `  kind: ${frontmatterScalar(article.author.kind)}`,
+    ...frontmatterArray('areas', areaLabels(article)),
+    ...frontmatterArray('tags', tagLabels(article.tags)),
+    ...frontmatterField(
+      'source_url',
+      article.source_url ? abs(article.source_url) : undefined,
+    ),
+  ]);
 }
 
 function addendaSection(items: readonly NewsAddendum[]): readonly string[] {
@@ -190,19 +196,12 @@ function addendaSection(items: readonly NewsAddendum[]): readonly string[] {
 
   for (const [index, item] of items.entries()) {
     lines.push(
-      `### ${item.title ?? `Дополнение ${index + 1} от ${formatNewsDate(item.published_iso)}`}`,
+      `### ${item.title ?? `Дополнение ${index + 1} от ${when(item.published_iso, item.time)}`}`,
     );
     lines.push(
       ...pick([
-        row('Дата', formatNewsDate(item.published_iso)),
-        row('Время', item.time),
+        row('Дата', when(item.published_iso, item.time)),
         row('Автор', formatNewsAuthor(item.author, { short: false })),
-        row(
-          'Официальность',
-          item.author.is_official
-            ? 'официальное дополнение'
-            : 'community/editorial дополнение',
-        ),
         row('Источник', item.source_url ? abs(item.source_url) : undefined),
       ]),
     );
@@ -240,7 +239,7 @@ export function buildNewsHomeMarkdown(data: NewsDataset): string {
       empty: 'Первые публикации для раздела готовятся.',
       intro:
         normalCount > data.home.latest.length
-          ? `Закрепленные публикации показаны первыми. Для обычных новостей на главной companion-странице показываем не больше ${NEWS_LATEST_LIMIT}; более старые публикации остаются доступны в архивах.`
+          ? `Закрепленные публикации показаны первыми. Для обычных новостей на главной Markdown-странице показываем не больше ${NEWS_LATEST_LIMIT}; более старые публикации остаются доступны в архивах.`
           : undefined,
     }),
   ]);
@@ -289,7 +288,6 @@ export function buildNewsMonthMarkdown(input: {
     `# Новости Шелково за ${monthLabel}`,
     '',
     ...articleBlock({
-      title: 'Новости за месяц',
       items: archive.articles,
       empty: 'В этом месяце пока нет публикаций.',
     }),
@@ -298,10 +296,10 @@ export function buildNewsMonthMarkdown(input: {
 
 export function buildNewsArticleMarkdown(article: NewsArticle): string {
   return join([
+    ...articleFrontmatter(article),
     `# ${article.title}`,
     '',
-    ...articleMeta(article),
-    ...(article.body ? ['## Текст новости', '', article.body.trim(), ''] : []),
+    ...(article.body ? [article.body.trim(), ''] : []),
     ...photoSection(article),
     ...attachmentSection(article.attachments),
     ...addendaSection(article.addenda),
