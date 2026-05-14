@@ -16,6 +16,7 @@ scripts/     # build/deploy helper scripts
 ## Локальные инструкции
 
 - Перед работой в `apps/www` обязательно читать `apps/www/AGENTS.md`.
+- Данные новостей лежат в `apps/www/src/data/news`: авторы в `authors/*.yaml`, статьи в `articles/**/*.md`; перед добавлением или редактированием новостей обязательно читать `apps/www/src/data/news/AGENTS.md` и сверяться с `docs/news.md`.
 - Если меняются shared стили, примитивы ссылок или URL-утилиты, проверить все затронутые разделы в `apps/www`.
 - Архитектурные решения искать и фиксировать в `docs/decisions`; список ADR лежит в `docs/decisions/README.md`.
 - Не парься с форматированием кода - prettier все отформатирует автоматом при коммите
