@@ -4,6 +4,7 @@ dist/
 apps/*/dist/
 apps/*/.astro/
 .turbo/
+.lighthouseci/
 .agents/skills/
 logs/
 .env
