@@ -11,3 +11,4 @@
 - [ADR-005: CSP без `unsafe-inline` для исполняемых скриптов](005-csp-inline-script-policy.md) - принят, 2026-05-15.
 - [ADR-006: HSTS без `includeSubDomains` и `preload`](006-hsts-policy.md) - принят, 2026-05-15.
 - [ADR-007: COOP без COEP для изоляции `opener`-связей](007-coop-origin-isolation.md) - принят, 2026-05-15.
+- [ADR-004: Генерация Markdown через AST](004-markdown-ast-generation.md) - принят, 2026-05-14.
