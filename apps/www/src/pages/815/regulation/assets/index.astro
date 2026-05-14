@@ -1,5 +1,6 @@
 ---
 import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+import ResourceLink from '@shelkovo/ui/ResourceLink.astro';
 import ForestIcon from '@shelkovo/ui/icons/areas/Forest.astro';
 import ParkIcon from '@shelkovo/ui/icons/areas/Park.astro';
 import RiverIcon from '@shelkovo/ui/icons/areas/River.astro';
@@ -141,13 +142,14 @@ const tableHeaderCellRightClass = `${tableHeaderCellClass} text-right`;
                 </h3>
                 <p class="text-sm leading-6 text-muted-foreground md:text-base md:leading-7">
                   Источник:{' '}
-                  <a
+                  <ResourceLink
                     class="ui-link text-primary"
                     href={reglamentFullSourcePdfUrl()}
                     type="application/pdf"
+                    reload
                   >
                     полный регламент
-                  </a>
+                  </ResourceLink>
                   , Приложение №2, стр. 128-130. Значения перенесены как
                   справочные факты; пустые ячейки сохранены пустыми.
                 </p>

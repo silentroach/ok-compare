@@ -1,5 +1,6 @@
 ---
 import CalendarPlusIcon from '@shelkovo/ui/icons/system/CalendarPlus.astro';
+import ResourceLink from '@shelkovo/ui/ResourceLink.astro';
 import type { NewsEvent } from '@/lib/news/schema';
 import {
   buildNewsEventMapEmbedUrl,
@@ -119,7 +120,7 @@ const titleId = `news-event-title-${event.slug}`;
         </ul>
 
         <div class="news-event-compact-actions">
-          <a
+          <ResourceLink
             href={event.ics_url}
             download={calendarFilename}
             class="news-event-compact-action news-event-compact-action--primary"
@@ -127,7 +128,7 @@ const titleId = `news-event-title-${event.slug}`;
             title="Добавить в календарь"
           >
             <CalendarPlusIcon class="news-event-calendar-icon news-event-compact-icon news-event-compact-icon--calendar" />
-          </a>
+          </ResourceLink>
 
           {mapUrl && (
             <a
@@ -194,14 +195,14 @@ const titleId = `news-event-title-${event.slug}`;
           </p>
 
           <div class="news-event-actions">
-            <a
+            <ResourceLink
               href={event.ics_url}
               download={calendarFilename}
               class="ui-btn ui-btn-md news-event-action news-event-action--calendar"
             >
               <CalendarPlusIcon class="news-event-calendar-icon" />
               <span>Добавить в календарь</span>
-            </a>
+            </ResourceLink>
 
             {mapUrl && (
               <a

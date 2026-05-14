@@ -35,7 +35,8 @@
     "./SiteFooter.astro": "./src/SiteFooter.astro",
     "./styles.css": "./styles.css",
     "./icons/system/Domyland.astro": "./src/icons/system/Domyland.astro",
-    "./LinkWithIcon.astro": "./src/LinkWithIcon.astro"
+    "./LinkWithIcon.astro": "./src/LinkWithIcon.astro",
+    "./ResourceLink.astro": "./src/ResourceLink.astro"
   },
   "dependencies": {
     "@fontsource/fira-sans": "^5.2.7",
