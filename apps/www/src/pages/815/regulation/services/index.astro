@@ -1,5 +1,6 @@
 ---
 import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+import ResourceLink from '@shelkovo/ui/ResourceLink.astro';
 
 import { fullReglamentDataset2026 } from '@/data/reglament/full-2026';
 import BaseLayout from '@/layouts/BaseLayout.astro';
@@ -143,13 +144,14 @@ const tableHeaderCellClass =
                 </h3>
                 <p class="text-sm leading-6 text-muted-foreground md:text-base md:leading-7">
                   Источник:{' '}
-                  <a
+                  <ResourceLink
                     class="ui-link text-primary"
                     href={reglamentFullSourcePdfUrl()}
                     type="application/pdf"
+                    reload
                   >
                     полный регламент
-                  </a>
+                  </ResourceLink>
                   , Приложение №4, стр. 135. Услуги и периодичность перенесены
                   из полного регламента; годовые кратности сметы здесь не
                   пересчитываются автоматически.

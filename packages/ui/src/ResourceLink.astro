@@ -1,0 +1,17 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends Omit<HTMLAttributes<'a'>, 'href'> {
+  readonly href: string;
+  readonly reload?: boolean;
+}
+
+const { href, reload = false, ...attrs }: Props = Astro.props;
+---
+
+<a
+  {...attrs}
+  href={href}
+  data-astro-prefetch="false"
+  data-astro-reload={reload ? '' : undefined}><slot /></a
+>

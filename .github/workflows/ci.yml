@@ -48,7 +48,7 @@ jobs:
 
       - name: Run affected typecheck
         if: ${{ github.event_name == 'pull_request' }}
-        run: pnpm typecheck -- --affected
+        run: pnpm exec turbo run typecheck --affected
 
       - name: Run typecheck
         if: ${{ github.event_name != 'pull_request' }}
@@ -56,7 +56,7 @@ jobs:
 
       - name: Run affected tests
         if: ${{ github.event_name == 'pull_request' }}
-        run: pnpm test -- --affected
+        run: pnpm exec turbo run test --affected
 
       - name: Run tests
         if: ${{ github.event_name != 'pull_request' }}

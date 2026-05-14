@@ -1,5 +1,6 @@
 ---
 import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+import ResourceLink from '@shelkovo/ui/ResourceLink.astro';
 
 import { estimate2026 } from '@/data/reglament/estimate-2026';
 import BaseLayout from '@/layouts/BaseLayout.astro';
@@ -516,13 +517,14 @@ const formatInputUnit = (unit: string): string =>
                     {section.source_refs.map((ref, index) => (
                       <>
                         {index > 0 && '; '}
-                        <a
+                        <ResourceLink
                           class="ui-link text-primary"
                           href={ref.pdf_url}
                           type="application/pdf"
+                          reload
                         >
                           {formatEstimateSourceRefLabel(ref)}
-                        </a>
+                        </ResourceLink>
                       </>
                     ))}
                   </p>
@@ -863,13 +865,14 @@ const formatInputUnit = (unit: string): string =>
                                     <ul class="space-y-1">
                                       {row.source_refs.map((ref) => (
                                         <li>
-                                          <a
+                                          <ResourceLink
                                             class="ui-link text-primary"
                                             href={ref.pdf_url}
                                             type="application/pdf"
+                                            reload
                                           >
                                             {formatEstimateSourceRefLabel(ref)}
-                                          </a>
+                                          </ResourceLink>
                                           {ref.note && (
                                             <span class="block text-muted-foreground">
                                               {ref.note}
