@@ -25,4 +25,24 @@ describe('renderMarkdown', () => {
       '<p>По\u00A0словам <a href="/people/kschemelinin/">Кирилла Щемелинина</a>, работы идут.</p>',
     );
   });
+
+  it('renders labelled people mentions with author text preserved', () => {
+    const registry = new Map([
+      [
+        'kschemelinin',
+        createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),
+      ],
+    ]);
+
+    expect(
+      renderMarkdown('По словам [главного по электричеству](@kschemelinin).', {
+        people: {
+          registry,
+          context: 'test markdown',
+        },
+      }),
+    ).toBe(
+      '<p>По\u00A0словам <a href="/people/kschemelinin/">главного по\u00A0электричеству</a>.</p>',
+    );
+  });
 });

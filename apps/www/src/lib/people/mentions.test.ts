@@ -42,9 +42,81 @@ describe('normalizePeopleMentions', () => {
     });
   });
 
-  it('skips inline code, existing links, and autolink-like urls', () => {
+  it('replaces labelled mention destinations with stable person links', () => {
+    expect(
+      normalizePeopleMentions({
+        markdown:
+          'По словам [главного по электричеству](@kschemelinin), работы идут.',
+        context: 'news article "2026/05/test" body',
+        registry,
+      }),
+    ).toEqual({
+      markdown:
+        'По словам [главного по электричеству](/people/kschemelinin/), работы идут.',
+      mentions: [registry.get('kschemelinin')],
+    });
+  });
+
+  it('keeps normal links unchanged while normalizing labelled mentions', () => {
+    expect(
+      normalizePeopleMentions({
+        markdown:
+          '[канал](https://example.com) подтвердил [главному по электричеству](@kschemelinin) детали.',
+        context: 'news article "2026/05/test" body',
+        registry,
+      }),
+    ).toEqual({
+      markdown:
+        '[канал](https://example.com) подтвердил [главному по электричеству](/people/kschemelinin/) детали.',
+      mentions: [registry.get('kschemelinin')],
+    });
+  });
+
+  it('does not support name cases in labelled mention destinations', () => {
+    const markdown = '[главного по электричеству](@kschemelinin:gen)';
+
+    expect(
+      normalizePeopleMentions({
+        markdown,
+        context: 'news article "2026/05/test" body',
+        registry,
+      }),
+    ).toEqual({
+      markdown,
+      mentions: [],
+    });
+  });
+
+  it('fails on unknown labelled person mentions', () => {
+    expect(() =>
+      normalizePeopleMentions({
+        markdown: 'Текст с [подрядчиком](@unknown) внутри.',
+        context: 'news article "2026/05/test" body',
+        registry,
+      }),
+    ).toThrow(
+      'news article "2026/05/test" body contains unknown person mention "@unknown"',
+    );
+  });
+
+  it('dedupes labelled and canonical mentions in metadata', () => {
+    expect(
+      normalizePeopleMentions({
+        markdown:
+          '[главный по электричеству](@kschemelinin) сообщил, что @kschemelinin проверил сеть.',
+        context: 'news article "2026/05/test" body',
+        registry,
+      }),
+    ).toEqual({
+      markdown:
+        '[главный по электричеству](/people/kschemelinin/) сообщил, что [Кирилл Щемелинин](/people/kschemelinin/) проверил сеть.',
+      mentions: [registry.get('kschemelinin')],
+    });
+  });
+
+  it('skips inline code, images, existing links, and autolink-like urls', () => {
     const markdown =
-      'Код `@kschemelinin`, ссылка [@kschemelinin](/docs) и https://example.com/@kschemelinin.\n\n```txt\n@kschemelinin\n```';
+      'Код `@kschemelinin`, картинка ![@kschemelinin](@kschemelinin), ссылка [@kschemelinin](/docs) и https://example.com/@kschemelinin.\n\n```txt\n@kschemelinin\n```';
 
     expect(
       normalizePeopleMentions({

@@ -173,6 +173,48 @@ describe('buildNewsDataset', () => {
     );
   });
 
+  it('normalizes labelled mentions in article and addendum bodies', () => {
+    const data = buildNewsDataset(
+      [author({ id: 'ig', name: 'Редакция' })],
+      [
+        article({
+          id: '2026/05/electricity',
+          title: 'Авария на линии',
+          summary: 'Краткая сводка',
+          date: '03.05.2026 09:00',
+          body: 'Основной текст после [комментария специалиста](@kschemelinin).',
+          addenda: [
+            {
+              date: '03.05.2026 12:00',
+              body: 'Уточнение от [дежурного инженера](@kschemelinin).',
+            },
+          ],
+        }),
+      ],
+      {
+        people_registry: new Map([
+          [
+            'kschemelinin',
+            createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),
+          ],
+        ]),
+      },
+    );
+
+    expect(data.articles[0]?.body).toBe(
+      'Основной текст после [комментария специалиста](/people/kschemelinin/).',
+    );
+    expect(data.articles[0]?.mentions.map((item) => item.slug)).toEqual([
+      'kschemelinin',
+    ]);
+    expect(data.articles[0]?.addenda[0]?.body).toBe(
+      'Уточнение от [дежурного инженера](/people/kschemelinin/).',
+    );
+    expect(
+      data.articles[0]?.addenda[0]?.mentions.map((item) => item.slug),
+    ).toEqual(['kschemelinin']);
+  });
+
   it('renders requested mention case and profile context in link title', () => {
     const data = buildNewsDataset(
       [author({ id: 'ig', name: 'Редакция' })],

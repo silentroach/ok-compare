@@ -175,6 +175,28 @@ describe('buildPeopleDataset', () => {
     );
   });
 
+  it('normalizes labelled mentions in profile bodies', () => {
+    const data = buildPeopleDataset([
+      entry({
+        id: 'kschemelinin',
+        name: 'Кирилл Щемелинин',
+        body: 'Публичный профиль Кирилла.',
+      }),
+      entry({
+        id: 'apetrov',
+        name: 'Андрей Петров',
+        body: 'Работал вместе с [главным инженером](@kschemelinin) над разбором аварии.',
+      }),
+    ]);
+
+    expect(data.by_slug.get('apetrov')?.body).toBe(
+      'Работал вместе с [главным инженером](/people/kschemelinin/) над разбором аварии.',
+    );
+    expect(
+      data.by_slug.get('apetrov')?.mentions.map((item) => item.slug),
+    ).toEqual(['kschemelinin']);
+  });
+
   it('supports profiles without markdown body when frontmatter already carries context', () => {
     const data = buildPeopleDataset([
       entry({
@@ -298,5 +320,91 @@ describe('buildPeopleDataset', () => {
         },
       ],
     });
+  });
+
+  it('builds grouped backlinks from labelled news, status, and people mentions', () => {
+    const people = buildPeopleDataset([
+      entry({
+        id: 'kschemelinin',
+        name: 'Кирилл Щемелинин',
+        body: 'Публичный профиль Кирилла.',
+      }),
+      entry({
+        id: 'apetrov',
+        name: 'Андрей Петров',
+        body: 'Работал вместе с [главным инженером](@kschemelinin) над разбором аварии.',
+      }),
+    ]);
+    const news = buildNewsDataset(
+      [author({ id: 'ig', name: 'Редакция' })],
+      [
+        article({
+          id: '2026/05/electricity',
+          title: 'Авария на линии',
+          summary: 'Краткая сводка',
+          date: '03.05.2026 09:00',
+          body: 'Основной текст после [комментария специалиста](@kschemelinin).',
+          addenda: [
+            {
+              date: '03.05.2026 12:00',
+              title: 'Комментарий специалиста',
+              body: 'Уточнение от [дежурного инженера](@kschemelinin).',
+            },
+          ],
+        }),
+      ],
+      {
+        people_registry: people.mention_registry,
+      },
+    );
+    const status = buildStatusDataset(
+      [
+        incident({
+          id: '2026/04/electricity-river-10kv-line-damage',
+          title: 'Отключение электричества в Шелково Ривер',
+          service: 'electricity',
+          kind: 'incident',
+          started_at: '22.04.2026 11:30',
+          ended_at: '23.04.2026 00:06',
+          areas: ['river'],
+          body: 'После [осмотра линии](@kschemelinin) повреждение признали редким.',
+        }),
+      ],
+      {
+        people_registry: people.mention_registry,
+      },
+    );
+    const graph = buildPeopleGraphDataset(people, { news, status });
+    const backlinks = graph.by_slug.get('kschemelinin')?.backlinks;
+
+    expect(backlinks).toMatchObject({
+      news: [
+        {
+          kind: 'addendum',
+          source_id: '2026/05/electricity#addendum-1',
+          excerpt: 'Уточнение от дежурного инженера.',
+        },
+        {
+          kind: 'article',
+          source_id: '2026/05/electricity',
+          excerpt: 'Основной текст после комментария специалиста.',
+        },
+      ],
+      status: [
+        {
+          kind: 'incident',
+          source_id: '2026/04/electricity-river-10kv-line-damage',
+          excerpt: 'После осмотра линии повреждение признали редким.',
+        },
+      ],
+      people: [
+        {
+          kind: 'person',
+          source_id: 'apetrov',
+          excerpt: 'Работал вместе с главным инженером над разбором аварии.',
+        },
+      ],
+    });
+    expect(JSON.stringify(backlinks)).not.toContain('@kschemelinin');
   });
 });

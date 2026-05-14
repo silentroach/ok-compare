@@ -237,7 +237,7 @@ export function schema(root: string): Record<string, unknown> {
     $id: abs(root, peopleSchemaPath()),
     title: 'PeoplePayload',
     description:
-      'Read-only полный feed профилей людей с публичными контактами, mentions и backlinks по всему сайту.',
+      'Read-only полный feed профилей людей с публичными контактами, mentions и backlinks по всему сайту. Mentions учитывают `@slug`, `@slug:case` и `[текст](@slug)`; `[текст](@slug:case)` не поддерживается.',
     type: 'object',
     additionalProperties: false,
     required: ['stats', 'profiles'],
@@ -389,7 +389,7 @@ export function openapi(root: string): Record<string, unknown> {
       title: 'Шелково People Feed',
       version: '1.0.0',
       description:
-        'Read-only OpenAPI wrapper для /people/data/people.json с публичными профилями, contacts, mentions и backlinks.',
+        'Read-only OpenAPI wrapper для /people/data/people.json с публичными профилями, contacts, mentions и backlinks. Mentions учитывают `@slug`, `@slug:case` и `[текст](@slug)`; `[текст](@slug:case)` не поддерживается.',
     },
     servers: [
       {
@@ -402,7 +402,7 @@ export function openapi(root: string): Record<string, unknown> {
           operationId: 'getPeopleProfiles',
           summary: 'Read full people feed',
           description:
-            'Возвращает основной structured feed профилей людей с контактами, mentions и backlinks.',
+            'Возвращает основной structured feed профилей людей с контактами, mentions и backlinks. Mentions учитывают `@slug`, `@slug:case` и `[текст](@slug)`; `[текст](@slug:case)` не поддерживается.',
           responses: {
             200: {
               description: 'Full people feed',
