@@ -21,6 +21,7 @@ const htmlCachePolicy = 'public,max-age=60,stale-while-revalidate=300';
 
 const routeParamExamples: Record<string, string> = {
   month: '05',
+  event: 'community-day',
   service: 'water',
   tag: 'gkh',
   year: '2026',
@@ -215,7 +216,7 @@ const endpointRoutes = routeFiles
 
 const markdownRoutes = endpointRoutes.filter((route) => route.endsWith('.md'));
 const feedAndDownloadRoutes = endpointRoutes.filter(
-  (route) => route.endsWith('/feed.xml') || route.endsWith('/event.ics'),
+  (route) => route.endsWith('/feed.xml') || route.endsWith('.ics'),
 );
 
 const isDiscoveryOrDataRoute = (route: string): boolean =>
