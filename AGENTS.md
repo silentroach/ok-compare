@@ -24,8 +24,8 @@ scripts/     # build/deploy helper scripts
 
 ## Skills
 
-- Правишь что-то на фронте - подключай `frontend-ui-engineering` и `tailwind-design-system`
-- При редактировании/создании любого видимого текста используй скилл `copy-editing`, а отображенную в вебе - еще и `web-typography`
+- Правишь что-то на фронте - подключай `frontend-ui-engineering` и `tailwind-design-system`, а возможно и `impeccable`
+- При редактировании/создании любого видимого текста используй скилл `copy-editing` (ADR и техническая дока не в счет), а отображенную в вебе - еще и `web-typography`
 - Меняешь/изучаешь конфиги nginx в папке ops - `nginx-expert`
 
 ## Дизайн
