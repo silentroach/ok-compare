@@ -1,37 +1,37 @@
-import { render, type MarkdownPreprocessor } from '@shelkovo/markdown';
+import { render } from '@shelkovo/markdown';
 
-import {
-  normalizePeopleMentions,
-  type PeopleMentionRegistry,
-} from '../people/mentions';
+import { normalizePeopleMentions } from '../people/mentions';
+import type {
+  PreprocessedSiteMarkdown,
+  RenderSiteMarkdownOptions,
+} from './render.types';
 
-export interface RenderPeopleMentionsOptions {
-  readonly registry: PeopleMentionRegistry;
-  readonly context: string;
-}
+export type {
+  PreprocessedSiteMarkdown,
+  PreprocessedSiteMarkdownBody,
+  RenderPeopleMentionsOptions,
+  RenderSiteMarkdownOptions,
+} from './render.types';
 
-export interface RenderSiteMarkdownOptions {
-  readonly people?: RenderPeopleMentionsOptions;
-}
-
-const peoplePreprocessor =
-  (people: RenderPeopleMentionsOptions): MarkdownPreprocessor =>
-  (markdown) =>
-    normalizePeopleMentions({
+export const preprocessSiteMarkdown = (
+  markdown: string,
+  options?: RenderSiteMarkdownOptions,
+): PreprocessedSiteMarkdown => {
+  if (!options?.people) {
+    return {
       markdown,
-      context: people.context,
-      registry: people.registry,
-    }).markdown;
+      mentions: [],
+    };
+  }
+
+  return normalizePeopleMentions({
+    markdown,
+    context: options.people.context,
+    registry: options.people.registry,
+  });
+};
 
 export const renderMarkdown = (
   markdown: string,
   options?: RenderSiteMarkdownOptions,
-): string => {
-  if (!options?.people) {
-    return render(markdown);
-  }
-
-  return render(markdown, {
-    preprocess: peoplePreprocessor(options.people),
-  });
-};
+): string => render(preprocessSiteMarkdown(markdown, options).markdown);

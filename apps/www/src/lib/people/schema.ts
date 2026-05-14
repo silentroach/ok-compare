@@ -1,5 +1,6 @@
 import type { PersonMentionTarget } from './mentions';
 import type { PersonNameCaseForms } from './name-cases';
+import type { PreprocessedSiteMarkdownBody } from '../markdown/render';
 
 export const PERSON_CONTACT_TYPES = ['phone', 'telegram'] as const;
 export type PersonContactType = (typeof PERSON_CONTACT_TYPES)[number];
@@ -57,7 +58,7 @@ export interface PersonProfile {
   readonly markdown_url: string;
   readonly canonical: string;
   readonly contacts: readonly PersonContact[];
-  readonly body: string;
+  readonly body: PreprocessedSiteMarkdownBody;
   readonly mentions: readonly PersonMentionTarget[];
   readonly backlinks: PersonBacklinks;
 }

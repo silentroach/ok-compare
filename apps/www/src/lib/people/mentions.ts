@@ -170,12 +170,28 @@ function collectTextNodes(
   );
 }
 
-const labelledMentionSlug = (url: string): string | undefined => {
+const labelledMentionSlug = (
+  url: string,
+  context: string,
+): string | undefined => {
   if (url[0] !== '@') {
     return undefined;
   }
 
   const slug = url.slice(1);
+
+  for (let index = 0; index < slug.length; index += 1) {
+    if (
+      slug[index] === ':' &&
+      index > 0 &&
+      CASE_CHAR.test(slug[index + 1] ?? '')
+    ) {
+      failMention(
+        context,
+        `contains unsupported labelled person mention "@${slug}"; write the needed grammar in the visible link text`,
+      );
+    }
+  }
 
   return slug.length > 0 &&
     SLUG_START.test(slug[0] ?? '') &&
@@ -223,7 +239,7 @@ function collectLabelledMentionReplacements(
   }
 
   if (node.type === 'link' && node.url !== undefined) {
-    const slug = labelledMentionSlug(node.url);
+    const slug = labelledMentionSlug(node.url, context);
 
     if (slug === undefined) {
       return [];

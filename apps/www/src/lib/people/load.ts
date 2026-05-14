@@ -1,13 +1,15 @@
 import type { CollectionEntry } from 'astro:content';
 import { extractFirstMarkdownText } from '@shelkovo/markdown';
 
+import {
+  preprocessSiteMarkdown,
+  type PreprocessedSiteMarkdown,
+} from '../markdown/render';
 import { statusIncidentMarkdownUrl } from '../status/routes';
 import type { NewsDataset } from '../news/schema';
 import type { StatusDataset } from '../status/schema';
 import {
   createPersonMentionTarget,
-  normalizePeopleMentions,
-  type NormalizedPeopleMentions,
   type PeopleMentionRegistry,
 } from './mentions';
 import { personCanonical, personMarkdownUrl, personUrl } from './routes';
@@ -47,14 +49,15 @@ const content = (
   value: string | undefined,
   registry: PeopleMentionRegistry,
   context: string,
-): NormalizedPeopleMentions => {
+): PreprocessedSiteMarkdown => {
   const body = value?.trimEnd() ?? '';
 
   return body.trim().length > 0
-    ? normalizePeopleMentions({
-        markdown: body,
-        context,
-        registry,
+    ? preprocessSiteMarkdown(body, {
+        people: {
+          context,
+          registry,
+        },
       })
     : {
         markdown: '',

@@ -33,7 +33,6 @@ pnpm build
 ## Выходы сборки
 
 - `dist/www` — основной сайт `kpshelkovo.online`
-- `dist/www/815/compare` — compare-раздел внутри основного сайта
 
 ## Деплой
 

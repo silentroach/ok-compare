@@ -2,10 +2,10 @@ import { dateTimeFromISO } from '@shelkovo/format';
 import type { CollectionEntry } from 'astro:content';
 
 import {
-  normalizePeopleMentions,
-  type NormalizedPeopleMentions,
-  type PeopleMentionRegistry,
-} from '../people/mentions';
+  preprocessSiteMarkdown,
+  type PreprocessedSiteMarkdown,
+} from '../markdown/render';
+import type { PeopleMentionRegistry } from '../people/mentions';
 import { loadPeopleMentionRegistry } from '../people/load';
 import { statusIncidentCanonical, statusIncidentUrl } from './routes';
 import {
@@ -34,14 +34,15 @@ const content = (
   value: string | undefined,
   registry: PeopleMentionRegistry,
   context: string,
-): NormalizedPeopleMentions => {
+): PreprocessedSiteMarkdown => {
   const body = value?.trimEnd() ?? '';
 
   return body.trim().length > 0
-    ? normalizePeopleMentions({
-        markdown: body,
-        context,
-        registry,
+    ? preprocessSiteMarkdown(body, {
+        people: {
+          context,
+          registry,
+        },
       })
     : {
         markdown: '',

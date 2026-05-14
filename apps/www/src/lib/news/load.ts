@@ -2,10 +2,10 @@ import { padNumber } from '@shelkovo/format';
 import { getCollection, type CollectionEntry } from 'astro:content';
 
 import {
-  normalizePeopleMentions,
-  type NormalizedPeopleMentions,
-  type PeopleMentionRegistry,
-} from '../people/mentions';
+  preprocessSiteMarkdown,
+  type PreprocessedSiteMarkdown,
+} from '../markdown/render';
+import type { PeopleMentionRegistry } from '../people/mentions';
 import { loadPeopleMentionRegistry } from '../people/load';
 import { withBase } from '../site';
 import { buildArchives, newsMonthKey } from './archives';
@@ -95,14 +95,15 @@ const content = (
   value: string | undefined,
   registry: PeopleMentionRegistry,
   context: string,
-): NormalizedPeopleMentions => {
+): PreprocessedSiteMarkdown => {
   const body = value?.trimEnd() ?? '';
 
   return body.trim().length > 0
-    ? normalizePeopleMentions({
-        markdown: body,
-        context,
-        registry,
+    ? preprocessSiteMarkdown(body, {
+        people: {
+          context,
+          registry,
+        },
       })
     : {
         markdown: '',

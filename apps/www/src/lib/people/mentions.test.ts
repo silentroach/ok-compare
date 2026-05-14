@@ -72,19 +72,16 @@ describe('normalizePeopleMentions', () => {
     });
   });
 
-  it('does not support name cases in labelled mention destinations', () => {
-    const markdown = '[главного по электричеству](@kschemelinin:gen)';
-
-    expect(
+  it('fails on name cases in labelled mention destinations', () => {
+    expect(() =>
       normalizePeopleMentions({
-        markdown,
+        markdown: '[главного по электричеству](@kschemelinin:gen)',
         context: 'news article "2026/05/test" body',
         registry,
       }),
-    ).toEqual({
-      markdown,
-      mentions: [],
-    });
+    ).toThrow(
+      'news article "2026/05/test" body contains unsupported labelled person mention "@kschemelinin:gen"; write the needed grammar in the visible link text',
+    );
   });
 
   it('fails on unknown labelled person mentions', () => {

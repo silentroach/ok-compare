@@ -1,9 +1,30 @@
 import { describe, expect, it } from 'vitest';
 
 import { createPersonMentionTarget } from '../people/mentions';
-import { renderMarkdown } from './render';
+import { preprocessSiteMarkdown, renderMarkdown } from './render';
 
 describe('renderMarkdown', () => {
+  it('preprocesses app-level people mentions and returns mention metadata', () => {
+    const registry = new Map([
+      [
+        'kschemelinin',
+        createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),
+      ],
+    ]);
+
+    expect(
+      preprocessSiteMarkdown('Работы подтвердил @kschemelinin.', {
+        people: {
+          registry,
+          context: 'test markdown',
+        },
+      }),
+    ).toEqual({
+      markdown: 'Работы подтвердил [Кирилл Щемелинин](/people/kschemelinin/).',
+      mentions: [registry.get('kschemelinin')],
+    });
+  });
+
   it('renders markdown with app-level people mentions processing', () => {
     const registry = new Map([
       [

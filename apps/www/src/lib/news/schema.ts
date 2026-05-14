@@ -1,5 +1,6 @@
 import { isAbsoluteUrl } from '@shelkovo/url';
 
+import type { PreprocessedSiteMarkdownBody } from '../markdown/render';
 import type { PersonMentionTarget } from '../people/mentions';
 
 export { isAbsoluteUrl };
@@ -71,7 +72,7 @@ export interface NewsAddendum {
   readonly time?: string;
   readonly author: NewsAuthor;
   readonly source_url?: string;
-  readonly body?: string;
+  readonly body?: PreprocessedSiteMarkdownBody;
   readonly photos: readonly NewsPhoto[];
   readonly attachments: readonly NewsAttachment[];
   readonly published_at: Date;
@@ -114,7 +115,7 @@ export interface NewsArticle {
   readonly events: readonly NewsEvent[];
   readonly addenda: readonly NewsAddendum[];
   readonly summary: string;
-  readonly body: string;
+  readonly body: PreprocessedSiteMarkdownBody;
   readonly has_addenda: boolean;
   readonly mentions: readonly PersonMentionTarget[];
 }

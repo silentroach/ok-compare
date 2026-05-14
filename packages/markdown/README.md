@@ -1,32 +1,35 @@
 # @shelkovo/markdown
 
-Shared markdown rendering and typography helpers.
+Общий пакет для Markdown-рендера и типографики.
 
-## Public API
+## Публичный API
 
 - `render(markdown, options?)`
-  Render markdown body into HTML inside a section/app wrapper. Applies GFM, drops raw HTML, and typographs text nodes. In `apps/www`, prefer `@/lib/markdown/render` so app preprocessors can run first.
+  Рендерит body markdown в HTML внутри обертки раздела или приложения. Применяет GFM, отбрасывает raw HTML и типографирует текстовые узлы. В `apps/www` нужно использовать `@/lib/markdown/render`, чтобы сначала сработали preprocessors приложения.
 
 - `MarkdownPreprocessor`
-  Type app-specific markdown preprocessing functions. Preprocessors run before markdown parsing, for cases like `@person:case` mentions.
+  Тип для Markdown preprocessors приложения. Preprocessors выполняются до Markdown parsing, например для упоминаний вида `@person:case`.
 
 - `RenderOptions`
-  Pass one preprocessor or a preprocessor pipeline to `render`. Keep package options generic; domain logic belongs in the app.
+  Позволяет передать в `render` один preprocessor или pipeline preprocessors. Options пакета должны оставаться универсальными; доменная логика живет в приложении.
 
 - `extractFirstMarkdownText(markdown)`
-  Build excerpts or summaries from markdown source. Does not render HTML. Skips code, raw HTML, yaml and definitions; uses image alt text.
+  Достает excerpt или summary из Markdown source. Не рендерит HTML. Пропускает code, raw HTML, YAML и definitions; использует image alt text.
 
 - `formatDynamicHtml(html)`
-  Typograph a short ready-made HTML/text string. Use for headlines, labels and tooltip text that should not be parsed as markdown or wrapped in `<p>`.
+  Типографирует короткую готовую HTML/text-строку. Использовать для заголовков, labels и tooltip text, которые не нужно парсить как Markdown или оборачивать в `<p>`.
 
 - `rehypeTypograf()`
-  Configure an external markdown pipeline. Exported for framework integrations such as Astro `markdown.rehypePlugins`; do not call it for normal content rendering.
+  Настраивает внешний Markdown pipeline. Экспортируется для интеграций с framework, например Astro `markdown.rehypePlugins`; не вызывать для обычного рендера контента.
 
-## `apps/www` Usage
+## Использование в `apps/www`
 
-- Body markdown in pages/components should use `@/lib/markdown/render`.
-- The site wrapper calls package `render` and can attach local preprocessors, currently people mentions from `apps/www/src/lib/people/mentions.ts`.
-- Import `render` from `@shelkovo/markdown` directly only when writing a low-level wrapper or package test.
-- Import `formatDynamicHtml` directly for non-markdown dynamic snippets.
-- Import `extractFirstMarkdownText` directly for excerpts from markdown source.
-- Import `rehypeTypograf` directly only in config or custom unified/rehype pipeline setup.
+См. [ADR-003](../../docs/decisions/003-markdown-pipeline-layering.md) про слоистую модель Markdown-рендера.
+
+- Body markdown в pages/components должен идти через `@/lib/markdown/render`.
+- Обертка сайта вызывает пакетный `render` и держит локальные preprocessors, сейчас упоминания людей из `apps/www/src/lib/people/mentions.ts`.
+- Если app-loader заранее сохраняет подготовленный body markdown для mentions/backlinks, он должен брать этот результат из той же обертки сайта, а не вызывать domain preprocessor напрямую.
+- Импортировать `render` из `@shelkovo/markdown` напрямую можно только для низкоуровневой обертки или теста пакета.
+- Импортировать `formatDynamicHtml` напрямую можно для non-markdown dynamic snippets.
+- Импортировать `extractFirstMarkdownText` напрямую можно для excerpt из Markdown source.
+- Импортировать `rehypeTypograf` напрямую можно только в config или custom unified/rehype pipeline setup.

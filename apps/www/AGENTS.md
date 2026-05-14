@@ -39,7 +39,9 @@ pnpm typecheck
 - Динамические текстовые блоки, которые рендерятся в HTML из markdown, CMS или других данных, прогонять через типограф на этапе рендера.
 - Типограф применять точечно к самому динамическому контенту, а не к целому layout или полной HTML-странице.
 - Для body markdown в `apps/www` использовать `@/lib/markdown/render`, а не пакетный `render` напрямую: app-wrapper подключает локальные preprocessors вроде people mentions.
+- Если loader хранит уже подготовленный body markdown, он должен получать его через helper из `@/lib/markdown/render`, чтобы mentions/backlinks и HTML-render использовали один app-level pipeline.
 - Из `@shelkovo/markdown` напрямую в app использовать только низкоуровневые helpers по назначению: `formatDynamicHtml` для короткого готового HTML/text, `extractFirstMarkdownText` для excerpt, `rehypeTypograf` только в markdown pipeline config.
+- Новые Markdown preprocessors, специфичные для сайта, добавлять в `@/lib/markdown/render` и его options, а не в `@shelkovo/markdown` и не в параллельный pipeline.
 - Если нужна ссылка на compare, вести на `/815/compare/`, а не на legacy домен.
 - Если меняется deploy/base/root behavior, синхронно обновлять `ops/nginx/kpshelkovo-online.conf`.
 
