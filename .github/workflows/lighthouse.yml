@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      LHCI_TARGET: ${{ github.event_name == 'workflow_dispatch' && inputs.target || 'production' }}
+      LIGHTHOUSE_SITE_TARGET: ${{ github.event_name == 'workflow_dispatch' && inputs.target || 'static' }}
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -42,7 +42,7 @@ jobs:
           cache: pnpm
 
       - name: Restore Turbo cache
-        if: ${{ env.LHCI_TARGET == 'static' }}
+        if: ${{ env.LIGHTHOUSE_SITE_TARGET == 'static' }}
         id: restore-turbo-cache
         uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
@@ -58,7 +58,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        if: ${{ env.LHCI_TARGET == 'static' }}
+        if: ${{ env.LIGHTHOUSE_SITE_TARGET == 'static' }}
         env:
           PUBLIC_YANDEX_MAPS_API_KEY: ${{ secrets.YANDEX_MAPS_API_KEY }}
         run: pnpm build
@@ -67,7 +67,7 @@ jobs:
         run: pnpm exec lhci autorun
 
       - name: Save Turbo cache
-        if: ${{ env.LHCI_TARGET == 'static' && steps.restore-turbo-cache.outputs.cache-hit != 'true' }}
+        if: ${{ env.LIGHTHOUSE_SITE_TARGET == 'static' && steps.restore-turbo-cache.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: .turbo

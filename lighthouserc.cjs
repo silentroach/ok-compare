@@ -1,11 +1,11 @@
-const target = process.env.LHCI_TARGET ?? 'production';
+const target = process.env.LIGHTHOUSE_SITE_TARGET ?? 'production';
 const productionOrigin = (
   process.env.LHCI_PRODUCTION_ORIGIN ?? 'https://kpshelkovo.online'
 ).replace(/\/+$/, '');
 const allowedTargets = new Set(['production', 'static']);
 
 if (!allowedTargets.has(target)) {
-  throw new Error(`Unsupported LHCI_TARGET: ${target}`);
+  throw new Error(`Unsupported LIGHTHOUSE_SITE_TARGET: ${target}`);
 }
 
 const paths = [
@@ -26,7 +26,7 @@ const urls = paths.map((path) =>
 const collect = {
   ...(target === 'static' ? { staticDistDir: './dist/www' } : {}),
   url: urls,
-  numberOfRuns: 3,
+  numberOfRuns: 2,
 };
 
 module.exports = {
