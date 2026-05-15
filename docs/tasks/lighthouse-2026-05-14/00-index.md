@@ -21,7 +21,7 @@ These files break the findings into independent implementation tasks. Each task 
 - [x] `05-status-timeline-touch-targets.md`: make status timeline interactive targets accessible on touch.
 - [x] `06-status-heading-order.md`: restore sequential heading order on `/status/`.
 - [x] `07-compare-color-contrast.md`: fix compare page badge/count contrast.
-- [ ] `08-rating-color-contrast.md`: fix rating page adjustment label contrast.
+- [x] `08-rating-color-contrast.md`: fix rating page adjustment label contrast.
 - [ ] `09-critical-font-loading.md`: reduce critical font payload and preloads.
 - [ ] `10-status-timeline-js.md`: reduce unused status timeline JavaScript.
 - [ ] `11-compare-dom-size.md`: reduce initial DOM size on `/815/compare/`.

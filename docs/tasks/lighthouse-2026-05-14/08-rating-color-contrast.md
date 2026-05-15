@@ -24,15 +24,29 @@ Raise contrast for success/danger uppercase labels on `/815/compare/rating/`.
 
 ## Acceptance Criteria
 
-- [ ] `/815/compare/rating/` no longer fails `color-contrast` for adjustment labels.
-- [ ] Labels retain their success/danger visual meaning.
-- [ ] The rating page layout and hierarchy are unchanged.
+- [x] `/815/compare/rating/` no longer fails `color-contrast` for adjustment labels.
+- [x] Labels retain their success/danger visual meaning.
+- [x] The rating page layout and hierarchy are unchanged.
+
+## Resolution
+
+- `apps/www/src/pages/815/compare/rating.astro` now uses full-strength `text-success-text` and `text-danger-text` for the two adjustment labels instead of `/80` alpha-modified text.
+- The shared state tokens stayed unchanged; the fix uses the AA foreground tokens introduced for task `07` without changing page layout or hierarchy.
 
 ## Verification
 
-- [ ] Run `pnpm typecheck`.
-- [ ] Run Lighthouse or axe against `/815/compare/rating/`.
-- [ ] Manually inspect the adjustment cards at mobile width, where Lighthouse reported the issue.
+- [x] Run `pnpm typecheck`.
+- [x] Run Lighthouse or axe against `/815/compare/rating/`.
+- [x] Manually inspect the adjustment cards at mobile width, where Lighthouse reported the issue.
+
+Verification results, 2026-05-15:
+
+- Local OKLCH contrast sanity-check: `success-text` on `surface` is `5.456:1`; `danger-text` on `surface` is `5.921:1`.
+- `pnpm typecheck` passed.
+- `LIGHTHOUSE_DISABLE_ANALYTICS=true pnpm build` passed.
+- `LIGHTHOUSE_SITE_TARGET=static LIGHTHOUSE_DISABLE_ANALYTICS=true pnpm exec lhci autorun` completed. Representative `/815/compare/rating/` reported Accessibility `100`, `color-contrast` score `1`, and `0` failing color-contrast items.
+- The same Lighthouse run still reported unrelated existing `/815/compare/` Performance `84 < 85`.
+- Mobile browser inspection at `390x844` confirmed both adjustment labels render visibly with full-strength state colors on `surface`; screenshot saved to `/var/folders/sb/82f4cg9n6z182c5q0k6dn3hr0000gn/T/opencode/rating-adjustments-mobile.png`.
 
 ## Files Likely Touched
 
