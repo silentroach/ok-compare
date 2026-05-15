@@ -29,17 +29,32 @@ Decide how the site should handle the Lighthouse Best Practices failure caused b
 
 ## Acceptance Criteria
 
-- [ ] The repository documents whether Metrika third-party cookies are accepted, suppressed in CI, or avoided for Lighthouse-only runs.
-- [ ] Lighthouse CI no longer creates ambiguous Best Practices warnings without an explanation.
-- [ ] Production pages still load Metrika when the agreed production behavior requires it.
-- [ ] CSP remains aligned with the chosen Metrika behavior.
+- [x] The repository documents whether Metrika third-party cookies are accepted, suppressed in CI, or avoided for Lighthouse-only runs.
+- [x] Lighthouse CI no longer creates ambiguous Best Practices warnings without an explanation.
+- [x] Production pages still load Metrika when the agreed production behavior requires it.
+- [x] CSP remains aligned with the chosen Metrika behavior.
+
+## Resolution
+
+- Decision recorded in `docs/decisions/004-lighthouse-analytics-profile.md`.
+- Production keeps Yandex Metrika enabled; production CSP remains unchanged because Metrika origins are still required.
+- Scheduled/static Lighthouse builds use `LIGHTHOUSE_DISABLE_ANALYTICS=true`, so CI focuses on first-party quality without Metrika third-party-cookie noise.
+- Production Lighthouse target keeps analytics enabled and uses a lower Best Practices threshold for the accepted external-service limitation; the workflow summary now calls out Metrika findings when present.
 
 ## Verification
 
-- [ ] Run `pnpm typecheck`.
-- [ ] Run `pnpm build` if layout, env handling, or generated pages change.
-- [ ] Run Lighthouse against one affected URL with the chosen target and verify Best Practices behavior matches the documented decision.
-- [ ] Inspect the generated HTML for `mc.yandex.ru` only in the intended mode.
+- [x] Run `pnpm typecheck`.
+- [x] Run `pnpm build` if layout, env handling, or generated pages change.
+- [x] Run Lighthouse against one affected URL with the chosen target and verify Best Practices behavior matches the documented decision.
+- [x] Inspect the generated HTML for `mc.yandex.ru` only in the intended mode.
+
+Verification results, 2026-05-15:
+
+- `pnpm typecheck` passed.
+- `LIGHTHOUSE_DISABLE_ANALYTICS=true pnpm build` passed; generated `dist/www` had no `mc.yandex.*` references.
+- `LIGHTHOUSE_SITE_TARGET=static LIGHTHOUSE_DISABLE_ANALYTICS=true pnpm exec lhci autorun` passed with Best Practices `100` on representative static runs. It still reported existing unrelated warnings for `/status/` accessibility `90 < 95` and `/815/compare/` performance `84 < 85`.
+- The Lighthouse summary script was run locally against the current `.lighthouseci` reports and printed `Analytics: disabled` with Best Practices `100` for all representative static URLs.
+- Default `pnpm build` passed after verification; generated `dist/www` includes `mc.yandex.ru`, confirming production analytics remain enabled.
 
 ## Files Likely Touched
 
