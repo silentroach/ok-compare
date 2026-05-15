@@ -81,8 +81,8 @@ spacing:
 components:
   page-header:
     breadcrumbGap: '1.25rem'
-    headingClass: 'text-4xl md:text-5xl md:leading-[1.08]'
-    sectionPadding: 'pt-3 md:pt-5 lg:pt-6; pb-6 md:pb-8 lg:pb-10'
+    headingClass: 'ui-page-title'
+    sectionClass: 'ui-page-header'
   button-primary:
     backgroundColor: '{colors.primary}'
     textColor: '{colors.surface-raised}'
@@ -257,9 +257,9 @@ PT Sans Caption использовать в реальных весах семе
 
 ### Page Headers
 
-- **Structure:** стандартный header страницы: `Breadcrumbs` → `h1` → optional lead/summary. Между хлебными крошками и заголовком использовать `space-y-5` (`1.25rem`); не добавлять еще один `pt-*` внутри вложенного hero/surface перед `h1`.
-- **H1 Scale:** для обычных страниц и инструментов использовать Display-класс `text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]`. Collection/detail pages могут добавлять `max-w-*`, но не уменьшать h1 до `text-3xl`, если это главный видимый заголовок страницы.
-- **Header Padding:** внешний section/header получает `px-5 pb-6 pt-3 md:px-6 md:pb-8 md:pt-5 lg:pb-10 lg:pt-6`. Следующий крупный блок обычно начинается с `mt-8`.
+- **Structure:** стандартный header страницы: `Breadcrumbs` → `h1` → optional lead/summary. Между хлебными крошками и заголовком использовать `ui-page-header-stack` (`1.25rem`); не добавлять еще один `pt-*` внутри вложенного hero/surface перед `h1`.
+- **H1 Scale:** для обычных страниц и инструментов использовать shared-класс `ui-page-title`: Display-масштаб `text-4xl` на mobile и `text-5xl` с `line-height: 1.08` от `md`. Collection/detail pages могут добавлять `max-w-*`, но не уменьшать h1 до `text-3xl`, если это главный видимый заголовок страницы.
+- **Header Padding:** внешний section/header получает shared-класс `ui-page-header`, который соответствует `px-5 pb-6 pt-3 md:px-6 md:pb-8 md:pt-5 lg:pb-10 lg:pt-6`. Следующий крупный блок обычно начинается с `mt-8`.
 - **Lead Copy:** пояснение под `h1` держать рядом с заголовком: `mt-3` или inner `space-y-3`, `max-w-3xl`, line-height около `1.7`. Не повторять заголовок вторым предложением.
 - **Media Hero Exception:** если заголовок лежит поверх карты или фотографии, стекло и смещение допустимы как функциональный слой. Даже в этом случае видимый title должен сохранять Display-масштаб, а лишний воздух между breadcrumbs и title должен быть осознанным, не случайным результатом nested padding.
 

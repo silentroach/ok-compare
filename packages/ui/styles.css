@@ -642,6 +642,43 @@ a.ui-chip:hover {
   margin-inline: auto;
 }
 
+.ui-page-header {
+  padding: 0.75rem 1.25rem 1.5rem;
+}
+
+.ui-page-header-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ui-page-title {
+  font-family: var(--font-heading);
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.1111111111;
+  letter-spacing: -0.025em;
+  color: var(--color-foreground);
+  text-wrap: balance;
+}
+
+@media (min-width: 48rem) {
+  .ui-page-header {
+    padding: 1.25rem 1.5rem 2rem;
+  }
+
+  .ui-page-title {
+    font-size: 3rem;
+    line-height: 1.08;
+  }
+}
+
+@media (min-width: 64rem) {
+  .ui-page-header {
+    padding-block: 1.5rem 2.5rem;
+  }
+}
+
 .ui-site-footer {
   border-top: 1px solid
     color-mix(in oklab, var(--color-border) 80%, transparent);

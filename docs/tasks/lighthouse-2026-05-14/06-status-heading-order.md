@@ -25,17 +25,33 @@ Fix the heading hierarchy on `/status/` so service cards do not jump from the pa
 
 ## Acceptance Criteria
 
-- [ ] `/status/` has a sequential heading outline from `h1` to `h2` to lower levels.
-- [ ] Lighthouse no longer reports `heading-order` on `/status/`.
-- [ ] Visual design is unchanged unless a visible section heading is intentionally added.
-- [ ] Service detail pages still have correct heading hierarchy.
+- [x] `/status/` has a sequential heading outline from `h1` to `h2` to lower levels.
+- [x] Lighthouse no longer reports `heading-order` on `/status/`.
+- [x] Visual design is unchanged unless a visible section heading is intentionally added.
+- [x] Service detail pages still have correct heading hierarchy.
+
+## Resolution
+
+- `/status/` now labels the service overview section with a visually hidden `h2`: `Сводка по сервисам`.
+- The section uses `aria-labelledby="status-services-title"`, so the heading is part of the semantic outline without adding visible UI.
+- `StatusServiceCard.astro` remains unchanged; cards still render service names as `h3`, preserving their semantics under the new overview `h2`.
+- `src/lib/status/status-page-heading.test.ts` locks the first heading sequence as `h1` -> hidden overview `h2` -> service-card `h3`.
 
 ## Verification
 
-- [ ] Run relevant Astro render tests if present.
-- [ ] Run `pnpm typecheck`.
-- [ ] Run Lighthouse or axe against `/status/`.
-- [ ] Inspect headings manually with browser accessibility tools or rendered HTML.
+- [x] Run relevant Astro render tests if present.
+- [x] Run `pnpm typecheck`.
+- [x] Run Lighthouse or axe against `/status/`.
+- [x] Inspect headings manually with browser accessibility tools or rendered HTML.
+
+Verification results, 2026-05-15:
+
+- `pnpm exec vitest run src/lib/status/status-page-heading.test.ts` passed.
+- `pnpm typecheck` passed.
+- `pnpm build` passed.
+- `LIGHTHOUSE_SITE_TARGET=static LIGHTHOUSE_DISABLE_ANALYTICS=true pnpm exec lhci autorun` completed; representative `/status/` Accessibility was `100`, `heading-order` score was `1`, and the audit had `0` failing items.
+- Generated `dist/www/status/index.html` starts with this heading outline: `h1: Статус КП Шелково`, `h2: Сводка по сервисам`, then service-card `h3` headings.
+- The same Lighthouse run still reported existing unrelated warnings: global static Best Practices `79 < 90` and `/815/compare/` Performance `84 < 85`.
 
 ## Files Likely Touched
 

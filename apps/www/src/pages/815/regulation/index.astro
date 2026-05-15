@@ -345,35 +345,36 @@ const formatInputUnit = (unit: string): string =>
   schema={schema}
 >
   <main class="ui-page pb-8 md:pb-12 lg:pb-16" data-reglament-calculator>
-    <section class="px-5 pb-6 pt-3 md:px-6 md:pb-8 md:pt-5 lg:pb-10 lg:pt-6">
+    <section class="ui-page-header">
       <div class="max-w-5xl space-y-6">
-        <Breadcrumbs items={breadcrumbs} />
+        <div class="ui-page-header-stack">
+          <Breadcrumbs items={breadcrumbs} />
 
-        <div class="space-y-4">
-          <h1
-            class="max-w-4xl text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
-          >
-            Калькулятор тарифа по смете 2026
-          </h1>
-          <div
-            class="max-w-3xl space-y-3 text-sm leading-6 text-muted-foreground md:text-[0.9375rem]"
-          >
-            <p>
-              Смета разложена на разделы и строки. Меняйте объемы, периодичность
-              и цены: калькулятор сразу пересчитает тариф в{' '}
-              <span class="font-semibold text-foreground">₽/сотка за месяц</span
-              > и покажет, как изменилась итоговая сумма.
-            </p>
-            <p>
-              Для проверки по полному регламенту рядом есть справочники:{' '}
-              <a class="ui-link font-semibold" href={reglamentAssetsUrl()}>
-                что входит в общее имущество
-              </a>{' '}
-              и{' '}
-              <a class="ui-link font-semibold" href={reglamentServicesUrl()}>
-                какие услуги указаны в регламенте
-              </a>.
-            </p>
+          <div class="space-y-4">
+            <h1 class="ui-page-title max-w-4xl">
+              Калькулятор тарифа по смете 2026
+            </h1>
+            <div
+              class="max-w-3xl space-y-3 text-sm leading-6 text-muted-foreground md:text-[0.9375rem]"
+            >
+              <p>
+                Смета разложена на разделы и строки. Меняйте объемы,
+                периодичность и цены: калькулятор сразу пересчитает тариф в{' '}
+                <span class="font-semibold text-foreground"
+                  >₽/сотка за месяц</span
+                > и покажет, как изменилась итоговая сумма.
+              </p>
+              <p>
+                Для проверки по полному регламенту рядом есть справочники:{' '}
+                <a class="ui-link font-semibold" href={reglamentAssetsUrl()}>
+                  что входит в общее имущество
+                </a>{' '}
+                и{' '}
+                <a class="ui-link font-semibold" href={reglamentServicesUrl()}>
+                  какие услуги указаны в регламенте
+                </a>.
+              </p>
+            </div>
           </div>
         </div>
 
