@@ -1,6 +1,42 @@
+import {
+  createMarkdownDocument,
+  parseMarkdownFragment,
+  serializeMarkdownDocument,
+} from '@shelkovo/markdown';
+
 import { loadAllData } from './data';
 import { canon } from './site';
 const fix = 'https://t.me/silentroach';
+
+const SECTION_TITLES = new Set([
+  'Описание',
+  'Главные URL',
+  'Что открывать первым',
+  'Ограничения данных',
+  'Исправления и уточнения',
+  'Проект',
+  'Канонические URL',
+  'Описание data/settlements.json',
+  'Описание data/explorer.json',
+  'Детальные страницы поселков',
+  'Рейтинг',
+]);
+
+const serializeLlmsDocument = (lines: readonly string[]): string =>
+  serializeMarkdownDocument(
+    createMarkdownDocument({
+      children: parseMarkdownFragment(
+        lines
+          .map((line, index) => {
+            if (index === 0) return `# ${line}`;
+            if (SECTION_TITLES.has(line)) return `## ${line}`;
+
+            return line;
+          })
+          .join('\n'),
+      ),
+    }),
+  );
 
 function abs(path: string): string {
   return canon(path);
@@ -125,5 +161,5 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           `- Если нашли неточность или хотите передать дополнительные данные: ${fix}`,
         ];
 
-  return `${body.join('\n')}\n`;
+  return serializeLlmsDocument(body);
 }

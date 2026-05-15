@@ -53,6 +53,11 @@ Step 3 - Migrate llms generators.
 - GREEN/REFACTOR: added focused llms snapshots for section short agent overviews; full and short section llms outputs now share AST parse/create/serialize generation while preserving text and public URLs.
 - Final focused checks: `pnpm --filter @shelkovo/www test -- src/lib/news src/lib/status src/lib/people` passed; `pnpm --filter @shelkovo/www typecheck` passed; `pnpm --filter @shelkovo/www build` passed.
 - Real output spot checks read `dist/www/news/llms.txt`, `dist/www/status/llms.txt`, and `dist/www/people/llms.txt`; confirmed section headings, public feed/schema/OpenAPI/llms URLs, and no section-local `undefined`, `localhost`, `apps/www`, or `src/` leaks in changed llms outputs.
+- Builder started `task-1778863102-179e` and migrated root, reglament, and Compare `llms.txt` / `llms-full.txt` generators to `@shelkovo/markdown` AST serialization via `createMarkdownDocument`, `parseMarkdownFragment`, and `serializeMarkdownDocument`.
+- RED: `pnpm --filter @shelkovo/www test -- src/lib/llms.test.ts src/lib/reglament/llms.test.ts src/compare/lib/llms.test.ts` failed because old string generators emitted plain headings and bare URLs instead of serializer-owned headings/autolinks.
+- GREEN/REFACTOR: added focused short llms snapshots for root, reglament, and Compare; kept `.txt` routes, content type, public feed/schema/OpenAPI/skills/example URLs, and agent-facing text semantics unchanged aside from serializer-owned formatting.
+- Final focused checks: `pnpm --filter @shelkovo/www test -- src/lib/llms.test.ts src/lib/reglament src/compare/lib` passed; `pnpm --filter @shelkovo/www typecheck` passed; `pnpm --filter @shelkovo/www build` passed.
+- Real output spot checks read `dist/www/llms.txt`, `dist/www/llms-full.txt`, `dist/www/815/regulation/llms.txt`, `dist/www/815/regulation/llms-full.txt`, `dist/www/815/compare/llms.txt`, and `dist/www/815/compare/llms-full.txt`; confirmed serializer-owned headings/autolinks and public discovery URLs. Leak check for `undefined`, `localhost`, `apps/www/src`, `http://`, and `legacy` in changed llms outputs found no matches.
 
 ## Completed Steps
 
