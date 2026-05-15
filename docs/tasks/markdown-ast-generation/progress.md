@@ -29,6 +29,10 @@ Step 2 - Migrate section companion Markdown.
 - RED: `pnpm --filter @shelkovo/www test -- src/lib/news/markdown.test.ts` failed on nested YAML frontmatter from article/addendum Markdown fragments being emitted by the old string generator.
 - GREEN/REFACTOR: news Markdown tests were updated for package serializer output; body and addenda now use `parseMarkdownFragment`, article frontmatter uses `createMarkdownDocument` frontmatter, and section Markdown uses mdast nodes.
 - Final focused checks: `pnpm --filter @shelkovo/www test -- src/lib/news/markdown.test.ts` passed; `pnpm --filter @shelkovo/www typecheck` passed.
+- Builder started `task-1778857949-1033` and migrated `apps/www/src/lib/status/markdown.ts` to `@shelkovo/markdown` AST generation.
+- RED: `pnpm --filter @shelkovo/www test -- src/lib/status/markdown.test.ts` failed on nested YAML frontmatter from `incident.body` being emitted by the old string generator.
+- GREEN/REFACTOR: status Markdown tests were updated for package serializer output; incident frontmatter uses `createMarkdownDocument` frontmatter, incident bodies use `parseMarkdownFragment`, and service/incident lists preserve public Markdown links as mdast links.
+- Final focused checks: `pnpm --filter @shelkovo/www test -- src/lib/status/markdown.test.ts` passed; `pnpm --filter @shelkovo/www typecheck` passed.
 
 ## Completed Steps
 
