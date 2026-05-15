@@ -1,4 +1,4 @@
-# ADR-004: Генерация Markdown через AST
+# ADR-008: Генерация Markdown через AST
 
 ## Статус
 
