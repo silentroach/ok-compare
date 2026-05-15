@@ -261,14 +261,16 @@ describe('estimate detail markdown companions', () => {
       Машиночитаемый Markdown-индекс набора данных \`estimate-details-2026\` для маленьких PDF сметы. PDF не парсятся во время запроса или сборки страницы.
 
       ## Главные URL
-      - JSON-набор данных: https://kpshelkovo.online/815/regulation/data/estimate-details-2026.json
-      - Агрегированная смета: https://kpshelkovo.online/815/regulation/data/estimate-2026.json
-      - Набор данных полного регламента: https://kpshelkovo.online/815/regulation/data/full-2026.json
-      - Услуги полного регламента: https://kpshelkovo.online/815/regulation/full/services.md
-      - Сопоставление услуг со сметой: https://kpshelkovo.online/815/regulation/full/service-map.md
-      - Этот индекс: https://kpshelkovo.online/815/regulation/details.md
+
+      - JSON-набор данных: <https://kpshelkovo.online/815/regulation/data/estimate-details-2026.json>
+      - Агрегированная смета: <https://kpshelkovo.online/815/regulation/data/estimate-2026.json>
+      - Набор данных полного регламента: <https://kpshelkovo.online/815/regulation/data/full-2026.json>
+      - Услуги полного регламента: <https://kpshelkovo.online/815/regulation/full/services.md>
+      - Сопоставление услуг со сметой: <https://kpshelkovo.online/815/regulation/full/service-map.md>
+      - Этот индекс: <https://kpshelkovo.online/815/regulation/details.md>
 
       ## Как соединять слои
+
       - \`estimate-2026.json\` — агрегированная смета: разделы, строки, итоговые суммы, базовые частоты и разбивка сумм (\`breakdown\`).
       - \`full-2026.json\` и \`full/services.md\` — услуги полного регламента, периодичность и исходные формулировки услуг.
       - \`estimate-details-2026.json\` и \`details/*.md\` — детальные работы, материалы, машины, труд, контрольные итоги и позиции со статусом \`needs_check\` из маленьких PDF.
@@ -276,17 +278,20 @@ describe('estimate detail markdown companions', () => {
       - Для ответа сначала берите формулировку и периодичность услуги из полного регламента, затем строку и сумму из агрегированной сметы, затем ресурсы и проверки из детального слоя.
 
       ## Проверочные вопросы для агента
+
       - Какова периодичность полива дорог: сравните услуги \`summer-road-dust-suppression\` и \`summer-road-watering\`, строку \`cleaning-summer-mechanized\` и ресурсы детальной сметы по поливу.
       - Какие материалы, машины и труд входят в выбранную строку сметы: найдите строку по \`estimate_row_id\`, затем смотрите тематические файлы \`materials.md\`, \`machines.md\` и \`labor.md\`.
       - Какие суммы требуют ручной перепроверки: откройте \`checks.md\` и сверяйте причины \`needs_check\` с \`source_refs\`.
 
       ## Тематические файлы
-      - Материалы: https://kpshelkovo.online/815/regulation/details/materials.md; ресурсы с \`kind=material\`: количество, цена и итог
-      - Машины: https://kpshelkovo.online/815/regulation/details/machines.md; ресурсы с \`kind=machine\` и машинные затраты
-      - Труд: https://kpshelkovo.online/815/regulation/details/labor.md; ресурсы с \`kind=labor\` и \`kind=machinist_labor\`: ставки и итоги
-      - Проверки: https://kpshelkovo.online/815/regulation/details/checks.md; контрольные итоги, дельты и все позиции со статусом \`needs_check\`
+
+      - [Материалы](https://kpshelkovo.online/815/regulation/details/materials.md): ресурсы с \`kind=material\`: количество, цена и итог
+      - [Машины](https://kpshelkovo.online/815/regulation/details/machines.md): ресурсы с \`kind=machine\` и машинные затраты
+      - [Труд](https://kpshelkovo.online/815/regulation/details/labor.md): ресурсы с \`kind=labor\` и \`kind=machinist_labor\`: ставки и итоги
+      - [Проверки](https://kpshelkovo.online/815/regulation/details/checks.md): контрольные итоги, дельты и все позиции со статусом \`needs_check\`
 
       ## Сводка
+
       - Набор данных: estimate-details-2026; версия схемы: 1; год: 2026
       - PDF-источники: 1
       - Работы: 2
@@ -295,20 +300,34 @@ describe('estimate detail markdown companions', () => {
       - Со статусом \`needs_check\`: 3
 
       ## Ресурсы по видам
+
       - labor: 1 (труд)
-      - machinist_labor: 1 (труд машинистов)
+      - machinist\\_labor: 1 (труд машинистов)
       - machine: 1 (машины)
       - material: 1 (материалы)
       - contractor: 0 (подрядчики)
-      - other_cost: 0 (прочие затраты)
+      - other\\_cost: 0 (прочие затраты)
 
       ## PDF-источники
-      - cleaning.pdf: Детализация уборки; страниц: 4; ссылка: https://kpshelkovo.online/815/regulation/original/cleaning.pdf
+
+      - cleaning.pdf: Детализация уборки; страниц: 4; ссылка: <https://kpshelkovo.online/815/regulation/original/cleaning.pdf>
 
       ## Кураторские заметки
+
       - Тестовая заметка.
       "
     `);
+  });
+
+  it('serializes detail URLs through the package Markdown AST API', () => {
+    const markdown = buildEstimateDetailMarkdown(fixtureDataset);
+
+    expect(markdown).toContain(
+      '- JSON-набор данных: <https://kpshelkovo.online/815/regulation/data/estimate-details-2026.json>',
+    );
+    expect(markdown).toContain(
+      '- [Материалы](https://kpshelkovo.online/815/regulation/details/materials.md): ресурсы с `kind=material`: количество, цена и итог',
+    );
   });
 
   it('filters resource topical files from the dataset', () => {

@@ -41,6 +41,11 @@ Step 2 - Migrate section companion Markdown.
 - RED: `pnpm --filter @shelkovo/www test -- src/lib/reglament/markdown.test.ts` failed because the old string generators emitted bare URLs/source refs instead of mdast-owned Markdown links/autolinks.
 - GREEN/REFACTOR: `apps/www/src/lib/reglament/markdown.ts` and `apps/www/src/lib/reglament/full-markdown.ts` now use `createMarkdownDocument`, `md`, and `serializeMarkdownDocument`; source refs, thematic files, status codes, formulas, ids, and public URLs are represented as mdast links/autolinks/inline code.
 - Final focused checks: `pnpm --filter @shelkovo/www test -- src/lib/reglament` passed; `pnpm --filter @shelkovo/www typecheck` passed; `pnpm --filter @shelkovo/www build` passed and generated reglament Markdown routes.
+- Builder started `task-1778857949-527e` and migrated `apps/www/src/lib/reglament/detail-markdown.ts` to `@shelkovo/markdown` AST generation for detail index, materials, machines, labor, and checks Markdown companions.
+- RED: `pnpm --filter @shelkovo/www test -- src/lib/reglament/detail-markdown.test.ts` failed because the old detail generator emitted bare detail URLs instead of package serializer-owned autolinks/topic links.
+- GREEN/REFACTOR: detail Markdown tests were updated for package serializer output; detail documents now use `createMarkdownDocument`, `parseMarkdownFragment`, and `serializeMarkdownDocument`; source labels, quote items, grouped resources, totals, and `needs_check` markers remain represented in generated output.
+- Final focused checks: `pnpm --filter @shelkovo/www test -- src/lib/reglament/detail-markdown.test.ts` passed; `pnpm --filter @shelkovo/www typecheck` passed; `pnpm --filter @shelkovo/www build` passed and generated detail Markdown routes.
+- Real output spot checks: `dist/www/815/regulation/details.md`, `dist/www/815/regulation/details/materials.md`, `dist/www/815/regulation/details/machines.md`, `dist/www/815/regulation/details/labor.md`, and `dist/www/815/regulation/details/checks.md` preserved public links, source labels, quote items, grouped resources, control totals, and `needs_check` lines under serializer-owned Markdown formatting.
 
 ## Completed Steps
 

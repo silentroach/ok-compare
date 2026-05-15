@@ -2,7 +2,12 @@
 
 ## Статус
 
-Не начато
+Выполнено
+
+## Заметки выполнения
+
+- Детальные Markdown companion-файлы регламента переведены на пакетный Markdown AST API через `createMarkdownDocument`, `parseMarkdownFragment` и `serializeMarkdownDocument`.
+- Serializer-owned output изменил bare URL на autolinks, тематические ссылки на Markdown links, экранирование `_` и blank-line layout.
 
 ## Навыки
 

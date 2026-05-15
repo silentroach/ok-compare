@@ -1,3 +1,9 @@
+import {
+  createMarkdownDocument,
+  parseMarkdownFragment,
+  serializeMarkdownDocument,
+} from '@shelkovo/markdown';
+
 import { estimateDetails2026 } from '@/data/reglament/estimate-details-2026';
 import type {
   EstimateDetailControlTotal,
@@ -52,7 +58,12 @@ const CONTROL_SOURCE_LABELS = {
 
 const EMPTY_LIST_LINE = '- Нет данных в текущей версии набора.';
 
-const join = (lines: readonly string[]): string => `${lines.join('\n')}\n`;
+const serializeLines = (lines: readonly string[]): string =>
+  serializeMarkdownDocument(
+    createMarkdownDocument({
+      children: parseMarkdownFragment(lines.join('\n')),
+    }),
+  );
 
 const sourceQuoteItem = (
   item: EstimateDetailSourceQuoteItem,
@@ -327,7 +338,7 @@ const resourceGroupLines = (
 };
 
 const topicLine = (title: string, path: string, description: string): string =>
-  `- ${title}: ${absoluteUrl(path)}; ${description}`;
+  `- [${title}](${absoluteUrl(path)}): ${description}`;
 
 const sourcePdfLine = (
   pdf: EstimateDetailDataset['source_pdfs'][number],
@@ -355,7 +366,7 @@ const buildEstimateDetailResourcesMarkdown = (
     dataset.work_items.map((workItem) => [workItem.id, workItem]),
   );
 
-  return join([
+  return serializeLines([
     options.title,
     '',
     `- Индекс: ${absoluteUrl(reglamentEstimateDetailsMarkdownUrl())}`,
@@ -423,7 +434,7 @@ const controlNeedsCheckLine = (item: EstimateDetailControlTotal): string => {
 export const buildEstimateDetailMarkdown = (
   dataset: EstimateDetailDataset = estimateDetails2026,
 ): string =>
-  join([
+  serializeLines([
     '# Детальная смета 2026',
     '',
     'Машиночитаемый Markdown-индекс набора данных `estimate-details-2026` для маленьких PDF сметы. PDF не парсятся во время запроса или сборки страницы.',
@@ -531,7 +542,7 @@ export const buildEstimateDetailChecksMarkdown = (
   const needsCheckTotal =
     workItems.length + resources.length + controlTotals.length;
 
-  return join([
+  return serializeLines([
     '# Детальная смета 2026: проверки',
     '',
     `- Индекс: ${absoluteUrl(reglamentEstimateDetailsMarkdownUrl())}`,
