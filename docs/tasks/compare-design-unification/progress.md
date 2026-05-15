@@ -22,3 +22,8 @@
 - RED check: `pnpm --filter @shelkovo/www test -- src/compare/lib/styles.architecture.test.ts` failed as expected after adding newline/tab regression coverage.
 - GREEN change: selector detection now treats the canonical descendant space as CSS whitespace (`tab`, `newline`, `form feed`, `carriage return`, or regular space) while preserving the exact primitive class boundary.
 - Focused verification: `pnpm --filter @shelkovo/www test -- src/compare/lib/styles.architecture.test.ts` passed with 82 files / 480 tests.
+
+## Follow-up cleanup: remove temporary style architecture guard
+
+- The temporary `apps/www/src/compare/lib/styles.architecture.test.ts` guard was removed after the compare style unification follow-up.
+- The persistent explorer architecture guard remains in `apps/www/src/compare/lib/index.architecture.test.ts`.

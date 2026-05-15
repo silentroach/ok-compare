@@ -220,7 +220,7 @@
   </span>
 
   <div class="space-y-6">
-    <section class="ui-shell px-0 py-3" data-testid="explorer-controls">
+    <section class="ui-shell px-0 pb-0 pt-5" data-testid="explorer-controls">
       <div class="flex items-start gap-2 md:items-center md:justify-between">
         <fieldset class="min-w-0 flex-1">
           <legend class="sr-only">Фильтр по тарифу</legend>

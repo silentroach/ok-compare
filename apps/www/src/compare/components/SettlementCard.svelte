@@ -31,7 +31,7 @@
 
 <article
   data-testid="settlement-card"
-  class="ui-shell grid min-h-full gap-3 p-3.5 md:flex md:flex-col md:p-5"
+  class="ui-shell compare-settlement-card grid min-h-full gap-3 p-3.5 md:flex md:flex-col md:p-5"
 >
   <div class="flex items-start justify-between gap-3">
     <div class="min-w-0 space-y-1">
@@ -55,7 +55,7 @@
           href="https://t.me/obmandachniki"
           target="_blank"
           rel="noopener noreferrer"
-          class="ui-badge ui-badge-danger px-2 py-1 text-[11px] transition-colors hover:border-danger hover:bg-danger hover:text-danger-foreground"
+          class="ui-badge ui-badge-danger h-6 px-2 text-[11px] leading-none transition-colors hover:border-danger hover:bg-danger hover:text-danger-foreground"
           title="Открыть канал Коттеджное рабство"
           data-testid="rabstvo-badge"
         >
@@ -63,10 +63,12 @@
         </a>
       {/if}
       {#if isBaseline}
-        <span class="ui-badge ui-badge-info px-2 py-1 text-[11px]"> наш </span>
+        <span class="ui-badge ui-badge-info h-6 px-2 text-[11px] leading-none"
+          >наш</span
+        >
       {/if}
       <p
-        class="ui-num text-xs font-semibold text-muted-foreground"
+        class="ui-num inline-flex h-6 items-center text-xs font-semibold leading-none text-muted-foreground"
         data-testid="tariff-rank-label"
         title="Ранг по возрастанию тарифа (1 — самый дешевый)"
       >
@@ -113,3 +115,10 @@
     </div>
   </div>
 </article>
+
+<style>
+  .compare-settlement-card {
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+</style>
