@@ -59,6 +59,23 @@ describe('SettlementCard', () => {
     expect(container.textContent).toContain('Тестовский район');
   });
 
+  it('uses the shared shell primitive as its card surface', () => {
+    const { container } = render(SettlementCard, {
+      props: {
+        settlement: mockSettlement,
+        comparison: mockComparisonCheaper,
+        rank: 1,
+        base: 2,
+        total: 3,
+        isBaseline: false,
+      },
+    });
+
+    const card = container.querySelector('[data-testid="settlement-card"]');
+    expect(card?.className).toContain('ui-shell');
+    expect(card?.className).not.toContain('rounded-sm');
+  });
+
   it('renders tariff formatted correctly', () => {
     const { container } = render(SettlementCard, {
       props: {

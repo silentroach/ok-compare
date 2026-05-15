@@ -1,5 +1,4 @@
 ---
-import '@/compare/styles/global.css';
 import Link from '@/compare/components/Link.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { withBase } from '@/compare/lib/url';
@@ -14,29 +13,29 @@ const description =
   description={description}
   robots="noindex, nofollow"
   canonical={withBase('404.html')}
-  bodyClass="ui-root-compare"
 >
-  <main class="ui-page max-w-2xl py-16 text-center">
-    <div class="mb-8">
-      <h1 class="mb-4 text-6xl font-bold text-muted-foreground">404</h1>
-      <h2 class="mb-4 text-2xl font-bold text-foreground">
-        Страница не найдена
-      </h2>
-      <p class="mb-8 text-muted-foreground">
-        Запрашиваемая страница не существует или была перемещена.
-      </p>
-    </div>
+  <main class="ui-page pb-12 md:pb-16">
+    <section class="ui-page-header text-center">
+      <div class="ui-page-header-stack mx-auto max-w-2xl items-center">
+        <p class="ui-chip">404</p>
+        <h1 class="ui-page-title">Страница не найдена</h1>
+        <p class="ui-copy max-w-xl text-muted-foreground">
+          Такой страницы нет или ее адрес изменился. Вернитесь к списку поселков
+          и сравнению тарифов.
+        </p>
+      </div>
+    </section>
 
-    <div class="space-y-4">
+    <div class="mx-auto space-y-4 px-5 text-center md:px-6">
       <Link href="/" class="ui-btn ui-btn-md ui-btn-solid ui-btn-primary">
-        На главную
+        К сравнению поселков
       </Link>
 
       <div class="text-sm text-muted-foreground">
         <p>
-          Или посмотрите <Link href="/" class="ui-link"
-            >список всех посёлков</Link
-          >
+          Можно сразу открыть <Link href="/" class="ui-link"
+            >список всех поселков</Link
+          >.
         </p>
       </div>
     </div>
