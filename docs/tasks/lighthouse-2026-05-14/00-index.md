@@ -14,21 +14,22 @@ These files break the findings into independent implementation tasks. Each task 
 
 ## Tasks
 
-- `01-best-practices-yandex-metrika.md`: decide how to handle Yandex Metrika third-party cookies in Lighthouse Best Practices.
-- `03-news-pinned-icon-aria.md`: fix prohibited ARIA on the pinned news icon.
-- `04-status-timeline-aria.md`: fix prohibited ARIA on non-link status timeline segments.
-- `05-status-timeline-touch-targets.md`: make status timeline interactive targets accessible on touch.
-- `06-status-heading-order.md`: restore sequential heading order on `/status/`.
-- `07-compare-color-contrast.md`: fix compare page badge/count contrast.
-- `08-rating-color-contrast.md`: fix rating page adjustment label contrast.
-- `09-critical-font-loading.md`: reduce critical font payload and preloads.
-- `10-status-timeline-js.md`: reduce unused status timeline JavaScript.
-- `11-compare-dom-size.md`: reduce initial DOM size on `/815/compare/`.
-- `12-regulation-dom-size.md`: reduce initial DOM size on `/815/regulation/`.
-- `13-security-csp-inline.md`: harden CSP away from broad inline/script allowlists.
-- `14-security-hsts.md`: decide and roll out stronger HSTS.
-- `15-security-coop.md`: decide whether to add COOP/origin isolation.
-- `16-lighthouse-ci-summary-and-thresholds.md`: improve Lighthouse CI summaries and assertions.
+- [x] `01-best-practices-yandex-metrika.md`: decide how to handle Yandex Metrika third-party cookies in Lighthouse Best Practices.
+- [x] `02-robots-content-signal-lighthouse.md`: preserve `Content-Signal` while handling the Lighthouse robots warning.
+- [x] `03-news-pinned-icon-aria.md`: fix prohibited ARIA on the pinned news icon.
+- [x] `04-status-timeline-aria.md`: fix prohibited ARIA on non-link status timeline segments.
+- [x] `05-status-timeline-touch-targets.md`: make status timeline interactive targets accessible on touch.
+- [x] `06-status-heading-order.md`: restore sequential heading order on `/status/`.
+- [x] `07-compare-color-contrast.md`: fix compare page badge/count contrast.
+- [ ] `08-rating-color-contrast.md`: fix rating page adjustment label contrast.
+- [ ] `09-critical-font-loading.md`: reduce critical font payload and preloads.
+- [ ] `10-status-timeline-js.md`: reduce unused status timeline JavaScript.
+- [ ] `11-compare-dom-size.md`: reduce initial DOM size on `/815/compare/`.
+- [ ] `12-regulation-dom-size.md`: reduce initial DOM size on `/815/regulation/`.
+- [ ] `13-security-csp-inline.md`: harden CSP away from broad inline/script allowlists.
+- [ ] `14-security-hsts.md`: decide and roll out stronger HSTS.
+- [ ] `15-security-coop.md`: decide whether to add COOP/origin isolation.
+- [ ] `16-lighthouse-ci-summary-and-thresholds.md`: improve Lighthouse CI summaries and assertions.
 
 ## Suggested Order
 
