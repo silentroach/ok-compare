@@ -2,7 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "outputs": ["dist/site/**", "$TURBO_ROOT$/dist/www/**"]
+      "cache": false
     },
     "dev": {
       "cache": false,

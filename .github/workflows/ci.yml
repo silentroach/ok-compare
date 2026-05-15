@@ -36,12 +36,11 @@ jobs:
         id: restore-turbo-cache
         uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
-          path: .turbo
-          key: ${{ runner.os }}-turbo-test-${{ github.head_ref || github.ref_name }}-${{ github.sha }}
+          path: .turbo/cache
+          key: ${{ runner.os }}-turbo-test-v2-${{ github.head_ref || github.ref_name }}-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-turbo-test-${{ github.head_ref || github.ref_name }}-
-            ${{ runner.os }}-turbo-test-
-            ${{ runner.os }}-turbo-
+            ${{ runner.os }}-turbo-test-v2-${{ github.head_ref || github.ref_name }}-
+            ${{ runner.os }}-turbo-test-v2-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -66,7 +65,7 @@ jobs:
         if: ${{ steps.restore-turbo-cache.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
-          path: .turbo
+          path: .turbo/cache
           key: ${{ steps.restore-turbo-cache.outputs.cache-primary-key }}
 
   build:
@@ -86,17 +85,6 @@ jobs:
           node-version: 24
           cache: pnpm
 
-      - name: Restore Turbo cache
-        id: restore-turbo-cache
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
-        with:
-          path: .turbo
-          key: ${{ runner.os }}-turbo-build-${{ github.ref_name }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-build-${{ github.ref_name }}-
-            ${{ runner.os }}-turbo-build-
-            ${{ runner.os }}-turbo-
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -104,13 +92,6 @@ jobs:
         env:
           PUBLIC_YANDEX_MAPS_API_KEY: ${{ secrets.YANDEX_MAPS_API_KEY }}
         run: pnpm build
-
-      - name: Save Turbo cache
-        if: ${{ steps.restore-turbo-cache.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
-        with:
-          path: .turbo
-          key: ${{ steps.restore-turbo-cache.outputs.cache-primary-key }}
 
       - name: Upload VPS artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7

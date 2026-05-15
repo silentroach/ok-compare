@@ -42,19 +42,6 @@ jobs:
           node-version: 24
           cache: pnpm
 
-      - name: Restore Turbo cache
-        if: ${{ env.LIGHTHOUSE_SITE_TARGET == 'static' }}
-        id: restore-turbo-cache
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
-        with:
-          path: .turbo
-          key: ${{ runner.os }}-turbo-lighthouse-${{ github.ref_name }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-lighthouse-${{ github.ref_name }}-
-            ${{ runner.os }}-turbo-build-${{ github.ref_name }}-
-            ${{ runner.os }}-turbo-build-
-            ${{ runner.os }}-turbo-
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -186,13 +173,6 @@ jobs:
 
           appendSummary('Scores are shown as percentages from representative Lighthouse runs. Full reports are attached as the `lighthouse-reports` artifact.');
           NODE
-
-      - name: Save Turbo cache
-        if: ${{ env.LIGHTHOUSE_SITE_TARGET == 'static' && steps.restore-turbo-cache.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
-        with:
-          path: .turbo
-          key: ${{ steps.restore-turbo-cache.outputs.cache-primary-key }}
 
       - name: Upload Lighthouse reports
         if: ${{ always() }}
