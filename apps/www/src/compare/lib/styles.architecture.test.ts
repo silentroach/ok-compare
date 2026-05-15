@@ -17,12 +17,15 @@ const compareSharedPrimitiveSelectors = [
 const load = (): string => readFileSync(path, 'utf-8');
 const escapeRegExp = (value: string): string =>
   value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const selectorToPattern = (selector: string): string =>
+  selector.split(' ').map(escapeRegExp).join('[\\t\\n\\f\\r ]+');
 const hasDuplicateSharedStyleImport = (css: string): boolean =>
   sharedStyleImportPattern.test(css);
 const hasSelectorRule = (css: string, selector: string): boolean =>
-  new RegExp(`${escapeRegExp(selector)}(?![-_a-zA-Z0-9])[^{}]*\\{`, 'u').test(
-    css,
-  );
+  new RegExp(
+    `${selectorToPattern(selector)}(?![-_a-zA-Z0-9])[^{}]*\\{`,
+    'u',
+  ).test(css);
 const findForbiddenSharedPrimitiveSelectors = (
   css: string,
 ): readonly string[] =>
@@ -68,6 +71,20 @@ describe('compare shared-style architecture', () => {
     expect(
       findForbiddenSharedPrimitiveSelectors(
         '.ui-root-compare .ui-btn:hover { background: transparent; }',
+      ),
+    ).toEqual(['.ui-root-compare .ui-btn']);
+  });
+
+  it('detects forbidden primitive overrides with CSS whitespace descendant selectors', () => {
+    expect(
+      findForbiddenSharedPrimitiveSelectors(
+        '.ui-root-compare\n.ui-btn { background: transparent; }',
+      ),
+    ).toEqual(['.ui-root-compare .ui-btn']);
+
+    expect(
+      findForbiddenSharedPrimitiveSelectors(
+        '.ui-root-compare\t.ui-btn { background: transparent; }',
       ),
     ).toEqual(['.ui-root-compare .ui-btn']);
   });

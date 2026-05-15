@@ -15,3 +15,10 @@
 - GREEN change: import detection now accepts both quote styles and `url(...)`, and forbidden selector detection now catches exact shared primitive classes in grouped or pseudo-state selector rules.
 - Final verification: `pnpm --filter @shelkovo/www test -- src/compare/lib/styles.architecture.test.ts` passed with 82 files / 479 tests.
 - Extra verification: `pnpm --filter @shelkovo/www typecheck` passed.
+
+## Task 01 rejection fix: CSS whitespace descendant selectors
+
+- Review feedback: guard missed valid CSS descendant selectors when whitespace between `.ui-root-compare` and shared `.ui-*` primitive was a newline or tab.
+- RED check: `pnpm --filter @shelkovo/www test -- src/compare/lib/styles.architecture.test.ts` failed as expected after adding newline/tab regression coverage.
+- GREEN change: selector detection now treats the canonical descendant space as CSS whitespace (`tab`, `newline`, `form feed`, `carriage return`, or regular space) while preserving the exact primitive class boundary.
+- Focused verification: `pnpm --filter @shelkovo/www test -- src/compare/lib/styles.architecture.test.ts` passed with 82 files / 480 tests.
