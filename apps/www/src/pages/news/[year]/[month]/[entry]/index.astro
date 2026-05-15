@@ -149,9 +149,7 @@ const schema = newsArticleSchema({
             <div class="mt-auto px-5 pb-4 md:px-6 md:pb-6 lg:pb-8">
               <div class="max-w-4xl space-y-4">
                 <div class="space-y-3.5">
-                  <h1 class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08] lg:text-[3.5rem]">
-                    {article.title}
-                  </h1>
+                  <h1 class="ui-page-title">{article.title}</h1>
 
                   {article.tags.length > 0 && (
                     <ul class="flex flex-wrap gap-x-3 gap-y-1.5 text-[0.8125rem] font-medium leading-5 text-muted-foreground md:gap-x-4">
@@ -186,42 +184,42 @@ const schema = newsArticleSchema({
           </div>
         </header>
       ) : (
-        <header class="ui-page pt-3 md:pt-5 lg:pt-6">
-          <div class="max-w-4xl space-y-4 px-5 pb-2 md:px-6">
+        <header class="ui-page ui-page-header">
+          <div class="ui-page-header-stack max-w-4xl">
             <Breadcrumbs items={breadcrumbs} linkLast />
 
-            <div class="space-y-3.5">
-              <h1 class="text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]">
-                {article.title}
-              </h1>
+            <div class="space-y-4">
+              <div class="space-y-3.5">
+                <h1 class="ui-page-title">{article.title}</h1>
 
-              {article.tags.length > 0 && (
-                <ul class="flex flex-wrap gap-x-3 gap-y-1.5 text-[0.8125rem] font-medium leading-5 text-muted-foreground md:gap-x-4">
-                  {article.tags.map((item) => (
-                    <li>
-                      <a
-                        href={item.url}
-                        aria-label={`Тег ${item.label}`}
-                        class="news-tag-inline-link"
-                      >
-                        #{item.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              )}
+                {article.tags.length > 0 && (
+                  <ul class="flex flex-wrap gap-x-3 gap-y-1.5 text-[0.8125rem] font-medium leading-5 text-muted-foreground md:gap-x-4">
+                    {article.tags.map((item) => (
+                      <li>
+                        <a
+                          href={item.url}
+                          aria-label={`Тег ${item.label}`}
+                          class="news-tag-inline-link"
+                        >
+                          #{item.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <NewsMeta
+                publishedIso={article.published_iso}
+                updatedIso={article.updated_iso}
+                author={article.author}
+                fullAuthorName
+                showUpdated={false}
+                areas={article.areas}
+                appliesToAllAreas={article.applies_to_all_areas}
+                sourceUrl={article.source_url}
+              />
             </div>
-
-            <NewsMeta
-              publishedIso={article.published_iso}
-              updatedIso={article.updated_iso}
-              author={article.author}
-              fullAuthorName
-              showUpdated={false}
-              areas={article.areas}
-              appliesToAllAreas={article.applies_to_all_areas}
-              sourceUrl={article.source_url}
-            />
           </div>
         </header>
       )
@@ -230,7 +228,7 @@ const schema = newsArticleSchema({
     <article
       class:list={[
         'ui-page relative z-10 space-y-6',
-        hasHeroCover ? 'pt-0' : 'pt-6 md:pt-8 lg:pt-10',
+        hasHeroCover ? 'pt-0' : undefined,
       ]}
     >
       {

@@ -183,7 +183,7 @@ const denseProblemIncidents: readonly StatusTimelineIncidentInput[] = [
           Dense problems near range end
         </p>
         <div
-          class="status-timeline-visual-target status-timeline-visual-target--tooltip"
+          class="status-timeline-visual-target status-timeline-visual-target--tooltip status-timeline-visual-target--group-tooltip"
           data-testid="status-timeline-dense-problems"
         >
           <StatusServiceTimeline
@@ -241,6 +241,18 @@ const denseProblemIncidents: readonly StatusTimelineIncidentInput[] = [
   }
 
   .status-timeline-visual-target--tooltip {
+    padding-bottom: 1.1rem;
+  }
+
+  .status-timeline-visual-target--tooltip:has(
+    [data-status-timeline][data-status-tooltip-open='true']
+  ) {
     padding-bottom: 5.2rem;
+  }
+
+  .status-timeline-visual-target--group-tooltip:has(
+    [data-status-timeline][data-status-tooltip-open='true']
+  ) {
+    padding-bottom: 19rem;
   }
 </style>

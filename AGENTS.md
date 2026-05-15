@@ -27,6 +27,7 @@ scripts/     # build/deploy helper scripts
 - Правишь что-то на фронте - подключай `frontend-ui-engineering` и `tailwind-design-system`, а возможно и `impeccable`
 - При редактировании/создании любого видимого текста используй скилл `copy-editing` (ADR и техническая дока не в счет), а отображенную в вебе - еще и `web-typography`
 - Меняешь/изучаешь конфиги nginx в папке ops - `nginx-expert`
+- После правок в коде обязательно используй скилл `code-simplification`
 
 ## Дизайн
 

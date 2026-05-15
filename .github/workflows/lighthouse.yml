@@ -28,6 +28,7 @@ jobs:
     timeout-minutes: 30
     env:
       LIGHTHOUSE_SITE_TARGET: ${{ github.event_name == 'workflow_dispatch' && inputs.target || 'static' }}
+      LIGHTHOUSE_DISABLE_ANALYTICS: ${{ github.event_name == 'workflow_dispatch' && inputs.target == 'production' && 'false' || 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -87,6 +88,7 @@ jobs:
 
           const escapeCell = (value) => String(value).replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
           const formatScore = (score) => (typeof score === 'number' ? Math.round(score * 100) : 'n/a');
+          const metrikaPattern = /https:\/\/mc\.yandex\.(?:ru|com)\//i;
           const displayUrl = (value) => {
             try {
               const url = new URL(value);
@@ -95,6 +97,18 @@ jobs:
               return value;
             }
           };
+
+          const auditMentionsMetrika = (audit) => audit && metrikaPattern.test(JSON.stringify({
+            description: audit.description,
+            details: audit.details,
+            displayValue: audit.displayValue,
+            title: audit.title,
+          }));
+
+          const metrikaAuditsFor = (report) => [
+            ['third-party-cookies', 'third-party cookies'],
+            ['inspector-issues', 'inspector issues'],
+          ].filter(([id]) => auditMentionsMetrika(report.audits?.[id]));
 
           const listJsonFiles = (dir) => {
             if (!fs.existsSync(dir)) return [];
@@ -127,6 +141,7 @@ jobs:
           appendSummary('## Lighthouse CI');
           appendSummary('');
           appendSummary(`Target: \`${process.env.LIGHTHOUSE_SITE_TARGET}\``);
+          appendSummary(`Analytics: \`${process.env.LIGHTHOUSE_DISABLE_ANALYTICS === 'true' ? 'disabled' : 'enabled'}\``);
           appendSummary('');
 
           if (selectedReports.length === 0) {
@@ -148,6 +163,27 @@ jobs:
           }
 
           appendSummary('');
+
+          const metrikaFindings = selectedReports
+            .map(({ report }) => ({
+              url: displayUrl(report.finalUrl || report.requestedUrl),
+              audits: metrikaAuditsFor(report),
+            }))
+            .filter(({ audits }) => audits.length > 0);
+
+          if (metrikaFindings.length > 0) {
+            appendSummary('### Yandex Metrika Best Practices Finding');
+            appendSummary('');
+            appendSummary('Production Lighthouse runs intentionally keep Yandex Metrika enabled. The recurring third-party-cookie Best Practices finding is an accepted external-service limitation; scheduled static runs disable analytics with `LIGHTHOUSE_DISABLE_ANALYTICS=true`.');
+            appendSummary('');
+
+            for (const finding of metrikaFindings) {
+              appendSummary(`- ${finding.url}: ${finding.audits.map(([, label]) => `\`${label}\``).join(', ')}`);
+            }
+
+            appendSummary('');
+          }
+
           appendSummary('Scores are shown as percentages from representative Lighthouse runs. Full reports are attached as the `lighthouse-reports` artifact.');
           NODE
 

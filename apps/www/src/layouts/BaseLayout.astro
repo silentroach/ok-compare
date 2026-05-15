@@ -49,10 +49,10 @@ const socialAlt = social ? (imageAlt ?? title) : undefined;
 const socialMime = social ? imageMimeType(social) : undefined;
 const docs = serializeSchema(schema);
 const prod = import.meta.env.PROD;
+const disableAnalytics =
+  import.meta.env.LIGHTHOUSE_DISABLE_ANALYTICS === 'true';
+const enableMetrika = prod && !disableAnalytics;
 const ymId = 108975391;
-const ym = `(() => {if (window.__shelkovoYmDeferred) return;window.__shelkovoYmDeferred = true;const loadMetrika = () => {if (window.__shelkovoYmLoaded) return;window.__shelkovoYmLoaded = true;(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js','ym');ym(${ymId},'init',{clickmap:false,trackLinks:true,accurateTrackBounce:true,webvisor:false});};const scheduleAfterLoad = () => window.setTimeout(loadMetrika, 1000);if (document.readyState === 'complete') {scheduleAfterLoad();return;}window.addEventListener('load', scheduleAfterLoad, {once:true});})();`;
-const ymTransitions = `(() => {if (window.__shelkovoYmTransitions) return;window.__shelkovoYmTransitions = true;let href = location.href;document.addEventListener('astro:page-load', () => {if (location.href === href) return;href = location.href;if (typeof window.ym === 'function') window.ym(${ymId}, 'hit', href);});})();`;
-const navigationProgress = `(() => {if (window.__shelkovoNavigationProgress) return;window.__shelkovoNavigationProgress = true;const attr = 'data-site-navigation-pending';const delay = 50;const root = document.documentElement;const show = () => {root.setAttribute(attr, '');document.body?.setAttribute('aria-busy', 'true');};const hide = () => {root.removeAttribute(attr);document.body?.removeAttribute('aria-busy');};document.addEventListener('astro:before-preparation', (event) => {const loader = event.loader;let timer;event.loader = async () => {timer = window.setTimeout(show, delay);try {await loader();} finally {window.clearTimeout(timer);hide();}};});document.addEventListener('astro:page-load', hide);window.addEventListener('pageshow', hide);})();`;
 const contentTransition = fade({ duration: '60ms' });
 const bodyClasses = [
   'ui-root-site',
@@ -64,7 +64,12 @@ const bodyClasses = [
 ---
 
 <!doctype html>
-<html lang="ru" transition:name="root" transition:animate="none">
+<html
+  lang="ru"
+  data-site-metrika-id={enableMetrika ? String(ymId) : undefined}
+  transition:name="root"
+  transition:animate="none"
+>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -127,12 +132,12 @@ const bodyClasses = [
     <title>{title}</title>
     {docs.map((item) => <script type="application/ld+json" set:html={item} />)}
     <ClientRouter />
-    <script is:inline type="text/javascript" set:html={navigationProgress} />
+    <script src="../scripts/site-runtime.ts"></script>
   </head>
   <body class={bodyClasses}>
     <div class="site-navigation-progress" aria-hidden="true"></div>
     {
-      prod && (
+      enableMetrika && (
         <noscript>
           <div>
             <img
@@ -152,11 +157,5 @@ const bodyClasses = [
       <slot />
     </div>
     <SiteFooter />
-    {prod && <script is:inline type="text/javascript" set:html={ym} />}
-    {
-      prod && (
-        <script is:inline type="text/javascript" set:html={ymTransitions} />
-      )
-    }
   </body>
 </html>

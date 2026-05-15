@@ -55,8 +55,8 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
   bodyClass="ui-root-compare"
 >
   <main class="ui-page pb-6 md:pb-10 lg:pb-12">
-    <section class="px-5 pt-3 md:px-6 md:pt-5 lg:pt-6">
-      <div class="space-y-5">
+    <section class="ui-page-header">
+      <div class="ui-page-header-stack">
         <Breadcrumbs items={breadcrumbs} />
 
         <section class="bg-[color:var(--color-bg-soft)] pb-6 md:pb-8 lg:pb-10">
@@ -65,9 +65,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
           >
             <div class="max-w-3xl space-y-6">
               <div class="space-y-3">
-                <h1
-                  class="max-w-3xl text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
-                >
+                <h1 class="ui-page-title max-w-3xl">
                   Как считается условный уровень поселка
                 </h1>
                 <p class="ui-copy max-w-2xl text-muted-foreground">
@@ -249,7 +247,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
                 class="rounded-sm border border-success-border bg-[color:var(--color-surface)] p-5"
               >
                 <p
-                  class="text-xs font-semibold uppercase tracking-[0.06em] text-success-text/80"
+                  class="text-xs font-semibold uppercase tracking-[0.06em] text-success-text"
                 >
                   Плюс к рейтингу
                 </p>
@@ -266,7 +264,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
                 class="rounded-sm border border-danger-border bg-[color:var(--color-surface)] p-5"
               >
                 <p
-                  class="text-xs font-semibold uppercase tracking-[0.06em] text-danger-text/80"
+                  class="text-xs font-semibold uppercase tracking-[0.06em] text-danger-text"
                 >
                   Минус к рейтингу
                 </p>

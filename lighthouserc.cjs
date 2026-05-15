@@ -3,6 +3,8 @@ const productionOrigin = (
   process.env.LHCI_PRODUCTION_ORIGIN ?? 'https://kpshelkovo.online'
 ).replace(/\/+$/, '');
 const allowedTargets = new Set(['production', 'static']);
+// Production includes accepted Yandex Metrika third-party-cookie noise.
+const bestPracticesMinScore = target === 'production' ? 0.75 : 0.9;
 
 if (!allowedTargets.has(target)) {
   throw new Error(`Unsupported LIGHTHOUSE_SITE_TARGET: ${target}`);
@@ -36,7 +38,10 @@ module.exports = {
       assertions: {
         'categories:performance': ['warn', { minScore: 0.85 }],
         'categories:accessibility': ['warn', { minScore: 0.95 }],
-        'categories:best-practices': ['warn', { minScore: 0.9 }],
+        'categories:best-practices': [
+          'warn',
+          { minScore: bestPracticesMinScore },
+        ],
         'categories:seo': ['warn', { minScore: 0.9 }],
       },
     },

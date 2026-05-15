@@ -456,7 +456,7 @@ const closeStatusTimelineTooltip = (
   root: HTMLElement,
   tooltip: StatusTimelineTooltipElements,
 ): void => {
-  root.querySelectorAll(STATUS_TIMELINE_PROBLEM_SELECTOR).forEach((node) => {
+  root.querySelectorAll('[aria-describedby]').forEach((node) => {
     if (
       node instanceof HTMLElement &&
       node.getAttribute('aria-describedby') === tooltip.shell.id
@@ -511,7 +511,7 @@ const openStatusTimelineTooltip = (
     return;
   }
 
-  root.querySelectorAll(STATUS_TIMELINE_PROBLEM_SELECTOR).forEach((node) => {
+  root.querySelectorAll('[aria-describedby]').forEach((node) => {
     if (node instanceof HTMLElement && node !== trigger) {
       node.removeAttribute('aria-describedby');
     }
@@ -557,6 +557,13 @@ const bindStatusTimelineTooltipTrigger = (
   trigger.addEventListener('focusin', () => {
     openStatusTimelineTooltip(root, trigger, tooltip);
   });
+  trigger.addEventListener(
+    'touchstart',
+    () => {
+      openStatusTimelineTooltip(root, trigger, tooltip);
+    },
+    { passive: true },
+  );
   trigger.addEventListener('mouseleave', () => {
     closeStatusTimelineTooltip(root, tooltip);
   });

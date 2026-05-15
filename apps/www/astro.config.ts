@@ -46,6 +46,10 @@ export default defineConfig({
   publicDir: 'public',
   vite: {
     envDir: '../..',
+    build: {
+      // Keep processed scripts external so CSP does not need broad inline JS.
+      assetsInlineLimit: 0,
+    },
     server: {
       strictPort: true,
     },

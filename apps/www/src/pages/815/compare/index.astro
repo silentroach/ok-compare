@@ -67,8 +67,8 @@ const schema = {
   bodyClass="ui-root-compare"
 >
   <main class="ui-page pb-6 md:pb-10 lg:pb-12">
-    <section class="px-5 pt-3 md:px-6 md:pt-5 lg:pt-6">
-      <div class="space-y-5">
+    <section class="ui-page-header compare-landing-header">
+      <div class="ui-page-header-stack">
         <Breadcrumbs items={breadcrumbs} />
 
         <Hero
@@ -108,13 +108,6 @@ const schema = {
           }
         </div>
       </div>
-
-      <script is:inline>
-        window.addEventListener('explorer:ready', () => {
-          const fallback = document.getElementById('settlements-static');
-          if (fallback) fallback.style.display = 'none';
-        });
-      </script>
     </section>
   </main>
 </BaseLayout>

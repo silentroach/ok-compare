@@ -25,9 +25,7 @@
     class="grid gap-4 md:gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,28rem)] lg:items-end"
   >
     <div>
-      <h1
-        class="max-w-3xl text-4xl font-bold tracking-tight text-foreground md:text-5xl md:leading-[1.08]"
-      >
+      <h1 class="ui-page-title max-w-3xl">
         {title}
       </h1>
       <p

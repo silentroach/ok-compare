@@ -2,7 +2,8 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-const path = join(process.cwd(), 'src/pages/815/compare/index.astro');
+const indexPath = join(process.cwd(), 'src/pages/815/compare/index.astro');
+const runtimePath = join(process.cwd(), 'src/scripts/site-runtime.ts');
 
 /**
  * Intentional architecture guard for the main list:
@@ -11,13 +12,12 @@ const path = join(process.cwd(), 'src/pages/815/compare/index.astro');
  * 3) Passing settlements/comparisons/stats into SettlementsExplorer props in Astro
  *    serializes large payload into HTML again (the regression we had).
  */
-function load(): string {
-  return readFileSync(path, 'utf-8');
-}
+const loadIndex = (): string => readFileSync(indexPath, 'utf-8');
+const loadRuntime = (): string => readFileSync(runtimePath, 'utf-8');
 
 describe('index page explorer architecture', () => {
   it('uses client-only explorer with json source', () => {
-    const code = load();
+    const code = loadIndex();
 
     expect(code).toContain("import { withBase } from '@/compare/lib/url';");
     expect(code).toContain("const dataUrl = withBase('data/explorer.json');");
@@ -27,18 +27,20 @@ describe('index page explorer architecture', () => {
   });
 
   it('keeps static fallback list for bots and no-js', () => {
-    const code = load();
+    const code = loadIndex();
+    const runtime = loadRuntime();
 
     expect(code).toContain(
       "import SettlementCard from '@/compare/components/SettlementCard.svelte';",
     );
     expect(code).toContain('<div id="settlements-static">');
     expect(code).toContain('<SettlementCard');
-    expect(code).toContain("window.addEventListener('explorer:ready'");
+    expect(runtime).toContain("window.addEventListener('explorer:ready'");
+    expect(runtime).toContain("getElementById('settlements-static')");
   });
 
   it('does not inline large list payload into explorer island props', () => {
-    const code = load();
+    const code = loadIndex();
     const tag = code.match(/<SettlementsExplorer[\s\S]*?\/>/)?.[0] ?? '';
     const bad = [
       {
