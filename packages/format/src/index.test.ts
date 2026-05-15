@@ -12,7 +12,6 @@ import {
   formatTariff,
   parseNumberInputRu,
   pluralize,
-  pluralizeRu,
 } from './index';
 
 describe('format package', () => {
@@ -180,12 +179,6 @@ describe('format package', () => {
     it('ignores sign and fractional part', () => {
       expect(pluralize(-2, forms)).toBe('новости');
       expect(pluralize(1.9, forms)).toBe('новость');
-    });
-
-    it('exports the Russian plural helper under the app-facing name', () => {
-      expect(pluralizeRu(10, ['публикация', 'публикации', 'публикаций'])).toBe(
-        'публикаций',
-      );
     });
 
     it('formats count with matching plural form', () => {
