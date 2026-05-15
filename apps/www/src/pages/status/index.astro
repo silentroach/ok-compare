@@ -13,6 +13,8 @@ import { statusServiceUrl, statusUrl } from '@/lib/status/routes';
 
 const data = await loadStatusData();
 const now = Date.now();
+const overviewTimelineDays = 30;
+const mobileOverviewTimelineDays = 7;
 const activeIncidents = data.active.filter((item) => item.kind === 'incident');
 const plannedWorks = data.incidents.filter(
   (item) =>
@@ -81,7 +83,7 @@ const schema = collectionPageSchema({
               Сервис
             </p>
             <p class="text-[0.875rem] font-semibold text-muted-foreground">
-              Хронология за 90 дней
+              Хронология за месяц
             </p>
             <p class="text-[0.875rem] font-semibold text-muted-foreground">
               Статус
@@ -97,6 +99,8 @@ const schema = collectionPageSchema({
                 <StatusServiceCard
                   summary={summary}
                   serviceHref={statusServiceUrl(summary.service)}
+                  timelineDays={overviewTimelineDays}
+                  mobileTimelineDays={mobileOverviewTimelineDays}
                 />
               ))
             }

@@ -39,6 +39,7 @@ const incident = (input: IncidentInput): StatusTimelineIncidentInput => ({
 
 const renderTimeline = async (
   incidents: readonly StatusTimelineIncidentInput[],
+  timelineDays = 10,
 ): Promise<string> => {
   const container = await AstroContainer.create();
 
@@ -46,7 +47,7 @@ const renderTimeline = async (
     props: {
       service: 'water',
       incidents,
-      timelineDays: 10,
+      timelineDays,
     },
   });
 };
@@ -64,7 +65,10 @@ const normalizeHtml = (html: string): string =>
 const incidentSegmentTag = (html: string, id: string): string =>
   normalizeHtml(
     html.match(
-      new RegExp(`<(?:a|button)\\b[^>]*data-incident-id="${id}"[^>]*>`, 'u'),
+      new RegExp(
+        `<(?:a|button|span)\\b[^>]*data-incident-id="${id}"[^>]*>`,
+        'u',
+      ),
     )?.[0] ?? '',
   );
 
@@ -269,10 +273,79 @@ describe('StatusServiceTimeline', () => {
       incidentSegmentTag(html, 'with-page'),
     ]).toMatchInlineSnapshot(`
       [
-        "<button type="button" title="Вода. Инцидент. Запись no-page. Статус: восстановлено. 8·мая, 03:00·—·04:00" aria-label="Вода. Инцидент. Запись no-page. Статус: восстановлено. 8·мая, 03:00·—·04:00" data-incident-id="no-page" data-status-problem="true" data-status-kind="incident" data-status-service="water" data-start="2026-05-08T00:00:00Z" data-end="2026-05-08T01:00:00Z" data-tooltip-service-label="Вода" data-tooltip-kind-label="Инцидент" data-tooltip-title="Запись no-page" data-tooltip-phase-label="восстановлено" data-tooltip-phase-icon="check" data-tooltip-period-label="8·мая, 03:00·—·04:00" style="--segment-left: 80; --segment-width: 0.4166666666666667;" class="status-service-timeline__segment status-service-timeline__segment--problem status-service-timeline__segment--red">",
-        "<a href="/status/incidents/with-page" title="Вода. Инцидент. Запись with-page. Статус: восстановлено. 9·мая, 03:00·—·04:00" aria-label="Вода. Инцидент. Запись with-page. Статус: восстановлено. 9·мая, 03:00·—·04:00" data-incident-id="with-page" data-status-problem="true" data-status-kind="incident" data-status-service="water" data-start="2026-05-09T00:00:00Z" data-end="2026-05-09T01:00:00Z" data-tooltip-service-label="Вода" data-tooltip-kind-label="Инцидент" data-tooltip-title="Запись with-page" data-tooltip-phase-label="восстановлено" data-tooltip-phase-icon="check" data-tooltip-period-label="9·мая, 03:00·—·04:00" style="--segment-left: 90; --segment-width: 0.4166666666666667;" class="status-service-timeline__segment status-service-timeline__segment--problem status-service-timeline__segment--red">",
+        "<button type="button" title="Вода. Инцидент. Запись no-page. Статус: восстановлено. 8·мая, 03:00·—·04:00" aria-label="Вода. Инцидент. Запись no-page. Статус: восстановлено. 8·мая, 03:00·—·04:00" data-incident-id="no-page" data-status-problem="true" data-status-kind="incident" data-status-service="water" data-start="2026-05-08T00:00:00Z" data-end="2026-05-08T01:00:00Z" data-geometry-start="2026-05-07T21:00:00.000Z" data-geometry-end="2026-05-08T21:00:00.000Z" data-tooltip-service-label="Вода" data-tooltip-kind-label="Инцидент" data-tooltip-title="Запись no-page" data-tooltip-phase-label="восстановлено" data-tooltip-phase-icon="check" data-tooltip-period-label="8·мая, 03:00·—·04:00" style="--segment-left: 78.75; --segment-width: 10;" class="status-service-timeline__segment status-service-timeline__segment--problem status-service-timeline__segment--compact-marker status-service-timeline__segment--red">",
+        "<a href="/status/incidents/with-page" title="Вода. Инцидент. Запись with-page. Статус: восстановлено. 9·мая, 03:00·—·04:00" aria-label="Вода. Инцидент. Запись with-page. Статус: восстановлено. 9·мая, 03:00·—·04:00" data-incident-id="with-page" data-status-problem="true" data-status-kind="incident" data-status-service="water" data-start="2026-05-09T00:00:00Z" data-end="2026-05-09T01:00:00Z" data-geometry-start="2026-05-08T21:00:00.000Z" data-geometry-end="2026-05-09T21:00:00.000Z" data-tooltip-service-label="Вода" data-tooltip-kind-label="Инцидент" data-tooltip-title="Запись with-page" data-tooltip-phase-label="восстановлено" data-tooltip-phase-icon="check" data-tooltip-period-label="9·мая, 03:00·—·04:00" style="--segment-left: 88.75; --segment-width: 10;" class="status-service-timeline__segment status-service-timeline__segment--problem status-service-timeline__segment--compact-marker status-service-timeline__segment--red">",
       ]
     `);
+  });
+
+  it('marks any affected single day with the full visible day slot', async () => {
+    const html = await renderTimeline([
+      incident({
+        id: 'short-single-day',
+        started_iso: '2026-05-07T00:00:00Z',
+        ended_iso: '2026-05-07T00:15:00Z',
+        is_active: false,
+      }),
+      incident({
+        id: 'long-single-day',
+        started_iso: '2026-05-08T00:00:00Z',
+        ended_iso: '2026-05-08T09:00:00Z',
+        is_active: false,
+      }),
+      incident({
+        id: 'active-single-day',
+        started_iso: '2026-05-09T21:00:00Z',
+        is_active: true,
+      }),
+    ]);
+
+    expect(incidentSegmentTag(html, 'short-single-day')).toContain(
+      '--segment-width: 10;',
+    );
+    expect(incidentSegmentTag(html, 'long-single-day')).toContain(
+      '--segment-width: 10;',
+    );
+    expect(incidentSegmentTag(html, 'active-single-day')).toContain(
+      '--segment-width: 10;',
+    );
+    expect(incidentSegmentTag(html, 'long-single-day')).toContain(
+      'status-service-timeline__segment--compact-marker',
+    );
+    expect(incidentSegmentTag(html, 'active-single-day')).toContain(
+      'status-service-timeline__segment--compact-marker',
+    );
+
+    const shorterRangeHtml = await renderTimeline(
+      [
+        incident({
+          id: 'shorter-range-single-day',
+          started_iso: '2026-05-09T00:00:00Z',
+          ended_iso: '2026-05-09T01:00:00Z',
+          is_active: false,
+        }),
+      ],
+      5,
+    );
+
+    expect(
+      incidentSegmentTag(shorterRangeHtml, 'shorter-range-single-day'),
+    ).toContain('--segment-width: 20;');
+  });
+
+  it('marks every affected day for cross-day incidents', async () => {
+    const html = await renderTimeline([
+      incident({
+        id: 'cross-day-short',
+        started_iso: '2026-05-08T20:30:00Z',
+        ended_iso: '2026-05-08T22:00:00Z',
+        is_active: false,
+      }),
+    ]);
+
+    expect(incidentSegmentTag(html, 'cross-day-short')).toContain(
+      '--segment-width: 20;',
+    );
   });
 
   it('keeps compact grouped markers tooltip-only', async () => {
@@ -291,9 +364,34 @@ describe('StatusServiceTimeline', () => {
       }),
     ]);
 
-    expect(incidentSegmentTag(html, 'same-day-a')).toMatchInlineSnapshot(`
-      "<button type="button" title="Вода. 2·события за·9·мая. Запись same-day-a. 9·мая, 06:00·—·06:40. Запись same-day-b. 9·мая, 11:10·—·11:45" aria-label="Вода. 2·события за·9·мая. Запись same-day-a. 9·мая, 06:00·—·06:40. Запись same-day-b. 9·мая, 11:10·—·11:45" data-incident-id="same-day-a" data-status-problem="true" data-status-kind="incident" data-status-service="water" data-start="2026-05-09T03:00:00Z" data-end="2026-05-09T08:45:00Z" data-geometry-start="2026-05-09T05:22:30.000Z" data-geometry-end="2026-05-09T06:22:30.000Z" data-tooltip-service-label="Вода" data-tooltip-group-title="2·события за·9·мая" data-tooltip-items="[{&#34;kind&#34;:&#34;incident&#34;,&#34;title&#34;:&#34;Запись same-day-a&#34;,&#34;is_active&#34;:false,&#34;started_iso&#34;:&#34;2026-05-09T03:00:00Z&#34;,&#34;started_has_time&#34;:true,&#34;ended_iso&#34;:&#34;2026-05-09T03:40:00Z&#34;,&#34;ended_has_time&#34;:true},{&#34;kind&#34;:&#34;incident&#34;,&#34;title&#34;:&#34;Запись same-day-b&#34;,&#34;is_active&#34;:false,&#34;started_iso&#34;:&#34;2026-05-09T08:10:00Z&#34;,&#34;started_has_time&#34;:true,&#34;ended_iso&#34;:&#34;2026-05-09T08:45:00Z&#34;,&#34;ended_has_time&#34;:true}]" style="--segment-left: 92.23958333333333; --segment-width: 0.4166666666666667;" class="status-service-timeline__segment status-service-timeline__segment--problem status-service-timeline__segment--compact-marker status-service-timeline__segment--red">"
-    `);
+    expect(incidentSegmentTag(html, 'same-day-a')).toMatchInlineSnapshot(
+      `"<button type="button" title="Вода. 2·события за·9·мая. Запись same-day-a. 9·мая, 06:00·—·06:40. Запись same-day-b. 9·мая, 11:10·—·11:45" aria-label="Вода. 2·события за·9·мая. Запись same-day-a. 9·мая, 06:00·—·06:40. Запись same-day-b. 9·мая, 11:10·—·11:45" data-incident-id="same-day-a" data-status-problem="true" data-status-kind="incident" data-status-service="water" data-start="2026-05-09T03:00:00Z" data-end="2026-05-09T08:45:00Z" data-geometry-start="2026-05-08T21:00:00.000Z" data-geometry-end="2026-05-09T21:00:00.000Z" data-tooltip-service-label="Вода" data-tooltip-group-title="2·события за·9·мая" data-tooltip-items="[{&#34;kind&#34;:&#34;incident&#34;,&#34;title&#34;:&#34;Запись same-day-a&#34;,&#34;is_active&#34;:false,&#34;started_iso&#34;:&#34;2026-05-09T03:00:00Z&#34;,&#34;started_has_time&#34;:true,&#34;ended_iso&#34;:&#34;2026-05-09T03:40:00Z&#34;,&#34;ended_has_time&#34;:true},{&#34;kind&#34;:&#34;incident&#34;,&#34;title&#34;:&#34;Запись same-day-b&#34;,&#34;is_active&#34;:false,&#34;started_iso&#34;:&#34;2026-05-09T08:10:00Z&#34;,&#34;started_has_time&#34;:true,&#34;ended_iso&#34;:&#34;2026-05-09T08:45:00Z&#34;,&#34;ended_has_time&#34;:true}]" style="--segment-left: 88.75; --segment-width: 10;" class="status-service-timeline__segment status-service-timeline__segment--problem status-service-timeline__segment--compact-marker status-service-timeline__segment--red">"`,
+    );
+  });
+
+  it('groups short active same-day incidents with dense compact markers', async () => {
+    const html = await renderTimeline([
+      incident({
+        id: 'dense-ended',
+        started_iso: '2026-05-09T22:10:00Z',
+        ended_iso: '2026-05-09T22:30:00Z',
+        is_active: false,
+      }),
+      incident({
+        id: 'dense-active',
+        started_iso: '2026-05-09T23:40:00Z',
+        is_active: true,
+      }),
+    ]);
+
+    expect(html.match(/data-status-problem/g)?.length ?? 0).toBe(1);
+    expect(incidentSegmentTag(html, 'dense-ended')).toContain('<button');
+    expect(incidentSegmentTag(html, 'dense-ended')).toContain(
+      'data-tooltip-group-title="2·события за·10·мая"',
+    );
+    expect(incidentSegmentTag(html, 'dense-ended')).toContain(
+      '&#34;title&#34;:&#34;Запись dense-active&#34;',
+    );
   });
 
   it('renders a shared tooltip shell in SSR HTML', async () => {

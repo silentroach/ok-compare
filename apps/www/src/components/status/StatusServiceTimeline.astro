@@ -63,8 +63,6 @@ interface TimelineGroup {
   readonly visibleSegments: StatusTimelineSpan[];
 }
 
-const STATUS_TIMELINE_COMPACT_MARKER_MS = 60 * 60 * 1000;
-
 const toTimelineSortMs = (value?: string): number => {
   const parsed = Date.parse(value ?? '');
 
@@ -73,6 +71,15 @@ const toTimelineSortMs = (value?: string): number => {
 
 const getTimelineDayKey = (value: string): string =>
   dateTimeFromISO(value).toISODate() ?? value.slice(0, 10);
+
+const getTimelineDayStartMs = (valueMs: number): number =>
+  dateTimeFromISO(new Date(valueMs).toISOString()).startOf('day').toMillis();
+
+const getTimelineNextDayStartMs = (valueMs: number): number =>
+  dateTimeFromISO(new Date(valueMs).toISOString())
+    .startOf('day')
+    .plus({ days: 1 })
+    .toMillis();
 
 const visibleAreas = (
   item: Pick<StatusTimelineIncidentInput, 'areas'>,
@@ -84,26 +91,39 @@ const serializeAreas = (areas: readonly StatusArea[]): string | undefined =>
 const isCompactTimelineCandidate = (
   item: StatusTimelineIncidentInput,
   visibleSegment?: StatusTimelineSpan,
-): boolean =>
-  visibleSegment !== undefined &&
-  !item.is_active &&
-  !!item.ended_iso &&
-  getTimelineDayKey(item.started_iso) === getTimelineDayKey(item.ended_iso);
+): boolean => {
+  if (!visibleSegment) {
+    return false;
+  }
 
-const buildCompactTimelineMarkerSpan = (
+  const endIso = item.ended_iso ?? new Date(visibleSegment.endMs).toISOString();
+
+  return getTimelineDayKey(item.started_iso) === getTimelineDayKey(endIso);
+};
+
+const fitTimelineSpanToRange = (
   span: StatusTimelineSpan,
 ): StatusTimelineSpan | undefined => {
-  if (span.endMs <= span.startMs) {
+  const spanMs = Math.min(range.spanMs, span.endMs - span.startMs);
+
+  if (spanMs <= 0) {
     return undefined;
   }
 
-  const centerMs = span.startMs + (span.endMs - span.startMs) / 2;
-  const halfMarkerMs = STATUS_TIMELINE_COMPACT_MARKER_MS / 2;
-  const startMs = Math.max(range.startMs, centerMs - halfMarkerMs);
-  const endMs = Math.min(range.endMs, centerMs + halfMarkerMs);
+  let { startMs, endMs } = span;
+
+  if (startMs < range.startMs) {
+    startMs = range.startMs;
+    endMs = Math.min(range.endMs, startMs + spanMs);
+  }
+
+  if (endMs > range.endMs) {
+    endMs = range.endMs;
+    startMs = Math.max(range.startMs, endMs - spanMs);
+  }
 
   if (endMs <= startMs) {
-    return { startMs, endMs };
+    return undefined;
   }
 
   return {
@@ -111,6 +131,14 @@ const buildCompactTimelineMarkerSpan = (
     endMs,
   };
 };
+
+const buildTimelineProblemDaySpan = (
+  span: StatusTimelineSpan,
+): StatusTimelineSpan | undefined =>
+  fitTimelineSpanToRange({
+    startMs: getTimelineDayStartMs(span.startMs),
+    endMs: getTimelineNextDayStartMs(Math.max(span.startMs, span.endMs - 1)),
+  });
 
 const serializeTimelineTooltipItems = (
   items: readonly StatusTimelineIncidentInput[],
@@ -167,9 +195,9 @@ const timelineGroups = incidents
     if (
       last &&
       last.compact &&
+      last.isFuture === isFuture &&
       isCompactCandidate &&
-      last.dayKey === dayKey &&
-      last.isFuture === isFuture
+      last.dayKey === dayKey
     ) {
       last.items.push(item);
 
@@ -215,22 +243,19 @@ const timelineGroups = incidents
           endMs: Math.max(...group.visibleSegments.map((item) => item.endMs)),
         }
       : undefined;
-    const useCompactMarker = group.compact && group.items.length > 1;
-    const geometrySpan =
-      useCompactMarker && actualSpan
-        ? buildCompactTimelineMarkerSpan(actualSpan)
-        : actualSpan;
+    const useCompactMarker = group.compact;
+    const geometrySpan = actualSpan
+      ? buildTimelineProblemDaySpan(actualSpan)
+      : undefined;
     const geometry = geometrySpan
       ? getStatusTimelineSegmentGeometry(geometrySpan, range)
       : undefined;
-    const geometryStartIso =
-      useCompactMarker && geometrySpan
-        ? new Date(geometrySpan.startMs).toISOString()
-        : undefined;
-    const geometryEndIso =
-      useCompactMarker && geometrySpan
-        ? new Date(geometrySpan.endMs).toISOString()
-        : undefined;
+    const geometryStartIso = geometrySpan
+      ? new Date(geometrySpan.startMs).toISOString()
+      : undefined;
+    const geometryEndIso = geometrySpan
+      ? new Date(geometrySpan.endMs).toISOString()
+      : undefined;
     const latestEndedIso = group.items
       .map((item) => item.ended_iso)
       .filter((item) => item !== undefined)
@@ -298,9 +323,9 @@ const timelineGroups = incidents
       tone: group.items.some((item) => item.kind === 'incident')
         ? 'red'
         : 'amber',
-      tooltipItems: serializeTimelineTooltipItems(group.items),
       tooltipAreaLabel: undefined,
       tooltipAreas: undefined,
+      tooltipItems: serializeTimelineTooltipItems(group.items),
       tooltipLabel: formatStatusTimelineTooltipGroupLabel({
         serviceLabel,
         title: tooltipTitle,
@@ -391,7 +416,12 @@ const timelineGroups = incidents
                     ? undefined
                     : `--segment-left: ${left}; --segment-width: ${width};`
                 }
-              />
+              >
+                <span
+                  class="status-service-timeline__segment-marker"
+                  aria-hidden="true"
+                />
+              </TimelineSegment>
             );
           },
         )
@@ -428,9 +458,7 @@ const timelineGroups = incidents
       <span
         class="status-service-timeline__tooltip-areas"
         data-status-tooltip-title-areas
-        hidden
-      >
-      </span>
+        hidden></span>
     </p>
     <p class="status-service-timeline__tooltip-row" data-status-tooltip-period>
     </p>
@@ -467,7 +495,7 @@ const timelineGroups = incidents
 
   .status-service-timeline__track {
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     border: 1px solid
       color-mix(
         in oklab,
@@ -487,12 +515,13 @@ const timelineGroups = incidents
   .status-service-timeline__segments {
     position: absolute;
     inset: 0 0.2rem;
+    container-type: inline-size;
     height: 100%;
   }
 
   .status-service-timeline__segment {
     --segment-resolved-width: max(
-      calc(var(--segment-width) * 1%),
+      calc(var(--segment-width) * 1cqw),
       var(--segment-min-width, 0.45rem)
     );
     --segment-bleed-end: 0px;
@@ -514,6 +543,7 @@ const timelineGroups = incidents
     border: 0;
     padding: 0;
     font: inherit;
+    text-decoration: none;
     appearance: none;
   }
 
@@ -528,25 +558,59 @@ const timelineGroups = incidents
   }
 
   .status-service-timeline__segment--amber {
-    background: var(--color-warning);
+    --segment-marker-color: var(--color-warning);
+    background: var(--segment-marker-color);
     z-index: 2;
   }
 
   .status-service-timeline__segment--red {
-    background: var(--color-danger);
+    --segment-marker-color: var(--color-danger);
+    background: var(--segment-marker-color);
     z-index: 3;
   }
 
   .status-service-timeline__segment--problem {
+    --segment-hit-size: 24px;
+    --segment-hit-inline-padding: max(
+      0px,
+      calc(
+        (
+            var(--segment-hit-size) - var(--segment-resolved-width) -
+              var(--segment-bleed-end)
+          ) /
+          2
+      )
+    );
+    height: 0.62rem;
+    padding: calc((var(--segment-hit-size) - 0.62rem) / 2)
+      var(--segment-hit-inline-padding);
+    box-sizing: content-box;
+    margin-left: calc(var(--segment-hit-inline-padding) * -1);
+    background: transparent;
+    box-shadow: none;
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition:
+      filter 160ms ease,
+      transform 160ms ease;
+  }
+
+  .status-service-timeline__segment-marker {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--segment-marker-color);
     box-shadow: 0 0 0 1px
       color-mix(
         in oklab,
         var(--color-success) 14%,
         var(--color-surface-raised) 86%
       );
-    transition:
-      filter 160ms ease,
-      transform 160ms ease;
+    pointer-events: none;
+    transform: scaleY(var(--segment-scale, 1));
+    transform-origin: center;
+    transition: transform 160ms ease;
   }
 
   .status-service-timeline__segment--problem:hover,
@@ -565,7 +629,7 @@ const timelineGroups = incidents
   }
 
   .status-service-timeline__segment--compact-marker {
-    --segment-min-width: 0.3rem;
+    --segment-min-width: 0.65rem;
   }
 
   .status-service-timeline__tooltip {

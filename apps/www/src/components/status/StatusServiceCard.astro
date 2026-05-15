@@ -17,10 +17,16 @@ import {
 interface Props {
   readonly summary: StatusServiceSummary;
   readonly timelineDays?: number;
+  readonly mobileTimelineDays?: number;
   readonly serviceHref?: string;
 }
 
-const { summary, timelineDays = 90, serviceHref } = Astro.props;
+const {
+  summary,
+  timelineDays = 30,
+  mobileTimelineDays,
+  serviceHref,
+} = Astro.props;
 
 const serviceLabel = formatStatusService(summary.service);
 const stateLabel = formatStatusServiceState(summary.service_status);
@@ -69,6 +75,8 @@ const serviceMeta = {
   },
 } as const;
 const ServiceIcon = serviceMeta[summary.service].Icon;
+const resolvedMobileTimelineDays = mobileTimelineDays ?? timelineDays;
+const hasResponsiveTimeline = resolvedMobileTimelineDays !== timelineDays;
 ---
 
 <article class="status-service-row ui-shell px-5 py-4 md:px-6 md:py-5">
@@ -117,11 +125,33 @@ const ServiceIcon = serviceMeta[summary.service].Icon;
     }
 
     <div class="flex flex-col gap-2 lg:gap-0">
-      <StatusServiceTimeline
-        service={summary.service}
-        incidents={timelineIncidents}
-        timelineDays={timelineDays}
-      />
+      {
+        hasResponsiveTimeline ? (
+          <>
+            <div class="lg:hidden">
+              <StatusServiceTimeline
+                service={summary.service}
+                incidents={timelineIncidents}
+                timelineDays={resolvedMobileTimelineDays}
+              />
+            </div>
+
+            <div class="hidden lg:block">
+              <StatusServiceTimeline
+                service={summary.service}
+                incidents={timelineIncidents}
+                timelineDays={timelineDays}
+              />
+            </div>
+          </>
+        ) : (
+          <StatusServiceTimeline
+            service={summary.service}
+            incidents={timelineIncidents}
+            timelineDays={timelineDays}
+          />
+        )
+      }
     </div>
 
     <div>

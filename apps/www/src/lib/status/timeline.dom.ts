@@ -456,7 +456,7 @@ const closeStatusTimelineTooltip = (
   root: HTMLElement,
   tooltip: StatusTimelineTooltipElements,
 ): void => {
-  root.querySelectorAll(STATUS_TIMELINE_PROBLEM_SELECTOR).forEach((node) => {
+  root.querySelectorAll('[aria-describedby]').forEach((node) => {
     if (
       node instanceof HTMLElement &&
       node.getAttribute('aria-describedby') === tooltip.shell.id
@@ -511,7 +511,7 @@ const openStatusTimelineTooltip = (
     return;
   }
 
-  root.querySelectorAll(STATUS_TIMELINE_PROBLEM_SELECTOR).forEach((node) => {
+  root.querySelectorAll('[aria-describedby]').forEach((node) => {
     if (node instanceof HTMLElement && node !== trigger) {
       node.removeAttribute('aria-describedby');
     }
