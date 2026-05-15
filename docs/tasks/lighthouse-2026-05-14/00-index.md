@@ -15,7 +15,6 @@ These files break the findings into independent implementation tasks. Each task 
 ## Tasks
 
 - `01-best-practices-yandex-metrika.md`: decide how to handle Yandex Metrika third-party cookies in Lighthouse Best Practices.
-- `02-robots-content-signal-lighthouse.md`: keep `Content-Signal` in `robots.txt` and handle Lighthouse's unknown-directive warning intentionally.
 - `03-news-pinned-icon-aria.md`: fix prohibited ARIA on the pinned news icon.
 - `04-status-timeline-aria.md`: fix prohibited ARIA on non-link status timeline segments.
 - `05-status-timeline-touch-targets.md`: make status timeline interactive targets accessible on touch.
@@ -33,7 +32,7 @@ These files break the findings into independent implementation tasks. Each task 
 
 ## Suggested Order
 
-- Start with low-risk correctness tasks: `02`, `03`, `04`, `06`, `07`, `08`.
+- Start with low-risk correctness tasks: `03`, `04`, `06`, `07`, `08`.
 - Then improve CI observability: `16`.
 - Then tackle performance work: `09`, `10`, `11`, `12`.
 - Handle security header changes last because they need deliberate browser compatibility and third-party integration checks: `13`, `14`, `15`.

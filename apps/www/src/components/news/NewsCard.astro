@@ -44,18 +44,19 @@ const { article, featured = false } = Astro.props;
       <h3
         class="flex items-start gap-2 text-2xl font-bold tracking-tight text-foreground"
       >
-        <a href={article.url} class="ui-link">
-          {article.title}
-        </a>
+        <a href={article.url} class="ui-link">{article.title}</a>
         {
           article.pinned && (
-            <span
-              class="mt-1 inline-flex shrink-0 text-muted-foreground opacity-50"
-              title="закреплено сверху"
-              aria-label="закреплено сверху"
-            >
-              <StarIcon class="size-4" />
-            </span>
+            <>
+              <span
+                class="mt-1 inline-flex shrink-0 text-muted-foreground opacity-50"
+                title="закреплено сверху"
+                aria-hidden="true"
+              >
+                <StarIcon class="size-4" />
+              </span>
+              <span class="sr-only">Закреплено сверху</span>
+            </>
           )
         }
       </h3>
