@@ -1,3 +1,5 @@
+import { pluralizeRu } from '@shelkovo/format';
+
 import { serializeMarkdownLineDocument } from '@/lib/markdown/llms-document';
 
 import { loadAllData } from './data';
@@ -17,6 +19,11 @@ const SECTION_TITLES = new Set([
   'Детальные страницы поселков',
   'Рейтинг',
 ]);
+
+const count = (
+  value: number,
+  forms: readonly [one: string, few: string, many: string],
+): string => `${value} ${pluralizeRu(value, forms)}`;
 
 function abs(path: string): string {
   return canon(path);
@@ -59,7 +66,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           'Описание',
           '- Раздел `/815/compare/` сравнивает тарифы на содержание коттеджных поселков с тарифом КП Шелково.',
           '- В данных есть тарифы, базовая инфраструктура, общественные пространства, сервисная модель и условный рейтинг качества среды.',
-          `- Сейчас в базе ${stats.totalSettlements} поселков.`,
+          `- Сейчас в базе ${count(stats.totalSettlements, ['поселок', 'поселка', 'поселков'])}.`,
           '',
           'Главные URL',
           `- Главная: ${home}`,
@@ -93,7 +100,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           'Проект',
           '- Это публичный раздел для сравнения тарифов на содержание коттеджных поселков с тарифом КП Шелково.',
           '- Раздел помогает сопоставить цену и подтвержденные признаки среды: инженерную инфраструктуру, общественные пространства, сервисную модель и условный рейтинг.',
-          `- Сейчас в базе ${stats.totalSettlements} поселков.`,
+          `- Сейчас в базе ${count(stats.totalSettlements, ['поселок', 'поселка', 'поселков'])}.`,
           '',
           'Канонические URL',
           `- Главная: ${home}`,
