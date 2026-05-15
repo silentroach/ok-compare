@@ -1,4 +1,9 @@
 import { pluralizeRu } from '@shelkovo/format';
+import {
+  createMarkdownDocument,
+  parseMarkdownFragment,
+  serializeMarkdownDocument,
+} from '@shelkovo/markdown';
 
 import { absoluteUrl } from '../site';
 import { loadStatusData } from './load';
@@ -20,7 +25,34 @@ import {
 import { STATUS_KINDS, STATUS_SERVICE_STATES, STATUS_SERVICES } from './schema';
 import { formatStatusService } from './view';
 
-const join = (lines: readonly string[]): string => `${lines.join('\n')}\n`;
+const SECTION_TITLES = new Set([
+  'Описание',
+  'Главные URL',
+  'Как читать раздел',
+  'Проект',
+  'Канонические URL',
+  'Описание status.json',
+  'HTML и Markdown',
+  'RSS',
+  'Семантика полей',
+  'Ограничения',
+]);
+
+const serializeLlmsDocument = (lines: readonly string[]): string =>
+  serializeMarkdownDocument(
+    createMarkdownDocument({
+      children: parseMarkdownFragment(
+        lines
+          .map((line, index) => {
+            if (index === 0) return `# ${line}`;
+            if (SECTION_TITLES.has(line)) return `## ${line}`;
+
+            return line;
+          })
+          .join('\n'),
+      ),
+    }),
+  );
 
 const count = (value: number, forms: [string, string, string]): string =>
   `${value} ${pluralizeRu(value, forms)}`;
@@ -62,7 +94,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
     : '/status/incidents/YYYY/MM/[entry]/index.md';
 
   return kind === 'short'
-    ? join([
+    ? serializeLlmsDocument([
         'Статус КП Шелково',
         'Файл: llms.txt',
         'Язык: русский',
@@ -93,7 +125,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         '- Типы записей: `incident`, `maintenance`.',
         '- Текущий статус сервиса derive-ится как `red`, `amber` или `green`.',
       ])
-    : join([
+    : serializeLlmsDocument([
         'Статус КП Шелково',
         'Файл: llms-full.txt',
         'Язык: русский',

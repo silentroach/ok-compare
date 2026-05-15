@@ -1,4 +1,9 @@
 import { pluralizeRu } from '@shelkovo/format';
+import {
+  createMarkdownDocument,
+  parseMarkdownFragment,
+  serializeMarkdownDocument,
+} from '@shelkovo/markdown';
 
 import { absoluteUrl } from '../site';
 import { loadPeopleDataWithBacklinks } from './load';
@@ -13,7 +18,32 @@ import {
   peopleSchemaUrl,
 } from './routes';
 
-const join = (lines: readonly string[]): string => `${lines.join('\n')}\n`;
+const SECTION_TITLES = new Set([
+  'Описание',
+  'Главные URL',
+  'Как читать раздел',
+  'Проект',
+  'Канонические URL',
+  'Описание people.json',
+  'HTML и Markdown',
+  'Ограничения',
+]);
+
+const serializeLlmsDocument = (lines: readonly string[]): string =>
+  serializeMarkdownDocument(
+    createMarkdownDocument({
+      children: parseMarkdownFragment(
+        lines
+          .map((line, index) => {
+            if (index === 0) return `# ${line}`;
+            if (SECTION_TITLES.has(line)) return `## ${line}`;
+
+            return line;
+          })
+          .join('\n'),
+      ),
+    }),
+  );
 
 const count = (value: number, forms: [string, string, string]): string =>
   `${value} ${pluralizeRu(value, forms)}`;
@@ -46,7 +76,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
     : '/people/[slug]/index.md';
 
   return kind === 'short'
-    ? join([
+    ? serializeLlmsDocument([
         'Люди Шелково',
         'Файл: llms.txt',
         'Язык: русский',
@@ -72,7 +102,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         '- В `backlinks` лежат входящие ссылки из новостей, статуса и других профилей, собранные из тех же canonical и labelled mention-синтаксисов.',
         '- Контакты публикуются открыто и не маскируются в feed или markdown companions.',
       ])
-    : join([
+    : serializeLlmsDocument([
         'Люди Шелково',
         'Файл: llms-full.txt',
         'Язык: русский',
