@@ -22,15 +22,60 @@ const compareSharedPrimitiveSelectors = [
 const load = (): string => readFileSync(path, 'utf-8');
 const escapeRegExp = (value: string): string =>
   value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-const selectorToPattern = (selector: string): string =>
-  selector.split(' ').map(escapeRegExp).join(cssTokenSeparatorPattern);
+const selectorClassBoundaryPattern = String.raw`(?![-_a-zA-Z0-9])`;
 const hasDuplicateSharedStyleImport = (css: string): boolean =>
   sharedStyleImportPattern.test(css);
-const hasSelectorRule = (css: string, selector: string): boolean =>
-  new RegExp(
-    `${selectorToPattern(selector)}(?![-_a-zA-Z0-9])[^{}]*\\{`,
+const splitSelectorList = (selectorList: string): readonly string[] => {
+  const selectors: string[] = [];
+  let current = '';
+  let wrapperDepth = 0;
+
+  for (const character of selectorList) {
+    if (character === '(') {
+      wrapperDepth += 1;
+    }
+
+    if (character === ')') {
+      wrapperDepth = Math.max(0, wrapperDepth - 1);
+    }
+
+    if (character === ',' && wrapperDepth === 0) {
+      selectors.push(current);
+      current = '';
+      continue;
+    }
+
+    current += character;
+  }
+
+  selectors.push(current);
+
+  return selectors;
+};
+const hasSelectorRule = (css: string, selector: string): boolean => {
+  const [rootSelector, primitiveSelector] = selector.split(' ');
+
+  if (rootSelector === undefined || primitiveSelector === undefined) {
+    return false;
+  }
+
+  const selectorPattern = new RegExp(
+    `${escapeRegExp(rootSelector)}${selectorClassBoundaryPattern}[^{}]*${escapeRegExp(primitiveSelector)}${selectorClassBoundaryPattern}`,
     'u',
-  ).test(css);
+  );
+
+  return [...css.matchAll(/([^{}]+)\{/gu)].some((match) => {
+    const selectorList = match[1];
+
+    if (selectorList === undefined) {
+      return false;
+    }
+
+    return splitSelectorList(selectorList).some((selectorItem) =>
+      selectorPattern.test(selectorItem),
+    );
+  });
+};
 const findForbiddenSharedPrimitiveSelectors = (
   css: string,
 ): readonly string[] =>
@@ -128,6 +173,26 @@ describe('compare shared-style architecture', () => {
     expect(
       findForbiddenSharedPrimitiveSelectors(
         '.ui-root-compare/**/.ui-btn { background: transparent; }',
+      ),
+    ).toEqual(['.ui-root-compare .ui-btn']);
+  });
+
+  it('detects forbidden primitive overrides through child combinators and selector wrappers', () => {
+    expect(
+      findForbiddenSharedPrimitiveSelectors(
+        '.ui-root-compare > .ui-btn { background: transparent; }',
+      ),
+    ).toEqual(['.ui-root-compare .ui-btn']);
+
+    expect(
+      findForbiddenSharedPrimitiveSelectors(
+        '.ui-root-compare :where(.ui-btn) { background: transparent; }',
+      ),
+    ).toEqual(['.ui-root-compare .ui-btn']);
+
+    expect(
+      findForbiddenSharedPrimitiveSelectors(
+        '.ui-root-compare :is(.ui-btn) { background: transparent; }',
       ),
     ).toEqual(['.ui-root-compare .ui-btn']);
   });
