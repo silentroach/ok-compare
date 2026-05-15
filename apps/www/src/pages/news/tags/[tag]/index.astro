@@ -1,6 +1,6 @@
 ---
 import type { GetStaticPaths } from 'astro';
-import { pluralizeRu } from '@shelkovo/format';
+import { pluralize } from '@shelkovo/format';
 import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import {
@@ -34,7 +34,7 @@ if (!tag) {
 }
 
 const title = `Тема: ${tag.label} — Новости — Шелково Онлайн`;
-const latestPublicationsLabel = `${NEWS_LATEST_LIMIT} ${pluralizeRu(NEWS_LATEST_LIMIT, ['публикация', 'публикации', 'публикаций'])}`;
+const latestPublicationsLabel = `${NEWS_LATEST_LIMIT} ${pluralize(NEWS_LATEST_LIMIT, ['публикация', 'публикации', 'публикаций'])}`;
 const description = `Последние новости Шелково по теме «${tag.label}»: ${latestPublicationsLabel}, а более ранние материалы доступны в архивах.`;
 const breadcrumbs = withHomeBreadcrumbs([
   { label: 'Новости', href: newsUrl() },
