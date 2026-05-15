@@ -557,6 +557,13 @@ const bindStatusTimelineTooltipTrigger = (
   trigger.addEventListener('focusin', () => {
     openStatusTimelineTooltip(root, trigger, tooltip);
   });
+  trigger.addEventListener(
+    'touchstart',
+    () => {
+      openStatusTimelineTooltip(root, trigger, tooltip);
+    },
+    { passive: true },
+  );
   trigger.addEventListener('mouseleave', () => {
     closeStatusTimelineTooltip(root, tooltip);
   });

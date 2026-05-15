@@ -23,7 +23,7 @@ These files break the findings into independent implementation tasks. Each task 
 - [x] `07-compare-color-contrast.md`: fix compare page badge/count contrast.
 - [x] `08-rating-color-contrast.md`: fix rating page adjustment label contrast.
 - [x] `09-critical-font-loading.md`: reduce critical font payload and preloads.
-- [ ] `10-status-timeline-js.md`: reduce unused status timeline JavaScript.
+- [x] `10-status-timeline-js.md`: reduce unused status timeline JavaScript.
 - [ ] `11-compare-dom-size.md`: reduce initial DOM size on `/815/compare/`.
 - [ ] `12-regulation-dom-size.md`: reduce initial DOM size on `/815/regulation/`.
 - [ ] `13-security-csp-inline.md`: harden CSP away from broad inline/script allowlists.

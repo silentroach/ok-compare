@@ -26,18 +26,28 @@ Reduce unused JavaScript on `/status/` by loading status timeline behavior only 
 
 ## Acceptance Criteria
 
-- [ ] `/status/` unused JavaScript warning is reduced materially or resolved.
-- [ ] Timeline tooltips still work with mouse, keyboard, and touch.
-- [ ] Initial page rendering remains fully useful without waiting for JS.
-- [ ] No hydration or console errors are introduced.
+- [x] `/status/` unused JavaScript warning is reduced materially or resolved.
+- [x] Timeline tooltips still work with mouse, keyboard, and touch.
+- [x] Initial page rendering remains fully useful without waiting for JS.
+- [x] No hydration or console errors are introduced.
 
 ## Verification
 
-- [ ] Run `apps/www/src/lib/status/timeline.dom.test.ts`.
-- [ ] Run `apps/www/src/components/status/StatusServiceTimeline.test.ts`.
-- [ ] Run `pnpm typecheck`.
-- [ ] Run Lighthouse against `/status/` and compare unused JS.
-- [ ] Manually test tooltip behavior after a hard reload on mobile and desktop widths.
+- [x] Run `apps/www/src/lib/status/timeline.dom.test.ts`.
+- [x] Run `apps/www/src/components/status/StatusServiceTimeline.test.ts`.
+- [x] Run `pnpm typecheck`.
+- [x] Run Lighthouse against `/status/` and compare unused JS.
+- [x] Manually test tooltip behavior after a hard reload on mobile and desktop widths.
+
+## Result
+
+- `StatusServiceTimeline.astro` now ships only a small lazy-loader on initial page load.
+- `timeline.dom.ts` is loaded as a dynamic chunk on the first timeline segment `pointerover`, `focusin`, or `touchstart`, then hydrates all timelines and replays the initiating interaction.
+- `touchstart` now opens the shared tooltip after hydration, matching the existing mouse and keyboard behavior.
+- Built output splits the status timeline JavaScript into a `4.0K` initial loader (`1323` bytes gzip) and a separate lazy `timeline.dom` chunk.
+- Static Lighthouse CI reported representative `/status/` Performance `0.97`; `unused-javascript` scored `1` with no reported items.
+- Browser verification on `astro preview` at `390x844` and `1280x900` confirmed the tooltip opens after hard reload and the heavy chunk is not requested until interaction.
+- `agent-browser errors` and `agent-browser console` were empty after the browser checks.
 
 ## Files Likely Touched
 

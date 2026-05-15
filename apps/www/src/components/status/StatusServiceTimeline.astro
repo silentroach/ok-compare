@@ -758,11 +758,7 @@ const timelineGroups = incidents
 </style>
 
 <script>
-  import { hydrateStatusTimelines } from '@/lib/status/timeline.dom';
+  import { bindStatusTimelineLazyHydration } from '@/lib/status/timeline.lazy';
 
-  const hydrate = () => hydrateStatusTimelines();
-
-  hydrate();
-  document.addEventListener('astro:after-swap', hydrate);
-  document.addEventListener('astro:page-load', hydrate);
+  bindStatusTimelineLazyHydration();
 </script>

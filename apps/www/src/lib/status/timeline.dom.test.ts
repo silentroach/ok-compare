@@ -1,10 +1,11 @@
 // @vitest-environment happy-dom
 
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { visibleWhitespace } from '../test/visible-whitespace';
 import type { StatusService } from './schema';
 import { hydrateStatusTimeline, hydrateStatusTimelines } from './timeline.dom';
+import { bindStatusTimelineLazyHydration } from './timeline.lazy';
 
 interface TooltipInput {
   readonly serviceLabel: string;
@@ -156,6 +157,11 @@ const getTooltip = (): HTMLElement =>
 
 const getTooltipField = (selector: string): HTMLElement =>
   getTooltip().querySelector(selector) as HTMLElement;
+
+const flushPromises = async (): Promise<void> => {
+  await Promise.resolve();
+  await Promise.resolve();
+};
 
 const readSegmentMetric = (
   element: HTMLElement,
@@ -453,6 +459,28 @@ describe('hydrateStatusTimeline', () => {
     expect(tooltip.hidden).toBe(true);
   });
 
+  it('opens on touchstart after hydration', () => {
+    const root = renderTimeline([
+      {
+        id: 'touch',
+        tag: 'button',
+        start: '2026-05-08T00:00:00Z',
+      },
+    ]);
+
+    hydrateStatusTimeline(root, {
+      nowMs: Date.parse('2026-05-10T00:00:00Z'),
+    });
+
+    const node = getProblemNode('touch');
+    const tooltip = getTooltip();
+
+    node.dispatchEvent(new Event('touchstart'));
+
+    expect(tooltip.hidden).toBe(false);
+    expect(node.getAttribute('aria-describedby')).toBe(tooltip.id);
+  });
+
   it('removes the native title after hydration to avoid double tooltips', () => {
     const root = renderTimeline([
       {
@@ -722,4 +750,81 @@ describe('hydrateStatusTimeline', () => {
     expect(readSegmentMetric(scoped, '--segment-left')).toBeCloseTo(90);
     expect(readSegmentMetric(scoped, '--segment-width')).toBeCloseTo(10);
   });
+});
+
+describe('bindStatusTimelineLazyHydration', () => {
+  const renderLazyTimelineDocument = (): Document => {
+    const rootDocument = document.implementation.createHTMLDocument();
+
+    rootDocument.body.innerHTML = `
+      <button data-outside-status-timeline>Outside</button>
+      <div data-status-timeline data-range-days="10">
+        <div data-status-timeline-track>
+          <button type="button" data-status-problem data-incident-id="lazy"></button>
+        </div>
+      </div>
+    `;
+
+    return rootDocument;
+  };
+
+  const getLazyProblemNode = (rootDocument: Document): HTMLElement =>
+    rootDocument.querySelector('[data-status-problem]') as HTMLElement;
+
+  it('keeps the full DOM module unloaded until a timeline segment interaction', async () => {
+    const rootDocument = renderLazyTimelineDocument();
+    const hydrateStatusTimelines = vi.fn();
+    const loadStatusTimelineDom = vi.fn(async () => ({
+      hydrateStatusTimelines,
+    }));
+
+    bindStatusTimelineLazyHydration(rootDocument, loadStatusTimelineDom);
+
+    rootDocument
+      .querySelector('[data-outside-status-timeline]')
+      ?.dispatchEvent(new Event('pointerover', { bubbles: true }));
+    await flushPromises();
+
+    expect(loadStatusTimelineDom).not.toHaveBeenCalled();
+
+    getLazyProblemNode(rootDocument).dispatchEvent(
+      new Event('pointerover', { bubbles: true }),
+    );
+    await flushPromises();
+
+    expect(loadStatusTimelineDom).toHaveBeenCalledTimes(1);
+    expect(hydrateStatusTimelines).toHaveBeenCalledWith(rootDocument);
+  });
+
+  it.each([
+    ['pointerover', 'mouseenter'],
+    ['focusin', 'focusin'],
+    ['touchstart', 'touchstart'],
+  ] as const)(
+    'replays the first %s intent after lazy hydration',
+    async (sourceEvent, replayedEvent) => {
+      const rootDocument = renderLazyTimelineDocument();
+      const trigger = getLazyProblemNode(rootDocument);
+      const hydrateStatusTimelines = vi.fn((scope?: ParentNode) => {
+        const node = scope?.querySelector('[data-status-problem]');
+
+        if (!(node instanceof HTMLElement)) {
+          return;
+        }
+
+        node.addEventListener(replayedEvent, () => {
+          node.dataset.replayedEvent = replayedEvent;
+        });
+      });
+      const loadStatusTimelineDom = vi.fn(async () => ({
+        hydrateStatusTimelines,
+      }));
+
+      bindStatusTimelineLazyHydration(rootDocument, loadStatusTimelineDom);
+      trigger.dispatchEvent(new Event(sourceEvent, { bubbles: true }));
+      await flushPromises();
+
+      expect(trigger.dataset.replayedEvent).toBe(replayedEvent);
+    },
+  );
 });
