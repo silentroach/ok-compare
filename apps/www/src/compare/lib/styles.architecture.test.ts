@@ -155,7 +155,8 @@ const hasSelectorRule = (css: string, selector: string): boolean => {
     let hasCompareRoot = false;
 
     for (const selectorList of selectorPath) {
-      const selectorItems = splitSelectorList(selectorList);
+      const selectorItems =
+        splitSelectorList(selectorList).map(decodeCssEscapes);
       const selectorListHasCompareRoot = selectorItems.some((selectorItem) =>
         rootSelectorPattern.test(selectorItem),
       );
@@ -351,6 +352,26 @@ describe('compare shared-style architecture', () => {
     expect(
       findForbiddenSharedPrimitiveSelectors(
         '.ui-root-compare { /* } */ .ui-btn { background: transparent; } }',
+      ),
+    ).toEqual(['.ui-root-compare .ui-btn']);
+  });
+
+  it('detects forbidden primitive overrides with CSS-escaped selector class names', () => {
+    expect(
+      findForbiddenSharedPrimitiveSelectors(
+        '.ui-root-compare .ui-\\62 tn { background: transparent; }',
+      ),
+    ).toEqual(['.ui-root-compare .ui-btn']);
+
+    expect(
+      findForbiddenSharedPrimitiveSelectors(
+        '.ui-root-compare .\\75 i-btn { background: transparent; }',
+      ),
+    ).toEqual(['.ui-root-compare .ui-btn']);
+
+    expect(
+      findForbiddenSharedPrimitiveSelectors(
+        '.\\75 i-root-compare .ui-btn { background: transparent; }',
       ),
     ).toEqual(['.ui-root-compare .ui-btn']);
   });
