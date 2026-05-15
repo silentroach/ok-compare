@@ -3,6 +3,12 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const path = join(process.cwd(), 'src/compare/styles/global.css');
+const comparePagePaths = [
+  'src/pages/815/compare/index.astro',
+  'src/pages/815/compare/rating.astro',
+  'src/pages/815/compare/404.astro',
+  'src/pages/815/compare/settlements/[slug]/index.astro',
+] as const;
 const cssTokenSeparatorPattern = String.raw`(?:[\t\n\f\r ]|\/\*[^]*?\*\/)+`;
 const optionalCssTokenSeparatorPattern = `(?:${cssTokenSeparatorPattern})?`;
 const sharedStyleUrl = '@shelkovo/ui/styles.css';
@@ -21,6 +27,14 @@ const compareSharedPrimitiveSelectors = [
 ] as const;
 
 const load = (): string => readFileSync(path, 'utf-8');
+const loadComparePages = (): readonly {
+  readonly path: string;
+  readonly source: string;
+}[] =>
+  comparePagePaths.map((pagePath) => ({
+    path: pagePath,
+    source: readFileSync(join(process.cwd(), pagePath), 'utf-8'),
+  }));
 const escapeRegExp = (value: string): string =>
   value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const decodeCssEscapes = (value: string): string =>
@@ -219,6 +233,17 @@ describe('compare shared-style architecture', () => {
     expect(
       rootScopedSelectors,
       'compare CSS should keep local rules on compare-* selectors; ui-root-compare is only a page marker',
+    ).toEqual([]);
+  });
+
+  it('does not keep an unused compare body root class on compare pages', () => {
+    const pagesWithCompareRoot = loadComparePages()
+      .filter(({ source }) => source.includes('ui-root-compare'))
+      .map(({ path }) => path);
+
+    expect(
+      pagesWithCompareRoot,
+      'compare pages should inherit BaseLayout body classes without a stale CSS-isolation marker',
     ).toEqual([]);
   });
 
