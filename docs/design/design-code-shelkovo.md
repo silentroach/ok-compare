@@ -22,8 +22,10 @@ colors:
   accent-text: 'oklch(43% 0.075 72)'
   earth: 'oklch(45% 0.06 72)'
   success: 'oklch(53% 0.12 145)'
+  success-text: 'oklch(51% 0.12 145)'
   warning: 'oklch(73% 0.15 73)'
   danger: 'oklch(54% 0.145 28)'
+  danger-text: 'oklch(52% 0.145 28)'
   water: 'oklch(46% 0.09 235)'
   unknown: 'oklch(48% 0.04 125)'
 typography:
@@ -105,7 +107,7 @@ components:
     padding: '1.25rem 1.5rem'
   badge-success:
     backgroundColor: 'oklch(94.5% 0.04 145)'
-    textColor: '{colors.success}'
+    textColor: '{colors.success-text}'
     rounded: '{rounded.full}'
     padding: '0.25rem 0.65rem'
 ---
@@ -168,6 +170,7 @@ components:
 - **Внимание** (`warning`): плановые работы, частичные ограничения, условия, требующие проверки.
 - **Проблема** (`danger`): активные инциденты, ошибки, отрицательные корректировки.
 - **Неизвестно** (`unknown`): отсутствующие или неполные данные, не трактовать как отрицательный статус.
+- **Текстовые state-варианты** (`success-text`, `danger-text`): foreground для мягких плашек и мелких бейджей на `*-soft`, где базовые `success`/`danger` могут оказаться слишком близко к порогу WCAG AA.
 
 ### Contrast Matrix
 
