@@ -1,5 +1,5 @@
 ---
-import { pluralizeRu } from '@shelkovo/format';
+import { pluralize } from '@shelkovo/format';
 import type { GetStaticPaths } from 'astro';
 import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
@@ -82,7 +82,7 @@ const schema = collectionPageSchema({
                   })}
                 </a>
                 <span class="text-muted-foreground">
-                  {`(${item.count} ${pluralizeRu(item.count, ['новость', 'новости', 'новостей'])})`}
+                  {`(${item.count} ${pluralize(item.count, ['новость', 'новости', 'новостей'])})`}
                 </span>
               </li>
             ))
