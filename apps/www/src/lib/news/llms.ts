@@ -1,4 +1,4 @@
-import { pluralizeRu } from '@shelkovo/format';
+import { count } from '@shelkovo/format';
 
 import { absoluteUrl } from '../site';
 import { loadNewsData } from './load';
@@ -15,6 +15,11 @@ import {
   tagsMarkdownUrl,
   tagsUrl,
 } from './routes';
+import {
+  llmsSection,
+  markdownList,
+  serializeLlmsDocument,
+} from '@/lib/markdown/llms-document';
 
 export async function build(kind: 'short' | 'full'): Promise<string> {
   const data = await loadNewsData();
@@ -22,7 +27,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
   const year = data.archives.years[0];
   const month = year?.months[0];
   const tag = data.tags[0];
-  const counts = `${data.articles.length} ${pluralizeRu(data.articles.length, ['статья', 'статьи', 'статей'])}, ${data.tags.length} ${pluralizeRu(data.tags.length, ['тег', 'тега', 'тегов'])} и ${data.archives.years.length} ${pluralizeRu(data.archives.years.length, ['архивный год', 'архивных года', 'архивных лет'])}`;
+  const counts = `${count(data.articles.length, ['статья', 'статьи', 'статей'])}, ${count(data.tags.length, ['тег', 'тега', 'тегов'])} и ${count(data.archives.years.length, ['архивный год', 'архивных года', 'архивных лет'])}`;
 
   const home = absoluteUrl(newsUrl());
   const homeMarkdown = absoluteUrl(newsMarkdownUrl());
@@ -43,104 +48,125 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
   const monthUrl = month ? absoluteUrl(month.url) : '/news/YYYY/MM/';
   const tagUrl = tag ? absoluteUrl(tag.url) : '/news/tags/[tag]/';
 
-  const body =
-    kind === 'short'
-      ? [
-          'Новости Шелково',
-          'Файл: llms.txt',
-          'Язык: русский',
-          '',
-          'Описание',
-          '- Раздел `/news/` публикует новости, объявления и поздние уточнения по КП Шелково.',
-          `- Сейчас в разделе ${counts}.`,
-          '- HTML detail pages остаются каноническим представлением для людей, а articles.json служит основным structured feed.',
-          '- Если новость объявляет календарные события, в `articles[].events[]` есть metadata событий и ссылки на article-local `.ics`.',
-          '',
-          'Главные URL',
-          `- Главная новостей: ${home}`,
-          `- Основной JSON feed: ${feed}`,
-          `- RSS: ${rss}`,
-          `- API catalog: ${catalog}`,
-          `- JSON Schema: ${schema}`,
-          `- OpenAPI: ${openapi}`,
-          `- Расширенная версия этого текста: ${full}`,
-          '',
-          'Как читать раздел',
-          `- Пример detail HTML: ${articleHtml}`,
-          `- Пример detail Markdown: ${articleMarkdown}`,
-          `- Годовой архив: ${yearUrl}`,
-          `- Месячный архив: ${monthUrl}`,
-          `- Индекс тегов: ${tags}`,
-          `- Пример tag page: ${tagUrl}`,
-          '- В articles.json каждая статья содержит summary, полный body_markdown, optional `events` и отдельный массив addenda.',
-          '- addenda не переписывают исходный body новости; это поздние уточнения, комментарии или новые подтвержденные факты.',
-          '- Тип источника определяется по `author.kind`; официальные источники используют `kind: official`.',
-          '- Для календаря события используйте `/news/YYYY/MM/[entry]/[event-slug].ics`; глобального календаря событий нет.',
-        ]
-      : [
-          'Новости Шелково',
-          'Файл: llms-full.txt',
-          'Язык: русский',
-          '',
-          'Проект',
-          '- Раздел `/news/` публикует новости, объявления и последующие уточнения по КП Шелково.',
-          '- Для массового чтения используйте JSON feed; HTML и Markdown удобнее для одной новости, архива или тега.',
-          `- Сейчас в разделе ${counts}.`,
-          '',
-          'Канонические URL',
-          `- Главная новостей: ${home}`,
-          `- Markdown news home: ${homeMarkdown}`,
-          `- Короткий агентный обзор: ${short}`,
-          `- Расширенный агентный обзор: ${full}`,
-          `- Основной JSON feed: ${feed}`,
-          `- RSS: ${rss}`,
-          `- API catalog: ${catalog}`,
-          `- JSON Schema: ${schema}`,
-          `- OpenAPI: ${openapi}`,
-          `- Индекс тегов HTML: ${tags}`,
-          `- Индекс тегов Markdown: ${tagsMarkdown}`,
-          `- Пример detail HTML: ${articleHtml}`,
-          `- Пример detail Markdown: ${articleMarkdown}`,
-          `- Пример годового архива: ${yearUrl}`,
-          `- Пример месячного архива: ${monthUrl}`,
-          `- Пример страницы тега: ${tagUrl}`,
-          '',
-          'Описание articles.json',
-          '- Это основной read-only structured feed для массового обхода новостей.',
-          '- Корневой объект содержит `articles`, `archives.years` и `tags`.',
-          '- `articles[]` включает `id`, `title`, `summary`, `published_at`, опциональный `updated_at`, дату по частям (`year`, `month`, `day`), `entry`, `html_url`, `markdown_url`, `source_url`, `pinned`, `author`, `areas`, `tags`, опциональные `cover` и `events`, массивы `photos`, `attachments`, полный `body_markdown` и массив `addenda`.',
-          '- `articles[].events[]` существует только у новостей, которые объявляют календарные события; каждый объект содержит `slug`, `title`, `starts_at`, optional `description`, `ends_at`, `location`, `coordinates`, `map_url` и обязательный `ics_url`.',
-          '- `addenda[]` сериализуются отдельно от основного body и сохраняют собственные `published_at`, `author`, `source_url`, `body_markdown`, `photos` и `attachments`.',
-          '- `archives.years[]` описывают годовые и месячные архивы с count и URL на HTML/Markdown pages.',
-          '- `tags[]` содержат редакционный label, normalized key, count и URL на HTML/Markdown tag pages.',
-          '',
-          'События и календарь',
-          '- Файлы календаря событий живут рядом со статьей: `/news/YYYY/MM/[entry]/[event-slug].ics`.',
-          '- Для машинного обхода берите прямые ссылки из `articles[].events[].ics_url`; они абсолютные в JSON feed.',
-          '- Глобального events calendar feed в этой реализации нет.',
-          '',
-          'HTML и Markdown',
-          '- HTML detail pages `/news/YYYY/MM/[entry]/` остаются каноническим человекочитаемым представлением новости.',
-          '- Markdown companions `/news/.../index.md` дают text-first слой для терминалов, агентов и прямых ссылок на чистый текст.',
-          '- Во всех списках, архивах и тегах показывается только summary; полный body и текст addenda раскрываются только на detail page и в основном JSON feed.',
-          '',
-          'RSS',
-          '- `/news/feed.xml` остается summary-first RSS.',
-          '- В RSS description используется краткое summary статьи, а не полный body и не текст addenda.',
-          '- Источником правды для полного machine-readable контента остается articles.json.',
-          '',
-          'Addenda и источники',
-          '- addenda хранятся внутри того же article source file, что и исходная новость, но в JSON/Markdown/detail HTML отдаются отдельным массивом или блоком.',
-          '- Поздние addenda не поднимают новость вверх в списках: базовая сортировка остается по исходной публикации.',
-          '- Тип источника определяется по `author.kind`: официальные источники используют `kind: official`.',
-          '- Официальная новость может получить community/editorial addenda без переписывания исходного body.',
-          '',
-          'Ограничения',
-          '- Все маршруты раздела read-only; ручек для изменения данных и авторизации здесь нет.',
-          '- Если source article не указывает areas, effective `areas` в feed покрывает все части поселка: `river`, `forest`, `park`, `village`.',
-          '- Теги хранятся как русские label, а для URL и feed получают normalized key с дефисами.',
-          '- Inline локальные картинки внутри raw markdown body не переписываются автоматически; гарантированно machine-readable считаются `cover`, `photos`, `attachments` и `events`.',
-        ];
-
-  return `${body.join('\n')}\n`;
+  return kind === 'short'
+    ? serializeLlmsDocument({
+        title: 'Новости Шелково',
+        file: 'llms.txt',
+        sections: [
+          llmsSection('Описание', [
+            markdownList([
+              'Раздел `/news/` публикует новости, объявления и поздние уточнения по КП Шелково.',
+              `Сейчас в разделе ${counts}.`,
+              'HTML-страницы новостей остаются каноническим представлением для людей, а `articles.json` служит основным структурированным файлом данных.',
+              'Если новость объявляет календарные события, в `articles[].events[]` есть метаданные событий и ссылки на локальные для статьи `.ics`-файлы.',
+            ]),
+          ]),
+          llmsSection('Главные URL', [
+            markdownList([
+              `Главная новостей: ${home}`,
+              `Основной JSON-файл: ${feed}`,
+              `RSS: ${rss}`,
+              `Каталог API: ${catalog}`,
+              `JSON Schema: ${schema}`,
+              `OpenAPI: ${openapi}`,
+              `Расширенная версия этого текста: ${full}`,
+            ]),
+          ]),
+          llmsSection('Как читать раздел', [
+            markdownList([
+              `Пример HTML-страницы новости: ${articleHtml}`,
+              `Пример Markdown-страницы новости: ${articleMarkdown}`,
+              `Годовой архив: ${yearUrl}`,
+              `Месячный архив: ${monthUrl}`,
+              `Индекс тегов: ${tags}`,
+              `Пример страницы тега: ${tagUrl}`,
+              'В `articles.json` каждая статья содержит `summary`, полный `body_markdown`, необязательный массив `events` и отдельный массив `addenda`.',
+              '`addenda` не переписывают исходный `body` новости; это поздние уточнения, комментарии или новые подтвержденные факты.',
+              'Тип источника определяется по `author.kind`; официальные источники используют `kind: official`.',
+              'Для календаря события используйте `/news/YYYY/MM/[entry]/[event-slug].ics`; глобального календаря событий нет.',
+            ]),
+          ]),
+        ],
+      })
+    : serializeLlmsDocument({
+        title: 'Новости Шелково',
+        file: 'llms-full.txt',
+        sections: [
+          llmsSection('Проект', [
+            markdownList([
+              'Раздел `/news/` публикует новости, объявления и последующие уточнения по КП Шелково.',
+              'Для массового чтения используйте JSON-файл; HTML и Markdown удобнее для одной новости, архива или тега.',
+              `Сейчас в разделе ${counts}.`,
+            ]),
+          ]),
+          llmsSection('Канонические URL', [
+            markdownList([
+              `Главная новостей: ${home}`,
+              `Главная новостей в Markdown: ${homeMarkdown}`,
+              `Короткий обзор llms.txt: ${short}`,
+              `Подробный обзор llms-full.txt: ${full}`,
+              `Основной JSON-файл: ${feed}`,
+              `RSS: ${rss}`,
+              `Каталог API: ${catalog}`,
+              `JSON Schema: ${schema}`,
+              `OpenAPI: ${openapi}`,
+              `Индекс тегов HTML: ${tags}`,
+              `Индекс тегов Markdown: ${tagsMarkdown}`,
+              `Пример HTML-страницы новости: ${articleHtml}`,
+              `Пример Markdown-страницы новости: ${articleMarkdown}`,
+              `Пример годового архива: ${yearUrl}`,
+              `Пример месячного архива: ${monthUrl}`,
+              `Пример страницы тега: ${tagUrl}`,
+            ]),
+          ]),
+          llmsSection('Описание articles.json', [
+            markdownList([
+              'Это основной структурированный файл данных для массового обхода новостей; маршруты раздела доступны только на чтение.',
+              'Корневой объект содержит `articles`, `archives.years` и `tags`.',
+              '`articles[]` включает `id`, `title`, `summary`, `published_at`, опциональный `updated_at`, дату по частям (`year`, `month`, `day`), `entry`, `html_url`, `markdown_url`, `source_url`, `pinned`, `author`, `areas`, `tags`, опциональные `cover` и `events`, массивы `photos`, `attachments`, полный `body_markdown` и массив `addenda`.',
+              '`articles[].events[]` существует только у новостей, которые объявляют календарные события; каждый объект содержит `slug`, `title`, `starts_at`, необязательные `description`, `ends_at`, `location`, `coordinates`, `map_url` и обязательный `ics_url`.',
+              '`addenda[]` сериализуются отдельно от основного `body` и сохраняют собственные `published_at`, `author`, `source_url`, `body_markdown`, `photos` и `attachments`.',
+              '`archives.years[]` описывают годовые и месячные архивы с количеством публикаций и URL на HTML/Markdown-страницы.',
+              '`tags[]` содержат редакционный `label`, нормализованный `key`, количество публикаций и URL на HTML/Markdown-страницы тегов.',
+            ]),
+          ]),
+          llmsSection('События и календарь', [
+            markdownList([
+              'Файлы календаря событий живут рядом со статьей: `/news/YYYY/MM/[entry]/[event-slug].ics`.',
+              'Для машинного обхода берите прямые ссылки из `articles[].events[].ics_url`; в JSON-файле они абсолютные.',
+              'Глобального календарного файла событий в этой реализации нет.',
+            ]),
+          ]),
+          llmsSection('HTML и Markdown', [
+            markdownList([
+              'HTML-страницы `/news/YYYY/MM/[entry]/` остаются каноническим человекочитаемым представлением новости.',
+              'Markdown-файлы `/news/.../index.md` дают текстовую версию для терминалов и прямых ссылок на чистый текст.',
+              'Во всех списках, архивах и тегах показывается только `summary`; полный `body` и текст `addenda` раскрываются только на странице новости и в основном JSON-файле.',
+            ]),
+          ]),
+          llmsSection('RSS', [
+            markdownList([
+              '`/news/feed.xml` остается RSS с краткими описаниями.',
+              'В RSS `description` используется краткое `summary` статьи, а не полный `body` и не текст `addenda`.',
+              'Источником правды для полного машиночитаемого контента остается `articles.json`.',
+            ]),
+          ]),
+          llmsSection('Уточнения и источники', [
+            markdownList([
+              '`addenda` хранятся в том же исходном файле статьи, что и исходная новость, но в JSON, Markdown и HTML отдаются отдельным массивом или блоком.',
+              'Поздние `addenda` не поднимают новость вверх в списках: базовая сортировка остается по исходной публикации.',
+              'Тип источника определяется по `author.kind`: официальные источники используют `kind: official`.',
+              'Официальная новость может получить уточнения от сообщества или редакции без переписывания исходного `body`.',
+            ]),
+          ]),
+          llmsSection('Ограничения', [
+            markdownList([
+              'Все маршруты раздела доступны только на чтение; ручек для изменения данных и авторизации здесь нет.',
+              'Если исходная статья не указывает `areas`, итоговое поле `areas` в JSON-файле покрывает все части поселка: `river`, `forest`, `park`, `village`.',
+              'Теги хранятся как русские `label`, а для URL и JSON-файла получают нормализованный `key` с дефисами.',
+              'Локальные картинки внутри исходного markdown-текста не переписываются автоматически; гарантированно машиночитаемыми считаются `cover`, `photos`, `attachments` и `events`.',
+            ]),
+          ]),
+        ],
+      });
 }

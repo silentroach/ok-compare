@@ -1,10 +1,12 @@
-import { absoluteUrl } from '../site';
 import {
-  frontmatterArray,
-  frontmatterBlock,
-  frontmatterField,
-  frontmatterScalar,
-} from '../markdown/frontmatter';
+  createMarkdownDocument,
+  md,
+  parseMarkdownFragment,
+  serializeMarkdownDocument,
+  type MarkdownPhrasingInput,
+} from '@shelkovo/markdown';
+
+import { absoluteUrl } from '../site';
 import type {
   StatusDataset,
   StatusIncident,
@@ -27,34 +29,53 @@ export const STATUS_MARKDOWN_HEADERS = {
 
 const abs = (value: string): string => absoluteUrl(value);
 
-const join = (lines: readonly string[]): string => `${lines.join('\n')}\n`;
+type MarkdownNode = ReturnType<typeof parseMarkdownFragment>[number];
+type MarkdownListItem = ReturnType<typeof md.listItem>;
+type MarkdownPhrasingNodes = Exclude<MarkdownPhrasingInput, string>;
+type MarkdownPhrasingNode = MarkdownPhrasingNodes[number];
+
+const serialize = (children: readonly MarkdownNode[]): string =>
+  serializeMarkdownDocument(createMarkdownDocument({ children }));
 
 const pick = <T>(items: readonly (T | undefined)[]): readonly T[] =>
   items.filter((item): item is T => item !== undefined);
 
-function row(label: string, value?: string): string | undefined {
+const phrase = (value: MarkdownPhrasingInput): MarkdownPhrasingNodes =>
+  typeof value === 'string' ? [md.text(value)] : value;
+
+function row(
+  label: string,
+  value?: MarkdownPhrasingInput,
+): MarkdownListItem | undefined {
   if (!value) {
     return undefined;
   }
 
-  return `- ${label}: ${value}`;
+  return md.listItem([md.paragraph([md.text(`${label}: `), ...phrase(value)])]);
 }
 
-function section(title: string, rows: readonly string[]): readonly string[] {
-  return [`## ${title}`, ...(rows.length > 0 ? rows : ['- Нет данных.']), ''];
-}
+const section = (
+  title: string,
+  rows: readonly MarkdownListItem[],
+): readonly MarkdownNode[] => [
+  md.heading(2, title),
+  md.list(rows.length > 0 ? rows : [md.listItem('Нет данных.')]),
+];
 
 const inline = (value: string): string => value.replace(/\s+/gu, ' ').trim();
 
 const statusDate = (iso: string, hasTime: boolean): string =>
   hasTime ? iso : iso.slice(0, 10);
 
-const sourceMarkdownLink = (url: string): string => `[источник](${abs(url)})`;
+const sourceMarkdownLink = (url: string): ReturnType<typeof md.link> =>
+  md.link(abs(url), 'источник');
 
-const incidentMarkdownLabel = (incident: StatusIncident): string =>
+const incidentMarkdownLabel = (
+  incident: StatusIncident,
+): MarkdownPhrasingNodes =>
   incident.has_page
-    ? `[${incident.title}](${incidentMarkdownHref(incident)})`
-    : incident.title;
+    ? [md.link(incidentMarkdownHref(incident), incident.title)]
+    : [md.text(incident.title)];
 
 const incidentMarkdownHref = (
   incident: Pick<StatusIncident, 'year' | 'month' | 'slug'>,
@@ -67,44 +88,41 @@ const areaLabels = (
     ? []
     : incident.areas.map((area) => formatStatusArea(area));
 
-function incidentFrontmatter(incident: StatusIncident): readonly string[] {
-  return frontmatterBlock([
-    ...frontmatterField('title', incident.title),
-    'service:',
-    `  id: ${frontmatterScalar(incident.service)}`,
-    `  name: ${frontmatterScalar(formatStatusService(incident.service))}`,
-    'kind:',
-    `  id: ${frontmatterScalar(incident.kind)}`,
-    `  name: ${frontmatterScalar(formatStatusKind(incident.kind))}`,
-    ...frontmatterField('phase', getStatusIncidentPhase(incident).label),
-    ...frontmatterField(
-      'started_at',
-      statusDate(incident.started_iso, incident.started_has_time),
-    ),
-    ...frontmatterField('started_has_time', incident.started_has_time),
-    ...frontmatterField(
-      'ended_at',
-      incident.ended_iso
-        ? statusDate(incident.ended_iso, incident.ended_has_time)
-        : undefined,
-    ),
+const incidentFrontmatter = (
+  incident: StatusIncident,
+): Readonly<Record<string, unknown>> => {
+  const areas = areaLabels(incident);
+
+  return {
+    title: incident.title,
+    service: {
+      id: incident.service,
+      name: formatStatusService(incident.service),
+    },
+    kind: {
+      id: incident.kind,
+      name: formatStatusKind(incident.kind),
+    },
+    phase: getStatusIncidentPhase(incident).label,
+    started_at: statusDate(incident.started_iso, incident.started_has_time),
+    started_has_time: incident.started_has_time,
     ...(incident.ended_iso
-      ? frontmatterField('ended_has_time', incident.ended_has_time)
-      : []),
-    ...frontmatterArray('areas', areaLabels(incident)),
-    ...frontmatterField(
-      'source_url',
-      incident.source_url ? abs(incident.source_url) : undefined,
-    ),
-  ]);
-}
+      ? {
+          ended_at: statusDate(incident.ended_iso, incident.ended_has_time),
+          ended_has_time: incident.ended_has_time,
+        }
+      : {}),
+    ...(areas.length > 0 ? { areas } : {}),
+    ...(incident.source_url ? { source_url: abs(incident.source_url) } : {}),
+  };
+};
 
 function incidentLine(
   incident: StatusIncident,
   opts?: {
     readonly hideIncidentPhase?: boolean;
   },
-): string {
+): MarkdownListItem {
   const meta = pick([
     formatStatusService(incident.service),
     formatStatusKind(incident.kind),
@@ -112,15 +130,25 @@ function incidentLine(
       ? undefined
       : getStatusIncidentPhase(incident).label,
     formatStatusIncidentPeriodText(incident),
-    !incident.has_page && incident.source_url
-      ? sourceMarkdownLink(incident.source_url)
-      : undefined,
   ]);
   const excerpt = incident.excerpt ? inline(incident.excerpt) : undefined;
+  const children: MarkdownPhrasingNode[] = [...incidentMarkdownLabel(incident)];
 
-  return `- ${incidentMarkdownLabel(incident)}${
-    meta.length > 0 ? ` — ${meta.join('; ')}` : ''
-  }${excerpt ? `\n  ${excerpt}` : ''}`;
+  if (meta.length > 0 || (!incident.has_page && incident.source_url)) {
+    children.push(md.text(` — ${meta.join('; ')}`));
+
+    if (!incident.has_page && incident.source_url) {
+      children.push(
+        md.text(meta.length > 0 ? '; ' : ''),
+        sourceMarkdownLink(incident.source_url),
+      );
+    }
+  }
+
+  return md.listItem([
+    md.paragraph(children),
+    ...(excerpt ? [md.paragraph(excerpt)] : []),
+  ]);
 }
 
 function incidentSection(input: {
@@ -129,26 +157,37 @@ function incidentSection(input: {
   readonly empty: string;
   readonly intro?: string;
   readonly hideIncidentPhase?: boolean;
-}): readonly string[] {
+}): readonly MarkdownNode[] {
   const { title, items, empty, intro, hideIncidentPhase } = input;
 
   return [
-    `## ${title}`,
-    ...(intro ? [intro, ''] : []),
-    ...(items.length > 0
-      ? items.map((incident) => incidentLine(incident, { hideIncidentPhase }))
-      : [`- ${empty}`]),
-    '',
+    md.heading(2, title),
+    ...(intro ? [md.paragraph(intro)] : []),
+    md.list(
+      items.length > 0
+        ? items.map((incident) => incidentLine(incident, { hideIncidentPhase }))
+        : [md.listItem(empty)],
+    ),
   ];
 }
 
-const serviceLine = (summary: StatusServiceSummary): string => {
+const serviceLine = (summary: StatusServiceSummary): MarkdownListItem => {
   const latest = summary.incidents[0];
-  const latestLabel = latest
-    ? incidentMarkdownLabel(latest)
-    : 'пока без записей';
 
-  return `- [${formatStatusService(summary.service)}](${abs(statusServiceMarkdownUrl(summary.service))}) — ${formatStatusServiceState(summary.service_status)}; последняя запись: ${latestLabel}`;
+  return md.listItem([
+    md.paragraph([
+      md.link(
+        abs(statusServiceMarkdownUrl(summary.service)),
+        formatStatusService(summary.service),
+      ),
+      md.text(
+        ` — ${formatStatusServiceState(summary.service_status)}; последняя запись: `,
+      ),
+      ...(latest
+        ? incidentMarkdownLabel(latest)
+        : [md.text('пока без записей')]),
+    ]),
+  ]);
 };
 
 export function buildStatusHomeMarkdown(
@@ -167,11 +206,11 @@ export function buildStatusHomeMarkdown(
       (item.is_active || item.started_at.valueOf() > now.valueOf()),
   );
 
-  return join([
-    '# Статус КП Шелково',
-    '',
-    'Текстовая сводка состояния сервисов КП Шелково: активные инциденты, плановые работы и история отключений.',
-    '',
+  return serialize([
+    md.heading(1, 'Статус КП Шелково'),
+    md.paragraph(
+      'Текстовая сводка состояния сервисов КП Шелково: активные инциденты, плановые работы и история отключений.',
+    ),
     ...section('Сервисы', data.services.map(serviceLine)),
     ...(activeIncidents.length > 0
       ? incidentSection({
@@ -211,9 +250,8 @@ export function buildStatusServiceMarkdown(
   );
   const serviceLabel = formatStatusService(summary.service);
 
-  return join([
-    `# ${serviceLabel} — статус Шелково`,
-    '',
+  return serialize([
+    md.heading(1, `${serviceLabel} — статус Шелково`),
     ...section(
       'Сводка',
       pick([
@@ -221,7 +259,7 @@ export function buildStatusServiceMarkdown(
         row('Текущий статус', formatStatusServiceState(summary.service_status)),
         row(
           'Последняя запись',
-          latest ? incidentMarkdownLabel(latest) : 'нет записей',
+          latest ? incidentMarkdownLabel(latest) : [md.text('нет записей')],
         ),
       ]),
     ),
@@ -254,10 +292,13 @@ export function buildStatusServiceMarkdown(
 }
 
 export function buildStatusIncidentMarkdown(incident: StatusIncident): string {
-  return join([
-    ...incidentFrontmatter(incident),
-    `# ${incident.title}`,
-    '',
-    ...(incident.body ? [incident.body.trim(), ''] : []),
-  ]);
+  return serializeMarkdownDocument(
+    createMarkdownDocument({
+      frontmatter: incidentFrontmatter(incident),
+      children: [
+        md.heading(1, incident.title),
+        ...(incident.body ? parseMarkdownFragment(incident.body.trim()) : []),
+      ],
+    }),
+  );
 }

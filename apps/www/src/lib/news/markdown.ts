@@ -1,11 +1,11 @@
-import { pluralizeRu } from '@shelkovo/format';
-
+import { count } from '@shelkovo/format';
 import {
-  frontmatterArray,
-  frontmatterBlock,
-  frontmatterField,
-  frontmatterScalar,
-} from '../markdown/frontmatter';
+  createMarkdownDocument,
+  md,
+  parseMarkdownFragment,
+  serializeMarkdownDocument,
+} from '@shelkovo/markdown';
+
 import { absoluteUrl } from '../site';
 import { NEWS_LATEST_LIMIT } from './config';
 import type {
@@ -33,22 +33,30 @@ export const NEWS_MARKDOWN_HEADERS = {
 
 const abs = (value: string): string => absoluteUrl(value);
 
-const join = (lines: readonly string[]): string => `${lines.join('\n')}\n`;
+type MarkdownNode = ReturnType<typeof parseMarkdownFragment>[number];
+type MarkdownListItem = ReturnType<typeof md.listItem>;
+
+const serialize = (children: readonly MarkdownNode[]): string =>
+  serializeMarkdownDocument(createMarkdownDocument({ children }));
 
 const pick = <T>(items: readonly (T | undefined)[]): readonly T[] =>
   items.filter((item): item is T => item !== undefined);
 
-function row(label: string, value?: string): string | undefined {
+function row(label: string, value?: string): MarkdownListItem | undefined {
   if (!value) {
     return undefined;
   }
 
-  return `- ${label}: ${value}`;
+  return md.listItem(`${label}: ${value}`);
 }
 
-function section(title: string, rows: readonly string[]): readonly string[] {
-  return [`## ${title}`, ...(rows.length > 0 ? rows : ['- Нет данных.']), ''];
-}
+const section = (
+  title: string,
+  rows: readonly MarkdownListItem[],
+): readonly MarkdownNode[] => [
+  md.heading(2, title),
+  md.list(rows.length > 0 ? rows : [md.listItem('Нет данных.')]),
+];
 
 const inline = (value: string): string => value.replace(/\s+/g, ' ').trim();
 
@@ -76,20 +84,24 @@ const when = (iso: string, time?: string): string =>
 const machineDate = (iso: string, time?: string): string =>
   time ? iso : iso.slice(0, 10);
 
-const photoLine = (label: string, photo: NewsPhoto): string =>
-  `- ${label}: ${pick([
-    abs(photo.url),
-    `alt: ${inline(photo.alt)}`,
-    photo.caption ? `подпись: ${inline(photo.caption)}` : undefined,
-  ]).join(' — ')}`;
+const photoLine = (label: string, photo: NewsPhoto): MarkdownListItem =>
+  md.listItem(
+    `${label}: ${pick([
+      abs(photo.url),
+      `alt: ${inline(photo.alt)}`,
+      photo.caption ? `подпись: ${inline(photo.caption)}` : undefined,
+    ]).join(' — ')}`,
+  );
 
-function photoSection(article: NewsArticle): readonly string[] {
-  const rows = pick<string>([
+function photoSection(article: NewsArticle): readonly MarkdownNode[] {
+  const rows = pick<MarkdownListItem>([
     article.cover_url
-      ? `- Обложка: ${pick([
-          abs(article.cover_url),
-          `alt: ${inline(article.cover_alt ?? article.title)}`,
-        ]).join(' — ')}`
+      ? md.listItem(
+          `Обложка: ${pick([
+            abs(article.cover_url),
+            `alt: ${inline(article.cover_alt ?? article.title)}`,
+          ]).join(' — ')}`,
+        )
       : undefined,
     ...article.photos.map((photo, index) =>
       photoLine(`Фото ${index + 1}`, photo),
@@ -99,44 +111,52 @@ function photoSection(article: NewsArticle): readonly string[] {
   return rows.length > 0 ? section('Фото', rows) : [];
 }
 
-function addendumPhotoSection(items: readonly NewsPhoto[]): readonly string[] {
+function addendumPhotoSection(
+  items: readonly NewsPhoto[],
+): readonly MarkdownNode[] {
   if (items.length === 0) {
     return [];
   }
 
   return [
-    '#### Фото',
-    ...items.map((photo, index) => photoLine(`Фото ${index + 1}`, photo)),
-    '',
+    md.heading(4, 'Фото'),
+    md.list(items.map((photo, index) => photoLine(`Фото ${index + 1}`, photo))),
   ];
 }
 
-const attachmentLine = (item: NewsAttachment): string =>
-  `- ${item.title}: ${pick([abs(item.url), item.type, item.size]).join(' — ')}`;
+const attachmentLine = (item: NewsAttachment): MarkdownListItem =>
+  md.listItem(
+    `${item.title}: ${pick([abs(item.url), item.type, item.size]).join(' — ')}`,
+  );
 
 function attachmentSection(
   items: readonly NewsAttachment[],
-): readonly string[] {
+): readonly MarkdownNode[] {
   return items.length > 0 ? section('Вложения', items.map(attachmentLine)) : [];
 }
 
 function addendumAttachmentSection(
   items: readonly NewsAttachment[],
-): readonly string[] {
+): readonly MarkdownNode[] {
   if (items.length === 0) {
     return [];
   }
 
-  return ['#### Вложения', ...items.map(attachmentLine), ''];
+  return [md.heading(4, 'Вложения'), md.list(items.map(attachmentLine))];
 }
 
-function articleLine(article: NewsListArticle): string {
+function articleLine(article: NewsListArticle): MarkdownListItem {
   const meta = pick<string>([when(article.published_iso, article.time)]);
   const summary = inline(article.summary);
+  const titleLine = [
+    md.link(abs(article.markdown_url), article.title),
+    ...(meta.length > 0 ? [md.text(` — ${meta.join('; ')}`)] : []),
+  ];
 
-  return `- [${article.title}](${abs(article.markdown_url)})${
-    meta.length > 0 ? ` — ${meta.join('; ')}` : ''
-  }${summary ? `\n  ${summary}` : ''}`;
+  return md.listItem([
+    md.paragraph(titleLine),
+    ...(summary ? [md.paragraph(summary)] : []),
+  ]);
 }
 
 function articleBlock(input: {
@@ -145,94 +165,120 @@ function articleBlock(input: {
   readonly title?: string;
   readonly intro?: string;
   readonly headingLevel?: 2 | 3;
-}): readonly string[] {
+}): readonly MarkdownNode[] {
   const { items, empty, title, intro, headingLevel = 2 } = input;
 
   return [
-    ...(title ? [`${'#'.repeat(headingLevel)} ${title}`] : []),
-    ...(intro ? [intro, ''] : []),
-    ...(items.length > 0 ? items.map(articleLine) : [`- ${empty}`]),
-    '',
+    ...(title ? [md.heading(headingLevel, title)] : []),
+    ...(intro ? [md.paragraph(intro)] : []),
+    md.list(items.length > 0 ? items.map(articleLine) : [md.listItem(empty)]),
   ];
 }
 
-function articleFrontmatter(article: NewsArticle): readonly string[] {
-  return frontmatterBlock([
-    ...frontmatterField('title', article.title),
-    ...frontmatterField('summary', article.summary),
-    ...frontmatterField(
-      'published_at',
-      machineDate(article.published_iso, article.time),
-    ),
-    ...frontmatterField(
-      'updated_at',
-      article.updated_iso
-        ? machineDate(article.updated_iso, article.addenda.at(-1)?.time)
-        : undefined,
-    ),
-    'author:',
-    `  id: ${frontmatterScalar(article.author.id)}`,
-    `  name: ${frontmatterScalar(formatNewsAuthor(article.author, { short: false }))}`,
-    `  kind: ${frontmatterScalar(article.author.kind)}`,
-    ...frontmatterArray('areas', areaLabels(article)),
-    ...frontmatterArray('tags', tagLabels(article.tags)),
-    ...frontmatterField(
-      'source_url',
-      article.source_url ? abs(article.source_url) : undefined,
-    ),
-  ]);
+function articleFrontmatter(
+  article: NewsArticle,
+): Readonly<Record<string, unknown>> {
+  const areas = areaLabels(article);
+  const tags = tagLabels(article.tags);
+
+  return {
+    title: article.title,
+    summary: article.summary,
+    published_at: machineDate(article.published_iso, article.time),
+    ...(article.updated_iso
+      ? {
+          updated_at: machineDate(
+            article.updated_iso,
+            article.addenda.at(-1)?.time,
+          ),
+        }
+      : {}),
+    author: {
+      id: article.author.id,
+      name: formatNewsAuthor(article.author, { short: false }),
+      kind: article.author.kind,
+    },
+    ...(areas.length > 0 ? { areas } : {}),
+    ...(tags.length > 0 ? { tags } : {}),
+    ...(article.source_url ? { source_url: abs(article.source_url) } : {}),
+  };
 }
 
-function addendaSection(items: readonly NewsAddendum[]): readonly string[] {
+function addendaSection(
+  items: readonly NewsAddendum[],
+): readonly MarkdownNode[] {
   if (items.length === 0) {
     return [];
   }
 
-  const lines: string[] = [
-    '## Дополнения',
-    'Исходный текст новости не переписывается: поздние уточнения остаются отдельными блоками.',
-    '',
+  const children: MarkdownNode[] = [
+    md.heading(2, 'Дополнения'),
+    md.paragraph(
+      'Исходный текст новости не переписывается: поздние уточнения остаются отдельными блоками.',
+    ),
   ];
 
   for (const [index, item] of items.entries()) {
-    lines.push(
-      `### ${item.title ?? `Дополнение ${index + 1} от ${when(item.published_iso, item.time)}`}`,
+    children.push(
+      md.heading(
+        3,
+        item.title ??
+          `Дополнение ${index + 1} от ${when(item.published_iso, item.time)}`,
+      ),
     );
-    lines.push(
-      ...pick([
-        row('Дата', when(item.published_iso, item.time)),
-        row('Автор', formatNewsAuthor(item.author, { short: false })),
-        row('Источник', item.source_url ? abs(item.source_url) : undefined),
-      ]),
+    children.push(
+      md.list(
+        pick([
+          row('Дата', when(item.published_iso, item.time)),
+          row('Автор', formatNewsAuthor(item.author, { short: false })),
+          row('Источник', item.source_url ? abs(item.source_url) : undefined),
+        ]),
+      ),
     );
-    lines.push('');
 
     if (item.body) {
-      lines.push(item.body.trim(), '');
+      children.push(...parseMarkdownFragment(item.body.trim()));
     }
 
-    lines.push(...addendumPhotoSection(item.photos));
-    lines.push(...addendumAttachmentSection(item.attachments));
+    children.push(...addendumPhotoSection(item.photos));
+    children.push(...addendumAttachmentSection(item.attachments));
   }
 
-  return [...lines, ''];
+  return children;
 }
 
-const monthLine = (item: NewsMonthArchive): string =>
-  `- [${formatNewsMonth(item.year, item.month, { capitalize: true })}](${abs(item.markdown_url)}) — ${item.count} ${pluralizeRu(item.count, ['публикация', 'публикации', 'публикаций'])}`;
+const monthLine = (item: NewsMonthArchive): MarkdownListItem =>
+  md.listItem([
+    md.paragraph([
+      md.link(
+        abs(item.markdown_url),
+        formatNewsMonth(item.year, item.month, { capitalize: true }),
+      ),
+      md.text(
+        ` — ${count(item.count, ['публикация', 'публикации', 'публикаций'])}`,
+      ),
+    ]),
+  ]);
 
-const tagLine = (item: NewsTagPage): string =>
-  `- [${item.label}](${abs(item.markdown_url)}) — ${item.count} ${pluralizeRu(item.count, ['публикация', 'публикации', 'публикаций'])}`;
+const tagLine = (item: NewsTagPage): MarkdownListItem =>
+  md.listItem([
+    md.paragraph([
+      md.link(abs(item.markdown_url), item.label),
+      md.text(
+        ` — ${count(item.count, ['публикация', 'публикации', 'публикаций'])}`,
+      ),
+    ]),
+  ]);
 
 export function buildNewsHomeMarkdown(data: NewsDataset): string {
   const latest = [...data.home.pinned, ...data.home.latest];
   const normalCount = data.articles.length - data.home.pinned.length;
 
-  return join([
-    '# Новости Шелково',
-    '',
-    'Свежие новости поселков Шелково и сервисов ОК Комфорт в текстовом формате.',
-    '',
+  return serialize([
+    md.heading(1, 'Новости Шелково'),
+    md.paragraph(
+      'Свежие новости поселков Шелково и сервисов ОК Комфорт в текстовом формате.',
+    ),
     ...articleBlock({
       title: 'Новости',
       items: latest,
@@ -246,26 +292,24 @@ export function buildNewsHomeMarkdown(data: NewsDataset): string {
 }
 
 export function buildNewsYearMarkdown(archive: NewsYearArchive): string {
-  const lines: string[] = [
-    `# Новости Шелково за ${archive.year} год`,
-    '',
+  const children: MarkdownNode[] = [
+    md.heading(1, `Новости Шелково за ${archive.year} год`),
     ...section(
       'Месяцы года',
       archive.months.length > 0
         ? archive.months.map(monthLine)
-        : ['- В этом году пока нет публикаций.'],
+        : [md.listItem('В этом году пока нет публикаций.')],
     ),
-    '## Публикации по месяцам',
-    '',
+    md.heading(2, 'Публикации по месяцам'),
   ];
 
   if (archive.months.length === 0) {
-    lines.push('- В этом году пока нет публикаций.', '');
-    return join(lines);
+    children.push(md.list([md.listItem('В этом году пока нет публикаций.')]));
+    return serialize(children);
   }
 
   for (const item of archive.months) {
-    lines.push(
+    children.push(
       ...articleBlock({
         title: formatNewsMonth(item.year, item.month, { capitalize: true }),
         headingLevel: 3,
@@ -275,7 +319,7 @@ export function buildNewsYearMarkdown(archive: NewsYearArchive): string {
     );
   }
 
-  return join(lines);
+  return serialize(children);
 }
 
 export function buildNewsMonthMarkdown(input: {
@@ -284,9 +328,8 @@ export function buildNewsMonthMarkdown(input: {
   const { archive } = input;
   const monthLabel = formatNewsMonth(archive.year, archive.month);
 
-  return join([
-    `# Новости Шелково за ${monthLabel}`,
-    '',
+  return serialize([
+    md.heading(1, `Новости Шелково за ${monthLabel}`),
     ...articleBlock({
       items: archive.articles,
       empty: 'В этом месяце пока нет публикаций.',
@@ -295,38 +338,47 @@ export function buildNewsMonthMarkdown(input: {
 }
 
 export function buildNewsArticleMarkdown(article: NewsArticle): string {
-  return join([
-    ...articleFrontmatter(article),
-    `# ${article.title}`,
-    '',
-    ...(article.body ? [article.body.trim(), ''] : []),
-    ...photoSection(article),
-    ...attachmentSection(article.attachments),
-    ...addendaSection(article.addenda),
-  ]);
+  return serializeMarkdownDocument(
+    createMarkdownDocument({
+      frontmatter: articleFrontmatter(article),
+      children: [
+        md.heading(1, article.title),
+        ...(article.body ? parseMarkdownFragment(article.body.trim()) : []),
+        ...photoSection(article),
+        ...attachmentSection(article.attachments),
+        ...addendaSection(article.addenda),
+      ],
+    }),
+  );
 }
 
 export function buildNewsTagsMarkdown(
   tagsPage: readonly NewsTagPage[],
 ): string {
-  return join([
-    '# Теги новостей Шелково',
-    '',
+  return serialize([
+    md.heading(1, 'Теги новостей Шелково'),
     ...section(
       'Теги',
       tagsPage.length > 0
         ? tagsPage.map(tagLine)
-        : ['- Индекс появится автоматически после первых новостей с тегами.'],
+        : [
+            md.listItem(
+              'Индекс появится автоматически после первых новостей с тегами.',
+            ),
+          ],
     ),
   ]);
 }
 
 export function buildNewsTagMarkdown(tag: NewsTagPage): string {
-  const latestPublicationsLabel = `${NEWS_LATEST_LIMIT} ${pluralizeRu(NEWS_LATEST_LIMIT, ['публикация', 'публикации', 'публикаций'])}`;
+  const latestPublicationsLabel = count(NEWS_LATEST_LIMIT, [
+    'публикация',
+    'публикации',
+    'публикаций',
+  ]);
 
-  return join([
-    `# Тег ${tag.label}`,
-    '',
+  return serialize([
+    md.heading(1, `Тег ${tag.label}`),
     ...articleBlock({
       title: 'Последние новости по тегу',
       items: tag.latest,

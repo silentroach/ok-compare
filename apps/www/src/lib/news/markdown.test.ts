@@ -47,28 +47,28 @@ describe('buildNewsArticleMarkdown', () => {
   it('puts article metadata into YAML frontmatter without officialness flags', () => {
     const markdown = buildNewsArticleMarkdown(article());
 
-    expect(markdown).toContain(`---
-title: "Россети планируют усилить три подстанции в КП Шелково"
-summary: "Краткое описание новости."
-published_at: "2026-05-14T22:16:00+03:00"
-author:
-  id: "ig"
-  name: "Инициативная группа"
-  kind: "community"
-areas:
-  - "Шелково Парк"
-  - "Шелково Вилладж"
-tags:
-  - "электричество"
-source_url: "https://example.com/source"
----`);
-    expect(markdown).not.toContain('Официальность');
-    expect(markdown).not.toContain('is_official');
-    expect(markdown).not.toContain('Areas');
-    expect(markdown).not.toContain('## Текст новости');
-    expect(markdown).toContain(
-      '# Россети планируют усилить три подстанции в КП Шелково\n\nТекст новости.',
-    );
+    expect(markdown).toMatchInlineSnapshot(`
+      "---
+      title: Россети планируют усилить три подстанции в КП Шелково
+      summary: Краткое описание новости.
+      published_at: 2026-05-14T22:16:00+03:00
+      author:
+        id: ig
+        name: Инициативная группа
+        kind: community
+      areas:
+        - Шелково Парк
+        - Шелково Вилладж
+      tags:
+        - электричество
+      source_url: https://example.com/source
+      ---
+
+      # Россети планируют усилить три подстанции в КП Шелково
+
+      Текст новости.
+      "
+    `);
   });
 
   it('omits settlement-wide areas and combines addendum date with time', () => {
@@ -101,6 +101,78 @@ source_url: "https://example.com/source"
     expect(markdown).not.toContain('- Время:');
   });
 
+  it('inserts article and addendum bodies as Markdown fragments without nested frontmatter', () => {
+    const markdown = buildNewsArticleMarkdown(
+      article({
+        body: `---
+ignored: true
+---
+
+Текст с [важной ссылкой](https://example.com/body).
+
+- первый пункт`,
+        addenda: [
+          {
+            title: 'Уточнение',
+            author: {
+              id: 'ok-comfort',
+              name: 'ОК Комфорт',
+              kind: 'official',
+            },
+            time: '23:00',
+            body: `---
+ignored: addendum
+---
+
+Дополнение с **акцентом**.`,
+            photos: [],
+            attachments: [],
+            published_at: new Date('2026-05-14T20:00:00.000Z'),
+            published_iso: '2026-05-14T23:00:00+03:00',
+            mentions: [],
+          },
+        ],
+        has_addenda: true,
+      }),
+    );
+
+    expect(markdown).toMatchInlineSnapshot(`
+      "---
+      title: Россети планируют усилить три подстанции в КП Шелково
+      summary: Краткое описание новости.
+      published_at: 2026-05-14T22:16:00+03:00
+      author:
+        id: ig
+        name: Инициативная группа
+        kind: community
+      areas:
+        - Шелково Парк
+        - Шелково Вилладж
+      tags:
+        - электричество
+      source_url: https://example.com/source
+      ---
+
+      # Россети планируют усилить три подстанции в КП Шелково
+
+      Текст с [важной ссылкой](https://example.com/body).
+
+      - первый пункт
+
+      ## Дополнения
+
+      Исходный текст новости не переписывается: поздние уточнения остаются отдельными блоками.
+
+      ### Уточнение
+
+      - Дата: 14 мая 2026, 23:00
+      - Автор: ОК Комфорт
+
+      Дополнение с **акцентом**.
+      "
+    `);
+  });
+
   it('keeps month archives without a redundant news subsection', () => {
     expect(
       buildNewsMonthMarkdown({
@@ -118,8 +190,8 @@ source_url: "https://example.com/source"
       "# Новости Шелково за май 2026 г.
 
       - [Россети планируют усилить три подстанции в КП Шелково](https://kpshelkovo.online/news/2026/05/ktp-upgrade/index.md) — 14 мая 2026, 22:16
-        Краткое описание новости.
 
+        Краткое описание новости.
       "
     `);
   });

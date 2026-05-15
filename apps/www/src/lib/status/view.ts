@@ -1,4 +1,4 @@
-import { dateTimeFromISO, pluralizeRu } from '@shelkovo/format';
+import { count, dateTimeFromISO, pluralize } from '@shelkovo/format';
 import {
   extractFirstMarkdownText,
   formatDynamicHtml,
@@ -352,7 +352,7 @@ export const formatStatusTimelineGroupTitle = (input: {
   const spacer = input.nonBreaking ? NBSP : ' ';
 
   return formatStatusTooltipText(
-    `${input.count}${spacer}${pluralizeRu(input.count, ['событие', 'события', 'событий'])} за${spacer}${formatStatusCalendarDate(input.startedIso, { nonBreaking: input.nonBreaking })}`,
+    `${input.count}${spacer}${pluralize(input.count, ['событие', 'события', 'событий'])} за${spacer}${formatStatusCalendarDate(input.startedIso, { nonBreaking: input.nonBreaking })}`,
   );
 };
 
@@ -386,7 +386,7 @@ export const formatStatusDaysWithoutIncidents = (
     case 'count': {
       const days = value.days ?? 0;
 
-      return `${days} ${pluralizeRu(days, ['день', 'дня', 'дней'])} без проблем`;
+      return `${count(days, ['день', 'дня', 'дней'])} без проблем`;
     }
   }
 };

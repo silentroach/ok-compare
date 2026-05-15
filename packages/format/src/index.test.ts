@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  count,
   formatCurrency,
   formatDate,
   formatDistance,
@@ -10,7 +11,7 @@ import {
   formatPercentage,
   formatTariff,
   parseNumberInputRu,
-  pluralizeRu,
+  pluralize,
 } from './index';
 
 describe('format package', () => {
@@ -152,32 +153,38 @@ describe('format package', () => {
     });
   });
 
-  describe('pluralizeRu', () => {
+  describe('pluralize', () => {
     const forms = ['новость', 'новости', 'новостей'] as const;
 
     it('uses singular form for one', () => {
-      expect(pluralizeRu(1, forms)).toBe('новость');
-      expect(pluralizeRu(21, forms)).toBe('новость');
-      expect(pluralizeRu(101, forms)).toBe('новость');
+      expect(pluralize(1, forms)).toBe('новость');
+      expect(pluralize(21, forms)).toBe('новость');
+      expect(pluralize(101, forms)).toBe('новость');
     });
 
     it('uses few form for two to four', () => {
-      expect(pluralizeRu(2, forms)).toBe('новости');
-      expect(pluralizeRu(4, forms)).toBe('новости');
-      expect(pluralizeRu(22, forms)).toBe('новости');
+      expect(pluralize(2, forms)).toBe('новости');
+      expect(pluralize(4, forms)).toBe('новости');
+      expect(pluralize(22, forms)).toBe('новости');
     });
 
     it('uses many form for zero teens and five plus', () => {
-      expect(pluralizeRu(0, forms)).toBe('новостей');
-      expect(pluralizeRu(5, forms)).toBe('новостей');
-      expect(pluralizeRu(11, forms)).toBe('новостей');
-      expect(pluralizeRu(14, forms)).toBe('новостей');
-      expect(pluralizeRu(25, forms)).toBe('новостей');
+      expect(pluralize(0, forms)).toBe('новостей');
+      expect(pluralize(5, forms)).toBe('новостей');
+      expect(pluralize(11, forms)).toBe('новостей');
+      expect(pluralize(14, forms)).toBe('новостей');
+      expect(pluralize(25, forms)).toBe('новостей');
     });
 
     it('ignores sign and fractional part', () => {
-      expect(pluralizeRu(-2, forms)).toBe('новости');
-      expect(pluralizeRu(1.9, forms)).toBe('новость');
+      expect(pluralize(-2, forms)).toBe('новости');
+      expect(pluralize(1.9, forms)).toBe('новость');
+    });
+
+    it('formats count with matching plural form', () => {
+      expect(count(1, forms)).toBe('1 новость');
+      expect(count(2, forms)).toBe('2 новости');
+      expect(count(5, forms)).toBe('5 новостей');
     });
   });
 });

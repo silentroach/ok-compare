@@ -184,25 +184,88 @@ describe('buildPersonMarkdown', () => {
       },
     };
 
-    expect(buildPersonMarkdown(profile)).toContain(
-      'Исполняющий обязанности директора по эксплуатации, ОК "Комфорт"',
-    );
-    expect(buildPersonMarkdown(profile)).toContain(
-      '- Telegram: [@Kirill_ZemlyaMO](https://t.me/Kirill_ZemlyaMO)',
-    );
-    expect(buildPersonMarkdown(profile)).toContain('## Профиль');
-    expect(buildPersonMarkdown(profile)).toContain(
-      'Публичный профиль с контекстом.',
-    );
-    expect(buildPersonMarkdown(profile)).toContain('## Где упоминается');
-    expect(buildPersonMarkdown(profile)).toContain('### Новости');
-    expect(buildPersonMarkdown(profile)).toContain('### Статус');
-    expect(buildPersonMarkdown(profile)).toContain(
-      '[Авария на линии](https://example.com/news/2026/05/electricity/index.md) — Новость; 3 мая 2026',
-    );
-    expect(buildPersonMarkdown(profile)).toContain(
-      '[Отключение электричества в Шелково Ривер](https://example.com/status/incidents/2026/04/electricity-river-10kv-line-damage/index.md) — Инцидент; 22 апреля',
-    );
+    const markdown = buildPersonMarkdown(profile);
+
+    expect(markdown).toMatchInlineSnapshot(`
+      "# Кирилл Щемелинин
+
+      Исполняющий обязанности директора по эксплуатации, ОК "Комфорт"
+
+      ## Контакты
+
+      - Telegram: [@Kirill\\_ZemlyaMO](https://t.me/Kirill_ZemlyaMO)
+
+      ## Профиль
+
+      Публичный профиль с контекстом.
+
+      ## Где упоминается
+
+      ### Новости
+
+      - [Авария на линии](https://example.com/news/2026/05/electricity/index.md) — Новость; 3 мая 2026
+
+        Основной текст про Кирилла Щемелинина.
+
+      ### Статус
+
+      - [Отключение электричества в Шелково Ривер](https://example.com/status/incidents/2026/04/electricity-river-10kv-line-damage/index.md) — Инцидент; 22 апреля
+
+        Как отметил Кирилл Щемелинин, повреждение было редким.
+      "
+    `);
+  });
+
+  it('parses profile body as Markdown fragment without nested frontmatter', () => {
+    const profile: PersonProfile = {
+      id: 'kschemelinin',
+      slug: 'kschemelinin',
+      name: 'Кирилл Щемелинин',
+      company: 'ОК "Комфорт"',
+      position: 'Исполняющий обязанности директора по эксплуатации',
+      url: '/people/kschemelinin/',
+      markdown_url: '/people/kschemelinin/index.md',
+      canonical: 'https://example.com/people/kschemelinin/',
+      contacts: [],
+      body: [
+        '---',
+        'internal: true',
+        '---',
+        '',
+        '### Роль',
+        '',
+        'Помогает с [инцидентами](/status/index.md).',
+      ].join('\n'),
+      mentions: [],
+      backlinks: {
+        news: [],
+        status: [],
+        people: [],
+      },
+    };
+
+    const markdown = buildPersonMarkdown(profile);
+
+    expect(markdown).toMatchInlineSnapshot(`
+      "# Кирилл Щемелинин
+
+      Исполняющий обязанности директора по эксплуатации, ОК "Комфорт"
+
+      ## Контакты
+
+      - Контакты пока не опубликованы.
+
+      ## Профиль
+
+      ### Роль
+
+      Помогает с [инцидентами](/status/index.md).
+
+      ## Где упоминается
+
+      - Пока публичных упоминаний не найдено.
+      "
+    `);
   });
 
   it('omits profile section when markdown body is empty', () => {

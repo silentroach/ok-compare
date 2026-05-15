@@ -728,12 +728,12 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, reglamentLlmsPath()),
             type: 'text/plain',
-            'title*': star('Короткий агентный обзор llms.txt'),
+            'title*': star('Короткий обзор llms.txt'),
           },
           {
             href: abs(root, reglamentLlmsFullPath()),
             type: 'text/plain',
-            'title*': star('Расширенный агентный обзор llms-full.txt'),
+            'title*': star('Подробный обзор llms-full.txt'),
           },
           ...ESTIMATE_SOURCE_PDFS.map((pdf) => ({
             href: abs(root, reglamentSourcePdfPath(pdf)),

@@ -1,4 +1,11 @@
-import { extractFirstMarkdownText } from '@shelkovo/markdown';
+import {
+  createMarkdownDocument,
+  extractFirstMarkdownText,
+  md,
+  parseMarkdownFragment,
+  serializeMarkdownDocument,
+  type MarkdownPhrasingInput,
+} from '@shelkovo/markdown';
 
 import { MARKDOWN_ROBOTS } from '../news/seo';
 import { formatNewsDate, NEWS_PROSE } from '../news/view';
@@ -42,21 +49,31 @@ export const PEOPLE_MARKDOWN_HEADERS = {
   'X-Robots-Tag': MARKDOWN_ROBOTS,
 } as const;
 
-const join = (lines: readonly string[]): string => `${lines.join('\n')}\n`;
+type MarkdownNode = ReturnType<typeof parseMarkdownFragment>[number];
+type MarkdownListItem = ReturnType<typeof md.listItem>;
+type MarkdownPhrasingNodes = Exclude<MarkdownPhrasingInput, string>;
+type MarkdownPhrasingNode = MarkdownPhrasingNodes[number];
+
+const serialize = (children: readonly MarkdownNode[]): string =>
+  serializeMarkdownDocument(createMarkdownDocument({ children }));
 
 const inline = (value: string): string => value.replace(/\s+/gu, ' ').trim();
 
-const section = (title: string, rows: readonly string[]): readonly string[] => [
-  `## ${title}`,
-  ...(rows.length > 0 ? rows : ['- Нет данных.']),
-  '',
+const section = (
+  title: string,
+  rows: readonly MarkdownListItem[],
+): readonly MarkdownNode[] => [
+  md.heading(2, title),
+  md.list(rows.length > 0 ? rows : [md.listItem('Нет данных.')]),
 ];
 
-const escapeMarkdown = (value: string): string =>
-  value.replace(/([\\\[\]])/gu, '\\$1');
-
-const contactLine = (contact: PersonContact): string =>
-  `- ${formatPersonContactType(contact.type)}: [${escapeMarkdown(contact.display)}](${contact.href})`;
+const contactLine = (contact: PersonContact): MarkdownListItem =>
+  md.listItem([
+    md.paragraph([
+      md.text(`${formatPersonContactType(contact.type)}: `),
+      md.link(contact.href, contact.display),
+    ]),
+  ]);
 
 const backlinkDate = (backlink: PersonMentionRef): string | undefined => {
   if (!backlink.mentioned_at) {
@@ -68,37 +85,41 @@ const backlinkDate = (backlink: PersonMentionRef): string | undefined => {
     : formatNewsDate(backlink.mentioned_at);
 };
 
-const backlinkLine = (backlink: PersonMentionRef): string => {
+const backlinkLine = (backlink: PersonMentionRef): MarkdownListItem => {
   const meta = [
     formatPersonBacklinkKind(backlink.kind),
     backlinkDate(backlink),
   ].filter(Boolean);
   const details = meta.length > 0 ? ` — ${meta.join('; ')}` : '';
-  const summary = backlink.excerpt
-    ? `\n  ${escapeMarkdown(inline(backlink.excerpt))}`
-    : '';
+  const summary = backlink.excerpt ? inline(backlink.excerpt) : undefined;
+  const titleLine: MarkdownPhrasingNode[] = [
+    md.link(absoluteUrl(backlink.markdown_url), backlink.title),
+    ...(details ? [md.text(details)] : []),
+  ];
 
-  return `- [${escapeMarkdown(backlink.title)}](${absoluteUrl(backlink.markdown_url)})${details}${summary}`;
+  return md.listItem([
+    md.paragraph(titleLine),
+    ...(summary ? [md.paragraph(summary)] : []),
+  ]);
 };
 
-const backlinksSection = (backlinks: PersonBacklinks): readonly string[] => {
+const backlinksSection = (
+  backlinks: PersonBacklinks,
+): readonly MarkdownNode[] => {
   const groups = personBacklinkGroups(backlinks);
 
   if (groups.length === 0) {
     return [
-      '## Где упоминается',
-      '- Пока публичных упоминаний не найдено.',
-      '',
+      md.heading(2, 'Где упоминается'),
+      md.list([md.listItem('Пока публичных упоминаний не найдено.')]),
     ];
   }
 
   return [
-    '## Где упоминается',
-    '',
+    md.heading(2, 'Где упоминается'),
     ...groups.flatMap((group) => [
-      `### ${group.label}`,
-      ...group.items.map(backlinkLine),
-      '',
+      md.heading(3, group.label),
+      md.list(group.items.map(backlinkLine)),
     ]),
   ];
 };
@@ -229,17 +250,21 @@ export const describePersonProfile = (
 export const buildPersonMarkdown = (profile: PersonProfile): string => {
   const headline = formatPersonHeadline(profile);
 
-  return join([
-    `# ${profile.name}`,
-    '',
-    ...(headline ? [headline, ''] : []),
+  return serialize([
+    md.heading(1, profile.name),
+    ...(headline ? [md.paragraph(headline)] : []),
     ...section(
       'Контакты',
       profile.contacts.length > 0
         ? profile.contacts.map(contactLine)
-        : ['- Контакты пока не опубликованы.'],
+        : [md.listItem('Контакты пока не опубликованы.')],
     ),
-    ...(profile.body ? ['## Профиль', '', profile.body.trim(), ''] : []),
+    ...(profile.body
+      ? [
+          md.heading(2, 'Профиль'),
+          ...parseMarkdownFragment(profile.body.trim()),
+        ]
+      : []),
     ...backlinksSection(profile.backlinks),
   ]);
 };

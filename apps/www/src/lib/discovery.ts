@@ -80,17 +80,19 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: full(root, siteLlmsUrl()),
             type: 'text/plain',
-            'title*': star('Короткий агентный обзор корневого сайта'),
+            'title*': star('Короткий обзор корневого сайта'),
           },
           {
             href: full(root, siteLlmsFullUrl()),
             type: 'text/plain',
-            'title*': star('Расширенный агентный обзор корневого сайта'),
+            'title*': star('Подробный обзор корневого сайта'),
           },
           {
             href: full(root, siteSkillsUrl()),
             type: 'application/json',
-            'title*': star('Индекс public agent skills корневого сайта'),
+            'title*': star(
+              'Индекс инструкций для автоматического чтения корневого сайта',
+            ),
           },
         ],
       },
@@ -203,7 +205,7 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, reglamentLlmsFullPath()),
             type: 'text/plain',
-            'title*': star('Расширенный агентный обзор регламента'),
+            'title*': star('Подробный обзор регламента'),
           },
         ],
         'service-desc': [
@@ -237,7 +239,7 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, peopleLlmsFullPath()),
             type: 'text/plain',
-            'title*': star('Расширенный агентный обзор профилей людей'),
+            'title*': star('Подробный обзор профилей людей'),
           },
         ],
         'service-desc': [
@@ -267,7 +269,7 @@ export function catalog(root: string): Record<string, unknown> {
             href: abs(root, COMPARE_SKILLS),
             type: 'application/json',
             'title*': star(
-              'Индекс public agent skills сравнения тарифов поселков',
+              'Индекс инструкций для автоматического чтения сравнения тарифов поселков',
             ),
           },
         ],
