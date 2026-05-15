@@ -52,6 +52,27 @@ const splitSelectorList = (selectorList: string): readonly string[] => {
 
   return selectors;
 };
+const getCssStringEndIndex = (css: string, startIndex: number): number => {
+  const quote = css[startIndex];
+
+  for (let index = startIndex + 1; index < css.length; index += 1) {
+    if (css[index] === '\\') {
+      index += 1;
+      continue;
+    }
+
+    if (css[index] === quote) {
+      return index;
+    }
+  }
+
+  return css.length - 1;
+};
+const getCssCommentEndIndex = (css: string, startIndex: number): number => {
+  const commentEndIndex = css.indexOf('*/', startIndex + 2);
+
+  return commentEndIndex === -1 ? css.length - 1 : commentEndIndex + 1;
+};
 const getRuleSelectorPaths = (css: string): readonly (readonly string[])[] => {
   const selectorPaths: string[][] = [];
   const selectorStack: string[] = [];
@@ -59,6 +80,16 @@ const getRuleSelectorPaths = (css: string): readonly (readonly string[])[] => {
 
   for (let index = 0; index < css.length; index += 1) {
     const character = css[index];
+
+    if (character === '/' && css[index + 1] === '*') {
+      index = getCssCommentEndIndex(css, index);
+      continue;
+    }
+
+    if (character === '"' || character === "'") {
+      index = getCssStringEndIndex(css, index);
+      continue;
+    }
 
     if (character === '{') {
       const segment = css.slice(segmentStart, index);
@@ -258,6 +289,20 @@ describe('compare shared-style architecture', () => {
     expect(
       findForbiddenSharedPrimitiveSelectors(
         '.ui-root-compare { .compare-x, .ui-btn:hover { background: transparent; } }',
+      ),
+    ).toEqual(['.ui-root-compare .ui-btn']);
+  });
+
+  it('detects nested primitive overrides after braces inside CSS strings and comments', () => {
+    expect(
+      findForbiddenSharedPrimitiveSelectors(
+        '.ui-root-compare { --brace: "}"; .ui-btn { background: transparent; } }',
+      ),
+    ).toEqual(['.ui-root-compare .ui-btn']);
+
+    expect(
+      findForbiddenSharedPrimitiveSelectors(
+        '.ui-root-compare { /* } */ .ui-btn { background: transparent; } }',
       ),
     ).toEqual(['.ui-root-compare .ui-btn']);
   });
