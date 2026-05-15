@@ -38,3 +38,7 @@
 .ui-root-compare .ui-btn {
   border-radius: 0;
 }
+
+.ui-root-compare .compare-landing-header {
+  padding-bottom: 0;
+}

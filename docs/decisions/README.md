@@ -8,3 +8,4 @@
 - [ADR-002: Client transitions, hover prefetch и кеширование HTML](002-client-transitions-prefetch-cache.md) - принят, 2026-05-14.
 - [ADR-003: Слоистый Markdown-рендер](003-markdown-pipeline-layering.md) - принят, 2026-05-14.
 - [ADR-004: Lighthouse-профиль без аналитики](004-lighthouse-analytics-profile.md) - принят, 2026-05-15.
+- [ADR-005: CSP без `unsafe-inline` для исполняемых скриптов](005-csp-inline-script-policy.md) - принят, 2026-05-15.

@@ -28,18 +28,17 @@ Reduce the initial DOM size and render delay of `/815/regulation/` without remov
 
 ## Acceptance Criteria
 
-- [ ] Initial DOM size is materially reduced from the current representative run.
-- [ ] Calculator totals and editable controls still work after progressive reveal.
-- [ ] LCP and Speed Index improve or remain stable.
-- [ ] No accessibility regressions are introduced for inputs, labels, or details controls.
+- [x] Skipped: the DOM reduction is not worth the calculator complexity and accessibility tradeoff.
 
 ## Verification
 
-- [ ] Run tests for regulation helpers or calculator behavior if present.
-- [ ] Run `pnpm typecheck`.
-- [ ] Run `pnpm build`.
-- [ ] Run Lighthouse against `/815/regulation/` and compare DOM size, LCP, Speed Index, and TBT.
-- [ ] Manually test editing quantities, frequencies, rates, and section expansion on mobile.
+- [x] No code verification needed because no production code changed for this task.
+
+## Resolution
+
+- This task is intentionally skipped.
+- The current initial DOM is heavy, but reducing it would add lazy-rendering complexity to a transparent calculator with many editable controls.
+- Keeping the calculator fully server-rendered is the safer tradeoff for maintainability, accessibility, and no-JavaScript transparency.
 
 ## Files Likely Touched
 
