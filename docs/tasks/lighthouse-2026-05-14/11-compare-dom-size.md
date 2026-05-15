@@ -40,6 +40,10 @@ Reduce the initial DOM size of `/815/compare/` to improve render cost and mainta
 - [ ] Run Lighthouse against `/815/compare/` and compare DOM size, LCP, and Speed Index.
 - [ ] Manually test filtering, sorting, map toggles, and settlement links.
 
+## Completion Notes
+
+- Closed without implementation: the tested DOM-reduction variant added progressive disclosure and a smaller fallback, but the UX/SEO tradeoff was not worth the change right now.
+
 ## Files Likely Touched
 
 - `apps/www/src/pages/815/compare/index.astro`
