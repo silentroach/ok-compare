@@ -27,17 +27,25 @@ Reduce render delay, FCP, and Speed Index by loading fewer critical font files b
 
 ## Acceptance Criteria
 
-- [ ] Global font preload count is reduced or justified with measured evidence.
-- [ ] Heavy pages show improved or unchanged FCP/LCP in Lighthouse.
-- [ ] No visible flash or layout shift regression is introduced.
-- [ ] Cyrillic text still renders with intended fonts.
+- [x] Global font preload count is reduced or justified with measured evidence.
+- [x] Heavy pages show improved or unchanged FCP/LCP in Lighthouse.
+- [x] No visible flash or layout shift regression is introduced.
+- [x] Cyrillic text still renders with intended fonts.
 
 ## Verification
 
-- [ ] Run `pnpm build`.
-- [ ] Compare generated CSS/font asset requests before and after.
-- [ ] Run Lighthouse on `/815/compare/` and `/815/regulation/`.
-- [ ] Manually inspect Russian text rendering on `/`, `/news/`, and compare pages.
+- [x] Run `pnpm build`.
+- [x] Compare generated CSS/font asset requests before and after.
+- [x] Run Lighthouse on `/815/compare/` and `/815/regulation/`.
+- [x] Manually inspect Russian text rendering on `/`, `/news/`, and compare pages.
+
+## Completion Notes
+
+- Global font preloads reduced from 4 to 2: only critical Cyrillic `Fira Sans 400` and `PT Sans Caption 700` remain preloaded.
+- Generated font assets reduced from 32 WOFF2 plus 32 WOFF files to 15 WOFF2 files; Greek, Vietnamese, Cyrillic Extended and WOFF fallback assets are no longer emitted.
+- The shared CSS keeps `font-display: swap` and preserves Cyrillic, Latin and Latin Extended coverage for the weights used by the site.
+- Final static Lighthouse CI on `/815/compare/` and `/815/regulation/` completed with remaining performance and Best Practices warnings; those are tracked by later Lighthouse tasks.
+- Browser verification on `/`, `/news/` and `/815/compare/` confirmed `Fira Sans` body text and `PT Sans Caption` headings load for Russian text.
 
 ## Files Likely Touched
 
