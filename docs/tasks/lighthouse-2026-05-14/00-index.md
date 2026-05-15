@@ -27,7 +27,7 @@ These files break the findings into independent implementation tasks. Each task 
 - [x] `11-compare-dom-size.md`: reduce initial DOM size on `/815/compare/`.
 - [x] `12-regulation-dom-size.md`: skipped; DOM reduction is not worth the calculator complexity tradeoff.
 - [x] `13-security-csp-inline.md`: harden CSP away from broad inline/script allowlists.
-- [ ] `14-security-hsts.md`: decide and roll out stronger HSTS.
+- [x] `14-security-hsts.md`: decide and roll out stronger HSTS.
 - [ ] `15-security-coop.md`: decide whether to add COOP/origin isolation.
 - [ ] `16-lighthouse-ci-summary-and-thresholds.md`: improve Lighthouse CI summaries and assertions.
 

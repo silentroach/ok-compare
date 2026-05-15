@@ -25,16 +25,25 @@ Decide whether `kpshelkovo.online` should use stronger HSTS directives and imple
 
 ## Acceptance Criteria
 
-- [ ] The repository documents whether `includeSubDomains` and `preload` are accepted or rejected.
-- [ ] If accepted, nginx emits the updated HSTS header consistently on HTTPS responses.
-- [ ] If rejected, Lighthouse's informative warning is treated as a documented non-actionable item.
-- [ ] Redirect behavior for HTTP and `www` remains correct.
+- [x] The repository documents whether `includeSubDomains` and `preload` are accepted or rejected.
+- [x] Rejected path: nginx keeps host-only HSTS and emits it on known HTTPS hosts only.
+- [x] If rejected, Lighthouse's informative warning is treated as a documented non-actionable item.
+- [x] Redirect behavior for HTTP and `www` remains correct.
 
 ## Verification
 
 - [ ] Validate nginx config syntax in the deployment environment with `nginx -t`.
-- [ ] Check response headers for `https://kpshelkovo.online/` and `https://www.kpshelkovo.online/`.
-- [ ] Run Lighthouse and inspect `has-hsts` details.
+- [ ] After deployment, check response headers for `https://kpshelkovo.online/` and `https://www.kpshelkovo.online/`.
+- [ ] After deployment, run Lighthouse and inspect `has-hsts` details.
+
+## Resolution
+
+- `includeSubDomains` is rejected for now because the repository does not contain an authoritative inventory of all current, internal, and planned subdomains.
+- `preload` is rejected because it requires `includeSubDomains`, long-term HTTPS coverage for every subdomain, and a slow rollback path.
+- The policy is recorded in `docs/decisions/006-hsts-policy.md`.
+- `ops/nginx/kpshelkovo-online.conf` keeps `Strict-Transport-Security: max-age=31536000` on the apex HTTPS server and adds the same host-only HSTS header to the HTTPS `www` redirect.
+- HTTP and `www` redirect targets are unchanged.
+- Deployment-only verification remains to be done in production: the deploy script runs `nginx -t` before reloading nginx, then response headers and Lighthouse `has-hsts` should be checked on the deployed site.
 
 ## Files Likely Touched
 
