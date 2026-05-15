@@ -28,17 +28,32 @@ Remove invalid `aria-label` usage from non-link timeline segments on `/status/` 
 
 ## Acceptance Criteria
 
-- [ ] `/status/` no longer fails `aria-prohibited-attr` for timeline segments.
-- [ ] Non-link timeline segments remain keyboard focusable.
-- [ ] Tooltip behavior still works for mouse, touch, and keyboard focus.
-- [ ] Link segments still navigate to incident detail pages.
+- [x] `/status/` no longer fails `aria-prohibited-attr` for timeline segments.
+- [x] Non-link timeline segments remain keyboard focusable.
+- [x] Tooltip behavior still works for mouse, touch, and keyboard focus.
+- [x] Link segments still navigate to incident detail pages.
+
+## Resolution
+
+- `StatusServiceTimeline.astro` now renders timeline segments with detail pages as `<a>` and tooltip-only segments as `<button type="button">`.
+- The segment styling, data attributes, `aria-label`, and shared tooltip binding remain unchanged.
+- Component snapshots cover the anchor/button SSR contract; DOM tests cover tooltip focus behavior on button segments.
 
 ## Verification
 
-- [ ] Run `apps/www/src/components/status/StatusServiceTimeline.test.ts`.
-- [ ] Run `apps/www/src/lib/status/timeline.dom.test.ts`.
-- [ ] Run `pnpm typecheck`.
-- [ ] Run Lighthouse or axe against `/status/`.
+- [x] Run `apps/www/src/components/status/StatusServiceTimeline.test.ts`.
+- [x] Run `apps/www/src/lib/status/timeline.dom.test.ts`.
+- [x] Run `pnpm typecheck`.
+- [x] Run Lighthouse or axe against `/status/`.
+
+Verification results, 2026-05-15:
+
+- `pnpm exec vitest run src/components/status/StatusServiceTimeline.test.ts` passed.
+- `pnpm exec vitest run src/lib/status/timeline.dom.test.ts` passed.
+- `pnpm typecheck` passed.
+- `LIGHTHOUSE_DISABLE_ANALYTICS=true pnpm build` passed.
+- `LIGHTHOUSE_SITE_TARGET=static LIGHTHOUSE_DISABLE_ANALYTICS=true pnpm exec lhci autorun` completed; representative `/status/` `aria-prohibited-attr` audit was `score=1` with `0` failing items.
+- The same Lighthouse run still reported existing unrelated warnings: `/status/` Accessibility `94 < 95` due remaining `target-size` and `heading-order` audits, and `/815/compare/` Performance `84 < 85`.
 
 ## Files Likely Touched
 

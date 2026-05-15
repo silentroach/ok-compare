@@ -28,6 +28,7 @@ interface ProblemNodeInput {
   readonly id: string;
   readonly kind?: 'incident' | 'maintenance';
   readonly service?: StatusService;
+  readonly tag?: 'a' | 'button';
   readonly start: string;
   readonly end?: string;
   readonly hidden?: boolean;
@@ -80,14 +81,13 @@ const renderTimeline = (
               kind = 'incident',
               service = 'water',
               start,
+              tag = 'a',
               tone = 'red',
               tooltip: rawTooltip,
             }) => {
               const tooltip = buildTooltip(id, rawTooltip);
-
-              return `
-              <a
-                href="/status/incidents/${id}"
+              const segmentAttributes = `
+                ${tag === 'a' ? `href="/status/incidents/${id}"` : 'type="button"'}
                 title="${escapeAttribute(buildTooltipLabel(tooltip))}"
                 data-incident-id="${id}"
                 data-status-problem
@@ -103,7 +103,10 @@ const renderTimeline = (
                 data-tooltip-period-label="${escapeAttribute(tooltip.periodLabel)}"
                 class="status-service-timeline__segment status-service-timeline__segment--problem status-service-timeline__segment--${tone}"
                 ${hidden ? 'hidden' : ''}
-              ></a>
+              `;
+
+              return `
+              <${tag}${segmentAttributes}></${tag}>
             `;
             },
           )
@@ -427,6 +430,7 @@ describe('hydrateStatusTimeline', () => {
     const root = renderTimeline([
       {
         id: 'focus',
+        tag: 'button',
         start: '2026-05-08T00:00:00Z',
       },
     ]);

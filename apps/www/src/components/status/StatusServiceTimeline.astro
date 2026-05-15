@@ -345,12 +345,12 @@ const timelineGroups = incidents
             startIso,
             width,
           }) => {
-            const TimelineSegment = href ? 'a' : 'span';
+            const TimelineSegment = href ? 'a' : 'button';
 
             return (
               <TimelineSegment
                 href={href}
-                tabindex={href ? undefined : '0'}
+                type={href ? undefined : 'button'}
                 title={tooltipLabel}
                 aria-label={tooltipLabel}
                 data-incident-id={id}
