@@ -206,6 +206,22 @@ describe('compare shared-style architecture', () => {
     ).toEqual([]);
   });
 
+  it('keeps local compare styles on domain selectors instead of compare-root scoped selectors', () => {
+    const css = load();
+    const rootScopedSelectors = getRuleSelectorPaths(css)
+      .map((selectorPath) => selectorPath.at(-1) ?? '')
+      .flatMap(splitSelectorList)
+      .map((selector) => selector.trim())
+      .filter((selector) =>
+        decodeCssEscapes(selector).includes('.ui-root-compare'),
+      );
+
+    expect(
+      rootScopedSelectors,
+      'compare CSS should keep local rules on compare-* selectors; ui-root-compare is only a page marker',
+    ).toEqual([]);
+  });
+
   it('detects shared UI imports regardless of quote style', () => {
     expect(
       hasDuplicateSharedStyleImport('@import "@shelkovo/ui/styles.css";'),
