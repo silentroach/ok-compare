@@ -6,11 +6,17 @@ import { describe, expect, it } from 'vitest';
 // @ts-expect-error Astro page modules are resolved by Astro/Vitest at test time.
 import StatusPage from '@/pages/status/index.astro';
 
-const stripTags = (value: string): string =>
-  value
-    .replace(/<[^>]*>/gu, '')
-    .replace(/\s+/gu, ' ')
-    .trim();
+const stripTags = (value: string): string => {
+  let sanitized = value;
+  let previous: string;
+
+  do {
+    previous = sanitized;
+    sanitized = sanitized.replace(/<[^>]*>/gu, '');
+  } while (sanitized !== previous);
+
+  return sanitized.replace(/\s+/gu, ' ').trim();
+};
 
 const headingOutline = (html: string): readonly string[] =>
   [...html.matchAll(/<h([1-6])\b[^>]*>([\s\S]*?)<\/h\1>/gu)].map(
