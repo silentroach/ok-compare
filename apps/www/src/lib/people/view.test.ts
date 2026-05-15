@@ -184,25 +184,60 @@ describe('buildPersonMarkdown', () => {
       },
     };
 
-    expect(buildPersonMarkdown(profile)).toContain(
+    const markdown = buildPersonMarkdown(profile);
+
+    expect(markdown).toContain(
       'Исполняющий обязанности директора по эксплуатации, ОК "Комфорт"',
     );
-    expect(buildPersonMarkdown(profile)).toContain(
-      '- Telegram: [@Kirill_ZemlyaMO](https://t.me/Kirill_ZemlyaMO)',
+    expect(markdown).toContain(
+      String.raw`- Telegram: [@Kirill\_ZemlyaMO](https://t.me/Kirill_ZemlyaMO)`,
     );
-    expect(buildPersonMarkdown(profile)).toContain('## Профиль');
-    expect(buildPersonMarkdown(profile)).toContain(
-      'Публичный профиль с контекстом.',
-    );
-    expect(buildPersonMarkdown(profile)).toContain('## Где упоминается');
-    expect(buildPersonMarkdown(profile)).toContain('### Новости');
-    expect(buildPersonMarkdown(profile)).toContain('### Статус');
-    expect(buildPersonMarkdown(profile)).toContain(
+    expect(markdown).toContain('## Профиль');
+    expect(markdown).toContain('Публичный профиль с контекстом.');
+    expect(markdown).toContain('## Где упоминается');
+    expect(markdown).toContain('### Новости');
+    expect(markdown).toContain('### Статус');
+    expect(markdown).toContain(
       '[Авария на линии](https://example.com/news/2026/05/electricity/index.md) — Новость; 3 мая 2026',
     );
-    expect(buildPersonMarkdown(profile)).toContain(
+    expect(markdown).toContain(
       '[Отключение электричества в Шелково Ривер](https://example.com/status/incidents/2026/04/electricity-river-10kv-line-damage/index.md) — Инцидент; 22 апреля',
     );
+  });
+
+  it('parses profile body as Markdown fragment without nested frontmatter', () => {
+    const profile: PersonProfile = {
+      id: 'kschemelinin',
+      slug: 'kschemelinin',
+      name: 'Кирилл Щемелинин',
+      company: 'ОК "Комфорт"',
+      position: 'Исполняющий обязанности директора по эксплуатации',
+      url: '/people/kschemelinin/',
+      markdown_url: '/people/kschemelinin/index.md',
+      canonical: 'https://example.com/people/kschemelinin/',
+      contacts: [],
+      body: [
+        '---',
+        'internal: true',
+        '---',
+        '',
+        '### Роль',
+        '',
+        'Помогает с [инцидентами](/status/index.md).',
+      ].join('\n'),
+      mentions: [],
+      backlinks: {
+        news: [],
+        status: [],
+        people: [],
+      },
+    };
+
+    const markdown = buildPersonMarkdown(profile);
+
+    expect(markdown).not.toContain('internal: true');
+    expect(markdown).toContain('### Роль');
+    expect(markdown).toContain('[инцидентами](/status/index.md)');
   });
 
   it('omits profile section when markdown body is empty', () => {

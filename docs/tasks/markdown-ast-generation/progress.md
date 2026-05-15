@@ -33,6 +33,10 @@ Step 2 - Migrate section companion Markdown.
 - RED: `pnpm --filter @shelkovo/www test -- src/lib/status/markdown.test.ts` failed on nested YAML frontmatter from `incident.body` being emitted by the old string generator.
 - GREEN/REFACTOR: status Markdown tests were updated for package serializer output; incident frontmatter uses `createMarkdownDocument` frontmatter, incident bodies use `parseMarkdownFragment`, and service/incident lists preserve public Markdown links as mdast links.
 - Final focused checks: `pnpm --filter @shelkovo/www test -- src/lib/status/markdown.test.ts` passed; `pnpm --filter @shelkovo/www typecheck` passed.
+- Builder started `task-1778857949-2594` and migrated people overview/detail Markdown generation to `@shelkovo/markdown` AST generation.
+- RED: `pnpm --filter @shelkovo/www test -- src/lib/people/view.test.ts -t "parses profile body as Markdown fragment without nested frontmatter"` failed on nested YAML frontmatter from `profile.body` being emitted by the old string generator.
+- GREEN/REFACTOR: people Markdown tests were updated for package serializer output; profile bodies now use `parseMarkdownFragment`, and overview/detail links are generated as mdast links.
+- Final focused checks: `pnpm --filter @shelkovo/www test -- src/lib/people` passed; `pnpm --filter @shelkovo/www typecheck` passed; `pnpm --filter @shelkovo/www build` passed and generated people Markdown routes.
 
 ## Completed Steps
 
