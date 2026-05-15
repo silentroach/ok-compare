@@ -5,10 +5,11 @@ import { describe, expect, it } from 'vitest';
 const path = join(process.cwd(), 'src/compare/styles/global.css');
 const cssTokenSeparatorPattern = String.raw`(?:[\t\n\f\r ]|\/\*[^]*?\*\/)+`;
 const optionalCssTokenSeparatorPattern = `(?:${cssTokenSeparatorPattern})?`;
-const sharedStyleUrlPattern = String.raw`@shelkovo\/ui\/styles\.css`;
+const sharedStyleUrl = '@shelkovo/ui/styles.css';
+const cssStringPattern = String.raw`(?:(?:"(?:\\[^]|[^"\\])*")|(?:'(?:\\[^]|[^'\\])*'))`;
 const sharedStyleImportPattern = new RegExp(
-  String.raw`@import${cssTokenSeparatorPattern}(?:url\(${optionalCssTokenSeparatorPattern}['"]?${sharedStyleUrlPattern}['"]?${optionalCssTokenSeparatorPattern}\)|['"]${sharedStyleUrlPattern}['"])[^;]*;`,
-  'iu',
+  String.raw`@import${cssTokenSeparatorPattern}(?:url\(${optionalCssTokenSeparatorPattern}(?<url>${cssStringPattern}|[^)]*?)${optionalCssTokenSeparatorPattern}\)|(?<quoted>${cssStringPattern}))[^;]*;`,
+  'giu',
 );
 const compareSharedPrimitiveSelectors = [
   '.ui-root-compare .ui-shell',
@@ -22,9 +23,34 @@ const compareSharedPrimitiveSelectors = [
 const load = (): string => readFileSync(path, 'utf-8');
 const escapeRegExp = (value: string): string =>
   value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const decodeCssEscapes = (value: string): string =>
+  value.replace(
+    /\\(?:([\da-f]{1,6})[\t\n\f\r ]?|([^\da-f]))/giu,
+    (_escape, hex: string | undefined, character: string | undefined) =>
+      hex === undefined
+        ? (character ?? '')
+        : String.fromCodePoint(Number.parseInt(hex, 16)),
+  );
+const stripCssUrlQuotes = (value: string): string => {
+  const trimmedValue = value.trim();
+  const firstCharacter = trimmedValue[0];
+  const lastCharacter = trimmedValue.at(-1);
+
+  return (firstCharacter === '"' || firstCharacter === "'") &&
+    firstCharacter === lastCharacter
+    ? trimmedValue.slice(1, -1)
+    : trimmedValue;
+};
 const selectorClassBoundaryPattern = String.raw`(?![-_a-zA-Z0-9])`;
 const hasDuplicateSharedStyleImport = (css: string): boolean =>
-  sharedStyleImportPattern.test(css);
+  [...css.matchAll(sharedStyleImportPattern)].some(({ groups }) => {
+    const importTarget = groups?.url ?? groups?.quoted;
+
+    return (
+      importTarget !== undefined &&
+      decodeCssEscapes(stripCssUrlQuotes(importTarget)) === sharedStyleUrl
+    );
+  });
 const splitSelectorList = (selectorList: string): readonly string[] => {
   const selectors: string[] = [];
   let current = '';
@@ -232,6 +258,28 @@ describe('compare shared-style architecture', () => {
   it('detects shared UI imports with unquoted url wrappers', () => {
     expect(
       hasDuplicateSharedStyleImport('@import url(@shelkovo/ui/styles.css);'),
+    ).toBe(true);
+  });
+
+  it('detects shared UI imports written with CSS escapes', () => {
+    expect(
+      hasDuplicateSharedStyleImport('@import "@shelkovo\\/ui\\/styles.css";'),
+    ).toBe(true);
+
+    expect(
+      hasDuplicateSharedStyleImport(
+        '@import url(@shelkovo\\/ui\\/styles.css);',
+      ),
+    ).toBe(true);
+
+    expect(
+      hasDuplicateSharedStyleImport('@import "@shelkovo/ui/styles\\.css";'),
+    ).toBe(true);
+
+    expect(
+      hasDuplicateSharedStyleImport(
+        '@import "@shelkovo\\2f ui\\2f styles\\2e css";',
+      ),
     ).toBe(true);
   });
 
