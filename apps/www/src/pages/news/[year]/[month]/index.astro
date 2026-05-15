@@ -46,6 +46,12 @@ const monthLabel = formatNewsMonth(archive.year, archive.month);
 const monthName = formatNewsMonth(archive.year, archive.month, {
   capitalize: true,
 });
+const newerMonthName = newer
+  ? formatNewsMonth(newer.year, newer.month, { capitalize: true })
+  : undefined;
+const olderMonthName = older
+  ? formatNewsMonth(older.year, older.month, { capitalize: true })
+  : undefined;
 const heading = `Новости за ${monthLabel}`;
 const title = `Новости за ${monthLabel} — Шелково Онлайн`;
 const description = `Архив новостей Шелково за ${monthLabel}: публикации месяца в хронологическом порядке.`;
@@ -85,24 +91,30 @@ const schema = collectionPageSchema({
           </h1>
         </div>
 
-        <div
-          class="flex flex-wrap gap-3 text-sm leading-6 text-muted-foreground"
+        <nav
+          class="flex max-w-3xl flex-col gap-2 pt-1 text-sm font-semibold leading-6 sm:flex-row sm:items-center sm:justify-between"
+          aria-label="Навигация по месяцам новостей"
         >
           {
-            newer && (
-              <a href={newer.url} class="ui-link font-semibold">
-                Более новый месяц
+            older && olderMonthName && (
+              <a href={older.url} class="ui-link">
+                <span aria-hidden="true">← </span>
+                {olderMonthName}
               </a>
             )
           }
           {
-            older && (
-              <a href={older.url} class="ui-link font-semibold">
-                Более ранний месяц
+            newer && newerMonthName && (
+              <a
+                href={newer.url}
+                class:list={['ui-link', !older && 'sm:ml-auto']}
+              >
+                {newerMonthName}
+                <span aria-hidden="true"> →</span>
               </a>
             )
           }
-        </div>
+        </nav>
       </div>
     </section>
 
