@@ -4,8 +4,11 @@ import { describe, expect, it } from 'vitest';
 
 const path = join(process.cwd(), 'src/compare/styles/global.css');
 const cssTokenSeparatorPattern = String.raw`(?:[\t\n\f\r ]|\/\*[^]*?\*\/)+`;
-const sharedStyleImportPattern =
-  /@import\s+(?:url\(\s*)?['"]@shelkovo\/ui\/styles\.css['"]\s*\)?[^;]*;/u;
+const optionalCssTokenSeparatorPattern = `(?:${cssTokenSeparatorPattern})?`;
+const sharedStyleImportPattern = new RegExp(
+  String.raw`@import${cssTokenSeparatorPattern}(?:url\(${optionalCssTokenSeparatorPattern})?['"]@shelkovo\/ui\/styles\.css['"]${optionalCssTokenSeparatorPattern}\)?[^;]*;`,
+  'iu',
+);
 const compareSharedPrimitiveSelectors = [
   '.ui-root-compare .ui-shell',
   '.ui-root-compare .ui-shell-strong',
@@ -101,6 +104,16 @@ describe('compare shared-style architecture', () => {
       hasDuplicateSharedStyleImport(
         '@import "@shelkovo/ui/styles.css" layer(base);',
       ),
+    ).toBe(true);
+  });
+
+  it('detects shared UI imports with CSS comments after the at-rule and uppercase import names', () => {
+    expect(
+      hasDuplicateSharedStyleImport('@import/**/"@shelkovo/ui/styles.css";'),
+    ).toBe(true);
+
+    expect(
+      hasDuplicateSharedStyleImport('@IMPORT "@shelkovo/ui/styles.css";'),
     ).toBe(true);
   });
 
