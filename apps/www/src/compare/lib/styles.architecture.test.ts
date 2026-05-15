@@ -247,6 +247,19 @@ describe('compare shared-style architecture', () => {
     ).toEqual([]);
   });
 
+  it('does not import empty legacy compare CSS from compare pages', () => {
+    const pagesWithLegacyCssImport = loadComparePages()
+      .filter(({ source }) =>
+        source.includes("import '@/compare/styles/global.css';"),
+      )
+      .map(({ path }) => path);
+
+    expect(
+      pagesWithLegacyCssImport,
+      'compare pages should rely on BaseLayout and shared UI styles, not an empty legacy stylesheet',
+    ).toEqual([]);
+  });
+
   it('detects shared UI imports regardless of quote style', () => {
     expect(
       hasDuplicateSharedStyleImport('@import "@shelkovo/ui/styles.css";'),

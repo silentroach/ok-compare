@@ -1,5 +1,4 @@
 ---
-import '@/compare/styles/global.css';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
 import {
@@ -45,6 +44,11 @@ const weights = [
   ['15%', 'Близость к Москве', 'Приближенное расстояние за пределами МКАД'],
 ];
 const sectionClass = 'scroll-mt-8 py-4 md:py-5';
+const panelClass = 'ui-shell bg-[color:var(--color-surface)] p-4 md:p-5';
+const panelClassCompact = 'ui-shell bg-[color:var(--color-surface)] p-4';
+const panelClassRoomy = 'ui-shell bg-[color:var(--color-surface)] p-5';
+const sectionTitleClass =
+  'font-heading text-2xl font-bold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]';
 ---
 
 <BaseLayout
@@ -58,89 +62,81 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
       <div class="ui-page-header-stack">
         <Breadcrumbs items={breadcrumbs} />
 
-        <section class="bg-[color:var(--color-bg-soft)] pb-6 md:pb-8 lg:pb-10">
-          <div
-            class="relative grid gap-8 lg:grid-cols-[minmax(0,1.25fr)_20rem] lg:gap-10"
-          >
-            <div class="max-w-3xl space-y-6">
-              <div class="space-y-3">
-                <h1 class="ui-page-title max-w-3xl">
-                  Как считается условный уровень поселка
-                </h1>
-                <p class="ui-copy max-w-2xl text-muted-foreground">
-                  Условный уровень показывает качество среды без учета тарифа.
-                  Сначала он сравнивает поселки по инфраструктуре, сервису и
-                  близости к Москве, затем помогает понять, насколько разумна
-                  цена на фоне похожих вариантов.
+        <div
+          class="relative grid gap-8 lg:grid-cols-[minmax(0,1.25fr)_20rem] lg:gap-10"
+        >
+          <div class="max-w-3xl space-y-6">
+            <div class="space-y-3">
+              <h1 class="ui-page-title max-w-3xl">
+                Как считается условный уровень поселка
+              </h1>
+              <p class="ui-copy max-w-2xl text-muted-foreground">
+                Условный уровень показывает качество среды без учета тарифа.
+                Сначала он сравнивает поселки по инфраструктуре, сервису и
+                близости к Москве, затем помогает понять, насколько разумна цена
+                на фоне похожих вариантов.
+              </p>
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-2">
+              <div class={panelClass}>
+                <p
+                  class="text-xs font-semibold uppercase tracking-[0.06em] text-info-text/80"
+                >
+                  Важно
+                </p>
+                <p class="mt-3 text-sm leading-7 text-info-text">
+                  Тариф не участвует в формуле. Так дешевые и дорогие поселки
+                  сравниваются внутри близкого по качеству диапазона, без
+                  смешения цены и среды в одну цифру.
                 </p>
               </div>
 
-              <div class="grid gap-4 md:grid-cols-2">
-                <div
-                  class="rounded-sm bg-[color:var(--color-surface)] p-4 md:p-5"
-                >
-                  <p
-                    class="text-xs font-semibold uppercase tracking-[0.06em] text-info-text/80"
-                  >
-                    Важно
-                  </p>
-                  <p class="mt-3 text-sm leading-7 text-info-text">
-                    Тариф не участвует в формуле. Так дешевые и дорогие поселки
-                    сравниваются внутри близкого по качеству диапазона, без
-                    смешения цены и среды в одну цифру.
-                  </p>
-                </div>
-
-                <div
-                  class="rounded-sm bg-[color:var(--color-surface)] p-4 md:p-5"
-                >
-                  <p
-                    class="text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground"
-                  >
-                    Коротко
-                  </p>
-                  <p class="mt-3 text-sm leading-7 text-muted-foreground">
-                    Больше всего весят дороги, вода, газ, канализация, охрана,
-                    повседневная среда и близость к Москве. Премиальные опции
-                    учитываются, но не перекрывают слабую базу; неполные
-                    карточки тянутся к середине шкалы.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <aside class="space-y-4">
-              <div
-                class="rounded-sm border border-border bg-[color:var(--color-surface)] p-5"
-              >
+              <div class={panelClass}>
                 <p
                   class="text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground"
                 >
-                  Итоговая структура
+                  Коротко
                 </p>
-                <dl class="mt-3 divide-y divide-border">
-                  {
-                    weights.map(([weight, label, note]) => (
-                      <div class="py-3 first:pt-0 last:pb-0">
-                        <dt class="flex items-baseline justify-between gap-3">
-                          <span class="text-sm font-semibold text-foreground">
-                            {label}
-                          </span>
-                          <span class="ui-num text-lg font-bold text-primary">
-                            {weight}
-                          </span>
-                        </dt>
-                        <dd class="mt-1 text-xs leading-5 text-muted-foreground">
-                          {note}
-                        </dd>
-                      </div>
-                    ))
-                  }
-                </dl>
+                <p class="mt-3 text-sm leading-7 text-muted-foreground">
+                  Больше всего весят дороги, вода, газ, канализация, охрана,
+                  повседневная среда и близость к Москве. Премиальные опции
+                  учитываются, но не перекрывают слабую базу; неполные карточки
+                  тянутся к середине шкалы.
+                </p>
               </div>
-            </aside>
+            </div>
           </div>
-        </section>
+
+          <aside class="space-y-4">
+            <div class={panelClassRoomy}>
+              <p
+                class="text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground"
+              >
+                Итоговая структура
+              </p>
+              <dl class="mt-3 divide-y divide-border">
+                {
+                  weights.map(([weight, label, note]) => (
+                    <div class="py-3 first:pt-0 last:pb-0">
+                      <dt class="flex items-baseline justify-between gap-3">
+                        <span class="text-sm font-semibold text-foreground">
+                          {label}
+                        </span>
+                        <span class="ui-num text-lg font-bold text-primary">
+                          {weight}
+                        </span>
+                      </dt>
+                      <dd class="mt-1 text-xs leading-5 text-muted-foreground">
+                        {note}
+                      </dd>
+                    </div>
+                  ))
+                }
+              </dl>
+            </div>
+          </aside>
+        </div>
       </div>
     </section>
 
@@ -155,11 +151,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
             >
               Что это вообще такое
             </p>
-            <h2
-              class="text-2xl font-bold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
-            >
-              Индекс среды, а не цена жизни
-            </h2>
+            <h2 class={sectionTitleClass}>Индекс среды, а не цена жизни</h2>
             <p class="ui-copy text-muted-foreground">
               Условный уровень отвечает на один вопрос: насколько сильным
               выглядит поселок по собранным данным. В расчет входят инженерия,
@@ -180,13 +172,9 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
             >
               Формула и веса
             </p>
-            <h2
-              class="text-2xl font-bold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
-            >
-              Из чего складывается цифра
-            </h2>
+            <h2 class={sectionTitleClass}>Из чего складывается цифра</h2>
             <div
-              class="overflow-x-auto rounded-sm border border-border bg-[color:var(--color-surface)] p-5"
+              class="ui-shell overflow-x-auto bg-[color:var(--color-surface)] p-5"
             >
               <pre
                 class="ui-num text-sm leading-8 text-foreground"><code>условный уровень =
@@ -203,7 +191,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
             <div class="grid gap-3 md:grid-cols-2">
               {
                 weights.map(([weight, label, note]) => (
-                  <div class="rounded-sm border border-border bg-[color:var(--color-surface)] p-4">
+                  <div class={panelClassCompact}>
                     <div class="flex items-start justify-between gap-4">
                       <div>
                         <h3 class="font-body text-sm font-semibold text-foreground">
@@ -231,11 +219,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
             >
               Дополнительные корректировки
             </p>
-            <h2
-              class="text-2xl font-bold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
-            >
-              Есть два дополнительных сигнала
-            </h2>
+            <h2 class={sectionTitleClass}>Есть два дополнительных сигнала</h2>
             <p class="ui-copy text-muted-foreground">
               Они не связаны с ценой и не меняют тариф. Эти поправки только
               уточняют качество среды по признакам, которые важно не потерять в
@@ -243,7 +227,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
             </p>
             <div class="grid gap-4 md:grid-cols-2">
               <div
-                class="rounded-sm border border-success-border bg-[color:var(--color-surface)] p-5"
+                class="ui-shell border-success-border bg-[color:var(--color-surface)] p-5"
               >
                 <p
                   class="text-xs font-semibold uppercase tracking-[0.06em] text-success-text"
@@ -260,7 +244,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
                 </p>
               </div>
               <div
-                class="rounded-sm border border-danger-border bg-[color:var(--color-surface)] p-5"
+                class="ui-shell border-danger-border bg-[color:var(--color-surface)] p-5"
               >
                 <p
                   class="text-xs font-semibold uppercase tracking-[0.06em] text-danger-text"
@@ -287,20 +271,14 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
             >
               1. Инфраструктура
             </p>
-            <h2
-              class="text-2xl font-bold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
-            >
-              Самый важный блок
-            </h2>
+            <h2 class={sectionTitleClass}>Самый важный блок</h2>
             <p class="ui-copy text-muted-foreground">
               Это основа пригодности поселка для жизни. Если инженерная база
               слабая, высокий уровень не получится даже при красивой концепции,
               воде рядом или премиальных объектах.
             </p>
             <div class="grid gap-4 md:grid-cols-2">
-              <div
-                class="rounded-sm border border-border bg-[color:var(--color-surface)] p-5"
-              >
+              <div class={panelClassRoomy}>
                 <h3 class="text-base font-bold text-foreground">
                   Максимально влияют
                 </h3>
@@ -316,9 +294,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
                   <li>КПП</li>
                 </ul>
               </div>
-              <div
-                class="rounded-sm border border-border bg-[color:var(--color-surface)] p-5"
-              >
+              <div class={panelClassRoomy}>
                 <h3 class="text-base font-bold text-foreground">
                   Дополняют картину
                 </h3>
@@ -336,7 +312,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
               </div>
             </div>
             <div
-              class="rounded-sm border border-border bg-[color:var(--color-surface)] p-5 text-sm leading-7 text-muted-foreground"
+              class="ui-shell bg-[color:var(--color-surface)] p-5 text-sm leading-7 text-muted-foreground"
             >
               <p>
                 Подтвержденный признак получает полный балл. Ограниченный или
@@ -359,9 +335,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
             >
               2. Общественные пространства
             </p>
-            <h2
-              class="text-2xl font-bold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
-            >
+            <h2 class={sectionTitleClass}>
               Комфорт среды, а не только премиальные опции
             </h2>
             <p class="ui-copy text-muted-foreground">
@@ -370,9 +344,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
               должны перевешивать базовую функциональность поселка.
             </p>
             <div class="grid gap-4 md:grid-cols-2">
-              <div
-                class="rounded-sm border border-border bg-[color:var(--color-surface)] p-5"
-              >
+              <div class={panelClassRoomy}>
                 <h3 class="text-base font-bold text-foreground">
                   Более значимые признаки
                 </h3>
@@ -386,9 +358,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
                   <li>Клубная инфраструктура</li>
                 </ul>
               </div>
-              <div
-                class="rounded-sm border border-border bg-[color:var(--color-surface)] p-5"
-              >
+              <div class={panelClassRoomy}>
                 <h3 class="text-base font-bold text-foreground">
                   Менее значимые признаки
                 </h3>
@@ -420,9 +390,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
             >
               3. Сервисная модель
             </p>
-            <h2
-              class="text-2xl font-bold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
-            >
+            <h2 class={sectionTitleClass}>
               Насколько поселок поддерживается в рабочем состоянии
             </h2>
             <p class="ui-copy text-muted-foreground">
@@ -430,9 +398,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
               уборка снега и дорог, благоустройство, аварийная поддержка и
               диспетчеризация.
             </p>
-            <div
-              class="rounded-sm border border-border bg-[color:var(--color-surface)] p-5"
-            >
+            <div class={panelClassRoomy}>
               <ul
                 class="grid gap-2 text-sm leading-6 text-muted-foreground sm:grid-cols-2"
               >
@@ -458,9 +424,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
             >
               4. Удаленность от Москвы
             </p>
-            <h2
-              class="text-2xl font-bold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
-            >
+            <h2 class={sectionTitleClass}>
               Приближенная оценка расстояния, а не времени в пути
             </h2>
             <p class="ui-copy text-muted-foreground">
@@ -468,9 +432,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
               него вычитается приблизительный радиус МКАД. Получается условное
               расстояние «за МКАД» с весом 15%.
             </p>
-            <div
-              class="rounded-sm border border-border bg-[color:var(--color-surface)] p-5"
-            >
+            <div class={panelClassRoomy}>
               <p class="text-sm leading-7 text-muted-foreground">
                 Чем дальше поселок за расчетным радиусом, тем слабее вклад в
                 итог. Влияние ограничено, чтобы дальний, но сильный поселок не
@@ -478,7 +440,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
               </p>
             </div>
             <div
-              class="rounded-sm border border-warning-border bg-[color:var(--color-surface)] p-5"
+              class="ui-shell border-warning-border bg-[color:var(--color-surface)] p-5"
             >
               <p class="text-sm leading-7 text-warning-text">
                 Важно: здесь не учитываются пробки, качество шоссе, близость к
@@ -496,9 +458,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
             >
               Неизвестные данные
             </p>
-            <h2
-              class="text-2xl font-bold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
-            >
+            <h2 class={sectionTitleClass}>
               Отсутствие данных не считается автоматическим минусом, но и не
               превращается в скрытый плюс
             </h2>
@@ -508,7 +468,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
               смотрит, насколько полно заполнен блок.
             </p>
             <div
-              class="rounded-sm border border-warning-border bg-[color:var(--color-surface)] p-5"
+              class="ui-shell border-warning-border bg-[color:var(--color-surface)] p-5"
             >
               <p class="text-sm leading-7 text-warning-text">
                 Это консервативная настройка. Сильные стороны поселков обычно
@@ -517,25 +477,19 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
               </p>
             </div>
             <div class="grid gap-3 md:grid-cols-3">
-              <div
-                class="rounded-sm border border-border bg-[color:var(--color-surface)] p-4"
-              >
+              <div class={panelClassCompact}>
                 <p class="text-sm font-semibold text-foreground">Шаг 1</p>
                 <p class="mt-2 text-sm leading-6 text-muted-foreground">
                   Считаем среднее только по известным полям.
                 </p>
               </div>
-              <div
-                class="rounded-sm border border-border bg-[color:var(--color-surface)] p-4"
-              >
+              <div class={panelClassCompact}>
                 <p class="text-sm font-semibold text-foreground">Шаг 2</p>
                 <p class="mt-2 text-sm leading-6 text-muted-foreground">
                   Считаем, насколько полно заполнен блок.
                 </p>
               </div>
-              <div
-                class="rounded-sm border border-border bg-[color:var(--color-surface)] p-4"
-              >
+              <div class={panelClassCompact}>
                 <p class="text-sm font-semibold text-foreground">Шаг 3</p>
                 <p class="mt-2 text-sm leading-6 text-muted-foreground">
                   Если данных мало, частично тянем результат к нейтральному
@@ -558,33 +512,25 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
             >
               Как читать результат
             </p>
-            <h2
-              class="text-2xl font-bold leading-tight text-foreground md:text-[2rem] md:leading-[1.15]"
-            >
+            <h2 class={sectionTitleClass}>
               Что означает высокий или низкий уровень
             </h2>
             <div class="grid gap-4 md:grid-cols-3">
-              <div
-                class="rounded-sm border border-border bg-[color:var(--color-surface)] p-5"
-              >
+              <div class={panelClassRoomy}>
                 <h3 class="text-base font-bold text-foreground">Высокий</h3>
                 <p class="mt-2 text-sm leading-6 text-muted-foreground">
                   Обычно это сильная базовая инфраструктура, понятная среда и
                   неплохая близость к Москве.
                 </p>
               </div>
-              <div
-                class="rounded-sm border border-border bg-[color:var(--color-surface)] p-5"
-              >
+              <div class={panelClassRoomy}>
                 <h3 class="text-base font-bold text-foreground">Средний</h3>
                 <p class="mt-2 text-sm leading-6 text-muted-foreground">
                   Обычно это сочетание сильных и слабых сторон или заметная
                   удаленность при неплохой внутренней среде.
                 </p>
               </div>
-              <div
-                class="rounded-sm border border-border bg-[color:var(--color-surface)] p-5"
-              >
+              <div class={panelClassRoomy}>
                 <h3 class="text-base font-bold text-foreground">Низкий</h3>
                 <p class="mt-2 text-sm leading-6 text-muted-foreground">
                   Чаще всего это не один минус, а комбинация проблем в
@@ -593,7 +539,7 @@ const sectionClass = 'scroll-mt-8 py-4 md:py-5';
               </div>
             </div>
             <div
-              class="rounded-sm border border-primary/30 bg-[color:var(--color-surface)] p-5"
+              class="ui-shell border-primary/30 bg-[color:var(--color-surface)] p-5"
             >
               <p class="text-sm leading-7 text-muted-foreground">
                 Условный уровень не заменяет тариф. Логика сравнения такая:

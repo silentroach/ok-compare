@@ -1,5 +1,4 @@
 ---
-import '@/compare/styles/global.css';
 import CommonSpacesTable from '@/compare/components/CommonSpacesTable.svelte';
 import InfrastructureTable from '@/compare/components/InfrastructureTable.svelte';
 import ServiceTable from '@/compare/components/ServiceTable.svelte';
@@ -201,10 +200,7 @@ const heroMap = hasPoint
           <div class="flex flex-wrap justify-end gap-2">
             {
               waterInc && (
-                <span
-                  class="inline-flex items-center rounded-md border border-[color:var(--color-water-border)] bg-[color:var(--color-water-soft)] px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.06em] text-[color:var(--color-water)]"
-                  title={waterTitle}
-                >
+                <span class="ui-badge ui-badge-water" title={waterTitle}>
                   Вода в тарифе
                 </span>
               )
@@ -215,7 +211,7 @@ const heroMap = hasPoint
                   href={obmanUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="inline-flex items-center rounded-md border border-danger bg-danger px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.06em] text-danger-foreground transition-opacity hover:opacity-90"
+                  class="ui-badge ui-badge-danger transition-opacity hover:opacity-90"
                   title="Открыть Telegram-канал Коттеджное рабство"
                 >
                   Коттеджное рабство
@@ -251,12 +247,12 @@ const heroMap = hasPoint
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Открыть сайт поселка"
-                      class="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      class="ui-icon-btn"
                       title="Перейти на сайт поселка"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="h-6 w-6"
+                        class="h-5 w-5"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -278,12 +274,12 @@ const heroMap = hasPoint
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Открыть Telegram-канал поселка"
-                      class="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      class="ui-icon-btn"
                       title="Перейти в Telegram-канал"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        class="h-6 w-6"
+                        class="h-5 w-5"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -310,12 +306,12 @@ const heroMap = hasPoint
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Открыть поселок на Яндекс.Картах"
-                  class="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  class="ui-icon-btn"
                   title="Открыть на Яндекс.Картах"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6"
+                    class="h-5 w-5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -525,7 +521,7 @@ const heroMap = hasPoint
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Открыть сайт поселка"
-                    class="inline-flex min-h-9 items-center gap-1.5 rounded-sm border border-border px-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    class="ui-btn ui-btn-sm ui-btn-outline min-h-9"
                     title="Перейти на сайт поселка"
                   >
                     <svg
@@ -553,7 +549,7 @@ const heroMap = hasPoint
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Открыть Telegram-канал поселка"
-                    class="inline-flex min-h-9 items-center gap-1.5 rounded-sm border border-border px-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    class="ui-btn ui-btn-sm ui-btn-outline min-h-9"
                     title="Перейти в Telegram-канал"
                   >
                     <svg
@@ -586,7 +582,7 @@ const heroMap = hasPoint
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Открыть поселок на Яндекс.Картах"
-                class="inline-flex min-h-9 items-center gap-1.5 rounded-sm border border-border px-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                class="ui-btn ui-btn-sm ui-btn-outline min-h-9"
                 title="Открыть на Яндекс.Картах"
               >
                 <svg
@@ -644,10 +640,7 @@ const heroMap = hasPoint
         hasLabels && (
           <div class="mt-4 flex flex-wrap gap-2">
             {waterInc && (
-              <span
-                class="inline-flex items-center rounded-md border border-[color:var(--color-water-border)] bg-[color:var(--color-water-soft)] px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.06em] text-[color:var(--color-water)]"
-                title={waterTitle}
-              >
+              <span class="ui-badge ui-badge-water" title={waterTitle}>
                 Вода в тарифе
               </span>
             )}
@@ -656,7 +649,7 @@ const heroMap = hasPoint
                 href={obmanUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center rounded-md border border-danger bg-danger px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.06em] text-danger-foreground transition-opacity hover:opacity-90"
+                class="ui-badge ui-badge-danger transition-opacity hover:opacity-90"
                 title="Открыть Telegram-канал Коттеджное рабство"
               >
                 Коттеджное рабство
