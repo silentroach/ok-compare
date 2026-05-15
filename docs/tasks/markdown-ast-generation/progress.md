@@ -37,6 +37,10 @@ Step 2 - Migrate section companion Markdown.
 - RED: `pnpm --filter @shelkovo/www test -- src/lib/people/view.test.ts -t "parses profile body as Markdown fragment without nested frontmatter"` failed on nested YAML frontmatter from `profile.body` being emitted by the old string generator.
 - GREEN/REFACTOR: people Markdown tests were updated for package serializer output; profile bodies now use `parseMarkdownFragment`, and overview/detail links are generated as mdast links.
 - Final focused checks: `pnpm --filter @shelkovo/www test -- src/lib/people` passed; `pnpm --filter @shelkovo/www typecheck` passed; `pnpm --filter @shelkovo/www build` passed and generated people Markdown routes.
+- Builder started `task-1778857949-3d69` and migrated reglament overview/full Markdown generation to `@shelkovo/markdown` AST generation.
+- RED: `pnpm --filter @shelkovo/www test -- src/lib/reglament/markdown.test.ts` failed because the old string generators emitted bare URLs/source refs instead of mdast-owned Markdown links/autolinks.
+- GREEN/REFACTOR: `apps/www/src/lib/reglament/markdown.ts` and `apps/www/src/lib/reglament/full-markdown.ts` now use `createMarkdownDocument`, `md`, and `serializeMarkdownDocument`; source refs, thematic files, status codes, formulas, ids, and public URLs are represented as mdast links/autolinks/inline code.
+- Final focused checks: `pnpm --filter @shelkovo/www test -- src/lib/reglament` passed; `pnpm --filter @shelkovo/www typecheck` passed; `pnpm --filter @shelkovo/www build` passed and generated reglament Markdown routes.
 
 ## Completed Steps
 

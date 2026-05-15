@@ -1,3 +1,10 @@
+import {
+  createMarkdownDocument,
+  md,
+  serializeMarkdownDocument,
+  type MarkdownPhrasingInput,
+} from '@shelkovo/markdown';
+
 import type { Estimate } from './schema';
 import { absoluteUrl } from '../site';
 import { buildReglamentPayload } from './discovery';
@@ -21,71 +28,137 @@ export const REGLAMENT_MARKDOWN_HEADERS = {
   'X-Robots-Tag': 'noindex, follow',
 } as const;
 
-const join = (lines: readonly string[]): string => `${lines.join('\n')}\n`;
+type MarkdownNode = Parameters<
+  typeof createMarkdownDocument
+>[0]['children'][number];
+type MarkdownListItem = ReturnType<typeof md.listItem>;
+type MarkdownPhrasingNodes = Exclude<MarkdownPhrasingInput, string>;
+
+const serialize = (children: readonly MarkdownNode[]): string =>
+  serializeMarkdownDocument(createMarkdownDocument({ children }));
+
+const phrase = (value: MarkdownPhrasingInput): MarkdownPhrasingNodes =>
+  typeof value === 'string' ? [md.text(value)] : value;
+
+const row = (label: string, value: MarkdownPhrasingInput): MarkdownListItem =>
+  md.listItem([md.paragraph([md.text(`${label}: `), ...phrase(value)])]);
+
+const linkedUrlRow = (label: string, url: string): MarkdownListItem => {
+  const href = absoluteUrl(url);
+
+  return row(label, [md.link(href, href)]);
+};
 
 const source = (
   ref: ReturnType<typeof buildReglamentPayload>['source_refs'][number],
-): string => {
+): ReturnType<typeof md.link> => {
   const fragment = ref.fragment ? `, ${ref.fragment}` : '';
-  const note = ref.note ? ` (${ref.note})` : '';
 
-  return `[${ref.pdf}.pdf, стр. ${ref.page}${fragment}](${absoluteUrl(ref.pdf_url)})${note}`;
+  return md.link(
+    absoluteUrl(ref.pdf_url),
+    `${ref.pdf}.pdf, стр. ${ref.page}${fragment}`,
+    ref.note,
+  );
 };
 
-const rowLines = (
+const sourcePhrasing = (
+  refs: readonly ReturnType<
+    typeof buildReglamentPayload
+  >['source_refs'][number][],
+): MarkdownPhrasingNodes =>
+  refs.flatMap((ref, index) => [
+    ...(index > 0 ? [md.text('; ')] : []),
+    source(ref),
+  ]);
+
+const reglamentRow = (
   row: ReturnType<
     typeof buildReglamentPayload
   >['sections'][number]['rows'][number],
-): readonly string[] => [
-  `- ${row.title} — ${formatReglamentTariff(row.baseline.tariff_per_sotka_month)}; ${formatReglamentAnnualMoney(row.baseline.annual_gross)}; источник: ${row.source_refs.map(source).join('; ')}`,
-  ...(row.description ? [`  ${row.description}`] : []),
-  ...(row.tags && row.tags.length > 0
-    ? [`  Теги: ${row.tags.map((tag) => `\`${tag}\``).join(', ')}`]
-    : []),
-];
+): MarkdownListItem =>
+  md.listItem([
+    md.paragraph([
+      md.text(
+        `${row.title} — ${formatReglamentTariff(row.baseline.tariff_per_sotka_month)}; ${formatReglamentAnnualMoney(row.baseline.annual_gross)}; источник: `,
+      ),
+      ...sourcePhrasing(row.source_refs),
+    ]),
+    ...(row.description ? [md.paragraph(row.description)] : []),
+    ...(row.tags && row.tags.length > 0
+      ? [
+          md.paragraph(
+            row.tags.flatMap((tag, index) => [
+              md.text(index === 0 ? 'Теги: ' : ', '),
+              md.inlineCode(tag),
+            ]),
+          ),
+        ]
+      : []),
+  ]);
 
 export function buildReglamentMarkdown(estimate: Estimate): string {
   const payload = buildReglamentPayload(estimate);
 
-  return join([
-    '# Калькулятор тарифа по смете 2026',
-    '',
-    'Текстовая версия интерактивной сметы регламента.',
-    'В интерфейсе тариф показывается как ₽/сотка; машинное поле `tariff_per_sotka_month` остается месячным тарифом.',
-    '',
-    '## Главные URL',
-    `- Раздел: ${absoluteUrl(reglamentUrl())}`,
-    `- JSON сметы: ${absoluteUrl(reglamentEstimate2026DataUrl())}`,
-    `- JSON Schema: ${absoluteUrl(reglamentEstimate2026SchemaUrl())}`,
-    `- OpenAPI: ${absoluteUrl(reglamentEstimate2026OpenApiUrl())}`,
-    `- API catalog: ${absoluteUrl(reglamentApiCatalogUrl())}`,
-    `- llms.txt: ${absoluteUrl(reglamentLlmsUrl())}`,
-    `- llms-full.txt: ${absoluteUrl(reglamentLlmsFullUrl())}`,
-    ...payload.sources.map(
-      (item) => `- Исходный PDF ${item.pdf}.pdf: ${absoluteUrl(item.pdf_url)}`,
-    ),
-    '',
-    '## Итог',
-    `- Официальный годовой итог: ${formatReglamentAnnualMoney(payload.official.annual_gross)}`,
-    `- Официальный тариф: ${formatReglamentTariff(payload.official.tariff_per_sotka_month)}`,
-    `- Расчетная база в JSON: ${formatReglamentAnnualMoney(payload.computed.annual_gross)}; ${formatReglamentTariff(payload.computed.tariff_per_sotka_month)}`,
-    `- Тарифицируемая площадь: ${formatReglamentNumber(payload.tariff_area_sotki)} сотки`,
-    '',
-    '## Формулы',
-    `- Тариф: \`${payload.formulas.tariff_per_sotka_month}\``,
-    `- ФОТ: \`${payload.formulas.row_breakdown.fot}\``,
-    `- Доходы всего: \`${payload.formulas.row_breakdown.income}\``,
-    `- Сумма с НДС: \`${payload.formulas.row_breakdown.gross}\``,
-    '',
-    '## Ограничения',
-    ...payload.caveats.map((item) => `- ${item}`),
-    '',
+  return serialize([
+    md.heading(1, 'Калькулятор тарифа по смете 2026'),
+    md.paragraph('Текстовая версия интерактивной сметы регламента.'),
+    md.paragraph([
+      md.text('В интерфейсе тариф показывается как ₽/сотка; машинное поле '),
+      md.inlineCode('tariff_per_sotka_month'),
+      md.text(' остается месячным тарифом.'),
+    ]),
+    md.heading(2, 'Главные URL'),
+    md.list([
+      linkedUrlRow('Раздел', reglamentUrl()),
+      linkedUrlRow('JSON сметы', reglamentEstimate2026DataUrl()),
+      linkedUrlRow('JSON Schema', reglamentEstimate2026SchemaUrl()),
+      linkedUrlRow('OpenAPI', reglamentEstimate2026OpenApiUrl()),
+      linkedUrlRow('API catalog', reglamentApiCatalogUrl()),
+      linkedUrlRow('llms.txt', reglamentLlmsUrl()),
+      linkedUrlRow('llms-full.txt', reglamentLlmsFullUrl()),
+      ...payload.sources.map((item) =>
+        linkedUrlRow(`Исходный PDF ${item.pdf}.pdf`, item.pdf_url),
+      ),
+    ]),
+    md.heading(2, 'Итог'),
+    md.list([
+      row(
+        'Официальный годовой итог',
+        formatReglamentAnnualMoney(payload.official.annual_gross),
+      ),
+      row(
+        'Официальный тариф',
+        formatReglamentTariff(payload.official.tariff_per_sotka_month),
+      ),
+      row(
+        'Расчетная база в JSON',
+        `${formatReglamentAnnualMoney(payload.computed.annual_gross)}; ${formatReglamentTariff(payload.computed.tariff_per_sotka_month)}`,
+      ),
+      row(
+        'Тарифицируемая площадь',
+        `${formatReglamentNumber(payload.tariff_area_sotki)} сотки`,
+      ),
+    ]),
+    md.heading(2, 'Формулы'),
+    md.list([
+      row('Тариф', [md.inlineCode(payload.formulas.tariff_per_sotka_month)]),
+      row('ФОТ', [md.inlineCode(payload.formulas.row_breakdown.fot)]),
+      row('Доходы всего', [
+        md.inlineCode(payload.formulas.row_breakdown.income),
+      ]),
+      row('Сумма с НДС', [md.inlineCode(payload.formulas.row_breakdown.gross)]),
+    ]),
+    md.heading(2, 'Ограничения'),
+    md.list(payload.caveats.map((item) => md.listItem(item))),
     ...payload.sections.flatMap((section) => [
-      `## ${section.title}`,
-      `- Итог раздела: ${formatReglamentAnnualMoney(section.official.annual_gross)}; ${formatReglamentTariff(section.official.tariff_per_sotka_month)}`,
-      '',
-      ...section.rows.flatMap(rowLines),
-      '',
+      md.heading(2, section.title),
+      md.list([
+        row(
+          'Итог раздела',
+          `${formatReglamentAnnualMoney(section.official.annual_gross)}; ${formatReglamentTariff(section.official.tariff_per_sotka_month)}`,
+        ),
+        ...section.rows.map(reglamentRow),
+      ]),
     ]),
   ]);
 }
