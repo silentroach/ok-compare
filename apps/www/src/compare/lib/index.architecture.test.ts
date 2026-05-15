@@ -16,6 +16,14 @@ const loadIndex = (): string => readFileSync(indexPath, 'utf-8');
 const loadRuntime = (): string => readFileSync(runtimePath, 'utf-8');
 
 describe('index page explorer architecture', () => {
+  it('uses the shared page header without compare-home compensation CSS', () => {
+    const code = loadIndex();
+
+    expect(code).not.toContain("import '@/compare/styles/global.css';");
+    expect(code).not.toContain('compare-landing-header');
+    expect(code).toContain('<section class="ui-page-header">');
+  });
+
   it('uses client-only explorer with json source', () => {
     const code = loadIndex();
 

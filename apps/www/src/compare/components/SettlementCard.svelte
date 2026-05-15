@@ -31,7 +31,7 @@
 
 <article
   data-testid="settlement-card"
-  class="grid min-h-full gap-3 rounded-sm border border-border bg-[color:var(--color-surface)] p-3.5 md:flex md:flex-col md:p-5"
+  class="ui-shell grid min-h-full gap-3 p-3.5 md:flex md:flex-col md:p-5"
 >
   <div class="flex items-start justify-between gap-3">
     <div class="min-w-0 space-y-1">

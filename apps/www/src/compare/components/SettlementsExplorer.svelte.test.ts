@@ -394,6 +394,23 @@ describe('SettlementsExplorer', () => {
     expect(container.querySelector(`#${mapid}`)).toBeTruthy();
   });
 
+  it('uses shared button primitives for filter and map controls', async () => {
+    setScreen(false);
+
+    const { container, getByTestId } = render(SettlementsExplorer, {
+      props: { settlements, comparisons, stats },
+    });
+
+    await waitFor(() => {
+      expect(getByTestId('map-toggle')).toBeTruthy();
+    });
+
+    const filter = getByTestId('price-cheaper') as HTMLInputElement;
+    const filterLabel = container.querySelector(`label[for="${filter.id}"]`);
+    expect(filterLabel?.className).toContain('ui-btn');
+    expect(getByTestId('map-toggle').className).toContain('ui-btn');
+  });
+
   it('uses one rank for duplicate tariffs', async () => {
     setScreen(false);
 

@@ -28,6 +28,19 @@ describe('Hero', () => {
     expect(h1?.textContent).toContain('Test Title');
   });
 
+  it('uses shared page typography primitives instead of a local hero panel', () => {
+    const { container } = render(Hero, {
+      props: {
+        title: 'Test Title',
+        subtitle: 'Test Subtitle',
+      },
+    });
+
+    expect(container.querySelector('section')).toBeNull();
+    expect(container.querySelector('h1')?.className).toContain('ui-page-title');
+    expect(container.querySelector('p')?.className).toContain('ui-copy');
+  });
+
   it('renders subtitle link when provided', () => {
     const { container } = render(Hero, {
       props: {
@@ -40,5 +53,6 @@ describe('Hero', () => {
 
     const link = container.querySelector('a[href="/815/compare/rating/"]');
     expect(link?.textContent).toContain('рейтингу');
+    expect(link?.className).toContain('ui-link');
   });
 });

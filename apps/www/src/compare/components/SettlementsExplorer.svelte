@@ -220,10 +220,7 @@
   </span>
 
   <div class="space-y-6">
-    <section
-      class="bg-[color:var(--color-bg-soft)] px-0 py-2 md:px-5 md:py-0.5"
-      data-testid="explorer-controls"
-    >
+    <section class="ui-shell px-0 py-3" data-testid="explorer-controls">
       <div class="flex items-start gap-2 md:items-center md:justify-between">
         <fieldset class="min-w-0 flex-1">
           <legend class="sr-only">Фильтр по тарифу</legend>
@@ -246,10 +243,10 @@
               />
               <label
                 for={allid}
-                class="inline-flex min-h-9 cursor-pointer items-center rounded-sm border px-3 py-1 text-sm font-semibold transition-colors hover:border-border-strong hover:text-foreground peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-accent)] md:min-h-8 md:px-2.5 {priceFilter ===
+                class="ui-btn ui-btn-sm min-h-9 whitespace-nowrap peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-accent)] md:min-h-8 {priceFilter ===
                 'all'
-                  ? 'border-primary bg-[color:var(--color-primary-soft)] text-primary'
-                  : 'border-transparent text-muted-foreground'}"
+                  ? 'ui-btn-primary ui-btn-soft'
+                  : 'ui-btn-ghost'}"
               >
                 Все
               </label>
@@ -266,10 +263,10 @@
               />
               <label
                 for={cheapid}
-                class="inline-flex min-h-9 cursor-pointer items-center rounded-sm border px-3 py-1 text-sm font-semibold transition-colors hover:border-border-strong hover:text-foreground peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-accent)] md:min-h-8 md:px-2.5 {priceFilter ===
+                class="ui-btn ui-btn-sm min-h-9 whitespace-nowrap peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-accent)] md:min-h-8 {priceFilter ===
                 'cheaper'
-                  ? 'border-primary bg-[color:var(--color-primary-soft)] text-primary'
-                  : 'border-transparent text-muted-foreground'}"
+                  ? 'ui-btn-primary ui-btn-soft'
+                  : 'ui-btn-ghost'}"
               >
                 {mobile ? 'Дешевле' : 'Дешевле Шелково'}
                 {#if stats}
@@ -295,10 +292,10 @@
               />
               <label
                 for={moreid}
-                class="inline-flex min-h-9 cursor-pointer items-center rounded-sm border px-3 py-1 text-sm font-semibold transition-colors hover:border-border-strong hover:text-foreground peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-accent)] md:min-h-8 md:px-2.5 {priceFilter ===
+                class="ui-btn ui-btn-sm min-h-9 whitespace-nowrap peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-accent)] md:min-h-8 {priceFilter ===
                 'more_expensive'
-                  ? 'border-primary bg-[color:var(--color-primary-soft)] text-primary'
-                  : 'border-transparent text-muted-foreground'}"
+                  ? 'ui-btn-primary ui-btn-soft'
+                  : 'ui-btn-ghost'}"
               >
                 {mobile ? 'Дороже' : 'Дороже Шелково'}
                 {#if stats}
@@ -316,9 +313,9 @@
         </fieldset>
         <button
           type="button"
-          class="inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-sm border px-2.5 py-1 text-sm font-semibold transition-colors hover:border-border-strong hover:bg-[color:var(--color-surface)] md:min-h-8 {showMap
-            ? 'border-border-strong bg-[color:var(--color-surface)] text-foreground'
-            : 'border-border text-muted-foreground'}"
+          class="ui-btn ui-btn-sm min-h-9 shrink-0 md:min-h-8 {showMap
+            ? 'ui-btn-outline'
+            : 'ui-btn-ghost'}"
           onclick={() => {
             showMap = !showMap;
           }}
