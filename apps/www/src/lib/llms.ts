@@ -1,10 +1,6 @@
 import { pluralizeRu } from '@shelkovo/format';
-import {
-  createMarkdownDocument,
-  parseMarkdownFragment,
-  serializeMarkdownDocument,
-} from '@shelkovo/markdown';
 
+import { serializeMarkdownLineDocument } from '@/lib/markdown/llms-document';
 import { loadNewsData } from './news/load';
 import {
   apiCatalogUrl as newsApiCatalogUrl,
@@ -63,8 +59,6 @@ const SITE_LLMS = '/llms.txt';
 const SITE_LLMS_FULL = '/llms-full.txt';
 const SITE_API_CATALOG = '/.well-known/api-catalog';
 
-const join = (lines: readonly string[]): string => `${lines.join('\n')}\n`;
-
 const SECTION_TITLES = new Set([
   'Описание',
   'Главные URL',
@@ -79,22 +73,6 @@ const SECTION_TITLES = new Set([
   'Как выбирать источник',
   'Skills и discovery',
 ]);
-
-const serializeLlmsDocument = (lines: readonly string[]): string =>
-  serializeMarkdownDocument(
-    createMarkdownDocument({
-      children: parseMarkdownFragment(
-        lines
-          .map((line, index) => {
-            if (index === 0) return `# ${line}`;
-            if (SECTION_TITLES.has(line)) return `## ${line}`;
-
-            return line;
-          })
-          .join('\n'),
-      ),
-    }),
-  );
 
 const count = (value: number, forms: [string, string, string]): string =>
   `${value} ${pluralizeRu(value, forms)}`;
@@ -305,36 +283,39 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           '- У compare свой skill index для фида, страниц поселков, рейтинга и уточнений по источникам.',
         ];
 
-  return serializeLlmsDocument(body);
+  return serializeMarkdownLineDocument(body, SECTION_TITLES);
 }
 
 export async function buildHomeMarkdown(): Promise<string> {
   const { news, people, status } = await snapshot();
   const activeStatus = status.active.filter((item) => item.kind === 'incident');
 
-  return join([
-    '# Шелково Онлайн',
-    '',
-    'Текстовое представление корневого сайта и его основных разделов для терминалов и агентов.',
-    '',
-    '## Разделы',
-    `- [Новости](${absoluteUrl(newsUrl())}) — ${count(news.articles.length, ['статья', 'статьи', 'статей'])}; structured feed: ${absoluteUrl(articlesDataUrl())}; RSS: ${absoluteUrl(newsFeedUrl())}; события: optional articles[].events[] с article-local [event-slug].ics`,
-    `- [Статус](${absoluteUrl(statusUrl())}) — ${count(status.incidents.length, ['запись', 'записи', 'записей'])}, ${count(activeStatus.length, ['активный инцидент', 'активных инцидента', 'активных инцидентов'])}; structured feed: ${absoluteUrl(statusDataUrl())}; RSS: ${absoluteUrl(statusFeedUrl())}`,
-    `- [Регламент](${absoluteUrl(reglamentUrl())}) — смета тарифа 2026; structured feed: ${absoluteUrl(reglamentEstimate2026DataUrl())}; full index: ${absoluteUrl(reglamentFullMarkdownUrl())}; full dataset: ${absoluteUrl(reglamentFull2026DataUrl())}; markdown overview: ${absoluteUrl(reglamentMarkdownUrl())}`,
-    `- Люди — ${count(people.profiles.length, ['профиль', 'профиля', 'профилей'])}; markdown overview: ${absoluteUrl(peopleMarkdownUrl())}; structured feed: ${absoluteUrl(peopleDataUrl())}; публичного HTML-индекса нет`,
-    `- [Compare](${absoluteUrl('/815/compare/')}) — сравнение тарифов поселков и рейтинга; structured feed: ${absoluteUrl('/815/compare/data/settlements.json')}`,
-    '',
-    '## Agent Discovery',
-    `- API catalog сайта: ${absoluteUrl(siteApiCatalogUrl())}`,
-    `- llms.txt: ${absoluteUrl(siteLlmsUrl())}`,
-    `- llms-full.txt: ${absoluteUrl(siteLlmsFullUrl())}`,
-    `- Public agent skills: ${absoluteUrl(siteSkillsUrl())}`,
-    '',
-    '## Section Discovery',
-    `- Новости: ${absoluteUrl(newsLlmsUrl())}, ${absoluteUrl(newsApiCatalogUrl())}`,
-    `- Статус: ${absoluteUrl(statusLlmsUrl())}, ${absoluteUrl(statusApiCatalogUrl())}`,
-    `- Регламент: ${absoluteUrl(reglamentLlmsUrl())}, ${absoluteUrl(reglamentApiCatalogUrl())}`,
-    `- Люди: ${absoluteUrl(peopleLlmsUrl())}, ${absoluteUrl(peopleApiCatalogUrl())}`,
-    `- Compare: ${absoluteUrl('/815/compare/llms.txt')}, ${absoluteUrl('/815/compare/.well-known/api-catalog')}`,
-  ]);
+  return serializeMarkdownLineDocument(
+    [
+      'Шелково Онлайн',
+      '',
+      'Текстовое представление корневого сайта и его основных разделов для терминалов и агентов.',
+      '',
+      'Разделы',
+      `- [Новости](${absoluteUrl(newsUrl())}) — ${count(news.articles.length, ['статья', 'статьи', 'статей'])}; structured feed: ${absoluteUrl(articlesDataUrl())}; RSS: ${absoluteUrl(newsFeedUrl())}; события: optional articles[].events[] с article-local [event-slug].ics`,
+      `- [Статус](${absoluteUrl(statusUrl())}) — ${count(status.incidents.length, ['запись', 'записи', 'записей'])}, ${count(activeStatus.length, ['активный инцидент', 'активных инцидента', 'активных инцидентов'])}; structured feed: ${absoluteUrl(statusDataUrl())}; RSS: ${absoluteUrl(statusFeedUrl())}`,
+      `- [Регламент](${absoluteUrl(reglamentUrl())}) — смета тарифа 2026; structured feed: ${absoluteUrl(reglamentEstimate2026DataUrl())}; full index: ${absoluteUrl(reglamentFullMarkdownUrl())}; full dataset: ${absoluteUrl(reglamentFull2026DataUrl())}; markdown overview: ${absoluteUrl(reglamentMarkdownUrl())}`,
+      `- Люди — ${count(people.profiles.length, ['профиль', 'профиля', 'профилей'])}; markdown overview: ${absoluteUrl(peopleMarkdownUrl())}; structured feed: ${absoluteUrl(peopleDataUrl())}; публичного HTML-индекса нет`,
+      `- [Compare](${absoluteUrl('/815/compare/')}) — сравнение тарифов поселков и рейтинга; structured feed: ${absoluteUrl('/815/compare/data/settlements.json')}`,
+      '',
+      'Agent Discovery',
+      `- API catalog сайта: ${absoluteUrl(siteApiCatalogUrl())}`,
+      `- llms.txt: ${absoluteUrl(siteLlmsUrl())}`,
+      `- llms-full.txt: ${absoluteUrl(siteLlmsFullUrl())}`,
+      `- Public agent skills: ${absoluteUrl(siteSkillsUrl())}`,
+      '',
+      'Section Discovery',
+      `- Новости: ${absoluteUrl(newsLlmsUrl())}, ${absoluteUrl(newsApiCatalogUrl())}`,
+      `- Статус: ${absoluteUrl(statusLlmsUrl())}, ${absoluteUrl(statusApiCatalogUrl())}`,
+      `- Регламент: ${absoluteUrl(reglamentLlmsUrl())}, ${absoluteUrl(reglamentApiCatalogUrl())}`,
+      `- Люди: ${absoluteUrl(peopleLlmsUrl())}, ${absoluteUrl(peopleApiCatalogUrl())}`,
+      `- Compare: ${absoluteUrl('/815/compare/llms.txt')}, ${absoluteUrl('/815/compare/.well-known/api-catalog')}`,
+    ],
+    new Set(['Разделы', 'Agent Discovery', 'Section Discovery']),
+  );
 }

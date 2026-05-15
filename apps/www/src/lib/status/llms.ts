@@ -1,12 +1,8 @@
 import { pluralizeRu } from '@shelkovo/format';
-import {
-  createMarkdownDocument,
-  parseMarkdownFragment,
-  serializeMarkdownDocument,
-} from '@shelkovo/markdown';
 
 import { absoluteUrl } from '../site';
 import { loadStatusData } from './load';
+import { serializeMarkdownLineDocument } from '@/lib/markdown/llms-document';
 import {
   statusApiCatalogUrl,
   statusDataUrl,
@@ -37,22 +33,6 @@ const SECTION_TITLES = new Set([
   'Семантика полей',
   'Ограничения',
 ]);
-
-const serializeLlmsDocument = (lines: readonly string[]): string =>
-  serializeMarkdownDocument(
-    createMarkdownDocument({
-      children: parseMarkdownFragment(
-        lines
-          .map((line, index) => {
-            if (index === 0) return `# ${line}`;
-            if (SECTION_TITLES.has(line)) return `## ${line}`;
-
-            return line;
-          })
-          .join('\n'),
-      ),
-    }),
-  );
 
 const count = (value: number, forms: [string, string, string]): string =>
   `${value} ${pluralizeRu(value, forms)}`;
@@ -94,98 +74,104 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
     : '/status/incidents/YYYY/MM/[entry]/index.md';
 
   return kind === 'short'
-    ? serializeLlmsDocument([
-        'Статус КП Шелково',
-        'Файл: llms.txt',
-        'Язык: русский',
-        '',
-        'Описание',
-        '- Раздел `/status/` показывает текущие проблемы, плановые работы и историю по сервисам КП Шелково.',
-        `- Сейчас в разделе ${count(data.incidents.length, ['запись', 'записи', 'записей'])}, ${count(activeIncidents.length, ['активный инцидент', 'активных инцидента', 'активных инцидентов'])} и ${count(activeMaintenance.length, ['активная работа', 'активные работы', 'активных работ'])}.`,
-        `- Раздел покрывает ${count(data.services.length, ['сервис', 'сервиса', 'сервисов'])}: ${STATUS_SERVICES.join(', ')}.`,
-        '- HTML-страницы остаются каноническим представлением для людей, а /status/data/status.json служит основным structured feed.',
-        '',
-        'Главные URL',
-        `- Главная страница /status: ${home}`,
-        `- Основной JSON feed: ${feed}`,
-        `- RSS: ${rss}`,
-        `- API catalog: ${catalog}`,
-        `- JSON Schema: ${schema}`,
-        `- OpenAPI: ${openapi}`,
-        `- Расширенная версия этого текста: ${full}`,
-        '',
-        'Как читать раздел',
-        `- Markdown home: ${homeMarkdown}`,
-        `- Пример service HTML (${serviceLabel}): ${serviceHtml}`,
-        `- Пример service Markdown: ${serviceMarkdown}`,
-        `- Пример incident HTML: ${incidentHtml}`,
-        `- Пример incident Markdown: ${incidentMarkdown}`,
-        '- В status.json сервисные сводки derive-ятся из массива incidents.',
-        '- Сервисы: `electricity`, `water`, `internet`, `dam`.',
-        '- Типы записей: `incident`, `maintenance`.',
-        '- Текущий статус сервиса derive-ится как `red`, `amber` или `green`.',
-      ])
-    : serializeLlmsDocument([
-        'Статус КП Шелково',
-        'Файл: llms-full.txt',
-        'Язык: русский',
-        '',
-        'Проект',
-        '- Раздел `/status/` публикует состояние сервисов КП Шелково, активные инциденты, плановые работы и историю отключений/ограничений.',
-        '- Для массового чтения используйте JSON feed; HTML и Markdown удобнее для одной линии или одного события.',
-        `- Сейчас в разделе ${count(data.incidents.length, ['запись', 'записи', 'записей'])}, ${count(activeIncidents.length, ['активный инцидент', 'активных инцидента', 'активных инцидентов'])} и ${count(activeMaintenance.length, ['активная работа', 'активные работы', 'активных работ'])}.`,
-        '',
-        'Канонические URL',
-        `- Главная страница /status: ${home}`,
-        `- Markdown home: ${homeMarkdown}`,
-        `- Короткий агентный обзор: ${short}`,
-        `- Расширенный агентный обзор: ${full}`,
-        `- Основной JSON feed: ${feed}`,
-        `- RSS: ${rss}`,
-        `- API catalog: ${catalog}`,
-        `- JSON Schema: ${schema}`,
-        `- OpenAPI: ${openapi}`,
-        `- Пример service HTML (${serviceLabel}): ${serviceHtml}`,
-        `- Пример service Markdown: ${serviceMarkdown}`,
-        `- Пример incident HTML: ${incidentHtml}`,
-        `- Пример incident Markdown: ${incidentMarkdown}`,
-        '',
-        'Описание status.json',
-        '- Это основной read-only structured feed для массового обхода раздела /status.',
-        '- Корневой объект содержит `stats`, `active`, `incidents` и `services`.',
-        '- `incidents[]` включает `id`, `title`, `service`, `kind`, `year`, `month`, `slug`, опциональные `html_url` и `markdown_url` только для записей с опубликованной detail page, `started_at`, опциональный `ended_at`, флаг `is_active`, фазы `phase`, затронутые `areas`, опциональный `source_url`, `excerpt`, полный `body_markdown` и опциональную `duration`.',
-        '- `active[]` содержит только активные на момент сборки incidents/maintenance записи в том же формате, что и `incidents[]`.',
-        '- `services[]` содержит derive-сводки по сервисам с `service_status`, URL сервиса, массивами `incident_ids`, `active_incident_ids`, `active_maintenance_ids`, а также `days_without_incidents` и опциональной `latest_incident`.',
-        '- `stats` дает агрегированные counts по сервисам, активным инцидентам и активным работам.',
-        '',
-        'HTML и Markdown',
-        '- HTML home `/status/` остается каноническим человекочитаемым представлением сводки по поселку.',
-        '- Markdown companion `/status/index.md` дает text-first слой для терминалов и агентов.',
-        '- Страницы сервисов `/status/[service]/` и их companions `/status/[service]/index.md` удобны для фокусного чтения одной линии: электричество, вода, интернет или дамба.',
-        '- Страницы incidents `/status/incidents/YYYY/MM/[entry]/` и их companions `/status/incidents/.../index.md` публикуются только для записей с body и тогда же появляются в `html_url`/`markdown_url`.',
-        '',
-        'RSS',
-        '- `/status/feed.xml` остается краткой RSS-лентой.',
-        '- В RSS description сериализуются текущий статус записи, период, зоны воздействия и короткий excerpt, если он есть.',
-        '- Источником правды для полного машиночитаемого контента остается status.json.',
-        '',
-        'Семантика полей',
-        `- ` +
-          'Сервисы сериализуются как: ' +
-          `\`${STATUS_SERVICES.join('`, `')}\`.`,
-        `- ` +
-          'Типы записей сериализуются как: ' +
-          `\`${STATUS_KINDS.join('`, `')}\`.`,
-        `- ` +
-          'Статусы сервисов сериализуются как: ' +
-          `\`${STATUS_SERVICE_STATES.join('`, `')}\`.`,
-        '- `service_status` derive-ится из активных записей: активный incident дает `red`, только активные maintenance дают `amber`, иначе `green`.',
-        '- `phase` для отдельной записи показывает ее жизненный цикл: `active`, `resolved` или `scheduled`.',
-        '- Если `areas` не указаны в source file, feed нормализует запись как `applies_to_all_areas: true` и подставляет все части поселка.',
-        '',
-        'Ограничения',
-        '- Все маршруты /status read-only; ручек для изменения данных и авторизации здесь нет.',
-        '- Feed описывает состояние на момент сборки. Для чтения в терминах редакционного контекста или ссылок на первоисточник переходите на detail page инцидента.',
-        '- Markdown companions и JSON feed повторяют одно и то же содержание в разных формах; для массового анализа используйте JSON feed.',
-      ]);
+    ? serializeMarkdownLineDocument(
+        [
+          'Статус КП Шелково',
+          'Файл: llms.txt',
+          'Язык: русский',
+          '',
+          'Описание',
+          '- Раздел `/status/` показывает текущие проблемы, плановые работы и историю по сервисам КП Шелково.',
+          `- Сейчас в разделе ${count(data.incidents.length, ['запись', 'записи', 'записей'])}, ${count(activeIncidents.length, ['активный инцидент', 'активных инцидента', 'активных инцидентов'])} и ${count(activeMaintenance.length, ['активная работа', 'активные работы', 'активных работ'])}.`,
+          `- Раздел покрывает ${count(data.services.length, ['сервис', 'сервиса', 'сервисов'])}: ${STATUS_SERVICES.join(', ')}.`,
+          '- HTML-страницы остаются каноническим представлением для людей, а /status/data/status.json служит основным structured feed.',
+          '',
+          'Главные URL',
+          `- Главная страница /status: ${home}`,
+          `- Основной JSON feed: ${feed}`,
+          `- RSS: ${rss}`,
+          `- API catalog: ${catalog}`,
+          `- JSON Schema: ${schema}`,
+          `- OpenAPI: ${openapi}`,
+          `- Расширенная версия этого текста: ${full}`,
+          '',
+          'Как читать раздел',
+          `- Markdown home: ${homeMarkdown}`,
+          `- Пример service HTML (${serviceLabel}): ${serviceHtml}`,
+          `- Пример service Markdown: ${serviceMarkdown}`,
+          `- Пример incident HTML: ${incidentHtml}`,
+          `- Пример incident Markdown: ${incidentMarkdown}`,
+          '- В status.json сервисные сводки derive-ятся из массива incidents.',
+          '- Сервисы: `electricity`, `water`, `internet`, `dam`.',
+          '- Типы записей: `incident`, `maintenance`.',
+          '- Текущий статус сервиса derive-ится как `red`, `amber` или `green`.',
+        ],
+        SECTION_TITLES,
+      )
+    : serializeMarkdownLineDocument(
+        [
+          'Статус КП Шелково',
+          'Файл: llms-full.txt',
+          'Язык: русский',
+          '',
+          'Проект',
+          '- Раздел `/status/` публикует состояние сервисов КП Шелково, активные инциденты, плановые работы и историю отключений/ограничений.',
+          '- Для массового чтения используйте JSON feed; HTML и Markdown удобнее для одной линии или одного события.',
+          `- Сейчас в разделе ${count(data.incidents.length, ['запись', 'записи', 'записей'])}, ${count(activeIncidents.length, ['активный инцидент', 'активных инцидента', 'активных инцидентов'])} и ${count(activeMaintenance.length, ['активная работа', 'активные работы', 'активных работ'])}.`,
+          '',
+          'Канонические URL',
+          `- Главная страница /status: ${home}`,
+          `- Markdown home: ${homeMarkdown}`,
+          `- Короткий агентный обзор: ${short}`,
+          `- Расширенный агентный обзор: ${full}`,
+          `- Основной JSON feed: ${feed}`,
+          `- RSS: ${rss}`,
+          `- API catalog: ${catalog}`,
+          `- JSON Schema: ${schema}`,
+          `- OpenAPI: ${openapi}`,
+          `- Пример service HTML (${serviceLabel}): ${serviceHtml}`,
+          `- Пример service Markdown: ${serviceMarkdown}`,
+          `- Пример incident HTML: ${incidentHtml}`,
+          `- Пример incident Markdown: ${incidentMarkdown}`,
+          '',
+          'Описание status.json',
+          '- Это основной read-only structured feed для массового обхода раздела /status.',
+          '- Корневой объект содержит `stats`, `active`, `incidents` и `services`.',
+          '- `incidents[]` включает `id`, `title`, `service`, `kind`, `year`, `month`, `slug`, опциональные `html_url` и `markdown_url` только для записей с опубликованной detail page, `started_at`, опциональный `ended_at`, флаг `is_active`, фазы `phase`, затронутые `areas`, опциональный `source_url`, `excerpt`, полный `body_markdown` и опциональную `duration`.',
+          '- `active[]` содержит только активные на момент сборки incidents/maintenance записи в том же формате, что и `incidents[]`.',
+          '- `services[]` содержит derive-сводки по сервисам с `service_status`, URL сервиса, массивами `incident_ids`, `active_incident_ids`, `active_maintenance_ids`, а также `days_without_incidents` и опциональной `latest_incident`.',
+          '- `stats` дает агрегированные counts по сервисам, активным инцидентам и активным работам.',
+          '',
+          'HTML и Markdown',
+          '- HTML home `/status/` остается каноническим человекочитаемым представлением сводки по поселку.',
+          '- Markdown companion `/status/index.md` дает text-first слой для терминалов и агентов.',
+          '- Страницы сервисов `/status/[service]/` и их companions `/status/[service]/index.md` удобны для фокусного чтения одной линии: электричество, вода, интернет или дамба.',
+          '- Страницы incidents `/status/incidents/YYYY/MM/[entry]/` и их companions `/status/incidents/.../index.md` публикуются только для записей с body и тогда же появляются в `html_url`/`markdown_url`.',
+          '',
+          'RSS',
+          '- `/status/feed.xml` остается краткой RSS-лентой.',
+          '- В RSS description сериализуются текущий статус записи, период, зоны воздействия и короткий excerpt, если он есть.',
+          '- Источником правды для полного машиночитаемого контента остается status.json.',
+          '',
+          'Семантика полей',
+          `- ` +
+            'Сервисы сериализуются как: ' +
+            `\`${STATUS_SERVICES.join('`, `')}\`.`,
+          `- ` +
+            'Типы записей сериализуются как: ' +
+            `\`${STATUS_KINDS.join('`, `')}\`.`,
+          `- ` +
+            'Статусы сервисов сериализуются как: ' +
+            `\`${STATUS_SERVICE_STATES.join('`, `')}\`.`,
+          '- `service_status` derive-ится из активных записей: активный incident дает `red`, только активные maintenance дают `amber`, иначе `green`.',
+          '- `phase` для отдельной записи показывает ее жизненный цикл: `active`, `resolved` или `scheduled`.',
+          '- Если `areas` не указаны в source file, feed нормализует запись как `applies_to_all_areas: true` и подставляет все части поселка.',
+          '',
+          'Ограничения',
+          '- Все маршруты /status read-only; ручек для изменения данных и авторизации здесь нет.',
+          '- Feed описывает состояние на момент сборки. Для чтения в терминах редакционного контекста или ссылок на первоисточник переходите на detail page инцидента.',
+          '- Markdown companions и JSON feed повторяют одно и то же содержание в разных формах; для массового анализа используйте JSON feed.',
+        ],
+        SECTION_TITLES,
+      );
 }

@@ -1,8 +1,4 @@
-import {
-  createMarkdownDocument,
-  parseMarkdownFragment,
-  serializeMarkdownDocument,
-} from '@shelkovo/markdown';
+import { serializeMarkdownLineDocument } from '@/lib/markdown/llms-document';
 
 import { loadAllData } from './data';
 import { canon } from './site';
@@ -21,22 +17,6 @@ const SECTION_TITLES = new Set([
   'Детальные страницы поселков',
   'Рейтинг',
 ]);
-
-const serializeLlmsDocument = (lines: readonly string[]): string =>
-  serializeMarkdownDocument(
-    createMarkdownDocument({
-      children: parseMarkdownFragment(
-        lines
-          .map((line, index) => {
-            if (index === 0) return `# ${line}`;
-            if (SECTION_TITLES.has(line)) return `## ${line}`;
-
-            return line;
-          })
-          .join('\n'),
-      ),
-    }),
-  );
 
 function abs(path: string): string {
   return canon(path);
@@ -161,5 +141,5 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           `- Если нашли неточность или хотите передать дополнительные данные: ${fix}`,
         ];
 
-  return serializeLlmsDocument(body);
+  return serializeMarkdownLineDocument(body, SECTION_TITLES);
 }

@@ -2,12 +2,11 @@
 
 ## Current Step
 
-Step 3 - Migrate llms generators.
+Step 4 - Cleanup and final verification.
 
 ## Active Wave
 
-- `code-assist:markdown-ast-generation:step-03:migrate-section-llms` -> `docs/tasks/markdown-ast-generation/08-migrate-section-llms.md`
-- `code-assist:markdown-ast-generation:step-03:migrate-root-reglament-compare-llms` -> `docs/tasks/markdown-ast-generation/09-migrate-root-reglament-compare-llms.md` (blocked by Task 08 to preserve README order)
+- `code-assist:markdown-ast-generation:step-04:cleanup-final-verification` -> `docs/tasks/markdown-ast-generation/10-cleanup-and-final-verification.md`
 
 ## Verification Notes
 
@@ -58,8 +57,18 @@ Step 3 - Migrate llms generators.
 - GREEN/REFACTOR: added focused short llms snapshots for root, reglament, and Compare; kept `.txt` routes, content type, public feed/schema/OpenAPI/skills/example URLs, and agent-facing text semantics unchanged aside from serializer-owned formatting.
 - Final focused checks: `pnpm --filter @shelkovo/www test -- src/lib/llms.test.ts src/lib/reglament src/compare/lib` passed; `pnpm --filter @shelkovo/www typecheck` passed; `pnpm --filter @shelkovo/www build` passed.
 - Real output spot checks read `dist/www/llms.txt`, `dist/www/llms-full.txt`, `dist/www/815/regulation/llms.txt`, `dist/www/815/regulation/llms-full.txt`, `dist/www/815/compare/llms.txt`, and `dist/www/815/compare/llms-full.txt`; confirmed serializer-owned headings/autolinks and public discovery URLs. Leak check for `undefined`, `localhost`, `apps/www/src`, `http://`, and `legacy` in changed llms outputs found no matches.
+- Finalizer closed `task-1778863102-179e` and emitted `queue.advance` because Step 4 remains.
+- Planner advanced to Step 4 because all Step 3 runtime tasks are closed and no open Step 3 work remains.
+- Builder started `task-1778864444-edcc` and ran cleanup for Task 10.
+- RED: `pnpm --filter @shelkovo/www test -- src/lib/markdown/llms-document.test.ts` failed because the shared line-document helper did not exist yet.
+- GREEN/REFACTOR: removed unused `apps/www/src/lib/markdown/frontmatter.ts`; added `apps/www/src/lib/markdown/llms-document.ts` as a thin app helper over `@shelkovo/markdown`; migrated root, section, reglament, compare llms generators and root/detail Markdown line documents away from local whole-document `lines.join('\n')` serializers.
+- Focused checks: `pnpm --filter @shelkovo/www test -- src/lib/markdown/llms-document.test.ts src/lib/reglament/detail-markdown.test.ts src/lib/llms.test.ts src/lib/reglament/llms.test.ts src/compare/lib/llms.test.ts src/lib/news/llms.test.ts src/lib/status/llms.test.ts src/lib/people/llms.test.ts` passed.
+- Documentation updated: `packages/markdown/README.md` now separates render vs generation; root and app `AGENTS.md` include concise Markdown generation guidance.
+- Final required checks passed: `pnpm --filter @shelkovo/markdown test`, `pnpm --filter @shelkovo/markdown typecheck`, `pnpm --filter @shelkovo/www test`, `pnpm --filter @shelkovo/www typecheck`, and `pnpm build`.
+- Real generated spot checks read `dist/www/llms.txt`, `dist/www/index.md`, and `dist/www/815/regulation/details/materials.md`; confirmed serializer-owned headings/autolinks and preserved nested detail resource bullets. Broad generated Markdown/llms grep for `undefined`, `localhost`, `apps/www/src`, and `http://` found no matches; `legacy` appears only in existing curated detail text.
 
 ## Completed Steps
 
 - Step 1 - Add package Markdown AST API.
 - Step 2 - Migrate section companion Markdown.
+- Step 3 - Migrate llms generators.

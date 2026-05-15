@@ -1,9 +1,3 @@
-import {
-  createMarkdownDocument,
-  parseMarkdownFragment,
-  serializeMarkdownDocument,
-} from '@shelkovo/markdown';
-
 import { estimateDetails2026 } from '@/data/reglament/estimate-details-2026';
 import type {
   EstimateDetailControlTotal,
@@ -17,6 +11,7 @@ import type {
   EstimateDetailWorkItem,
 } from '@/lib/reglament/detail-schema';
 import { ESTIMATE_DETAIL_RESOURCE_KINDS } from '@/lib/reglament/detail-schema';
+import { serializeMarkdownLineDocument } from '@/lib/markdown/llms-document';
 
 import { absoluteUrl } from '../site';
 import { formatReglamentMoney, formatReglamentNumber } from './format';
@@ -59,11 +54,7 @@ const CONTROL_SOURCE_LABELS = {
 const EMPTY_LIST_LINE = '- Нет данных в текущей версии набора.';
 
 const serializeLines = (lines: readonly string[]): string =>
-  serializeMarkdownDocument(
-    createMarkdownDocument({
-      children: parseMarkdownFragment(lines.join('\n')),
-    }),
-  );
+  serializeMarkdownLineDocument(lines, new Set());
 
 const sourceQuoteItem = (
   item: EstimateDetailSourceQuoteItem,

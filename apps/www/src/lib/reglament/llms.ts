@@ -1,10 +1,5 @@
-import {
-  createMarkdownDocument,
-  parseMarkdownFragment,
-  serializeMarkdownDocument,
-} from '@shelkovo/markdown';
-
 import { estimate2026 } from '@/data/reglament/estimate-2026';
+import { serializeMarkdownLineDocument } from '@/lib/markdown/llms-document';
 
 import { absoluteUrl } from '../site';
 import { calculateEstimate } from './calculate';
@@ -58,22 +53,6 @@ const SECTION_TITLES = new Set([
   'Секции',
   'Ограничения',
 ]);
-
-const serializeLlmsDocument = (lines: readonly string[]): string =>
-  serializeMarkdownDocument(
-    createMarkdownDocument({
-      children: parseMarkdownFragment(
-        lines
-          .map((line, index) => {
-            if (index === 0) return `# ${line}`;
-            if (SECTION_TITLES.has(line)) return `## ${line}`;
-
-            return line;
-          })
-          .join('\n'),
-      ),
-    }),
-  );
 
 const rowsCount = (rows: readonly EstimateRow[]): number =>
   rows.reduce((total, row) => total + 1 + rowsCount(row.children ?? []), 0);
@@ -241,5 +220,5 @@ export function build(kind: 'short' | 'full'): string {
           ...REGLAMENT_CAVEATS.map((item) => `- ${item}`),
         ];
 
-  return serializeLlmsDocument(body);
+  return serializeMarkdownLineDocument(body, SECTION_TITLES);
 }

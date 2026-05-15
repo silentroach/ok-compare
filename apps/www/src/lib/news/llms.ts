@@ -1,9 +1,4 @@
 import { pluralizeRu } from '@shelkovo/format';
-import {
-  createMarkdownDocument,
-  parseMarkdownFragment,
-  serializeMarkdownDocument,
-} from '@shelkovo/markdown';
 
 import { absoluteUrl } from '../site';
 import { loadNewsData } from './load';
@@ -20,6 +15,7 @@ import {
   tagsMarkdownUrl,
   tagsUrl,
 } from './routes';
+import { serializeMarkdownLineDocument } from '@/lib/markdown/llms-document';
 
 const SECTION_TITLES = new Set([
   'Описание',
@@ -34,22 +30,6 @@ const SECTION_TITLES = new Set([
   'Addenda и источники',
   'Ограничения',
 ]);
-
-const serializeLlmsDocument = (lines: readonly string[]): string =>
-  serializeMarkdownDocument(
-    createMarkdownDocument({
-      children: parseMarkdownFragment(
-        lines
-          .map((line, index) => {
-            if (index === 0) return `# ${line}`;
-            if (SECTION_TITLES.has(line)) return `## ${line}`;
-
-            return line;
-          })
-          .join('\n'),
-      ),
-    }),
-  );
 
 export async function build(kind: 'short' | 'full'): Promise<string> {
   const data = await loadNewsData();
@@ -177,5 +157,5 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           '- Inline локальные картинки внутри raw markdown body не переписываются автоматически; гарантированно machine-readable считаются `cover`, `photos`, `attachments` и `events`.',
         ];
 
-  return serializeLlmsDocument(body);
+  return serializeMarkdownLineDocument(body, SECTION_TITLES);
 }

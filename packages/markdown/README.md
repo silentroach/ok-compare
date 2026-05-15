@@ -38,6 +38,12 @@
 
 См. [ADR-003](../../docs/decisions/003-markdown-pipeline-layering.md) про слоистую модель Markdown-рендера.
 
+### Рендер vs генерация
+
+- Рендер Markdown в HTML: исходный body markdown проходит через app-wrapper `@/lib/markdown/render`, затем пакетный `render` и preprocessors приложения.
+- Генерация Markdown: структурные данные собираются в mdast через `createMarkdownDocument`, `md` и `parseMarkdownFragment`, затем сериализуются через `serializeMarkdownDocument`.
+- `parseMarkdownFragment` нужен только для уже написанных Markdown-фрагментов или секционных блоков, где нужно сохранить inline Markdown, списки и autolinks; он не заменяет ручной сериализатор целого документа.
+
 - Body markdown в pages/components должен идти через `@/lib/markdown/render`.
 - Обертка сайта вызывает пакетный `render` и держит локальные preprocessors, сейчас упоминания людей из `apps/www/src/lib/people/mentions.ts`.
 - Если app-loader заранее сохраняет подготовленный body markdown для mentions/backlinks, он должен брать этот результат из той же обертки сайта, а не вызывать domain preprocessor напрямую.
