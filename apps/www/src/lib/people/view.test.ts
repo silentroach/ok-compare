@@ -235,9 +235,26 @@ describe('buildPersonMarkdown', () => {
 
     const markdown = buildPersonMarkdown(profile);
 
-    expect(markdown).not.toContain('internal: true');
-    expect(markdown).toContain('### Роль');
-    expect(markdown).toContain('[инцидентами](/status/index.md)');
+    expect(markdown).toMatchInlineSnapshot(`
+      "# Кирилл Щемелинин
+
+      Исполняющий обязанности директора по эксплуатации, ОК "Комфорт"
+
+      ## Контакты
+
+      - Контакты пока не опубликованы.
+
+      ## Профиль
+
+      ### Роль
+
+      Помогает с [инцидентами](/status/index.md).
+
+      ## Где упоминается
+
+      - Пока публичных упоминаний не найдено.
+      "
+    `);
   });
 
   it('omits profile section when markdown body is empty', () => {

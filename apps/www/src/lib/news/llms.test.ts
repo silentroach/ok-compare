@@ -47,29 +47,29 @@ describe('news llms', () => {
 
       - Раздел \`/news/\` публикует новости, объявления и поздние уточнения по КП Шелково.
       - Сейчас в разделе 1 статья, 1 тег и 1 архивный год.
-      - HTML detail pages остаются каноническим представлением для людей, а articles.json служит основным structured feed.
-      - Если новость объявляет календарные события, в \`articles[].events[]\` есть metadata событий и ссылки на article-local \`.ics\`.
+      - HTML-страницы новостей остаются каноническим представлением для людей, а \`articles.json\` служит основным структурированным файлом данных.
+      - Если новость объявляет календарные события, в \`articles[].events[]\` есть метаданные событий и ссылки на локальные для статьи \`.ics\`-файлы.
 
       ## Главные URL
 
       - Главная новостей: <https://example.com/news/>
-      - Основной JSON feed: <https://example.com/news/data/articles.json>
+      - Основной JSON-файл: <https://example.com/news/data/articles.json>
       - RSS: <https://example.com/news/feed.xml>
-      - API catalog: <https://example.com/news/.well-known/api-catalog>
+      - Каталог API: <https://example.com/news/.well-known/api-catalog>
       - JSON Schema: <https://example.com/news/schemas/articles.schema.json>
       - OpenAPI: <https://example.com/news/openapi/articles.openapi.json>
       - Расширенная версия этого текста: <https://example.com/news/llms-full.txt>
 
       ## Как читать раздел
 
-      - Пример detail HTML: <https://example.com/news/2026/05/event/>
-      - Пример detail Markdown: <https://example.com/news/2026/05/event/index.md>
+      - Пример HTML-страницы новости: <https://example.com/news/2026/05/event/>
+      - Пример Markdown-страницы новости: <https://example.com/news/2026/05/event/index.md>
       - Годовой архив: <https://example.com/news/2026/>
       - Месячный архив: <https://example.com/news/2026/05/>
       - Индекс тегов: <https://example.com/news/tags/>
-      - Пример tag page: <https://example.com/news/tags/electricity/>
-      - В articles.json каждая статья содержит summary, полный body\\_markdown, optional \`events\` и отдельный массив addenda.
-      - addenda не переписывают исходный body новости; это поздние уточнения, комментарии или новые подтвержденные факты.
+      - Пример страницы тега: <https://example.com/news/tags/electricity/>
+      - В \`articles.json\` каждая статья содержит \`summary\`, полный \`body_markdown\`, необязательный массив \`events\` и отдельный массив \`addenda\`.
+      - \`addenda\` не переписывают исходный \`body\` новости; это поздние уточнения, комментарии или новые подтвержденные факты.
       - Тип источника определяется по \`author.kind\`; официальные источники используют \`kind: official\`.
       - Для календаря события используйте \`/news/YYYY/MM/[entry]/[event-slug].ics\`; глобального календаря событий нет.
       "

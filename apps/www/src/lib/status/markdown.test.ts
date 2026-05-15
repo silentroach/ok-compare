@@ -69,12 +69,20 @@ describe('buildStatusHomeMarkdown', () => {
       by_service: new Map([['electricity', testSummary]]),
     });
 
-    expect(markdown).toContain(
-      '[Электричество](https://example.com/status/electricity/index.md)',
-    );
-    expect(markdown).toContain(
-      '[Отключение электричества в Шелково Ривер](https://example.com/status/incidents/2026/05/electricity-river-outage/index.md)',
-    );
+    expect(markdown).toMatchInlineSnapshot(`
+      "# Статус КП Шелково
+
+      Текстовая сводка состояния сервисов КП Шелково: активные инциденты, плановые работы и история отключений.
+
+      ## Сервисы
+
+      - [Электричество](https://example.com/status/electricity/index.md) — В норме; последняя запись: [Отключение электричества в Шелково Ривер](https://example.com/status/incidents/2026/05/electricity-river-outage/index.md)
+
+      ## История
+
+      - [Отключение электричества в Шелково Ривер](https://example.com/status/incidents/2026/05/electricity-river-outage/index.md) — Электричество; Инцидент; восстановлено; 1 мая, 07:32 - 16:38 (9 ч. 6 мин.)
+      "
+    `);
   });
 });
 

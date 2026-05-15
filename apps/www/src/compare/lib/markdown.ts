@@ -309,9 +309,9 @@ export async function buildHomeMd(): Promise<string> {
   ];
 
   return serialize([
-    md.heading(1, 'Сравни.Шелково'),
+    md.heading(1, 'Сравни тариф КП Шелково с другими поселками'),
     md.paragraph(
-      'Структурированное сравнение коттеджных поселков с Шелково по тарифам, инфраструктуре, общественным пространствам, сервисной модели и условному рейтингу качества среды.',
+      'Структурированное сравнение тарифа КП Шелково с другими коттеджными поселками по тарифам, инфраструктуре, общественным пространствам, сервисной модели и условному рейтингу качества среды.',
     ),
     ...nav('home'),
     md.heading(2, 'Что здесь сравнивается'),
@@ -325,19 +325,17 @@ export async function buildHomeMd(): Promise<string> {
     md.list(picks.map(settlementLine)),
     md.heading(2, 'Markdown-доступ'),
     md.list([
-      codeListItem(
-        'HTML-маршруты `/`, `/rating/` и `/settlements/[slug]/` поддерживают `Accept: text/markdown`.',
+      md.listItem(
+        'HTML-маршруты /, /rating/ и страницы поселков /settlements/SLUG/ поддерживают заголовок Accept: text/markdown.',
       ),
-      codeListItem(
-        'Прямые Markdown-адреса: `/index.md`, `/rating/index.md`, `/settlements/[slug]/index.md`.',
+      md.listItem(
+        'Прямые Markdown-адреса: /index.md, /rating/index.md, /settlements/SLUG/index.md.',
       ),
     ]),
     md.heading(2, 'Ограничения данных'),
     md.list([
       md.listItem('Если факт не подтвержден источником, поле опускается.'),
-      md.listItem(
-        'Отсутствие поля обычно означает «неизвестно», а не «точно нет».',
-      ),
+      md.listItem('Отсутствие поля означает «неизвестно», а не «точно нет».'),
       codeListItem(
         '`data/settlements.json` является основным полным JSON-файлом поселков.',
       ),
@@ -351,7 +349,7 @@ export async function buildHomeMd(): Promise<string> {
 
 export async function buildRatingMd(): Promise<string> {
   return serialize([
-    md.heading(1, 'Методика условного рейтинга поселков'),
+    md.heading(1, 'Методика расчета условного рейтинга поселков'),
     md.paragraph(
       'Текстовая версия страницы с публичным объяснением того, как считается условный уровень поселка.',
     ),
@@ -397,16 +395,20 @@ export async function buildRatingMd(): Promise<string> {
     ]),
     md.heading(2, 'Дополнительные корректировки'),
     md.list([
-      codeListItem('`water_in_tariff = true`: `+4` к рейтингу.'),
-      codeListItem('`rabstvo = true`: `-15` к рейтингу.'),
+      codeListItem(
+        'Если центральная вода подтверждена и уже входит в тариф (`water_in_tariff = true`), поселок получает `+4` к рейтингу.',
+      ),
+      codeListItem(
+        'Если поселок есть в канале «Коттеджное рабство» (`rabstvo = true`), рейтинг уменьшается на `15` пунктов.',
+      ),
     ]),
     md.heading(2, 'Как читать результат'),
     md.list([
       md.listItem(
-        'Это технический прокси качества среды, а не рыночная оценка недвижимости.',
+        'Рейтинг — приблизительная сводная оценка подтвержденных признаков поселка, а не рыночная оценка недвижимости.',
       ),
       md.listItem(
-        'Сначала сравнивается сила поселка по среде, потом отдельно смотрится тариф.',
+        'Сначала смотрите на инфраструктуру, общественные пространства и сервисную модель, затем отдельно сравнивайте тариф.',
       ),
       md.listItem(
         'Полная визуальная версия с пояснениями и разделами доступна по HTML-ссылке выше.',
