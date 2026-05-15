@@ -3,7 +3,8 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const path = join(process.cwd(), 'src/compare/styles/global.css');
-const sharedStyleImport = "@import '@shelkovo/ui/styles.css';";
+const sharedStyleImportPattern =
+  /@import\s+(?:url\()?['"]@shelkovo\/ui\/styles\.css['"]\)?\s*;/u;
 const compareSharedPrimitiveSelectors = [
   '.ui-root-compare .ui-shell',
   '.ui-root-compare .ui-shell-strong',
@@ -16,27 +17,58 @@ const compareSharedPrimitiveSelectors = [
 const load = (): string => readFileSync(path, 'utf-8');
 const escapeRegExp = (value: string): string =>
   value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const hasDuplicateSharedStyleImport = (css: string): boolean =>
+  sharedStyleImportPattern.test(css);
+const hasSelectorRule = (css: string, selector: string): boolean =>
+  new RegExp(`${escapeRegExp(selector)}(?![-_a-zA-Z0-9])[^{}]*\\{`, 'u').test(
+    css,
+  );
+const findForbiddenSharedPrimitiveSelectors = (
+  css: string,
+): readonly string[] =>
+  compareSharedPrimitiveSelectors.filter((selector) =>
+    hasSelectorRule(css, selector),
+  );
 
 describe('compare shared-style architecture', () => {
   it('inherits shared UI styles from BaseLayout instead of importing them again', () => {
     const css = load();
 
     expect(
-      css,
+      hasDuplicateSharedStyleImport(css),
       'compare pages use BaseLayout, so compare CSS must not re-import shared UI styles',
-    ).not.toContain(sharedStyleImport);
+    ).toBe(false);
   });
 
   it('does not override shared UI primitives inside the compare root', () => {
     const css = load();
-    const forbiddenSelectors = compareSharedPrimitiveSelectors.filter(
-      (selector) =>
-        new RegExp(`${escapeRegExp(selector)}\\s*\\{`, 'u').test(css),
-    );
+    const forbiddenSelectors = findForbiddenSharedPrimitiveSelectors(css);
 
     expect(
       forbiddenSelectors,
       'compare must inherit shared UI primitives; use compare-* classes for domain-specific local styles',
     ).toEqual([]);
+  });
+
+  it('detects shared UI imports regardless of quote style', () => {
+    expect(
+      hasDuplicateSharedStyleImport('@import "@shelkovo/ui/styles.css";'),
+    ).toBe(true);
+  });
+
+  it('detects forbidden primitive overrides in grouped selectors', () => {
+    expect(
+      findForbiddenSharedPrimitiveSelectors(
+        '.ui-root-compare .ui-shell, .compare-panel { padding: 1rem; }',
+      ),
+    ).toEqual(['.ui-root-compare .ui-shell']);
+  });
+
+  it('detects forbidden primitive overrides with pseudo states', () => {
+    expect(
+      findForbiddenSharedPrimitiveSelectors(
+        '.ui-root-compare .ui-btn:hover { background: transparent; }',
+      ),
+    ).toEqual(['.ui-root-compare .ui-btn']);
   });
 });

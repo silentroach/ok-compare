@@ -7,3 +7,11 @@
 - GREEN change: removed the duplicate shared UI import and forbidden `.ui-root-compare .ui-*` primitive override rules from `apps/www/src/compare/styles/global.css`, leaving compare-specific styles in place.
 - Final verification: `pnpm --filter @shelkovo/www test -- src/compare/lib/styles.architecture.test.ts` passed with 82 files / 476 tests.
 - Extra verification: `pnpm --filter @shelkovo/www typecheck` passed.
+
+## Task 01 rejection fix: robust architecture guard
+
+- Review feedback: guard missed double-quote imports, grouped selectors, and pseudo-state shared primitive overrides.
+- RED check: `pnpm --filter @shelkovo/www test -- src/compare/lib/styles.architecture.test.ts` failed with 3 expected failures after adding regression coverage for those variants.
+- GREEN change: import detection now accepts both quote styles and `url(...)`, and forbidden selector detection now catches exact shared primitive classes in grouped or pseudo-state selector rules.
+- Final verification: `pnpm --filter @shelkovo/www test -- src/compare/lib/styles.architecture.test.ts` passed with 82 files / 479 tests.
+- Extra verification: `pnpm --filter @shelkovo/www typecheck` passed.
