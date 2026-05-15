@@ -3,8 +3,9 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const path = join(process.cwd(), 'src/compare/styles/global.css');
+const cssTokenSeparatorPattern = String.raw`(?:[\t\n\f\r ]|\/\*[^]*?\*\/)+`;
 const sharedStyleImportPattern =
-  /@import\s+(?:url\()?['"]@shelkovo\/ui\/styles\.css['"]\)?\s*;/u;
+  /@import\s+(?:url\(\s*)?['"]@shelkovo\/ui\/styles\.css['"]\s*\)?[^;]*;/u;
 const compareSharedPrimitiveSelectors = [
   '.ui-root-compare .ui-shell',
   '.ui-root-compare .ui-shell-strong',
@@ -18,7 +19,7 @@ const load = (): string => readFileSync(path, 'utf-8');
 const escapeRegExp = (value: string): string =>
   value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const selectorToPattern = (selector: string): string =>
-  selector.split(' ').map(escapeRegExp).join('[\\t\\n\\f\\r ]+');
+  selector.split(' ').map(escapeRegExp).join(cssTokenSeparatorPattern);
 const hasDuplicateSharedStyleImport = (css: string): boolean =>
   sharedStyleImportPattern.test(css);
 const hasSelectorRule = (css: string, selector: string): boolean =>
@@ -85,6 +86,28 @@ describe('compare shared-style architecture', () => {
     expect(
       findForbiddenSharedPrimitiveSelectors(
         '.ui-root-compare\t.ui-btn { background: transparent; }',
+      ),
+    ).toEqual(['.ui-root-compare .ui-btn']);
+  });
+
+  it('detects shared UI imports with url wrappers and trailing import conditions', () => {
+    expect(
+      hasDuplicateSharedStyleImport(
+        '@import url( "@shelkovo/ui/styles.css" );',
+      ),
+    ).toBe(true);
+
+    expect(
+      hasDuplicateSharedStyleImport(
+        '@import "@shelkovo/ui/styles.css" layer(base);',
+      ),
+    ).toBe(true);
+  });
+
+  it('detects forbidden primitive overrides when CSS comments separate selector tokens', () => {
+    expect(
+      findForbiddenSharedPrimitiveSelectors(
+        '.ui-root-compare/**/.ui-btn { background: transparent; }',
       ),
     ).toEqual(['.ui-root-compare .ui-btn']);
   });
