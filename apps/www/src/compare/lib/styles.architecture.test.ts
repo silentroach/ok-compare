@@ -52,6 +52,32 @@ const splitSelectorList = (selectorList: string): readonly string[] => {
 
   return selectors;
 };
+const getRuleSelectorPaths = (css: string): readonly (readonly string[])[] => {
+  const selectorPaths: string[][] = [];
+  const selectorStack: string[] = [];
+  let segmentStart = 0;
+
+  for (let index = 0; index < css.length; index += 1) {
+    const character = css[index];
+
+    if (character === '{') {
+      const segment = css.slice(segmentStart, index);
+      const selector = segment.slice(segment.lastIndexOf(';') + 1).trim();
+
+      selectorStack.push(selector);
+      selectorPaths.push([...selectorStack]);
+      segmentStart = index + 1;
+      continue;
+    }
+
+    if (character === '}') {
+      selectorStack.pop();
+      segmentStart = index + 1;
+    }
+  }
+
+  return selectorPaths;
+};
 const hasSelectorRule = (css: string, selector: string): boolean => {
   const [rootSelector, primitiveSelector] = selector.split(' ');
 
@@ -59,21 +85,40 @@ const hasSelectorRule = (css: string, selector: string): boolean => {
     return false;
   }
 
-  const selectorPattern = new RegExp(
-    `${escapeRegExp(rootSelector)}${selectorClassBoundaryPattern}[^{}]*${escapeRegExp(primitiveSelector)}${selectorClassBoundaryPattern}`,
+  const rootSelectorPattern = new RegExp(
+    `${escapeRegExp(rootSelector)}${selectorClassBoundaryPattern}`,
+    'u',
+  );
+  const primitiveSelectorPattern = new RegExp(
+    `${escapeRegExp(primitiveSelector)}${selectorClassBoundaryPattern}`,
     'u',
   );
 
-  return [...css.matchAll(/([^{}]+)\{/gu)].some((match) => {
-    const selectorList = match[1];
+  return getRuleSelectorPaths(css).some((selectorPath) => {
+    let hasCompareRoot = false;
 
-    if (selectorList === undefined) {
-      return false;
+    for (const selectorList of selectorPath) {
+      const selectorItems = splitSelectorList(selectorList);
+      const selectorListHasCompareRoot = selectorItems.some((selectorItem) =>
+        rootSelectorPattern.test(selectorItem),
+      );
+      const selectorListHasSharedPrimitive = selectorItems.some(
+        (selectorItem) => primitiveSelectorPattern.test(selectorItem),
+      );
+
+      if (
+        (hasCompareRoot || selectorListHasCompareRoot) &&
+        selectorListHasSharedPrimitive
+      ) {
+        return true;
+      }
+
+      if (selectorListHasCompareRoot) {
+        hasCompareRoot = true;
+      }
     }
 
-    return splitSelectorList(selectorList).some((selectorItem) =>
-      selectorPattern.test(selectorItem),
-    );
+    return false;
   });
 };
 const findForbiddenSharedPrimitiveSelectors = (
@@ -193,6 +238,26 @@ describe('compare shared-style architecture', () => {
     expect(
       findForbiddenSharedPrimitiveSelectors(
         '.ui-root-compare :is(.ui-btn) { background: transparent; }',
+      ),
+    ).toEqual(['.ui-root-compare .ui-btn']);
+  });
+
+  it('detects forbidden primitive overrides in native nested CSS selectors', () => {
+    expect(
+      findForbiddenSharedPrimitiveSelectors(
+        '.ui-root-compare { .ui-btn { background: transparent; } }',
+      ),
+    ).toEqual(['.ui-root-compare .ui-btn']);
+
+    expect(
+      findForbiddenSharedPrimitiveSelectors(
+        '.ui-root-compare { & .ui-btn { background: transparent; } }',
+      ),
+    ).toEqual(['.ui-root-compare .ui-btn']);
+
+    expect(
+      findForbiddenSharedPrimitiveSelectors(
+        '.ui-root-compare { .compare-x, .ui-btn:hover { background: transparent; } }',
       ),
     ).toEqual(['.ui-root-compare .ui-btn']);
   });
