@@ -46,6 +46,10 @@ Step 2 - Migrate section companion Markdown.
 - GREEN/REFACTOR: detail Markdown tests were updated for package serializer output; detail documents now use `createMarkdownDocument`, `parseMarkdownFragment`, and `serializeMarkdownDocument`; source labels, quote items, grouped resources, totals, and `needs_check` markers remain represented in generated output.
 - Final focused checks: `pnpm --filter @shelkovo/www test -- src/lib/reglament/detail-markdown.test.ts` passed; `pnpm --filter @shelkovo/www typecheck` passed; `pnpm --filter @shelkovo/www build` passed and generated detail Markdown routes.
 - Real output spot checks: `dist/www/815/regulation/details.md`, `dist/www/815/regulation/details/materials.md`, `dist/www/815/regulation/details/machines.md`, `dist/www/815/regulation/details/labor.md`, and `dist/www/815/regulation/details/checks.md` preserved public links, source labels, quote items, grouped resources, control totals, and `needs_check` lines under serializer-owned Markdown formatting.
+- Builder started `task-1778857949-676e` and migrated `apps/www/src/compare/lib/markdown.ts` to `@shelkovo/markdown` AST generation for home, rating, and settlement Markdown companions.
+- RED: `pnpm --filter @shelkovo/www test -- src/compare/lib/markdown.test.ts` failed because the old compare generator emitted bare URLs/manual spacing while the new snapshots expected package serializer-owned Markdown links.
+- GREEN/REFACTOR: compare Markdown tests now snapshot home, rating, and settlement detail output; discovery URLs stay under `/815/compare/`, source URLs serialize as package autolinks, and settlement facts/sources remain readable.
+- Final focused checks: `pnpm --filter @shelkovo/www test -- src/compare/lib/markdown.test.ts` passed; `pnpm --filter @shelkovo/www typecheck` passed; `pnpm --filter @shelkovo/www build` passed and generated Compare Markdown routes.
 
 ## Completed Steps
 
