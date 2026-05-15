@@ -1,32 +1,36 @@
 import { describe, expect, it } from 'vitest';
 
-import { serializeMarkdownLineDocument } from './llms-document';
+import {
+  llmsSection,
+  markdownList,
+  serializeLlmsDocument,
+} from './llms-document';
 
-describe('serializeMarkdownLineDocument', () => {
-  it('builds llms documents through mdast while preserving inline Markdown', () => {
+describe('serializeLlmsDocument', () => {
+  it('собирает llms-документы через mdast и сохраняет inline Markdown', () => {
     expect(
-      serializeMarkdownLineDocument(
-        [
-          'Agent Surface',
-          'Файл: llms.txt',
-          'Язык: русский',
-          '',
-          'Главные URL',
-          '- Home: https://example.test/',
-          '- Feed: https://example.test/feed.json with `json`',
+      serializeLlmsDocument({
+        title: 'Поверхность для агентов',
+        file: 'llms.txt',
+        sections: [
+          llmsSection('Главные URL', [
+            markdownList([
+              'Главная: https://example.test/',
+              'Фид: https://example.test/feed.json с `json`',
+            ]),
+          ]),
         ],
-        new Set(['Главные URL']),
-      ),
+      }),
     ).toMatchInlineSnapshot(`
-      "# Agent Surface
+      "# Поверхность для агентов
 
       Файл: llms.txt
       Язык: русский
 
       ## Главные URL
 
-      - Home: <https://example.test/>
-      - Feed: <https://example.test/feed.json> with \`json\`
+      - Главная: <https://example.test/>
+      - Фид: <https://example.test/feed.json> с \`json\`
       "
     `);
   });

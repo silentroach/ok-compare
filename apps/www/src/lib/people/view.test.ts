@@ -186,23 +186,34 @@ describe('buildPersonMarkdown', () => {
 
     const markdown = buildPersonMarkdown(profile);
 
-    expect(markdown).toContain(
-      'Исполняющий обязанности директора по эксплуатации, ОК "Комфорт"',
-    );
-    expect(markdown).toContain(
-      String.raw`- Telegram: [@Kirill\_ZemlyaMO](https://t.me/Kirill_ZemlyaMO)`,
-    );
-    expect(markdown).toContain('## Профиль');
-    expect(markdown).toContain('Публичный профиль с контекстом.');
-    expect(markdown).toContain('## Где упоминается');
-    expect(markdown).toContain('### Новости');
-    expect(markdown).toContain('### Статус');
-    expect(markdown).toContain(
-      '[Авария на линии](https://example.com/news/2026/05/electricity/index.md) — Новость; 3 мая 2026',
-    );
-    expect(markdown).toContain(
-      '[Отключение электричества в Шелково Ривер](https://example.com/status/incidents/2026/04/electricity-river-10kv-line-damage/index.md) — Инцидент; 22 апреля',
-    );
+    expect(markdown).toMatchInlineSnapshot(`
+      "# Кирилл Щемелинин
+
+      Исполняющий обязанности директора по эксплуатации, ОК "Комфорт"
+
+      ## Контакты
+
+      - Telegram: [@Kirill\\_ZemlyaMO](https://t.me/Kirill_ZemlyaMO)
+
+      ## Профиль
+
+      Публичный профиль с контекстом.
+
+      ## Где упоминается
+
+      ### Новости
+
+      - [Авария на линии](https://example.com/news/2026/05/electricity/index.md) — Новость; 3 мая 2026
+
+        Основной текст про Кирилла Щемелинина.
+
+      ### Статус
+
+      - [Отключение электричества в Шелково Ривер](https://example.com/status/incidents/2026/04/electricity-river-10kv-line-damage/index.md) — Инцидент; 22 апреля
+
+        Как отметил Кирилл Щемелинин, повреждение было редким.
+      "
+    `);
   });
 
   it('parses profile body as Markdown fragment without nested frontmatter', () => {
