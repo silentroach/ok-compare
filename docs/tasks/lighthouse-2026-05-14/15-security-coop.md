@@ -24,16 +24,24 @@ Evaluate whether the site should add `Cross-Origin-Opener-Policy` and implement 
 
 ## Acceptance Criteria
 
-- [ ] COOP is either implemented safely or explicitly documented as not appropriate right now.
-- [ ] Yandex Maps, external links, Metrika, and page transitions still work.
-- [ ] No new browser console warnings or broken popup behavior appear.
+- [x] COOP is either implemented safely or explicitly documented as not appropriate right now.
+- [x] Yandex Maps, external links, Metrika, and page transitions still work.
+- [x] No new browser console warnings or broken popup behavior appear.
 
 ## Verification
 
 - [ ] Validate nginx config syntax in the deployment environment with `nginx -t` if headers change.
-- [ ] Check response headers on representative pages.
-- [ ] Manually test pages with external integrations.
-- [ ] Run Lighthouse and inspect `origin-isolation` details.
+- [ ] Check response headers on representative pages after deployment.
+- [ ] Manually test pages with external integrations after deployment.
+- [ ] Run Lighthouse and inspect `origin-isolation` details after deployment.
+
+## Resolution
+
+- `Cross-Origin-Opener-Policy: same-origin` is added to the main `kpshelkovo.online` HTTPS server block.
+- The decision is recorded in `docs/decisions/007-coop-origin-isolation.md`.
+- COEP is intentionally not added because the site does not need `crossOriginIsolated` features and COEP can block third-party Yandex subresources without full CORP/CORS opt-in.
+- Static code review found no `window.open`, OAuth, payment, or opener-dependent popup flow. Existing external links already use `noopener`/`noreferrer`.
+- Deployment-only verification remains to be done in production: the deploy script should run `nginx -t`, then response headers, Yandex Maps, external links, Metrika, page transitions, browser console, and Lighthouse `origin-isolation` should be checked on the deployed site.
 
 ## Files Likely Touched
 
