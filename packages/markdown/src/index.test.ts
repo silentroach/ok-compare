@@ -35,26 +35,6 @@ describe('@shelkovo/markdown', () => {
     `);
   });
 
-  it('serializes GFM tables', () => {
-    expect(
-      serializeMarkdownDocument(
-        createMarkdownDocument({
-          children: [
-            md.table(
-              [md.tableRow(['Ключ', 'Значение'])],
-              [md.tableRow(['A', 'B'])],
-            ),
-          ],
-        }),
-      ),
-    ).toMatchInlineSnapshot(`
-      "| Ключ | Значение |
-      | ---- | -------- |
-      | A    | B        |
-      "
-    `);
-  });
-
   it('serializes nested lists with package style markers', () => {
     expect(
       serializeMarkdownDocument(
@@ -85,6 +65,16 @@ describe('@shelkovo/markdown', () => {
       1. Три
       "
     `);
+  });
+
+  it('rejects table nodes in generated Markdown documents', () => {
+    expect(() =>
+      serializeMarkdownDocument(
+        createMarkdownDocument({
+          children: [{ type: 'table', children: [] }],
+        }),
+      ),
+    ).toThrow('Markdown tables are not supported; use lists.');
   });
 
   it('parses Markdown fragments for insertion into generated documents', () => {
@@ -133,6 +123,12 @@ describe('@shelkovo/markdown', () => {
       .toMatchInlineSnapshot(`
         "<p>Текст <strong>важный</strong></p>"
       `);
+  });
+
+  it('rejects tables when rendering Markdown strings', () => {
+    expect(() =>
+      render('| Ключ | Значение |\n| --- | --- |\n| A | B |'),
+    ).toThrow('Markdown tables are not supported; use lists.');
   });
 
   it('preprocesses markdown before rendering', () => {

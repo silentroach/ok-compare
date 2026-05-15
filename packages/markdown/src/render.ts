@@ -1,9 +1,11 @@
 import rehypeStringify from 'rehype-stringify';
+import type { Root } from 'mdast';
 import remarkGfm from 'remark-gfm';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
-import { unified } from 'unified';
+import { unified, type Plugin } from 'unified';
 
+import { assertNoMarkdownTables } from './no-tables';
 import { rehypeTypograf } from './typography';
 
 export type MarkdownPreprocessor = (markdown: string) => string;
@@ -12,9 +14,14 @@ export interface RenderOptions {
   readonly preprocess?: MarkdownPreprocessor | readonly MarkdownPreprocessor[];
 }
 
+const remarkNoMarkdownTables: Plugin<[], Root> = () => (tree) => {
+  assertNoMarkdownTables(tree);
+};
+
 const processor = unified()
   .use(remarkParse)
   .use(remarkGfm)
+  .use(remarkNoMarkdownTables)
   // Raw HTML is not passed through, so markdown content cannot inject markup.
   .use(remarkRehype)
   .use(rehypeTypograf)

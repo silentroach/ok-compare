@@ -1,4 +1,4 @@
-import { pluralizeRu } from '@shelkovo/format';
+import { count } from '@shelkovo/format';
 import {
   createMarkdownDocument,
   md,
@@ -25,9 +25,6 @@ type MarkdownListItem = ReturnType<typeof md.listItem>;
 
 const serialize = (children: readonly MarkdownNode[]): string =>
   serializeMarkdownDocument(createMarkdownDocument({ children }));
-
-const count = (value: number, forms: [string, string, string]): string =>
-  `${value} ${pluralizeRu(value, forms)}`;
 
 const inline = (value: string): string => value.replace(/\s+/gu, ' ').trim();
 

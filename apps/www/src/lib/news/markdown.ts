@@ -1,4 +1,4 @@
-import { pluralizeRu } from '@shelkovo/format';
+import { count } from '@shelkovo/format';
 import {
   createMarkdownDocument,
   md,
@@ -255,7 +255,7 @@ const monthLine = (item: NewsMonthArchive): MarkdownListItem =>
         formatNewsMonth(item.year, item.month, { capitalize: true }),
       ),
       md.text(
-        ` — ${item.count} ${pluralizeRu(item.count, ['публикация', 'публикации', 'публикаций'])}`,
+        ` — ${count(item.count, ['публикация', 'публикации', 'публикаций'])}`,
       ),
     ]),
   ]);
@@ -265,7 +265,7 @@ const tagLine = (item: NewsTagPage): MarkdownListItem =>
     md.paragraph([
       md.link(abs(item.markdown_url), item.label),
       md.text(
-        ` — ${item.count} ${pluralizeRu(item.count, ['публикация', 'публикации', 'публикаций'])}`,
+        ` — ${count(item.count, ['публикация', 'публикации', 'публикаций'])}`,
       ),
     ]),
   ]);
@@ -371,7 +371,11 @@ export function buildNewsTagsMarkdown(
 }
 
 export function buildNewsTagMarkdown(tag: NewsTagPage): string {
-  const latestPublicationsLabel = `${NEWS_LATEST_LIMIT} ${pluralizeRu(NEWS_LATEST_LIMIT, ['публикация', 'публикации', 'публикаций'])}`;
+  const latestPublicationsLabel = count(NEWS_LATEST_LIMIT, [
+    'публикация',
+    'публикации',
+    'публикаций',
+  ]);
 
   return serialize([
     md.heading(1, `Тег ${tag.label}`),

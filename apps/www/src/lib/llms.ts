@@ -1,4 +1,4 @@
-import { pluralizeRu } from '@shelkovo/format';
+import { count } from '@shelkovo/format';
 import { md } from '@shelkovo/markdown';
 
 import {
@@ -65,9 +65,6 @@ const SITE_MARKDOWN = '/index.md';
 const SITE_LLMS = '/llms.txt';
 const SITE_LLMS_FULL = '/llms-full.txt';
 const SITE_API_CATALOG = '/.well-known/api-catalog';
-
-const count = (value: number, forms: [string, string, string]): string =>
-  `${value} ${pluralizeRu(value, forms)}`;
 
 export const siteMarkdownUrl = (): string => withBase(SITE_MARKDOWN);
 
@@ -170,7 +167,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
               `Главная: ${home}`,
               `Главная в Markdown: ${homeMarkdown}`,
               `API catalog сайта: ${catalog}`,
-              `Public agent skills сайта: ${skills}`,
+              `Инструкции для автоматического чтения сайта: ${skills}`,
               `Новости: ${newsHome}`,
               `Статус: ${statusHome}`,
               `Регламент: ${reglamentHome}`,
@@ -182,12 +179,12 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           llmsSection('Как ориентироваться', [
             markdownList([
               'Если задача относится к одному разделу, сначала откройте его `llms.txt`; если нужны данные массово, сразу берите JSON-фид.',
-              `Новости: ${absoluteUrl(newsLlmsUrl())}; основной feed: ${newsFeed}; календарные события лежат в articles[].events[].ics_url.`,
+              `Новости: ${absoluteUrl(newsLlmsUrl())}; основной feed: ${newsFeed}; календарные события лежат в \`articles[].events[].ics_url\`.`,
               `Статус сервисов: ${absoluteUrl(statusLlmsUrl())}; основной feed: ${statusFeed}.`,
               `Регламент и смета: ${reglamentLlms}; смета: ${reglamentFeed}; полный регламент: ${reglamentFullMarkdown}; dataset: ${reglamentFullDataset}.`,
               `Люди: ${peopleShort}; основной feed: ${peopleFeed}; одна персона: ${personHtml} или ${personMarkdown}.`,
               `Сравнение тарифов поселков: ${compareLlms}; основной feed: ${compareFeed}.`,
-              'Public skills дают короткие инструкции для типовых задач; у compare есть отдельный skill index.',
+              'Публичные инструкции помогают с типовыми задачами; у сравнения тарифов есть отдельный индекс.',
             ]),
           ]),
         ],
@@ -198,7 +195,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         sections: [
           llmsSection('Проект', [
             markdownList([
-              'Это корневой сайт kpshelkovo.online и карта его публичных данных для агентов.',
+              'Это корневой сайт kpshelkovo.online и карта его публичных данных.',
               'Разделы сайта: `/news/`, `/status/`, `/815/regulation/`, `/people/` и `/815/compare/`.',
               'Все JSON-фиды read-only и отражают состояние на момент сборки сайта.',
               'У раздела людей нет публичной HTML-страницы индекса `/people/`; используйте `/people/index.md` и `/people/data/people.json`.',
@@ -208,10 +205,10 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
             markdownList([
               `Главная: ${home}`,
               `Главная в Markdown: ${homeMarkdown}`,
-              `Короткий агентный обзор: ${short}`,
-              `Расширенный агентный обзор: ${full}`,
+              `Короткий обзор llms.txt: ${short}`,
+              `Подробный обзор llms-full.txt: ${full}`,
               `API catalog сайта: ${catalog}`,
-              `Public agent skills сайта: ${skills}`,
+              `Инструкции для автоматического чтения сайта: ${skills}`,
             ]),
           ]),
           llmsSection('Новости', [
@@ -276,7 +273,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
               `llms.txt: ${compareLlms}`,
               `Основной JSON feed: ${compareFeed}`,
               `API catalog: ${compareCatalog}`,
-              `Public agent skills: ${compareSkills}`,
+              `Инструкции для автоматического чтения: ${compareSkills}`,
             ]),
           ]),
           llmsSection('Как выбирать источник', [
@@ -292,7 +289,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           ]),
           llmsSection('Skills и discovery', [
             markdownList([
-              '`llms.txt` дает карту маршрутов, `api-catalog` и OpenAPI/Schema описывают контракты, public skills дают короткие инструкции под типовые задачи.',
+              '`llms.txt` дает карту маршрутов, `api-catalog` и OpenAPI/Schema описывают контракты, публичные инструкции закрывают типовые задачи.',
               'Корневой skill index покрывает навигацию, новости, статус и профили людей.',
               'У compare свой skill index для фида, страниц поселков, рейтинга и уточнений по источникам.',
             ]),
@@ -308,11 +305,11 @@ export async function buildHomeMarkdown(): Promise<string> {
   return serializeMarkdownNodes([
     md.heading(1, 'Шелково Онлайн'),
     ...markdownBlocks(
-      'Текстовое представление корневого сайта и его основных разделов для терминалов и агентов.',
+      'Текстовое представление корневого сайта и его основных разделов для терминалов и автоматического чтения.',
     ),
     md.heading(2, 'Разделы'),
     markdownList([
-      `[Новости](${absoluteUrl(newsUrl())}) — ${count(news.articles.length, ['статья', 'статьи', 'статей'])}; structured feed: ${absoluteUrl(articlesDataUrl())}; RSS: ${absoluteUrl(newsFeedUrl())}; события: optional articles[].events[] с article-local [event-slug].ics`,
+      `[Новости](${absoluteUrl(newsUrl())}) — ${count(news.articles.length, ['статья', 'статьи', 'статей'])}; structured feed: ${absoluteUrl(articlesDataUrl())}; RSS: ${absoluteUrl(newsFeedUrl())}; события: optional \`articles[].events[]\` с article-local \`[event-slug].ics\``,
       `[Статус](${absoluteUrl(statusUrl())}) — ${count(status.incidents.length, ['запись', 'записи', 'записей'])}, ${count(activeStatus.length, ['активный инцидент', 'активных инцидента', 'активных инцидентов'])}; structured feed: ${absoluteUrl(statusDataUrl())}; RSS: ${absoluteUrl(statusFeedUrl())}`,
       `[Регламент](${absoluteUrl(reglamentUrl())}) — смета тарифа 2026; structured feed: ${absoluteUrl(reglamentEstimate2026DataUrl())}; full index: ${absoluteUrl(reglamentFullMarkdownUrl())}; full dataset: ${absoluteUrl(reglamentFull2026DataUrl())}; markdown overview: ${absoluteUrl(reglamentMarkdownUrl())}`,
       `Люди — ${count(people.profiles.length, ['профиль', 'профиля', 'профилей'])}; markdown overview: ${absoluteUrl(peopleMarkdownUrl())}; structured feed: ${absoluteUrl(peopleDataUrl())}; публичного HTML-индекса нет`,
@@ -323,7 +320,7 @@ export async function buildHomeMarkdown(): Promise<string> {
       `API catalog сайта: ${absoluteUrl(siteApiCatalogUrl())}`,
       `llms.txt: ${absoluteUrl(siteLlmsUrl())}`,
       `llms-full.txt: ${absoluteUrl(siteLlmsFullUrl())}`,
-      `Public agent skills: ${absoluteUrl(siteSkillsUrl())}`,
+      `Инструкции для автоматического чтения: ${absoluteUrl(siteSkillsUrl())}`,
     ]),
     md.heading(2, 'Section Discovery'),
     markdownList([

@@ -301,12 +301,12 @@ describe('estimate detail markdown companions', () => {
 
       ## Ресурсы по видам
 
-      - labor: 1 (труд)
-      - machinist\\_labor: 1 (труд машинистов)
-      - machine: 1 (машины)
-      - material: 1 (материалы)
-      - contractor: 0 (подрядчики)
-      - other\\_cost: 0 (прочие затраты)
+      - \`labor\`: 1 (труд)
+      - \`machinist_labor\`: 1 (труд машинистов)
+      - \`machine\`: 1 (машины)
+      - \`material\`: 1 (материалы)
+      - \`contractor\`: 0 (подрядчики)
+      - \`other_cost\`: 0 (прочие затраты)
 
       ## PDF-источники
 
@@ -353,18 +353,20 @@ describe('estimate detail markdown companions', () => {
     const materials = buildEstimateDetailMaterialsMarkdown(fixtureDataset);
 
     expect(materials).toContain(
-      'позиции цитаты: 1) Песок; ресурсы: material-sand; кол-во: 12,5 т; цена: 1 000 ₽; итог: 12 500 ₽',
+      'позиции цитаты: 1) Песок; ресурсы: `material-sand`; кол-во: 12,5 т; цена: 1 000 ₽; итог: 12 500 ₽',
     );
   });
 
   it('lists control totals, deltas and needs_check items', () => {
     const checks = buildEstimateDetailChecksMarkdown(fixtureDataset);
 
-    expect(checks).toContain('cleaning-materials-total: materials');
+    expect(checks).toContain('`cleaning-materials-total`: `materials`');
     expect(checks).toContain('источник контроля: секционный PDF');
     expect(checks).toContain('дельта: -25 ₽');
     expect(checks).toContain('Работа для сверки');
-    expect(checks).toContain('machinist-loader: Машинист погрузчика');
+    expect(checks).toContain(
+      '`resources:machinist-loader`: Машинист погрузчика',
+    );
     expect(checks).toContain('Расхождение больше допуска.');
   });
 
@@ -405,7 +407,7 @@ describe('estimate detail markdown companions', () => {
   it('exposes final PDF controls in real checks markdown', () => {
     const checks = buildEstimateDetailChecksMarkdown();
 
-    expect(checks).toContain('final-estimate-gross: gross');
+    expect(checks).toContain('`final-estimate-gross`: `gross`');
     expect(checks).toContain('источник контроля: итоговый PDF');
     expect(checks).toContain('final-cleaning-gross');
     expect(checks).toContain('Сумма дочерних строк отличается');

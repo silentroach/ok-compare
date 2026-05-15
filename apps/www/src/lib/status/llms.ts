@@ -1,4 +1,4 @@
-import { pluralizeRu } from '@shelkovo/format';
+import { count } from '@shelkovo/format';
 
 import { absoluteUrl } from '../site';
 import { loadStatusData } from './load';
@@ -24,9 +24,6 @@ import {
 } from './routes';
 import { STATUS_KINDS, STATUS_SERVICE_STATES, STATUS_SERVICES } from './schema';
 import { formatStatusService } from './view';
-
-const count = (value: number, forms: [string, string, string]): string =>
-  `${value} ${pluralizeRu(value, forms)}`;
 
 export async function build(kind: 'short' | 'full'): Promise<string> {
   const data = await loadStatusData();
@@ -118,8 +115,8 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
             markdownList([
               `Главная страница /status: ${home}`,
               `Markdown home: ${homeMarkdown}`,
-              `Короткий агентный обзор: ${short}`,
-              `Расширенный агентный обзор: ${full}`,
+              `Короткий обзор llms.txt: ${short}`,
+              `Подробный обзор llms-full.txt: ${full}`,
               `Основной JSON feed: ${feed}`,
               `RSS: ${rss}`,
               `API catalog: ${catalog}`,
@@ -144,7 +141,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           llmsSection('HTML и Markdown', [
             markdownList([
               'HTML home `/status/` остается каноническим человекочитаемым представлением сводки по поселку.',
-              'Markdown companion `/status/index.md` дает text-first слой для терминалов и агентов.',
+              'Markdown companion `/status/index.md` дает текстовую версию сводки для терминалов и прямых ссылок.',
               'Страницы сервисов `/status/[service]/` и их companions `/status/[service]/index.md` удобны для фокусного чтения одной линии: электричество, вода, интернет или дамба.',
               'Страницы incidents `/status/incidents/YYYY/MM/[entry]/` и их companions `/status/incidents/.../index.md` публикуются только для записей с body и тогда же появляются в `html_url`/`markdown_url`.',
             ]),

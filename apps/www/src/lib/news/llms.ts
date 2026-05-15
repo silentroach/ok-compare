@@ -1,4 +1,4 @@
-import { pluralizeRu } from '@shelkovo/format';
+import { count } from '@shelkovo/format';
 
 import { absoluteUrl } from '../site';
 import { loadNewsData } from './load';
@@ -27,7 +27,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
   const year = data.archives.years[0];
   const month = year?.months[0];
   const tag = data.tags[0];
-  const counts = `${data.articles.length} ${pluralizeRu(data.articles.length, ['статья', 'статьи', 'статей'])}, ${data.tags.length} ${pluralizeRu(data.tags.length, ['тег', 'тега', 'тегов'])} и ${data.archives.years.length} ${pluralizeRu(data.archives.years.length, ['архивный год', 'архивных года', 'архивных лет'])}`;
+  const counts = `${count(data.articles.length, ['статья', 'статьи', 'статей'])}, ${count(data.tags.length, ['тег', 'тега', 'тегов'])} и ${count(data.archives.years.length, ['архивный год', 'архивных года', 'архивных лет'])}`;
 
   const home = absoluteUrl(newsUrl());
   const homeMarkdown = absoluteUrl(newsMarkdownUrl());
@@ -103,8 +103,8 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
             markdownList([
               `Главная новостей: ${home}`,
               `Главная новостей в Markdown: ${homeMarkdown}`,
-              `Короткий агентный обзор: ${short}`,
-              `Расширенный агентный обзор: ${full}`,
+              `Короткий обзор llms.txt: ${short}`,
+              `Подробный обзор llms-full.txt: ${full}`,
               `Основной JSON-файл: ${feed}`,
               `RSS: ${rss}`,
               `Каталог API: ${catalog}`,
@@ -140,7 +140,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           llmsSection('HTML и Markdown', [
             markdownList([
               'HTML-страницы `/news/YYYY/MM/[entry]/` остаются каноническим человекочитаемым представлением новости.',
-              'Markdown-файлы `/news/.../index.md` дают текстовый слой для терминалов, агентов и прямых ссылок на чистый текст.',
+              'Markdown-файлы `/news/.../index.md` дают текстовую версию для терминалов и прямых ссылок на чистый текст.',
               'Во всех списках, архивах и тегах показывается только `summary`; полный `body` и текст `addenda` раскрываются только на странице новости и в основном JSON-файле.',
             ]),
           ]),

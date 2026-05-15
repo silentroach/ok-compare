@@ -10,7 +10,7 @@ describe('serializeLlmsDocument', () => {
   it('собирает llms-документы через mdast и сохраняет inline Markdown', () => {
     expect(
       serializeLlmsDocument({
-        title: 'Поверхность для агентов',
+        title: 'Текстовая карта раздела',
         file: 'llms.txt',
         sections: [
           llmsSection('Главные URL', [
@@ -22,7 +22,7 @@ describe('serializeLlmsDocument', () => {
         ],
       }),
     ).toMatchInlineSnapshot(`
-      "# Поверхность для агентов
+      "# Текстовая карта раздела
 
       Файл: llms.txt
       Язык: русский

@@ -19,15 +19,13 @@ import type {
   PhrasingContent,
   Root,
   RootContent,
-  Table,
-  TableCell,
-  TableRow,
   Text,
   ThematicBreak,
   Yaml,
 } from 'mdast';
 import { stringify } from 'yaml';
 
+import { assertNoMarkdownTables } from './no-tables';
 import type {
   MarkdownDocumentInput,
   MarkdownFrontmatter,
@@ -35,9 +33,6 @@ import type {
   MarkdownListItemOptions,
   MarkdownListOptions,
   MarkdownPhrasingInput,
-  MarkdownTableAlign,
-  MarkdownTableCellInput,
-  MarkdownTableInput,
 } from './generate-types';
 
 const createParseExtensions = () => [gfm(), frontmatter(['yaml'])];
@@ -78,6 +73,8 @@ export const createMarkdownDocument = ({
 });
 
 export const serializeMarkdownDocument = (document: Root): string => {
+  assertNoMarkdownTables(document);
+
   const markdown = toMarkdown(document, {
     bullet: '-',
     bulletOrdered: '.',
@@ -153,28 +150,6 @@ export const md = {
   paragraph: (children: MarkdownPhrasingInput): Paragraph => ({
     type: 'paragraph',
     children: toPhrasingChildren(children),
-  }),
-  table: (
-    header: readonly TableRow[],
-    body: readonly TableRow[] = [],
-    align?: readonly MarkdownTableAlign[],
-  ): Table => ({
-    type: 'table',
-    children: [...header, ...body],
-    ...(align ? { align: [...align] } : {}),
-  }),
-  tableCell: (children: MarkdownTableCellInput): TableCell => ({
-    type: 'tableCell',
-    children: toPhrasingChildren(children),
-  }),
-  tableRow: (cells: readonly MarkdownTableCellInput[]): TableRow => ({
-    type: 'tableRow',
-    children: cells.map((cell) => md.tableCell(cell)),
-  }),
-  tableFromRows: ({ align, children }: MarkdownTableInput): Table => ({
-    type: 'table',
-    children: [...children],
-    ...(align ? { align: [...align] } : {}),
   }),
   text: (value: string): Text => ({ type: 'text', value }),
   thematicBreak: (): ThematicBreak => ({ type: 'thematicBreak' }),

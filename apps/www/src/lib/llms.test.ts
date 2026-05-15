@@ -62,7 +62,7 @@ describe('root llms', () => {
       - Главная: <https://example.com/>
       - Главная в Markdown: <https://example.com/index.md>
       - API catalog сайта: <https://example.com/.well-known/api-catalog>
-      - Public agent skills сайта: <https://example.com/.well-known/agent-skills/index.json>
+      - Инструкции для автоматического чтения сайта: <https://example.com/.well-known/agent-skills/index.json>
       - Новости: <https://example.com/news/>
       - Статус: <https://example.com/status/>
       - Регламент: <https://example.com/815/regulation/>
@@ -73,12 +73,12 @@ describe('root llms', () => {
       ## Как ориентироваться
 
       - Если задача относится к одному разделу, сначала откройте его \`llms.txt\`; если нужны данные массово, сразу берите JSON-фид.
-      - Новости: <https://example.com/news/llms.txt>; основной feed: <https://example.com/news/data/articles.json>; календарные события лежат в articles\\[].events\\[].ics\\_url.
+      - Новости: <https://example.com/news/llms.txt>; основной feed: <https://example.com/news/data/articles.json>; календарные события лежат в \`articles[].events[].ics_url\`.
       - Статус сервисов: <https://example.com/status/llms.txt>; основной feed: <https://example.com/status/data/status.json>.
       - Регламент и смета: <https://example.com/815/regulation/llms.txt>; смета: <https://example.com/815/regulation/data/estimate-2026.json>; полный регламент: <https://example.com/815/regulation/full.md>; dataset: <https://example.com/815/regulation/data/full-2026.json>.
       - Люди: <https://example.com/people/llms.txt>; основной feed: <https://example.com/people/data/people.json>; одна персона: <https://example.com/people/kschemelinin/> или <https://example.com/people/kschemelinin/index.md>.
       - Сравнение тарифов поселков: <https://example.com/815/compare/llms.txt>; основной feed: <https://example.com/815/compare/data/settlements.json>.
-      - Public skills дают короткие инструкции для типовых задач; у compare есть отдельный skill index.
+      - Публичные инструкции помогают с типовыми задачами; у сравнения тарифов есть отдельный индекс.
       "
     `);
   });

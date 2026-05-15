@@ -1,10 +1,4 @@
-import type {
-  AlignType,
-  BlockContent,
-  PhrasingContent,
-  RootContent,
-  TableRow,
-} from 'mdast';
+import type { BlockContent, PhrasingContent, RootContent } from 'mdast';
 
 export type MarkdownFrontmatter = Readonly<Record<string, unknown>>;
 
@@ -26,13 +20,4 @@ export type MarkdownListOptions = {
 export type MarkdownListItemOptions = {
   readonly checked?: boolean;
   readonly spread?: boolean;
-};
-
-export type MarkdownTableAlign = Exclude<AlignType, null>;
-
-export type MarkdownTableCellInput = MarkdownPhrasingInput;
-
-export type MarkdownTableInput = {
-  readonly align?: readonly MarkdownTableAlign[];
-  readonly children: readonly TableRow[];
 };

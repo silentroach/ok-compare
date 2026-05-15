@@ -46,7 +46,7 @@ describe('compare llms', () => {
       - Методика рейтинга: <https://example.com/815/compare/rating/>
       - Основной JSON feed: <https://example.com/815/compare/data/settlements.json>
       - Облегченный explorer feed: <https://example.com/815/compare/data/explorer.json>
-      - Индекс agent skills: <https://example.com/815/compare/.well-known/agent-skills/index.json>
+      - Индекс инструкций для автоматического чтения: <https://example.com/815/compare/.well-known/agent-skills/index.json>
       - Расширенная версия этого текста: <https://example.com/815/compare/llms-full.txt>
       - Примеры детальных страниц:
       - Шелково: <https://example.com/815/compare/settlements/shelkovo/>

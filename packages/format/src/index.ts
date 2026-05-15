@@ -16,4 +16,4 @@ export {
   padNumber,
   parseNumberInputRu,
 } from './number';
-export { pluralizeRu } from './plural';
+export { count, pluralize } from './plural';

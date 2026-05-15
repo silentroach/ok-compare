@@ -1,4 +1,4 @@
-import { pluralizeRu } from '@shelkovo/format';
+import { count } from '@shelkovo/format';
 
 import {
   llmsSection,
@@ -8,11 +8,6 @@ import {
 
 import { loadAllData } from './data';
 import { canon } from './site';
-
-const count = (
-  value: number,
-  forms: readonly [one: string, few: string, many: string],
-): string => `${value} ${pluralizeRu(value, forms)}`;
 
 function abs(path: string): string {
   return canon(path);
@@ -63,7 +58,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
               `Методика рейтинга: ${rating}`,
               `Основной JSON feed: ${feed}`,
               `Облегченный explorer feed: ${explorer}`,
-              `Индекс agent skills: ${skills}`,
+              `Индекс инструкций для автоматического чтения: ${skills}`,
               `Расширенная версия этого текста: ${full}`,
               'Примеры детальных страниц:',
               ...refs(list),
@@ -100,12 +95,12 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           llmsSection('Канонические URL', [
             markdownList([
               `Главная: ${home}`,
-              `Короткий агентный обзор: ${short}`,
-              `Расширенный агентный обзор: ${full}`,
+              `Короткий обзор llms.txt: ${short}`,
+              `Подробный обзор llms-full.txt: ${full}`,
               `Методика рейтинга: ${rating}`,
               `Основной JSON feed: ${feed}`,
               `Облегченный explorer feed: ${explorer}`,
-              `Индекс agent skills: ${skills}`,
+              `Индекс инструкций для автоматического чтения: ${skills}`,
               'Примеры детальных страниц поселков:',
               ...refs(list),
             ]),

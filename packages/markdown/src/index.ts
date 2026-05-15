@@ -11,9 +11,6 @@ export type {
   MarkdownListItemOptions,
   MarkdownListOptions,
   MarkdownPhrasingInput,
-  MarkdownTableAlign,
-  MarkdownTableCellInput,
-  MarkdownTableInput,
 } from './generate-types';
 export { extractFirstMarkdownText } from './plain-text';
 export {

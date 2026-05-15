@@ -1,4 +1,4 @@
-import { pluralizeRu } from '@shelkovo/format';
+import { count } from '@shelkovo/format';
 
 import { absoluteUrl } from '../site';
 import { loadPeopleDataWithBacklinks } from './load';
@@ -17,9 +17,6 @@ import {
   peopleOpenApiUrl,
   peopleSchemaUrl,
 } from './routes';
-
-const count = (value: number, forms: [string, string, string]): string =>
-  `${value} ${pluralizeRu(value, forms)}`;
 
 const backlinksCount = (backlinks: PersonBacklinks): number =>
   backlinks.news.length + backlinks.status.length + backlinks.people.length;
@@ -96,8 +93,8 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           llmsSection('Канонические URL', [
             markdownList([
               `Markdown overview раздела: ${overview}`,
-              `Короткий агентный обзор: ${short}`,
-              `Расширенный агентный обзор: ${full}`,
+              `Короткий обзор llms.txt: ${short}`,
+              `Подробный обзор llms-full.txt: ${full}`,
               `Основной JSON feed: ${feed}`,
               `API catalog: ${catalog}`,
               `JSON Schema: ${schema}`,
@@ -121,8 +118,8 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
             markdownList([
               'Публичного HTML-home route `/people/` нет и в MVP не будет.',
               'HTML detail pages `/people/[slug]/` остаются каноническим человекочитаемым представлением одной персоны.',
-              'Markdown companions `/people/[slug]/index.md` дают text-first слой для терминалов и агентов.',
-              '`/people/index.md` работает как section overview для агентов и терминалов, а не как список-страница для обычной навигации.',
+              'Markdown companion `/people/[slug]/index.md` дает текстовую версию профиля для терминалов и прямых ссылок.',
+              '`/people/index.md` работает как текстовый обзор раздела, а не как список-страница для обычной навигации.',
             ]),
           ]),
           llmsSection('Ограничения', [

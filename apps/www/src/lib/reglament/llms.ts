@@ -1,3 +1,5 @@
+import { count } from '@shelkovo/format';
+
 import { estimate2026 } from '@/data/reglament/estimate-2026';
 import {
   llmsSection,
@@ -98,7 +100,7 @@ export function build(kind: 'short' | 'full'): string {
             markdownList([
               'Это статический раздел `/815/regulation/` внутри kpshelkovo.online для интерактивной сметы тарифа 2026.',
               `Исходный расчет: ${formatReglamentTariff(payload.official.tariff_per_sotka_month)} при годовом итоге ${formatReglamentAnnualMoney(payload.official.annual_gross)} и площади ${formatReglamentNumber(payload.tariff_area_sotki)} сотки.`,
-              `В JSON ${payload.sections.length} секций и ${rows} строк; PDF не парсятся во время запроса.`,
+              `Смета включает ${count(payload.sections.length, ['секцию', 'секции', 'секций'])} и ${count(rows, ['строку', 'строки', 'строк'])}; строки содержат суммы, формулы и ссылки на источники.`,
               'В интерфейсе тариф показывается как ₽/сотка; машинное поле `tariff_per_sotka_month` остается месячным тарифом.',
             ]),
           ]),
@@ -134,7 +136,7 @@ export function build(kind: 'short' | 'full'): string {
               `Формула тарифа: \`${REGLAMENT_FORMULAS.tariff_per_sotka_month}\`.`,
             ]),
           ]),
-          llmsSection('Куда смотреть агенту', [
+          llmsSection('Что открыть для проверки', [
             markdownList([
               'Агрегированная смета: `estimate-2026.json` и `index.md` — разделы, строки, итоговые суммы, базовые частоты и breakdown.',
               'Услуги полного регламента: `full-2026.json`, `full/services.md` и `full/service-map.md` — формулировки услуг, периодичность и связь со строками сметы.',
@@ -152,7 +154,7 @@ export function build(kind: 'short' | 'full'): string {
           llmsSection('Проект', [
             markdownList([
               'Это машиночитаемый и текстовый слой страницы `/815/regulation/` с калькулятором тарифа по смете регламента 2026.',
-              'Данные уже нормализованы: агенту не нужно парсить PDF, чтобы начать проверку сметы.',
+              'Материалы дают расчетные суммы, ссылки на источники и проверочные заметки по строкам сметы.',
               'В интерфейсе тариф показывается как ₽/сотка; машинное поле `tariff_per_sotka_month` остается месячным тарифом.',
               `Официальный baseline: ${formatReglamentAnnualMoney(payload.official.annual_gross)} и ${formatReglamentTariff(payload.official.tariff_per_sotka_month)}.`,
               `Расчетный baseline сейчас дает ${formatReglamentAnnualMoney(calculated.annual_gross)} и ${formatReglamentTariff(calculated.tariff_per_sotka_month)}.`,
@@ -172,8 +174,8 @@ export function build(kind: 'short' | 'full'): string {
               `Полный регламент, услуги Markdown: ${fullServicesMarkdown}`,
               `Полный регламент, сопоставления Markdown: ${fullServiceMapMarkdown}`,
               `Полный регламент, проверки Markdown: ${fullChecksMarkdown}`,
-              `Короткий агентный обзор: ${short}`,
-              `Расширенный агентный обзор: ${full}`,
+              `Короткий обзор llms.txt: ${short}`,
+              `Подробный обзор llms-full.txt: ${full}`,
               `JSON сметы: ${feed}`,
               `JSON детальной сметы: ${detailFeed}`,
               `Dataset полного регламента: ${fullDataset}`,

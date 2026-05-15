@@ -53,6 +53,8 @@ const CONTROL_SOURCE_LABELS = {
 
 const EMPTY_LIST_LINE = '- Нет данных в текущей версии набора.';
 
+const code = (value: string): string => `\`${value}\``;
+
 const serializeLines = (lines: readonly string[]): string =>
   serializeMarkdownLineDocument(lines, new Set());
 
@@ -61,7 +63,7 @@ const sourceQuoteItem = (
   index: number,
 ): string => {
   const resourceIds = item.resource_ids?.length
-    ? `; ресурсы: ${item.resource_ids.join(', ')}`
+    ? `; ресурсы: ${item.resource_ids.map(code).join(', ')}`
     : '';
   const quantity = item.quantity
     ? `; кол-во: ${formatQuantity(item.quantity)}`
@@ -256,7 +258,7 @@ const resourceWorkItemsLine = (
     .map((id) => {
       const workItem = workItemsById.get(id);
 
-      return workItem ? `\`${id}\`: ${workItem.title}` : `\`${id}\``;
+      return workItem ? `${code(id)}: ${workItem.title}` : code(id);
     })
     .join('; ');
 };
@@ -264,7 +266,7 @@ const resourceWorkItemsLine = (
 const resourceIndexLine = (
   group: ReturnType<typeof resourceGroupsByEstimateRow>[number],
 ): string =>
-  `- \`${group.estimateRowId}\`: ресурсов: ${group.resources.length}; итог: ${resourceTotalSummary(group.resources)}`;
+  `- ${code(group.estimateRowId)}: ресурсов: ${group.resources.length}; итог: ${resourceTotalSummary(group.resources)}`;
 
 const resourceFieldLine = (label: string, value: string): string =>
   `  - ${label}: ${value}`;
@@ -285,9 +287,9 @@ const resourceLines = (
     }
 
     lines.push(
-      resourceFieldLine('Работа', `\`${resource.work_item_id}\``),
-      resourceFieldLine('Строка сметы', `\`${resource.estimate_row_id}\``),
-      resourceFieldLine('Статья затрат', resource.cost_bucket),
+      resourceFieldLine('Работа', code(resource.work_item_id)),
+      resourceFieldLine('Строка сметы', code(resource.estimate_row_id)),
+      resourceFieldLine('Статья затрат', code(resource.cost_bucket)),
       resourceFieldLine('Кол-во', formatQuantity(resource.quantity)),
       resourceFieldLine(priceLabel, formatMoney(resource.unit_price_rub)),
       resourceFieldLine('Итог', formatMoney(resource.total_rub)),
@@ -313,7 +315,7 @@ const resourceGroupLines = (
   const sourceLabels = sourceLabelsByRenderedSource(group.resources);
 
   return [
-    `### \`${group.estimateRowId}\``,
+    `### ${code(group.estimateRowId)}`,
     '',
     `- Ресурсов: ${group.resources.length}`,
     `- Итог по ресурсам: ${resourceTotalSummary(group.resources)}`,
@@ -392,10 +394,10 @@ const controlTotalLine = (control: EstimateDetailControlTotal): string => {
     control.tolerance_rub === undefined
       ? '-'
       : `${formatReglamentNumber(control.tolerance_rub)} ₽`;
-  const resources = control.resource_ids?.join(', ') ?? '-';
+  const resources = control.resource_ids?.map(code).join(', ') ?? '-';
   const note = control.note ? `; примечание: ${control.note}` : '';
 
-  return `- ${control.id}: ${control.cost_bucket}; строка сметы: ${control.estimate_row_id}; источник контроля: ${CONTROL_SOURCE_LABELS[control.control_source]}; сумма в источнике: ${formatMoney(control.source_total_rub)}; ${detail}; ${aggregate}; дельта: ${formatDelta(control.delta_rub)}; допуск: ${tolerance}; ресурсы: ${resources}; статус: ${control.status_label_ru}; источник: ${sources(control.source_refs)}${note}`;
+  return `- ${code(control.id)}: ${code(control.cost_bucket)}; строка сметы: ${code(control.estimate_row_id)}; источник контроля: ${CONTROL_SOURCE_LABELS[control.control_source]}; сумма в источнике: ${formatMoney(control.source_total_rub)}; ${detail}; ${aggregate}; дельта: ${formatDelta(control.delta_rub)}; допуск: ${tolerance}; ресурсы: ${resources}; статус: ${control.status_label_ru}; источник: ${sources(control.source_refs)}${note}`;
 };
 
 const workItemNeedsCheckLine = (item: EstimateDetailWorkItem): string => {
@@ -403,7 +405,7 @@ const workItemNeedsCheckLine = (item: EstimateDetailWorkItem): string => {
 
   const checkSources = item.needs_check.source_refs ?? item.source_refs;
 
-  return `- work_items:${item.id}: ${item.title}; строка сметы: ${item.estimate_row_id}; причина: ${item.needs_check.reason}; источник: ${sources(checkSources)}`;
+  return `- ${code(`work_items:${item.id}`)}: ${item.title}; строка сметы: ${code(item.estimate_row_id)}; причина: ${item.needs_check.reason}; источник: ${sources(checkSources)}`;
 };
 
 const resourceNeedsCheckLine = (item: EstimateDetailResource): string => {
@@ -411,7 +413,7 @@ const resourceNeedsCheckLine = (item: EstimateDetailResource): string => {
 
   const checkSources = item.needs_check.source_refs ?? item.source_refs;
 
-  return `- resources:${item.id}: ${item.title}; работа: ${item.work_item_id}; статья затрат: ${item.cost_bucket}; причина: ${item.needs_check.reason}; источник: ${sources(checkSources)}`;
+  return `- ${code(`resources:${item.id}`)}: ${item.title}; работа: ${code(item.work_item_id)}; статья затрат: ${code(item.cost_bucket)}; причина: ${item.needs_check.reason}; источник: ${sources(checkSources)}`;
 };
 
 const controlNeedsCheckLine = (item: EstimateDetailControlTotal): string => {
@@ -419,7 +421,7 @@ const controlNeedsCheckLine = (item: EstimateDetailControlTotal): string => {
 
   const checkSources = item.needs_check.source_refs ?? item.source_refs;
 
-  return `- control_totals:${item.id}: ${item.cost_bucket}; строка сметы: ${item.estimate_row_id}; причина: ${item.needs_check.reason}; источник: ${sources(checkSources)}`;
+  return `- ${code(`control_totals:${item.id}`)}: ${code(item.cost_bucket)}; строка сметы: ${code(item.estimate_row_id)}; причина: ${item.needs_check.reason}; источник: ${sources(checkSources)}`;
 };
 
 export const buildEstimateDetailMarkdown = (
@@ -483,7 +485,7 @@ export const buildEstimateDetailMarkdown = (
     '## Ресурсы по видам',
     ...ESTIMATE_DETAIL_RESOURCE_KINDS.map(
       (kind) =>
-        `- ${kind}: ${resourcesByKind(dataset, [kind]).length} (${RESOURCE_KIND_LABELS[kind]})`,
+        `- ${code(kind)}: ${resourcesByKind(dataset, [kind]).length} (${RESOURCE_KIND_LABELS[kind]})`,
     ),
     '',
     '## PDF-источники',
