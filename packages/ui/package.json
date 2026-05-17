@@ -44,10 +44,10 @@
     "@shelkovo/url": "workspace:*"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.2",
-    "@tailwindcss/vite": "^4.2.4",
-    "astro": "^6.1.10",
-    "tailwindcss": "^4.2.4",
+    "@playwright/test": "^1.60.0",
+    "@tailwindcss/vite": "^4.3.0",
+    "astro": "^6.3.3",
+    "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3"
   }
 }

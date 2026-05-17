@@ -57,6 +57,7 @@ const astroGeneratedAttribute =
 const normalizeHtml = (html: string): string =>
   html
     .replace(astroGeneratedAttribute, '')
+    .replaceAll('&quot;', '&#34;')
     .replaceAll(NBSP, '·')
     .replace(/>\s+</gu, '><')
     .replace(/</gu, '\n<')
@@ -223,7 +224,7 @@ describe('StatusServiceTimeline', () => {
       }),
     ]);
 
-    expect(html).toMatch(
+    expect(normalizeHtml(html)).toMatch(
       /data-incident-id="park-outage"[^>]*data-tooltip-areas="\[&#34;park&#34;\]"/,
     );
     expect(html).toMatch(
