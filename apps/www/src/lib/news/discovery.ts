@@ -135,6 +135,10 @@ export interface NewsDiscoveryTagPage {
 }
 
 export interface NewsDiscoveryPayload {
+  readonly schema_version: string;
+  readonly generated_at: string;
+  readonly updated_at: string;
+  readonly total_count: number;
   readonly articles: readonly NewsDiscoveryArticle[];
   readonly archives: {
     readonly years: readonly NewsDiscoveryArchiveYear[];
@@ -143,6 +147,7 @@ export interface NewsDiscoveryPayload {
 }
 
 const NEWS_ARTICLES_PAYLOAD_SCHEMA = 'NewsArticlesPayload';
+const NEWS_PAYLOAD_SCHEMA_VERSION = '1.0.0';
 
 const abs = (root: string, path: string): string =>
   new URL(path.replace(/^\//, ''), `${root}/`).toString();
@@ -371,13 +376,46 @@ const tagPage = (item: NewsTagPage): NewsDiscoveryTagPage => ({
   markdown_url: fullUrl(item.markdown_url),
 });
 
-export const buildNewsPayload = (data: NewsDataset): NewsDiscoveryPayload => ({
-  articles: data.articles.map(article),
-  archives: {
-    years: data.archives.years.map(archiveYear),
-  },
-  tags: data.tags.map(tagPage),
-});
+function latestUpdate(data: NewsDataset): string | undefined {
+  let latest:
+    | {
+        readonly at: Date;
+        readonly iso: string;
+      }
+    | undefined;
+
+  for (const item of data.articles) {
+    const current = {
+      at: item.updated_at ?? item.published_at,
+      iso: item.updated_iso ?? item.published_iso,
+    };
+
+    if (!latest || current.at.valueOf() > latest.at.valueOf()) {
+      latest = current;
+    }
+  }
+
+  return latest?.iso;
+}
+
+export const buildNewsPayload = (
+  data: NewsDataset,
+  opts?: { readonly generated_at?: Date },
+): NewsDiscoveryPayload => {
+  const generatedAt = (opts?.generated_at ?? new Date()).toISOString();
+
+  return {
+    schema_version: NEWS_PAYLOAD_SCHEMA_VERSION,
+    generated_at: generatedAt,
+    updated_at: latestUpdate(data) ?? generatedAt,
+    total_count: data.articles.length,
+    articles: data.articles.map(article),
+    archives: {
+      years: data.archives.years.map(archiveYear),
+    },
+    tags: data.tags.map(tagPage),
+  };
+};
 
 export function schema(root: string): Record<string, unknown> {
   return {
@@ -385,11 +423,25 @@ export function schema(root: string): Record<string, unknown> {
     $id: abs(root, articlesSchemaPath()),
     title: 'NewsArticlesPayload',
     description:
-      'Read-only полный feed новостей с canonical HTML URL, markdown companions, full body_markdown, optional events metadata с article-local ics_url и отдельным массивом addenda.',
+      'Read-only полный feed новостей с feed-level metadata, canonical HTML URL, markdown companions, full body_markdown, optional events metadata с article-local ics_url и отдельным массивом addenda.',
     type: 'object',
     additionalProperties: false,
-    required: ['articles', 'archives', 'tags'],
+    required: [
+      'schema_version',
+      'generated_at',
+      'updated_at',
+      'total_count',
+      'articles',
+      'archives',
+      'tags',
+    ],
     properties: {
+      schema_version: {
+        const: NEWS_PAYLOAD_SCHEMA_VERSION,
+      },
+      generated_at: dateTime(),
+      updated_at: dateTime(),
+      total_count: integer(0),
       articles: list({
         $ref: '#/$defs/article',
       }),
@@ -618,7 +670,7 @@ export function openapi(root: string): Record<string, unknown> {
       title: 'Шелково News Feed',
       version: '1.0.0',
       description:
-        'Read-only OpenAPI wrapper для /news/data/articles.json с полным body_markdown, optional article events, addenda, архивами и тегами.',
+        'Read-only OpenAPI wrapper для /news/data/articles.json с feed-level metadata, полным body_markdown, optional article events, addenda, архивами и тегами.',
     },
     servers: [
       {
@@ -631,7 +683,7 @@ export function openapi(root: string): Record<string, unknown> {
           operationId: 'getNewsArticles',
           summary: 'Read full news feed',
           description:
-            'Возвращает основной structured feed новостей со статьями, полным body_markdown, optional events metadata с article-local ics_url, addenda, тегами и архивами.',
+            'Возвращает основной structured feed новостей со служебными метаданными, статьями, полным body_markdown, optional events metadata с article-local ics_url, addenda, тегами и архивами.',
           responses: {
             200: {
               description: 'Full news feed',

@@ -80,6 +80,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
               `Месячный архив: ${monthUrl}`,
               `Индекс тегов: ${tags}`,
               `Пример страницы тега: ${tagUrl}`,
+              'В корне `articles.json` есть `schema_version`, `generated_at`, `updated_at`, `total_count`, а также массивы `articles`, `archives.years` и `tags`.',
               'В `articles.json` каждая статья содержит `summary`, полный `body_markdown`, необязательный массив `events` и отдельный массив `addenda`.',
               '`addenda` не переписывают исходный `body` новости; это поздние уточнения, комментарии или новые подтвержденные факты.',
               'Тип источника определяется по `author.kind`; официальные источники используют `kind: official`.',
@@ -122,7 +123,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           llmsSection('Описание articles.json', [
             markdownList([
               'Это основной структурированный файл данных для массового обхода новостей; маршруты раздела доступны только на чтение.',
-              'Корневой объект содержит `articles`, `archives.years` и `tags`.',
+              'Корневой объект содержит служебные поля ленты `schema_version`, `generated_at`, `updated_at`, `total_count`, а также массивы `articles`, `archives.years` и `tags`.',
               '`articles[]` включает `id`, `title`, `summary`, `published_at`, опциональный `updated_at`, дату по частям (`year`, `month`, `day`), `entry`, `html_url`, `markdown_url`, `source_url`, `pinned`, `author`, `areas`, `tags`, опциональные `cover` и `events`, массивы `photos`, `attachments`, полный `body_markdown` и массив `addenda`.',
               '`articles[].events[]` существует только у новостей, которые объявляют календарные события; каждый объект содержит `slug`, `title`, `starts_at`, необязательные `description`, `ends_at`, `location`, `coordinates`, `map_url` и обязательный `ics_url`.',
               '`addenda[]` сериализуются отдельно от основного `body` и сохраняют собственные `published_at`, `author`, `source_url`, `body_markdown`, `photos` и `attachments`.',

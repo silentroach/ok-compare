@@ -84,6 +84,30 @@ beforeAll(async () => {
 });
 
 describe('news discovery payload', () => {
+  it('publishes feed-level metadata for consumers', () => {
+    const first = articleWithEvent();
+    const second = {
+      ...articleWithEvent(),
+      id: '2026/05/updated',
+      published_at: new Date('2026-05-02T09:00:00+03:00'),
+      published_iso: '2026-05-02T09:00:00.000+03:00',
+      updated_at: new Date('2026-05-03T09:00:00+03:00'),
+      updated_iso: '2026-05-03T09:00:00.000+03:00',
+      addenda: [],
+    };
+
+    const payload = buildNewsPayload(dataset([first, second]), {
+      generated_at: new Date('2026-05-04T09:00:00.000Z'),
+    });
+
+    expect(payload).toMatchObject({
+      schema_version: '1.0.0',
+      generated_at: '2026-05-04T09:00:00.000Z',
+      updated_at: '2026-05-03T09:00:00.000+03:00',
+      total_count: 2,
+    });
+  });
+
   it('serializes optional article events with absolute ICS URLs', () => {
     const payload = buildNewsPayload(dataset([articleWithEvent()]));
 
@@ -115,6 +139,8 @@ describe('news discovery payload', () => {
   it('keeps schema, openapi, and catalog aligned around article-local events', () => {
     const root = 'https://example.com';
     const jsonSchema = schema(root) as {
+      readonly required?: readonly string[];
+      readonly properties?: Record<string, unknown>;
       readonly $defs?: Record<
         string,
         {
@@ -145,6 +171,8 @@ describe('news discovery payload', () => {
         readonly schemas?: Record<
           string,
           {
+            readonly required?: readonly string[];
+            readonly properties?: Record<string, unknown>;
             readonly $defs?: Record<
               string,
               {
@@ -160,6 +188,34 @@ describe('news discovery payload', () => {
     const openapiDefs =
       api.components?.schemas?.NewsArticlesPayload?.$defs ?? {};
 
+    expect(jsonSchema.required).toEqual([
+      'schema_version',
+      'generated_at',
+      'updated_at',
+      'total_count',
+      'articles',
+      'archives',
+      'tags',
+    ]);
+    expect(jsonSchema.properties?.schema_version).toMatchObject({
+      const: '1.0.0',
+    });
+    expect(jsonSchema.properties?.generated_at).toMatchObject({
+      format: 'date-time',
+    });
+    expect(jsonSchema.properties?.updated_at).toMatchObject({
+      format: 'date-time',
+    });
+    expect(jsonSchema.properties?.total_count).toMatchObject({
+      type: 'integer',
+      minimum: 0,
+    });
+    expect(api.components?.schemas?.NewsArticlesPayload?.required).toEqual(
+      jsonSchema.required,
+    );
+    expect(
+      api.components?.schemas?.NewsArticlesPayload?.properties?.generated_at,
+    ).toMatchObject({ format: 'date-time' });
     expect(defs.event?.required).toEqual([
       'slug',
       'title',

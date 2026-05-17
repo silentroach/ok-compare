@@ -68,6 +68,7 @@ describe('news llms', () => {
       - Месячный архив: <https://example.com/news/2026/05/>
       - Индекс тегов: <https://example.com/news/tags/>
       - Пример страницы тега: <https://example.com/news/tags/electricity/>
+      - В корне \`articles.json\` есть \`schema_version\`, \`generated_at\`, \`updated_at\`, \`total_count\`, а также массивы \`articles\`, \`archives.years\` и \`tags\`.
       - В \`articles.json\` каждая статья содержит \`summary\`, полный \`body_markdown\`, необязательный массив \`events\` и отдельный массив \`addenda\`.
       - \`addenda\` не переписывают исходный \`body\` новости; это поздние уточнения, комментарии или новые подтвержденные факты.
       - Тип источника определяется по \`author.kind\`; официальные источники используют \`kind: official\`.
