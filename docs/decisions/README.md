@@ -12,3 +12,4 @@
 - [ADR-006: HSTS без `includeSubDomains` и `preload`](006-hsts-policy.md) - принят, 2026-05-15.
 - [ADR-007: COOP без COEP для изоляции `opener`-связей](007-coop-origin-isolation.md) - принят, 2026-05-15.
 - [ADR-008: Генерация Markdown через AST](008-markdown-ast-generation.md) - принят, 2026-05-14.
+- [ADR-009: Markdown через `Accept` negotiation](009-markdown-accept-negotiation.md) - принят, 2026-05-17.

@@ -168,6 +168,12 @@ const hasExplicitCacheControl = (block: string): boolean =>
 const hasHtmlCacheControl = (block: string): boolean =>
   block.includes('add_header Cache-Control $html_cache_control always;');
 
+const hasAcceptVary = (block: string): boolean =>
+  block.includes('add_header Vary Accept always;');
+
+const negotiatesMarkdownByAccept = (block: string): boolean =>
+  block.includes('error_page 418 = @markdown;');
+
 const hasMarkdownType = (block: string): boolean =>
   block.includes('default_type text/markdown;') &&
   block.includes('text/markdown md;');
@@ -269,6 +275,36 @@ describe('nginx route cache coverage', () => {
         hasHtmlCacheControl,
         'ADR-002 HTML Cache-Control',
       );
+    }
+  });
+
+  it('marks Accept-negotiated HTML routes as varying by Accept', () => {
+    const negotiatedHtmlRoutes = htmlRoutes.filter((route) =>
+      negotiatesMarkdownByAccept(
+        selectLocation(locations, samplePath(route)).block,
+      ),
+    );
+
+    expect(negotiatedHtmlRoutes).toMatchInlineSnapshot(`
+      [
+        "/",
+        "/815/compare/",
+        "/815/compare/rating/",
+        "/815/compare/settlements/[slug]/",
+        "/news/",
+        "/news/[year]/",
+        "/news/[year]/[month]/",
+        "/news/[year]/[month]/[entry]/",
+        "/news/tags/",
+        "/news/tags/[tag]/",
+        "/status/",
+        "/status/[service]/",
+        "/status/incidents/[year]/[month]/[entry]/",
+      ]
+    `);
+
+    for (const route of negotiatedHtmlRoutes) {
+      assertLocationHas(route, hasAcceptVary, 'Vary: Accept');
     }
   });
 
