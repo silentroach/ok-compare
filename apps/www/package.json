@@ -23,16 +23,16 @@
   "dependencies": {
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
-    "@astrojs/svelte": "^8.0.5",
+    "@astrojs/svelte": "^8.1.1",
     "@shelkovo/format": "workspace:*",
     "@shelkovo/geo": "workspace:*",
     "@shelkovo/markdown": "workspace:*",
     "@shelkovo/seo": "workspace:*",
     "@shelkovo/ui": "workspace:*",
     "@shelkovo/url": "workspace:*",
-    "astro": "^6.1.10",
+    "astro": "^6.3.3",
     "svelte": "^5.55.5",
-    "zod": "^4.3.6"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
