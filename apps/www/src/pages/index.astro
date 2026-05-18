@@ -180,6 +180,7 @@ const heroImage = heroMode === 'day' ? dayHeroImage : nightHeroImage;
         </div>
         <script>
           import { installHomeHeroHydration } from '@/lib/home/hero';
+          import { installHomeStatusHydration } from '@/lib/home/status';
 
           const hydrateHomeNavDropdown = () => {
             const dropdown = document.querySelector('[data-home-nav-dropdown]');
@@ -262,6 +263,7 @@ const heroImage = heroMode === 'day' ? dayHeroImage : nightHeroImage;
           };
 
           installHomeHeroHydration();
+          installHomeStatusHydration();
           hydrateHomeNavDropdown();
           document.addEventListener('astro:after-swap', hydrateHomeNavDropdown);
           document.addEventListener('astro:page-load', hydrateHomeNavDropdown);

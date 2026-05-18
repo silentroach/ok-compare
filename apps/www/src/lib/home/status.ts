@@ -5,6 +5,16 @@ import type {
   HomeStatusState,
 } from './status.types';
 
+declare global {
+  interface Window {
+    __shelkovoHomeStatusHydration?: boolean;
+  }
+}
+
+const HOME_STATUS_LINK_SELECTOR = '[data-home-status-link]';
+const HOME_STATUS_MAINTENANCE_WINDOWS_SELECTOR =
+  '[data-home-status-maintenance-windows]';
+
 export const HOME_STATUS_LABELS = {
   green: 'все сервисы работают',
   amber: 'идут плановые работы',
@@ -61,3 +71,93 @@ export const getHomeStatusMaintenanceWindows = (
       ];
     })
     .sort((a, b) => a.start - b.start || a.end - b.end);
+
+const isHomeStatusMaintenanceWindow = (
+  value: unknown,
+): value is HomeStatusMaintenanceWindow => {
+  if (!(value instanceof Object) || Array.isArray(value)) {
+    return false;
+  }
+
+  const { start, end } = value as {
+    readonly start?: unknown;
+    readonly end?: unknown;
+  };
+
+  return (
+    typeof start === 'number' &&
+    typeof end === 'number' &&
+    Number.isFinite(start) &&
+    Number.isFinite(end) &&
+    start < end
+  );
+};
+
+const parseHomeStatusMaintenanceWindows = (
+  source: string | undefined,
+): readonly HomeStatusMaintenanceWindow[] => {
+  if (source === undefined) {
+    return [];
+  }
+
+  try {
+    const parsed: unknown = JSON.parse(source);
+
+    return Array.isArray(parsed)
+      ? parsed.filter(isHomeStatusMaintenanceWindow)
+      : [];
+  } catch {
+    return [];
+  }
+};
+
+const hasActiveMaintenanceWindow = (
+  windows: readonly HomeStatusMaintenanceWindow[],
+  now: number,
+): boolean => windows.some((item) => item.start <= now && now < item.end);
+
+export const hydrateHomeStatus = (
+  root: ParentNode = document,
+  now: number = Date.now(),
+): void => {
+  const link = root.querySelector(HOME_STATUS_LINK_SELECTOR);
+
+  if (
+    !(link instanceof HTMLElement) ||
+    link.dataset.homeStatusState === 'red'
+  ) {
+    return;
+  }
+
+  const payload = root.querySelector(HOME_STATUS_MAINTENANCE_WINDOWS_SELECTOR);
+  if (!(payload instanceof HTMLScriptElement)) {
+    return;
+  }
+
+  const windows = parseHomeStatusMaintenanceWindows(
+    payload.textContent ?? undefined,
+  );
+  if (!hasActiveMaintenanceWindow(windows, now)) {
+    return;
+  }
+
+  link.dataset.homeStatusState = 'amber';
+  link.setAttribute('aria-label', getHomeStatusAriaLabel('amber'));
+};
+
+export const installHomeStatusHydration = (
+  options: { readonly now?: () => number } = {},
+): void => {
+  const hydrate = (): void =>
+    hydrateHomeStatus(document, options.now?.() ?? Date.now());
+
+  if (window.__shelkovoHomeStatusHydration) {
+    hydrate();
+    return;
+  }
+
+  window.__shelkovoHomeStatusHydration = true;
+  hydrate();
+  document.addEventListener('astro:after-swap', hydrate);
+  document.addEventListener('astro:page-load', hydrate);
+};
