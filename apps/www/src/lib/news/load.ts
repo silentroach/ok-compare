@@ -34,6 +34,7 @@ import {
   type NewsDataset,
   type NewsEvent,
   type NewsEventCoordinates,
+  type NewsEventPerformer,
   type NewsHomeData,
   type NewsListArticle,
   type NewsMonthArchive,
@@ -257,6 +258,60 @@ function normalizeEventCoordinates(
   };
 }
 
+const normalizeEventOrganizer = (
+  input: EventData['organizer'],
+  context: string,
+): NewsEvent['organizer'] => {
+  if (!input) {
+    return undefined;
+  }
+
+  if (typeof input === 'string') {
+    const name = optionalEventText(input, context);
+
+    return name ? { name, type: 'organization' as const } : undefined;
+  }
+
+  const name = requiredEventText(input.name, `${context}.name`);
+
+  return {
+    name,
+    type: input.type ?? ('organization' as const),
+  };
+};
+
+const normalizeEventPerformerItem = (
+  input: NonNullable<EventData['performer']>[number],
+  context: string,
+): NewsEventPerformer => {
+  if (typeof input === 'string') {
+    const name = requiredEventText(input, context);
+
+    return { name, type: 'organization' as const };
+  }
+
+  const name = requiredEventText(input.name, `${context}.name`);
+
+  return {
+    name,
+    type: input.type ?? ('organization' as const),
+  };
+};
+
+const normalizeEventPerformers = (
+  input: EventData['performer'],
+  context: string,
+): NewsEvent['performer'] => {
+  if (!input?.length) {
+    return undefined;
+  }
+
+  return input.map(
+    (item: NonNullable<EventData['performer']>[number], index: number) =>
+      normalizeEventPerformerItem(item, `${context}[${index}]`),
+  );
+};
+
 function normalizeEvent(
   input: EventData,
   entryId: string,
@@ -276,6 +331,14 @@ function normalizeEvent(
     : undefined;
   const location = optionalEventText(input.location, `${context} location`);
   const coordinates = normalizeEventCoordinates(input.coordinates, context);
+  const organizer = normalizeEventOrganizer(
+    input.organizer,
+    `${context} organizer`,
+  );
+  const performer = normalizeEventPerformers(
+    input.performer,
+    `${context} performer`,
+  );
 
   if (ends && ends.at.valueOf() <= starts.at.valueOf()) {
     throw new Error(`${context} ends_at must be later than starts_at`);
@@ -311,6 +374,8 @@ function normalizeEvent(
       : {}),
     ...(location ? { location } : {}),
     ...(coordinates ? { coordinates } : {}),
+    ...(organizer ? { organizer } : {}),
+    ...(performer ? { performer } : {}),
   };
 }
 

@@ -51,6 +51,16 @@ export interface NewsEventCoordinates {
   readonly lng: number;
 }
 
+export interface NewsEventOrganizer {
+  readonly name: string;
+  readonly type: 'organization' | 'person';
+}
+
+export interface NewsEventPerformer {
+  readonly name: string;
+  readonly type: 'organization' | 'person';
+}
+
 export interface NewsEvent {
   readonly slug: string;
   readonly title: string;
@@ -64,6 +74,8 @@ export interface NewsEvent {
   readonly ics_url: string;
   readonly location?: string;
   readonly coordinates?: NewsEventCoordinates;
+  readonly organizer?: NewsEventOrganizer;
+  readonly performer?: readonly NewsEventPerformer[];
 }
 
 export interface NewsAddendum {

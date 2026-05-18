@@ -360,6 +360,38 @@ describe('buildNewsDataset', () => {
     );
   });
 
+  it('normalizes event organizer and performer', () => {
+    const data = buildNewsDataset(
+      [author({ id: 'ig', name: 'Редакция' })],
+      [
+        article({
+          id: '2026/05/event',
+          title: 'Праздник',
+          summary: 'Коротко о празднике',
+          date: '04.05.2026 10:00',
+          events: [
+            {
+              title: 'Праздник',
+              starts_at: '31.05.2026 19:00',
+              organizer: 'ОК Комфорт',
+              performer: ['Хор "Лейся, песня!"', 'Ансамбль "Ромашкино"'],
+            },
+          ],
+        }),
+      ],
+    );
+
+    expect(data.articles[0]?.events[0]).toMatchObject({
+      slug: 'event',
+      title: 'Праздник',
+      organizer: { name: 'ОК Комфорт', type: 'organization' },
+      performer: [
+        { name: 'Хор "Лейся, песня!"', type: 'organization' },
+        { name: 'Ансамбль "Ромашкино"', type: 'organization' },
+      ],
+    });
+  });
+
   it('keeps omitted event end empty in normalized event data', () => {
     const data = buildNewsDataset(
       [author({ id: 'ig', name: 'Редакция' })],
@@ -482,6 +514,64 @@ describe('buildNewsDataset', () => {
         ],
       ),
     ).toThrow(/coordinates\.lat must be between -90 and 90/);
+  });
+
+  it('rejects an empty performer entry', () => {
+    expect(() =>
+      buildNewsDataset(
+        [author({ id: 'ig', name: 'Редакция' })],
+        [
+          article({
+            id: '2026/05/event',
+            title: 'Встреча по регламенту',
+            summary: 'Коротко о встрече',
+            date: '04.05.2026 10:00',
+            events: [
+              {
+                title: 'Встреча по регламенту',
+                starts_at: '31.05.2026 19:00',
+                performer: [''],
+              },
+            ],
+          }),
+        ],
+      ),
+    ).toThrow(/events\[0\] performer\[0\] is required/);
+  });
+
+  it('normalizes event organizer and performer with explicit type', () => {
+    const data = buildNewsDataset(
+      [author({ id: 'ig', name: 'Редакция' })],
+      [
+        article({
+          id: '2026/05/event',
+          title: 'Праздник',
+          summary: 'Коротко о празднике',
+          date: '04.05.2026 10:00',
+          events: [
+            {
+              title: 'Праздник',
+              starts_at: '31.05.2026 19:00',
+              organizer: { name: 'Инициативная группа', type: 'person' },
+              performer: [
+                { name: 'Иван Иванов', type: 'person' },
+                { name: 'Ансамбль', type: 'organization' },
+              ],
+            },
+          ],
+        }),
+      ],
+    );
+
+    expect(data.articles[0]?.events[0]).toMatchObject({
+      slug: 'event',
+      title: 'Праздник',
+      organizer: { name: 'Инициативная группа', type: 'person' },
+      performer: [
+        { name: 'Иван Иванов', type: 'person' },
+        { name: 'Ансамбль', type: 'organization' },
+      ],
+    });
   });
 
   it('keeps articles without event unchanged', () => {

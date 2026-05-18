@@ -161,6 +161,24 @@ const personNameCases = () =>
     .strict()
     .partial();
 
+const eventOrganizer = () =>
+  z.union([
+    text('events[].organizer'),
+    z.object({
+      name: text('events[].organizer.name'),
+      type: z.enum(['organization', 'person']).optional(),
+    }),
+  ]);
+
+const eventPerformer = () =>
+  z.union([
+    text('events[].performer[]'),
+    z.object({
+      name: text('events[].performer[].name'),
+      type: z.enum(['organization', 'person']).optional(),
+    }),
+  ]);
+
 const event = () =>
   z
     .object({
@@ -178,6 +196,8 @@ const event = () =>
           lng: z.number().min(-180).max(180),
         })
         .optional(),
+      organizer: eventOrganizer().optional(),
+      performer: z.array(eventPerformer()).min(1).optional(),
     })
     .superRefine((data, ctx) => {
       const starts = parseNewsTimestampInput(data.starts_at);

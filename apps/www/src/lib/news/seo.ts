@@ -47,6 +47,8 @@ export interface NewsArticleEventInput extends Pick<
   | 'ends_iso'
   | 'location'
   | 'coordinates'
+  | 'organizer'
+  | 'performer'
 > {}
 
 export interface NewsArticleInput extends Omit<ArticleInput, 'type'> {
@@ -148,6 +150,24 @@ const eventLocationSchema = (
   };
 };
 
+const schemaType = (type: 'organization' | 'person'): string =>
+  type === 'person' ? 'Person' : 'Organization';
+
+const performerSchema = (
+  items: NewsEvent['performer'],
+): SchemaDoc | readonly SchemaDoc[] | undefined => {
+  if (!items?.length) {
+    return undefined;
+  }
+
+  const docs = items.map((item) => ({
+    '@type': schemaType(item.type),
+    name: item.name,
+  }));
+
+  return docs.length === 1 ? docs[0] : docs;
+};
+
 const newsEventSchema = (input: NewsArticleInput): readonly SchemaDoc[] => {
   const events = input.events ?? [];
 
@@ -155,6 +175,7 @@ const newsEventSchema = (input: NewsArticleInput): readonly SchemaDoc[] => {
 
   return events.map((event) => {
     const location = eventLocationSchema(event);
+    const performer = performerSchema(event.performer);
 
     return {
       '@context': CONTEXT,
@@ -170,6 +191,15 @@ const newsEventSchema = (input: NewsArticleInput): readonly SchemaDoc[] => {
       startDate: event.starts_iso,
       ...(event.ends_iso ? { endDate: event.ends_iso } : {}),
       ...(location ? { location } : {}),
+      ...(event.organizer
+        ? {
+            organizer: {
+              '@type': schemaType(event.organizer.type),
+              name: event.organizer.name,
+            },
+          }
+        : {}),
+      ...(performer ? { performer } : {}),
     };
   });
 };

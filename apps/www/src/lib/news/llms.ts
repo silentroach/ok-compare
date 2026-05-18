@@ -125,7 +125,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
               'Это основной структурированный файл данных для массового обхода новостей; маршруты раздела доступны только на чтение.',
               'Корневой объект содержит служебные поля ленты `schema_version`, `generated_at`, `updated_at`, `total_count`, а также массивы `articles`, `archives.years` и `tags`.',
               '`articles[]` включает `id`, `title`, `summary`, `published_at`, опциональный `updated_at`, дату по частям (`year`, `month`, `day`), `entry`, `html_url`, `markdown_url`, `source_url`, `pinned`, `author`, `areas`, `tags`, опциональные `cover` и `events`, массивы `photos`, `attachments`, полный `body_markdown` и массив `addenda`.',
-              '`articles[].events[]` существует только у новостей, которые объявляют календарные события; каждый объект содержит `slug`, `title`, `starts_at`, необязательные `description`, `ends_at`, `location`, `coordinates`, `map_url` и обязательный `ics_url`.',
+              '`articles[].events[]` существует только у новостей, которые объявляют календарные события; каждый объект содержит `slug`, `title`, `starts_at`, необязательные `description`, `ends_at`, `location`, `coordinates`, `map_url`, `organizer`, `performer` и обязательный `ics_url`.',
               '`addenda[]` сериализуются отдельно от основного `body` и сохраняют собственные `published_at`, `author`, `source_url`, `body_markdown`, `photos` и `attachments`.',
               '`archives.years[]` описывают годовые и месячные архивы с количеством публикаций и URL на HTML/Markdown-страницы.',
               '`tags[]` содержат редакционный `label`, нормализованный `key`, количество публикаций и URL на HTML/Markdown-страницы тегов.',

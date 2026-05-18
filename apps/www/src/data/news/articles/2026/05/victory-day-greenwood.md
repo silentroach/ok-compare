@@ -28,6 +28,12 @@ events:
     coordinates:
       lat: 55.077635
       lng: 37.755967
+    organizer:
+      name: ОК Комфорт
+      type: organization
+    performer:
+      - name: Хор «Лейся, песня!»
+        type: organization
   - slug: shelkovo-memorial
     title: Митинг ко Дню Победы в деревне Шелково
     description: 'Торжественный митинг к 81-й годовщине Победы пройдет у памятника погибшим воинам. После митинга откроют монумент «Звезда — символ вечности и благодарности».'

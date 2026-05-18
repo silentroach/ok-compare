@@ -60,6 +60,11 @@ export interface NewsDiscoveryCover {
   readonly alt: string;
 }
 
+export interface NewsDiscoveryEventOrganizer {
+  readonly name: string;
+  readonly type: 'organization' | 'person';
+}
+
 export interface NewsDiscoveryEvent {
   readonly slug: string;
   readonly title: string;
@@ -73,6 +78,8 @@ export interface NewsDiscoveryEvent {
   };
   readonly map_url?: string;
   readonly ics_url: string;
+  readonly organizer?: NewsDiscoveryEventOrganizer;
+  readonly performer?: readonly NewsDiscoveryEventOrganizer[];
 }
 
 export interface NewsDiscoveryAddendum {
@@ -308,6 +315,8 @@ function event(item: NewsEvent): NewsDiscoveryEvent {
       : {}),
     ...(mapUrl ? { map_url: discoveryUrl(mapUrl) } : {}),
     ics_url: fullUrl(item.ics_url),
+    ...(item.organizer ? { organizer: item.organizer } : {}),
+    ...(item.performer ? { performer: item.performer } : {}),
   };
 }
 
