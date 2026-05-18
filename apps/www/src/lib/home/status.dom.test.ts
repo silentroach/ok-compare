@@ -1,12 +1,28 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { hydrateHomeStatus, installHomeStatusHydration } from './status';
+import type { StatusIncident } from '@/lib/status/schema';
+
+import {
+  getHomeStatusMaintenanceWindows,
+  hydrateHomeStatus,
+  installHomeStatusHydration,
+} from './status';
 
 const WINDOW_START = 1779094800000;
 const WINDOW_END = 1779105600000;
 const DEFAULT_WINDOWS_PAYLOAD = `[{"start":${WINDOW_START},"end":${WINDOW_END}}]`;
 const AMBER_ARIA_LABEL = 'Статус: идут плановые работы';
 const GREEN_ARIA_LABEL = 'Статус: все сервисы работают';
+const STATUS_LABELS = {
+  green: 'все сервисы работают',
+  amber: 'идут плановые работы',
+  red: 'есть активные проблемы',
+} as const;
+const MAINTENANCE_WINDOW = {
+  kind: 'maintenance',
+  started_at: new Date(WINDOW_START),
+  ended_at: new Date(WINDOW_END),
+} as const satisfies Pick<StatusIncident, 'kind' | 'started_at' | 'ended_at'>;
 
 const renderHomeStatus = ({
   state = 'green',
@@ -17,8 +33,7 @@ const renderHomeStatus = ({
   readonly includePayload?: boolean;
   readonly payload?: string;
 } = {}): void => {
-  const label =
-    state === 'red' ? 'есть активные проблемы' : 'все сервисы работают';
+  const label = STATUS_LABELS[state];
 
   document.body.innerHTML = `
     <a
@@ -46,6 +61,16 @@ afterEach(() => {
   delete window.__shelkovoHomeStatusHydration;
 });
 
+describe('getHomeStatusMaintenanceWindows', () => {
+  it('keeps a finite maintenance window that is active at build time', () => {
+    const buildNow = WINDOW_START + 1;
+
+    expect(
+      getHomeStatusMaintenanceWindows([MAINTENANCE_WINDOW], buildNow),
+    ).toEqual([{ start: WINDOW_START, end: WINDOW_END }]);
+  });
+});
+
 describe('hydrateHomeStatus', () => {
   it('changes green to amber when now is inside an embedded window', () => {
     renderHomeStatus();
@@ -69,6 +94,15 @@ describe('hydrateHomeStatus', () => {
     hydrateHomeStatus(document, WINDOW_END);
 
     expect(getStatusLink().dataset.homeStatusState).toBe('green');
+  });
+
+  it('clears build-time amber when the embedded window has ended', () => {
+    renderHomeStatus({ state: 'amber' });
+
+    hydrateHomeStatus(document, WINDOW_END);
+
+    expect(getStatusLink().dataset.homeStatusState).toBe('green');
+    expect(getStatusLink().getAttribute('aria-label')).toBe(GREEN_ARIA_LABEL);
   });
 
   it('changes green to amber when now equals the embedded window start', () => {

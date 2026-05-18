@@ -49,7 +49,10 @@ export const getHomeStatusState = (
 };
 
 export const getHomeStatusMaintenanceWindows = (
-  incidents: readonly StatusIncident[],
+  incidents: readonly Pick<
+    StatusIncident,
+    'kind' | 'started_at' | 'ended_at'
+  >[],
   buildNow: number,
 ): readonly HomeStatusMaintenanceWindow[] =>
   incidents
@@ -59,14 +62,15 @@ export const getHomeStatusMaintenanceWindows = (
       }
 
       const start = item.started_at.valueOf();
-      if (start <= buildNow) {
+      const end = item.ended_at.valueOf();
+      if (end <= buildNow) {
         return [];
       }
 
       return [
         {
           start,
-          end: item.ended_at.valueOf(),
+          end,
         },
       ];
     })
@@ -116,6 +120,14 @@ const hasActiveMaintenanceWindow = (
   now: number,
 ): boolean => windows.some((item) => item.start <= now && now < item.end);
 
+const setHomeStatusState = (
+  link: HTMLElement,
+  state: HomeStatusState,
+): void => {
+  link.dataset.homeStatusState = state;
+  link.setAttribute('aria-label', getHomeStatusAriaLabel(state));
+};
+
 export const hydrateHomeStatus = (
   root: ParentNode = document,
   now: number = Date.now(),
@@ -137,12 +149,14 @@ export const hydrateHomeStatus = (
   const windows = parseHomeStatusMaintenanceWindows(
     payload.textContent ?? undefined,
   );
-  if (!hasActiveMaintenanceWindow(windows, now)) {
+  if (hasActiveMaintenanceWindow(windows, now)) {
+    setHomeStatusState(link, 'amber');
     return;
   }
 
-  link.dataset.homeStatusState = 'amber';
-  link.setAttribute('aria-label', getHomeStatusAriaLabel('amber'));
+  if (link.dataset.homeStatusState === 'amber' && windows.length > 0) {
+    setHomeStatusState(link, 'green');
+  }
 };
 
 export const installHomeStatusHydration = (
