@@ -6,6 +6,11 @@ import dayHero from '@/assets/home/home-hero-day.png';
 import nightHero from '@/assets/home/home-hero-night.png';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getHomeHeroMode } from '@/lib/home/hero';
+import {
+  getHomeStatusAriaLabel,
+  getHomeStatusMaintenanceWindows,
+  getHomeStatusState,
+} from '@/lib/home/status';
 import { loadNewsArticles } from '@/lib/news/load';
 import { articleUrl } from '@/lib/news/routes';
 import { formatNewsDate } from '@/lib/news/view';
@@ -41,16 +46,13 @@ const [news, status] = await Promise.all([
   loadNewsArticles(),
   loadStatusData(),
 ]);
+const buildNow = Date.now();
 const latestNews = news.slice(0, 2);
-const hasActiveIncidents = status.active.some(
-  (item) => item.kind === 'incident',
+const homeStatusState = getHomeStatusState(status.incidents, buildNow);
+const plannedMaintenanceWindows = getHomeStatusMaintenanceWindows(
+  status.incidents,
+  buildNow,
 );
-const statusDotClass = hasActiveIncidents
-  ? 'bg-[color:var(--color-danger)]'
-  : 'bg-[color:var(--color-success)]';
-const statusLabel = hasActiveIncidents
-  ? 'есть активные проблемы'
-  : 'все сервисы работают';
 
 const heroWidths = [960, 1280, 1536, 1916, 2172] as const;
 const heroSizes = '100vw';
@@ -156,18 +158,24 @@ const heroImage = heroMode === 'day' ? dayHeroImage : nightHeroImage;
               </div>
               <a
                 href="/status/"
-                aria-label={`Статус: ${statusLabel}`}
-                class="flex items-center gap-3"
+                aria-label={getHomeStatusAriaLabel(homeStatusState)}
+                class="home-hero-status-link flex items-center gap-3"
+                data-home-status-link
+                data-home-status-state={homeStatusState}
               >
                 <span>Статус</span>
                 <span
                   aria-hidden="true"
-                  class:list={[
-                    'home-hero-status-dot inline-block h-3 w-3 rounded-full',
-                    statusDotClass,
-                  ]}></span>
+                  data-home-status-dot
+                  class="home-hero-status-dot inline-block h-3 w-3 rounded-full"
+                ></span>
               </a>
             </nav>
+            <script
+              type="application/json"
+              data-home-status-maintenance-windows
+              set:html={JSON.stringify(plannedMaintenanceWindows)}
+            />
           </div>
         </div>
         <script>
@@ -348,6 +356,18 @@ const heroImage = heroMode === 'day' ? dayHeroImage : nightHeroImage;
 
   .home-hero-status-dot {
     box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-bg) 72%, transparent);
+  }
+
+  .home-hero-status-link[data-home-status-state='green'] .home-hero-status-dot {
+    background: var(--color-success);
+  }
+
+  .home-hero-status-link[data-home-status-state='amber'] .home-hero-status-dot {
+    background: var(--color-warning);
+  }
+
+  .home-hero-status-link[data-home-status-state='red'] .home-hero-status-dot {
+    background: var(--color-danger);
   }
 
   .home-hero[data-home-hero-mode='night'] .home-hero-overlay {
