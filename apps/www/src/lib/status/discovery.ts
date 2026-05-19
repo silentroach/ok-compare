@@ -324,7 +324,7 @@ export function schema(root: string): Record<string, unknown> {
     $id: abs(root, statusSchemaPath()),
     title: 'StatusPayload',
     description:
-      'Read-only feed раздела /status с историей инцидентов, производными сводками сервисов и markdown companion-страницами.',
+      'Лента раздела /status только для чтения с историей инцидентов, производными сводками сервисов и Markdown-версиями страниц.',
     type: 'object',
     additionalProperties: false,
     required: ['stats', 'active', 'incidents', 'services'],
@@ -523,7 +523,7 @@ export function openapi(root: string): Record<string, unknown> {
       title: 'Шелково Status Feed',
       version: '1.0.0',
       description:
-        'Read-only OpenAPI wrapper для /status/data/status.json с историей инцидентов и производными сводками сервисов.',
+        'OpenAPI-описание /status/data/status.json только для чтения с историей инцидентов и производными сводками сервисов.',
     },
     servers: [
       {
@@ -534,12 +534,12 @@ export function openapi(root: string): Record<string, unknown> {
       [statusDataPath()]: {
         get: {
           operationId: 'getStatusFeed',
-          summary: 'Read full status feed',
+          summary: 'Получить полную ленту статуса',
           description:
-            'Возвращает основной структурированный feed раздела /status с активными и историческими инцидентами, а также производными сводками по сервисам.',
+            'Возвращает основную структурированную ленту раздела /status с активными и историческими инцидентами, а также производными сводками по сервисам.',
           responses: {
             200: {
-              description: 'Full status feed',
+              description: 'Полная лента статуса',
               content: {
                 'application/json': {
                   schema: {
@@ -569,7 +569,7 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, statusDataPath()),
             type: 'application/json',
-            'title*': star('Основной машиночитаемый feed раздела /status'),
+            'title*': star('Основная машиночитаемая лента раздела /status'),
           },
           {
             href: abs(root, statusFeedPath()),
@@ -579,7 +579,7 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: fullUrl(statusMarkdownUrl()),
             type: 'text/markdown',
-            'title*': star('Markdown companion status home'),
+            'title*': star('Markdown-версия раздела /status'),
           },
           {
             href: abs(root, statusLlmsPath()),
@@ -596,12 +596,12 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, statusSchemaPath()),
             type: 'application/schema+json',
-            'title*': star('JSON Schema для status feed'),
+            'title*': star('JSON Schema ленты статуса'),
           },
           {
             href: abs(root, statusOpenApiPath()),
             type: OAS,
-            'title*': star('OpenAPI для status feed'),
+            'title*': star('OpenAPI ленты статуса'),
           },
         ],
       },

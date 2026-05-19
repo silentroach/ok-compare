@@ -1,0 +1,359 @@
+import { describe, expect, it } from 'vitest';
+
+import {
+  createPublicSurfaceRegistry,
+  publicSurfaceRegistry,
+  surfaceHref,
+  surfaceToLinksetItem,
+} from './index';
+import {
+  compareApiCatalogPath,
+  compareExplorerDataPath,
+  compareLlmsFullPath,
+  compareLlmsPath,
+  compareMarkdownPath,
+  compareOpenApiPath,
+  comparePath,
+  comparePublicSurfaceSlice,
+  compareRatingMarkdownPath,
+  compareRatingPath,
+  compareSchemaPath,
+  compareSettlementMarkdownPattern,
+  compareSettlementPattern,
+  compareSettlementsDataPath,
+  compareSkillsPath,
+} from '@/compare/lib/public-surface';
+import {
+  apiCatalogPath as newsApiCatalogPath,
+  articleMarkdownPattern,
+  articlePattern,
+  articlesDataPath,
+  articlesOpenApiPath,
+  articlesSchemaPath,
+  feedPath as newsFeedPath,
+  llmsFullPath as newsLlmsFullPath,
+  llmsPath as newsLlmsPath,
+  newsMarkdownPath,
+  newsPath,
+} from '@/lib/news/routes';
+import {
+  peopleApiCatalogPath,
+  peopleDataPath,
+  peopleLlmsFullPath,
+  peopleLlmsPath,
+  peopleMarkdownPath,
+  peopleOpenApiPath,
+  peopleSchemaPath,
+  personMarkdownPattern,
+  personPattern,
+} from '@/lib/people/routes';
+import { reglamentPublicSurfaceSlice } from '@/lib/reglament/public-surface';
+import { REGLAMENT_PUBLIC_PATHS } from '@/lib/reglament/routes';
+import {
+  statusApiCatalogPath,
+  statusDataPath,
+  statusFeedPath,
+  statusIncidentMarkdownPattern,
+  statusIncidentPattern,
+  statusLlmsFullPath,
+  statusLlmsPath,
+  statusMarkdownPath,
+  statusOpenApiPath,
+  statusPath,
+  statusSchemaPath,
+  statusServiceMarkdownPattern,
+  statusServicePattern,
+} from '@/lib/status/routes';
+import {
+  siteApiCatalogPath,
+  siteLlmsFullPath,
+  siteLlmsPath,
+  siteMarkdownPath,
+} from '@/lib/llms';
+import { siteSkillsPath } from '@/lib/skills';
+import type { PublicSurfaceSlice } from './types';
+
+const newsSlice: PublicSurfaceSlice = {
+  owner: {
+    id: 'news',
+    label: 'Новости',
+    entryPath: '/news/',
+  },
+  surfaces: [
+    {
+      id: 'news:index',
+      label: 'Новости',
+      path: '/news/',
+      mediaType: 'text/html',
+      cacheClass: 'html',
+      discoveryRoles: ['section-entry'],
+      catalogRole: 'anchor',
+    },
+    {
+      id: 'news:article',
+      label: 'Страница новости',
+      routePattern: '/news/:year/:month/:entry/',
+      mediaType: 'text/html',
+      cacheClass: 'html',
+      discoveryRoles: ['detail-page'],
+      catalogRole: 'item',
+      linkRelations: [
+        {
+          rel: 'alternate',
+          href: '/news/:year/:month/:entry/index.md',
+          mediaType: 'text/markdown',
+        },
+      ],
+      acceptsNegotiation: 'not-negotiated',
+    },
+  ],
+};
+
+const compareSlice: PublicSurfaceSlice = {
+  owner: {
+    id: 'compare',
+    label: 'Сравнение поселков',
+    entryPath: '/815/compare/',
+  },
+  surfaces: [
+    {
+      id: 'compare:data',
+      label: 'Dataset сравнения',
+      path: '/815/compare/data/settlements.json',
+      mediaType: 'application/json',
+      cacheClass: 'data',
+      discoveryRoles: ['data-feed', 'root-catalog'],
+      catalogRole: 'item',
+      linkRelations: [
+        { rel: 'api-catalog', href: '/815/compare/.well-known/api-catalog' },
+      ],
+      acceptsNegotiation: 'not-negotiated',
+    },
+  ],
+};
+
+describe('public surface registry', () => {
+  it('aggregates section-owned slices without losing ownership', () => {
+    const registry = createPublicSurfaceRegistry([newsSlice, compareSlice]);
+
+    expect(registry.sections).toEqual([newsSlice.owner, compareSlice.owner]);
+    expect(registry.surfaces.map((surface) => surface.id)).toEqual([
+      'news:index',
+      'news:article',
+      'compare:data',
+    ]);
+    expect(
+      registry.surfacesByOwner('news').map((surface) => surface.id),
+    ).toEqual(['news:index', 'news:article']);
+    expect(registry.surfaceOwner('compare:data')).toEqual(compareSlice.owner);
+  });
+
+  it('keeps path and route-pattern surfaces linkset-friendly', () => {
+    const registry = createPublicSurfaceRegistry([newsSlice, compareSlice]);
+    const [indexSurface, articleSurface, dataSurface] = registry.surfaces;
+
+    expect(
+      indexSurface && surfaceHref('https://example.com/base', indexSurface),
+    ).toBe('https://example.com/base/news/');
+    expect(
+      articleSurface && surfaceHref('https://example.com/base', articleSurface),
+    ).toBe('/news/:year/:month/:entry/');
+    expect(
+      dataSurface &&
+        surfaceToLinksetItem('https://example.com/base', dataSurface),
+    ).toEqual({
+      href: 'https://example.com/base/815/compare/data/settlements.json',
+      type: 'application/json',
+      rel: ['api-catalog'],
+      title: 'Dataset сравнения',
+    });
+  });
+
+  it('registers root public surfaces', () => {
+    const rootPaths = publicSurfaceRegistry
+      .surfacesByOwner('root')
+      .map((surface) =>
+        'path' in surface ? surface.path : surface.routePattern,
+      );
+
+    expect(rootPaths).toEqual([
+      '/',
+      siteMarkdownPath(),
+      siteLlmsPath(),
+      siteLlmsFullPath(),
+      siteApiCatalogPath(),
+      siteSkillsPath(),
+    ]);
+  });
+
+  it('registers news surfaces from news route helpers', () => {
+    const surfaces = publicSurfaceRegistry.surfacesByOwner('news');
+    const byId = new Map(surfaces.map((surface) => [surface.id, surface]));
+
+    expect(byId.get('news:index')).toMatchObject({ path: newsPath() });
+    expect(byId.get('news:index-markdown')).toMatchObject({
+      path: newsMarkdownPath(),
+    });
+    expect(byId.get('news:article')).toMatchObject({
+      routePattern: articlePattern(),
+    });
+    expect(byId.get('news:article-markdown')).toMatchObject({
+      routePattern: articleMarkdownPattern(),
+    });
+    expect(byId.get('news:data')).toMatchObject({ path: articlesDataPath() });
+    expect(byId.get('news:rss')).toMatchObject({ path: newsFeedPath() });
+    expect(byId.get('news:schema')).toMatchObject({
+      path: articlesSchemaPath(),
+    });
+    expect(byId.get('news:openapi')).toMatchObject({
+      path: articlesOpenApiPath(),
+    });
+    expect(byId.get('news:api-catalog')).toMatchObject({
+      path: newsApiCatalogPath(),
+    });
+    expect(byId.get('news:llms')).toMatchObject({ path: newsLlmsPath() });
+    expect(byId.get('news:llms-full')).toMatchObject({
+      path: newsLlmsFullPath(),
+    });
+  });
+
+  it('registers status surfaces from status route helpers', () => {
+    const surfaces = publicSurfaceRegistry.surfacesByOwner('status');
+    const byId = new Map(surfaces.map((surface) => [surface.id, surface]));
+
+    expect(byId.get('status:index')).toMatchObject({ path: statusPath() });
+    expect(byId.get('status:index-markdown')).toMatchObject({
+      path: statusMarkdownPath(),
+    });
+    expect(byId.get('status:service')).toMatchObject({
+      routePattern: statusServicePattern(),
+    });
+    expect(byId.get('status:service-markdown')).toMatchObject({
+      routePattern: statusServiceMarkdownPattern(),
+    });
+    expect(byId.get('status:incident')).toMatchObject({
+      routePattern: statusIncidentPattern(),
+    });
+    expect(byId.get('status:incident')).toMatchObject({
+      routePattern: '/status/incidents/:year/:month/:entry/',
+    });
+    expect(byId.get('status:incident-markdown')).toMatchObject({
+      routePattern: statusIncidentMarkdownPattern(),
+    });
+    expect(byId.get('status:incident-markdown')).toMatchObject({
+      routePattern: '/status/incidents/:year/:month/:entry/index.md',
+    });
+    expect(byId.get('status:data')).toMatchObject({ path: statusDataPath() });
+    expect(byId.get('status:rss')).toMatchObject({ path: statusFeedPath() });
+    expect(byId.get('status:schema')).toMatchObject({
+      path: statusSchemaPath(),
+    });
+    expect(byId.get('status:openapi')).toMatchObject({
+      path: statusOpenApiPath(),
+    });
+    expect(byId.get('status:api-catalog')).toMatchObject({
+      path: statusApiCatalogPath(),
+    });
+    expect(byId.get('status:llms')).toMatchObject({ path: statusLlmsPath() });
+    expect(byId.get('status:llms-full')).toMatchObject({
+      path: statusLlmsFullPath(),
+    });
+  });
+
+  it('registers people Markdown index without a public HTML index', () => {
+    const surfaces = publicSurfaceRegistry.surfacesByOwner('people');
+    const byId = new Map(surfaces.map((surface) => [surface.id, surface]));
+
+    expect(
+      surfaces.some(
+        (surface) => 'path' in surface && surface.path === '/people/',
+      ),
+    ).toBe(false);
+    expect(byId.get('people:index-markdown')).toMatchObject({
+      path: peopleMarkdownPath(),
+      discoveryRoles: ['section-entry', 'markdown-companion'],
+    });
+    expect(byId.get('people:profile')).toMatchObject({
+      routePattern: personPattern(),
+    });
+    expect(byId.get('people:profile-markdown')).toMatchObject({
+      routePattern: personMarkdownPattern(),
+    });
+    expect(byId.get('people:data')).toMatchObject({ path: peopleDataPath() });
+    expect(byId.get('people:schema')).toMatchObject({
+      path: peopleSchemaPath(),
+    });
+    expect(byId.get('people:openapi')).toMatchObject({
+      path: peopleOpenApiPath(),
+    });
+    expect(byId.get('people:api-catalog')).toMatchObject({
+      path: peopleApiCatalogPath(),
+    });
+    expect(byId.get('people:llms')).toMatchObject({ path: peopleLlmsPath() });
+    expect(byId.get('people:llms-full')).toMatchObject({
+      path: peopleLlmsFullPath(),
+    });
+  });
+
+  it('registers every reglament public path from the reglament-owned slice', () => {
+    const surfaces = publicSurfaceRegistry.surfacesByOwner('reglament');
+
+    expect(
+      surfaces.map((surface) => ('path' in surface ? surface.path : '')),
+    ).toEqual(REGLAMENT_PUBLIC_PATHS);
+    expect(
+      publicSurfaceRegistry.surfaceOwner('reglament:data-estimate-2026'),
+    ).toEqual(reglamentPublicSurfaceSlice.owner);
+  });
+
+  it('registers compare surfaces from the compare-owned slice', () => {
+    const surfaces = publicSurfaceRegistry.surfacesByOwner('compare');
+    const byId = new Map(surfaces.map((surface) => [surface.id, surface]));
+
+    expect(
+      publicSurfaceRegistry.surfaceOwner('compare:data-settlements'),
+    ).toEqual(comparePublicSurfaceSlice.owner);
+    expect(byId.get('compare:index')).toMatchObject({
+      path: comparePath(),
+    });
+    expect(byId.get('compare:rating')).toMatchObject({
+      path: compareRatingPath(),
+    });
+    expect(byId.get('compare:settlement')).toMatchObject({
+      routePattern: compareSettlementPattern(),
+    });
+    expect(byId.get('compare:index-markdown')).toMatchObject({
+      path: compareMarkdownPath(),
+    });
+    expect(byId.get('compare:rating-markdown')).toMatchObject({
+      path: compareRatingMarkdownPath(),
+    });
+    expect(byId.get('compare:settlement-markdown')).toMatchObject({
+      routePattern: compareSettlementMarkdownPattern(),
+    });
+    expect(byId.get('compare:data-settlements')).toMatchObject({
+      path: compareSettlementsDataPath(),
+    });
+    expect(byId.get('compare:data-explorer')).toMatchObject({
+      path: compareExplorerDataPath(),
+    });
+    expect(byId.get('compare:schema')).toMatchObject({
+      path: compareSchemaPath(),
+    });
+    expect(byId.get('compare:openapi')).toMatchObject({
+      path: compareOpenApiPath(),
+    });
+    expect(byId.get('compare:api-catalog')).toMatchObject({
+      path: compareApiCatalogPath(),
+    });
+    expect(byId.get('compare:llms')).toMatchObject({
+      path: compareLlmsPath(),
+    });
+    expect(byId.get('compare:llms-full')).toMatchObject({
+      path: compareLlmsFullPath(),
+    });
+    expect(byId.get('compare:skills')).toMatchObject({
+      path: compareSkillsPath(),
+    });
+  });
+});

@@ -134,7 +134,7 @@ exports[`reglament markdown companions > keeps overview URLs, source refs and fo
 - JSON сметы: <https://example.com/815/regulation/data/estimate-2026.json>
 - JSON Schema: <https://example.com/815/regulation/schemas/estimate-2026.schema.json>
 - OpenAPI: <https://example.com/815/regulation/openapi/estimate-2026.openapi.json>
-- API catalog: <https://example.com/815/regulation/.well-known/api-catalog>
+- Каталог API: <https://example.com/815/regulation/.well-known/api-catalog>
 - llms.txt: <https://example.com/815/regulation/llms.txt>
 - llms-full.txt: <https://example.com/815/regulation/llms-full.txt>
 - Исходный PDF final.pdf: <https://example.com/815/regulation/original/final.pdf>

@@ -44,14 +44,14 @@ describe('people llms', () => {
 
       - Раздел \`/people/\` публикует публичные профили людей, контакты и граф упоминаний между новостями, статусом и другими профилями.
       - Сейчас в разделе 1 профиль, 1 исходящее упоминание и 2 обратные ссылки.
-      - Публичного HTML-индекса \`/people/\` нет: для массового обхода используйте people.json и markdown overview.
-      - У профиля могут быть \`company\`, \`position\` и \`name_cases\` для склонения canonical mentions; \`body_markdown\` может быть пустым, если базовый контекст уже есть во frontmatter.
+      - Публичного HTML-индекса \`/people/\` нет: для массового обхода используйте people.json и Markdown-обзор.
+      - У профиля могут быть \`company\`, \`position\` и \`name_cases\` для склонения канонических упоминаний; \`body_markdown\` может быть пустым, если базовый контекст уже есть во frontmatter.
 
       ## Главные URL
 
-      - Markdown overview раздела: <https://example.com/people/index.md>
-      - Основной JSON feed: <https://example.com/people/data/people.json>
-      - API catalog: <https://example.com/people/.well-known/api-catalog>
+      - Markdown-обзор раздела: <https://example.com/people/index.md>
+      - Основная JSON-лента: <https://example.com/people/data/people.json>
+      - Каталог API: <https://example.com/people/.well-known/api-catalog>
       - JSON Schema: <https://example.com/people/schemas/people.schema.json>
       - OpenAPI: <https://example.com/people/openapi/people.openapi.json>
       - Расширенная версия этого текста: <https://example.com/people/llms-full.txt>
@@ -61,8 +61,8 @@ describe('people llms', () => {
       - Для массового обхода начинайте с <https://example.com/people/data/people.json>.
       - Для одной персоны переходите на <https://example.com/people/kschemelinin/> или <https://example.com/people/kschemelinin/index.md>.
       - В \`mentions\` лежат исходящие упоминания из body профиля, если body заполнен; учитываются \`@slug\`, \`@slug:case\` и \`[текст](@slug)\`, а \`[текст](@slug:case)\` не поддерживается.
-      - В \`backlinks\` лежат входящие ссылки из новостей, статуса и других профилей, собранные из тех же canonical и labelled mention-синтаксисов.
-      - Контакты публикуются открыто и не маскируются в feed или markdown companions.
+      - В \`backlinks\` лежат входящие ссылки из новостей, статуса и других профилей, собранные из тех же канонических и подписанных синтаксисов упоминаний.
+      - Контакты публикуются открыто и не маскируются в ленте или Markdown-версиях.
       "
     `);
   });

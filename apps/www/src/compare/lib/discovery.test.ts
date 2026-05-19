@@ -1,4 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
+
+import type { comparePublicSurfaceSlice as comparePublicSurfaceSliceType } from '@/compare/lib/public-surface';
+import type { PublicSurfaceSlice } from '@/lib/public-surface';
+import type { expectSectionCatalogMatchesRegistry as expectSectionCatalogMatchesRegistryType } from '@/lib/public-surface/catalog-contract.test-helper';
+
 import {
   CATALOG,
   EXPLORER,
@@ -11,6 +16,16 @@ import {
 } from './discovery';
 
 const root = 'https://example.com';
+let comparePublicSurfaceSlice: typeof comparePublicSurfaceSliceType &
+  PublicSurfaceSlice;
+let expectSectionCatalogMatchesRegistry: typeof expectSectionCatalogMatchesRegistryType;
+
+beforeAll(async () => {
+  ({ comparePublicSurfaceSlice } =
+    await import('@/compare/lib/public-surface'));
+  ({ expectSectionCatalogMatchesRegistry } =
+    await import('@/lib/public-surface/catalog-contract.test-helper'));
+});
 
 describe('schema', () => {
   it('describes the actual full settlements payload with distance', () => {
@@ -34,7 +49,16 @@ describe('schema', () => {
 });
 
 describe('catalog', () => {
-  it('links both feeds, schema and openapi from the site root', () => {
+  it('keeps the section API catalog aligned with registry catalog surfaces', () => {
+    expectSectionCatalogMatchesRegistry({
+      catalog,
+      catalogRoot: `${root}/815/compare`,
+      siteRoot: root,
+      slice: comparePublicSurfaceSlice,
+    });
+  });
+
+  it('links markdown, feeds, agent docs, schema and openapi from the site root', () => {
     const body = catalog(root);
     const [item] = body.linkset as Array<Record<string, unknown>>;
     const list = item.item as Array<Record<string, unknown>>;
@@ -42,8 +66,13 @@ describe('catalog', () => {
 
     expect(item.anchor).toBe(`${root}/`);
     expect(list.map((row) => row.href)).toEqual([
+      `${root}/index.md`,
+      `${root}/rating/index.md`,
       `${root}${FEED}`,
       `${root}${EXPLORER}`,
+      `${root}/llms.txt`,
+      `${root}/llms-full.txt`,
+      `${root}/.well-known/agent-skills/index.json`,
     ]);
     expect(desc.map((row) => row.href)).toEqual([
       `${root}${SCHEMA}`,

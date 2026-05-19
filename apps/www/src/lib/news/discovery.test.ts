@@ -1,9 +1,17 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import type { NewsArticle, NewsDataset } from './schema';
+import type {
+  newsPublicSurfaceSlice as newsPublicSurfaceSliceType,
+  PublicSurfaceSlice,
+} from '@/lib/public-surface';
+import type { expectSectionCatalogMatchesRegistry as expectSectionCatalogMatchesRegistryType } from '@/lib/public-surface/catalog-contract.test-helper';
 
 let buildNewsPayload: typeof import('./discovery').buildNewsPayload;
 let catalog: typeof import('./discovery').catalog;
+let expectSectionCatalogMatchesRegistry: typeof expectSectionCatalogMatchesRegistryType;
+let newsPublicSurfaceSlice: typeof newsPublicSurfaceSliceType &
+  PublicSurfaceSlice;
 let openapi: typeof import('./discovery').openapi;
 let schema: typeof import('./discovery').schema;
 
@@ -81,9 +89,20 @@ beforeAll(async () => {
 
   ({ buildNewsPayload, catalog, openapi, schema } =
     await import('./discovery'));
+  ({ expectSectionCatalogMatchesRegistry } =
+    await import('@/lib/public-surface/catalog-contract.test-helper'));
+  ({ newsPublicSurfaceSlice } = await import('@/lib/public-surface'));
 });
 
 describe('news discovery payload', () => {
+  it('keeps the section API catalog aligned with registry catalog surfaces', () => {
+    expectSectionCatalogMatchesRegistry({
+      catalog,
+      siteRoot: 'https://example.com',
+      slice: newsPublicSurfaceSlice,
+    });
+  });
+
   it('publishes feed-level metadata for consumers', () => {
     const first = articleWithEvent();
     const second = {

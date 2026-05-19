@@ -42,29 +42,29 @@ describe('status llms', () => {
       - Раздел \`/status/\` показывает текущие проблемы, плановые работы и историю по сервисам КП Шелково.
       - Сейчас в разделе 1 запись, 1 активный инцидент и 1 активная работа.
       - Раздел покрывает 1 сервис: electricity, water, internet, dam.
-      - HTML-страницы остаются каноническим представлением для людей, а /status/data/status.json служит основным structured feed.
+      - HTML-страницы остаются каноническим представлением для людей, а /status/data/status.json служит основной структурированной лентой.
 
       ## Главные URL
 
       - Главная страница /status: <https://example.com/status/>
-      - Основной JSON feed: <https://example.com/status/data/status.json>
+      - Основная JSON-лента: <https://example.com/status/data/status.json>
       - RSS: <https://example.com/status/feed.xml>
-      - API catalog: <https://example.com/status/.well-known/api-catalog>
+      - Каталог API: <https://example.com/status/.well-known/api-catalog>
       - JSON Schema: <https://example.com/status/schemas/status.schema.json>
       - OpenAPI: <https://example.com/status/openapi/status.openapi.json>
       - Расширенная версия этого текста: <https://example.com/status/llms-full.txt>
 
       ## Как читать раздел
 
-      - Markdown home: <https://example.com/status/index.md>
-      - Пример service HTML (Электричество): <https://example.com/status/electricity/>
-      - Пример service Markdown: <https://example.com/status/electricity/index.md>
-      - Пример incident HTML: <https://example.com/status/incidents/2026/05/electricity-river-outage/>
-      - Пример incident Markdown: <https://example.com/status/incidents/2026/05/electricity-river-outage/index.md>
-      - В status.json сервисные сводки derive-ятся из массива incidents.
+      - Markdown-версия раздела: <https://example.com/status/index.md>
+      - Пример HTML-страницы сервиса (Электричество): <https://example.com/status/electricity/>
+      - Пример Markdown-версии сервиса: <https://example.com/status/electricity/index.md>
+      - Пример HTML-страницы инцидента: <https://example.com/status/incidents/2026/05/electricity-river-outage/>
+      - Пример Markdown-версии инцидента: <https://example.com/status/incidents/2026/05/electricity-river-outage/index.md>
+      - В status.json сервисные сводки выводятся из массива incidents.
       - Сервисы: \`electricity\`, \`water\`, \`internet\`, \`dam\`.
       - Типы записей: \`incident\`, \`maintenance\`.
-      - Текущий статус сервиса derive-ится как \`red\`, \`amber\` или \`green\`.
+      - Текущий статус сервиса выводится как \`red\`, \`amber\` или \`green\`.
       "
     `);
   });

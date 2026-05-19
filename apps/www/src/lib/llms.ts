@@ -9,70 +9,44 @@ import {
   serializeMarkdownNodes,
 } from '@/lib/markdown/llms-document';
 import { loadNewsData } from './news/load';
-import {
-  apiCatalogUrl as newsApiCatalogUrl,
-  articlesDataUrl,
-  feedUrl as newsFeedUrl,
-  llmsUrl as newsLlmsUrl,
-  newsMarkdownUrl,
-  newsUrl,
-} from './news/routes';
 import { loadPeopleDataWithBacklinks } from './people/load';
-import {
-  peopleApiCatalogUrl,
-  peopleDataUrl,
-  peopleLlmsFullUrl,
-  peopleLlmsUrl,
-  peopleMarkdownUrl,
-  peopleOpenApiUrl,
-  peopleSchemaUrl,
-} from './people/routes';
-import { absoluteUrl, withBase } from './site';
-import { siteSkillsUrl } from './skills';
+import { absoluteUrl } from './site';
 import { estimate2026 } from '@/data/reglament/estimate-2026';
 import { formatReglamentTariff } from './reglament/format';
-import {
-  reglamentApiCatalogUrl,
-  reglamentAssetsUrl,
-  reglamentEstimate2026DataUrl,
-  reglamentFullAssetsMarkdownUrl,
-  reglamentFullChecksMarkdownUrl,
-  reglamentFull2026DataUrl,
-  reglamentFullMarkdownUrl,
-  reglamentFullServiceMapMarkdownUrl,
-  reglamentFullServicesMarkdownUrl,
-  reglamentLlmsUrl,
-  reglamentMarkdownUrl,
-  reglamentServicesUrl,
-  reglamentUrl,
-} from './reglament/routes';
 import { loadStatusData } from './status/load';
-import {
-  statusApiCatalogUrl,
-  statusDataUrl,
-  statusFeedUrl,
-  statusLlmsUrl,
-  statusMarkdownUrl,
-  statusUrl,
-} from './status/routes';
+import { publicSurfaceRegistry } from './public-surface';
+import type { PublicSurfaceId } from './public-surface';
+
+export {
+  siteApiCatalogPath,
+  siteApiCatalogUrl,
+  siteLlmsFullPath,
+  siteLlmsFullUrl,
+  siteLlmsPath,
+  siteLlmsUrl,
+  siteMarkdownPath,
+  siteMarkdownUrl,
+} from './root-routes';
 
 export const SITE_MARKDOWN_HEADERS = {
   'Content-Type': 'text/markdown; charset=utf-8',
   'X-Robots-Tag': 'noindex, follow',
 } as const;
 
-const SITE_MARKDOWN = '/index.md';
-const SITE_LLMS = '/llms.txt';
-const SITE_LLMS_FULL = '/llms-full.txt';
-const SITE_API_CATALOG = '/.well-known/api-catalog';
+const registeredSurfacePath = (surfaceId: PublicSurfaceId): string => {
+  const surface = publicSurfaceRegistry.surfaces.find(
+    (item) => item.id === surfaceId,
+  );
 
-export const siteMarkdownUrl = (): string => withBase(SITE_MARKDOWN);
+  if (surface?.path === undefined) {
+    throw new Error(`Public surface ${surfaceId} must provide a stable path`);
+  }
 
-export const siteLlmsUrl = (): string => withBase(SITE_LLMS);
+  return surface.path;
+};
 
-export const siteLlmsFullUrl = (): string => withBase(SITE_LLMS_FULL);
-
-export const siteApiCatalogUrl = (): string => withBase(SITE_API_CATALOG);
+const registeredSurfaceUrl = (surfaceId: PublicSurfaceId): string =>
+  absoluteUrl(registeredSurfacePath(surfaceId));
 
 async function snapshot() {
   const [news, people, status] = await Promise.all([
@@ -92,62 +66,62 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
   const { news, people, status } = await snapshot();
   const activeStatus = status.active.filter((item) => item.kind === 'incident');
   const person = people.profiles[0];
-  const home = absoluteUrl('/');
-  const homeMarkdown = absoluteUrl(siteMarkdownUrl());
-  const short = absoluteUrl(siteLlmsUrl());
-  const full = absoluteUrl(siteLlmsFullUrl());
-  const catalog = absoluteUrl(siteApiCatalogUrl());
-  const newsHome = absoluteUrl(newsUrl());
-  const newsMarkdown = absoluteUrl(newsMarkdownUrl());
-  const newsFeed = absoluteUrl(articlesDataUrl());
-  const newsRss = absoluteUrl(newsFeedUrl());
-  const newsCatalog = absoluteUrl(newsApiCatalogUrl());
-  const statusHome = absoluteUrl(statusUrl());
-  const statusMarkdown = absoluteUrl(statusMarkdownUrl());
-  const statusFeed = absoluteUrl(statusDataUrl());
-  const statusRss = absoluteUrl(statusFeedUrl());
-  const statusCatalog = absoluteUrl(statusApiCatalogUrl());
-  const reglamentHome = absoluteUrl(reglamentUrl());
-  const reglamentMarkdown = absoluteUrl(reglamentMarkdownUrl());
-  const reglamentFeed = absoluteUrl(reglamentEstimate2026DataUrl());
-  const reglamentFullMarkdown = absoluteUrl(reglamentFullMarkdownUrl());
-  const reglamentFullAssetsMarkdown = absoluteUrl(
-    reglamentFullAssetsMarkdownUrl(),
+  const home = registeredSurfaceUrl('root:index');
+  const homeMarkdown = registeredSurfaceUrl('root:index-markdown');
+  const short = registeredSurfaceUrl('root:llms');
+  const full = registeredSurfaceUrl('root:llms-full');
+  const catalog = registeredSurfaceUrl('root:api-catalog');
+  const newsHome = registeredSurfaceUrl('news:index');
+  const newsMarkdown = registeredSurfaceUrl('news:index-markdown');
+  const newsFeed = registeredSurfaceUrl('news:data');
+  const newsRss = registeredSurfaceUrl('news:rss');
+  const newsCatalog = registeredSurfaceUrl('news:api-catalog');
+  const newsLlms = registeredSurfaceUrl('news:llms');
+  const statusHome = registeredSurfaceUrl('status:index');
+  const statusMarkdown = registeredSurfaceUrl('status:index-markdown');
+  const statusFeed = registeredSurfaceUrl('status:data');
+  const statusRss = registeredSurfaceUrl('status:rss');
+  const statusCatalog = registeredSurfaceUrl('status:api-catalog');
+  const statusLlms = registeredSurfaceUrl('status:llms');
+  const reglamentHome = registeredSurfaceUrl('reglament:index');
+  const reglamentMarkdown = registeredSurfaceUrl('reglament:index-markdown');
+  const reglamentFeed = registeredSurfaceUrl('reglament:data-estimate-2026');
+  const reglamentFullMarkdown = registeredSurfaceUrl('reglament:full-markdown');
+  const reglamentFullAssetsMarkdown = registeredSurfaceUrl(
+    'reglament:full-assets-markdown',
   );
-  const reglamentFullServicesMarkdown = absoluteUrl(
-    reglamentFullServicesMarkdownUrl(),
+  const reglamentFullServicesMarkdown = registeredSurfaceUrl(
+    'reglament:full-services-markdown',
   );
-  const reglamentFullServiceMapMarkdown = absoluteUrl(
-    reglamentFullServiceMapMarkdownUrl(),
+  const reglamentFullServiceMapMarkdown = registeredSurfaceUrl(
+    'reglament:full-service-map-markdown',
   );
-  const reglamentFullChecksMarkdown = absoluteUrl(
-    reglamentFullChecksMarkdownUrl(),
+  const reglamentFullChecksMarkdown = registeredSurfaceUrl(
+    'reglament:full-checks-markdown',
   );
-  const reglamentFullDataset = absoluteUrl(reglamentFull2026DataUrl());
-  const reglamentAssets = absoluteUrl(reglamentAssetsUrl());
-  const reglamentServices = absoluteUrl(reglamentServicesUrl());
-  const reglamentLlms = absoluteUrl(reglamentLlmsUrl());
-  const reglamentCatalog = absoluteUrl(reglamentApiCatalogUrl());
-  const peopleMarkdown = absoluteUrl(peopleMarkdownUrl());
-  const peopleFeed = absoluteUrl(peopleDataUrl());
-  const peopleCatalog = absoluteUrl(peopleApiCatalogUrl());
-  const peopleSchema = absoluteUrl(peopleSchemaUrl());
-  const peopleOpenApi = absoluteUrl(peopleOpenApiUrl());
-  const peopleShort = absoluteUrl(peopleLlmsUrl());
-  const peopleFull = absoluteUrl(peopleLlmsFullUrl());
+  const reglamentFullDataset = registeredSurfaceUrl('reglament:data-full-2026');
+  const reglamentAssets = registeredSurfaceUrl('reglament:assets');
+  const reglamentServices = registeredSurfaceUrl('reglament:services');
+  const reglamentLlms = registeredSurfaceUrl('reglament:llms');
+  const reglamentCatalog = registeredSurfaceUrl('reglament:api-catalog');
+  const peopleMarkdown = registeredSurfaceUrl('people:index-markdown');
+  const peopleFeed = registeredSurfaceUrl('people:data');
+  const peopleCatalog = registeredSurfaceUrl('people:api-catalog');
+  const peopleSchema = registeredSurfaceUrl('people:schema');
+  const peopleOpenApi = registeredSurfaceUrl('people:openapi');
+  const peopleShort = registeredSurfaceUrl('people:llms');
+  const peopleFull = registeredSurfaceUrl('people:llms-full');
   const personHtml = person?.canonical ?? '/people/[slug]/';
   const personMarkdown = person
     ? absoluteUrl(person.markdown_url)
     : '/people/[slug]/index.md';
-  const compareHome = absoluteUrl('/815/compare/');
-  const compareMarkdown = absoluteUrl('/815/compare/index.md');
-  const compareFeed = absoluteUrl('/815/compare/data/settlements.json');
-  const compareLlms = absoluteUrl('/815/compare/llms.txt');
-  const compareCatalog = absoluteUrl('/815/compare/.well-known/api-catalog');
-  const compareSkills = absoluteUrl(
-    '/815/compare/.well-known/agent-skills/index.json',
-  );
-  const skills = absoluteUrl(siteSkillsUrl());
+  const compareHome = registeredSurfaceUrl('compare:index');
+  const compareMarkdown = registeredSurfaceUrl('compare:index-markdown');
+  const compareFeed = registeredSurfaceUrl('compare:data-settlements');
+  const compareLlms = registeredSurfaceUrl('compare:llms');
+  const compareCatalog = registeredSurfaceUrl('compare:api-catalog');
+  const compareSkills = registeredSurfaceUrl('compare:skills');
+  const skills = registeredSurfaceUrl('root:skills');
 
   return kind === 'short'
     ? serializeLlmsDocument({
@@ -159,14 +133,14 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
               'Это карта публичных данных и точек входа kpshelkovo.online.',
               'Основные разделы: новости, статус сервисов, регламент и смета тарифа 815, профили людей и сравнение тарифов поселков.',
               `Сейчас в новостях ${count(news.articles.length, ['статья', 'статьи', 'статей'])}, в статусе ${count(status.incidents.length, ['запись', 'записи', 'записей'])} и ${count(activeStatus.length, ['активный инцидент', 'активных инцидента', 'активных инцидентов'])}, в людях ${count(people.profiles.length, ['профиль', 'профиля', 'профилей'])}.`,
-              'Для массового чтения используйте JSON-фиды; HTML и Markdown удобнее для ссылок и точечного чтения.',
+              'Для массового чтения используйте JSON-ленты; HTML и Markdown удобнее для ссылок и точечного чтения.',
             ]),
           ]),
           llmsSection('Главные URL', [
             markdownList([
               `Главная: ${home}`,
               `Главная в Markdown: ${homeMarkdown}`,
-              `API catalog сайта: ${catalog}`,
+              `Каталог API сайта: ${catalog}`,
               `Инструкции для автоматического чтения сайта: ${skills}`,
               `Новости: ${newsHome}`,
               `Статус: ${statusHome}`,
@@ -178,12 +152,12 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           ]),
           llmsSection('Как ориентироваться', [
             markdownList([
-              'Если задача относится к одному разделу, сначала откройте его `llms.txt`; если нужны данные массово, сразу берите JSON-фид.',
-              `Новости: ${absoluteUrl(newsLlmsUrl())}; основной feed: ${newsFeed}; календарные события лежат в \`articles[].events[].ics_url\`.`,
-              `Статус сервисов: ${absoluteUrl(statusLlmsUrl())}; основной feed: ${statusFeed}.`,
-              `Регламент и смета: ${reglamentLlms}; смета: ${reglamentFeed}; полный регламент: ${reglamentFullMarkdown}; dataset: ${reglamentFullDataset}.`,
-              `Люди: ${peopleShort}; основной feed: ${peopleFeed}; одна персона: ${personHtml} или ${personMarkdown}.`,
-              `Сравнение тарифов поселков: ${compareLlms}; основной feed: ${compareFeed}.`,
+              'Если задача относится к одному разделу, сначала откройте его `llms.txt`; если нужны данные массово, сразу берите JSON-ленту.',
+              `Новости: ${newsLlms}; основная лента: ${newsFeed}; календарные события лежат в \`articles[].events[].ics_url\`.`,
+              `Статус сервисов: ${statusLlms}; основная лента: ${statusFeed}.`,
+              `Регламент и смета: ${reglamentLlms}; смета: ${reglamentFeed}; полный регламент: ${reglamentFullMarkdown}; набор данных: ${reglamentFullDataset}.`,
+              `Люди: ${peopleShort}; основная лента: ${peopleFeed}; одна персона: ${personHtml} или ${personMarkdown}.`,
+              `Сравнение тарифов поселков: ${compareLlms}; основная лента: ${compareFeed}.`,
               'Публичные инструкции помогают с типовыми задачами; у сравнения тарифов есть отдельный индекс.',
             ]),
           ]),
@@ -196,8 +170,8 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           llmsSection('Проект', [
             markdownList([
               'Это корневой сайт kpshelkovo.online и карта его публичных данных.',
-              'Разделы сайта: `/news/`, `/status/`, `/815/regulation/`, `/people/` и `/815/compare/`.',
-              'Все JSON-фиды read-only и отражают состояние на момент сборки сайта.',
+              `Разделы сайта: \`${registeredSurfacePath('news:index')}\`, \`${registeredSurfacePath('status:index')}\`, \`${registeredSurfacePath('reglament:index')}\`, \`${registeredSurfacePath('people:index-markdown')}\` и \`${registeredSurfacePath('compare:index')}\`.`,
+              'Все JSON-ленты доступны только для чтения и отражают состояние на момент сборки сайта.',
               'У раздела людей нет публичной HTML-страницы индекса `/people/`; используйте `/people/index.md` и `/people/data/people.json`.',
             ]),
           ]),
@@ -207,49 +181,49 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
               `Главная в Markdown: ${homeMarkdown}`,
               `Короткий обзор llms.txt: ${short}`,
               `Подробный обзор llms-full.txt: ${full}`,
-              `API catalog сайта: ${catalog}`,
+              `Каталог API сайта: ${catalog}`,
               `Инструкции для автоматического чтения сайта: ${skills}`,
             ]),
           ]),
           llmsSection('Новости', [
             markdownList([
-              `HTML home: ${newsHome}`,
-              `Markdown home: ${newsMarkdown}`,
-              `llms.txt: ${absoluteUrl(newsLlmsUrl())}`,
-              `JSON feed: ${newsFeed}`,
+              `HTML-страница раздела: ${newsHome}`,
+              `Markdown-версия раздела: ${newsMarkdown}`,
+              `llms.txt: ${newsLlms}`,
+              `JSON-лента: ${newsFeed}`,
               `RSS: ${newsRss}`,
-              `API catalog: ${newsCatalog}`,
-              'События новостей представлены как optional `articles[].events[]`; `.ics` доступен по `/news/YYYY/MM/[entry]/[event-slug].ics`, глобального events feed нет.',
+              `Каталог API: ${newsCatalog}`,
+              'События новостей представлены как необязательный `articles[].events[]`; `.ics` доступен по `/news/YYYY/MM/[entry]/[event-slug].ics`, глобальной ленты событий нет.',
               `Сейчас в разделе ${count(news.articles.length, ['статья', 'статьи', 'статей'])}.`,
             ]),
           ]),
           llmsSection('Статус сервисов', [
             markdownList([
-              `HTML home: ${statusHome}`,
-              `Markdown home: ${statusMarkdown}`,
-              `llms.txt: ${absoluteUrl(statusLlmsUrl())}`,
-              `JSON feed: ${statusFeed}`,
+              `HTML-страница раздела: ${statusHome}`,
+              `Markdown-версия раздела: ${statusMarkdown}`,
+              `llms.txt: ${statusLlms}`,
+              `JSON-лента: ${statusFeed}`,
               `RSS: ${statusRss}`,
-              `API catalog: ${statusCatalog}`,
+              `Каталог API: ${statusCatalog}`,
               `Сейчас в разделе ${count(status.incidents.length, ['запись', 'записи', 'записей'])} и ${count(activeStatus.length, ['активный инцидент', 'активных инцидента', 'активных инцидентов'])}.`,
             ]),
           ]),
           llmsSection('Регламент и смета тарифа 815', [
             markdownList([
-              `HTML home: ${reglamentHome}`,
-              `Markdown companion: ${reglamentMarkdown}`,
-              `Полный регламент Markdown: ${reglamentFullMarkdown}`,
-              `Полный регламент, имущество Markdown: ${reglamentFullAssetsMarkdown}`,
-              `Полный регламент, услуги Markdown: ${reglamentFullServicesMarkdown}`,
-              `Полный регламент, сопоставления Markdown: ${reglamentFullServiceMapMarkdown}`,
-              `Полный регламент, проверки Markdown: ${reglamentFullChecksMarkdown}`,
+              `HTML-страница раздела: ${reglamentHome}`,
+              `Markdown-версия: ${reglamentMarkdown}`,
+              `Markdown-версия полного регламента: ${reglamentFullMarkdown}`,
+              `Markdown-версия полного регламента про имущество: ${reglamentFullAssetsMarkdown}`,
+              `Markdown-версия полного регламента про услуги: ${reglamentFullServicesMarkdown}`,
+              `Markdown-версия сопоставлений полного регламента: ${reglamentFullServiceMapMarkdown}`,
+              `Markdown-версия проверок полного регламента: ${reglamentFullChecksMarkdown}`,
               `llms.txt: ${reglamentLlms}`,
-              `JSON feed: ${reglamentFeed}`,
-              `Dataset полного регламента: ${reglamentFullDataset}`,
+              `JSON-лента: ${reglamentFeed}`,
+              `Набор данных полного регламента: ${reglamentFullDataset}`,
               `Общее имущество: ${reglamentAssets}`,
               `Услуги регламента: ${reglamentServices}`,
-              `API catalog: ${reglamentCatalog}`,
-              `В feed ${estimate2026.sections.length} секций сметы; официальный месячный тариф ${formatReglamentTariff(estimate2026.baseline.tariff_per_sotka_month)}.`,
+              `Каталог API: ${reglamentCatalog}`,
+              `В ленте ${estimate2026.sections.length} секций сметы; официальный месячный тариф ${formatReglamentTariff(estimate2026.baseline.tariff_per_sotka_month)}.`,
             ]),
           ]),
           llmsSection('Люди', [
@@ -257,41 +231,41 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
               `HTML-индекса нет; обзор раздела живет в Markdown: ${peopleMarkdown}`,
               `llms.txt: ${peopleShort}`,
               `llms-full.txt: ${peopleFull}`,
-              `JSON feed: ${peopleFeed}`,
-              `API catalog: ${peopleCatalog}`,
+              `JSON-лента: ${peopleFeed}`,
+              `Каталог API: ${peopleCatalog}`,
               `JSON Schema: ${peopleSchema}`,
               `OpenAPI: ${peopleOpenApi}`,
-              `Пример detail HTML: ${personHtml}`,
-              `Пример detail Markdown: ${personMarkdown}`,
+              `Пример HTML-страницы профиля: ${personHtml}`,
+              `Пример Markdown-версии профиля: ${personMarkdown}`,
               `Сейчас в разделе ${count(people.profiles.length, ['профиль', 'профиля', 'профилей'])}.`,
             ]),
           ]),
           llmsSection('Сравнение тарифов поселков', [
             markdownList([
-              `HTML home: ${compareHome}`,
-              `Markdown home: ${compareMarkdown}`,
+              `HTML-страница раздела: ${compareHome}`,
+              `Markdown-версия раздела: ${compareMarkdown}`,
               `llms.txt: ${compareLlms}`,
-              `Основной JSON feed: ${compareFeed}`,
-              `API catalog: ${compareCatalog}`,
+              `Основная JSON-лента: ${compareFeed}`,
+              `Каталог API: ${compareCatalog}`,
               `Инструкции для автоматического чтения: ${compareSkills}`,
             ]),
           ]),
           llmsSection('Как выбирать источник', [
             markdownList([
               'Когда нужен обзор разделов и точек входа, начинайте с этого `llms-full.txt` или с корневого `/.well-known/api-catalog`.',
-              'Когда нужна текстовая версия home-страницы и быстрые ссылки на разделы, используйте `/index.md`.',
+              'Когда нужна текстовая версия главной страницы и быстрые ссылки на разделы, используйте `/index.md`.',
               'Для новостей при массовом чтении используйте `/news/data/articles.json`, а HTML/Markdown-страницы оставляйте для одной конкретной записи; если у статьи есть `events`, календарь берите из `events[].ics_url`.',
-              'Для статуса при массовом чтении используйте `/status/data/status.json`, а HTML/Markdown service/incident pages оставляйте для фокусной проверки одной линии или одного события.',
-              'Для регламента при массовом чтении используйте `/815/regulation/data/estimate-2026.json` для расчетной сметы и `/815/regulation/data/full-2026.json` для полного structured dataset; для текстового чтения начинайте с `/815/regulation/full.md`, затем переходите в тематические файлы `/815/regulation/full/*.md`.',
+              'Для статуса при массовом чтении используйте `/status/data/status.json`, а HTML/Markdown-страницы сервисов и инцидентов оставляйте для фокусной проверки одной линии или одного события.',
+              'Для регламента при массовом чтении используйте `/815/regulation/data/estimate-2026.json` для расчетной сметы и `/815/regulation/data/full-2026.json` для полного структурированного набора данных; для текстового чтения начинайте с `/815/regulation/full.md`, затем переходите в тематические файлы `/815/regulation/full/*.md`.',
               'Для людей при массовом чтении используйте `/people/data/people.json`, а `/people/[slug]/` и `/people/[slug]/index.md` оставляйте для чтения одного профиля.',
-              'Для сравнения тарифов используйте `/815/compare/data/settlements.json` как основной structured feed, а HTML/Markdown-страницы - для чтения по одному поселку.',
+              `Для сравнения тарифов используйте \`${registeredSurfacePath('compare:data-settlements')}\` как основную структурированную ленту, а HTML/Markdown-страницы - для чтения по одному поселку.`,
             ]),
           ]),
-          llmsSection('Skills и discovery', [
+          llmsSection('Навыки и обнаружение', [
             markdownList([
               '`llms.txt` дает карту маршрутов, `api-catalog` и OpenAPI/Schema описывают контракты, публичные инструкции закрывают типовые задачи.',
-              'Корневой skill index покрывает навигацию, новости, статус и профили людей.',
-              'У compare свой skill index для фида, страниц поселков, рейтинга и уточнений по источникам.',
+              'Корневой индекс навыков покрывает навигацию, новости, статус и профили людей.',
+              'У Compare свой индекс навыков для ленты, страниц поселков, рейтинга и уточнений по источникам.',
             ]),
           ]),
         ],
@@ -301,6 +275,35 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
 export async function buildHomeMarkdown(): Promise<string> {
   const { news, people, status } = await snapshot();
   const activeStatus = status.active.filter((item) => item.kind === 'incident');
+  const newsHome = registeredSurfaceUrl('news:index');
+  const newsFeed = registeredSurfaceUrl('news:data');
+  const newsRss = registeredSurfaceUrl('news:rss');
+  const newsLlms = registeredSurfaceUrl('news:llms');
+  const newsCatalog = registeredSurfaceUrl('news:api-catalog');
+  const statusHome = registeredSurfaceUrl('status:index');
+  const statusFeed = registeredSurfaceUrl('status:data');
+  const statusRss = registeredSurfaceUrl('status:rss');
+  const statusLlms = registeredSurfaceUrl('status:llms');
+  const statusCatalog = registeredSurfaceUrl('status:api-catalog');
+  const reglamentHome = registeredSurfaceUrl('reglament:index');
+  const reglamentFeed = registeredSurfaceUrl('reglament:data-estimate-2026');
+  const reglamentFullMarkdown = registeredSurfaceUrl('reglament:full-markdown');
+  const reglamentFullDataset = registeredSurfaceUrl('reglament:data-full-2026');
+  const reglamentMarkdown = registeredSurfaceUrl('reglament:index-markdown');
+  const reglamentLlms = registeredSurfaceUrl('reglament:llms');
+  const reglamentCatalog = registeredSurfaceUrl('reglament:api-catalog');
+  const peopleMarkdown = registeredSurfaceUrl('people:index-markdown');
+  const peopleFeed = registeredSurfaceUrl('people:data');
+  const peopleLlms = registeredSurfaceUrl('people:llms');
+  const peopleCatalog = registeredSurfaceUrl('people:api-catalog');
+  const compareHome = registeredSurfaceUrl('compare:index');
+  const compareFeed = registeredSurfaceUrl('compare:data-settlements');
+  const compareLlms = registeredSurfaceUrl('compare:llms');
+  const compareCatalog = registeredSurfaceUrl('compare:api-catalog');
+  const catalog = registeredSurfaceUrl('root:api-catalog');
+  const short = registeredSurfaceUrl('root:llms');
+  const full = registeredSurfaceUrl('root:llms-full');
+  const skills = registeredSurfaceUrl('root:skills');
 
   return serializeMarkdownNodes([
     md.heading(1, 'Шелково Онлайн'),
@@ -309,26 +312,26 @@ export async function buildHomeMarkdown(): Promise<string> {
     ),
     md.heading(2, 'Разделы'),
     markdownList([
-      `[Новости](${absoluteUrl(newsUrl())}) — ${count(news.articles.length, ['статья', 'статьи', 'статей'])}; structured feed: ${absoluteUrl(articlesDataUrl())}; RSS: ${absoluteUrl(newsFeedUrl())}; события: optional \`articles[].events[]\` с article-local \`[event-slug].ics\``,
-      `[Статус](${absoluteUrl(statusUrl())}) — ${count(status.incidents.length, ['запись', 'записи', 'записей'])}, ${count(activeStatus.length, ['активный инцидент', 'активных инцидента', 'активных инцидентов'])}; structured feed: ${absoluteUrl(statusDataUrl())}; RSS: ${absoluteUrl(statusFeedUrl())}`,
-      `[Регламент](${absoluteUrl(reglamentUrl())}) — смета тарифа 2026; structured feed: ${absoluteUrl(reglamentEstimate2026DataUrl())}; full index: ${absoluteUrl(reglamentFullMarkdownUrl())}; full dataset: ${absoluteUrl(reglamentFull2026DataUrl())}; markdown overview: ${absoluteUrl(reglamentMarkdownUrl())}`,
-      `Люди — ${count(people.profiles.length, ['профиль', 'профиля', 'профилей'])}; markdown overview: ${absoluteUrl(peopleMarkdownUrl())}; structured feed: ${absoluteUrl(peopleDataUrl())}; публичного HTML-индекса нет`,
-      `[Compare](${absoluteUrl('/815/compare/')}) — сравнение тарифов поселков и рейтинга; structured feed: ${absoluteUrl('/815/compare/data/settlements.json')}`,
+      `[Новости](${newsHome}) — ${count(news.articles.length, ['статья', 'статьи', 'статей'])}; структурированная лента: ${newsFeed}; RSS: ${newsRss}; события: необязательный \`articles[].events[]\` с локальным для статьи \`[event-slug].ics\``,
+      `[Статус](${statusHome}) — ${count(status.incidents.length, ['запись', 'записи', 'записей'])}, ${count(activeStatus.length, ['активный инцидент', 'активных инцидента', 'активных инцидентов'])}; структурированная лента: ${statusFeed}; RSS: ${statusRss}`,
+      `[Регламент](${reglamentHome}) — смета тарифа 2026; структурированная лента: ${reglamentFeed}; полный индекс: ${reglamentFullMarkdown}; полный набор данных: ${reglamentFullDataset}; Markdown-обзор: ${reglamentMarkdown}`,
+      `Люди — ${count(people.profiles.length, ['профиль', 'профиля', 'профилей'])}; Markdown-обзор: ${peopleMarkdown}; структурированная лента: ${peopleFeed}; публичного HTML-индекса нет`,
+      `[Compare](${compareHome}) — сравнение тарифов поселков и рейтинга; структурированная лента: ${compareFeed}`,
     ]),
-    md.heading(2, 'Agent Discovery'),
+    md.heading(2, 'Обнаружение для агентов'),
     markdownList([
-      `API catalog сайта: ${absoluteUrl(siteApiCatalogUrl())}`,
-      `llms.txt: ${absoluteUrl(siteLlmsUrl())}`,
-      `llms-full.txt: ${absoluteUrl(siteLlmsFullUrl())}`,
-      `Инструкции для автоматического чтения: ${absoluteUrl(siteSkillsUrl())}`,
+      `Каталог API сайта: ${catalog}`,
+      `llms.txt: ${short}`,
+      `llms-full.txt: ${full}`,
+      `Инструкции для автоматического чтения: ${skills}`,
     ]),
-    md.heading(2, 'Section Discovery'),
+    md.heading(2, 'Обнаружение разделов'),
     markdownList([
-      `Новости: ${absoluteUrl(newsLlmsUrl())}, ${absoluteUrl(newsApiCatalogUrl())}`,
-      `Статус: ${absoluteUrl(statusLlmsUrl())}, ${absoluteUrl(statusApiCatalogUrl())}`,
-      `Регламент: ${absoluteUrl(reglamentLlmsUrl())}, ${absoluteUrl(reglamentApiCatalogUrl())}`,
-      `Люди: ${absoluteUrl(peopleLlmsUrl())}, ${absoluteUrl(peopleApiCatalogUrl())}`,
-      `Compare: ${absoluteUrl('/815/compare/llms.txt')}, ${absoluteUrl('/815/compare/.well-known/api-catalog')}`,
+      `Новости: ${newsLlms}, ${newsCatalog}`,
+      `Статус: ${statusLlms}, ${statusCatalog}`,
+      `Регламент: ${reglamentLlms}, ${reglamentCatalog}`,
+      `Люди: ${peopleLlms}, ${peopleCatalog}`,
+      `Compare: ${compareLlms}, ${compareCatalog}`,
     ]),
   ]);
 }
