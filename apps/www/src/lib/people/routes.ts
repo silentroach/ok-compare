@@ -25,6 +25,10 @@ export const personPath = (slug: string): string =>
 export const personMarkdownPath = (slug: string): string =>
   `${personPath(slug)}index.md`;
 
+export const personPattern = (): string => '/people/:slug/';
+
+export const personMarkdownPattern = (): string => '/people/:slug/index.md';
+
 export const peoplePath = (): string => PEOPLE_ROOT;
 
 export const peopleMarkdownPath = (): string => PEOPLE_MARKDOWN;

@@ -480,6 +480,16 @@ export function catalog(root: string): Record<string, unknown> {
         anchor: abs(root, '/'),
         item: [
           {
+            href: abs(root, '/index.md'),
+            type: 'text/markdown',
+            'title*': star('Markdown companion сравнения поселков'),
+          },
+          {
+            href: abs(root, '/rating/index.md'),
+            type: 'text/markdown',
+            'title*': star('Markdown companion методики рейтинга'),
+          },
+          {
             href: abs(root, FEED),
             type: 'application/json',
             'title*': star('Полный машиночитаемый feed поселков'),
@@ -488,6 +498,23 @@ export function catalog(root: string): Record<string, unknown> {
             href: abs(root, EXPLORER),
             type: 'application/json',
             'title*': star('Облегченный explorer feed для списка и карты'),
+          },
+          {
+            href: abs(root, '/llms.txt'),
+            type: 'text/plain',
+            'title*': star('Короткий обзор llms.txt'),
+          },
+          {
+            href: abs(root, '/llms-full.txt'),
+            type: 'text/plain',
+            'title*': star('Подробный обзор llms-full.txt'),
+          },
+          {
+            href: abs(root, '/.well-known/agent-skills/index.json'),
+            type: 'application/json',
+            'title*': star(
+              'Индекс инструкций для автоматического чтения сравнения поселков',
+            ),
           },
         ],
         'service-desc': [

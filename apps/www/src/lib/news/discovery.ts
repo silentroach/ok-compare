@@ -7,6 +7,7 @@ import {
   feedPath,
   llmsFullPath,
   llmsPath,
+  newsMarkdownPath,
   newsPath,
 } from './routes';
 import {
@@ -722,6 +723,11 @@ export function catalog(root: string): Record<string, unknown> {
       {
         anchor: abs(root, newsPath()),
         item: [
+          {
+            href: abs(root, newsMarkdownPath()),
+            type: 'text/markdown',
+            'title*': star('Markdown companion новостей'),
+          },
           {
             href: abs(root, articlesDataPath()),
             type: 'application/json',

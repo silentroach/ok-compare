@@ -2,6 +2,11 @@ import { beforeAll, describe, expect, it } from 'vitest';
 
 import type { StatusIncidentEntry } from './load';
 import type { StatusArea, StatusKind, StatusService } from './schema';
+import type {
+  PublicSurfaceSlice,
+  statusPublicSurfaceSlice as statusPublicSurfaceSliceType,
+} from '@/lib/public-surface';
+import type { expectSectionCatalogMatchesRegistry as expectSectionCatalogMatchesRegistryType } from '@/lib/public-surface/catalog-contract.test-helper';
 
 interface EntryInput {
   readonly id: string;
@@ -31,7 +36,11 @@ const entry = (input: EntryInput): StatusIncidentEntry => ({
 
 let buildStatusDataset: typeof import('./load').buildStatusDataset;
 let buildStatusPayload: typeof import('./discovery').buildStatusPayload;
+let catalog: typeof import('./discovery').catalog;
+let expectSectionCatalogMatchesRegistry: typeof expectSectionCatalogMatchesRegistryType;
 let statusSchema: typeof import('./discovery').schema;
+let statusPublicSurfaceSlice: typeof statusPublicSurfaceSliceType &
+  PublicSurfaceSlice;
 
 beforeAll(async () => {
   Object.assign(import.meta.env, {
@@ -40,7 +49,24 @@ beforeAll(async () => {
   });
 
   ({ buildStatusDataset } = await import('./load'));
-  ({ buildStatusPayload, schema: statusSchema } = await import('./discovery'));
+  ({
+    buildStatusPayload,
+    catalog,
+    schema: statusSchema,
+  } = await import('./discovery'));
+  ({ expectSectionCatalogMatchesRegistry } =
+    await import('@/lib/public-surface/catalog-contract.test-helper'));
+  ({ statusPublicSurfaceSlice } = await import('@/lib/public-surface'));
+});
+
+describe('status API catalog', () => {
+  it('keeps the section API catalog aligned with registry catalog surfaces', () => {
+    expectSectionCatalogMatchesRegistry({
+      catalog,
+      siteRoot: 'https://example.com',
+      slice: statusPublicSurfaceSlice,
+    });
+  });
 });
 
 describe('buildStatusPayload', () => {

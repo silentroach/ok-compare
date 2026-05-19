@@ -66,6 +66,8 @@ const digest = (body: Buffer): string =>
 
 export const siteSkillsUrl = (): string => withBase(SKILLS);
 
+export const siteSkillsPath = (): string => SKILLS;
+
 export async function build(): Promise<SkillsIndex> {
   const skills = await Promise.all(
     names.map(async (id) => {

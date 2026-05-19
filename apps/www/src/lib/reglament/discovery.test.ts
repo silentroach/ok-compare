@@ -3,6 +3,9 @@ import { readFile } from 'node:fs/promises';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { estimate2026 } from '@/data/reglament/estimate-2026';
+import type { expectSectionCatalogMatchesRegistry as expectSectionCatalogMatchesRegistryType } from '@/lib/public-surface/catalog-contract.test-helper';
+import type { PublicSurfaceSlice } from '@/lib/public-surface';
+import type { reglamentPublicSurfaceSlice as reglamentPublicSurfaceSliceType } from '@/lib/reglament/public-surface';
 
 import {
   REGLAMENT_PUBLIC_PATHS,
@@ -27,7 +30,10 @@ import {
 
 let buildReglamentPayload: typeof import('./discovery').buildReglamentPayload;
 let catalog: typeof import('./discovery').catalog;
+let expectSectionCatalogMatchesRegistry: typeof expectSectionCatalogMatchesRegistryType;
 let openapi: typeof import('./discovery').openapi;
+let reglamentPublicSurfaceSlice: typeof reglamentPublicSurfaceSliceType &
+  PublicSurfaceSlice;
 let schema: typeof import('./discovery').schema;
 let self: typeof import('./discovery').self;
 
@@ -52,6 +58,10 @@ beforeAll(async () => {
 
   ({ buildReglamentPayload, catalog, openapi, schema, self } =
     await import('./discovery'));
+  ({ expectSectionCatalogMatchesRegistry } =
+    await import('@/lib/public-surface/catalog-contract.test-helper'));
+  ({ reglamentPublicSurfaceSlice } =
+    await import('@/lib/reglament/public-surface'));
 });
 
 const catalogEntries = (root: string): readonly CatalogEntry[] => {
@@ -104,6 +114,14 @@ const markdownSection = (markdown: string, title: string): string => {
 };
 
 describe('reglament discovery payload', () => {
+  it('keeps the section API catalog aligned with registry catalog surfaces', () => {
+    expectSectionCatalogMatchesRegistry({
+      catalog,
+      siteRoot: 'https://example.com',
+      slice: reglamentPublicSurfaceSlice,
+    });
+  });
+
   it('publishes baseline formulas, source refs and computed values', () => {
     const payload = buildReglamentPayload(estimate2026);
     const rows = payload.sections.flatMap((section) => section.rows);

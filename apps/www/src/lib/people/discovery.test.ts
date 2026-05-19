@@ -1,11 +1,19 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import type { PersonProfile } from './schema';
+import type {
+  peoplePublicSurfaceSlice as peoplePublicSurfaceSliceType,
+  PublicSurfaceSlice,
+} from '@/lib/public-surface';
+import type { expectSectionCatalogMatchesRegistry as expectSectionCatalogMatchesRegistryType } from '@/lib/public-surface/catalog-contract.test-helper';
 
 let buildPeoplePayload: typeof import('./discovery').buildPeoplePayload;
 let catalog: typeof import('./discovery').catalog;
+let expectSectionCatalogMatchesRegistry: typeof expectSectionCatalogMatchesRegistryType;
 let links: typeof import('./discovery').links;
 let openapi: typeof import('./discovery').openapi;
+let peoplePublicSurfaceSlice: typeof peoplePublicSurfaceSliceType &
+  PublicSurfaceSlice;
 let schema: typeof import('./discovery').schema;
 
 const profile = (): PersonProfile => ({
@@ -73,9 +81,20 @@ beforeAll(async () => {
 
   ({ buildPeoplePayload, catalog, links, openapi, schema } =
     await import('./discovery'));
+  ({ expectSectionCatalogMatchesRegistry } =
+    await import('@/lib/public-surface/catalog-contract.test-helper'));
+  ({ peoplePublicSurfaceSlice } = await import('@/lib/public-surface'));
 });
 
 describe('people discovery payload', () => {
+  it('keeps the section API catalog aligned with registry catalog surfaces', () => {
+    expectSectionCatalogMatchesRegistry({
+      catalog,
+      siteRoot: 'https://example.com',
+      slice: peoplePublicSurfaceSlice,
+    });
+  });
+
   it('serializes profiles with mentions, backlinks, and aggregate stats', () => {
     const payload = buildPeoplePayload({ profiles: [profile()] });
 

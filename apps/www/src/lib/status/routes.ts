@@ -32,6 +32,8 @@ const need = (value: string, name: string): string => {
 
 export const statusPath = (): string => STATUS_ROOT;
 
+export const statusMarkdownPath = (): string => STATUS_MARKDOWN;
+
 export const statusDataPath = (): string => STATUS_DATA;
 
 export const statusFeedPath = (): string => STATUS_FEED;
@@ -51,6 +53,17 @@ export const statusServicePath = (service: StatusService): string =>
 
 export const statusIncidentPath = (input: StatusIncidentRouteInput): string =>
   `${STATUS_INCIDENTS_ROOT}${padNumber(input.year, 4)}/${padNumber(input.month, 2)}/${need(input.slug, 'slug')}/`;
+
+export const statusServicePattern = (): string => '/status/:service/';
+
+export const statusServiceMarkdownPattern = (): string =>
+  '/status/:service/index.md';
+
+export const statusIncidentPattern = (): string =>
+  '/status/incidents/:year/:month/:entry/';
+
+export const statusIncidentMarkdownPattern = (): string =>
+  '/status/incidents/:year/:month/:entry/index.md';
 
 export const statusUrl = (): string => withBase(STATUS_ROOT);
 

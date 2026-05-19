@@ -1,0 +1,216 @@
+import type {
+  PublicSurface,
+  PublicSurfaceSlice,
+} from '@/lib/public-surface/types';
+
+import {
+  REGLAMENT_ESTIMATE_DETAILS_MARKDOWN_PATHS,
+  REGLAMENT_SOURCE_PDF_PATHS,
+  reglamentApiCatalogPath,
+  reglamentAssetsPath,
+  reglamentEstimate2026DataPath,
+  reglamentEstimate2026OpenApiPath,
+  reglamentEstimate2026SchemaPath,
+  reglamentFull2026DataPath,
+  reglamentFullAssetsMarkdownPath,
+  reglamentFullChecksMarkdownPath,
+  reglamentFullMarkdownPath,
+  reglamentFullServiceMapMarkdownPath,
+  reglamentFullServicesMarkdownPath,
+  reglamentFullSourcePdfPath,
+  reglamentLlmsFullPath,
+  reglamentLlmsPath,
+  reglamentMarkdownPath,
+  reglamentPath,
+  reglamentServicesPath,
+  reglamentEstimateDetails2026DataPath,
+} from './routes';
+
+const markdownSurface = (
+  id: string,
+  label: string,
+  path: string,
+): PublicSurface => ({
+  id,
+  label,
+  path,
+  mediaType: 'text/markdown',
+  cacheClass: 'markdown',
+  discoveryRoles: ['markdown-companion'],
+  catalogRole: 'item',
+});
+
+const dataSurface = (
+  id: string,
+  label: string,
+  path: string,
+): PublicSurface => ({
+  id,
+  label,
+  path,
+  mediaType: 'application/json',
+  cacheClass: 'data',
+  discoveryRoles: ['data-feed', 'root-catalog'],
+  catalogRole: 'item',
+});
+
+const pdfSurface = (
+  id: string,
+  label: string,
+  path: string,
+): PublicSurface => ({
+  id,
+  label,
+  path,
+  mediaType: 'application/pdf',
+  cacheClass: 'static',
+  discoveryRoles: ['download'],
+  catalogRole: 'item',
+});
+
+export const reglamentPublicSurfaceSlice = {
+  owner: {
+    id: 'reglament',
+    label: 'Регламент',
+    entryPath: reglamentPath(),
+  },
+  surfaces: [
+    {
+      id: 'reglament:index',
+      label: 'Калькулятор тарифа по смете 2026',
+      path: reglamentPath(),
+      mediaType: 'text/html',
+      cacheClass: 'html',
+      discoveryRoles: ['section-entry'],
+      catalogRole: 'anchor',
+    },
+    markdownSurface(
+      'reglament:index-markdown',
+      'Markdown companion регламента',
+      reglamentMarkdownPath(),
+    ),
+    markdownSurface(
+      'reglament:full-markdown',
+      'Markdown полного регламента',
+      reglamentFullMarkdownPath(),
+    ),
+    markdownSurface(
+      'reglament:full-assets-markdown',
+      'Markdown полного регламента: общее имущество',
+      reglamentFullAssetsMarkdownPath(),
+    ),
+    markdownSurface(
+      'reglament:full-services-markdown',
+      'Markdown полного регламента: услуги',
+      reglamentFullServicesMarkdownPath(),
+    ),
+    markdownSurface(
+      'reglament:full-service-map-markdown',
+      'Markdown полного регламента: сопоставление услуг со сметой',
+      reglamentFullServiceMapMarkdownPath(),
+    ),
+    markdownSurface(
+      'reglament:full-checks-markdown',
+      'Markdown полного регламента: проверки и допущения',
+      reglamentFullChecksMarkdownPath(),
+    ),
+    ...REGLAMENT_ESTIMATE_DETAILS_MARKDOWN_PATHS.map((path, index) =>
+      markdownSurface(
+        `reglament:details-markdown-${index}`,
+        'Markdown детальной сметы регламента',
+        path,
+      ),
+    ),
+    dataSurface(
+      'reglament:data-estimate-2026',
+      'Основной машиночитаемый JSON сметы регламента 2026',
+      reglamentEstimate2026DataPath(),
+    ),
+    dataSurface(
+      'reglament:data-estimate-details-2026',
+      'Детальный машиночитаемый JSON сметы регламента 2026',
+      reglamentEstimateDetails2026DataPath(),
+    ),
+    dataSurface(
+      'reglament:data-full-2026',
+      'Набор данных полного регламента',
+      reglamentFull2026DataPath(),
+    ),
+    {
+      id: 'reglament:assets',
+      label: 'Страница общего имущества из полного регламента',
+      path: reglamentAssetsPath(),
+      mediaType: 'text/html',
+      cacheClass: 'html',
+      discoveryRoles: ['detail-page'],
+      catalogRole: 'item',
+    },
+    {
+      id: 'reglament:services',
+      label: 'Страница услуг и сопоставления со сметой',
+      path: reglamentServicesPath(),
+      mediaType: 'text/html',
+      cacheClass: 'html',
+      discoveryRoles: ['detail-page'],
+      catalogRole: 'item',
+    },
+    {
+      id: 'reglament:llms',
+      label: 'Агентный обзор регламента',
+      path: reglamentLlmsPath(),
+      mediaType: 'text/plain',
+      cacheClass: 'static',
+      discoveryRoles: ['llms', 'root-catalog'],
+      catalogRole: 'item',
+    },
+    {
+      id: 'reglament:llms-full',
+      label: 'Подробный обзор регламента',
+      path: reglamentLlmsFullPath(),
+      mediaType: 'text/plain',
+      cacheClass: 'static',
+      discoveryRoles: ['llms'],
+      catalogRole: 'item',
+    },
+    {
+      id: 'reglament:schema',
+      label: 'JSON Schema для данных сметы регламента 2026',
+      path: reglamentEstimate2026SchemaPath(),
+      mediaType: 'application/schema+json',
+      cacheClass: 'schema',
+      discoveryRoles: ['schema'],
+      catalogRole: 'service-desc',
+    },
+    {
+      id: 'reglament:openapi',
+      label: 'OpenAPI для данных сметы регламента 2026',
+      path: reglamentEstimate2026OpenApiPath(),
+      mediaType: 'application/vnd.oai.openapi+json',
+      cacheClass: 'schema',
+      discoveryRoles: ['schema'],
+      catalogRole: 'service-desc',
+    },
+    {
+      id: 'reglament:api-catalog',
+      label: 'API catalog регламента',
+      path: reglamentApiCatalogPath(),
+      mediaType: 'application/linkset+json',
+      cacheClass: 'catalog',
+      discoveryRoles: ['api-catalog', 'root-catalog'],
+      catalogRole: 'service-desc',
+      sectionCatalogRole: false,
+    },
+    pdfSurface(
+      'reglament:source-full-pdf',
+      'Исходный PDF полного регламента',
+      reglamentFullSourcePdfPath(),
+    ),
+    ...REGLAMENT_SOURCE_PDF_PATHS.map((path) =>
+      pdfSurface(
+        `reglament:source-pdf:${path.split('/').at(-1) ?? path}`,
+        'Исходный PDF сметы регламента',
+        path,
+      ),
+    ),
+  ],
+} satisfies PublicSurfaceSlice;

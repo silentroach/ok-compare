@@ -17,6 +17,8 @@ const ARTICLES_OPENAPI = '/news/openapi/articles.openapi.json';
 
 export const newsPath = (): string => NEWS_ROOT;
 
+export const newsMarkdownPath = (): string => NEWS_MARKDOWN;
+
 export const articlesDataPath = (): string => DATA_ARTICLES;
 
 export const feedPath = (): string => FEED;
@@ -30,6 +32,10 @@ export const apiCatalogPath = (): string => API_CATALOG;
 export const articlesSchemaPath = (): string => ARTICLES_SCHEMA;
 
 export const articlesOpenApiPath = (): string => ARTICLES_OPENAPI;
+
+export const tagsPath = (): string => TAGS_ROOT;
+
+export const tagsMarkdownPath = (): string => TAGS_MARKDOWN;
 
 export interface NewsArticleRouteInput {
   readonly year: number | string;
@@ -71,6 +77,26 @@ const articlePath = (input: NewsArticleRouteInput): string =>
   `${monthPath(input.year, input.month)}${need(input.entry, 'entry')}/`;
 
 const tagPath = (value: string): string => `/news/tags/${tagKey(value)}/`;
+
+export const yearPattern = (): string => '/news/:year/';
+
+export const yearMarkdownPattern = (): string => '/news/:year/index.md';
+
+export const monthPattern = (): string => '/news/:year/:month/';
+
+export const monthMarkdownPattern = (): string => '/news/:year/:month/index.md';
+
+export const articlePattern = (): string => '/news/:year/:month/:entry/';
+
+export const articleMarkdownPattern = (): string =>
+  '/news/:year/:month/:entry/index.md';
+
+export const articleEventIcsPattern = (): string =>
+  '/news/:year/:month/:entry/:event.ics';
+
+export const tagPattern = (): string => '/news/tags/:tag/';
+
+export const tagMarkdownPattern = (): string => '/news/tags/:tag/index.md';
 
 export const newsUrl = (): string => withBase(NEWS_ROOT);
 
