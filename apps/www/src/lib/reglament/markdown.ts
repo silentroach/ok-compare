@@ -113,7 +113,7 @@ export function buildReglamentMarkdown(estimate: Estimate): string {
       linkedUrlRow('JSON сметы', reglamentEstimate2026DataUrl()),
       linkedUrlRow('JSON Schema', reglamentEstimate2026SchemaUrl()),
       linkedUrlRow('OpenAPI', reglamentEstimate2026OpenApiUrl()),
-      linkedUrlRow('API catalog', reglamentApiCatalogUrl()),
+      linkedUrlRow('Каталог API', reglamentApiCatalogUrl()),
       linkedUrlRow('llms.txt', reglamentLlmsUrl()),
       linkedUrlRow('llms-full.txt', reglamentLlmsFullUrl()),
       ...payload.sources.map((item) =>

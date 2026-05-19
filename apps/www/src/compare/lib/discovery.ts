@@ -62,7 +62,7 @@ export function schema(root: string): Record<string, unknown> {
     $id: abs(root, SCHEMA),
     title: 'SettlementsPayload',
     description:
-      'Read-only полный feed поселков с detail-полями, вычисленными расстояниями, рейтингом и агрегатами.',
+      'Полная лента поселков только для чтения с детальными полями, вычисленными расстояниями, рейтингом и агрегатами.',
     type: 'object',
     additionalProperties: false,
     required: ['settlements', 'stats', 'comparisons'],
@@ -436,7 +436,7 @@ export function openapi(root: string): Record<string, unknown> {
       title: 'Сравни.Шелково Settlements Feed',
       version: '1.0.0',
       description:
-        'Read-only OpenAPI wrapper для полного feed поселков с вычисленными расстояниями, пригодный для автоматического discovery.',
+        'OpenAPI-описание полной ленты поселков только для чтения с вычисленными расстояниями, пригодное для автоматического обнаружения.',
     },
     servers: [
       {
@@ -447,12 +447,12 @@ export function openapi(root: string): Record<string, unknown> {
       [FEED]: {
         get: {
           operationId: 'getSettlements',
-          summary: 'Read full settlements feed',
+          summary: 'Получить полную ленту поселков',
           description:
-            'Возвращает полный feed поселков с detail-полями, distance, rating, stats и comparisons.',
+            'Возвращает полную ленту поселков с детальными полями, расстояниями, рейтингом, статистикой и сравнениями.',
           responses: {
             200: {
-              description: 'Full settlements feed',
+              description: 'Полная лента поселков',
               content: {
                 'application/json': {
                   schema: {
@@ -482,22 +482,22 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, '/index.md'),
             type: 'text/markdown',
-            'title*': star('Markdown companion сравнения поселков'),
+            'title*': star('Markdown-версия сравнения поселков'),
           },
           {
             href: abs(root, '/rating/index.md'),
             type: 'text/markdown',
-            'title*': star('Markdown companion методики рейтинга'),
+            'title*': star('Markdown-версия методики рейтинга'),
           },
           {
             href: abs(root, FEED),
             type: 'application/json',
-            'title*': star('Полный машиночитаемый feed поселков'),
+            'title*': star('Полная машиночитаемая лента поселков'),
           },
           {
             href: abs(root, EXPLORER),
             type: 'application/json',
-            'title*': star('Облегченный explorer feed для списка и карты'),
+            'title*': star('Облегченная лента explorer для списка и карты'),
           },
           {
             href: abs(root, '/llms.txt'),
@@ -521,12 +521,12 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, SCHEMA),
             type: 'application/schema+json',
-            'title*': star('JSON Schema для полного feed'),
+            'title*': star('JSON Schema полной ленты'),
           },
           {
             href: abs(root, OPENAPI),
             type: OAS,
-            'title*': star('OpenAPI для полного feed'),
+            'title*': star('OpenAPI полной ленты'),
           },
         ],
       },

@@ -331,7 +331,7 @@ export function schema(root: string): Record<string, unknown> {
     $id: abs(root, reglamentEstimate2026SchemaPath()),
     title: ESTIMATE_PAYLOAD_SCHEMA,
     description:
-      'JSON сметы регламента 2026 только для чтения: baseline, формулы, source refs и computed значения в рублях за сотку в месяц.',
+      'JSON сметы регламента 2026 только для чтения: базовая смета, формулы, ссылки на источники и расчетные значения в рублях за сотку в месяц.',
     type: 'object',
     additionalProperties: false,
     required: [
@@ -585,7 +585,7 @@ export function openapi(root: string): Record<string, unknown> {
       title: 'Шелково Reglament Estimate 2026 JSON',
       version: '1.0.0',
       description:
-        'OpenAPI-описание read-only JSON /815/regulation/data/estimate-2026.json: baseline сметы, формулы, source refs и computed значения.',
+        'OpenAPI-описание JSON /815/regulation/data/estimate-2026.json только для чтения: базовая смета, формулы, ссылки на источники и расчетные значения.',
     },
     servers: [
       {
@@ -598,10 +598,10 @@ export function openapi(root: string): Record<string, unknown> {
           operationId: 'getReglamentEstimate2026',
           summary: 'Read reglament estimate 2026 JSON',
           description:
-            'Возвращает нормализованную смету регламента 2026: официальный baseline, формулы пересчета, секции, строки, source refs и computed тарифы.',
+            'Возвращает нормализованную смету регламента 2026: официальную базу, формулы пересчета, секции, строки, ссылки на источники и расчетные тарифы.',
           responses: {
             200: {
-              description: 'Full reglament estimate 2026 JSON',
+              description: 'Полный JSON сметы регламента 2026',
               content: {
                 'application/json': {
                   schema: {
@@ -631,15 +631,13 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, reglamentMarkdownPath()),
             type: 'text/markdown',
-            'title*': star(
-              'Markdown companion калькулятора тарифа по смете 2026',
-            ),
+            'title*': star('Markdown-версия калькулятора тарифа по смете 2026'),
           },
           {
             href: abs(root, reglamentFullMarkdownPath()),
             type: 'text/markdown',
             'title*': star(
-              'Индекс Markdown companion полного регламента содержания Шелково',
+              'Индекс Markdown-версий полного регламента содержания Шелково',
             ),
           },
           {

@@ -57,7 +57,7 @@ export const comparePublicSurfaceSlice = {
     },
     {
       id: 'compare:index-markdown',
-      label: 'Markdown companion сравнения поселков',
+      label: 'Markdown-версия сравнения поселков',
       path: compareMarkdownPath(),
       mediaType: 'text/markdown',
       cacheClass: 'markdown',
@@ -66,7 +66,7 @@ export const comparePublicSurfaceSlice = {
     },
     {
       id: 'compare:rating-markdown',
-      label: 'Markdown companion методики рейтинга',
+      label: 'Markdown-версия методики рейтинга',
       path: compareRatingMarkdownPath(),
       mediaType: 'text/markdown',
       cacheClass: 'markdown',
@@ -75,7 +75,7 @@ export const comparePublicSurfaceSlice = {
     },
     {
       id: 'compare:settlement-markdown',
-      label: 'Markdown companion поселка',
+      label: 'Markdown-версия поселка',
       routePattern: compareSettlementMarkdownPattern(),
       mediaType: 'text/markdown',
       cacheClass: 'markdown',
@@ -83,7 +83,7 @@ export const comparePublicSurfaceSlice = {
     },
     {
       id: 'compare:data-settlements',
-      label: 'Полный машиночитаемый feed поселков',
+      label: 'Полная машиночитаемая лента поселков',
       path: compareSettlementsDataPath(),
       mediaType: 'application/json',
       cacheClass: 'data',
@@ -92,7 +92,7 @@ export const comparePublicSurfaceSlice = {
     },
     {
       id: 'compare:data-explorer',
-      label: 'Облегченный explorer feed для списка и карты',
+      label: 'Облегченная лента explorer для списка и карты',
       path: compareExplorerDataPath(),
       mediaType: 'application/json',
       cacheClass: 'data',
@@ -101,7 +101,7 @@ export const comparePublicSurfaceSlice = {
     },
     {
       id: 'compare:schema',
-      label: 'JSON Schema для полного feed поселков',
+      label: 'JSON Schema полной ленты поселков',
       path: compareSchemaPath(),
       mediaType: 'application/schema+json',
       cacheClass: 'schema',
@@ -110,7 +110,7 @@ export const comparePublicSurfaceSlice = {
     },
     {
       id: 'compare:openapi',
-      label: 'OpenAPI для полного feed поселков',
+      label: 'OpenAPI полной ленты поселков',
       path: compareOpenApiPath(),
       mediaType: OAS,
       cacheClass: 'schema',
@@ -119,7 +119,7 @@ export const comparePublicSurfaceSlice = {
     },
     {
       id: 'compare:api-catalog',
-      label: 'API catalog сравнения поселков',
+      label: 'Каталог API сравнения поселков',
       path: compareApiCatalogPath(),
       mediaType: 'application/linkset+json',
       cacheClass: 'catalog',

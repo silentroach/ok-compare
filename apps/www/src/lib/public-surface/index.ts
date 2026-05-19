@@ -127,7 +127,7 @@ export const rootPublicSurfaceSlice = {
     },
     {
       id: 'root:index-markdown',
-      label: 'Markdown companion корневой страницы',
+      label: 'Markdown-версия корневой страницы',
       path: siteMarkdownPath(),
       mediaType: 'text/markdown',
       cacheClass: 'markdown',
@@ -154,7 +154,7 @@ export const rootPublicSurfaceSlice = {
     },
     {
       id: 'root:api-catalog',
-      label: 'API catalog сайта',
+      label: 'Каталог API сайта',
       path: siteApiCatalogPath(),
       mediaType: 'application/linkset+json',
       cacheClass: 'catalog',
@@ -192,7 +192,7 @@ export const newsPublicSurfaceSlice = {
     },
     {
       id: 'news:index-markdown',
-      label: 'Markdown companion новостей',
+      label: 'Markdown-версия новостей',
       path: newsMarkdownPath(),
       mediaType: 'text/markdown',
       cacheClass: 'markdown',
@@ -209,7 +209,7 @@ export const newsPublicSurfaceSlice = {
     },
     {
       id: 'news:year-markdown',
-      label: 'Markdown companion годового архива новостей',
+      label: 'Markdown-версия годового архива новостей',
       routePattern: yearMarkdownPattern(),
       mediaType: 'text/markdown',
       cacheClass: 'markdown',
@@ -225,7 +225,7 @@ export const newsPublicSurfaceSlice = {
     },
     {
       id: 'news:month-markdown',
-      label: 'Markdown companion месячного архива новостей',
+      label: 'Markdown-версия месячного архива новостей',
       routePattern: monthMarkdownPattern(),
       mediaType: 'text/markdown',
       cacheClass: 'markdown',
@@ -241,7 +241,7 @@ export const newsPublicSurfaceSlice = {
     },
     {
       id: 'news:article-markdown',
-      label: 'Markdown companion новости',
+      label: 'Markdown-версия новости',
       routePattern: articleMarkdownPattern(),
       mediaType: 'text/markdown',
       cacheClass: 'markdown',
@@ -265,7 +265,7 @@ export const newsPublicSurfaceSlice = {
     },
     {
       id: 'news:tags-markdown',
-      label: 'Markdown companion тегов новостей',
+      label: 'Markdown-версия тегов новостей',
       path: tagsMarkdownPath(),
       mediaType: 'text/markdown',
       cacheClass: 'markdown',
@@ -281,7 +281,7 @@ export const newsPublicSurfaceSlice = {
     },
     {
       id: 'news:tag-markdown',
-      label: 'Markdown companion тега новостей',
+      label: 'Markdown-версия тега новостей',
       routePattern: tagMarkdownPattern(),
       mediaType: 'text/markdown',
       cacheClass: 'markdown',
@@ -289,7 +289,7 @@ export const newsPublicSurfaceSlice = {
     },
     {
       id: 'news:data',
-      label: 'Основной машиночитаемый feed новостей',
+      label: 'Основная машиночитаемая лента новостей',
       path: articlesDataPath(),
       mediaType: 'application/json',
       cacheClass: 'data',
@@ -307,7 +307,7 @@ export const newsPublicSurfaceSlice = {
     },
     {
       id: 'news:schema',
-      label: 'JSON Schema для news feed',
+      label: 'JSON Schema ленты новостей',
       path: articlesSchemaPath(),
       mediaType: 'application/schema+json',
       cacheClass: 'schema',
@@ -316,7 +316,7 @@ export const newsPublicSurfaceSlice = {
     },
     {
       id: 'news:openapi',
-      label: 'OpenAPI для news feed',
+      label: 'OpenAPI ленты новостей',
       path: articlesOpenApiPath(),
       mediaType: 'application/vnd.oai.openapi+json',
       cacheClass: 'schema',
@@ -325,7 +325,7 @@ export const newsPublicSurfaceSlice = {
     },
     {
       id: 'news:api-catalog',
-      label: 'API catalog новостей',
+      label: 'Каталог API новостей',
       path: newsApiCatalogPath(),
       mediaType: 'application/linkset+json',
       cacheClass: 'catalog',
@@ -372,7 +372,7 @@ export const statusPublicSurfaceSlice = {
     },
     {
       id: 'status:index-markdown',
-      label: 'Markdown companion статуса',
+      label: 'Markdown-версия статуса',
       path: statusMarkdownPath(),
       mediaType: 'text/markdown',
       cacheClass: 'markdown',
@@ -389,7 +389,7 @@ export const statusPublicSurfaceSlice = {
     },
     {
       id: 'status:service-markdown',
-      label: 'Markdown companion сервиса',
+      label: 'Markdown-версия сервиса',
       routePattern: statusServiceMarkdownPattern(),
       mediaType: 'text/markdown',
       cacheClass: 'markdown',
@@ -405,7 +405,7 @@ export const statusPublicSurfaceSlice = {
     },
     {
       id: 'status:incident-markdown',
-      label: 'Markdown companion инцидента',
+      label: 'Markdown-версия инцидента',
       routePattern: statusIncidentMarkdownPattern(),
       mediaType: 'text/markdown',
       cacheClass: 'markdown',
@@ -413,7 +413,7 @@ export const statusPublicSurfaceSlice = {
     },
     {
       id: 'status:data',
-      label: 'Основной машиночитаемый feed статуса',
+      label: 'Основная машиночитаемая лента статуса',
       path: statusDataPath(),
       mediaType: 'application/json',
       cacheClass: 'data',
@@ -431,7 +431,7 @@ export const statusPublicSurfaceSlice = {
     },
     {
       id: 'status:schema',
-      label: 'JSON Schema для status feed',
+      label: 'JSON Schema ленты статуса',
       path: statusSchemaPath(),
       mediaType: 'application/schema+json',
       cacheClass: 'schema',
@@ -440,7 +440,7 @@ export const statusPublicSurfaceSlice = {
     },
     {
       id: 'status:openapi',
-      label: 'OpenAPI для status feed',
+      label: 'OpenAPI ленты статуса',
       path: statusOpenApiPath(),
       mediaType: 'application/vnd.oai.openapi+json',
       cacheClass: 'schema',
@@ -449,7 +449,7 @@ export const statusPublicSurfaceSlice = {
     },
     {
       id: 'status:api-catalog',
-      label: 'API catalog статуса',
+      label: 'Каталог API статуса',
       path: statusApiCatalogPath(),
       mediaType: 'application/linkset+json',
       cacheClass: 'catalog',
@@ -487,7 +487,7 @@ export const peoplePublicSurfaceSlice = {
   surfaces: [
     {
       id: 'people:index-markdown',
-      label: 'Markdown overview профилей людей без публичного HTML index',
+      label: 'Markdown-обзор профилей людей без публичного HTML-индекса',
       path: peopleMarkdownPath(),
       mediaType: 'text/markdown',
       cacheClass: 'markdown',
@@ -504,7 +504,7 @@ export const peoplePublicSurfaceSlice = {
     },
     {
       id: 'people:profile-markdown',
-      label: 'Markdown companion профиля человека',
+      label: 'Markdown-версия профиля человека',
       routePattern: personMarkdownPattern(),
       mediaType: 'text/markdown',
       cacheClass: 'markdown',
@@ -512,7 +512,7 @@ export const peoplePublicSurfaceSlice = {
     },
     {
       id: 'people:data',
-      label: 'Основной машиночитаемый feed профилей людей',
+      label: 'Основная машиночитаемая лента профилей людей',
       path: peopleDataPath(),
       mediaType: 'application/json',
       cacheClass: 'data',
@@ -521,7 +521,7 @@ export const peoplePublicSurfaceSlice = {
     },
     {
       id: 'people:schema',
-      label: 'JSON Schema для people feed',
+      label: 'JSON Schema ленты профилей людей',
       path: peopleSchemaPath(),
       mediaType: 'application/schema+json',
       cacheClass: 'schema',
@@ -530,7 +530,7 @@ export const peoplePublicSurfaceSlice = {
     },
     {
       id: 'people:openapi',
-      label: 'OpenAPI для people feed',
+      label: 'OpenAPI ленты профилей людей',
       path: peopleOpenApiPath(),
       mediaType: 'application/vnd.oai.openapi+json',
       cacheClass: 'schema',
@@ -539,7 +539,7 @@ export const peoplePublicSurfaceSlice = {
     },
     {
       id: 'people:api-catalog',
-      label: 'API catalog профилей людей',
+      label: 'Каталог API профилей людей',
       path: peopleApiCatalogPath(),
       mediaType: 'application/linkset+json',
       cacheClass: 'catalog',

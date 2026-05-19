@@ -56,8 +56,8 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
             markdownList([
               `Главная: ${home}`,
               `Методика рейтинга: ${rating}`,
-              `Основной JSON feed: ${feed}`,
-              `Облегченный explorer feed: ${explorer}`,
+              `Основная JSON-лента: ${feed}`,
+              `Облегченная лента explorer: ${explorer}`,
               `Индекс инструкций для автоматического чтения: ${skills}`,
               `Расширенная версия этого текста: ${full}`,
               'Примеры детальных страниц:',
@@ -67,8 +67,8 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           llmsSection('Что открывать первым', [
             markdownList([
               'Для анализа всех поселков используйте `data/settlements.json`.',
-              '`data/explorer.json` нужен только для облегченного списка, карты и минимального payload.',
-              'Список `sources` остается на детальных страницах и не входит в общий feed.',
+              '`data/explorer.json` нужен только для облегченного списка, карты и минимального набора данных.',
+              'Список `sources` остается на детальных страницах и не входит в общую ленту.',
               'Если нужен первоисточник или человекочитаемый контекст, переходите на `/settlements/[slug]/`.',
             ]),
           ]),
@@ -98,8 +98,8 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
               `Короткий обзор llms.txt: ${short}`,
               `Подробный обзор llms-full.txt: ${full}`,
               `Методика рейтинга: ${rating}`,
-              `Основной JSON feed: ${feed}`,
-              `Облегченный explorer feed: ${explorer}`,
+              `Основная JSON-лента: ${feed}`,
+              `Облегченная лента explorer: ${explorer}`,
               `Индекс инструкций для автоматического чтения: ${skills}`,
               'Примеры детальных страниц поселков:',
               ...refs(list),
@@ -107,19 +107,19 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           ]),
           llmsSection('Описание data/settlements.json', [
             markdownList([
-              'Это основной structured feed для массового анализа поселков.',
-              'Структура `settlements[]` включает подтвержденные поля карточки поселка: `name`, `short_name`, `slug`, `website`, `telegram`, `management_company`, полный `location`, полный `tariff`, опциональный блок `lots`, `water_in_tariff`, `rabstvo`, `infrastructure`, `common_spaces`, `service_model`, вычисленное поле `rating` и объект `distance` с `moscow_km`, `mkad_km`, `shelkovo_km`.',
+              'Это основная структурированная лента для массового анализа поселков.',
+              'Структура `settlements[]` включает подтвержденные поля карточки поселка: `name`, `short_name`, `slug`, `website`, `telegram`, `management_company`, полный `location`, полный `tariff`, необязательный блок `lots`, `water_in_tariff`, `rabstvo`, `infrastructure`, `common_spaces`, `service_model`, вычисленное поле `rating` и объект `distance` с `moscow_km`, `mkad_km`, `shelkovo_km`.',
               'Поле `rating` сериализуется как число `0..100` и служит техническим прокси качества среды для сортировки и сравнения.',
               'Объект `comparisons` индексируется по `slug` и содержит `tariffDelta`, `tariffDeltaPercent` и `isCheaper` относительно базового поселка Шелково.',
               'Объект `stats` содержит агрегированные показатели по тарифам, отдельную peer-медиану для рейтинговой группы Шелково и общее число поселков.',
-              'Список первоисточников `sources` в общий feed не включен; за ним нужно идти на detail-страницу поселка.',
+              'Список первоисточников `sources` в общую ленту не включен; за ним нужно идти на детальную страницу поселка.',
             ]),
           ]),
           llmsSection('Описание data/explorer.json', [
             markdownList([
-              'Это отдельный облегченный feed для главного списка и карты, а не основной источник для анализа.',
-              'Его `settlements[]` включает только `name`, `short_name`, `slug`, `rating`, `is_baseline`, `location.lat`, `location.lng`, `location.district`, `tariff.normalized_per_sotka_month`, `tariff.normalized_is_estimate`, а также опциональные `rabstvo` и сокращенный `management_company`.',
-              'Используйте его только когда нужен минимальный payload для массовой первичной выборки или повторения логики главной страницы.',
+              'Это отдельная облегченная лента для главного списка и карты, а не основной источник для анализа.',
+              'Его `settlements[]` включает только `name`, `short_name`, `slug`, `rating`, `is_baseline`, `location.lat`, `location.lng`, `location.district`, `tariff.normalized_per_sotka_month`, `tariff.normalized_is_estimate`, а также необязательные `rabstvo` и сокращенный `management_company`.',
+              'Используйте его только когда нужен минимальный набор данных для массовой первичной выборки или повторения логики главной страницы.',
             ]),
           ]),
           llmsSection('Детальные страницы поселков', [
@@ -143,7 +143,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
               'Если факт не подтвержден источником, поле может быть опущено.',
               'Отсутствие поля означает «неизвестно», а не «точно нет».',
               'Основной язык сайта русский; названия поселков, разделов и часть полей заданы по-русски.',
-              '`data/explorer.json` оптимизирован для списка и карты и не заменяет полный feed `data/settlements.json`.',
+              '`data/explorer.json` оптимизирован для списка и карты и не заменяет полную ленту `data/settlements.json`.',
             ]),
           ]),
         ],

@@ -86,49 +86,49 @@ export const reglamentPublicSurfaceSlice = {
     },
     markdownSurface(
       'reglament:index-markdown',
-      'Markdown companion регламента',
+      'Markdown-версия регламента',
       reglamentMarkdownPath(),
     ),
     markdownSurface(
       'reglament:full-markdown',
-      'Markdown полного регламента',
+      'Markdown-версия полного регламента',
       reglamentFullMarkdownPath(),
     ),
     markdownSurface(
       'reglament:full-assets-markdown',
-      'Markdown полного регламента: общее имущество',
+      'Markdown-версия полного регламента: общее имущество',
       reglamentFullAssetsMarkdownPath(),
     ),
     markdownSurface(
       'reglament:full-services-markdown',
-      'Markdown полного регламента: услуги',
+      'Markdown-версия полного регламента: услуги',
       reglamentFullServicesMarkdownPath(),
     ),
     markdownSurface(
       'reglament:full-service-map-markdown',
-      'Markdown полного регламента: сопоставление услуг со сметой',
+      'Markdown-версия полного регламента: сопоставление услуг со сметой',
       reglamentFullServiceMapMarkdownPath(),
     ),
     markdownSurface(
       'reglament:full-checks-markdown',
-      'Markdown полного регламента: проверки и допущения',
+      'Markdown-версия полного регламента: проверки и допущения',
       reglamentFullChecksMarkdownPath(),
     ),
     ...REGLAMENT_ESTIMATE_DETAILS_MARKDOWN_PATHS.map((path, index) =>
       markdownSurface(
         `reglament:details-markdown-${index}`,
-        'Markdown детальной сметы регламента',
+        'Markdown-версия детальной сметы регламента',
         path,
       ),
     ),
     dataSurface(
       'reglament:data-estimate-2026',
-      'Основной машиночитаемый JSON сметы регламента 2026',
+      'Основной машиночитаемый JSON-файл сметы регламента 2026',
       reglamentEstimate2026DataPath(),
     ),
     dataSurface(
       'reglament:data-estimate-details-2026',
-      'Детальный машиночитаемый JSON сметы регламента 2026',
+      'Детальный машиночитаемый JSON-файл сметы регламента 2026',
       reglamentEstimateDetails2026DataPath(),
     ),
     dataSurface(
@@ -192,7 +192,7 @@ export const reglamentPublicSurfaceSlice = {
     },
     {
       id: 'reglament:api-catalog',
-      label: 'API catalog регламента',
+      label: 'Каталог API регламента',
       path: reglamentApiCatalogPath(),
       mediaType: 'application/linkset+json',
       cacheClass: 'catalog',

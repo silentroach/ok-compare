@@ -30,9 +30,9 @@ describe('reglament llms', () => {
         ## Главные URL
 
         - Раздел: <https://example.com/815/regulation/>
-        - Markdown companion: <https://example.com/815/regulation/index.md>
-        - Детальная смета Markdown: <https://example.com/815/regulation/details.md>
-        - Темы детальной сметы Markdown: <https://example.com/815/regulation/details/materials.md>, <https://example.com/815/regulation/details/machines.md>, <https://example.com/815/regulation/details/labor.md>, <https://example.com/815/regulation/details/checks.md>"
+        - Markdown-версия: <https://example.com/815/regulation/index.md>
+        - Markdown-версия детальной сметы: <https://example.com/815/regulation/details.md>
+        - Темы детальной сметы в Markdown: <https://example.com/815/regulation/details/materials.md>, <https://example.com/815/regulation/details/machines.md>, <https://example.com/815/regulation/details/labor.md>, <https://example.com/815/regulation/details/checks.md>"
       `);
   });
 });

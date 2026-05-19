@@ -237,7 +237,7 @@ export function schema(root: string): Record<string, unknown> {
     $id: abs(root, peopleSchemaPath()),
     title: 'PeoplePayload',
     description:
-      'Read-only полный feed профилей людей с публичными контактами, mentions и backlinks по всему сайту. Mentions учитывают `@slug`, `@slug:case` и `[текст](@slug)`; `[текст](@slug:case)` не поддерживается.',
+      'Полная лента профилей людей только для чтения с публичными контактами, упоминаниями и обратными ссылками по всему сайту. Упоминания учитывают `@slug`, `@slug:case` и `[текст](@slug)`; `[текст](@slug:case)` не поддерживается.',
     type: 'object',
     additionalProperties: false,
     required: ['stats', 'profiles'],
@@ -389,7 +389,7 @@ export function openapi(root: string): Record<string, unknown> {
       title: 'Шелково People Feed',
       version: '1.0.0',
       description:
-        'Read-only OpenAPI wrapper для /people/data/people.json с публичными профилями, contacts, mentions и backlinks. Mentions учитывают `@slug`, `@slug:case` и `[текст](@slug)`; `[текст](@slug:case)` не поддерживается.',
+        'OpenAPI-описание /people/data/people.json только для чтения с публичными профилями, контактами, упоминаниями и обратными ссылками. Упоминания учитывают `@slug`, `@slug:case` и `[текст](@slug)`; `[текст](@slug:case)` не поддерживается.',
     },
     servers: [
       {
@@ -400,12 +400,12 @@ export function openapi(root: string): Record<string, unknown> {
       [peopleDataPath()]: {
         get: {
           operationId: 'getPeopleProfiles',
-          summary: 'Read full people feed',
+          summary: 'Получить полную ленту профилей людей',
           description:
-            'Возвращает основной structured feed профилей людей с контактами, mentions и backlinks. Mentions учитывают `@slug`, `@slug:case` и `[текст](@slug)`; `[текст](@slug:case)` не поддерживается.',
+            'Возвращает основную структурированную ленту профилей людей с контактами, упоминаниями и обратными ссылками. Упоминания учитывают `@slug`, `@slug:case` и `[текст](@slug)`; `[текст](@slug:case)` не поддерживается.',
           responses: {
             200: {
-              description: 'Full people feed',
+              description: 'Полная лента профилей людей',
               content: {
                 'application/json': {
                   schema: {
@@ -436,13 +436,13 @@ export function catalog(root: string): Record<string, unknown> {
             href: abs(root, peopleMarkdownPath()),
             type: 'text/markdown',
             'title*': star(
-              'Markdown overview профилей людей без публичного HTML index',
+              'Markdown-обзор профилей людей без публичного HTML-индекса',
             ),
           },
           {
             href: abs(root, peopleDataPath()),
             type: 'application/json',
-            'title*': star('Основной машиночитаемый feed профилей людей'),
+            'title*': star('Основная машиночитаемая лента профилей людей'),
           },
           {
             href: abs(root, peopleLlmsPath()),
@@ -459,12 +459,12 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, peopleSchemaPath()),
             type: 'application/schema+json',
-            'title*': star('JSON Schema для people feed'),
+            'title*': star('JSON Schema ленты профилей людей'),
           },
           {
             href: abs(root, peopleOpenApiPath()),
             type: OAS,
-            'title*': star('OpenAPI для people feed'),
+            'title*': star('OpenAPI ленты профилей людей'),
           },
         ],
       },

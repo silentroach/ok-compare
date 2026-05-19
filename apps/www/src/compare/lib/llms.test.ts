@@ -44,8 +44,8 @@ describe('compare llms', () => {
 
       - Главная: <https://example.com/815/compare/>
       - Методика рейтинга: <https://example.com/815/compare/rating/>
-      - Основной JSON feed: <https://example.com/815/compare/data/settlements.json>
-      - Облегченный explorer feed: <https://example.com/815/compare/data/explorer.json>
+      - Основная JSON-лента: <https://example.com/815/compare/data/settlements.json>
+      - Облегченная лента explorer: <https://example.com/815/compare/data/explorer.json>
       - Индекс инструкций для автоматического чтения: <https://example.com/815/compare/.well-known/agent-skills/index.json>
       - Расширенная версия этого текста: <https://example.com/815/compare/llms-full.txt>
       - Примеры детальных страниц:
@@ -56,8 +56,8 @@ describe('compare llms', () => {
       ## Что открывать первым
 
       - Для анализа всех поселков используйте \`data/settlements.json\`.
-      - \`data/explorer.json\` нужен только для облегченного списка, карты и минимального payload.
-      - Список \`sources\` остается на детальных страницах и не входит в общий feed.
+      - \`data/explorer.json\` нужен только для облегченного списка, карты и минимального набора данных.
+      - Список \`sources\` остается на детальных страницах и не входит в общую ленту.
       - Если нужен первоисточник или человекочитаемый контекст, переходите на \`/settlements/[slug]/\`.
 
       ## Ограничения данных

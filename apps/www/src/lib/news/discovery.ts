@@ -433,7 +433,7 @@ export function schema(root: string): Record<string, unknown> {
     $id: abs(root, articlesSchemaPath()),
     title: 'NewsArticlesPayload',
     description:
-      'Read-only полный feed новостей с feed-level metadata, canonical HTML URL, markdown companions, full body_markdown, optional events metadata с article-local ics_url и отдельным массивом addenda.',
+      'Полная лента новостей только для чтения: метаданные ленты, канонический HTML URL, Markdown-версии, полный body_markdown, необязательные метаданные событий с ics_url внутри статьи и отдельный массив addenda.',
     type: 'object',
     additionalProperties: false,
     required: [
@@ -680,7 +680,7 @@ export function openapi(root: string): Record<string, unknown> {
       title: 'Шелково News Feed',
       version: '1.0.0',
       description:
-        'Read-only OpenAPI wrapper для /news/data/articles.json с feed-level metadata, полным body_markdown, optional article events, addenda, архивами и тегами.',
+        'OpenAPI-описание /news/data/articles.json только для чтения: метаданные ленты, полный body_markdown, необязательные события статей, addenda, архивы и теги.',
     },
     servers: [
       {
@@ -691,12 +691,12 @@ export function openapi(root: string): Record<string, unknown> {
       [articlesDataPath()]: {
         get: {
           operationId: 'getNewsArticles',
-          summary: 'Read full news feed',
+          summary: 'Получить полную ленту новостей',
           description:
-            'Возвращает основной structured feed новостей со служебными метаданными, статьями, полным body_markdown, optional events metadata с article-local ics_url, addenda, тегами и архивами.',
+            'Возвращает основную структурированную ленту новостей со служебными метаданными, статьями, полным body_markdown, необязательными метаданными событий с ics_url внутри статьи, addenda, тегами и архивами.',
           responses: {
             200: {
-              description: 'Full news feed',
+              description: 'Полная лента новостей',
               content: {
                 'application/json': {
                   schema: {
@@ -726,13 +726,13 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, newsMarkdownPath()),
             type: 'text/markdown',
-            'title*': star('Markdown companion новостей'),
+            'title*': star('Markdown-версия новостей'),
           },
           {
             href: abs(root, articlesDataPath()),
             type: 'application/json',
             'title*': star(
-              'Основной машиночитаемый feed новостей, включая optional events',
+              'Основная машиночитаемая лента новостей, включая необязательные события',
             ),
           },
           {
@@ -755,12 +755,12 @@ export function catalog(root: string): Record<string, unknown> {
           {
             href: abs(root, articlesSchemaPath()),
             type: 'application/schema+json',
-            'title*': star('JSON Schema для news feed'),
+            'title*': star('JSON Schema ленты новостей'),
           },
           {
             href: abs(root, articlesOpenApiPath()),
             type: OAS,
-            'title*': star('OpenAPI для news feed'),
+            'title*': star('OpenAPI ленты новостей'),
           },
         ],
       },

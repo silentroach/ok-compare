@@ -427,11 +427,11 @@ describe('reglament discovery route smoke', () => {
       {
         "fullSection": "## Как выбирать источник
 
-      - Агрегированная смета: \`estimate-2026.json\` и \`index.md\` — официальный baseline по разделам и строкам, базовые частоты, годовые суммы, формулы и breakdown.
+      - Агрегированная смета: \`estimate-2026.json\` и \`index.md\` — официальная база по разделам и строкам, базовые частоты, годовые суммы, формулы и разбор суммы.
       - Услуги полного регламента: \`full-2026.json\`, \`full/services.md\` и \`full/service-map.md\` — перечень услуг, периодичность, исходные формулировки и сопоставление с \`estimate_row_id\`.
-      - Детальные ресурсы: \`estimate-details-2026.json\` и \`details/*.md\` — work items, resources, control totals, source refs и причины \`needs_check\` из маленьких PDF.
-      - Практический порядок ответа: услуга и периодичность из full-слоя, строка и сумма из агрегированной сметы, состав ресурсов и проверки из detail-слоя.
-      - Пример вопроса: для полива дорог сравните \`summer-road-dust-suppression\`, \`summer-road-watering\`, строку \`cleaning-summer-mechanized\` и detail-ресурсы воды/поливомоечной техники.
+      - Детальные ресурсы: \`estimate-details-2026.json\` и \`details/*.md\` — работы, ресурсы, контрольные итоги, ссылки на источники и причины \`needs_check\` из маленьких PDF.
+      - Практический порядок ответа: услуга и периодичность из полного слоя, строка и сумма из агрегированной сметы, состав ресурсов и проверки из детального слоя.
+      - Пример вопроса: для полива дорог сравните \`summer-road-dust-suppression\`, \`summer-road-watering\`, строку \`cleaning-summer-mechanized\` и детальные ресурсы воды/поливомоечной техники.
       ",
         "publicPathMatches": [
           {
@@ -473,11 +473,11 @@ describe('reglament discovery route smoke', () => {
         ],
         "shortSection": "## Что открыть для проверки
 
-      - Агрегированная смета: \`estimate-2026.json\` и \`index.md\` — разделы, строки, итоговые суммы, базовые частоты и breakdown.
+      - Агрегированная смета: \`estimate-2026.json\` и \`index.md\` — разделы, строки, итоговые суммы, базовые частоты и разбор суммы.
       - Услуги полного регламента: \`full-2026.json\`, \`full/services.md\` и \`full/service-map.md\` — формулировки услуг, периодичность и связь со строками сметы.
       - Детальные ресурсы: \`estimate-details-2026.json\` и \`details/*.md\` — работы, материалы, машины, труд, подрядчики, контрольные итоги и \`needs_check\` из маленьких PDF.
-      - Связки: \`estimate_row_id\` соединяет detail-факты с агрегированной сметой; \`service_ids\` соединяют work items с услугами полного регламента.
-      - Пример проверки: для полива дорог сопоставьте услуги \`summer-road-dust-suppression\` и \`summer-road-watering\`, строку \`cleaning-summer-mechanized\` и detail-ресурсы полива.",
+      - Связки: \`estimate_row_id\` соединяет детальные факты с агрегированной сметой; \`service_ids\` соединяют работы с услугами полного регламента.
+      - Пример проверки: для полива дорог сопоставьте услуги \`summer-road-dust-suppression\` и \`summer-road-watering\`, строку \`cleaning-summer-mechanized\` и детальные ресурсы полива.",
       }
     `);
   });

@@ -63,13 +63,13 @@ describe('root llms', () => {
       - Это карта публичных данных и точек входа kpshelkovo.online.
       - Основные разделы: новости, статус сервисов, регламент и смета тарифа 815, профили людей и сравнение тарифов поселков.
       - Сейчас в новостях 3 статьи, в статусе 2 записи и 1 активный инцидент, в людях 1 профиль.
-      - Для массового чтения используйте JSON-фиды; HTML и Markdown удобнее для ссылок и точечного чтения.
+      - Для массового чтения используйте JSON-ленты; HTML и Markdown удобнее для ссылок и точечного чтения.
 
       ## Главные URL
 
       - Главная: <https://example.com/>
       - Главная в Markdown: <https://example.com/index.md>
-      - API catalog сайта: <https://example.com/.well-known/api-catalog>
+      - Каталог API сайта: <https://example.com/.well-known/api-catalog>
       - Инструкции для автоматического чтения сайта: <https://example.com/.well-known/agent-skills/index.json>
       - Новости: <https://example.com/news/>
       - Статус: <https://example.com/status/>
@@ -80,12 +80,12 @@ describe('root llms', () => {
 
       ## Как ориентироваться
 
-      - Если задача относится к одному разделу, сначала откройте его \`llms.txt\`; если нужны данные массово, сразу берите JSON-фид.
-      - Новости: <https://example.com/news/llms.txt>; основной feed: <https://example.com/news/data/articles.json>; календарные события лежат в \`articles[].events[].ics_url\`.
-      - Статус сервисов: <https://example.com/status/llms.txt>; основной feed: <https://example.com/status/data/status.json>.
-      - Регламент и смета: <https://example.com/815/regulation/llms.txt>; смета: <https://example.com/815/regulation/data/estimate-2026.json>; полный регламент: <https://example.com/815/regulation/full.md>; dataset: <https://example.com/815/regulation/data/full-2026.json>.
-      - Люди: <https://example.com/people/llms.txt>; основной feed: <https://example.com/people/data/people.json>; одна персона: <https://example.com/people/kschemelinin/> или <https://example.com/people/kschemelinin/index.md>.
-      - Сравнение тарифов поселков: <https://example.com/815/compare/llms.txt>; основной feed: <https://example.com/815/compare/data/settlements.json>.
+      - Если задача относится к одному разделу, сначала откройте его \`llms.txt\`; если нужны данные массово, сразу берите JSON-ленту.
+      - Новости: <https://example.com/news/llms.txt>; основная лента: <https://example.com/news/data/articles.json>; календарные события лежат в \`articles[].events[].ics_url\`.
+      - Статус сервисов: <https://example.com/status/llms.txt>; основная лента: <https://example.com/status/data/status.json>.
+      - Регламент и смета: <https://example.com/815/regulation/llms.txt>; смета: <https://example.com/815/regulation/data/estimate-2026.json>; полный регламент: <https://example.com/815/regulation/full.md>; набор данных: <https://example.com/815/regulation/data/full-2026.json>.
+      - Люди: <https://example.com/people/llms.txt>; основная лента: <https://example.com/people/data/people.json>; одна персона: <https://example.com/people/kschemelinin/> или <https://example.com/people/kschemelinin/index.md>.
+      - Сравнение тарифов поселков: <https://example.com/815/compare/llms.txt>; основная лента: <https://example.com/815/compare/data/settlements.json>.
       - Публичные инструкции помогают с типовыми задачами; у сравнения тарифов есть отдельный индекс.
       "
     `);

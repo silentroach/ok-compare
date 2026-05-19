@@ -11,7 +11,7 @@ export const GET: APIRoute = async (context) => {
   return rss({
     title: 'Новости Шелково',
     description:
-      'Статическая лента новостей Шелково: summary-first RSS, полный machine-readable контракт живет в /news/data/articles.json.',
+      'Статическая лента новостей Шелково: RSS дает краткое описание, полный машиночитаемый контракт живет в /news/data/articles.json.',
     site: context.site ?? 'https://kpshelkovo.online',
     items: data.articles.map((item) => ({
       title: item.title,
