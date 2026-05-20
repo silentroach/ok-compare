@@ -3,7 +3,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 
 import { preprocessSiteMarkdownContent } from '../markdown/render';
 import type { SiteMentionRegistry } from '../mentions';
-import { loadPeopleMentionRegistry } from '../people/load';
+import { loadPeopleMentionRegistry } from '../people/registry';
 import { withBase } from '../site';
 import { buildArchives, newsMonthKey } from './archives';
 import { NEWS_LATEST_LIMIT } from './config';

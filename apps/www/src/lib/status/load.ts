@@ -5,7 +5,7 @@ import { compareRuText } from '@/lib/locale';
 
 import { preprocessSiteMarkdownContent } from '../markdown/render';
 import type { SiteMentionRegistry } from '../mentions';
-import { loadPeopleMentionRegistry } from '../people/load';
+import { loadPeopleMentionRegistry } from '../people/registry';
 import { statusIncidentCanonical, statusIncidentUrl } from './routes';
 import {
   parseStatusTimestamp,

@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import type { NewsArticleEntry, NewsAuthorEntry } from '../news/load';
@@ -119,6 +121,16 @@ const incident = (input: {
 });
 
 describe('buildPeopleDataset', () => {
+  it('keeps news and status loaders off the backlink-enabled people loader', async () => {
+    const [newsLoad, statusLoad] = await Promise.all([
+      readFile(new URL('../news/load.ts', import.meta.url), 'utf8'),
+      readFile(new URL('../status/load.ts', import.meta.url), 'utf8'),
+    ]);
+
+    expect(newsLoad).not.toContain('../people/load');
+    expect(statusLoad).not.toContain('../people/load');
+  });
+
   it('accepts a valid person entry with normalized contacts and body mentions', () => {
     const data = buildPeopleDataset([
       entry({
