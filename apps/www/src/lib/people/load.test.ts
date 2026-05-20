@@ -246,7 +246,7 @@ describe('buildPeopleDataset', () => {
         }),
       ],
       {
-        people_registry: people.mention_registry,
+        mention_registry: people.mention_registry,
       },
     );
     const status = buildStatusDataset(
@@ -263,7 +263,7 @@ describe('buildPeopleDataset', () => {
         }),
       ],
       {
-        people_registry: people.mention_registry,
+        mention_registry: people.mention_registry,
       },
     );
     const graph = buildPeopleGraphDataset(people, { news, status });
@@ -321,7 +321,7 @@ describe('buildPeopleDataset', () => {
         }),
       ],
       {
-        people_registry: people.mention_registry,
+        mention_registry: people.mention_registry,
       },
     );
     const status = buildStatusDataset(
@@ -338,7 +338,7 @@ describe('buildPeopleDataset', () => {
         }),
       ],
       {
-        people_registry: people.mention_registry,
+        mention_registry: people.mention_registry,
       },
     );
     const graph = buildPeopleGraphDataset(people, { news, status });

@@ -10,6 +10,7 @@ export {
   type EntityMentionAlternateLabelCase,
   type EntityMentionLabelCase,
   type EntityMentionLabelCaseForms,
+  type EntityMentionSourceEntity,
   type EntityMentionTarget,
   type EntityMentionType,
   type NormalizedEntityMentions,

@@ -39,7 +39,6 @@ const profile = (): PersonProfile => ({
       type: 'person',
       slug: 'apetrov',
       label: 'Андрей Петров',
-      name: 'Андрей Петров',
       html_url: '/people/apetrov/',
       markdown_url: '/people/apetrov/index.md',
     },

@@ -1,7 +1,7 @@
 import { isAbsoluteUrl } from '@shelkovo/url';
 
 import type { PreprocessedSiteMarkdownBody } from '../markdown/render';
-import type { PersonMentionTarget } from '../people/mentions';
+import type { EntityMentionTarget } from '../mentions';
 
 export { isAbsoluteUrl };
 
@@ -108,7 +108,7 @@ export interface NewsArticle {
   readonly events: readonly NewsEvent[];
   readonly summary: string;
   readonly body: PreprocessedSiteMarkdownBody;
-  readonly mentions: readonly PersonMentionTarget[];
+  readonly mentions: readonly EntityMentionTarget[];
 }
 
 export interface NewsListArticle {

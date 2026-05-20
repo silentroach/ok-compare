@@ -31,6 +31,11 @@ export interface EntityMentionTarget {
   readonly link_context?: string;
 }
 
+export interface EntityMentionSourceEntity {
+  readonly type: EntityMentionType;
+  readonly slug: string;
+}
+
 export type SiteMentionRegistry = ReadonlyMap<string, EntityMentionTarget>;
 
 export interface NormalizedEntityMentions {

@@ -113,6 +113,32 @@ describe('normalizeEntityMentions', () => {
     );
   });
 
+  it('fails when canonical mentions link the source entity to itself', () => {
+    expect(() =>
+      normalizeEntityMentions({
+        markdown: 'Профиль ведет на @kschemelinin.',
+        context: 'people profile "kschemelinin" body',
+        registry,
+        source_entity: { type: 'person', slug: 'kschemelinin' },
+      }),
+    ).toThrow(
+      'people profile "kschemelinin" body contains self entity mention "person:kschemelinin"',
+    );
+  });
+
+  it('fails when labelled mentions link the source entity to itself', () => {
+    expect(() =>
+      normalizeEntityMentions({
+        markdown: 'Профиль ведет на [свой профиль](@kschemelinin).',
+        context: 'people profile "kschemelinin" body',
+        registry,
+        source_entity: { type: 'person', slug: 'kschemelinin' },
+      }),
+    ).toThrow(
+      'people profile "kschemelinin" body contains self entity mention "person:kschemelinin"',
+    );
+  });
+
   it('dedupes mentions by target type and slug in first appearance order', () => {
     expect(
       normalizeEntityMentions({

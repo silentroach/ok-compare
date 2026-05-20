@@ -1,5 +1,5 @@
 import { absoluteUrl } from '../site';
-import type { PersonMentionTarget } from './mentions';
+import type { EntityMentionTarget } from '../mentions';
 import type { PersonNameCaseForms } from './name-cases';
 import type {
   PersonBacklinks,
@@ -167,14 +167,19 @@ const contact = (item: PersonContact): PeopleDiscoveryContact => ({
   href: item.href,
 });
 
-const mention = (item: PersonMentionTarget): PeopleDiscoveryMention => ({
-  slug: item.slug,
-  name: item.name,
-  ...(item.company ? { company: item.company } : {}),
-  ...(item.position ? { position: item.position } : {}),
-  html_url: fullUrl(item.html_url),
-  markdown_url: fullUrl(item.markdown_url),
-});
+const mention = (item: EntityMentionTarget): PeopleDiscoveryMention => {
+  const company = 'company' in item ? item.company : undefined;
+  const position = 'position' in item ? item.position : undefined;
+
+  return {
+    slug: item.slug,
+    name: item.label,
+    ...(typeof company === 'string' ? { company } : {}),
+    ...(typeof position === 'string' ? { position } : {}),
+    html_url: fullUrl(item.html_url),
+    markdown_url: fullUrl(item.markdown_url),
+  };
+};
 
 const backlink = (item: PersonMentionRef): PeopleDiscoveryBacklink => ({
   section: item.section,

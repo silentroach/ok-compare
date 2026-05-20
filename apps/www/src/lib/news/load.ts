@@ -5,7 +5,7 @@ import {
   preprocessSiteMarkdown,
   type PreprocessedSiteMarkdown,
 } from '../markdown/render';
-import type { PeopleMentionRegistry } from '../people/mentions';
+import type { SiteMentionRegistry } from '../mentions';
 import { loadPeopleMentionRegistry } from '../people/load';
 import { withBase } from '../site';
 import { buildArchives, newsMonthKey } from './archives';
@@ -63,7 +63,7 @@ type NewsTimestampWithTime = NonNullable<
 };
 
 let cache: Promise<NewsDataset> | undefined;
-const EMPTY_MENTION_REGISTRY: PeopleMentionRegistry = new Map();
+const EMPTY_MENTION_REGISTRY: SiteMentionRegistry = new Map();
 
 const isPinnedAtBuild = (input: {
   readonly pinned?: boolean;
@@ -82,14 +82,14 @@ const isPinnedAtBuild = (input: {
 
 const content = (
   value: string | undefined,
-  registry: PeopleMentionRegistry,
+  registry: SiteMentionRegistry,
   context: string,
 ): PreprocessedSiteMarkdown => {
   const body = value?.trimEnd() ?? '';
 
   return body.trim().length > 0
     ? preprocessSiteMarkdown(body, {
-        people: {
+        mentions: {
           context,
           registry,
         },
@@ -437,7 +437,7 @@ const areas = (
 function normalizeArticle(
   entry: ArticleEntry,
   authors: ReadonlyMap<string, NewsAuthor>,
-  peopleRegistry: PeopleMentionRegistry,
+  mentionRegistry: SiteMentionRegistry,
 ): NewsArticle {
   const parts = articleParts(entry);
   const published = parseEntryTimestamp(
@@ -459,7 +459,7 @@ function normalizeArticle(
   const events = normalizeEvents(entry.data.events, entry.id, parts);
   const body = content(
     entry.body,
-    peopleRegistry,
+    mentionRegistry,
     `news article "${entry.id}" body`,
   );
   const article = {
@@ -572,15 +572,15 @@ export function buildNewsDataset(
   authorsData: readonly NewsAuthorEntry[],
   articlesData: readonly NewsArticleEntry[],
   opts?: {
-    readonly people_registry?: PeopleMentionRegistry;
+    readonly mention_registry?: SiteMentionRegistry;
   },
 ): NewsDataset {
-  const peopleRegistry = opts?.people_registry ?? EMPTY_MENTION_REGISTRY;
+  const mentionRegistry = opts?.mention_registry ?? EMPTY_MENTION_REGISTRY;
   const authors = authorMap(authorsData);
 
   const articles: readonly NewsArticle[] = articlesData
     .map((item: ArticleEntry) =>
-      normalizeArticle(item, authors, peopleRegistry),
+      normalizeArticle(item, authors, mentionRegistry),
     )
     .sort(compareArticlesPublishedDesc);
 
@@ -606,13 +606,13 @@ export function buildNewsDataset(
 }
 
 async function buildNewsData(): Promise<NewsDataset> {
-  const [authorsData, articlesData, people_registry] = await Promise.all([
+  const [authorsData, articlesData, mention_registry] = await Promise.all([
     getCollection('newsAuthors') as Promise<readonly NewsAuthorEntry[]>,
     getCollection('newsArticles') as Promise<readonly NewsArticleEntry[]>,
     loadPeopleMentionRegistry(),
   ]);
 
-  return buildNewsDataset(authorsData, articlesData, { people_registry });
+  return buildNewsDataset(authorsData, articlesData, { mention_registry });
 }
 
 export const loadNewsData = (): Promise<NewsDataset> => {

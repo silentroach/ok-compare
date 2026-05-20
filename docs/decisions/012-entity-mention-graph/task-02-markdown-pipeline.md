@@ -1,6 +1,6 @@
 # Task 02: App markdown pipeline и self-link validation
 
-Статус: не начат.
+Статус: реализовано.
 
 ## Скилы
 
@@ -56,29 +56,29 @@
 
 ## Acceptance criteria
 
-- [ ] `preprocessSiteMarkdown` больше не зависит от `../people/mentions` напрямую.
-- [ ] `render.types.ts` больше не импортирует people-only registry/target types.
-- [ ] News, status и people body проходят через общий mention option.
-- [ ] `PersonProfile.mentions`, `NewsArticle.mentions` и `StatusIncident.mentions` типизированы generic target type или безопасным domain alias поверх него.
-- [ ] Self mention в profile body падает на normalization, а не фильтруется позже graph module.
-- [ ] Empty body по-прежнему возвращает пустой markdown и пустые mentions.
-- [ ] Старые behavior tests для normal mentions, labelled mentions и case mentions остаются зелеными после обновления типов.
+- [x] `preprocessSiteMarkdown` больше не зависит от `../people/mentions` напрямую.
+- [x] `render.types.ts` больше не импортирует people-only registry/target types.
+- [x] News, status и people body проходят через общий mention option.
+- [x] `PersonProfile.mentions`, `NewsArticle.mentions` и `StatusIncident.mentions` типизированы generic target type или безопасным domain alias поверх него.
+- [x] Self mention в profile body падает на normalization, а не фильтруется позже graph module.
+- [x] Empty body по-прежнему возвращает пустой markdown и пустые mentions.
+- [x] Старые behavior tests для normal mentions, labelled mentions и case mentions остаются зелеными после обновления типов.
 
 ## Проверка
 
-- [ ] `pnpm --filter @shelkovo/www test -- src/lib/markdown src/lib/mentions src/lib/people/load.test.ts src/lib/news/load.test.ts src/lib/status/load.test.ts`
-- [ ] `pnpm --filter @shelkovo/www typecheck`
+- [x] `pnpm --filter @shelkovo/www test -- src/lib/markdown src/lib/mentions src/lib/people/load.test.ts src/lib/news/load.test.ts src/lib/status/load.test.ts`
+- [x] `pnpm --filter @shelkovo/www typecheck`
 
 ## Чеклист агента
 
-- [ ] Прочитал обязательные файлы.
-- [ ] Обновил app-level Markdown options.
-- [ ] Подключил generic registry в loaders.
-- [ ] Добавил self-link validation.
-- [ ] Покрыл canonical и labelled self-link тестами.
-- [ ] Запустил проверки.
-- [ ] Использовал `code-simplification` после реализации.
-- [ ] Сделал commit.
+- [x] Прочитал обязательные файлы.
+- [x] Обновил app-level Markdown options.
+- [x] Подключил generic registry в loaders.
+- [x] Добавил self-link validation.
+- [x] Покрыл canonical и labelled self-link тестами.
+- [x] Запустил проверки.
+- [x] Использовал `code-simplification` после реализации.
+- [x] Сделал commit.
 
 ## Commit message
 

@@ -177,7 +177,7 @@ describe('buildNewsDataset', () => {
         }),
       ],
       {
-        people_registry: new Map([
+        mention_registry: new Map([
           [
             'kschemelinin',
             createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),
@@ -204,7 +204,7 @@ describe('buildNewsDataset', () => {
         }),
       ],
       {
-        people_registry: new Map([
+        mention_registry: new Map([
           [
             'kschemelinin',
             createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),
@@ -234,7 +234,7 @@ describe('buildNewsDataset', () => {
         }),
       ],
       {
-        people_registry: new Map([
+        mention_registry: new Map([
           [
             'kschemelinin',
             createPersonMentionTarget(
@@ -268,7 +268,7 @@ describe('buildNewsDataset', () => {
           }),
         ],
         {
-          people_registry: new Map([
+          mention_registry: new Map([
             [
               'kschemelinin',
               createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),

@@ -5,7 +5,7 @@ import {
   preprocessSiteMarkdown,
   type PreprocessedSiteMarkdown,
 } from '../markdown/render';
-import type { PeopleMentionRegistry } from '../people/mentions';
+import type { SiteMentionRegistry } from '../mentions';
 import { loadPeopleMentionRegistry } from '../people/load';
 import { statusIncidentCanonical, statusIncidentUrl } from './routes';
 import {
@@ -28,18 +28,18 @@ export type StatusIncidentEntry = Pick<
 >;
 
 let cache: Promise<StatusDataset> | undefined;
-const EMPTY_MENTION_REGISTRY: PeopleMentionRegistry = new Map();
+const EMPTY_MENTION_REGISTRY: SiteMentionRegistry = new Map();
 
 const content = (
   value: string | undefined,
-  registry: PeopleMentionRegistry,
+  registry: SiteMentionRegistry,
   context: string,
 ): PreprocessedSiteMarkdown => {
   const body = value?.trimEnd() ?? '';
 
   return body.trim().length > 0
     ? preprocessSiteMarkdown(body, {
-        people: {
+        mentions: {
           context,
           registry,
         },
@@ -130,7 +130,7 @@ const duration = (start: Date, end: Date): StatusDuration => ({
 function normalizeIncident(
   entry: StatusIncidentEntry,
   now: Date,
-  peopleRegistry: PeopleMentionRegistry,
+  mentionRegistry: SiteMentionRegistry,
 ): StatusIncident {
   const parts = incidentParts(entry);
   const started = parseEntryTimestamp(
@@ -157,7 +157,7 @@ function normalizeIncident(
   const area = areas(entry.data.areas);
   const body = content(
     entry.body,
-    peopleRegistry,
+    mentionRegistry,
     `status incident "${entry.id}" body`,
   );
   const changeAt = ended?.at ?? started.at;
@@ -279,13 +279,13 @@ export const buildStatusDataset = (
   entries: readonly StatusIncidentEntry[],
   opts?: {
     readonly now?: Date;
-    readonly people_registry?: PeopleMentionRegistry;
+    readonly mention_registry?: SiteMentionRegistry;
   },
 ): StatusDataset => {
   const now = opts?.now ?? new Date();
-  const peopleRegistry = opts?.people_registry ?? EMPTY_MENTION_REGISTRY;
+  const mentionRegistry = opts?.mention_registry ?? EMPTY_MENTION_REGISTRY;
   const incidents = entries
-    .map((entry) => normalizeIncident(entry, now, peopleRegistry))
+    .map((entry) => normalizeIncident(entry, now, mentionRegistry))
     .sort(compareIncidentsDesc);
   const services = STATUS_SERVICES.map((service) =>
     serviceSummary(service, incidents, now),
@@ -309,8 +309,8 @@ export const loadStatusData = (): Promise<StatusDataset> => {
         >,
     ),
     loadPeopleMentionRegistry(),
-  ]).then(([entries, people_registry]) =>
-    buildStatusDataset(entries, { people_registry }),
+  ]).then(([entries, mention_registry]) =>
+    buildStatusDataset(entries, { mention_registry }),
   );
 
   return cache;

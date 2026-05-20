@@ -5,6 +5,7 @@ import {
   preprocessSiteMarkdown,
   type PreprocessedSiteMarkdown,
 } from '../markdown/render';
+import type { SiteMentionRegistry } from '../mentions';
 import { statusIncidentMarkdownUrl } from '../status/routes';
 import type { NewsDataset } from '../news/schema';
 import type { StatusDataset } from '../status/schema';
@@ -47,16 +48,18 @@ const byText = (a: string, b: string): number => a.localeCompare(b, 'ru');
 
 const content = (
   value: string | undefined,
-  registry: PeopleMentionRegistry,
+  registry: SiteMentionRegistry,
   context: string,
+  sourceEntity?: { readonly type: 'person'; readonly slug: string },
 ): PreprocessedSiteMarkdown => {
   const body = value?.trimEnd() ?? '';
 
   return body.trim().length > 0
     ? preprocessSiteMarkdown(body, {
-        people: {
+        mentions: {
           context,
           registry,
+          source_entity: sourceEntity,
         },
       })
     : {
@@ -190,12 +193,13 @@ const personRegistry = (
 
 const normalizePerson = (
   entry: PersonProfileEntry,
-  registry: PeopleMentionRegistry,
+  registry: SiteMentionRegistry,
 ): PersonProfile => {
   const body = content(
     entry.body,
     registry,
     `people profile "${entry.id}" body`,
+    { type: 'person', slug: entry.id },
   );
 
   return {

@@ -6,6 +6,7 @@ import {
   ENTITY_MENTION_DEFAULT_LABEL_CASE,
   isEntityMentionLabelCase,
   type EntityMentionLabelCase,
+  type EntityMentionSourceEntity,
   type EntityMentionTarget,
   type NormalizedEntityMentions,
   type SiteMentionRegistry,
@@ -62,6 +63,9 @@ const escapeLinkTitle = (value: string): string =>
 const entityKey = (target: EntityMentionTarget): string =>
   `${target.type}:${target.slug}`;
 
+const sourceEntityKey = (source: EntityMentionSourceEntity): string =>
+  `${source.type}:${source.slug}`;
+
 const token = (segment: string, start: number): string => {
   let end = start + 1;
 
@@ -74,6 +78,16 @@ const token = (segment: string, start: number): string => {
 
 const failMention = (context: string, message: string): never => {
   throw new Error(`${context} ${message}`);
+};
+
+const validateNotSelfMention = (
+  target: EntityMentionTarget,
+  source: EntityMentionSourceEntity | undefined,
+  context: string,
+): void => {
+  if (source && entityKey(target) === sourceEntityKey(source)) {
+    failMention(context, `contains self entity mention "${entityKey(target)}"`);
+  }
 };
 
 const mentionLabel = (
@@ -383,6 +397,7 @@ export const normalizeEntityMentions = (input: {
   readonly markdown: string;
   readonly context: string;
   readonly registry: SiteMentionRegistry;
+  readonly source_entity?: EntityMentionSourceEntity;
 }): NormalizedEntityMentions => {
   if (!input.markdown.includes('@')) {
     return {
@@ -421,6 +436,12 @@ export const normalizeEntityMentions = (input: {
   const mentions = new Map<string, EntityMentionTarget>();
 
   for (const replacement of replacements) {
+    validateNotSelfMention(
+      replacement.target,
+      input.source_entity,
+      input.context,
+    );
+
     markdown += `${input.markdown.slice(cursor, replacement.start)}${replacement.markdown}`;
     cursor = replacement.end;
 

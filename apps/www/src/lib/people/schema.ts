@@ -1,4 +1,4 @@
-import type { PersonMentionTarget } from './mentions';
+import type { EntityMentionTarget } from '../mentions';
 import type { PersonNameCaseForms } from './name-cases';
 import type { PreprocessedSiteMarkdownBody } from '../markdown/render';
 
@@ -54,6 +54,6 @@ export interface PersonProfile {
   readonly canonical: string;
   readonly contacts: readonly PersonContact[];
   readonly body: PreprocessedSiteMarkdownBody;
-  readonly mentions: readonly PersonMentionTarget[];
+  readonly mentions: readonly EntityMentionTarget[];
   readonly backlinks: PersonBacklinks;
 }

@@ -14,7 +14,7 @@ describe('renderMarkdown', () => {
 
     expect(
       preprocessSiteMarkdown('Работы подтвердил @kschemelinin.', {
-        people: {
+        mentions: {
           registry,
           context: 'test markdown',
         },
@@ -37,7 +37,7 @@ describe('renderMarkdown', () => {
 
     expect(
       renderMarkdown('По словам @kschemelinin:gen, работы идут.', {
-        people: {
+        mentions: {
           registry,
           context: 'test markdown',
         },
@@ -57,7 +57,7 @@ describe('renderMarkdown', () => {
 
     expect(
       renderMarkdown('По словам [главного по электричеству](@kschemelinin).', {
-        people: {
+        mentions: {
           registry,
           context: 'test markdown',
         },
