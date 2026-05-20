@@ -36,6 +36,26 @@ export interface EntityMentionSourceEntity {
   readonly slug: string;
 }
 
+export interface EntityMentionSourceRef {
+  readonly target_type: EntityMentionType;
+  readonly target_slug: string;
+  readonly source_section: string;
+  readonly source_kind: string;
+  readonly source_id: string;
+  readonly title: string;
+  readonly html_url: string;
+  readonly markdown_url: string;
+  readonly excerpt?: string;
+  readonly mentioned_at?: string;
+  readonly sort_key?: number;
+  readonly source_entity?: EntityMentionSourceEntity;
+}
+
+export type EntityMentionSourceRefSource = Omit<
+  EntityMentionSourceRef,
+  'target_type' | 'target_slug'
+>;
+
 export type SiteMentionRegistry = ReadonlyMap<string, EntityMentionTarget>;
 
 export interface NormalizedEntityMentions {

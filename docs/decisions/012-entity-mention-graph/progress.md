@@ -39,3 +39,20 @@ Verification:
 - GREEN: same focused command passed, 85 files / 521 tests.
 - `pnpm --filter @shelkovo/www typecheck` initially failed because people discovery still expected `PersonMentionTarget` fields; discovery now serializes mention name from generic `label` and guards optional person context fields.
 - Final `pnpm --filter @shelkovo/www typecheck` passed.
+
+## 2026-05-20 Task 03
+
+Active task: `task-1779292290-e963` / `code-assist:012-entity-mention-graph:step-03:source-ref-adapters`.
+
+Implemented source ref adapters for ADR-012 without switching the existing people backlinks graph:
+
+- Added neutral `EntityMentionSourceRef` and shared `createEntityMentionSourceRefs` dedupe helper in `apps/www/src/lib/mentions`.
+- Added `createNewsArticleMentionRefs` with news article URLs, body excerpt, `published_iso`, and `published_at.valueOf()` sort key.
+- Added `createStatusIncidentMentionRefs` with incident URLs, existing incident excerpt, `started_iso`, and `sort_last_change_at` sort key.
+- Added `createPersonProfileMentionRefs` with profile URLs, body excerpt, and `source_entity` for the source person identity.
+
+Verification:
+
+- RED: `pnpm --filter @shelkovo/www test -- src/lib/news/mentions.test.ts src/lib/status/mentions.test.ts src/lib/people/mention-refs.test.ts src/lib/mentions` failed because the new adapter modules did not exist yet.
+- GREEN: same focused command passed, 88 files / 527 tests.
+- `pnpm --filter @shelkovo/www typecheck` passed.

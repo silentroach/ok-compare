@@ -2,6 +2,7 @@ export {
   createSiteMentionRegistry,
   normalizeEntityMentions,
 } from './normalize';
+export { createEntityMentionSourceRefs } from './source-refs';
 export {
   ENTITY_MENTION_ALTERNATE_LABEL_CASES,
   ENTITY_MENTION_DEFAULT_LABEL_CASE,
@@ -11,6 +12,8 @@ export {
   type EntityMentionLabelCase,
   type EntityMentionLabelCaseForms,
   type EntityMentionSourceEntity,
+  type EntityMentionSourceRef,
+  type EntityMentionSourceRefSource,
   type EntityMentionTarget,
   type EntityMentionType,
   type NormalizedEntityMentions,

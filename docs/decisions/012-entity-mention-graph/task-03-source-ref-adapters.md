@@ -1,6 +1,6 @@
 # Task 03: Source refs adapters для news, status и people
 
-Статус: не начат.
+Статус: реализовано.
 
 ## Скилы
 
@@ -57,29 +57,29 @@
 
 ## Acceptance criteria
 
-- [ ] News adapter создает ref с section `news`, kind `article`, article URLs, excerpt из body, `mentioned_at` из `published_iso` и `sort_key` из `published_at.valueOf()`.
-- [ ] Status adapter создает ref с section `status`, kind `incident`, incident URLs, excerpt из incident, `mentioned_at` из `started_iso` и `sort_key` из `sort_last_change_at`.
-- [ ] People adapter создает ref с section `people`, kind `person`, profile URLs и excerpt из profile body.
-- [ ] Все adapters пишут target pair из `EntityMentionTarget.type` и `EntityMentionTarget.slug`.
-- [ ] Повтор одного target в source unit не создает duplicate refs.
-- [ ] Tests adapters используют маленькие fixtures и не проверяют случайную статику сверх публичного контракта ref.
+- [x] News adapter создает ref с section `news`, kind `article`, article URLs, excerpt из body, `mentioned_at` из `published_iso` и `sort_key` из `published_at.valueOf()`.
+- [x] Status adapter создает ref с section `status`, kind `incident`, incident URLs, excerpt из incident, `mentioned_at` из `started_iso` и `sort_key` из `sort_last_change_at`.
+- [x] People adapter создает ref с section `people`, kind `person`, profile URLs и excerpt из profile body.
+- [x] Все adapters пишут target pair из `EntityMentionTarget.type` и `EntityMentionTarget.slug`.
+- [x] Повтор одного target в source unit не создает duplicate refs.
+- [x] Tests adapters используют маленькие fixtures и не проверяют случайную статику сверх публичного контракта ref.
 
 ## Проверка
 
-- [ ] `pnpm --filter @shelkovo/www test -- src/lib/news/mentions.test.ts src/lib/status/mentions.test.ts src/lib/people/mention-refs.test.ts src/lib/mentions`
-- [ ] `pnpm --filter @shelkovo/www typecheck`
+- [x] `pnpm --filter @shelkovo/www test -- src/lib/news/mentions.test.ts src/lib/status/mentions.test.ts src/lib/people/mention-refs.test.ts src/lib/mentions`
+- [x] `pnpm --filter @shelkovo/www typecheck`
 
 ## Чеклист агента
 
-- [ ] Прочитал обязательные файлы.
-- [ ] Добавил `EntityMentionSourceRef`.
-- [ ] Добавил news source adapter и tests.
-- [ ] Добавил status source adapter и tests.
-- [ ] Добавил people source adapter и tests.
-- [ ] Проверил source-level dedupe.
-- [ ] Запустил проверки.
-- [ ] Использовал `code-simplification` после реализации.
-- [ ] Сделал commit.
+- [x] Прочитал обязательные файлы.
+- [x] Добавил `EntityMentionSourceRef`.
+- [x] Добавил news source adapter и tests.
+- [x] Добавил status source adapter и tests.
+- [x] Добавил people source adapter и tests.
+- [x] Проверил source-level dedupe.
+- [x] Запустил проверки.
+- [x] Использовал `code-simplification` после реализации.
+- [x] Сделал commit.
 
 ## Commit message
 
