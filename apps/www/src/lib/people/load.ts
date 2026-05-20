@@ -1,4 +1,7 @@
 import type { CollectionEntry } from 'astro:content';
+
+import { compareRuText } from '@/lib/locale';
+
 import { preprocessSiteMarkdownContent } from '../markdown/render';
 import {
   createEntityMentionGraph,
@@ -40,7 +43,6 @@ export interface PeopleDataset {
 let cache: Promise<PeopleDataset> | undefined;
 let graphCache: Promise<PeopleDataset> | undefined;
 
-const byText = (a: string, b: string): number => a.localeCompare(b, 'ru');
 const PERSON_MENTION_SECTION_SET = new Set<string>(PERSON_MENTION_SECTIONS);
 const PERSON_BACKLINK_KIND_SET = new Set<string>(PERSON_BACKLINK_KINDS);
 
@@ -145,7 +147,9 @@ export const buildPeopleDataset = (
   const mention_registry = personRegistry(entries);
   const profiles = entries
     .map((entry) => normalizePerson(entry, mention_registry))
-    .sort((a, b) => byText(a.name, b.name) || byText(a.slug, b.slug));
+    .sort(
+      (a, b) => compareRuText(a.name, b.name) || compareRuText(a.slug, b.slug),
+    );
 
   return {
     profiles,

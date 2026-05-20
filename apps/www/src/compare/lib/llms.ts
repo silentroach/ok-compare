@@ -1,5 +1,6 @@
 import { count } from '@shelkovo/format';
 
+import { compareRuText } from '@/lib/locale';
 import {
   llmsSection,
   markdownList,
@@ -28,7 +29,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
       const d =
         (ratings.get(b.slug)?.score ?? 0) - (ratings.get(a.slug)?.score ?? 0);
       if (d !== 0) return d;
-      return a.short_name.localeCompare(b.short_name, 'ru');
+      return compareRuText(a.short_name, b.short_name);
     })
     .slice(0, 2);
   const list = [...(base ? [base] : []), ...top];

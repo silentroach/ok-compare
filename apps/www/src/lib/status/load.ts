@@ -1,6 +1,8 @@
 import { dateTimeFromISO } from '@shelkovo/format';
 import type { CollectionEntry } from 'astro:content';
 
+import { compareRuText } from '@/lib/locale';
+
 import { preprocessSiteMarkdownContent } from '../markdown/render';
 import type { SiteMentionRegistry } from '../mentions';
 import { loadPeopleMentionRegistry } from '../people/load';
@@ -31,8 +33,6 @@ interface EntryParts {
   readonly month: string;
   readonly slug: string;
 }
-
-const byText = (a: string, b: string): number => a.localeCompare(b, 'ru');
 
 function parseEntryTimestamp(
   value: string,
@@ -190,7 +190,7 @@ function compareIncidentsDesc(a: StatusIncident, b: StatusIncident): number {
     return start;
   }
 
-  return byText(a.id, b.id);
+  return compareRuText(a.id, b.id);
 }
 
 function daysWithoutIncidents(

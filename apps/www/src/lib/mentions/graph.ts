@@ -5,7 +5,7 @@ import type {
   EntityMentionType,
 } from './types';
 
-const byRuText = (a: string, b: string): number => a.localeCompare(b, 'ru');
+import { compareRuText } from '@/lib/locale';
 
 const targetKey = (type: EntityMentionType, slug: string): string =>
   `${type}:${slug}`;
@@ -19,8 +19,8 @@ const compareRefs = (
 ): number =>
   (b.sort_key ?? Number.NEGATIVE_INFINITY) -
     (a.sort_key ?? Number.NEGATIVE_INFINITY) ||
-  byRuText(a.title, b.title) ||
-  byRuText(a.source_id, b.source_id);
+  compareRuText(a.title, b.title) ||
+  compareRuText(a.source_id, b.source_id);
 
 const assertNotSelfLink = (ref: EntityMentionSourceRef): void => {
   if (

@@ -1,3 +1,5 @@
+import { compareRuText } from '@/lib/locale';
+
 import type { NewsListArticle, NewsTagPage } from './schema';
 
 interface PublishedLike {
@@ -5,15 +7,13 @@ interface PublishedLike {
   readonly published_at: Date;
 }
 
-const byText = (a: string, b: string): number => a.localeCompare(b, 'ru');
-
 export function compareArticlesPublishedDesc(
   a: PublishedLike,
   b: PublishedLike,
 ): number {
   const delta = b.published_at.valueOf() - a.published_at.valueOf();
 
-  return delta || byText(a.id, b.id);
+  return delta || compareRuText(a.id, b.id);
 }
 
 export function compareTagPages(a: NewsTagPage, b: NewsTagPage): number {
@@ -31,7 +31,7 @@ export function compareTagPages(a: NewsTagPage, b: NewsTagPage): number {
     return recent;
   }
 
-  return byText(a.label, b.label);
+  return compareRuText(a.label, b.label);
 }
 
 export const latestFirst = (

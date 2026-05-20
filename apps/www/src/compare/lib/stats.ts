@@ -1,3 +1,5 @@
+import { compareRuText } from '@/lib/locale';
+
 import type { Settlement, Stats } from './schema';
 import type { Rating } from './rating';
 
@@ -14,7 +16,7 @@ function sort<T extends Ranked>(settlements: T[]): T[] {
     const diff =
       a.tariff.normalized_per_sotka_month - b.tariff.normalized_per_sotka_month;
     if (diff !== 0) return diff;
-    return a.short_name.localeCompare(b.short_name, 'ru');
+    return compareRuText(a.short_name, b.short_name);
   });
 }
 
@@ -97,7 +99,7 @@ function peers(
     .sort((a, b) => {
       const diff = a.score - b.score;
       if (diff !== 0) return diff;
-      return a.short_name.localeCompare(b.short_name, 'ru');
+      return compareRuText(a.short_name, b.short_name);
     });
 
   const band =

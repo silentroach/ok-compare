@@ -1,4 +1,7 @@
 import type { NewsListArticle, NewsTag, NewsTagPage } from './schema';
+
+import { compareRuText } from '@/lib/locale';
+
 import { NEWS_LATEST_LIMIT } from './config';
 import { tagMarkdownUrl, tagUrl } from './routes';
 import { compareTagPages, latestFirst } from './sort';
@@ -11,7 +14,7 @@ interface TagBucket {
 }
 
 const byLabel = (a: NewsTag, b: NewsTag): number =>
-  a.label.localeCompare(b.label, 'ru');
+  compareRuText(a.label, b.label);
 
 export function buildArticleTags(
   values: readonly string[] | undefined,
