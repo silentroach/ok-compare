@@ -15,3 +15,4 @@
 - [ADR-009: Markdown через `Accept` negotiation](009-markdown-accept-negotiation.md) - принят, 2026-05-17.
 - [ADR-010: Плановые работы в индикаторе статуса на главной](010-home-status-maintenance-indicator.md) - принят, 2026-05-18.
 - [ADR-011: Реестр публичных поверхностей](011-public-surface-registry.md) - принят, 2026-05-19.
+- [ADR-012: Единый граф упоминаний сущностей в Markdown](012-entity-mention-graph.md) - принят, 2026-05-20.
