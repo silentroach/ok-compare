@@ -170,6 +170,13 @@ const labelledMentionSlug = (
     return undefined;
   }
 
+  if (url.includes('%')) {
+    failMention(
+      context,
+      `contains unsupported encoded labelled entity mention destination "${url}"`,
+    );
+  }
+
   const slug = url.slice(1);
 
   for (let index = 0; index < slug.length; index += 1) {
@@ -192,6 +199,81 @@ const labelledMentionSlug = (
     : undefined;
 };
 
+const decodeUriComponentSafe = (value: string): string | undefined => {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return undefined;
+  }
+};
+
+const rawUnwrappedLinkDestinationEnd = (
+  source: string,
+  destinationStart: number,
+): number => {
+  let parenDepth = 0;
+
+  for (let index = destinationStart; index < source.length; index += 1) {
+    const char = source[index];
+
+    if (char === '\\') {
+      index += 1;
+      continue;
+    }
+
+    if (/\s/u.test(char)) {
+      return index;
+    }
+
+    if (char === '(') {
+      parenDepth += 1;
+      continue;
+    }
+
+    if (char === ')') {
+      if (parenDepth === 0) {
+        return index;
+      }
+
+      parenDepth -= 1;
+    }
+  }
+
+  return source.length;
+};
+
+const rawLinkDestinationEnd = (
+  source: string,
+  destinationStart: number,
+  isAngleWrapped: boolean,
+  url: string,
+  context: string,
+): number => {
+  if (source.startsWith(url, destinationStart)) {
+    return destinationStart + url.length;
+  }
+
+  const rawEnd = isAngleWrapped
+    ? source.indexOf('>', destinationStart)
+    : rawUnwrappedLinkDestinationEnd(source, destinationStart);
+
+  if (rawEnd === -1) {
+    throw new Error(
+      `${context} contains a labelled entity mention with unsupported link syntax`,
+    );
+  }
+
+  const rawUrl = source.slice(destinationStart, rawEnd);
+
+  if (decodeUriComponentSafe(rawUrl) === url) {
+    return rawEnd;
+  }
+
+  throw new Error(
+    `${context} contains a labelled entity mention with unsupported link destination boundaries`,
+  );
+};
+
 const linkDestinationOffsets = (
   markdown: string,
   node: MarkdownNode,
@@ -212,11 +294,21 @@ const linkDestinationOffsets = (
 
   const destinationStart = destinationStartMarker + 2;
   const isAngleWrapped = source[destinationStart] === '<';
-  const urlStart = start + destinationStart + (isAngleWrapped ? 1 : 0);
+  const sourceUrlStart = destinationStart + (isAngleWrapped ? 1 : 0);
+  const urlStart = start + sourceUrlStart;
+  const url = node.url ?? '';
 
   return {
     start: urlStart,
-    end: urlStart + (node.url?.length ?? 0),
+    end:
+      start +
+      rawLinkDestinationEnd(
+        source,
+        sourceUrlStart,
+        isAngleWrapped,
+        url,
+        context,
+      ),
   };
 };
 

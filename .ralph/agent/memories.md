@@ -6,6 +6,18 @@
 
 ## Fixes
 
+### mem-1779300717-2b15
+
+> failure: cmd=pnpm --filter @shelkovo/www test -- src/lib/mentions, exit=1, error=RED encoded labelled mention destination was silently ignored, next=fail clearly for encoded @...%... destinations and harden raw URL boundary detection
+
+<!-- tags: mentions, testing, error-handling | created: 2026-05-20 -->
+
+### mem-1779300717-1484
+
+> failure: cmd=node --input-type=module import remark-parse from workspace root, exit=1, error=ERR_MODULE_NOT_FOUND for app dependency, next=run investigation through pnpm --filter @shelkovo/www exec node
+
+<!-- tags: mentions, testing, error-handling | created: 2026-05-20 -->
+
 ### mem-1779293175-ead4
 
 > failure: cmd=pnpm --filter @shelkovo/www typecheck, exit=2, error=EntityMentionGraphTarget.sections typed ReadonlyMap while graph builder mutates it; PersonBacklinks import unused, next=update graph builder to replace section maps immutably and remove unused import

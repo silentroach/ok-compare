@@ -37,6 +37,12 @@ Original request: implement `docs/decisions/012-entity-mention-graph/` for ADR-0
 - `apps/www/src/lib/markdown/render.types.ts`
 - Later steps: `apps/www/src/lib/news/load.ts`, `apps/www/src/lib/status/load.ts`, `apps/www/src/lib/people/load.ts`, source ref adapters, and generic graph modules.
 
+## Task 07 Findings
+
+- `remark-parse` keeps `%40kschemelinin` as raw `%40kschemelinin` in `node.url`; it does not decode that URL-encoded `@` in the current dependency set.
+- Link node positions cover the full Markdown link. There is no dedicated URL position span exposed by the current AST shape used in `apps/www/src/lib/mentions/normalize.ts`.
+- Labelled mention replacement boundaries must therefore be derived from the raw Markdown source slice, not from `node.url.length` alone.
+
 ## Acceptance Criteria
 
 - Editorial syntax stays short: `@slug`, `@slug:case`, `[visible text](@slug)`.

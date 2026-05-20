@@ -77,6 +77,34 @@ describe('normalizeEntityMentions', () => {
     });
   });
 
+  it('replaces only the raw labelled mention destination before link title and adjacent text', () => {
+    expect(
+      normalizeEntityMentions({
+        markdown:
+          'По словам [главного по электричеству](@kschemelinin "%D1%82%D0%B8%D1%82%D1%83%D0%BB"), работы идут.',
+        context: 'news article "2026/05/test" body',
+        registry,
+      }),
+    ).toEqual({
+      markdown:
+        'По словам [главного по электричеству](/people/kschemelinin/ "%D1%82%D0%B8%D1%82%D1%83%D0%BB"), работы идут.',
+      mentions: [targets[0]],
+    });
+  });
+
+  it('fails clearly on encoded labelled mention destinations', () => {
+    expect(() =>
+      normalizeEntityMentions({
+        markdown:
+          'По словам [главного по электричеству](@kschemelinin%20), работы идут.',
+        context: 'news article "2026/05/test" body',
+        registry,
+      }),
+    ).toThrow(
+      'news article "2026/05/test" body contains unsupported encoded labelled entity mention destination "@kschemelinin%20"',
+    );
+  });
+
   it('fails when canonical mention requests a missing label case', () => {
     expect(() =>
       normalizeEntityMentions({
