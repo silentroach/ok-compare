@@ -15,12 +15,7 @@ export interface PersonContact {
 export const PERSON_MENTION_SECTIONS = ['news', 'status', 'people'] as const;
 export type PersonMentionSection = (typeof PERSON_MENTION_SECTIONS)[number];
 
-export const PERSON_BACKLINK_KINDS = [
-  'article',
-  'addendum',
-  'incident',
-  'person',
-] as const;
+export const PERSON_BACKLINK_KINDS = ['article', 'incident', 'person'] as const;
 export type PersonBacklinkKind = (typeof PERSON_BACKLINK_KINDS)[number];
 
 export interface PersonMentionRef {

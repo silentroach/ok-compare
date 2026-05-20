@@ -69,10 +69,8 @@ const article = (input?: {
   photos: [],
   attachments: [],
   events: input?.events ?? [],
-  addenda: [],
   summary: input?.summary ?? 'Коротко о встрече',
   body: '',
-  has_addenda: false,
   mentions: [],
 });
 

@@ -35,10 +35,8 @@ const article = (input?: Partial<NewsArticle>): NewsArticle => ({
   photos: [],
   attachments: [],
   events: [],
-  addenda: [],
   summary: 'Краткое описание новости.',
   body: 'Текст новости.',
-  has_addenda: false,
   mentions: [],
   ...input,
 });
@@ -71,37 +69,18 @@ describe('buildNewsArticleMarkdown', () => {
     `);
   });
 
-  it('omits settlement-wide areas and combines addendum date with time', () => {
+  it('omits settlement-wide areas', () => {
     const markdown = buildNewsArticleMarkdown(
       article({
         applies_to_all_areas: true,
         areas: ['river', 'forest', 'park', 'village'],
-        addenda: [
-          {
-            author: {
-              id: 'ok-comfort',
-              name: 'ОК Комфорт',
-              kind: 'official',
-            },
-            time: '23:00',
-            photos: [],
-            attachments: [],
-            published_at: new Date('2026-05-14T20:00:00.000Z'),
-            published_iso: '2026-05-14T23:00:00+03:00',
-            mentions: [],
-          },
-        ],
-        has_addenda: true,
       }),
     );
 
     expect(markdown).not.toContain('\nareas:\n');
-    expect(markdown).toContain('### Дополнение 1 от 14 мая 2026, 23:00');
-    expect(markdown).toContain('- Дата: 14 мая 2026, 23:00');
-    expect(markdown).not.toContain('- Время:');
   });
 
-  it('inserts article and addendum bodies as Markdown fragments without nested frontmatter', () => {
+  it('inserts article body as a Markdown fragment without nested frontmatter', () => {
     const markdown = buildNewsArticleMarkdown(
       article({
         body: `---
@@ -111,28 +90,6 @@ ignored: true
 Текст с [важной ссылкой](https://example.com/body).
 
 - первый пункт`,
-        addenda: [
-          {
-            title: 'Уточнение',
-            author: {
-              id: 'ok-comfort',
-              name: 'ОК Комфорт',
-              kind: 'official',
-            },
-            time: '23:00',
-            body: `---
-ignored: addendum
----
-
-Дополнение с **акцентом**.`,
-            photos: [],
-            attachments: [],
-            published_at: new Date('2026-05-14T20:00:00.000Z'),
-            published_iso: '2026-05-14T23:00:00+03:00',
-            mentions: [],
-          },
-        ],
-        has_addenda: true,
       }),
     );
 
@@ -158,17 +115,6 @@ ignored: addendum
       Текст с [важной ссылкой](https://example.com/body).
 
       - первый пункт
-
-      ## Дополнения
-
-      Исходный текст новости не переписывается: поздние уточнения остаются отдельными блоками.
-
-      ### Уточнение
-
-      - Дата: 14 мая 2026, 23:00
-      - Автор: ОК Комфорт
-
-      Дополнение с **акцентом**.
       "
     `);
   });

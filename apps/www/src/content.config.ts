@@ -118,6 +118,9 @@ const forbiddenTime = (name: string) =>
     `${name} is not supported; include time in date as dd.mm.yyyy hh:mm`,
   );
 
+const forbiddenField = (name: string) =>
+  z.unknown().refine(() => false, `${name} is not supported`);
+
 const tag = () =>
   text('tags[]')
     .refine(
@@ -254,37 +257,6 @@ function validateEventSlugs(
   });
 }
 
-function addendum(image: SchemaContext['image']) {
-  return z
-    .object({
-      date: newsDate('addenda[].date'),
-      time: forbiddenTime('addenda[].time').optional(),
-      title: text('addenda[].title').optional(),
-      author: reference('newsAuthors').optional(),
-      source_url: absoluteUrl('addenda[].source_url').optional(),
-      body: text('addenda[].body').optional(),
-      ...media(image),
-    })
-    .superRefine((data, ctx) => {
-      if (
-        data.title ||
-        data.body ||
-        data.source_url ||
-        data.photos?.length ||
-        data.attachments?.length
-      ) {
-        return;
-      }
-
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['body'],
-        message:
-          'addenda[] must include body, title, source_url, photos, or attachments',
-      });
-    });
-}
-
 const trimMarkdown = (entry: string): string => entry.replace(/\.md$/i, '');
 
 const rawMarkdownBody = (root: string, entry: string): string =>
@@ -314,11 +286,7 @@ function readDateParts(data: unknown): readonly DateParts[] {
     : [];
 }
 
-function fail(
-  kind: 'article' | 'addendum',
-  entry: string,
-  reason: string,
-): never {
+function fail(kind: 'article', entry: string, reason: string): never {
   throw new Error(`news ${kind} path \"${entry}\" ${reason}`);
 }
 
@@ -503,7 +471,7 @@ const newsArticles = defineCollection({
         cover_alt: text('cover_alt').optional(),
         events: z.array(event()).min(1).optional(),
         ...media(image),
-        addenda: z.array(addendum(image)).min(1).optional(),
+        addenda: forbiddenField('addenda').optional(),
         seo: z
           .object({
             title: text('seo.title').optional(),

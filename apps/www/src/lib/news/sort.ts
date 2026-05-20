@@ -1,4 +1,4 @@
-import type { NewsAddendum, NewsListArticle, NewsTagPage } from './schema';
+import type { NewsListArticle, NewsTagPage } from './schema';
 
 interface PublishedLike {
   readonly id: string;
@@ -14,20 +14,6 @@ export function compareArticlesPublishedDesc(
   const delta = b.published_at.valueOf() - a.published_at.valueOf();
 
   return delta || byText(a.id, b.id);
-}
-
-export function compareAddendaPublishedAsc(
-  a: Pick<NewsAddendum, 'published_at' | 'title' | 'published_iso'>,
-  b: Pick<NewsAddendum, 'published_at' | 'title' | 'published_iso'>,
-): number {
-  const delta = a.published_at.valueOf() - b.published_at.valueOf();
-
-  if (delta) {
-    return delta;
-  }
-
-  const title = byText(a.title ?? '', b.title ?? '');
-  return title || byText(a.published_iso, b.published_iso);
 }
 
 export function compareTagPages(a: NewsTagPage, b: NewsTagPage): number {

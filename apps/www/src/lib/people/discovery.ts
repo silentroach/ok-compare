@@ -257,7 +257,7 @@ export function schema(root: string): Record<string, unknown> {
         enum: ['news', 'status', 'people'],
       },
       kind: {
-        enum: ['article', 'addendum', 'incident', 'person'],
+        enum: ['article', 'incident', 'person'],
       },
       nameCases: obj(
         {

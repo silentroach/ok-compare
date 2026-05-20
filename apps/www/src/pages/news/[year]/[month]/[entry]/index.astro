@@ -5,7 +5,6 @@ import type { GetStaticPaths } from 'astro';
 import { padNumber } from '@shelkovo/format';
 import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import NewsAddenda from '@/components/news/NewsAddenda.astro';
 import NewsAttachments from '@/components/news/NewsAttachments.astro';
 import NewsEventCard from '@/components/news/NewsEventCard.astro';
 import NewsMeta from '@/components/news/NewsMeta.astro';
@@ -105,7 +104,6 @@ const schema = newsArticleSchema({
     { name: article.title, url: articleUrl(article) },
   ]),
   datePublished: article.published_iso,
-  ...(article.updated_iso ? { dateModified: article.updated_iso } : {}),
   ...(article.cover_url ? { image: article.cover_url } : {}),
   author,
   ...(hasEvents ? { events: article.events } : {}),
@@ -170,10 +168,8 @@ const schema = newsArticleSchema({
 
                 <NewsMeta
                   publishedIso={article.published_iso}
-                  updatedIso={article.updated_iso}
                   author={article.author}
                   fullAuthorName
-                  showUpdated={false}
                   areas={article.areas}
                   appliesToAllAreas={article.applies_to_all_areas}
                   sourceUrl={article.source_url}
@@ -211,10 +207,8 @@ const schema = newsArticleSchema({
 
               <NewsMeta
                 publishedIso={article.published_iso}
-                updatedIso={article.updated_iso}
                 author={article.author}
                 fullAuthorName
-                showUpdated={false}
                 areas={article.areas}
                 appliesToAllAreas={article.applies_to_all_areas}
                 sourceUrl={article.source_url}
@@ -278,7 +272,6 @@ const schema = newsArticleSchema({
 
       <NewsPhotos photos={article.photos} />
       <NewsAttachments items={article.attachments} />
-      <NewsAddenda items={article.addenda} />
     </article>
   </main>
 </BaseLayout>

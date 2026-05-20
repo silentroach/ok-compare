@@ -39,7 +39,6 @@ const baseArticle: NewsListArticle = {
   pinned: true,
   summary: 'Короткое описание новости.',
   events: [],
-  has_addenda: false,
 };
 
 describe('NewsCard', () => {

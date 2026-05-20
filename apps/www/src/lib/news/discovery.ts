@@ -13,7 +13,6 @@ import {
 import {
   NEWS_AREAS,
   NEWS_AUTHOR_KINDS,
-  type NewsAddendum,
   type NewsArticle,
   type NewsAttachment,
   type NewsAuthor,
@@ -83,22 +82,11 @@ export interface NewsDiscoveryEvent {
   readonly performer?: readonly NewsDiscoveryEventOrganizer[];
 }
 
-export interface NewsDiscoveryAddendum {
-  readonly title?: string;
-  readonly published_at: string;
-  readonly author: NewsDiscoveryAuthor;
-  readonly source_url?: string;
-  readonly body_markdown: string;
-  readonly photos: readonly NewsDiscoveryPhoto[];
-  readonly attachments: readonly NewsDiscoveryAttachment[];
-}
-
 export interface NewsDiscoveryArticle {
   readonly id: string;
   readonly title: string;
   readonly summary: string;
   readonly published_at: string;
-  readonly updated_at?: string;
   readonly year: number;
   readonly month: number;
   readonly day: number;
@@ -115,7 +103,6 @@ export interface NewsDiscoveryArticle {
   readonly photos: readonly NewsDiscoveryPhoto[];
   readonly attachments: readonly NewsDiscoveryAttachment[];
   readonly body_markdown: string;
-  readonly addenda: readonly NewsDiscoveryAddendum[];
 }
 
 export interface NewsDiscoveryArchiveMonth {
@@ -321,18 +308,6 @@ function event(item: NewsEvent): NewsDiscoveryEvent {
   };
 }
 
-function addendum(item: NewsAddendum): NewsDiscoveryAddendum {
-  return {
-    ...(item.title ? { title: item.title } : {}),
-    published_at: item.published_iso,
-    author: author(item.author),
-    ...(item.source_url ? { source_url: fullUrl(item.source_url) } : {}),
-    body_markdown: item.body ?? '',
-    photos: item.photos.map(photo),
-    attachments: item.attachments.map(attachment),
-  };
-}
-
 function article(item: NewsArticle): NewsDiscoveryArticle {
   const image = cover(item);
 
@@ -341,7 +316,6 @@ function article(item: NewsArticle): NewsDiscoveryArticle {
     title: item.title,
     summary: item.summary,
     published_at: item.published_iso,
-    ...(item.updated_iso ? { updated_at: item.updated_iso } : {}),
     year: item.year,
     month: item.month,
     day: item.day,
@@ -358,7 +332,6 @@ function article(item: NewsArticle): NewsDiscoveryArticle {
     photos: item.photos.map(photo),
     attachments: item.attachments.map(attachment),
     body_markdown: item.body,
-    addenda: item.addenda.map(addendum),
   };
 }
 
@@ -396,8 +369,8 @@ function latestUpdate(data: NewsDataset): string | undefined {
 
   for (const item of data.articles) {
     const current = {
-      at: item.updated_at ?? item.published_at,
-      iso: item.updated_iso ?? item.published_iso,
+      at: item.published_at,
+      iso: item.published_iso,
     };
 
     if (!latest || current.at.valueOf() > latest.at.valueOf()) {
@@ -433,7 +406,7 @@ export function schema(root: string): Record<string, unknown> {
     $id: abs(root, articlesSchemaPath()),
     title: 'NewsArticlesPayload',
     description:
-      'Полная лента новостей только для чтения: метаданные ленты, канонический HTML URL, Markdown-версии, полный body_markdown, необязательные метаданные событий с ics_url внутри статьи и отдельный массив addenda.',
+      'Полная лента новостей только для чтения: метаданные ленты, канонический HTML URL, Markdown-версии, полный body_markdown и необязательные метаданные событий с ics_url внутри статьи.',
     type: 'object',
     additionalProperties: false,
     required: [
@@ -544,24 +517,6 @@ export function schema(root: string): Record<string, unknown> {
         },
         ['slug', 'title', 'starts_at', 'ics_url'],
       ),
-      addendum: obj(
-        {
-          title: text(1),
-          published_at: dateTime(),
-          author: {
-            $ref: '#/$defs/author',
-          },
-          source_url: uri(),
-          body_markdown: text(),
-          photos: list({
-            $ref: '#/$defs/photo',
-          }),
-          attachments: list({
-            $ref: '#/$defs/attachment',
-          }),
-        },
-        ['published_at', 'author', 'body_markdown', 'photos', 'attachments'],
-      ),
       article: obj(
         {
           id: {
@@ -571,7 +526,6 @@ export function schema(root: string): Record<string, unknown> {
           title: text(1),
           summary: text(1),
           published_at: dateTime(),
-          updated_at: dateTime(),
           year: integer(2000, 2999),
           month: integer(1, 12),
           day: integer(1, 31),
@@ -613,9 +567,6 @@ export function schema(root: string): Record<string, unknown> {
             $ref: '#/$defs/attachment',
           }),
           body_markdown: text(),
-          addenda: list({
-            $ref: '#/$defs/addendum',
-          }),
         },
         [
           'id',
@@ -635,7 +586,6 @@ export function schema(root: string): Record<string, unknown> {
           'photos',
           'attachments',
           'body_markdown',
-          'addenda',
         ],
       ),
       archiveMonth: obj(
@@ -680,7 +630,7 @@ export function openapi(root: string): Record<string, unknown> {
       title: 'Шелково News Feed',
       version: '1.0.0',
       description:
-        'OpenAPI-описание /news/data/articles.json только для чтения: метаданные ленты, полный body_markdown, необязательные события статей, addenda, архивы и теги.',
+        'OpenAPI-описание /news/data/articles.json только для чтения: метаданные ленты, полный body_markdown, необязательные события статей, архивы и теги.',
     },
     servers: [
       {
@@ -693,7 +643,7 @@ export function openapi(root: string): Record<string, unknown> {
           operationId: 'getNewsArticles',
           summary: 'Получить полную ленту новостей',
           description:
-            'Возвращает основную структурированную ленту новостей со служебными метаданными, статьями, полным body_markdown, необязательными метаданными событий с ics_url внутри статьи, addenda, тегами и архивами.',
+            'Возвращает основную структурированную ленту новостей со служебными метаданными, статьями, полным body_markdown, необязательными метаданными событий с ics_url внутри статьи, тегами и архивами.',
           responses: {
             200: {
               description: 'Полная лента новостей',

@@ -68,11 +68,6 @@ const article = (input: {
   readonly summary: string;
   readonly date: string;
   readonly body?: string;
-  readonly addenda?: readonly {
-    readonly date: string;
-    readonly title?: string;
-    readonly body?: string;
-  }[];
 }): NewsArticleEntry => ({
   id: input.id,
   body: input.body ?? '',
@@ -81,15 +76,6 @@ const article = (input: {
     summary: input.summary,
     date: input.date,
     author: { id: 'ig' } as NewsArticleEntry['data']['author'],
-    ...(input.addenda
-      ? {
-          addenda: input.addenda.map((item) => ({
-            date: item.date,
-            ...(item.title ? { title: item.title } : {}),
-            ...(item.body ? { body: item.body } : {}),
-          })),
-        }
-      : {}),
   },
 });
 
@@ -256,14 +242,7 @@ describe('buildPeopleDataset', () => {
           title: 'Авария на линии',
           summary: 'Краткая сводка',
           date: '03.05.2026 09:00',
-          body: 'Основной текст про @kschemelinin.',
-          addenda: [
-            {
-              date: '03.05.2026 12:00',
-              title: 'Комментарий специалиста',
-              body: 'Уточнение после комментария @kschemelinin.',
-            },
-          ],
+          body: 'Основной текст про @kschemelinin. Позже добавили уточнение после комментария специалиста.',
         }),
       ],
       {
@@ -291,11 +270,6 @@ describe('buildPeopleDataset', () => {
 
     expect(graph.by_slug.get('kschemelinin')?.backlinks).toMatchObject({
       news: [
-        {
-          kind: 'addendum',
-          source_id: '2026/05/electricity#addendum-1',
-          title: 'Авария на линии — Комментарий специалиста',
-        },
         {
           kind: 'article',
           source_id: '2026/05/electricity',
@@ -343,14 +317,7 @@ describe('buildPeopleDataset', () => {
           title: 'Авария на линии',
           summary: 'Краткая сводка',
           date: '03.05.2026 09:00',
-          body: 'Основной текст после [комментария специалиста](@kschemelinin).',
-          addenda: [
-            {
-              date: '03.05.2026 12:00',
-              title: 'Комментарий специалиста',
-              body: 'Уточнение от [дежурного инженера](@kschemelinin).',
-            },
-          ],
+          body: 'Основной текст после [комментария специалиста](@kschemelinin). Позже добавили уточнение от дежурного инженера.',
         }),
       ],
       {
@@ -380,14 +347,10 @@ describe('buildPeopleDataset', () => {
     expect(backlinks).toMatchObject({
       news: [
         {
-          kind: 'addendum',
-          source_id: '2026/05/electricity#addendum-1',
-          excerpt: 'Уточнение от дежурного инженера.',
-        },
-        {
           kind: 'article',
           source_id: '2026/05/electricity',
-          excerpt: 'Основной текст после комментария специалиста.',
+          excerpt:
+            'Основной текст после комментария специалиста. Позже добавили уточнение от дежурного инженера.',
         },
       ],
       status: [

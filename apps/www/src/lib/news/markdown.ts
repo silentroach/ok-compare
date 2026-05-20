@@ -9,7 +9,6 @@ import {
 import { absoluteUrl } from '../site';
 import { NEWS_LATEST_LIMIT } from './config';
 import type {
-  NewsAddendum,
   NewsArticle,
   NewsAttachment,
   NewsDataset,
@@ -41,14 +40,6 @@ const serialize = (children: readonly MarkdownNode[]): string =>
 
 const pick = <T>(items: readonly (T | undefined)[]): readonly T[] =>
   items.filter((item): item is T => item !== undefined);
-
-function row(label: string, value?: string): MarkdownListItem | undefined {
-  if (!value) {
-    return undefined;
-  }
-
-  return md.listItem(`${label}: ${value}`);
-}
 
 const section = (
   title: string,
@@ -111,19 +102,6 @@ function photoSection(article: NewsArticle): readonly MarkdownNode[] {
   return rows.length > 0 ? section('Фото', rows) : [];
 }
 
-function addendumPhotoSection(
-  items: readonly NewsPhoto[],
-): readonly MarkdownNode[] {
-  if (items.length === 0) {
-    return [];
-  }
-
-  return [
-    md.heading(4, 'Фото'),
-    md.list(items.map((photo, index) => photoLine(`Фото ${index + 1}`, photo))),
-  ];
-}
-
 const attachmentLine = (item: NewsAttachment): MarkdownListItem =>
   md.listItem(
     `${item.title}: ${pick([abs(item.url), item.type, item.size]).join(' — ')}`,
@@ -133,16 +111,6 @@ function attachmentSection(
   items: readonly NewsAttachment[],
 ): readonly MarkdownNode[] {
   return items.length > 0 ? section('Вложения', items.map(attachmentLine)) : [];
-}
-
-function addendumAttachmentSection(
-  items: readonly NewsAttachment[],
-): readonly MarkdownNode[] {
-  if (items.length === 0) {
-    return [];
-  }
-
-  return [md.heading(4, 'Вложения'), md.list(items.map(attachmentLine))];
 }
 
 function articleLine(article: NewsListArticle): MarkdownListItem {
@@ -185,14 +153,6 @@ function articleFrontmatter(
     title: article.title,
     summary: article.summary,
     published_at: machineDate(article.published_iso, article.time),
-    ...(article.updated_iso
-      ? {
-          updated_at: machineDate(
-            article.updated_iso,
-            article.addenda.at(-1)?.time,
-          ),
-        }
-      : {}),
     author: {
       id: article.author.id,
       name: formatNewsAuthor(article.author, { short: false }),
@@ -202,49 +162,6 @@ function articleFrontmatter(
     ...(tags.length > 0 ? { tags } : {}),
     ...(article.source_url ? { source_url: abs(article.source_url) } : {}),
   };
-}
-
-function addendaSection(
-  items: readonly NewsAddendum[],
-): readonly MarkdownNode[] {
-  if (items.length === 0) {
-    return [];
-  }
-
-  const children: MarkdownNode[] = [
-    md.heading(2, 'Дополнения'),
-    md.paragraph(
-      'Исходный текст новости не переписывается: поздние уточнения остаются отдельными блоками.',
-    ),
-  ];
-
-  for (const [index, item] of items.entries()) {
-    children.push(
-      md.heading(
-        3,
-        item.title ??
-          `Дополнение ${index + 1} от ${when(item.published_iso, item.time)}`,
-      ),
-    );
-    children.push(
-      md.list(
-        pick([
-          row('Дата', when(item.published_iso, item.time)),
-          row('Автор', formatNewsAuthor(item.author, { short: false })),
-          row('Источник', item.source_url ? abs(item.source_url) : undefined),
-        ]),
-      ),
-    );
-
-    if (item.body) {
-      children.push(...parseMarkdownFragment(item.body.trim()));
-    }
-
-    children.push(...addendumPhotoSection(item.photos));
-    children.push(...addendumAttachmentSection(item.attachments));
-  }
-
-  return children;
 }
 
 const monthLine = (item: NewsMonthArchive): MarkdownListItem =>
@@ -346,7 +263,6 @@ export function buildNewsArticleMarkdown(article: NewsArticle): string {
         ...(article.body ? parseMarkdownFragment(article.body.trim()) : []),
         ...photoSection(article),
         ...attachmentSection(article.attachments),
-        ...addendaSection(article.addenda),
       ],
     }),
   );

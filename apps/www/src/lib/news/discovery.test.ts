@@ -58,10 +58,8 @@ const articleWithEvent = (): NewsArticle => ({
       },
     },
   ],
-  addenda: [],
   summary: 'Будет обсуждение регламента.',
   body: 'Текст новости.',
-  has_addenda: false,
   mentions: [],
 });
 
@@ -107,12 +105,9 @@ describe('news discovery payload', () => {
     const first = articleWithEvent();
     const second = {
       ...articleWithEvent(),
-      id: '2026/05/updated',
+      id: '2026/05/latest',
       published_at: new Date('2026-05-02T09:00:00+03:00'),
       published_iso: '2026-05-02T09:00:00.000+03:00',
-      updated_at: new Date('2026-05-03T09:00:00+03:00'),
-      updated_iso: '2026-05-03T09:00:00.000+03:00',
-      addenda: [],
     };
 
     const payload = buildNewsPayload(dataset([first, second]), {
@@ -122,7 +117,7 @@ describe('news discovery payload', () => {
     expect(payload).toMatchObject({
       schema_version: '1.0.0',
       generated_at: '2026-05-04T09:00:00.000Z',
-      updated_at: '2026-05-03T09:00:00.000+03:00',
+      updated_at: '2026-05-02T09:00:00.000+03:00',
       total_count: 2,
     });
   });
@@ -242,6 +237,9 @@ describe('news discovery payload', () => {
       'ics_url',
     ]);
     expect(defs.article?.required).not.toContain('events');
+    expect(defs.article?.properties).not.toHaveProperty('updated_at');
+    expect(defs.article?.required).not.toContain('addenda');
+    expect(defs.article?.properties).not.toHaveProperty('addenda');
     expect(defs.event?.properties?.starts_at).toMatchObject({
       format: 'date-time',
     });

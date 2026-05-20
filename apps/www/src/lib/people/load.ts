@@ -137,35 +137,6 @@ const articleBacklink = (
   };
 };
 
-const addendumTitle = (
-  article: NewsDataset['articles'][number],
-  addendum: NewsDataset['articles'][number]['addenda'][number],
-  index: number,
-): string =>
-  addendum.title
-    ? `${article.title} — ${addendum.title}`
-    : `${article.title} — дополнение ${index + 1}`;
-
-const addendumBacklink = (
-  article: NewsDataset['articles'][number],
-  addendum: NewsDataset['articles'][number]['addenda'][number],
-  index: number,
-): PersonMentionRef => {
-  const summary = addendum.body ? excerpt(addendum.body) : undefined;
-
-  return {
-    section: 'news',
-    kind: 'addendum',
-    source_id: `${article.id}#addendum-${index + 1}`,
-    title: addendumTitle(article, addendum, index),
-    html_url: article.url,
-    markdown_url: article.markdown_url,
-    ...(summary ? { excerpt: summary } : {}),
-    mentioned_at: addendum.published_iso,
-    sort_key: addendum.published_at.valueOf(),
-  };
-};
-
 const incidentBacklink = (
   incident: StatusDataset['incidents'][number],
 ): PersonMentionRef => ({
@@ -279,18 +250,6 @@ export const buildPeopleGraphDataset = (
       const backlink = articleBacklink(article);
 
       for (const mention of article.mentions) {
-        pushBacklink(backlinks, mention.slug, backlink);
-      }
-    }
-
-    for (const [index, addendum] of article.addenda.entries()) {
-      if (addendum.mentions.length === 0) {
-        continue;
-      }
-
-      const backlink = addendumBacklink(article, addendum, index);
-
-      for (const mention of addendum.mentions) {
         pushBacklink(backlinks, mention.slug, backlink);
       }
     }
