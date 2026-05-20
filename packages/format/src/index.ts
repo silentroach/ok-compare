@@ -17,3 +17,4 @@ export {
   parseNumberInputRu,
 } from './number';
 export { count, pluralize } from './plural';
+export { compareRuText } from './locale';

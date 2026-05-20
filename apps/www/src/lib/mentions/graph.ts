@@ -5,7 +5,7 @@ import type {
   EntityMentionType,
 } from './types';
 
-import { compareRuText } from '@/lib/locale';
+import { compareRuText } from '@shelkovo/format';
 
 const targetKey = (type: EntityMentionType, slug: string): string =>
   `${type}:${slug}`;

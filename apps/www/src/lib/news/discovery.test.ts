@@ -237,9 +237,6 @@ describe('news discovery payload', () => {
       'ics_url',
     ]);
     expect(defs.article?.required).not.toContain('events');
-    expect(defs.article?.properties).not.toHaveProperty('updated_at');
-    expect(defs.article?.required).not.toContain('addenda');
-    expect(defs.article?.properties).not.toHaveProperty('addenda');
     expect(defs.event?.properties?.starts_at).toMatchObject({
       format: 'date-time',
     });

@@ -1,6 +1,6 @@
 import type { NewsListArticle, NewsTag, NewsTagPage } from './schema';
 
-import { compareRuText } from '@/lib/locale';
+import { compareRuText } from '@shelkovo/format';
 
 import { NEWS_LATEST_LIMIT } from './config';
 import { tagMarkdownUrl, tagUrl } from './routes';

@@ -1,4 +1,4 @@
-import { compareRuText } from '@/lib/locale';
+import { compareRuText } from '@shelkovo/format';
 
 import type { NewsListArticle, NewsTagPage } from './schema';
 

@@ -1,6 +1,6 @@
 import { count } from '@shelkovo/format';
 
-import { compareRuText } from '@/lib/locale';
+import { compareRuText } from '@shelkovo/format';
 import {
   llmsSection,
   markdownList,

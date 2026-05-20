@@ -7,7 +7,7 @@ import {
   type MarkdownPhrasingInput,
 } from '@shelkovo/markdown';
 
-import { compareRuText } from '@/lib/locale';
+import { compareRuText } from '@shelkovo/format';
 
 import { loadAllData } from './data';
 import { toExplorer } from './explorer';

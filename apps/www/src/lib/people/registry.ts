@@ -1,6 +1,6 @@
 import type { CollectionEntry } from 'astro:content';
 
-import { compareRuText } from '@/lib/locale';
+import { compareRuText } from '@shelkovo/format';
 
 import { preprocessSiteMarkdownContent } from '../markdown/render';
 import type { SiteMentionRegistry } from '../mentions';
