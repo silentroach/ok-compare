@@ -15,10 +15,35 @@
     newDocument?: Document;
   };
 
+  const isYandexMapsHeadUrl = (url: string): boolean => {
+    if (!url) return false;
+
+    try {
+      const host = new URL(url).hostname;
+      return (
+        host === 'api-maps.yandex.ru' ||
+        host.endsWith('.api-maps.yandex.ru') ||
+        host === 'yastatic.net'
+      );
+    } catch {
+      return false;
+    }
+  };
+
   const yandexHeadKey = (node: Element): string | undefined => {
+    if (node instanceof HTMLScriptElement) {
+      if (node.dataset.yandexMapsApi === 'true') return `script:${node.src}`;
+      if (isYandexMapsHeadUrl(node.src)) return `script:${node.src}`;
+    }
+
+    if (node instanceof HTMLLinkElement) {
+      if (isYandexMapsHeadUrl(node.href))
+        return `link:${node.rel}:${node.href}`;
+    }
+
     if (node instanceof HTMLStyleElement) {
       const text = node.textContent ?? '';
-      if (text.includes('ymaps3--')) {
+      if (text.toLowerCase().includes('ymaps')) {
         return `style:${text.slice(0, 512)}`;
       }
     }
@@ -111,7 +136,7 @@
 
       if (!existing) {
         script.dataset.yandexMapsApi = 'true';
-        script.src = `https://api-maps.yandex.ru/v3/?apikey=${API_KEY}&lang=ru_RU`;
+        script.src = `https://api-maps.yandex.ru/v3/?apikey=${API_KEY}&lang=ru_RU&csp=202512`;
         script.async = true;
         document.head.appendChild(script);
       }
