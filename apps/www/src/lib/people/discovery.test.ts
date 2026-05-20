@@ -36,7 +36,9 @@ const profile = (): PersonProfile => ({
   body: 'Как отметил [Кирилл Щемелинин](/people/kschemelinin/), проблема редкая.',
   mentions: [
     {
+      type: 'person',
       slug: 'apetrov',
+      label: 'Андрей Петров',
       name: 'Андрей Петров',
       html_url: '/people/apetrov/',
       markdown_url: '/people/apetrov/index.md',

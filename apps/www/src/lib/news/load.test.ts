@@ -276,7 +276,7 @@ describe('buildNewsDataset', () => {
           ]),
         },
       ),
-    ).toThrow('has no "gen" name case');
+    ).toThrow('has no "gen" label case');
   });
 
   it('normalizes a valid event for article and list data', () => {

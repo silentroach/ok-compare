@@ -1,6 +1,6 @@
 # Task 01: Нейтральные mention-типы, registry и normalizer
 
-Статус: не начат.
+Статус: реализовано.
 
 ## Скилы
 
@@ -54,29 +54,29 @@
 
 ## Acceptance criteria
 
-- [ ] Общий normalizer не импортирует `people`, `news`, `status` или route helpers доменных разделов.
-- [ ] `createPersonMentionTarget` мапит person data в neutral `EntityMentionTarget` с `type: 'person'`.
-- [ ] Canonical mentions раскрываются в `label` и `html_url`.
-- [ ] `@slug:case` раскрывается через `label_cases` и падает, если формы нет.
-- [ ] Labelled mentions сохраняют видимый текст и заменяют destination на `html_url`.
-- [ ] Unknown short slug падает на build-time normalization.
-- [ ] Duplicate short slug в `SiteMentionRegistry` падает до обработки body.
-- [ ] `mentions[]` содержит уникальные targets в порядке первого появления.
+- [x] Общий normalizer не импортирует `people`, `news`, `status` или route helpers доменных разделов.
+- [x] `createPersonMentionTarget` мапит person data в neutral `EntityMentionTarget` с `type: 'person'`.
+- [x] Canonical mentions раскрываются в `label` и `html_url`.
+- [x] `@slug:case` раскрывается через `label_cases` и падает, если формы нет.
+- [x] Labelled mentions сохраняют видимый текст и заменяют destination на `html_url`.
+- [x] Unknown short slug падает на build-time normalization.
+- [x] Duplicate short slug в `SiteMentionRegistry` падает до обработки body.
+- [x] `mentions[]` содержит уникальные targets в порядке первого появления.
 
 ## Проверка
 
-- [ ] `pnpm --filter @shelkovo/www test -- src/lib/mentions src/lib/people/mentions.test.ts src/lib/markdown/render.test.ts`
-- [ ] `pnpm --filter @shelkovo/www typecheck`
+- [x] `pnpm --filter @shelkovo/www test -- src/lib/mentions src/lib/people/mentions.test.ts src/lib/markdown/render.test.ts`
+- [x] `pnpm --filter @shelkovo/www typecheck`
 
 ## Чеклист агента
 
-- [ ] Прочитал обязательные файлы.
-- [ ] Добавил нейтральный mention layer.
-- [ ] Сохранил people adapter.
-- [ ] Обновил или перенес тесты.
-- [ ] Запустил проверки.
-- [ ] Использовал `code-simplification` после реализации.
-- [ ] Сделал commit.
+- [x] Прочитал обязательные файлы.
+- [x] Добавил нейтральный mention layer.
+- [x] Сохранил people adapter.
+- [x] Обновил или перенес тесты.
+- [x] Запустил проверки.
+- [x] Использовал `code-simplification` после реализации.
+- [x] Сделал commit.
 
 ## Commit message
 

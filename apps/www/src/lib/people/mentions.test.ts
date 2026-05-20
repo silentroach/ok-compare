@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  createPersonMentionTarget,
   normalizePeopleMentions,
   type PeopleMentionRegistry,
 } from './mentions';
@@ -8,22 +9,9 @@ import {
 const registry = new Map([
   [
     'kschemelinin',
-    {
-      slug: 'kschemelinin',
-      name: 'Кирилл Щемелинин',
-      html_url: '/people/kschemelinin/',
-      markdown_url: '/people/kschemelinin/index.md',
-    },
+    createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),
   ],
-  [
-    'apetrov',
-    {
-      slug: 'apetrov',
-      name: 'Андрей Петров',
-      html_url: '/people/apetrov/',
-      markdown_url: '/people/apetrov/index.md',
-    },
-  ],
+  ['apetrov', createPersonMentionTarget('apetrov', 'Андрей Петров')],
 ]) satisfies PeopleMentionRegistry;
 
 describe('normalizePeopleMentions', () => {
@@ -80,7 +68,7 @@ describe('normalizePeopleMentions', () => {
         registry,
       }),
     ).toThrow(
-      'news article "2026/05/test" body contains unsupported labelled person mention "@kschemelinin:gen"; write the needed grammar in the visible link text',
+      'news article "2026/05/test" body contains unsupported labelled entity mention "@kschemelinin:gen"; write the needed grammar in the visible link text',
     );
   });
 
@@ -92,7 +80,7 @@ describe('normalizePeopleMentions', () => {
         registry,
       }),
     ).toThrow(
-      'news article "2026/05/test" body contains unknown person mention "@unknown"',
+      'news article "2026/05/test" body contains unknown entity mention "@unknown"',
     );
   });
 
@@ -135,7 +123,7 @@ describe('normalizePeopleMentions', () => {
         registry,
       }),
     ).toThrow(
-      'people profile "test" body contains unknown person mention "@unknown"',
+      'people profile "test" body contains unknown entity mention "@unknown"',
     );
   });
 
