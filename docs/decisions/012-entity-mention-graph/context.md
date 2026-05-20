@@ -89,12 +89,12 @@
 
 ## Порядок задач
 
-- [ ] [Task 01: Нейтральные mention-типы, registry и normalizer](task-01-neutral-mentions.md)
-- [ ] [Task 02: App markdown pipeline и self-link validation](task-02-markdown-pipeline.md)
-- [ ] [Task 03: Source refs adapters для news, status и people](task-03-source-ref-adapters.md)
-- [ ] [Task 04: Generic mention graph и миграция people backlinks](task-04-generic-graph.md)
-- [ ] [Task 05: Cleanup доменных границ и документации](task-05-cleanup-docs.md)
-- [ ] [Task 06: Финальная регрессия и hardening](task-06-final-regression.md)
+- [x] [Task 01: Нейтральные mention-типы, registry и normalizer](task-01-neutral-mentions.md)
+- [x] [Task 02: App markdown pipeline и self-link validation](task-02-markdown-pipeline.md)
+- [x] [Task 03: Source refs adapters для news, status и people](task-03-source-ref-adapters.md)
+- [x] [Task 04: Generic mention graph и миграция people backlinks](task-04-generic-graph.md)
+- [x] [Task 05: Cleanup доменных границ и документации](task-05-cleanup-docs.md)
+- [x] [Task 06: Финальная регрессия и hardening](task-06-final-regression.md)
 
 ## Зависимости задач
 

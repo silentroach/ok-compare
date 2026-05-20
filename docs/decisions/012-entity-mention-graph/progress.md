@@ -2,11 +2,11 @@
 
 ## Current Step
 
-Step 5 - Boundary cleanup and docs.
+Complete.
 
 ## Active Wave
 
-- `code-assist:012-entity-mention-graph:step-05:cleanup-docs` backed by `docs/decisions/012-entity-mention-graph/task-05-cleanup-docs.md`.
+- `code-assist:012-entity-mention-graph:step-06:final-regression` backed by `docs/decisions/012-entity-mention-graph/task-06-final-regression.md`.
 
 ## Verification Notes
 
@@ -15,6 +15,8 @@ Step 5 - Boundary cleanup and docs.
 - Task 03 focused tests and typecheck passed before closure.
 - Task 04 focused tests, app typecheck and full app tests passed before closure.
 - Task 05 boundary cleanup, app tests and app typecheck passed before review.
+- Task 05 finalizer re-ran boundary grep, app tests and app typecheck before closure.
+- Task 06 final regression passed targeted grep, code review, `pnpm test`, `pnpm typecheck`, and `pnpm build`.
 
 ## Completed Steps
 
@@ -23,6 +25,7 @@ Step 5 - Boundary cleanup and docs.
 - Step 3 - Source ref adapters.
 - Step 4 - Generic graph migration.
 - Step 5 - Boundary cleanup and docs.
+- Step 6 - Final regression.
 
 ## Historical Log
 
@@ -118,3 +121,28 @@ Verification:
 - Grep checks passed for people-only names, `render.ts` imports, people backlinks imports, and Markdown tables in touched docs.
 - `pnpm --filter @shelkovo/www test` passed, 89 files / 523 tests.
 - `pnpm --filter @shelkovo/www typecheck` passed.
+
+## 2026-05-20 Task 06
+
+Active task: `task-1779294265-f2f1` / `code-assist:012-entity-mention-graph:step-06:final-regression`.
+
+Final regression review for ADR-012 found no implementation regressions:
+
+- Previous task files are marked complete with separate commits in history.
+- Generic mention layer lives in `apps/www/src/lib/mentions`; app body markdown uses `@/lib/markdown/render` and generic `mentions` options.
+- Self-link validation is covered in normalization tests for canonical and labelled mentions.
+- News, status and people source adapters publish `EntityMentionSourceRef[]` while the generic graph stays independent from real domain dataset shapes.
+- People backlinks still expose `backlinks.news`, `backlinks.status` and `backlinks.people`; no public generic entities API/feed was added.
+
+Targeted grep:
+
+- `PeopleMentionRegistry` remains confined to the people adapter/domain loader boundary; news/status only load the registry provider.
+- `PersonMentionTarget` remains confined to the people adapter and tests/fixtures.
+- `people/load.ts` contains no `statusIncidentMarkdownUrl`, `NewsDataset` or `StatusDataset` backlink coupling.
+- Direct app imports from `@shelkovo/markdown` are low-level helpers or the allowed app wrapper `render.ts`; no new body-render bypass was found.
+
+Verification:
+
+- `pnpm test` passed, including `@shelkovo/www` 89 files / 523 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed and produced `dist/www`.

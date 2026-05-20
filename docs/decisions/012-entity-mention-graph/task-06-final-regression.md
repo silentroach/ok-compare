@@ -1,6 +1,6 @@
 # Task 06: Финальная регрессия и hardening
 
-Статус: не начат.
+Статус: выполнено.
 
 ## Скилы
 
@@ -38,33 +38,33 @@
 
 ## Acceptance criteria
 
-- [ ] Все task-файлы в этой папке обновлены по факту выполнения.
-- [ ] Generic mention layer живет в `apps/www/src/lib/mentions`.
-- [ ] App Markdown pipeline использует generic mention layer.
-- [ ] Self-link падает на normalization Markdown body.
-- [ ] Source adapters создают refs для news, status и people.
-- [ ] Generic graph тестируется без реальных domain dataset shapes.
-- [ ] People backlinks shape сохранился.
-- [ ] Нет публичного generic entities API/feed.
-- [ ] Full tests, typecheck и build проходят или documented blocker явно записан.
+- [x] Все task-файлы в этой папке обновлены по факту выполнения.
+- [x] Generic mention layer живет в `apps/www/src/lib/mentions`.
+- [x] App Markdown pipeline использует generic mention layer.
+- [x] Self-link падает на normalization Markdown body.
+- [x] Source adapters создают refs для news, status и people.
+- [x] Generic graph тестируется без реальных domain dataset shapes.
+- [x] People backlinks shape сохранился.
+- [x] Нет публичного generic entities API/feed.
+- [x] Full tests, typecheck и build проходят или documented blocker явно записан.
 
 ## Проверка
 
-- [ ] `pnpm test`
-- [ ] `pnpm typecheck`
-- [ ] `pnpm build`
+- [x] `pnpm test`
+- [x] `pnpm typecheck`
+- [x] `pnpm build`
 
 ## Чеклист агента
 
-- [ ] Прочитал обязательные файлы.
-- [ ] Выполнил targeted grep.
-- [ ] Провел code review итоговой реализации.
-- [ ] Исправил найденные регрессии минимальными изменениями.
-- [ ] Запустил полный набор проверок.
-- [ ] Использовал `code-review-and-quality`.
-- [ ] Использовал `diagnose`, если были падения.
-- [ ] Использовал `code-simplification`, если были code changes.
-- [ ] Сделал commit.
+- [x] Прочитал обязательные файлы.
+- [x] Выполнил targeted grep.
+- [x] Провел code review итоговой реализации.
+- [x] Исправил найденные регрессии минимальными изменениями.
+- [x] Запустил полный набор проверок.
+- [x] Использовал `code-review-and-quality`.
+- [x] Использовал `diagnose`, если были падения.
+- [x] Использовал `code-simplification`, если были code changes.
+- [x] Сделал commit.
 
 ## Commit message
 
