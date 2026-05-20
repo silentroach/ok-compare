@@ -118,9 +118,6 @@ const forbiddenTime = (name: string) =>
     `${name} is not supported; include time in date as dd.mm.yyyy hh:mm`,
   );
 
-const forbiddenField = (name: string) =>
-  z.unknown().refine(() => false, `${name} is not supported`);
-
 const tag = () =>
   text('tags[]')
     .refine(
