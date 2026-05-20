@@ -1,7 +1,12 @@
-import { beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { createPersonMentionTarget } from '../people/mentions';
 import type { NewsArticleEntry, NewsAuthorEntry } from './load';
+
+type MutableMentionRegistry = Map<
+  string,
+  ReturnType<typeof createPersonMentionTarget>
+>;
 
 let buildNewsDataset: typeof import('./load').buildNewsDataset;
 
@@ -556,5 +561,132 @@ describe('buildNewsDataset', () => {
 
     expect(data.articles[0]?.events).toEqual([]);
     expect(data.home.latest[0]?.events).toEqual([]);
+  });
+
+  it('does not reuse the fallback mention registry between builds', async () => {
+    vi.resetModules();
+    vi.doMock('../markdown/render', () => ({
+      preprocessSiteMarkdownContent: (
+        markdown: string,
+        _context: string,
+        registry: Map<string, unknown>,
+      ) => {
+        const alreadyMutated = registry.has('leaked');
+
+        registry.set(
+          'leaked',
+          createPersonMentionTarget('leaked', 'Утекшее упоминание'),
+        );
+
+        return {
+          markdown: alreadyMutated ? 'fallback registry leaked' : markdown,
+          mentions: [],
+        };
+      },
+    }));
+
+    try {
+      const { buildNewsDataset: buildWithMockedPreprocessor } =
+        await import('./load');
+
+      buildWithMockedPreprocessor(
+        [author({ id: 'ig', name: 'Редакция' })],
+        [
+          article({
+            id: '2026/05/first',
+            title: 'Первая новость',
+            summary: 'Проверка',
+            date: '01.05.2026',
+            body: 'Первый body.',
+          }),
+        ],
+      );
+
+      const data = buildWithMockedPreprocessor(
+        [author({ id: 'ig', name: 'Редакция' })],
+        [
+          article({
+            id: '2026/05/second',
+            title: 'Вторая новость',
+            summary: 'Проверка',
+            date: '02.05.2026',
+            body: 'Второй body.',
+          }),
+        ],
+      );
+
+      expect(data.articles[0]?.body).toBe('Второй body.');
+    } finally {
+      vi.doUnmock('../markdown/render');
+      vi.resetModules();
+    }
+  });
+
+  it('does not let fallback registry mutations make later mentions valid', async () => {
+    vi.resetModules();
+    vi.doMock('../markdown/render', async () => {
+      const actual =
+        await vi.importActual<typeof import('../markdown/render')>(
+          '../markdown/render',
+        );
+
+      return {
+        ...actual,
+        preprocessSiteMarkdownContent: (
+          markdown: string,
+          context: string,
+          registry: MutableMentionRegistry,
+        ) => {
+          const body = actual.preprocessSiteMarkdownContent(
+            markdown,
+            context,
+            registry,
+          );
+
+          registry.set(
+            'leaked',
+            createPersonMentionTarget('leaked', 'Утекшее упоминание'),
+          );
+
+          return body;
+        },
+      };
+    });
+
+    try {
+      const { buildNewsDataset: buildWithMutablePreprocessor } =
+        await import('./load');
+
+      buildWithMutablePreprocessor(
+        [author({ id: 'ig', name: 'Редакция' })],
+        [
+          article({
+            id: '2026/05/first',
+            title: 'Первая новость',
+            summary: 'Проверка',
+            date: '01.05.2026',
+            body: 'Первый body.',
+          }),
+        ],
+      );
+
+      expect(() =>
+        buildWithMutablePreprocessor(
+          [author({ id: 'ig', name: 'Редакция' })],
+          [
+            article({
+              id: '2026/05/second',
+              title: 'Вторая новость',
+              summary: 'Проверка',
+              date: '02.05.2026',
+              body: 'Упоминание @leaked.',
+            }),
+          ],
+        ),
+      ).toThrow('unknown entity mention "@leaked"');
+    } finally {
+      vi.doUnmock('../markdown/render');
+      vi.resetModules();
+    }
   });
 });

@@ -25,6 +25,13 @@ const targets = [
     html_url: '/people/apetrov/',
     markdown_url: '/people/apetrov/index.md',
   },
+  {
+    type: 'person',
+    slug: 'encoded-url',
+    label: 'Адрес с пробелом',
+    html_url: '/people/иван%20петров/',
+    markdown_url: '/people/иван%20петров/index.md',
+  },
 ] as const;
 
 const registry = createSiteMentionRegistry(targets);
@@ -92,6 +99,21 @@ describe('normalizeEntityMentions', () => {
     });
   });
 
+  it('replaces labelled mentions with encoded target URLs without trimming adjacent text', () => {
+    expect(
+      normalizeEntityMentions({
+        markdown:
+          'Перед [видимым текстом](@encoded-url), после ссылки остается текст.',
+        context: 'news article "2026/05/test" body',
+        registry,
+      }),
+    ).toEqual({
+      markdown:
+        'Перед [видимым текстом](/people/иван%20петров/), после ссылки остается текст.',
+      mentions: [targets[2]],
+    });
+  });
+
   it('fails clearly on encoded labelled mention destinations', () => {
     expect(() =>
       normalizeEntityMentions({
@@ -126,6 +148,18 @@ describe('normalizeEntityMentions', () => {
       }),
     ).toThrow(
       'people profile "test" body contains unknown entity mention "@unknown"',
+    );
+  });
+
+  it('fails on empty canonical mentions', () => {
+    expect(() =>
+      normalizeEntityMentions({
+        markdown: 'Текст @.',
+        context: 'news article "2026/05/test" body',
+        registry,
+      }),
+    ).toThrow(
+      'news article "2026/05/test" body contains invalid entity mention "@."',
     );
   });
 

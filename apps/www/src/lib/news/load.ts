@@ -60,7 +60,6 @@ type NewsTimestampWithTime = NonNullable<
 };
 
 let cache: Promise<NewsDataset> | undefined;
-const EMPTY_MENTION_REGISTRY: SiteMentionRegistry = new Map();
 
 const isPinnedAtBuild = (input: {
   readonly pinned?: boolean;
@@ -552,7 +551,7 @@ export function buildNewsDataset(
     readonly mention_registry?: SiteMentionRegistry;
   },
 ): NewsDataset {
-  const mentionRegistry = opts?.mention_registry ?? EMPTY_MENTION_REGISTRY;
+  const mentionRegistry = opts?.mention_registry ?? new Map();
   const authors = authorMap(authorsData);
 
   const articles: readonly NewsArticle[] = articlesData

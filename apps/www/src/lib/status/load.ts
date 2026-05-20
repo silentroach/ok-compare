@@ -25,7 +25,6 @@ export type StatusIncidentEntry = Pick<
 >;
 
 let cache: Promise<StatusDataset> | undefined;
-const EMPTY_MENTION_REGISTRY: SiteMentionRegistry = new Map();
 
 interface EntryParts {
   readonly year: string;
@@ -260,7 +259,7 @@ export const buildStatusDataset = (
   },
 ): StatusDataset => {
   const now = opts?.now ?? new Date();
-  const mentionRegistry = opts?.mention_registry ?? EMPTY_MENTION_REGISTRY;
+  const mentionRegistry = opts?.mention_registry ?? new Map();
   const incidents = entries
     .map((entry) => normalizeIncident(entry, now, mentionRegistry))
     .sort(compareIncidentsDesc);
