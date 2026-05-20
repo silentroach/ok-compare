@@ -1,6 +1,6 @@
 # Task 04: Generic mention graph и миграция people backlinks
 
-Статус: не начат.
+Статус: реализовано.
 
 ## Скилы
 
@@ -58,31 +58,31 @@
 
 ## Acceptance criteria
 
-- [ ] Graph tests не используют реальные формы `NewsArticle`, `StatusIncident` или `PersonProfile`.
-- [ ] Graph дедуплицирует повторный ref одного source unit к одной target entity.
-- [ ] Graph сортирует refs по правилам ADR-012.
-- [ ] Graph группирует refs по `source_section`.
-- [ ] Graph падает на self-link ref, если `source_entity` совпадает с target pair.
-- [ ] `buildPeopleGraphDataset` больше не принимает `related.news` и `related.status` datasets.
-- [ ] `people/load.ts` больше не импортирует `NewsDataset`, `StatusDataset`, `statusIncidentMarkdownUrl` или route helpers чужих source sections для построения backlinks.
-- [ ] Existing people backlinks tests проходят с тем же публичным shape.
+- [x] Graph tests не используют реальные формы `NewsArticle`, `StatusIncident` или `PersonProfile`.
+- [x] Graph дедуплицирует повторный ref одного source unit к одной target entity.
+- [x] Graph сортирует refs по правилам ADR-012.
+- [x] Graph группирует refs по `source_section`.
+- [x] Graph падает на self-link ref, если `source_entity` совпадает с target pair.
+- [x] `buildPeopleGraphDataset` больше не принимает `related.news` и `related.status` datasets.
+- [x] `people/load.ts` больше не импортирует `NewsDataset`, `StatusDataset`, `statusIncidentMarkdownUrl` или route helpers чужих source sections для построения backlinks.
+- [x] Existing people backlinks tests проходят с тем же публичным shape.
 
 ## Проверка
 
-- [ ] `pnpm --filter @shelkovo/www test -- src/lib/mentions/graph.test.ts src/lib/people/load.test.ts src/lib/news/mentions.test.ts src/lib/status/mentions.test.ts src/lib/people/mention-refs.test.ts`
-- [ ] `pnpm --filter @shelkovo/www typecheck`
+- [x] `pnpm --filter @shelkovo/www test -- src/lib/mentions/graph.test.ts src/lib/people/load.test.ts src/lib/news/mentions.test.ts src/lib/status/mentions.test.ts src/lib/people/mention-refs.test.ts`
+- [x] `pnpm --filter @shelkovo/www typecheck`
 
 ## Чеклист агента
 
-- [ ] Прочитал обязательные файлы.
-- [ ] Добавил generic graph module.
-- [ ] Покрыл graph sorting, grouping, dedupe и self-link tests.
-- [ ] Перевел people backlinks на graph/source refs.
-- [ ] Удалил старую source-specific coupling из `people/load.ts`.
-- [ ] Сохранил public people backlinks shape.
-- [ ] Запустил проверки.
-- [ ] Использовал `code-simplification` после реализации.
-- [ ] Сделал commit.
+- [x] Прочитал обязательные файлы.
+- [x] Добавил generic graph module.
+- [x] Покрыл graph sorting, grouping, dedupe и self-link tests.
+- [x] Перевел people backlinks на graph/source refs.
+- [x] Удалил старую source-specific coupling из `people/load.ts`.
+- [x] Сохранил public people backlinks shape.
+- [x] Запустил проверки.
+- [x] Использовал `code-simplification` после реализации.
+- [x] Сделал commit.
 
 ## Commit message
 

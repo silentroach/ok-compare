@@ -3,6 +3,7 @@ export {
   normalizeEntityMentions,
 } from './normalize';
 export { createEntityMentionSourceRefs } from './source-refs';
+export { createEntityMentionGraph, getEntityMentionGraphRefs } from './graph';
 export {
   ENTITY_MENTION_ALTERNATE_LABEL_CASES,
   ENTITY_MENTION_DEFAULT_LABEL_CASE,
@@ -12,6 +13,8 @@ export {
   type EntityMentionLabelCase,
   type EntityMentionLabelCaseForms,
   type EntityMentionSourceEntity,
+  type EntityMentionGraph,
+  type EntityMentionGraphTarget,
   type EntityMentionSourceRef,
   type EntityMentionSourceRefSource,
   type EntityMentionTarget,

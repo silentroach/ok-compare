@@ -9,6 +9,9 @@ let buildPeopleDataset: typeof import('./load').buildPeopleDataset;
 let buildPeopleGraphDataset: typeof import('./load').buildPeopleGraphDataset;
 let buildNewsDataset: typeof import('../news/load').buildNewsDataset;
 let buildStatusDataset: typeof import('../status/load').buildStatusDataset;
+let createNewsArticleMentionRefs: typeof import('../news/mentions').createNewsArticleMentionRefs;
+let createStatusIncidentMentionRefs: typeof import('../status/mentions').createStatusIncidentMentionRefs;
+let createPersonProfileMentionRefs: typeof import('./mention-refs').createPersonProfileMentionRefs;
 
 beforeAll(async () => {
   Object.assign(import.meta.env, {
@@ -19,7 +22,20 @@ beforeAll(async () => {
   ({ buildPeopleDataset, buildPeopleGraphDataset } = await import('./load'));
   ({ buildNewsDataset } = await import('../news/load'));
   ({ buildStatusDataset } = await import('../status/load'));
+  ({ createNewsArticleMentionRefs } = await import('../news/mentions'));
+  ({ createStatusIncidentMentionRefs } = await import('../status/mentions'));
+  ({ createPersonProfileMentionRefs } = await import('./mention-refs'));
 });
+
+const sourceRefs = (input: {
+  readonly people: ReturnType<typeof buildPeopleDataset>;
+  readonly news: ReturnType<typeof buildNewsDataset>;
+  readonly status: ReturnType<typeof buildStatusDataset>;
+}) => [
+  ...input.news.articles.flatMap(createNewsArticleMentionRefs),
+  ...input.status.incidents.flatMap(createStatusIncidentMentionRefs),
+  ...input.people.profiles.flatMap(createPersonProfileMentionRefs),
+];
 
 const entry = (input: {
   readonly id: string;
@@ -266,7 +282,10 @@ describe('buildPeopleDataset', () => {
         mention_registry: people.mention_registry,
       },
     );
-    const graph = buildPeopleGraphDataset(people, { news, status });
+    const graph = buildPeopleGraphDataset(
+      people,
+      sourceRefs({ people, news, status }),
+    );
 
     expect(graph.by_slug.get('kschemelinin')?.backlinks).toMatchObject({
       news: [
@@ -341,7 +360,10 @@ describe('buildPeopleDataset', () => {
         mention_registry: people.mention_registry,
       },
     );
-    const graph = buildPeopleGraphDataset(people, { news, status });
+    const graph = buildPeopleGraphDataset(
+      people,
+      sourceRefs({ people, news, status }),
+    );
     const backlinks = graph.by_slug.get('kschemelinin')?.backlinks;
 
     expect(backlinks).toMatchObject({

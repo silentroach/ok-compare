@@ -1,14 +1,17 @@
 import type { CollectionEntry } from 'astro:content';
-import { extractFirstMarkdownText } from '@shelkovo/markdown';
-
 import {
   preprocessSiteMarkdown,
   type PreprocessedSiteMarkdown,
 } from '../markdown/render';
-import type { SiteMentionRegistry } from '../mentions';
-import { statusIncidentMarkdownUrl } from '../status/routes';
-import type { NewsDataset } from '../news/schema';
-import type { StatusDataset } from '../status/schema';
+import {
+  createEntityMentionGraph,
+  getEntityMentionGraphRefs,
+  type EntityMentionSourceRef,
+  type SiteMentionRegistry,
+} from '../mentions';
+import { createNewsArticleMentionRefs } from '../news/mentions';
+import { createStatusIncidentMentionRefs } from '../status/mentions';
+import { createPersonProfileMentionRefs } from './mention-refs';
 import {
   createPersonMentionTarget,
   type PeopleMentionRegistry,
@@ -16,8 +19,11 @@ import {
 import { personCanonical, personMarkdownUrl, personUrl } from './routes';
 import {
   EMPTY_PERSON_BACKLINKS,
-  type PersonBacklinks,
+  PERSON_BACKLINK_KINDS,
+  PERSON_MENTION_SECTIONS,
+  type PersonBacklinkKind,
   type PersonMentionRef,
+  type PersonMentionSection,
   type PersonProfile,
 } from './schema';
 import { normalizePersonContact } from './view';
@@ -34,17 +40,12 @@ export interface PeopleDataset {
   readonly mention_registry: PeopleMentionRegistry;
 }
 
-interface PersonBacklinksDraft {
-  news: PersonMentionRef[];
-  status: PersonMentionRef[];
-  people: PersonMentionRef[];
-}
-
 let cache: Promise<PeopleDataset> | undefined;
 let graphCache: Promise<PeopleDataset> | undefined;
 
-const SPACE = /\s+/gu;
 const byText = (a: string, b: string): number => a.localeCompare(b, 'ru');
+const PERSON_MENTION_SECTION_SET = new Set<string>(PERSON_MENTION_SECTIONS);
+const PERSON_BACKLINK_KIND_SET = new Set<string>(PERSON_BACKLINK_KINDS);
 
 const content = (
   value: string | undefined,
@@ -68,105 +69,43 @@ const content = (
       };
 };
 
-const inline = (value: string): string => value.replace(SPACE, ' ').trim();
+const isPersonMentionSection = (value: string): value is PersonMentionSection =>
+  PERSON_MENTION_SECTION_SET.has(value);
 
-const excerpt = (value: string): string | undefined => {
-  const first = extractFirstMarkdownText(value);
+const isPersonBacklinkKind = (value: string): value is PersonBacklinkKind =>
+  PERSON_BACKLINK_KIND_SET.has(value);
 
-  return first ? inline(first) : undefined;
-};
-
-const createBacklinksDraft = (): PersonBacklinksDraft => ({
-  news: [],
-  status: [],
-  people: [],
-});
-
-const createPersonBacklinks = (
-  draft: PersonBacklinksDraft | undefined,
-): PersonBacklinks => {
-  if (!draft) {
-    return EMPTY_PERSON_BACKLINKS;
+const toPersonMentionRef = (
+  ref: EntityMentionSourceRef,
+): PersonMentionRef | undefined => {
+  if (
+    !isPersonMentionSection(ref.source_section) ||
+    !isPersonBacklinkKind(ref.source_kind)
+  ) {
+    return undefined;
   }
 
-  const sort = (
-    items: readonly PersonMentionRef[],
-  ): readonly PersonMentionRef[] =>
-    [...items].sort(
-      (a, b) =>
-        (b.sort_key ?? Number.NEGATIVE_INFINITY) -
-          (a.sort_key ?? Number.NEGATIVE_INFINITY) ||
-        byText(a.title, b.title) ||
-        byText(a.source_id, b.source_id),
-    );
-
   return {
-    news: sort(draft.news),
-    status: sort(draft.status),
-    people: sort(draft.people),
+    section: ref.source_section,
+    kind: ref.source_kind,
+    source_id: ref.source_id,
+    title: ref.title,
+    html_url: ref.html_url,
+    markdown_url: ref.markdown_url,
+    ...(ref.excerpt ? { excerpt: ref.excerpt } : {}),
+    ...(ref.mentioned_at ? { mentioned_at: ref.mentioned_at } : {}),
+    ...(ref.sort_key !== undefined ? { sort_key: ref.sort_key } : {}),
   };
 };
 
-const pushBacklink = (
-  index: Map<string, PersonBacklinksDraft>,
-  slug: string,
-  backlink: PersonMentionRef,
-): void => {
-  if (backlink.section === 'people' && backlink.source_id === slug) {
-    return;
-  }
+const toPersonMentionRefs = (
+  refs: readonly EntityMentionSourceRef[],
+): readonly PersonMentionRef[] =>
+  refs.flatMap((ref) => {
+    const backlink = toPersonMentionRef(ref);
 
-  const list = index.get(slug) ?? createBacklinksDraft();
-
-  list[backlink.section].push(backlink);
-  index.set(slug, list);
-};
-
-const articleBacklink = (
-  article: NewsDataset['articles'][number],
-): PersonMentionRef => {
-  const summary = excerpt(article.body);
-
-  return {
-    section: 'news',
-    kind: 'article',
-    source_id: article.id,
-    title: article.title,
-    html_url: article.url,
-    markdown_url: article.markdown_url,
-    ...(summary ? { excerpt: summary } : {}),
-    mentioned_at: article.published_iso,
-    sort_key: article.published_at.valueOf(),
-  };
-};
-
-const incidentBacklink = (
-  incident: StatusDataset['incidents'][number],
-): PersonMentionRef => ({
-  section: 'status',
-  kind: 'incident',
-  source_id: incident.id,
-  title: incident.title,
-  html_url: incident.url,
-  markdown_url: statusIncidentMarkdownUrl(incident),
-  ...(incident.excerpt ? { excerpt: incident.excerpt } : {}),
-  mentioned_at: incident.started_iso,
-  sort_key: incident.sort_last_change_at,
-});
-
-const personBacklink = (profile: PersonProfile): PersonMentionRef => {
-  const summary = excerpt(profile.body);
-
-  return {
-    section: 'people',
-    kind: 'person',
-    source_id: profile.id,
-    title: profile.name,
-    html_url: profile.url,
-    markdown_url: profile.markdown_url,
-    ...(summary ? { excerpt: summary } : {}),
-  };
-};
+    return backlink ? [backlink] : [];
+  });
 
 const personRegistry = (
   entries: readonly PersonProfileEntry[],
@@ -242,50 +181,23 @@ export const buildPeopleDataset = (
 
 export const buildPeopleGraphDataset = (
   people: PeopleDataset,
-  related: {
-    readonly news: Pick<NewsDataset, 'articles'>;
-    readonly status: Pick<StatusDataset, 'incidents'>;
-  },
+  refs: readonly EntityMentionSourceRef[],
 ): PeopleDataset => {
-  const backlinks = new Map<string, PersonBacklinksDraft>();
-
-  for (const article of related.news.articles) {
-    if (article.mentions.length > 0) {
-      const backlink = articleBacklink(article);
-
-      for (const mention of article.mentions) {
-        pushBacklink(backlinks, mention.slug, backlink);
-      }
-    }
-  }
-
-  for (const incident of related.status.incidents) {
-    if (incident.mentions.length === 0) {
-      continue;
-    }
-
-    const backlink = incidentBacklink(incident);
-
-    for (const mention of incident.mentions) {
-      pushBacklink(backlinks, mention.slug, backlink);
-    }
-  }
-
-  for (const profile of people.profiles) {
-    if (profile.mentions.length === 0) {
-      continue;
-    }
-
-    const backlink = personBacklink(profile);
-
-    for (const mention of profile.mentions) {
-      pushBacklink(backlinks, mention.slug, backlink);
-    }
-  }
+  const graph = createEntityMentionGraph(refs);
 
   const profiles = people.profiles.map((profile) => ({
     ...profile,
-    backlinks: createPersonBacklinks(backlinks.get(profile.slug)),
+    backlinks: {
+      news: toPersonMentionRefs(
+        getEntityMentionGraphRefs(graph, 'person', profile.slug, 'news'),
+      ),
+      status: toPersonMentionRefs(
+        getEntityMentionGraphRefs(graph, 'person', profile.slug, 'status'),
+      ),
+      people: toPersonMentionRefs(
+        getEntityMentionGraphRefs(graph, 'person', profile.slug, 'people'),
+      ),
+    },
   }));
 
   return {
@@ -312,8 +224,13 @@ const buildPeopleDataWithBacklinks = async (): Promise<PeopleDataset> => {
     loadPeopleData(),
   ]);
   const [news, status] = await Promise.all([loadNewsData(), loadStatusData()]);
+  const refs = [
+    ...news.articles.flatMap(createNewsArticleMentionRefs),
+    ...status.incidents.flatMap(createStatusIncidentMentionRefs),
+    ...people.profiles.flatMap(createPersonProfileMentionRefs),
+  ];
 
-  return buildPeopleGraphDataset(people, { news, status });
+  return buildPeopleGraphDataset(people, refs);
 };
 
 export const loadPeopleDataWithBacklinks = (): Promise<PeopleDataset> => {

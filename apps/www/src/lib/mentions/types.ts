@@ -56,6 +56,16 @@ export type EntityMentionSourceRefSource = Omit<
   'target_type' | 'target_slug'
 >;
 
+export interface EntityMentionGraphTarget {
+  readonly type: EntityMentionType;
+  readonly slug: string;
+  readonly sections: ReadonlyMap<string, readonly EntityMentionSourceRef[]>;
+}
+
+export interface EntityMentionGraph {
+  readonly targets: ReadonlyMap<string, EntityMentionGraphTarget>;
+}
+
 export type SiteMentionRegistry = ReadonlyMap<string, EntityMentionTarget>;
 
 export interface NormalizedEntityMentions {
