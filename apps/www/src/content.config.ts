@@ -471,7 +471,6 @@ const newsArticles = defineCollection({
         cover_alt: text('cover_alt').optional(),
         events: z.array(event()).min(1).optional(),
         ...media(image),
-        addenda: forbiddenField('addenda').optional(),
         seo: z
           .object({
             title: text('seo.title').optional(),
