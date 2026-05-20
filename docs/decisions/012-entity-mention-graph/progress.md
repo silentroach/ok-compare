@@ -2,14 +2,19 @@
 
 ## Current Step
 
-Complete.
+All planned steps complete.
 
 ## Active Wave
 
-- `code-assist:012-entity-mention-graph:step-06:final-regression` backed by `docs/decisions/012-entity-mention-graph/task-06-final-regression.md`.
+None.
 
 ## Verification Notes
 
+- Task 08 active task: `task-1779301044-be81` / `code-assist:012-entity-mention-graph:step-08:test-encoded-url-boundaries`.
+- Task 08 intended verification: `pnpm --filter @shelkovo/www test -- src/lib/mentions`.
+- Task 08 added focused coverage in `apps/www/src/lib/mentions/mentions.test.ts` only; production normalization logic was not changed.
+- Task 08 verification passed: `pnpm --filter @shelkovo/www test -- src/lib/mentions` and `pnpm --filter @shelkovo/www typecheck`.
+- Task 08 finalizer re-ran `pnpm --filter @shelkovo/www test -- src/lib/mentions` and `pnpm --filter @shelkovo/www typecheck` before closure.
 - Task 01 focused tests and typecheck passed before closure.
 - Task 02 focused tests and typecheck passed before closure.
 - Task 03 focused tests and typecheck passed before closure.
@@ -17,6 +22,42 @@ Complete.
 - Task 05 boundary cleanup, app tests and app typecheck passed before review.
 - Task 05 finalizer re-ran boundary grep, app tests and app typecheck before closure.
 - Task 06 final regression passed targeted grep, code review, `pnpm test`, `pnpm typecheck`, and `pnpm build`.
+- Planner reopened ADR-012 for post-review tasks 07-13 and queued Step 7 only.
+- Task 07 was verified and closed before this planner activation.
+- Planner advanced queue to Step 8 and queued only the Step 8 runtime task.
+- Task 08 was verified and closed before this planner activation.
+- Planner advanced queue to Step 9 and queued only the Step 9 runtime task.
+- Task 09 active task: `task-1779301606-aa27` / `code-assist:012-entity-mention-graph:step-09:extract-content-helper`.
+- Task 09 intended verification: `pnpm --filter @shelkovo/www test -- src/lib/markdown src/lib/news/load.test.ts src/lib/status/load.test.ts src/lib/people/load.test.ts` and `pnpm --filter @shelkovo/www typecheck`.
+- Task 09 RED: `pnpm --filter @shelkovo/www test -- src/lib/markdown` failed because `preprocessSiteMarkdownContent` was not exported yet.
+- Task 09 GREEN: added `preprocessSiteMarkdownContent` in `apps/www/src/lib/markdown/render.ts`, removed duplicate loader-local `content` helpers from news/status/people, and verified focused tests plus typecheck passed.
+- Task 09 committed as `542ba4d` (`Extract shared content helper from domain loaders`); focused tests and typecheck passed again after commit hook formatting.
+- Task 09 finalizer re-ran focused Markdown/news/status/people loader tests, typecheck, and the self-link regression before closure.
+- Planner advanced queue to Step 10 and queued only the Step 10 runtime task.
+- Task 10 active task: `task-1779302334-2658` / `code-assist:012-entity-mention-graph:step-10:harden-empty-registry`.
+- Task 10 RED: `pnpm --filter @shelkovo/www test -- src/lib/news/load.test.ts src/lib/status/load.test.ts` failed because mocked markdown preprocessing could mutate the shared fallback registry and leak it into the next build.
+- Task 10 GREEN: removed shared mutable `EMPTY_MENTION_REGISTRY` from news/status loaders and allocated a fresh fallback `Map` when `mention_registry` is omitted.
+- Task 10 verification passed: `pnpm --filter @shelkovo/www test -- src/lib/news/load.test.ts src/lib/status/load.test.ts` and `pnpm --filter @shelkovo/www typecheck`.
+- Task 10 finalizer re-ran focused news/status loader tests, typecheck, and the fallback-registry mutation adversarial test before closure.
+- Planner advanced queue to Step 11 and queued only the Step 11 runtime task.
+- Task 11 active task: `task-1779302874-f141` / `code-assist:012-entity-mention-graph:step-11:test-empty-registry-mutation`.
+- Task 11 added a defensive news loader test proving a mutation of the no-registry fallback after real preprocessing does not make `@leaked` valid in a later no-registry build.
+- Task 11 verification passed: `pnpm --filter @shelkovo/www test -- src/lib/news/load.test.ts src/lib/status/load.test.ts` and `pnpm --filter @shelkovo/www typecheck`.
+- Task 11 finalizer re-ran focused news/status loader tests, typecheck, and the fallback-registry mutation adversarial test before closure.
+- Planner advanced queue to Step 12 and queued only the Step 12 runtime task.
+- Task 12 active task: `task-1779303451-8957` / `code-assist:012-entity-mention-graph:step-12:extract-ru-sort-helper`.
+- Task 12 RED: `pnpm --filter @shelkovo/www test -- src/lib/locale.test.ts` failed because the shared `./locale` helper did not exist yet.
+- Task 12 GREEN: added `compareRuText` in `apps/www/src/lib/locale.ts` and switched direct Russian `localeCompare(..., 'ru')` usage in `apps/www/src` to the shared helper.
+- Task 12 verification passed: focused locale/mentions/people/status/news loader tests, `pnpm --filter @shelkovo/www test`, `pnpm --filter @shelkovo/www typecheck`, and grep confirmed `localeCompare(..., 'ru')` remains only in the shared helper.
+- Task 12 commits: code in `5801697` (`fixes`, created before manual commit), task artifact in `eb54a99` (`Document Russian text sort helper task`).
+- Task 12 finalizer re-ran focused locale/mentions/people/status/news loader tests, full app tests, app typecheck, and grep checks before closure.
+- Planner advanced queue to Step 13 and queued only the Step 13 runtime task.
+- Task 13 active task: `task-1779304185-21fd` / `code-assist:012-entity-mention-graph:step-13:circular-loader-deps`.
+- Task 13 RED: `pnpm --filter @shelkovo/www test -- src/lib/people/load.test.ts -t "keeps news and status loaders off"` failed because `news/load.ts` still imported `../people/load`.
+- Task 13 GREEN: extracted base people dataset, registry cache, and mention registry loader into `apps/www/src/lib/people/registry.ts`; `people/load.ts` now owns backlinks and re-exports the public base loader API, while `news/load.ts` and `status/load.ts` import the registry loader from the smaller module.
+- Task 13 verification passed: focused news/status/people loader tests, app typecheck, `pnpm test`, and `pnpm typecheck`.
+- Task 13 committed as `3e35eef` (`Resolve circular loader dependencies`); focused loader tests and app typecheck passed again after commit hook formatting.
+- Task 13 finalizer re-ran focused news/status/people loader tests, app typecheck, `pnpm test`, `pnpm typecheck`, `pnpm build`, and the structural cycle-boundary adversarial test before closure.
 
 ## Completed Steps
 
@@ -26,6 +67,13 @@ Complete.
 - Step 4 - Generic graph migration.
 - Step 5 - Boundary cleanup and docs.
 - Step 6 - Final regression.
+- Step 7 - Labelled mention URL boundary hardening.
+- Step 8 - Encoded URL boundary regression test.
+- Step 9 - Shared content helper.
+- Step 10 - Empty mention registry hardening.
+- Step 11 - Empty registry defensive test.
+- Step 12 - Russian text sort helper.
+- Step 13 - Loader circular dependency boundary.
 
 ## Historical Log
 

@@ -71,6 +71,7 @@
 - По возможности использовать `readonly` в новых TypeScript типах.
 - Для тривиальных helpers с одним return предпочитать однострочные `const`-стрелки.
 - После правок в коде использовать skill `code-simplification` перед финальной проверкой.
+- После выполнения таска коммить измененные файлы
 
 ## Глобальная проверка
 
@@ -95,6 +96,13 @@
 - [x] [Task 04: Generic mention graph и миграция people backlinks](task-04-generic-graph.md)
 - [x] [Task 05: Cleanup доменных границ и документации](task-05-cleanup-docs.md)
 - [x] [Task 06: Финальная регрессия и hardening](task-06-final-regression.md)
+- [x] [Task 07: Защитить границы labelled-mention URL и добавить недостающие тесты](task-07-label-mention-url-encoding.md)
+- [x] [Task 08: Добавить тест на labelled mentions с URL-encoded destinations](task-08-test-encoded-url-boundaries.md)
+- [x] [Task 09: Вынести shared content helper из loaders](task-09-extract-content-helper.md)
+- [x] [Task 10: Защитить EMPTY_MENTION_REGISTRY от мутации](task-10-harden-empty-registry.md)
+- [x] [Task 11: Добавить defensive тест на immutability empty registry](task-11-test-empty-registry-mutation.md)
+- [x] [Task 12: Вынести shared helper сортировки по-русски](task-12-extract-ru-sort-helper.md)
+- [x] [Task 13: Разрешить или задокументировать циклические зависимости loaders](task-13-circular-loader-deps.md)
 
 ## Зависимости задач
 
@@ -103,7 +111,8 @@
 - Task 03 зависит от Task 02: source adapters используют generic mentions, сохраненные в body units.
 - Task 04 зависит от Task 03: graph получает готовые refs от adapters.
 - Task 05 зависит от Task 04: cleanup имеет смысл после миграции graph.
-- Task 06 должен идти последним.
+- Task 06 должен идти последним из основной волны.
+- Task 07-13 — post-review задачи: они не блокируют базовую ADR-012, но устраняют найденные при ревью хрупкости. Выполнять их через runtime queue по текущему `plan.md`.
 
 ## Нерешенные вопросы
 

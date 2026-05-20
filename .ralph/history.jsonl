@@ -1,2 +1,5 @@
 {"ts":"2026-05-20T15:27:38.405407Z","type":{"kind":"loop_started","prompt":"Давай реализуем с тобой docs/decisions/012-entity-mention-graph/"}}
 {"ts":"2026-05-20T16:33:38.637594Z","type":{"kind":"loop_completed","reason":"completion_promise"}}
+{"ts":"2026-05-20T18:03:55.914591Z","type":{"kind":"loop_started","prompt":"Давай продолжим реализацию docs/decisions/012-entity-mention-graph/"}}
+{"ts":"2026-05-20T18:04:16.700546Z","type":{"kind":"loop_started","prompt":"Давай продолжим реализацию docs/decisions/012-entity-mention-graph/"}}
+{"ts":"2026-05-20T19:20:08.462118Z","type":{"kind":"loop_completed","reason":"completion_promise"}}

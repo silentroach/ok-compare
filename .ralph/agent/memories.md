@@ -6,6 +6,48 @@
 
 ## Fixes
 
+### mem-1779304427-49fe
+
+> failure: cmd=pnpm --filter @shelkovo/www test -- src/lib/people/load.test.ts -t "keeps news and status loaders off", exit=1, error=RED structural test found news/status statically imported ../people/load, next=extract people registry/dataset loader into people/registry.ts and update news/status imports
+
+<!-- tags: testing, mentions, error-handling | created: 2026-05-20 -->
+
+### mem-1779303680-7ceb
+
+> failure: cmd=pnpm --filter @shelkovo/www test -- src/lib/locale.test.ts, exit=1, error=RED expected missing ./locale helper before implementation, next=add compareRuText helper and update callers
+
+<!-- tags: testing, locale, error-handling | created: 2026-05-20 -->
+
+### mem-1779303052-1ae7
+
+> failure: cmd=pnpm --filter @shelkovo/www typecheck, exit=2, error=src/lib/news/load.test.ts mock registry typed as readonly SiteMentionRegistry so .set was unavailable, next=type the intentional mutation test double as mutable Map
+
+<!-- tags: typecheck, testing, mentions, error-handling | created: 2026-05-20 -->
+
+### mem-1779303003-db08
+
+> failure: cmd=pnpm --filter @shelkovo/www test -- src/lib/news/load.test.ts -t "does not let fallback registry mutations make later mentions valid", exit=1, error=test expected unknown entity mention "leaked" but actual includes "@leaked", next=assert the existing entity-level error text with @slug
+
+<!-- tags: testing, mentions, error-handling | created: 2026-05-20 -->
+
+### mem-1779302507-229c
+
+> failure: cmd=pnpm --filter @shelkovo/www test -- src/lib/news/load.test.ts src/lib/status/load.test.ts, exit=1, error=RED fallback EMPTY_MENTION_REGISTRY leaked mutation between dataset builds, next=allocate fresh fallback SiteMentionRegistry per build when mention_registry is omitted
+
+<!-- tags: testing, mentions, error-handling | created: 2026-05-20 -->
+
+### mem-1779301780-2b46
+
+> failure: cmd=pnpm --filter @shelkovo/www test -- src/lib/markdown src/lib/news/load.test.ts src/lib/status/load.test.ts src/lib/people/load.test.ts, exit=1, error=test expected old self-link wording, actual generic entity message, next=assert generic source context error text
+
+<!-- tags: testing, mentions, error-handling | created: 2026-05-20 -->
+
+### mem-1779301765-e342
+
+> failure: cmd=pnpm --filter @shelkovo/www test -- src/lib/markdown, exit=1, error=RED expected missing preprocessSiteMarkdownContent export, next=implement shared markdown content helper and update loaders
+
+<!-- tags: testing, mentions, error-handling | created: 2026-05-20 -->
+
 ### mem-1779300717-2b15
 
 > failure: cmd=pnpm --filter @shelkovo/www test -- src/lib/mentions, exit=1, error=RED encoded labelled mention destination was silently ignored, next=fail clearly for encoded @...%... destinations and harden raw URL boundary detection
