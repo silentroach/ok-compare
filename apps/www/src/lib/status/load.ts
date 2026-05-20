@@ -1,10 +1,7 @@
 import { dateTimeFromISO } from '@shelkovo/format';
 import type { CollectionEntry } from 'astro:content';
 
-import {
-  preprocessSiteMarkdown,
-  type PreprocessedSiteMarkdown,
-} from '../markdown/render';
+import { preprocessSiteMarkdownContent } from '../markdown/render';
 import type { SiteMentionRegistry } from '../mentions';
 import { loadPeopleMentionRegistry } from '../people/load';
 import { statusIncidentCanonical, statusIncidentUrl } from './routes';
@@ -29,26 +26,6 @@ export type StatusIncidentEntry = Pick<
 
 let cache: Promise<StatusDataset> | undefined;
 const EMPTY_MENTION_REGISTRY: SiteMentionRegistry = new Map();
-
-const content = (
-  value: string | undefined,
-  registry: SiteMentionRegistry,
-  context: string,
-): PreprocessedSiteMarkdown => {
-  const body = value?.trimEnd() ?? '';
-
-  return body.trim().length > 0
-    ? preprocessSiteMarkdown(body, {
-        mentions: {
-          context,
-          registry,
-        },
-      })
-    : {
-        markdown: '',
-        mentions: [],
-      };
-};
 
 interface EntryParts {
   readonly year: string;
@@ -155,10 +132,10 @@ function normalizeIncident(
   }
 
   const area = areas(entry.data.areas);
-  const body = content(
-    entry.body,
-    mentionRegistry,
+  const body = preprocessSiteMarkdownContent(
+    entry.body ?? '',
     `status incident "${entry.id}" body`,
+    mentionRegistry,
   );
   const changeAt = ended?.at ?? started.at;
 

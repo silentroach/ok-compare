@@ -1,8 +1,5 @@
 import type { CollectionEntry } from 'astro:content';
-import {
-  preprocessSiteMarkdown,
-  type PreprocessedSiteMarkdown,
-} from '../markdown/render';
+import { preprocessSiteMarkdownContent } from '../markdown/render';
 import {
   createEntityMentionGraph,
   getEntityMentionGraphRefs,
@@ -46,28 +43,6 @@ let graphCache: Promise<PeopleDataset> | undefined;
 const byText = (a: string, b: string): number => a.localeCompare(b, 'ru');
 const PERSON_MENTION_SECTION_SET = new Set<string>(PERSON_MENTION_SECTIONS);
 const PERSON_BACKLINK_KIND_SET = new Set<string>(PERSON_BACKLINK_KINDS);
-
-const content = (
-  value: string | undefined,
-  registry: SiteMentionRegistry,
-  context: string,
-  sourceEntity?: { readonly type: 'person'; readonly slug: string },
-): PreprocessedSiteMarkdown => {
-  const body = value?.trimEnd() ?? '';
-
-  return body.trim().length > 0
-    ? preprocessSiteMarkdown(body, {
-        mentions: {
-          context,
-          registry,
-          source_entity: sourceEntity,
-        },
-      })
-    : {
-        markdown: '',
-        mentions: [],
-      };
-};
 
 const isPersonMentionSection = (value: string): value is PersonMentionSection =>
   PERSON_MENTION_SECTION_SET.has(value);
@@ -134,10 +109,10 @@ const normalizePerson = (
   entry: PersonProfileEntry,
   registry: SiteMentionRegistry,
 ): PersonProfile => {
-  const body = content(
-    entry.body,
-    registry,
+  const body = preprocessSiteMarkdownContent(
+    entry.body ?? '',
     `people profile "${entry.id}" body`,
+    registry,
     { type: 'person', slug: entry.id },
   );
 

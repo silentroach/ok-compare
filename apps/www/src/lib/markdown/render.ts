@@ -2,6 +2,10 @@ import { render } from '@shelkovo/markdown';
 
 import { normalizeEntityMentions } from '../mentions';
 import type {
+  EntityMentionSourceEntity,
+  SiteMentionRegistry,
+} from '../mentions';
+import type {
   PreprocessedSiteMarkdown,
   RenderSiteMarkdownOptions,
 } from './render.types';
@@ -30,6 +34,28 @@ export const preprocessSiteMarkdown = (
     registry: options.mentions.registry,
     source_entity: options.mentions.source_entity,
   });
+};
+
+export const preprocessSiteMarkdownContent = (
+  markdown: string,
+  context: string,
+  registry: SiteMentionRegistry,
+  sourceEntity?: EntityMentionSourceEntity,
+): PreprocessedSiteMarkdown => {
+  const body = markdown.trimEnd();
+
+  return body.trim().length > 0
+    ? preprocessSiteMarkdown(body, {
+        mentions: {
+          context,
+          registry,
+          source_entity: sourceEntity,
+        },
+      })
+    : {
+        markdown: '',
+        mentions: [],
+      };
 };
 
 export const renderMarkdown = (

@@ -1,10 +1,7 @@
 import { padNumber } from '@shelkovo/format';
 import { getCollection, type CollectionEntry } from 'astro:content';
 
-import {
-  preprocessSiteMarkdown,
-  type PreprocessedSiteMarkdown,
-} from '../markdown/render';
+import { preprocessSiteMarkdownContent } from '../markdown/render';
 import type { SiteMentionRegistry } from '../mentions';
 import { loadPeopleMentionRegistry } from '../people/load';
 import { withBase } from '../site';
@@ -78,26 +75,6 @@ const isPinnedAtBuild = (input: {
     : undefined;
 
   return until ? Date.now() < until.at.valueOf() : true;
-};
-
-const content = (
-  value: string | undefined,
-  registry: SiteMentionRegistry,
-  context: string,
-): PreprocessedSiteMarkdown => {
-  const body = value?.trimEnd() ?? '';
-
-  return body.trim().length > 0
-    ? preprocessSiteMarkdown(body, {
-        mentions: {
-          context,
-          registry,
-        },
-      })
-    : {
-        markdown: '',
-        mentions: [],
-      };
 };
 
 function parseEntryTimestamp(
@@ -457,10 +434,10 @@ function normalizeArticle(
   const cover = entry.data.cover;
   const coverUrl = assetUrl(cover);
   const events = normalizeEvents(entry.data.events, entry.id, parts);
-  const body = content(
-    entry.body,
-    mentionRegistry,
+  const body = preprocessSiteMarkdownContent(
+    entry.body ?? '',
     `news article "${entry.id}" body`,
+    mentionRegistry,
   );
   const article = {
     id: entry.id,
