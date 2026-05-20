@@ -38,18 +38,20 @@ pnpm typecheck
 - Любые UI-подписи с количеством на русском языке обязательно склонять корректно (`1 новость`, `2 новости`, `5 новостей`).
 - Динамические текстовые блоки, которые рендерятся в HTML из markdown, CMS или других данных, прогонять через типограф на этапе рендера.
 - Типограф применять точечно к самому динамическому контенту, а не к целому layout или полной HTML-странице.
-- Для body markdown в `apps/www` использовать `@/lib/markdown/render`, а не пакетный `render` напрямую: app-wrapper подключает локальные preprocessors вроде people mentions.
+- Для body markdown в `apps/www` использовать `@/lib/markdown/render`, а не пакетный `render` напрямую: app-wrapper подключает общий app-level слой mentions.
 - Если loader хранит уже подготовленный body markdown, он должен получать его через helper из `@/lib/markdown/render`, чтобы mentions/backlinks и HTML-render использовали один app-level pipeline.
 - Для публичных `.md`, `llms.txt` и `llms-full.txt` генерировать Markdown через `@shelkovo/markdown` AST API (`createMarkdownDocument`, `md`, `parseMarkdownFragment`, `serializeMarkdownDocument`) или общий app-helper поверх него, а не через ручной `lines.join('\n')` всего документа.
 - Из `@shelkovo/markdown` напрямую в app использовать только низкоуровневые helpers по назначению: `formatDynamicHtml` для короткого готового HTML/text, `extractFirstMarkdownText` для excerpt, `rehypeTypograf` только в markdown pipeline config, AST API — для генерации публичного Markdown.
 - Новые Markdown preprocessors, специфичные для сайта, добавлять в `@/lib/markdown/render` и его options, а не в `@shelkovo/markdown` и не в параллельный pipeline.
+- Новые редакционные mention-enabled body surfaces должны подключать общий `SiteMentionRegistry` из `@/lib/mentions`; не добавлять отдельный people-only preprocessor.
 - Если нужна ссылка на compare, вести на `/815/compare/`, а не на legacy домен.
 - Если меняется deploy/base/root behavior, синхронно обновлять `ops/nginx/kpshelkovo-online.conf`.
 
 ## People Mentions
 
+- Упоминания людей работают через общий app-level слой `src/lib/mentions`; `src/lib/people/mentions.ts` только адаптирует профиль человека в generic mention target.
 - В `src/data/people/*.md` живут профили людей для раздела `/people/`; canonical slug человека равен имени файла без `.md`, например `kschemelinin`.
-- Если человек из `people` упоминается в `news`, `status` или другом people body, в source markdown нужно писать `@slug`, `@slug:case` или `[видимый текст](@slug)`, а не plain text имя и не ручную ссылку на `/people/.../`.
+- Если человек из `people` упоминается в `news`, `status` или другом редакционном Markdown body, в source markdown нужно писать `@slug`, `@slug:case` или `[видимый текст](@slug)`, а не plain text имя и не ручную ссылку на `/people/.../`.
 - `@slug` использовать, когда в тексте нужно показать каноническое имя человека в именительном падеже.
 - `@slug:case` использовать, когда в тексте нужно показать имя человека в другом падеже.
 - `[видимый текст](@slug)` использовать, когда видимым текстом должна остаться авторская фраза: роль, описание, ссылка-атрибуция или другая грамматическая конструкция.
@@ -60,6 +62,7 @@ pnpm typecheck
 - Неизвестный `@slug` или отсутствующий `name_cases.case` должен падать на билде и исправляться до merge.
 - Если у профиля есть `position` и/или `company`, они должны попадать в title markdown-ссылки mention как контекст человека.
 - Для атрибуции к внешнему источнику ссылку ставь на вводную фразу, например `[По словам](https://t.me/...) @kschemelinin, ...`.
+- Source refs для backlinks публикуют соседние адаптеры разделов: `news/mentions.ts`, `status/mentions.ts`, `people/mention-refs.ts`; общий graph не должен импортировать доменные datasets источников.
 
 ## Agent-Facing Surfaces
 

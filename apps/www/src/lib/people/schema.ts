@@ -1,4 +1,4 @@
-import type { PersonMentionTarget } from './mentions';
+import type { EntityMentionTarget } from '../mentions';
 import type { PersonNameCaseForms } from './name-cases';
 import type { PreprocessedSiteMarkdownBody } from '../markdown/render';
 
@@ -15,12 +15,7 @@ export interface PersonContact {
 export const PERSON_MENTION_SECTIONS = ['news', 'status', 'people'] as const;
 export type PersonMentionSection = (typeof PERSON_MENTION_SECTIONS)[number];
 
-export const PERSON_BACKLINK_KINDS = [
-  'article',
-  'addendum',
-  'incident',
-  'person',
-] as const;
+export const PERSON_BACKLINK_KINDS = ['article', 'incident', 'person'] as const;
 export type PersonBacklinkKind = (typeof PERSON_BACKLINK_KINDS)[number];
 
 export interface PersonMentionRef {
@@ -59,6 +54,6 @@ export interface PersonProfile {
   readonly canonical: string;
   readonly contacts: readonly PersonContact[];
   readonly body: PreprocessedSiteMarkdownBody;
-  readonly mentions: readonly PersonMentionTarget[];
+  readonly mentions: readonly EntityMentionTarget[];
   readonly backlinks: PersonBacklinks;
 }

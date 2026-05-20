@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { createPersonMentionTarget } from '../people/mentions';
 import type { StatusIncidentEntry } from './load';
@@ -327,7 +327,7 @@ describe('buildStatusDataset', () => {
         }),
       ],
       {
-        people_registry: new Map([
+        mention_registry: new Map([
           [
             'kschemelinin',
             createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),
@@ -357,7 +357,7 @@ describe('buildStatusDataset', () => {
         }),
       ],
       {
-        people_registry: new Map([
+        mention_registry: new Map([
           [
             'kschemelinin',
             createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),
@@ -423,5 +423,60 @@ describe('buildStatusDataset', () => {
         }),
       ]),
     ).toThrow('ended_at cannot be earlier than started_at');
+  });
+
+  it('does not reuse the fallback mention registry between builds', async () => {
+    vi.resetModules();
+    vi.doMock('../markdown/render', () => ({
+      preprocessSiteMarkdownContent: (
+        markdown: string,
+        _context: string,
+        registry: Map<string, unknown>,
+      ) => {
+        const alreadyMutated = registry.has('leaked');
+
+        registry.set(
+          'leaked',
+          createPersonMentionTarget('leaked', 'Утекшее упоминание'),
+        );
+
+        return {
+          markdown: alreadyMutated ? 'fallback registry leaked' : markdown,
+          mentions: [],
+        };
+      },
+    }));
+
+    try {
+      const { buildStatusDataset: buildWithMockedPreprocessor } =
+        await import('./load');
+
+      buildWithMockedPreprocessor([
+        entry({
+          id: '2026/05/first',
+          title: 'Первый инцидент',
+          service: 'electricity',
+          kind: 'incident',
+          started_at: '01.05.2026',
+          body: 'Первый body.',
+        }),
+      ]);
+
+      const data = buildWithMockedPreprocessor([
+        entry({
+          id: '2026/05/second',
+          title: 'Второй инцидент',
+          service: 'electricity',
+          kind: 'incident',
+          started_at: '02.05.2026',
+          body: 'Второй body.',
+        }),
+      ]);
+
+      expect(data.incidents[0]?.body).toBe('Второй body.');
+    } finally {
+      vi.doUnmock('../markdown/render');
+      vi.resetModules();
+    }
   });
 });

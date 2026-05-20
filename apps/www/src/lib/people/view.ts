@@ -37,7 +37,6 @@ const BACKLINK_SECTION_LABELS: Record<PersonMentionSection, string> = {
 
 const BACKLINK_KIND_LABELS: Record<PersonBacklinkKind, string> = {
   article: 'Новость',
-  addendum: 'Обновление',
   incident: 'Инцидент',
   person: 'Профиль',
 };

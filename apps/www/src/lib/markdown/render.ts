@@ -1,6 +1,10 @@
 import { render } from '@shelkovo/markdown';
 
-import { normalizePeopleMentions } from '../people/mentions';
+import { normalizeEntityMentions } from '../mentions';
+import type {
+  EntityMentionSourceEntity,
+  SiteMentionRegistry,
+} from '../mentions';
 import type {
   PreprocessedSiteMarkdown,
   RenderSiteMarkdownOptions,
@@ -9,7 +13,7 @@ import type {
 export type {
   PreprocessedSiteMarkdown,
   PreprocessedSiteMarkdownBody,
-  RenderPeopleMentionsOptions,
+  RenderEntityMentionsOptions,
   RenderSiteMarkdownOptions,
 } from './render.types';
 
@@ -17,18 +21,41 @@ export const preprocessSiteMarkdown = (
   markdown: string,
   options?: RenderSiteMarkdownOptions,
 ): PreprocessedSiteMarkdown => {
-  if (!options?.people) {
+  if (!options?.mentions) {
     return {
       markdown,
       mentions: [],
     };
   }
 
-  return normalizePeopleMentions({
+  return normalizeEntityMentions({
     markdown,
-    context: options.people.context,
-    registry: options.people.registry,
+    context: options.mentions.context,
+    registry: options.mentions.registry,
+    source_entity: options.mentions.source_entity,
   });
+};
+
+export const preprocessSiteMarkdownContent = (
+  markdown: string,
+  context: string,
+  registry: SiteMentionRegistry,
+  sourceEntity?: EntityMentionSourceEntity,
+): PreprocessedSiteMarkdown => {
+  const body = markdown.trimEnd();
+
+  return body.trim().length > 0
+    ? preprocessSiteMarkdown(body, {
+        mentions: {
+          context,
+          registry,
+          source_entity: sourceEntity,
+        },
+      })
+    : {
+        markdown: '',
+        mentions: [],
+      };
 };
 
 export const renderMarkdown = (

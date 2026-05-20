@@ -55,7 +55,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         sections: [
           llmsSection('Описание', [
             markdownList([
-              'Раздел `/news/` публикует новости, объявления и поздние уточнения по КП Шелково.',
+              'Раздел `/news/` публикует новости и объявления по КП Шелково.',
               `Сейчас в разделе ${counts}.`,
               'HTML-страницы новостей остаются каноническим представлением для людей, а `articles.json` служит основным структурированным файлом данных.',
               'Если новость объявляет календарные события, в `articles[].events[]` есть метаданные событий и ссылки на локальные для статьи `.ics`-файлы.',
@@ -81,8 +81,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
               `Индекс тегов: ${tags}`,
               `Пример страницы тега: ${tagUrl}`,
               'В корне `articles.json` есть `schema_version`, `generated_at`, `updated_at`, `total_count`, а также массивы `articles`, `archives.years` и `tags`.',
-              'В `articles.json` каждая статья содержит `summary`, полный `body_markdown`, необязательный массив `events` и отдельный массив `addenda`.',
-              '`addenda` не переписывают исходный `body` новости; это поздние уточнения, комментарии или новые подтвержденные факты.',
+              'В `articles.json` каждая статья содержит `summary`, полный `body_markdown` и необязательный массив `events`.',
               'Тип источника определяется по `author.kind`; официальные источники используют `kind: official`.',
               'Для календаря события используйте `/news/YYYY/MM/[entry]/[event-slug].ics`; глобального календаря событий нет.',
             ]),
@@ -95,7 +94,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         sections: [
           llmsSection('Проект', [
             markdownList([
-              'Раздел `/news/` публикует новости, объявления и последующие уточнения по КП Шелково.',
+              'Раздел `/news/` публикует новости и объявления по КП Шелково.',
               'Для массового чтения используйте JSON-файл; HTML и Markdown удобнее для одной новости, архива или тега.',
               `Сейчас в разделе ${counts}.`,
             ]),
@@ -124,9 +123,8 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
             markdownList([
               'Это основной структурированный файл данных для массового обхода новостей; маршруты раздела доступны только на чтение.',
               'Корневой объект содержит служебные поля ленты `schema_version`, `generated_at`, `updated_at`, `total_count`, а также массивы `articles`, `archives.years` и `tags`.',
-              '`articles[]` включает `id`, `title`, `summary`, `published_at`, опциональный `updated_at`, дату по частям (`year`, `month`, `day`), `entry`, `html_url`, `markdown_url`, `source_url`, `pinned`, `author`, `areas`, `tags`, опциональные `cover` и `events`, массивы `photos`, `attachments`, полный `body_markdown` и массив `addenda`.',
+              '`articles[]` включает `id`, `title`, `summary`, `published_at`, дату по частям (`year`, `month`, `day`), `entry`, `html_url`, `markdown_url`, `source_url`, `pinned`, `author`, `areas`, `tags`, опциональные `cover` и `events`, массивы `photos`, `attachments` и полный `body_markdown`.',
               '`articles[].events[]` существует только у новостей, которые объявляют календарные события; каждый объект содержит `slug`, `title`, `starts_at`, необязательные `description`, `ends_at`, `location`, `coordinates`, `map_url`, `organizer`, `performer` и обязательный `ics_url`.',
-              '`addenda[]` сериализуются отдельно от основного `body` и сохраняют собственные `published_at`, `author`, `source_url`, `body_markdown`, `photos` и `attachments`.',
               '`archives.years[]` описывают годовые и месячные архивы с количеством публикаций и URL на HTML/Markdown-страницы.',
               '`tags[]` содержат редакционный `label`, нормализованный `key`, количество публикаций и URL на HTML/Markdown-страницы тегов.',
             ]),
@@ -142,22 +140,20 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
             markdownList([
               'HTML-страницы `/news/YYYY/MM/[entry]/` остаются каноническим человекочитаемым представлением новости.',
               'Markdown-файлы `/news/.../index.md` дают текстовую версию для терминалов и прямых ссылок на чистый текст.',
-              'Во всех списках, архивах и тегах показывается только `summary`; полный `body` и текст `addenda` раскрываются только на странице новости и в основном JSON-файле.',
+              'Во всех списках, архивах и тегах показывается только `summary`; полный `body` раскрывается только на странице новости и в основном JSON-файле.',
             ]),
           ]),
           llmsSection('RSS', [
             markdownList([
               '`/news/feed.xml` остается RSS с краткими описаниями.',
-              'В RSS `description` используется краткое `summary` статьи, а не полный `body` и не текст `addenda`.',
+              'В RSS `description` используется краткое `summary` статьи, а не полный `body`.',
               'Источником правды для полного машиночитаемого контента остается `articles.json`.',
             ]),
           ]),
-          llmsSection('Уточнения и источники', [
+          llmsSection('Источники', [
             markdownList([
-              '`addenda` хранятся в том же исходном файле статьи, что и исходная новость, но в JSON, Markdown и HTML отдаются отдельным массивом или блоком.',
-              'Поздние `addenda` не поднимают новость вверх в списках: базовая сортировка остается по исходной публикации.',
               'Тип источника определяется по `author.kind`: официальные источники используют `kind: official`.',
-              'Официальная новость может получить уточнения от сообщества или редакции без переписывания исходного `body`.',
+              'Если в тексте есть внешняя атрибуция или дополнительный источник, ссылка остается в `body_markdown` самой статьи.',
             ]),
           ]),
           llmsSection('Ограничения', [

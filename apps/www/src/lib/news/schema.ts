@@ -1,7 +1,7 @@
 import { isAbsoluteUrl } from '@shelkovo/url';
 
 import type { PreprocessedSiteMarkdownBody } from '../markdown/render';
-import type { PersonMentionTarget } from '../people/mentions';
+import type { EntityMentionTarget } from '../mentions';
 
 export { isAbsoluteUrl };
 
@@ -15,8 +15,6 @@ export const NEWS_AUTHOR_KINDS = [
   'other',
 ] as const;
 export type NewsAuthorKind = (typeof NEWS_AUTHOR_KINDS)[number];
-
-export const NEWS_DEFAULT_ADDENDUM_AUTHOR_ID = 'ig';
 
 export interface NewsAuthor {
   readonly id: string;
@@ -78,19 +76,6 @@ export interface NewsEvent {
   readonly performer?: readonly NewsEventPerformer[];
 }
 
-export interface NewsAddendum {
-  readonly title?: string;
-  readonly time?: string;
-  readonly author: NewsAuthor;
-  readonly source_url?: string;
-  readonly body?: PreprocessedSiteMarkdownBody;
-  readonly photos: readonly NewsPhoto[];
-  readonly attachments: readonly NewsAttachment[];
-  readonly published_at: Date;
-  readonly published_iso: string;
-  readonly mentions: readonly PersonMentionTarget[];
-}
-
 export interface NewsArticle {
   readonly id: string;
   readonly title: string;
@@ -109,8 +94,6 @@ export interface NewsArticle {
   readonly published_at: Date;
   readonly published_iso: string;
   readonly time?: string;
-  readonly updated_at?: Date;
-  readonly updated_iso?: string;
   readonly applies_to_all_areas: boolean;
   readonly areas: readonly NewsArea[];
   readonly tags: readonly NewsTag[];
@@ -123,11 +106,9 @@ export interface NewsArticle {
   readonly photos: readonly NewsPhoto[];
   readonly attachments: readonly NewsAttachment[];
   readonly events: readonly NewsEvent[];
-  readonly addenda: readonly NewsAddendum[];
   readonly summary: string;
   readonly body: PreprocessedSiteMarkdownBody;
-  readonly has_addenda: boolean;
-  readonly mentions: readonly PersonMentionTarget[];
+  readonly mentions: readonly EntityMentionTarget[];
 }
 
 export interface NewsListArticle {
@@ -144,8 +125,6 @@ export interface NewsListArticle {
   readonly published_at: Date;
   readonly published_iso: string;
   readonly time?: string;
-  readonly updated_at?: Date;
-  readonly updated_iso?: string;
   readonly applies_to_all_areas: boolean;
   readonly areas: readonly NewsArea[];
   readonly tags: readonly NewsTag[];
@@ -157,7 +136,6 @@ export interface NewsListArticle {
   readonly cover_height?: number;
   readonly summary: string;
   readonly events: readonly NewsEvent[];
-  readonly has_addenda: boolean;
 }
 
 export interface NewsMonthArchive {

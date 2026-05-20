@@ -1,20 +1,22 @@
 import type {
-  PeopleMentionRegistry,
-  PersonMentionTarget,
-} from '../people/mentions';
+  EntityMentionSourceEntity,
+  EntityMentionTarget,
+  SiteMentionRegistry,
+} from '../mentions';
 
 export type PreprocessedSiteMarkdownBody = string;
 
-export interface RenderPeopleMentionsOptions {
-  readonly registry: PeopleMentionRegistry;
+export interface RenderEntityMentionsOptions {
+  readonly registry: SiteMentionRegistry;
   readonly context: string;
+  readonly source_entity?: EntityMentionSourceEntity;
 }
 
 export interface RenderSiteMarkdownOptions {
-  readonly people?: RenderPeopleMentionsOptions;
+  readonly mentions?: RenderEntityMentionsOptions;
 }
 
 export interface PreprocessedSiteMarkdown {
   readonly markdown: PreprocessedSiteMarkdownBody;
-  readonly mentions: readonly PersonMentionTarget[];
+  readonly mentions: readonly EntityMentionTarget[];
 }

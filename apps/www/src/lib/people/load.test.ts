@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import type { NewsArticleEntry, NewsAuthorEntry } from '../news/load';
@@ -9,6 +11,9 @@ let buildPeopleDataset: typeof import('./load').buildPeopleDataset;
 let buildPeopleGraphDataset: typeof import('./load').buildPeopleGraphDataset;
 let buildNewsDataset: typeof import('../news/load').buildNewsDataset;
 let buildStatusDataset: typeof import('../status/load').buildStatusDataset;
+let createNewsArticleMentionRefs: typeof import('../news/mentions').createNewsArticleMentionRefs;
+let createStatusIncidentMentionRefs: typeof import('../status/mentions').createStatusIncidentMentionRefs;
+let createPersonProfileMentionRefs: typeof import('./mention-refs').createPersonProfileMentionRefs;
 
 beforeAll(async () => {
   Object.assign(import.meta.env, {
@@ -19,7 +24,20 @@ beforeAll(async () => {
   ({ buildPeopleDataset, buildPeopleGraphDataset } = await import('./load'));
   ({ buildNewsDataset } = await import('../news/load'));
   ({ buildStatusDataset } = await import('../status/load'));
+  ({ createNewsArticleMentionRefs } = await import('../news/mentions'));
+  ({ createStatusIncidentMentionRefs } = await import('../status/mentions'));
+  ({ createPersonProfileMentionRefs } = await import('./mention-refs'));
 });
+
+const sourceRefs = (input: {
+  readonly people: ReturnType<typeof buildPeopleDataset>;
+  readonly news: ReturnType<typeof buildNewsDataset>;
+  readonly status: ReturnType<typeof buildStatusDataset>;
+}) => [
+  ...input.news.articles.flatMap(createNewsArticleMentionRefs),
+  ...input.status.incidents.flatMap(createStatusIncidentMentionRefs),
+  ...input.people.profiles.flatMap(createPersonProfileMentionRefs),
+];
 
 const entry = (input: {
   readonly id: string;
@@ -68,11 +86,6 @@ const article = (input: {
   readonly summary: string;
   readonly date: string;
   readonly body?: string;
-  readonly addenda?: readonly {
-    readonly date: string;
-    readonly title?: string;
-    readonly body?: string;
-  }[];
 }): NewsArticleEntry => ({
   id: input.id,
   body: input.body ?? '',
@@ -81,15 +94,6 @@ const article = (input: {
     summary: input.summary,
     date: input.date,
     author: { id: 'ig' } as NewsArticleEntry['data']['author'],
-    ...(input.addenda
-      ? {
-          addenda: input.addenda.map((item) => ({
-            date: item.date,
-            ...(item.title ? { title: item.title } : {}),
-            ...(item.body ? { body: item.body } : {}),
-          })),
-        }
-      : {}),
   },
 });
 
@@ -117,6 +121,16 @@ const incident = (input: {
 });
 
 describe('buildPeopleDataset', () => {
+  it('keeps news and status loaders off the backlink-enabled people loader', async () => {
+    const [newsLoad, statusLoad] = await Promise.all([
+      readFile(new URL('../news/load.ts', import.meta.url), 'utf8'),
+      readFile(new URL('../status/load.ts', import.meta.url), 'utf8'),
+    ]);
+
+    expect(newsLoad).not.toContain('../people/load');
+    expect(statusLoad).not.toContain('../people/load');
+  });
+
   it('accepts a valid person entry with normalized contacts and body mentions', () => {
     const data = buildPeopleDataset([
       entry({
@@ -256,18 +270,11 @@ describe('buildPeopleDataset', () => {
           title: 'Авария на линии',
           summary: 'Краткая сводка',
           date: '03.05.2026 09:00',
-          body: 'Основной текст про @kschemelinin.',
-          addenda: [
-            {
-              date: '03.05.2026 12:00',
-              title: 'Комментарий специалиста',
-              body: 'Уточнение после комментария @kschemelinin.',
-            },
-          ],
+          body: 'Основной текст про @kschemelinin. Позже добавили уточнение после комментария специалиста.',
         }),
       ],
       {
-        people_registry: people.mention_registry,
+        mention_registry: people.mention_registry,
       },
     );
     const status = buildStatusDataset(
@@ -284,18 +291,16 @@ describe('buildPeopleDataset', () => {
         }),
       ],
       {
-        people_registry: people.mention_registry,
+        mention_registry: people.mention_registry,
       },
     );
-    const graph = buildPeopleGraphDataset(people, { news, status });
+    const graph = buildPeopleGraphDataset(
+      people,
+      sourceRefs({ people, news, status }),
+    );
 
     expect(graph.by_slug.get('kschemelinin')?.backlinks).toMatchObject({
       news: [
-        {
-          kind: 'addendum',
-          source_id: '2026/05/electricity#addendum-1',
-          title: 'Авария на линии — Комментарий специалиста',
-        },
         {
           kind: 'article',
           source_id: '2026/05/electricity',
@@ -343,18 +348,11 @@ describe('buildPeopleDataset', () => {
           title: 'Авария на линии',
           summary: 'Краткая сводка',
           date: '03.05.2026 09:00',
-          body: 'Основной текст после [комментария специалиста](@kschemelinin).',
-          addenda: [
-            {
-              date: '03.05.2026 12:00',
-              title: 'Комментарий специалиста',
-              body: 'Уточнение от [дежурного инженера](@kschemelinin).',
-            },
-          ],
+          body: 'Основной текст после [комментария специалиста](@kschemelinin). Позже добавили уточнение от дежурного инженера.',
         }),
       ],
       {
-        people_registry: people.mention_registry,
+        mention_registry: people.mention_registry,
       },
     );
     const status = buildStatusDataset(
@@ -371,23 +369,22 @@ describe('buildPeopleDataset', () => {
         }),
       ],
       {
-        people_registry: people.mention_registry,
+        mention_registry: people.mention_registry,
       },
     );
-    const graph = buildPeopleGraphDataset(people, { news, status });
+    const graph = buildPeopleGraphDataset(
+      people,
+      sourceRefs({ people, news, status }),
+    );
     const backlinks = graph.by_slug.get('kschemelinin')?.backlinks;
 
     expect(backlinks).toMatchObject({
       news: [
         {
-          kind: 'addendum',
-          source_id: '2026/05/electricity#addendum-1',
-          excerpt: 'Уточнение от дежурного инженера.',
-        },
-        {
           kind: 'article',
           source_id: '2026/05/electricity',
-          excerpt: 'Основной текст после комментария специалиста.',
+          excerpt:
+            'Основной текст после комментария специалиста. Позже добавили уточнение от дежурного инженера.',
         },
       ],
       status: [

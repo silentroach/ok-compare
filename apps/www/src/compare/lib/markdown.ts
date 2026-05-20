@@ -7,6 +7,8 @@ import {
   type MarkdownPhrasingInput,
 } from '@shelkovo/markdown';
 
+import { compareRuText } from '@shelkovo/format';
+
 import { loadAllData } from './data';
 import { toExplorer } from './explorer';
 import {
@@ -300,7 +302,7 @@ export async function buildHomeMd(): Promise<string> {
   const list = toExplorer(settlements, ratings).sort((a, b) => {
     const d = b.rating - a.rating;
     if (d !== 0) return d;
-    return a.short_name.localeCompare(b.short_name, 'ru');
+    return compareRuText(a.short_name, b.short_name);
   });
   const base = list.find((item) => item.is_baseline);
   const picks = [

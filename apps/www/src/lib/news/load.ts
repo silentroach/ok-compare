@@ -1,12 +1,9 @@
 import { padNumber } from '@shelkovo/format';
 import { getCollection, type CollectionEntry } from 'astro:content';
 
-import {
-  preprocessSiteMarkdown,
-  type PreprocessedSiteMarkdown,
-} from '../markdown/render';
-import type { PeopleMentionRegistry } from '../people/mentions';
-import { loadPeopleMentionRegistry } from '../people/load';
+import { preprocessSiteMarkdownContent } from '../markdown/render';
+import type { SiteMentionRegistry } from '../mentions';
+import { loadPeopleMentionRegistry } from '../people/registry';
 import { withBase } from '../site';
 import { buildArchives, newsMonthKey } from './archives';
 import { NEWS_LATEST_LIMIT } from './config';
@@ -17,15 +14,10 @@ import {
   articleMarkdownUrl,
   articleUrl,
 } from './routes';
-import {
-  compareAddendaPublishedAsc,
-  compareArticlesPublishedDesc,
-} from './sort';
+import { compareArticlesPublishedDesc } from './sort';
 import {
   NEWS_AREAS,
-  NEWS_DEFAULT_ADDENDUM_AUTHOR_ID,
   normalizeTagKey,
-  type NewsAddendum,
   type NewsArea,
   type NewsArticle,
   type NewsArchives,
@@ -55,18 +47,11 @@ export type NewsAuthorEntry = Pick<
 type ArticleEntry = NewsArticleEntry;
 type AuthorEntry = NewsAuthorEntry;
 type ArticleData = ArticleEntry['data'];
-type AddendumData = NonNullable<ArticleData['addenda']>[number];
 type EventData = NonNullable<ArticleData['events']>[number];
-type AttachmentInput =
-  | NonNullable<ArticleData['attachments']>[number]
-  | NonNullable<AddendumData['attachments']>[number];
-type AuthorReference =
-  | ArticleData['author']
-  | NonNullable<AddendumData['author']>;
+type AttachmentInput = NonNullable<ArticleData['attachments']>[number];
+type AuthorReference = ArticleData['author'];
 type CoverInput = NonNullable<ArticleData['cover']>;
-type PhotoInput =
-  | NonNullable<ArticleData['photos']>[number]
-  | NonNullable<AddendumData['photos']>[number];
+type PhotoInput = NonNullable<ArticleData['photos']>[number];
 type NewsTimestampWithTime = NonNullable<
   ReturnType<typeof parseNewsTimestampInput>
 > & {
@@ -75,7 +60,6 @@ type NewsTimestampWithTime = NonNullable<
 };
 
 let cache: Promise<NewsDataset> | undefined;
-const EMPTY_MENTION_REGISTRY: PeopleMentionRegistry = new Map();
 
 const isPinnedAtBuild = (input: {
   readonly pinned?: boolean;
@@ -90,26 +74,6 @@ const isPinnedAtBuild = (input: {
     : undefined;
 
   return until ? Date.now() < until.at.valueOf() : true;
-};
-
-const content = (
-  value: string | undefined,
-  registry: PeopleMentionRegistry,
-  context: string,
-): PreprocessedSiteMarkdown => {
-  const body = value?.trimEnd() ?? '';
-
-  return body.trim().length > 0
-    ? preprocessSiteMarkdown(body, {
-        people: {
-          context,
-          registry,
-        },
-      })
-    : {
-        markdown: '',
-        mentions: [],
-      };
 };
 
 function parseEntryTimestamp(
@@ -427,69 +391,6 @@ function articleParts(entry: ArticleEntry): {
   };
 }
 
-function normalizeAddenda(
-  entry: ArticleEntry,
-  authors: ReadonlyMap<string, NewsAuthor>,
-  publishedAt: Date,
-  peopleRegistry: PeopleMentionRegistry,
-): {
-  readonly items: readonly NewsAddendum[];
-  readonly updated_at?: Date;
-  readonly updated_iso?: string;
-} {
-  const items = (entry.data.addenda ?? [])
-    .map((item: AddendumData, index: number) => {
-      const published = parseEntryTimestamp(
-        item.date,
-        `news article "${entry.id}" addendum #${index + 1}`,
-      );
-      const author = needAuthor(
-        authors,
-        item.author ? authorId(item.author) : NEWS_DEFAULT_ADDENDUM_AUTHOR_ID,
-        `news article "${entry.id}" addendum #${index + 1}`,
-      );
-      const body = content(
-        item.body,
-        peopleRegistry,
-        `news article "${entry.id}" addendum #${index + 1} body`,
-      );
-
-      return {
-        ...(item.title ? { title: item.title } : {}),
-        ...(published.time ? { time: published.time } : {}),
-        author,
-        ...(item.source_url ? { source_url: item.source_url } : {}),
-        ...(body.markdown ? { body: body.markdown } : {}),
-        photos: photos(item.photos),
-        attachments: attachments(item.attachments),
-        published_at: published.at,
-        published_iso: published.iso,
-        mentions: body.mentions,
-      } satisfies NewsAddendum;
-    })
-    .sort(compareAddendaPublishedAsc);
-
-  for (const item of items) {
-    if (item.published_at.valueOf() < publishedAt.valueOf()) {
-      throw new Error(
-        `news article "${entry.id}" addendum ${item.published_iso} cannot predate publication`,
-      );
-    }
-  }
-
-  const updated = items.at(-1);
-
-  return {
-    items,
-    ...(updated
-      ? {
-          updated_at: updated.published_at,
-          updated_iso: updated.published_iso,
-        }
-      : {}),
-  };
-}
-
 const areas = (
   values: readonly NewsArea[] | undefined,
 ): {
@@ -512,7 +413,7 @@ const areas = (
 function normalizeArticle(
   entry: ArticleEntry,
   authors: ReadonlyMap<string, NewsAuthor>,
-  peopleRegistry: PeopleMentionRegistry,
+  mentionRegistry: SiteMentionRegistry,
 ): NewsArticle {
   const parts = articleParts(entry);
   const published = parseEntryTimestamp(
@@ -524,12 +425,6 @@ function normalizeArticle(
     },
   );
   const area = areas(entry.data.areas);
-  const addenda = normalizeAddenda(
-    entry,
-    authors,
-    published.at,
-    peopleRegistry,
-  );
   const author = needAuthor(
     authors,
     authorId(entry.data.author),
@@ -538,10 +433,10 @@ function normalizeArticle(
   const cover = entry.data.cover;
   const coverUrl = assetUrl(cover);
   const events = normalizeEvents(entry.data.events, entry.id, parts);
-  const body = content(
-    entry.body,
-    peopleRegistry,
+  const body = preprocessSiteMarkdownContent(
+    entry.body ?? '',
     `news article "${entry.id}" body`,
+    mentionRegistry,
   );
   const article = {
     id: entry.id,
@@ -558,12 +453,6 @@ function normalizeArticle(
     published_at: published.at,
     published_iso: published.iso,
     ...(published.time ? { time: published.time } : {}),
-    ...(addenda.updated_at
-      ? {
-          updated_at: addenda.updated_at,
-          updated_iso: addenda.updated_iso,
-        }
-      : {}),
     applies_to_all_areas: area.applies_to_all_areas,
     areas: area.areas,
     tags: buildArticleTags(entry.data.tags),
@@ -580,21 +469,10 @@ function normalizeArticle(
     photos: photos(entry.data.photos),
     attachments: attachments(entry.data.attachments),
     events,
-    addenda: addenda.items,
     summary: entry.data.summary,
     body: body.markdown,
-    has_addenda: addenda.items.length > 0,
     mentions: body.mentions,
   } satisfies NewsArticle;
-
-  if (
-    article.updated_at &&
-    article.updated_at.valueOf() < article.published_at.valueOf()
-  ) {
-    throw new Error(
-      `news article "${entry.id}" updated_at cannot be earlier than published_at`,
-    );
-  }
 
   return article;
 }
@@ -613,12 +491,6 @@ const toListArticle = (article: NewsArticle): NewsListArticle => ({
   published_at: article.published_at,
   published_iso: article.published_iso,
   ...(article.time ? { time: article.time } : {}),
-  ...(article.updated_at
-    ? {
-        updated_at: article.updated_at,
-        updated_iso: article.updated_iso,
-      }
-    : {}),
   applies_to_all_areas: article.applies_to_all_areas,
   areas: article.areas,
   tags: article.tags,
@@ -634,7 +506,6 @@ const toListArticle = (article: NewsArticle): NewsListArticle => ({
   ...(article.cover_alt ? { cover_alt: article.cover_alt } : {}),
   events: article.events,
   summary: article.summary,
-  has_addenda: article.has_addenda,
 });
 
 function validateUniqueIds(items: readonly NewsArticle[]): void {
@@ -677,21 +548,15 @@ export function buildNewsDataset(
   authorsData: readonly NewsAuthorEntry[],
   articlesData: readonly NewsArticleEntry[],
   opts?: {
-    readonly people_registry?: PeopleMentionRegistry;
+    readonly mention_registry?: SiteMentionRegistry;
   },
 ): NewsDataset {
-  const peopleRegistry = opts?.people_registry ?? EMPTY_MENTION_REGISTRY;
+  const mentionRegistry = opts?.mention_registry ?? new Map();
   const authors = authorMap(authorsData);
-
-  if (!authors.has(NEWS_DEFAULT_ADDENDUM_AUTHOR_ID)) {
-    throw new Error(
-      `default addendum author "${NEWS_DEFAULT_ADDENDUM_AUTHOR_ID}" is required`,
-    );
-  }
 
   const articles: readonly NewsArticle[] = articlesData
     .map((item: ArticleEntry) =>
-      normalizeArticle(item, authors, peopleRegistry),
+      normalizeArticle(item, authors, mentionRegistry),
     )
     .sort(compareArticlesPublishedDesc);
 
@@ -717,13 +582,13 @@ export function buildNewsDataset(
 }
 
 async function buildNewsData(): Promise<NewsDataset> {
-  const [authorsData, articlesData, people_registry] = await Promise.all([
+  const [authorsData, articlesData, mention_registry] = await Promise.all([
     getCollection('newsAuthors') as Promise<readonly NewsAuthorEntry[]>,
     getCollection('newsArticles') as Promise<readonly NewsArticleEntry[]>,
     loadPeopleMentionRegistry(),
   ]);
 
-  return buildNewsDataset(authorsData, articlesData, { people_registry });
+  return buildNewsDataset(authorsData, articlesData, { mention_registry });
 }
 
 export const loadNewsData = (): Promise<NewsDataset> => {

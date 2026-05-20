@@ -1,7 +1,7 @@
 import { isAbsoluteUrl } from '@shelkovo/url';
 
 import type { PreprocessedSiteMarkdownBody } from '../markdown/render';
-import type { PersonMentionTarget } from '../people/mentions';
+import type { EntityMentionTarget } from '../mentions';
 import type { NewsDateParts, NewsTimestamp } from '../news/date';
 import { NEWS_AREAS } from '../news/schema';
 
@@ -60,7 +60,7 @@ export interface StatusIncident {
   readonly excerpt?: string;
   readonly has_page: boolean;
   readonly body: PreprocessedSiteMarkdownBody;
-  readonly mentions: readonly PersonMentionTarget[];
+  readonly mentions: readonly EntityMentionTarget[];
   readonly sort_started_at: number;
   readonly sort_last_change_at: number;
   readonly duration?: StatusDuration;

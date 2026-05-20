@@ -1,12 +1,11 @@
 import { dateTimeFromISO } from '@shelkovo/format';
 import type { CollectionEntry } from 'astro:content';
 
-import {
-  preprocessSiteMarkdown,
-  type PreprocessedSiteMarkdown,
-} from '../markdown/render';
-import type { PeopleMentionRegistry } from '../people/mentions';
-import { loadPeopleMentionRegistry } from '../people/load';
+import { compareRuText } from '@shelkovo/format';
+
+import { preprocessSiteMarkdownContent } from '../markdown/render';
+import type { SiteMentionRegistry } from '../mentions';
+import { loadPeopleMentionRegistry } from '../people/registry';
 import { statusIncidentCanonical, statusIncidentUrl } from './routes';
 import {
   parseStatusTimestamp,
@@ -28,35 +27,12 @@ export type StatusIncidentEntry = Pick<
 >;
 
 let cache: Promise<StatusDataset> | undefined;
-const EMPTY_MENTION_REGISTRY: PeopleMentionRegistry = new Map();
-
-const content = (
-  value: string | undefined,
-  registry: PeopleMentionRegistry,
-  context: string,
-): PreprocessedSiteMarkdown => {
-  const body = value?.trimEnd() ?? '';
-
-  return body.trim().length > 0
-    ? preprocessSiteMarkdown(body, {
-        people: {
-          context,
-          registry,
-        },
-      })
-    : {
-        markdown: '',
-        mentions: [],
-      };
-};
 
 interface EntryParts {
   readonly year: string;
   readonly month: string;
   readonly slug: string;
 }
-
-const byText = (a: string, b: string): number => a.localeCompare(b, 'ru');
 
 function parseEntryTimestamp(
   value: string,
@@ -130,7 +106,7 @@ const duration = (start: Date, end: Date): StatusDuration => ({
 function normalizeIncident(
   entry: StatusIncidentEntry,
   now: Date,
-  peopleRegistry: PeopleMentionRegistry,
+  mentionRegistry: SiteMentionRegistry,
 ): StatusIncident {
   const parts = incidentParts(entry);
   const started = parseEntryTimestamp(
@@ -155,10 +131,10 @@ function normalizeIncident(
   }
 
   const area = areas(entry.data.areas);
-  const body = content(
-    entry.body,
-    peopleRegistry,
+  const body = preprocessSiteMarkdownContent(
+    entry.body ?? '',
     `status incident "${entry.id}" body`,
+    mentionRegistry,
   );
   const changeAt = ended?.at ?? started.at;
 
@@ -214,7 +190,7 @@ function compareIncidentsDesc(a: StatusIncident, b: StatusIncident): number {
     return start;
   }
 
-  return byText(a.id, b.id);
+  return compareRuText(a.id, b.id);
 }
 
 function daysWithoutIncidents(
@@ -279,13 +255,13 @@ export const buildStatusDataset = (
   entries: readonly StatusIncidentEntry[],
   opts?: {
     readonly now?: Date;
-    readonly people_registry?: PeopleMentionRegistry;
+    readonly mention_registry?: SiteMentionRegistry;
   },
 ): StatusDataset => {
   const now = opts?.now ?? new Date();
-  const peopleRegistry = opts?.people_registry ?? EMPTY_MENTION_REGISTRY;
+  const mentionRegistry = opts?.mention_registry ?? new Map();
   const incidents = entries
-    .map((entry) => normalizeIncident(entry, now, peopleRegistry))
+    .map((entry) => normalizeIncident(entry, now, mentionRegistry))
     .sort(compareIncidentsDesc);
   const services = STATUS_SERVICES.map((service) =>
     serviceSummary(service, incidents, now),
@@ -309,8 +285,8 @@ export const loadStatusData = (): Promise<StatusDataset> => {
         >,
     ),
     loadPeopleMentionRegistry(),
-  ]).then(([entries, people_registry]) =>
-    buildStatusDataset(entries, { people_registry }),
+  ]).then(([entries, mention_registry]) =>
+    buildStatusDataset(entries, { mention_registry }),
   );
 
   return cache;

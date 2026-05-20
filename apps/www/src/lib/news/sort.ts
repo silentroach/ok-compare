@@ -1,11 +1,11 @@
-import type { NewsAddendum, NewsListArticle, NewsTagPage } from './schema';
+import { compareRuText } from '@shelkovo/format';
+
+import type { NewsListArticle, NewsTagPage } from './schema';
 
 interface PublishedLike {
   readonly id: string;
   readonly published_at: Date;
 }
-
-const byText = (a: string, b: string): number => a.localeCompare(b, 'ru');
 
 export function compareArticlesPublishedDesc(
   a: PublishedLike,
@@ -13,21 +13,7 @@ export function compareArticlesPublishedDesc(
 ): number {
   const delta = b.published_at.valueOf() - a.published_at.valueOf();
 
-  return delta || byText(a.id, b.id);
-}
-
-export function compareAddendaPublishedAsc(
-  a: Pick<NewsAddendum, 'published_at' | 'title' | 'published_iso'>,
-  b: Pick<NewsAddendum, 'published_at' | 'title' | 'published_iso'>,
-): number {
-  const delta = a.published_at.valueOf() - b.published_at.valueOf();
-
-  if (delta) {
-    return delta;
-  }
-
-  const title = byText(a.title ?? '', b.title ?? '');
-  return title || byText(a.published_iso, b.published_iso);
+  return delta || compareRuText(a.id, b.id);
 }
 
 export function compareTagPages(a: NewsTagPage, b: NewsTagPage): number {
@@ -45,7 +31,7 @@ export function compareTagPages(a: NewsTagPage, b: NewsTagPage): number {
     return recent;
   }
 
-  return byText(a.label, b.label);
+  return compareRuText(a.label, b.label);
 }
 
 export const latestFirst = (

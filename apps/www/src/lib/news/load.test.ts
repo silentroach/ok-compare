@@ -1,7 +1,12 @@
-import { beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { createPersonMentionTarget } from '../people/mentions';
 import type { NewsArticleEntry, NewsAuthorEntry } from './load';
+
+type MutableMentionRegistry = Map<
+  string,
+  ReturnType<typeof createPersonMentionTarget>
+>;
 
 let buildNewsDataset: typeof import('./load').buildNewsDataset;
 
@@ -39,10 +44,6 @@ const article = (input: {
   readonly pinned?: boolean;
   readonly pinned_until?: string;
   readonly events?: readonly ArticleEventInput[];
-  readonly addenda?: readonly {
-    readonly date: string;
-    readonly body?: string;
-  }[];
 }): NewsArticleEntry => ({
   id: input.id,
   body: input.body ?? '',
@@ -54,14 +55,6 @@ const article = (input: {
     ...(input.pinned !== undefined ? { pinned: input.pinned } : {}),
     ...(input.pinned_until ? { pinned_until: input.pinned_until } : {}),
     ...(input.events ? { events: input.events } : {}),
-    ...(input.addenda
-      ? {
-          addenda: input.addenda.map((item) => ({
-            date: item.date,
-            ...(item.body ? { body: item.body } : {}),
-          })),
-        }
-      : {}),
   },
 });
 
@@ -176,7 +169,7 @@ describe('buildNewsDataset', () => {
     ]);
   });
 
-  it('normalizes mentions in article and addendum bodies', () => {
+  it('normalizes mentions in article bodies', () => {
     const data = buildNewsDataset(
       [author({ id: 'ig', name: 'Редакция' })],
       [
@@ -186,16 +179,10 @@ describe('buildNewsDataset', () => {
           summary: 'Краткая сводка',
           date: '03.05.2026 09:00',
           body: 'Основной текст про @kschemelinin.',
-          addenda: [
-            {
-              date: '03.05.2026 12:00',
-              body: 'Уточнение после комментария @kschemelinin.',
-            },
-          ],
         }),
       ],
       {
-        people_registry: new Map([
+        mention_registry: new Map([
           [
             'kschemelinin',
             createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),
@@ -207,12 +194,9 @@ describe('buildNewsDataset', () => {
     expect(data.articles[0]?.body).toBe(
       'Основной текст про [Кирилл Щемелинин](/people/kschemelinin/).',
     );
-    expect(data.articles[0]?.addenda[0]?.body).toBe(
-      'Уточнение после комментария [Кирилл Щемелинин](/people/kschemelinin/).',
-    );
   });
 
-  it('normalizes labelled mentions in article and addendum bodies', () => {
+  it('normalizes labelled mentions in article bodies', () => {
     const data = buildNewsDataset(
       [author({ id: 'ig', name: 'Редакция' })],
       [
@@ -222,16 +206,10 @@ describe('buildNewsDataset', () => {
           summary: 'Краткая сводка',
           date: '03.05.2026 09:00',
           body: 'Основной текст после [комментария специалиста](@kschemelinin).',
-          addenda: [
-            {
-              date: '03.05.2026 12:00',
-              body: 'Уточнение от [дежурного инженера](@kschemelinin).',
-            },
-          ],
         }),
       ],
       {
-        people_registry: new Map([
+        mention_registry: new Map([
           [
             'kschemelinin',
             createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),
@@ -246,12 +224,6 @@ describe('buildNewsDataset', () => {
     expect(data.articles[0]?.mentions.map((item) => item.slug)).toEqual([
       'kschemelinin',
     ]);
-    expect(data.articles[0]?.addenda[0]?.body).toBe(
-      'Уточнение от [дежурного инженера](/people/kschemelinin/).',
-    );
-    expect(
-      data.articles[0]?.addenda[0]?.mentions.map((item) => item.slug),
-    ).toEqual(['kschemelinin']);
   });
 
   it('renders requested mention case and profile context in link title', () => {
@@ -267,7 +239,7 @@ describe('buildNewsDataset', () => {
         }),
       ],
       {
-        people_registry: new Map([
+        mention_registry: new Map([
           [
             'kschemelinin',
             createPersonMentionTarget(
@@ -301,7 +273,7 @@ describe('buildNewsDataset', () => {
           }),
         ],
         {
-          people_registry: new Map([
+          mention_registry: new Map([
             [
               'kschemelinin',
               createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),
@@ -309,7 +281,7 @@ describe('buildNewsDataset', () => {
           ]),
         },
       ),
-    ).toThrow('has no "gen" name case');
+    ).toThrow('has no "gen" label case');
   });
 
   it('normalizes a valid event for article and list data', () => {
@@ -589,5 +561,132 @@ describe('buildNewsDataset', () => {
 
     expect(data.articles[0]?.events).toEqual([]);
     expect(data.home.latest[0]?.events).toEqual([]);
+  });
+
+  it('does not reuse the fallback mention registry between builds', async () => {
+    vi.resetModules();
+    vi.doMock('../markdown/render', () => ({
+      preprocessSiteMarkdownContent: (
+        markdown: string,
+        _context: string,
+        registry: Map<string, unknown>,
+      ) => {
+        const alreadyMutated = registry.has('leaked');
+
+        registry.set(
+          'leaked',
+          createPersonMentionTarget('leaked', 'Утекшее упоминание'),
+        );
+
+        return {
+          markdown: alreadyMutated ? 'fallback registry leaked' : markdown,
+          mentions: [],
+        };
+      },
+    }));
+
+    try {
+      const { buildNewsDataset: buildWithMockedPreprocessor } =
+        await import('./load');
+
+      buildWithMockedPreprocessor(
+        [author({ id: 'ig', name: 'Редакция' })],
+        [
+          article({
+            id: '2026/05/first',
+            title: 'Первая новость',
+            summary: 'Проверка',
+            date: '01.05.2026',
+            body: 'Первый body.',
+          }),
+        ],
+      );
+
+      const data = buildWithMockedPreprocessor(
+        [author({ id: 'ig', name: 'Редакция' })],
+        [
+          article({
+            id: '2026/05/second',
+            title: 'Вторая новость',
+            summary: 'Проверка',
+            date: '02.05.2026',
+            body: 'Второй body.',
+          }),
+        ],
+      );
+
+      expect(data.articles[0]?.body).toBe('Второй body.');
+    } finally {
+      vi.doUnmock('../markdown/render');
+      vi.resetModules();
+    }
+  });
+
+  it('does not let fallback registry mutations make later mentions valid', async () => {
+    vi.resetModules();
+    vi.doMock('../markdown/render', async () => {
+      const actual =
+        await vi.importActual<typeof import('../markdown/render')>(
+          '../markdown/render',
+        );
+
+      return {
+        ...actual,
+        preprocessSiteMarkdownContent: (
+          markdown: string,
+          context: string,
+          registry: MutableMentionRegistry,
+        ) => {
+          const body = actual.preprocessSiteMarkdownContent(
+            markdown,
+            context,
+            registry,
+          );
+
+          registry.set(
+            'leaked',
+            createPersonMentionTarget('leaked', 'Утекшее упоминание'),
+          );
+
+          return body;
+        },
+      };
+    });
+
+    try {
+      const { buildNewsDataset: buildWithMutablePreprocessor } =
+        await import('./load');
+
+      buildWithMutablePreprocessor(
+        [author({ id: 'ig', name: 'Редакция' })],
+        [
+          article({
+            id: '2026/05/first',
+            title: 'Первая новость',
+            summary: 'Проверка',
+            date: '01.05.2026',
+            body: 'Первый body.',
+          }),
+        ],
+      );
+
+      expect(() =>
+        buildWithMutablePreprocessor(
+          [author({ id: 'ig', name: 'Редакция' })],
+          [
+            article({
+              id: '2026/05/second',
+              title: 'Вторая новость',
+              summary: 'Проверка',
+              date: '02.05.2026',
+              body: 'Упоминание @leaked.',
+            }),
+          ],
+        ),
+      ).toThrow('unknown entity mention "@leaked"');
+    } finally {
+      vi.doUnmock('../markdown/render');
+      vi.resetModules();
+    }
   });
 });

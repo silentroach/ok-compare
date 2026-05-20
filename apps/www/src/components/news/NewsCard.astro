@@ -32,14 +32,6 @@ const { article, featured = false } = Astro.props;
   }
 
   <div class="space-y-4 px-5 py-5 md:px-6 md:py-6">
-    {
-      featured && article.has_addenda && article.updated_iso && (
-        <div class="flex flex-wrap gap-2">
-          <span class="ui-chip">Есть уточнения</span>
-        </div>
-      )
-    }
-
     <div class="space-y-3">
       <h3
         class="flex items-start gap-2 text-2xl font-bold tracking-tight text-foreground"
@@ -63,10 +55,8 @@ const { article, featured = false } = Astro.props;
 
       <NewsMeta
         publishedIso={article.published_iso}
-        updatedIso={article.updated_iso}
         author={article.author}
         fullAuthorName
-        showUpdated={false}
       />
     </div>
 
