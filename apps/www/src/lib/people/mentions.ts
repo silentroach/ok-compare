@@ -1,8 +1,4 @@
-import {
-  normalizeEntityMentions,
-  type EntityMentionTarget,
-  type NormalizedEntityMentions,
-} from '../mentions';
+import type { EntityMentionTarget } from '../mentions';
 import type { PersonNameCaseForms } from './name-cases';
 import { personMarkdownUrl, personUrl } from './routes';
 
@@ -15,10 +11,6 @@ export interface PersonMentionTarget extends EntityMentionTarget {
 }
 
 export type PeopleMentionRegistry = ReadonlyMap<string, PersonMentionTarget>;
-
-export interface NormalizedPeopleMentions extends NormalizedEntityMentions {
-  readonly mentions: readonly PersonMentionTarget[];
-}
 
 const mentionTitle = (
   company: string | undefined,
@@ -51,18 +43,5 @@ export const createPersonMentionTarget = (
     ...(linkTitle ? { link_title: linkTitle } : {}),
     html_url: personUrl(slug),
     markdown_url: personMarkdownUrl(slug),
-  };
-};
-
-export const normalizePeopleMentions = (input: {
-  readonly markdown: string;
-  readonly context: string;
-  readonly registry: PeopleMentionRegistry;
-}): NormalizedPeopleMentions => {
-  const normalized = normalizeEntityMentions(input);
-
-  return {
-    markdown: normalized.markdown,
-    mentions: normalized.mentions as readonly PersonMentionTarget[],
   };
 };

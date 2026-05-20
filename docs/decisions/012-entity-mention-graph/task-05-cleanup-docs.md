@@ -1,6 +1,6 @@
 # Task 05: Cleanup доменных границ и документации
 
-Статус: не начат.
+Статус: выполнено.
 
 ## Скилы
 
@@ -53,28 +53,28 @@
 
 ## Acceptance criteria
 
-- [ ] Поиск `PeopleMentionRegistry` показывает только people adapter или полностью исчезает, если alias больше не нужен.
-- [ ] Поиск `PersonMentionTarget` показывает только people adapter/domain aliases или полностью исчезает из generic loaders.
-- [ ] `render.ts` не импортирует `people/mentions`.
-- [ ] `people/load.ts` не импортирует чужие source schema/route helpers для backlinks.
-- [ ] `apps/www/AGENTS.md` не противоречит ADR-012 и текущему коду.
-- [ ] Документация не содержит Markdown-таблиц.
+- [x] Поиск `PeopleMentionRegistry` показывает только people adapter или полностью исчезает, если alias больше не нужен.
+- [x] Поиск `PersonMentionTarget` показывает только people adapter/domain aliases или полностью исчезает из generic loaders.
+- [x] `render.ts` не импортирует `people/mentions`.
+- [x] `people/load.ts` не импортирует чужие source schema/route helpers для backlinks.
+- [x] `apps/www/AGENTS.md` не противоречит ADR-012 и текущему коду.
+- [x] Документация не содержит Markdown-таблиц.
 
 ## Проверка
 
-- [ ] `pnpm --filter @shelkovo/www test`
-- [ ] `pnpm --filter @shelkovo/www typecheck`
+- [x] `pnpm --filter @shelkovo/www test`
+- [x] `pnpm --filter @shelkovo/www typecheck`
 
 ## Чеклист агента
 
-- [ ] Прочитал обязательные файлы.
-- [ ] Проверил imports и grep по people-only names.
-- [ ] Удалил dead code и временные bridges.
-- [ ] Обновил agent-facing docs, если они устарели.
-- [ ] Запустил проверки.
-- [ ] Использовал `code-review-and-quality`.
-- [ ] Использовал `code-simplification` после cleanup.
-- [ ] Сделал commit.
+- [x] Прочитал обязательные файлы.
+- [x] Проверил imports и grep по people-only names.
+- [x] Удалил dead code и временные bridges.
+- [x] Обновил agent-facing docs, если они устарели.
+- [x] Запустил проверки.
+- [x] Использовал `code-review-and-quality`.
+- [x] Использовал `code-simplification` после cleanup.
+- [x] Сделал commit.
 
 ## Commit message
 

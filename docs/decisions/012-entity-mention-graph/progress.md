@@ -1,5 +1,31 @@
 # Progress
 
+## Current Step
+
+Step 5 - Boundary cleanup and docs.
+
+## Active Wave
+
+- `code-assist:012-entity-mention-graph:step-05:cleanup-docs` backed by `docs/decisions/012-entity-mention-graph/task-05-cleanup-docs.md`.
+
+## Verification Notes
+
+- Task 01 focused tests and typecheck passed before closure.
+- Task 02 focused tests and typecheck passed before closure.
+- Task 03 focused tests and typecheck passed before closure.
+- Task 04 focused tests, app typecheck and full app tests passed before closure.
+- Task 05 boundary cleanup, app tests and app typecheck passed before review.
+
+## Completed Steps
+
+- Step 1 - Neutral mention contracts.
+- Step 2 - Markdown pipeline migration.
+- Step 3 - Source ref adapters.
+- Step 4 - Generic graph migration.
+- Step 5 - Boundary cleanup and docs.
+
+## Historical Log
+
 ## 2026-05-20 Task 01
 
 Active task: `task-1779290934-3710` / `code-assist:012-entity-mention-graph:step-01:neutral-mentions`.
@@ -55,4 +81,40 @@ Verification:
 
 - RED: `pnpm --filter @shelkovo/www test -- src/lib/news/mentions.test.ts src/lib/status/mentions.test.ts src/lib/people/mention-refs.test.ts src/lib/mentions` failed because the new adapter modules did not exist yet.
 - GREEN: same focused command passed, 88 files / 527 tests.
+- `pnpm --filter @shelkovo/www typecheck` passed.
+
+## 2026-05-20 Task 04
+
+Active task: `task-1779292897-9a70` / `code-assist:012-entity-mention-graph:step-04:generic-graph`.
+
+Implemented generic graph migration for people backlinks:
+
+- Added `EntityMentionGraph` and `createEntityMentionGraph` in `apps/www/src/lib/mentions`.
+- Graph groups refs by `target_type + target_slug` and `source_section`, dedupes source-unit refs, sorts by ADR-012 order, and rejects defensive self-link refs.
+- `buildPeopleGraphDataset` now accepts `readonly EntityMentionSourceRef[]` instead of news/status datasets.
+- `buildPeopleDataWithBacklinks` now gathers refs via news, status and people source adapters before attaching current public `PersonBacklinks` shape.
+- Removed old news/status/person backlink construction helpers from `people/load.ts`.
+
+Verification:
+
+- RED: focused command failed because `src/lib/mentions/graph.ts` did not exist and `buildPeopleGraphDataset` still expected `related.news.articles`.
+- GREEN: `pnpm --filter @shelkovo/www test -- src/lib/mentions/graph.test.ts src/lib/people/load.test.ts src/lib/news/mentions.test.ts src/lib/status/mentions.test.ts src/lib/people/mention-refs.test.ts` passed, 89 files / 531 tests.
+- `pnpm --filter @shelkovo/www typecheck` passed.
+
+## 2026-05-20 Task 05
+
+Active task: `task-1779293687-7f41` / `code-assist:012-entity-mention-graph:step-05:cleanup-docs`.
+
+Implemented ADR-012 boundary cleanup and agent-facing docs update:
+
+- Confirmed `render.ts` imports only the generic mention layer.
+- Confirmed news/status body mentions use `SiteMentionRegistry` and do not import people-only registry or target types.
+- Removed the unused `normalizePeopleMentions` compatibility wrapper and left `people/mentions.ts` as the person target/registry adapter.
+- Kept source ref construction in source-owned adapters and confirmed `people/load.ts` imports only news/status mention adapters, not their schemas/routes.
+- Updated `apps/www/AGENTS.md` to describe the generic app-level mention layer, `SiteMentionRegistry`, and source ref adapter naming.
+
+Verification:
+
+- Grep checks passed for people-only names, `render.ts` imports, people backlinks imports, and Markdown tables in touched docs.
+- `pnpm --filter @shelkovo/www test` passed, 89 files / 523 tests.
 - `pnpm --filter @shelkovo/www typecheck` passed.
