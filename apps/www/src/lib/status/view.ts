@@ -11,11 +11,7 @@ import type {
   StatusService,
   StatusServiceState,
 } from './schema';
-import type {
-  StatusDaysWithoutIncidents,
-  StatusDuration,
-  StatusIncident,
-} from './types';
+import type { StatusDaysWithoutIncidents, StatusDuration } from './types';
 
 const SERVICE_LABELS: Record<StatusService, string> = {
   electricity: 'Электричество',
@@ -59,6 +55,26 @@ interface StatusIncidentPeriodPart {
   readonly text: string;
 }
 
+interface StatusIncidentPeriodMoment {
+  readonly iso: string;
+  readonly hasTime: boolean;
+}
+
+interface StatusIncidentPeriodInput {
+  readonly isActive: boolean;
+  readonly started: StatusIncidentPeriodMoment;
+  readonly ended?: StatusIncidentPeriodMoment;
+  readonly duration?: StatusDuration;
+}
+
+interface StatusIncidentPhaseInput {
+  readonly kind: StatusKind;
+  readonly isActive: boolean;
+  readonly started: StatusIncidentPeriodMoment;
+  readonly ended?: StatusIncidentPeriodMoment;
+  readonly service?: StatusService;
+}
+
 export interface StatusIncidentPeriod {
   readonly prefix?: 'Начало' | 'Начиная с';
   readonly start: StatusIncidentPeriodPart;
@@ -83,20 +99,18 @@ export interface StatusTimelineTooltipListItemData {
   readonly phaseIcon?: 'alert' | 'check';
 }
 
-type StatusTimelineTooltipIncident = Pick<
-  StatusIncident,
-  | 'kind'
-  | 'title'
-  | 'isActive'
-  | 'endedIso'
-  | 'startedIso'
-  | 'startedHasTime'
-  | 'endedHasTime'
-  | 'duration'
-> & {
+interface StatusTimelineTooltipIncident {
+  readonly kind: StatusKind;
+  readonly title: string;
+  readonly isActive: boolean;
+  readonly startedIso: string;
+  readonly startedHasTime: boolean;
+  readonly endedIso?: string;
+  readonly endedHasTime: boolean;
+  readonly duration?: StatusDuration;
   readonly service?: StatusService;
   readonly areas?: readonly StatusArea[];
-};
+}
 
 interface StatusTypographyOptions {
   readonly nonBreaking?: boolean;
@@ -139,6 +153,23 @@ const formatStatusTime = (iso: string): string =>
 const isSameStatusDay = (startIso: string, endIso: string): boolean =>
   dateTimeFromISO(startIso).hasSame(dateTimeFromISO(endIso), 'day');
 
+const toStatusIncidentPeriodInput = (
+  incident: StatusTimelineTooltipIncident,
+): StatusIncidentPeriodInput => ({
+  isActive: incident.isActive,
+  started: {
+    iso: incident.startedIso,
+    hasTime: incident.startedHasTime,
+  },
+  ended: incident.endedIso
+    ? {
+        iso: incident.endedIso,
+        hasTime: incident.endedHasTime,
+      }
+    : undefined,
+  duration: incident.duration,
+});
+
 export const extractStatusExcerpt = (markdown: string): string | undefined => {
   const first = extractFirstMarkdownText(markdown);
 
@@ -180,27 +211,19 @@ export const formatStatusDuration = (
 };
 
 export const getStatusIncidentPeriod = (
-  incident: Pick<
-    StatusIncident,
-    | 'isActive'
-    | 'startedIso'
-    | 'startedHasTime'
-    | 'endedIso'
-    | 'endedHasTime'
-    | 'duration'
-  >,
+  incident: StatusIncidentPeriodInput,
   opts?: StatusTypographyOptions,
 ): StatusIncidentPeriod => {
   const start = {
-    iso: incident.startedIso,
-    text: formatStatusDate(incident.startedIso, {
-      hasTime: incident.startedHasTime,
+    iso: incident.started.iso,
+    text: formatStatusDate(incident.started.iso, {
+      hasTime: incident.started.hasTime,
       nonBreaking: opts?.nonBreaking,
     }),
   };
-  const endedIso = incident.endedIso;
+  const ended = incident.ended;
 
-  if (!endedIso) {
+  if (!ended) {
     return {
       prefix: incident.isActive ? 'Начиная с' : 'Начало',
       start,
@@ -208,40 +231,40 @@ export const getStatusIncidentPeriod = (
   }
 
   const hasSameDayDateRange =
-    !incident.startedHasTime &&
-    !incident.endedHasTime &&
-    isSameStatusDay(incident.startedIso, endedIso);
+    !incident.started.hasTime &&
+    !ended.hasTime &&
+    isSameStatusDay(incident.started.iso, ended.iso);
 
   if (hasSameDayDateRange) {
     return {
       start: {
-        iso: incident.startedIso,
-        text: formatStatusCalendarDate(incident.startedIso, opts),
+        iso: incident.started.iso,
+        text: formatStatusCalendarDate(incident.started.iso, opts),
       },
     };
   }
 
   const hasSameDayTimeRange =
-    incident.startedHasTime &&
-    incident.endedHasTime &&
-    isSameStatusDay(incident.startedIso, endedIso);
+    incident.started.hasTime &&
+    ended.hasTime &&
+    isSameStatusDay(incident.started.iso, ended.iso);
 
   return {
     start: hasSameDayTimeRange
       ? {
-          iso: incident.startedIso,
-          text: formatStatusDate(incident.startedIso, {
+          iso: incident.started.iso,
+          text: formatStatusDate(incident.started.iso, {
             hasTime: true,
             nonBreaking: opts?.nonBreaking,
           }),
         }
       : start,
     end: {
-      iso: endedIso,
+      iso: ended.iso,
       text: hasSameDayTimeRange
-        ? formatStatusTime(endedIso)
-        : formatStatusDate(endedIso, {
-            hasTime: incident.endedHasTime,
+        ? formatStatusTime(ended.iso)
+        : formatStatusDate(ended.iso, {
+            hasTime: ended.hasTime,
             nonBreaking: opts?.nonBreaking,
           }),
     },
@@ -252,15 +275,7 @@ export const getStatusIncidentPeriod = (
 };
 
 export const formatStatusIncidentPeriodText = (
-  incident: Pick<
-    StatusIncident,
-    | 'isActive'
-    | 'startedIso'
-    | 'startedHasTime'
-    | 'endedIso'
-    | 'endedHasTime'
-    | 'duration'
-  >,
+  incident: StatusIncidentPeriodInput,
   opts?: StatusTypographyOptions,
 ): string => {
   const period = getStatusIncidentPeriod(incident, opts);
@@ -294,22 +309,40 @@ export const buildStatusTimelineTooltipData = (input: {
   readonly service: StatusService;
   readonly incident: StatusTimelineTooltipIncident;
   readonly nonBreaking?: boolean;
-}): StatusTimelineTooltipData => ({
-  serviceLabel: formatStatusTooltipText(formatStatusService(input.service)),
-  kindLabel: formatStatusTooltipText(formatStatusKind(input.incident.kind)),
-  title: formatStatusTooltipText(input.incident.title),
-  phaseLabel: formatStatusTooltipText(
-    getStatusIncidentPhase({ ...input.incident, service: input.service }).label,
-  ),
-  periodLabel: formatStatusTooltipText(
-    formatStatusIncidentPeriodText(input.incident, {
-      nonBreaking: input.nonBreaking,
-    }),
-  ),
-  ...(formatStatusAreaList(input.incident.areas)
-    ? { areaLabel: formatStatusAreaList(input.incident.areas) }
-    : {}),
-});
+}): StatusTimelineTooltipData => {
+  const periodIncident = toStatusIncidentPeriodInput(input.incident);
+  const areaLabel = formatStatusAreaList(input.incident.areas);
+  const tooltip: {
+    serviceLabel: string;
+    kindLabel: string;
+    title: string;
+    phaseLabel: string;
+    periodLabel: string;
+    areaLabel?: string;
+  } = {
+    serviceLabel: formatStatusTooltipText(formatStatusService(input.service)),
+    kindLabel: formatStatusTooltipText(formatStatusKind(input.incident.kind)),
+    title: formatStatusTooltipText(input.incident.title),
+    phaseLabel: formatStatusTooltipText(
+      getStatusIncidentPhase({
+        kind: input.incident.kind,
+        service: input.service,
+        ...periodIncident,
+      }).label,
+    ),
+    periodLabel: formatStatusTooltipText(
+      formatStatusIncidentPeriodText(periodIncident, {
+        nonBreaking: input.nonBreaking,
+      }),
+    ),
+  };
+
+  if (areaLabel) {
+    tooltip.areaLabel = areaLabel;
+  }
+
+  return tooltip;
+};
 
 export const formatStatusTimelineTooltipLabel = (
   tooltip: StatusTimelineTooltipData,
@@ -328,23 +361,46 @@ export const formatStatusTimelineTooltipLabel = (
 export const buildStatusTimelineTooltipListItemData = (
   incident: StatusTimelineTooltipIncident,
   opts?: StatusTypographyOptions,
-): StatusTimelineTooltipListItemData => ({
-  title: formatStatusTooltipText(incident.title),
-  periodLabel: formatStatusTooltipText(
-    formatStatusIncidentPeriodText(incident, opts),
-  ),
-  ...(incident.areas?.length ? { areas: incident.areas } : {}),
-  ...(formatStatusAreaList(incident.areas)
-    ? { areaLabel: formatStatusAreaList(incident.areas) }
-    : {}),
-  ...(incident.kind !== 'incident'
-    ? {}
-    : incident.isActive
-      ? { phaseIcon: 'alert' as const }
-      : incident.endedIso
-        ? { phaseIcon: 'check' as const }
-        : {}),
-});
+): StatusTimelineTooltipListItemData => {
+  const areaLabel = formatStatusAreaList(incident.areas);
+  const phaseIcon =
+    incident.kind !== 'incident'
+      ? undefined
+      : incident.isActive
+        ? 'alert'
+        : incident.endedIso
+          ? 'check'
+          : undefined;
+  const item: {
+    title: string;
+    periodLabel: string;
+    areas?: readonly StatusArea[];
+    areaLabel?: string;
+    phaseIcon?: 'alert' | 'check';
+  } = {
+    title: formatStatusTooltipText(incident.title),
+    periodLabel: formatStatusTooltipText(
+      formatStatusIncidentPeriodText(
+        toStatusIncidentPeriodInput(incident),
+        opts,
+      ),
+    ),
+  };
+
+  if (incident.areas?.length) {
+    item.areas = incident.areas;
+  }
+
+  if (areaLabel) {
+    item.areaLabel = areaLabel;
+  }
+
+  if (phaseIcon) {
+    item.phaseIcon = phaseIcon;
+  }
+
+  return item;
+};
 
 export const formatStatusTimelineGroupTitle = (input: {
   readonly count: number;
@@ -394,12 +450,7 @@ export const formatStatusDaysWithoutIncidents = (
 };
 
 export const getStatusIncidentPhase = (
-  incident: Pick<
-    StatusIncident,
-    'kind' | 'isActive' | 'startedIso' | 'endedIso'
-  > & {
-    readonly service?: StatusService;
-  },
+  incident: StatusIncidentPhaseInput,
   opts?: {
     readonly nowMs?: number;
   },
@@ -411,14 +462,14 @@ export const getStatusIncidentPhase = (
     };
   }
 
-  if (Date.parse(incident.startedIso) > (opts?.nowMs ?? Date.now())) {
+  if (Date.parse(incident.started.iso) > (opts?.nowMs ?? Date.now())) {
     return {
       label: incident.kind === 'maintenance' ? 'запланировано' : 'ожидается',
       tone: incident.kind === 'maintenance' ? 'warning' : 'info',
     };
   }
 
-  if (incident.endedIso) {
+  if (incident.ended) {
     return {
       label:
         incident.kind === 'maintenance'

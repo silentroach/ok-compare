@@ -86,11 +86,11 @@ const photoLine = (label: string, photo: NewsPhoto): MarkdownListItem =>
 
 function photoSection(article: NewsArticle): readonly MarkdownNode[] {
   const rows = pick<MarkdownListItem>([
-    article.coverUrl
+    article.cover
       ? md.listItem(
           `Обложка: ${pick([
-            abs(article.coverUrl),
-            `alt: ${inline(article.coverAlt ?? article.title)}`,
+            abs(article.cover.url),
+            `alt: ${inline(article.cover.alt)}`,
           ]).join(' — ')}`,
         )
       : undefined,

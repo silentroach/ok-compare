@@ -32,6 +32,6 @@ export const createPersonProfileMentionRefs = (
     title: profile.name,
     htmlUrl: profile.url,
     markdownUrl: profile.markdownUrl,
-    ...(summary ? { excerpt: summary } : {}),
+    excerpt: summary,
   });
 };

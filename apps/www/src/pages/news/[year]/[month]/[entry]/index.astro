@@ -104,7 +104,7 @@ const schema = newsArticleSchema({
     { name: article.title, url: articleUrl(article) },
   ]),
   datePublished: article.publishedIso,
-  ...(article.coverUrl ? { image: article.coverUrl } : {}),
+  image: article.cover?.url,
   author,
   ...(hasEvents ? { events: article.events } : {}),
 });
@@ -114,8 +114,8 @@ const schema = newsArticleSchema({
   title={title}
   description={description}
   canonical={article.url}
-  image={article.coverUrl}
-  imageAlt={article.coverAlt}
+  image={article.cover?.url}
+  imageAlt={article.cover?.alt}
   type="article"
   keywords={[
     'новости Шелково',

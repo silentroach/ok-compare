@@ -237,8 +237,10 @@ export function schema(root: string): Record<string, unknown> {
         {
           url: uri(),
           alt: text(1),
+          width: integer(1),
+          height: integer(1),
         },
-        ['url', 'alt'],
+        ['url', 'alt', 'width', 'height'],
       ),
       coordinates: obj(
         {

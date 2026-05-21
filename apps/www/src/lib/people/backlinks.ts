@@ -38,9 +38,9 @@ const toPeopleBacklink = (
     title: ref.title,
     htmlUrl: ref.htmlUrl,
     markdownUrl: ref.markdownUrl,
-    ...(ref.excerpt ? { excerpt: ref.excerpt } : {}),
-    ...(ref.mentionedAt ? { mentionedAt: ref.mentionedAt } : {}),
-    ...(ref.sortKey !== undefined ? { sortKey: ref.sortKey } : {}),
+    excerpt: ref.excerpt,
+    mentionedAt: ref.mentionedAt,
+    sortKey: ref.sortKey,
   };
 };
 

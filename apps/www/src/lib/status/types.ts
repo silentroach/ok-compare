@@ -11,6 +11,12 @@ export interface StatusDuration {
   readonly totalMinutes: number;
 }
 
+export interface StatusIncidentMoment {
+  readonly at: Date;
+  readonly iso: string;
+  readonly hasTime: boolean;
+}
+
 export interface StatusIncident {
   readonly id: string;
   readonly title: string;
@@ -21,12 +27,8 @@ export interface StatusIncident {
   readonly slug: string;
   readonly url: string;
   readonly canonical: string;
-  readonly startedAt: Date;
-  readonly startedIso: string;
-  readonly startedHasTime: boolean;
-  readonly endedAt?: Date;
-  readonly endedIso?: string;
-  readonly endedHasTime: boolean;
+  readonly started: StatusIncidentMoment;
+  readonly ended?: StatusIncidentMoment;
   readonly isActive: boolean;
   readonly appliesToAllAreas: boolean;
   readonly areas: readonly StatusArea[];

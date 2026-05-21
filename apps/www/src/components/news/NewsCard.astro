@@ -19,13 +19,13 @@ const { article, featured = false } = Astro.props;
   ]}
 >
   {
-    featured && article.coverUrl && (
+    featured && article.cover && (
       <img
-        src={article.coverUrl}
-        alt={article.coverAlt ?? article.title}
+        src={article.cover.url}
+        alt={article.cover.alt}
         loading="lazy"
-        width={article.coverWidth}
-        height={article.coverHeight}
+        width={article.cover.width}
+        height={article.cover.height}
         class="aspect-video w-full border-b border-border-strong object-cover"
       />
     )

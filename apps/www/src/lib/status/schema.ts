@@ -1,7 +1,7 @@
 import { isAbsoluteUrl } from '@shelkovo/url';
 
+import { AREAS, type Area } from '../areas';
 import type { NewsDateParts, NewsTimestamp } from '../news/date';
-import { NEWS_AREAS } from '../news/schema';
 
 export { isAbsoluteUrl };
 export type {
@@ -14,8 +14,8 @@ export {
   parseNewsTimestampInput as parseStatusTimestampInput,
 } from '../news/date';
 
-export const STATUS_AREAS = NEWS_AREAS;
-export type StatusArea = (typeof STATUS_AREAS)[number];
+export const STATUS_AREAS = AREAS;
+export type StatusArea = Area;
 
 export const STATUS_SERVICES = [
   'electricity',

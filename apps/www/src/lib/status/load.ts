@@ -50,20 +50,20 @@ function daysWithoutIncidents(
   }
 
   const latest = incidents.find(
-    (item) => item.kind === 'incident' && item.endedIso,
+    (item) => item.kind === 'incident' && item.ended,
   );
 
-  if (!latest?.endedIso) {
+  if (!latest?.ended) {
     return { mode: 'noIncidents' };
   }
 
   const today = dateTimeFromISO(now.toISOString()).startOf('day');
-  const last = dateTimeFromISO(latest.endedIso).startOf('day');
+  const last = dateTimeFromISO(latest.ended.iso).startOf('day');
 
   return {
     mode: 'count',
     days: Math.max(0, Math.floor(today.diff(last, 'days').days)),
-    lastEndedIso: latest.endedIso,
+    lastEndedIso: latest.ended.iso,
   };
 }
 

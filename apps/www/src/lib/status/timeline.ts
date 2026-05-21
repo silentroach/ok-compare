@@ -160,7 +160,7 @@ export const buildStatusTimelineProblemSegments = ({
       const span = clipStatusTimelineSpan(
         {
           startMs,
-          ...(endMs !== undefined ? { endMs } : {}),
+          endMs,
         },
         range,
       );
@@ -172,10 +172,10 @@ export const buildStatusTimelineProblemSegments = ({
       return toStatusTimelineSegment(
         {
           id: incident.id,
-          ...(incident.hasPage ? { href: incident.url } : {}),
+          href: incident.hasPage ? incident.url : undefined,
           tone: incident.kind === 'maintenance' ? 'amber' : 'red',
           startedIso: incident.startedIso,
-          ...(incident.endedIso ? { endedIso: incident.endedIso } : {}),
+          endedIso: incident.endedIso,
           ...span,
         },
         range,

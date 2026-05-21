@@ -31,10 +31,10 @@ const incident = (input: IncidentInput): StatusTimelineIncidentInput => ({
   kind: input.kind ?? 'incident',
   startedIso: input.startedIso,
   startedHasTime: input.startedHasTime ?? true,
-  ...(input.endedIso ? { endedIso: input.endedIso } : {}),
+  endedIso: input.endedIso,
   endedHasTime: input.endedHasTime ?? true,
   isActive: input.isActive ?? !input.endedIso,
-  ...(input.areas ? { areas: input.areas } : {}),
+  areas: input.areas,
 });
 
 const renderTimeline = async (

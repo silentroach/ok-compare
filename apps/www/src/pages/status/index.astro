@@ -19,7 +19,7 @@ const activeIncidents = data.active.filter((item) => item.kind === 'incident');
 const plannedWorks = data.incidents.filter(
   (item) =>
     item.kind === 'maintenance' &&
-    (item.isActive || item.startedAt.valueOf() > now),
+    (item.isActive || item.started.at.valueOf() > now),
 );
 const title = 'Статус поселка — Шелково Онлайн';
 const description =

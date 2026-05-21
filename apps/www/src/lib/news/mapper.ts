@@ -8,7 +8,7 @@ export const mapRawNewsAuthor = (
   id,
   name: raw.name,
   kind: raw.kind,
-  ...(raw.short_name ? { shortName: raw.short_name } : {}),
-  ...(raw.url ? { url: raw.url } : {}),
-  ...(raw.role ? { role: raw.role } : {}),
+  shortName: raw.short_name,
+  url: raw.url,
+  role: raw.role,
 });

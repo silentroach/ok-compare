@@ -23,7 +23,7 @@ const incident = (input?: {
   | 'slug'
   | 'excerpt'
   | 'mentions'
-  | 'startedIso'
+  | 'started'
   | 'sortLastChangeAt'
 > => ({
   id: '2026/04/electricity-river-10kv-line-damage',
@@ -34,7 +34,11 @@ const incident = (input?: {
   slug: 'electricity-river-10kv-line-damage',
   excerpt: 'Как отметил Кирилл Щемелинин, повреждение было редким.',
   mentions: input?.mentions ?? [target],
-  startedIso: '2026-04-22T11:30:00+03:00',
+  started: {
+    at: new Date('2026-04-22T11:30:00+03:00'),
+    iso: '2026-04-22T11:30:00+03:00',
+    hasTime: true,
+  },
   sortLastChangeAt: 1770000000000,
 });
 

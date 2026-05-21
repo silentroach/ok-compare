@@ -30,6 +30,13 @@ export interface NewsAttachment {
   readonly size?: string;
 }
 
+export interface NewsCover {
+  readonly url: string;
+  readonly width: number;
+  readonly height: number;
+  readonly alt: string;
+}
+
 export interface NewsEventCoordinates {
   readonly lat: number;
   readonly lng: number;
@@ -85,10 +92,7 @@ export interface NewsArticle {
   readonly tags: readonly NewsTag[];
   readonly pinned: boolean;
   readonly sourceUrl?: string;
-  readonly coverUrl?: string;
-  readonly coverAlt?: string;
-  readonly coverWidth?: number;
-  readonly coverHeight?: number;
+  readonly cover?: NewsCover;
   readonly photos: readonly NewsPhoto[];
   readonly attachments: readonly NewsAttachment[];
   readonly events: readonly NewsEvent[];
@@ -116,10 +120,7 @@ export interface NewsListArticle {
   readonly tags: readonly NewsTag[];
   readonly pinned: boolean;
   readonly sourceUrl?: string;
-  readonly coverUrl?: string;
-  readonly coverAlt?: string;
-  readonly coverWidth?: number;
-  readonly coverHeight?: number;
+  readonly cover?: NewsCover;
   readonly summary: string;
   readonly events: readonly NewsEvent[];
 }

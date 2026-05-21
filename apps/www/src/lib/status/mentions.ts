@@ -13,7 +13,7 @@ type StatusIncidentMentionRefSource = Pick<
   | 'slug'
   | 'excerpt'
   | 'mentions'
-  | 'startedIso'
+  | 'started'
   | 'sortLastChangeAt'
 >;
 
@@ -29,7 +29,7 @@ export const createStatusIncidentMentionRefs = (
     title: incident.title,
     htmlUrl: incident.url,
     markdownUrl: statusIncidentMarkdownUrl(incident),
-    ...(incident.excerpt ? { excerpt: incident.excerpt } : {}),
-    mentionedAt: incident.startedIso,
+    excerpt: incident.excerpt,
+    mentionedAt: incident.started.iso,
     sortKey: incident.sortLastChangeAt,
   });

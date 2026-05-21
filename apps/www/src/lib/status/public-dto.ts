@@ -106,9 +106,9 @@ export interface StatusPublicPayloadDto {
 const fullUrl = (value: string): string => absoluteUrl(value);
 
 const phase = (
-  item: Pick<StatusIncident, 'isActive' | 'endedIso'>,
+  item: Pick<StatusIncident, 'isActive' | 'ended'>,
 ): StatusPublicIncidentPhase =>
-  item.isActive ? 'active' : item.endedIso ? 'resolved' : 'scheduled';
+  item.isActive ? 'active' : item.ended ? 'resolved' : 'scheduled';
 
 const duration = (item: StatusDuration): StatusPublicDurationDto => ({
   total_minutes: item.totalMinutes,
@@ -173,10 +173,10 @@ function incident(item: StatusIncident): StatusPublicIncidentDto {
     month: item.month,
     slug: item.slug,
     ...incidentLinks(item),
-    started_at: item.startedIso,
-    started_has_time: item.startedHasTime,
-    ...(item.endedIso ? { ended_at: item.endedIso } : {}),
-    ended_has_time: item.endedHasTime,
+    started_at: item.started.iso,
+    started_has_time: item.started.hasTime,
+    ...(item.ended ? { ended_at: item.ended.iso } : {}),
+    ended_has_time: item.ended?.hasTime ?? false,
     is_active: item.isActive,
     phase: phase(item),
     phase_label: current.label,
@@ -214,7 +214,7 @@ const latestUpdate = (data: StatusDataset): string | undefined => {
     return undefined;
   }
 
-  return item.endedIso ?? item.startedIso;
+  return item.ended?.iso ?? item.started.iso;
 };
 
 export const buildStatusPublicPayload = (

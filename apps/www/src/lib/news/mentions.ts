@@ -38,7 +38,7 @@ export const createNewsArticleMentionRefs = (
     title: article.title,
     htmlUrl: article.url,
     markdownUrl: article.markdownUrl,
-    ...(summary ? { excerpt: summary } : {}),
+    excerpt: summary,
     mentionedAt: article.publishedIso,
     sortKey: article.publishedAt.valueOf(),
   });

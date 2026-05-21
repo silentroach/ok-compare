@@ -179,26 +179,30 @@ export const mapRawStatusIncident = (
     slug: parts.slug,
     url: statusIncidentUrl(parts),
     canonical: statusIncidentCanonical(parts),
-    startedAt: started.at,
-    startedIso: started.iso,
-    startedHasTime: started.has_time,
+    started: {
+      at: started.at,
+      iso: started.iso,
+      hasTime: started.has_time,
+    },
     ...(ended
       ? {
-          endedAt: ended.at,
-          endedIso: ended.iso,
+          ended: {
+            at: ended.at,
+            iso: ended.iso,
+            hasTime: ended.has_time,
+          },
         }
       : {}),
-    endedHasTime: ended?.has_time ?? false,
     isActive: isActive(opts.now, started.at, ended?.at),
     appliesToAllAreas: area.appliesToAllAreas,
     areas: area.areas,
-    ...(entry.data.source_url ? { sourceUrl: entry.data.source_url } : {}),
-    ...(body.markdown ? { excerpt: extractStatusExcerpt(body.markdown) } : {}),
+    sourceUrl: entry.data.source_url,
+    excerpt: body.markdown ? extractStatusExcerpt(body.markdown) : undefined,
     hasPage: body.markdown.length > 0,
     body: body.markdown,
     mentions: body.mentions,
     sortStartedAt: started.at.valueOf(),
     sortLastChangeAt: changeAt.valueOf(),
-    ...(ended ? { duration: duration(started.at, ended.at) } : {}),
+    duration: ended ? duration(started.at, ended.at) : undefined,
   } satisfies StatusIncident;
 };

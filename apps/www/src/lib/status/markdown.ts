@@ -104,12 +104,12 @@ const incidentFrontmatter = (
       name: formatStatusKind(incident.kind),
     },
     phase: getStatusIncidentPhase(incident).label,
-    startedAt: statusDate(incident.startedIso, incident.startedHasTime),
-    startedHasTime: incident.startedHasTime,
-    ...(incident.endedIso
+    startedAt: statusDate(incident.started.iso, incident.started.hasTime),
+    startedHasTime: incident.started.hasTime,
+    ...(incident.ended
       ? {
-          endedAt: statusDate(incident.endedIso, incident.endedHasTime),
-          endedHasTime: incident.endedHasTime,
+          endedAt: statusDate(incident.ended.iso, incident.ended.hasTime),
+          endedHasTime: incident.ended.hasTime,
         }
       : {}),
     ...(areas.length > 0 ? { areas } : {}),
@@ -203,7 +203,7 @@ export function buildStatusHomeMarkdown(
   const plannedWorks = data.incidents.filter(
     (item) =>
       item.kind === 'maintenance' &&
-      (item.isActive || item.startedAt.valueOf() > now.valueOf()),
+      (item.isActive || item.started.at.valueOf() > now.valueOf()),
   );
 
   return serialize([
@@ -246,7 +246,7 @@ export function buildStatusServiceMarkdown(
   const plannedWorks = summary.incidents.filter(
     (item) =>
       item.kind === 'maintenance' &&
-      (item.isActive || item.startedAt.valueOf() > now.valueOf()),
+      (item.isActive || item.started.at.valueOf() > now.valueOf()),
   );
   const serviceLabel = formatStatusService(summary.service);
 

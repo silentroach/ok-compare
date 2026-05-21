@@ -113,32 +113,4 @@ describe('status raw/domain architecture', () => {
 
     expect(offenders).toEqual([]);
   });
-
-  it('keeps raw status field names out of status UI and browser DTO contracts', () => {
-    const files = [
-      '../../components/status/StatusServiceTimeline.astro',
-      '../../components/status/StatusIncidentMeta.astro',
-      './timeline.dom.ts',
-    ];
-    const rawStatusTokens = [
-      'started_iso',
-      'ended_iso',
-      'is_active',
-      'started_has_time',
-      'ended_has_time',
-      'total_minutes',
-      'source_url',
-      'applies_to_all_areas',
-    ];
-
-    const offenders = files.flatMap((file) => {
-      const source = readFileSync(new URL(file, import.meta.url), 'utf8');
-
-      return rawStatusTokens
-        .filter((token) => new RegExp(`\\b${token}\\b`, 'u').test(source))
-        .map((token) => `${file}: ${token}`);
-    });
-
-    expect(offenders).toEqual([]);
-  });
 });

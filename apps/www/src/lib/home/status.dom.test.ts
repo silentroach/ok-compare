@@ -20,9 +20,17 @@ const STATUS_LABELS = {
 } as const;
 const MAINTENANCE_WINDOW = {
   kind: 'maintenance',
-  startedAt: new Date(WINDOW_START),
-  endedAt: new Date(WINDOW_END),
-} as const satisfies Pick<StatusIncident, 'kind' | 'startedAt' | 'endedAt'>;
+  started: {
+    at: new Date(WINDOW_START),
+    iso: new Date(WINDOW_START).toISOString(),
+    hasTime: true,
+  },
+  ended: {
+    at: new Date(WINDOW_END),
+    iso: new Date(WINDOW_END).toISOString(),
+    hasTime: true,
+  },
+} as const satisfies Pick<StatusIncident, 'kind' | 'started' | 'ended'>;
 
 const renderHomeStatus = ({
   state = 'green',

@@ -52,9 +52,9 @@ const article = (input: {
     summary: input.summary,
     date: input.date,
     author: { id: 'ig' } as NewsArticleEntry['data']['author'],
-    ...(input.pinned !== undefined ? { pinned: input.pinned } : {}),
-    ...(input.pinned_until ? { pinned_until: input.pinned_until } : {}),
-    ...(input.events ? { events: input.events } : {}),
+    pinned: input.pinned,
+    pinned_until: input.pinned_until,
+    events: input.events,
   },
 });
 
@@ -351,6 +351,11 @@ describe('buildNewsDataset', () => {
               date: '04.05.2026 10:00',
             }).data,
             source_url: 'https://example.com/source',
+            cover: {
+              src: '/cover.jpg',
+              width: 1200,
+              height: 675,
+            } as NewsArticleEntry['data']['cover'],
             cover_alt: 'Обложка новости',
           },
         },
@@ -363,7 +368,12 @@ describe('buildNewsDataset', () => {
       publishedIso: '2026-05-04T10:00:00+03:00',
       appliesToAllAreas: true,
       sourceUrl: 'https://example.com/source',
-      coverAlt: 'Обложка новости',
+      cover: {
+        url: '/cover.jpg',
+        width: 1200,
+        height: 675,
+        alt: 'Обложка новости',
+      },
     });
     expect(domainArticle?.publishedAt).toBeInstanceOf(Date);
     expect(data.byId.get('2026/05/article-domain')).toBe(domainArticle);

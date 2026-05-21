@@ -42,6 +42,8 @@ export interface NewsPublicAttachment {
 export interface NewsPublicCover {
   readonly url: string;
   readonly alt: string;
+  readonly width: number;
+  readonly height: number;
 }
 
 export interface NewsPublicEventOrganizer {
@@ -159,19 +161,15 @@ const toPublicAttachment = (item: NewsAttachment): NewsPublicAttachment => ({
 });
 
 function toPublicCover(article: NewsArticle): NewsPublicCover | undefined {
-  if (!article.coverUrl) {
-    return undefined;
-  }
+  const cover = article.cover;
 
-  if (!article.coverAlt) {
-    throw new Error(
-      `news article "${article.id}" coverAlt is required when cover is present`,
-    );
-  }
+  if (!cover) return undefined;
 
   return {
-    url: fullUrl(article.coverUrl),
-    alt: article.coverAlt,
+    url: fullUrl(cover.url),
+    alt: cover.alt,
+    width: cover.width,
+    height: cover.height,
   };
 }
 

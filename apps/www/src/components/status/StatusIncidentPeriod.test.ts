@@ -17,10 +17,16 @@ describe('StatusIncidentPeriod', () => {
       props: {
         incident: {
           isActive: false,
-          startedIso: `${currentYear}-05-01T07:32:00+03:00`,
-          startedHasTime: true,
-          endedIso: `${currentYear}-05-01T16:38:00+03:00`,
-          endedHasTime: true,
+          started: {
+            at: new Date(`${currentYear}-05-01T07:32:00+03:00`),
+            iso: `${currentYear}-05-01T07:32:00+03:00`,
+            hasTime: true,
+          },
+          ended: {
+            at: new Date(`${currentYear}-05-01T16:38:00+03:00`),
+            iso: `${currentYear}-05-01T16:38:00+03:00`,
+            hasTime: true,
+          },
           duration: { totalMinutes: 9 * 60 + 6 },
         },
       },

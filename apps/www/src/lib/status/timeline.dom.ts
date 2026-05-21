@@ -226,22 +226,7 @@ const parseStatusTimelineTooltipItems = (
 const toStatusTimelineTooltipListItemData = (
   item: StatusTimelineTooltipItemDto,
 ): StatusTimelineTooltipListItemData =>
-  buildStatusTimelineTooltipListItemData(
-    {
-      kind: item.kind,
-      title: item.title,
-      isActive: item.isActive,
-      startedIso: item.startedIso,
-      startedHasTime: item.startedHasTime,
-      ...(item.endedIso ? { endedIso: item.endedIso } : {}),
-      endedHasTime: item.endedHasTime,
-      ...(item.areas ? { areas: item.areas } : {}),
-      ...(item.duration
-        ? { duration: { totalMinutes: item.duration.totalMinutes } }
-        : {}),
-    },
-    { nonBreaking: true },
-  );
+  buildStatusTimelineTooltipListItemData(item, { nonBreaking: true });
 
 const readStatusTimelineTooltipData = (
   trigger: HTMLElement,
@@ -288,10 +273,11 @@ const readStatusTimelineTooltipData = (
       periodLabel,
       ...(areaLabel ? [`Части поселка: ${areaLabel}`] : []),
     ].join('. '),
-    ...(phaseIcon === 'alert' || phaseIcon === 'check' ? { phaseIcon } : {}),
+    phaseIcon:
+      phaseIcon === 'alert' || phaseIcon === 'check' ? phaseIcon : undefined,
     periodLabel,
-    ...(areaLabel ? { areaLabel } : {}),
-    ...(areas ? { areas } : {}),
+    areaLabel,
+    areas,
   };
 };
 
@@ -441,9 +427,15 @@ const syncStatusTimelineProblemPhase = (
     {
       kind: problemNode.kind,
       isActive: false,
-      startedIso: problemNode.startIso,
-      endedIso: problemNode.endIso,
-      ...(problemNode.service ? { service: problemNode.service } : {}),
+      started: {
+        iso: problemNode.startIso,
+        hasTime: true,
+      },
+      ended: {
+        iso: problemNode.endIso,
+        hasTime: true,
+      },
+      service: problemNode.service,
     },
     { nowMs },
   ).label;
@@ -612,11 +604,13 @@ const parseStatusTimelineProblemNode = (
         element.dataset.statusKind === 'maintenance'
           ? element.dataset.statusKind
           : undefined,
-      ...(isStatusTimelineService(service) ? { service } : {}),
+      service: isStatusTimelineService(service) ? service : undefined,
       startIso,
       startMs,
-      ...(Number.isFinite(geometryStartMs) ? { geometryStartMs } : {}),
-      ...(Number.isFinite(geometryEndMs) ? { geometryEndMs } : {}),
+      geometryStartMs: Number.isFinite(geometryStartMs)
+        ? geometryStartMs
+        : undefined,
+      geometryEndMs: Number.isFinite(geometryEndMs) ? geometryEndMs : undefined,
     };
   }
 
@@ -633,13 +627,15 @@ const parseStatusTimelineProblemNode = (
       element.dataset.statusKind === 'maintenance'
         ? element.dataset.statusKind
         : undefined,
-    ...(isStatusTimelineService(service) ? { service } : {}),
+    service: isStatusTimelineService(service) ? service : undefined,
     startIso,
     endIso: rawEnd,
     startMs,
     endMs,
-    ...(Number.isFinite(geometryStartMs) ? { geometryStartMs } : {}),
-    ...(Number.isFinite(geometryEndMs) ? { geometryEndMs } : {}),
+    geometryStartMs: Number.isFinite(geometryStartMs)
+      ? geometryStartMs
+      : undefined,
+    geometryEndMs: Number.isFinite(geometryEndMs) ? geometryEndMs : undefined,
   };
 };
 

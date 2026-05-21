@@ -32,8 +32,8 @@ const serviceLabel = formatStatusService(summary.service);
 const stateLabel = formatStatusServiceState(summary.serviceStatus);
 const latestRecord = summary.incidents[0];
 const latestMoment = latestRecord
-  ? formatStatusDate(latestRecord.startedIso, {
-      hasTime: latestRecord.startedHasTime,
+  ? formatStatusDate(latestRecord.started.iso, {
+      hasTime: latestRecord.started.hasTime,
       nonBreaking: true,
     })
   : undefined;
@@ -43,10 +43,20 @@ const latestDuration =
     : undefined;
 const latestAreas =
   latestRecord && !latestRecord.appliesToAllAreas ? latestRecord.areas : [];
-const timelineIncidents = summary.incidents.map(
-  ({ appliesToAllAreas, areas, ...incident }) =>
-    appliesToAllAreas ? incident : { ...incident, areas },
-);
+const timelineIncidents = summary.incidents.map((incident) => ({
+  id: incident.id,
+  url: incident.url,
+  hasPage: incident.hasPage,
+  title: incident.title,
+  kind: incident.kind,
+  startedIso: incident.started.iso,
+  startedHasTime: incident.started.hasTime,
+  endedIso: incident.ended?.iso,
+  endedHasTime: incident.ended?.hasTime ?? false,
+  isActive: incident.isActive,
+  areas: incident.appliesToAllAreas ? undefined : incident.areas,
+  duration: incident.duration,
+}));
 const stateClass = {
   green: 'text-[color:var(--color-success)]',
   amber: 'text-[color:var(--color-warning-text)]',

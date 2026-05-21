@@ -28,8 +28,8 @@ const entry = (input: EntryInput): StatusIncidentEntry => ({
     service: input.service,
     kind: input.kind,
     started_at: input.started_at,
-    ...(input.ended_at ? { ended_at: input.ended_at } : {}),
-    ...(input.areas ? { areas: [...input.areas] } : {}),
+    ended_at: input.ended_at,
+    areas: input.areas ? [...input.areas] : undefined,
     source_url: input.source_url ?? `https://example.com/${input.id}`,
   },
 });

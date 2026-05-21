@@ -18,15 +18,39 @@ const NBSP = '\u00A0';
 const currentYear = dateTimeFromISO(new Date().toISOString()).year;
 const nextYear = currentYear + 1;
 
+const period = (input: {
+  readonly isActive: boolean;
+  readonly startedIso: string;
+  readonly startedHasTime: boolean;
+  readonly endedIso?: string;
+  readonly endedHasTime: boolean;
+  readonly duration?: { readonly totalMinutes: number };
+}) => ({
+  isActive: input.isActive,
+  started: {
+    iso: input.startedIso,
+    hasTime: input.startedHasTime,
+  },
+  ended: input.endedIso
+    ? {
+        iso: input.endedIso,
+        hasTime: input.endedHasTime,
+      }
+    : undefined,
+  duration: input.duration,
+});
+
 describe('getStatusIncidentPeriod', () => {
   it('shows start label when there is no end date', () => {
     expect(
-      getStatusIncidentPeriod({
-        isActive: false,
-        startedIso: `${currentYear}-05-01T07:32:00+03:00`,
-        startedHasTime: true,
-        endedHasTime: false,
-      }),
+      getStatusIncidentPeriod(
+        period({
+          isActive: false,
+          startedIso: `${currentYear}-05-01T07:32:00+03:00`,
+          startedHasTime: true,
+          endedHasTime: false,
+        }),
+      ),
     ).toEqual({
       prefix: 'Начало',
       start: {
@@ -38,12 +62,14 @@ describe('getStatusIncidentPeriod', () => {
 
   it('shows since label for active entries without end date', () => {
     expect(
-      getStatusIncidentPeriod({
-        isActive: true,
-        startedIso: `${currentYear}-05-01T07:32:00+03:00`,
-        startedHasTime: true,
-        endedHasTime: false,
-      }),
+      getStatusIncidentPeriod(
+        period({
+          isActive: true,
+          startedIso: `${currentYear}-05-01T07:32:00+03:00`,
+          startedHasTime: true,
+          endedHasTime: false,
+        }),
+      ),
     ).toEqual({
       prefix: 'Начиная с',
       start: {
@@ -55,14 +81,16 @@ describe('getStatusIncidentPeriod', () => {
 
   it('shows full date range without labels when both dates are present', () => {
     expect(
-      getStatusIncidentPeriod({
-        isActive: false,
-        startedIso: `${currentYear}-05-01T00:00:00+03:00`,
-        startedHasTime: false,
-        endedIso: `${currentYear}-05-02T00:00:00+03:00`,
-        endedHasTime: false,
-        duration: { totalMinutes: 24 * 60 },
-      }),
+      getStatusIncidentPeriod(
+        period({
+          isActive: false,
+          startedIso: `${currentYear}-05-01T00:00:00+03:00`,
+          startedHasTime: false,
+          endedIso: `${currentYear}-05-02T00:00:00+03:00`,
+          endedHasTime: false,
+          duration: { totalMinutes: 24 * 60 },
+        }),
+      ),
     ).toEqual({
       start: {
         iso: `${currentYear}-05-01T00:00:00+03:00`,
@@ -78,14 +106,16 @@ describe('getStatusIncidentPeriod', () => {
 
   it('compresses same-day ranges with time into one date and two times', () => {
     expect(
-      getStatusIncidentPeriod({
-        isActive: false,
-        startedIso: `${currentYear}-05-01T07:32:00+03:00`,
-        startedHasTime: true,
-        endedIso: `${currentYear}-05-01T16:38:00+03:00`,
-        endedHasTime: true,
-        duration: { totalMinutes: 9 * 60 + 6 },
-      }),
+      getStatusIncidentPeriod(
+        period({
+          isActive: false,
+          startedIso: `${currentYear}-05-01T07:32:00+03:00`,
+          startedHasTime: true,
+          endedIso: `${currentYear}-05-01T16:38:00+03:00`,
+          endedHasTime: true,
+          duration: { totalMinutes: 9 * 60 + 6 },
+        }),
+      ),
     ).toEqual({
       start: {
         iso: `${currentYear}-05-01T07:32:00+03:00`,
@@ -101,14 +131,16 @@ describe('getStatusIncidentPeriod', () => {
 
   it('shows one date without duration for same-day ranges without time', () => {
     expect(
-      getStatusIncidentPeriod({
-        isActive: false,
-        startedIso: `${currentYear}-05-01T00:00:00+03:00`,
-        startedHasTime: false,
-        endedIso: `${currentYear}-05-01T00:00:00+03:00`,
-        endedHasTime: false,
-        duration: { totalMinutes: 0 },
-      }),
+      getStatusIncidentPeriod(
+        period({
+          isActive: false,
+          startedIso: `${currentYear}-05-01T00:00:00+03:00`,
+          startedHasTime: false,
+          endedIso: `${currentYear}-05-01T00:00:00+03:00`,
+          endedHasTime: false,
+          duration: { totalMinutes: 0 },
+        }),
+      ),
     ).toEqual({
       start: {
         iso: `${currentYear}-05-01T00:00:00+03:00`,
@@ -119,14 +151,16 @@ describe('getStatusIncidentPeriod', () => {
 
   it('keeps the full end timestamp when only one side has time', () => {
     expect(
-      getStatusIncidentPeriod({
-        isActive: false,
-        startedIso: `${currentYear}-05-01T00:00:00+03:00`,
-        startedHasTime: false,
-        endedIso: `${currentYear}-05-01T16:38:00+03:00`,
-        endedHasTime: true,
-        duration: { totalMinutes: 16 * 60 + 38 },
-      }),
+      getStatusIncidentPeriod(
+        period({
+          isActive: false,
+          startedIso: `${currentYear}-05-01T00:00:00+03:00`,
+          startedHasTime: false,
+          endedIso: `${currentYear}-05-01T16:38:00+03:00`,
+          endedHasTime: true,
+          duration: { totalMinutes: 16 * 60 + 38 },
+        }),
+      ),
     ).toEqual({
       start: {
         iso: `${currentYear}-05-01T00:00:00+03:00`,
@@ -163,26 +197,28 @@ describe('formatStatusDate', () => {
 describe('formatStatusIncidentPeriodText', () => {
   it('uses the same active wording as meta and timeline', () => {
     expect(
-      formatStatusIncidentPeriodText({
-        isActive: true,
-        startedIso: `${currentYear}-05-01T07:32:00+03:00`,
-        startedHasTime: true,
-        endedHasTime: false,
-      }),
+      formatStatusIncidentPeriodText(
+        period({
+          isActive: true,
+          startedIso: `${currentYear}-05-01T07:32:00+03:00`,
+          startedHasTime: true,
+          endedHasTime: false,
+        }),
+      ),
     ).toBe('Начиная с 1 мая, 07:32');
   });
 
   it('supports non-breaking spaces for UI period labels', () => {
     expect(
       formatStatusIncidentPeriodText(
-        {
+        period({
           isActive: false,
           startedIso: `${currentYear}-05-01T07:32:00+03:00`,
           startedHasTime: true,
           endedIso: `${currentYear}-05-01T16:38:00+03:00`,
           endedHasTime: true,
           duration: { totalMinutes: 9 * 60 + 6 },
-        },
+        }),
         { nonBreaking: true },
       ),
     ).toBe(`1${NBSP}мая, 07:32 -${NBSP}16:38 (9${NBSP}ч. 6${NBSP}мин.)`);

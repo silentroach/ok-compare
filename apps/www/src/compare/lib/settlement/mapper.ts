@@ -59,9 +59,9 @@ const mapTariff = (tariff: RawTariff): Tariff => ({
 });
 
 const mapManagementCompany = (
-  company: RawManagementCompany | undefined,
+  company?: RawManagementCompany,
 ): ManagementCompany | undefined => {
-  if (!company) return undefined;
+  if (!company) return;
   if (typeof company === 'string') return { title: company };
   return company;
 };

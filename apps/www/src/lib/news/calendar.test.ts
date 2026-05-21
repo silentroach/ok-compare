@@ -26,7 +26,7 @@ const event = (input?: {
 }): NewsEvent => ({
   slug: input?.slug ?? 'event',
   title: input?.title ?? 'Встреча по регламенту',
-  ...(input?.description ? { description: input.description } : {}),
+  description: input?.description,
   startsAt: new Date('2026-05-31T16:00:00.000Z'),
   startsIso: '2026-05-31T19:00:00+03:00',
   startsTime: '19:00',
@@ -38,8 +38,8 @@ const event = (input?: {
         endsIso: '2026-05-31T21:00:00+03:00',
         endsTime: '21:00',
       }),
-  ...(input?.location ? { location: input.location } : {}),
-  ...(input?.coordinates ? { coordinates: input.coordinates } : {}),
+  location: input?.location,
+  coordinates: input?.coordinates,
 });
 
 const article = (input?: {

@@ -24,8 +24,8 @@ const entry = (input: EntryInput): StatusIncidentEntry => ({
     service: input.service,
     kind: input.kind,
     started_at: input.started_at,
-    ...(input.ended_at ? { ended_at: input.ended_at } : {}),
-    ...(input.areas ? { areas: [...input.areas] } : {}),
+    ended_at: input.ended_at,
+    areas: input.areas ? [...input.areas] : undefined,
     source_url: input.source_url ?? `https://example.com/${input.id}`,
   },
 });
@@ -73,16 +73,22 @@ describe('buildStatusDataset', () => {
     );
 
     expect(data.byId.get('2026/05/day-only')).toMatchObject({
-      startedIso: '2026-05-01T00:00:00+03:00',
-      startedHasTime: false,
+      started: {
+        iso: '2026-05-01T00:00:00+03:00',
+        hasTime: false,
+      },
     });
     expect(data.byId.get('2026/05/day-time')).toMatchObject({
-      startedIso: '2026-05-02T14:05:00+03:00',
-      startedHasTime: true,
+      started: {
+        iso: '2026-05-02T14:05:00+03:00',
+        hasTime: true,
+      },
     });
     expect(data.byId.get('2026/05/iso-day')).toMatchObject({
-      startedIso: '2026-05-03T00:00:00+03:00',
-      startedHasTime: false,
+      started: {
+        iso: '2026-05-03T00:00:00+03:00',
+        hasTime: false,
+      },
     });
   });
 
@@ -141,10 +147,14 @@ describe('buildStatusDataset', () => {
     const damHistory = data.byId.get('2026/03/dam-flood-closure');
 
     expect(damHistory).toMatchObject({
-      startedIso: '2026-03-15T00:00:00+03:00',
-      endedIso: '2026-04-24T00:00:00+03:00',
-      startedHasTime: false,
-      endedHasTime: false,
+      started: {
+        iso: '2026-03-15T00:00:00+03:00',
+        hasTime: false,
+      },
+      ended: {
+        iso: '2026-04-24T00:00:00+03:00',
+        hasTime: false,
+      },
       appliesToAllAreas: true,
       excerpt: 'Первый абзац. С новой строкой.',
       duration: {
@@ -155,8 +165,12 @@ describe('buildStatusDataset', () => {
     const electricity = data.byId.get('2026/05/electricity-river-outage');
 
     expect(electricity).toMatchObject({
-      startedHasTime: true,
-      endedHasTime: true,
+      started: {
+        hasTime: true,
+      },
+      ended: {
+        hasTime: true,
+      },
       appliesToAllAreas: false,
       areas: ['river'],
       duration: {

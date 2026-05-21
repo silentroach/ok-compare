@@ -22,6 +22,7 @@ import type {
   NewsArchives,
   NewsAttachment,
   NewsAuthor,
+  NewsCover,
   NewsDataset,
   NewsEvent,
   NewsEventCoordinates,
@@ -129,13 +130,32 @@ function needAuthor(
 const assetUrl = (asset: CoverInput | undefined): string | undefined =>
   asset ? withBase(asset.src) : undefined;
 
+const cover = (
+  asset: CoverInput | undefined,
+  alt: string | undefined,
+  context: string,
+): NewsCover | undefined => {
+  const url = assetUrl(asset);
+
+  if (!asset || !url) return undefined;
+  if (!alt)
+    throw new Error(`${context} cover_alt is required when cover is set`);
+
+  return {
+    url,
+    width: asset.width,
+    height: asset.height,
+    alt,
+  };
+};
+
 const photos = (
   items: readonly PhotoInput[] | undefined,
 ): readonly NewsPhoto[] =>
   items?.map((item) => ({
     url: withBase(item.src.src),
     alt: item.alt,
-    ...(item.caption ? { caption: item.caption } : {}),
+    caption: item.caption,
   })) ?? [];
 
 const attachments = (
@@ -144,8 +164,8 @@ const attachments = (
   items?.map((item) => ({
     title: item.title,
     url: item.url,
-    ...(item.type ? { type: item.type } : {}),
-    ...(item.size ? { size: item.size } : {}),
+    type: item.type,
+    size: item.size,
   })) ?? [];
 
 const requiredEventText = (value: string, context: string): string => {
@@ -309,29 +329,20 @@ function normalizeEvent(
   return {
     slug: slug ?? 'event',
     title: requiredEventText(input.title, `${context} title`),
-    ...(input.description
-      ? {
-          description: requiredEventText(
-            input.description,
-            `${context} description`,
-          ),
-        }
-      : {}),
+    description: input.description
+      ? requiredEventText(input.description, `${context} description`)
+      : undefined,
     startsAt: starts.at,
     startsIso: starts.iso,
     startsTime: starts.time,
     icsUrl: articleEventIcsUrl({ ...route, event: slug ?? 'event' }),
-    ...(ends
-      ? {
-          endsAt: ends.at,
-          endsIso: ends.iso,
-          endsTime: ends.time,
-        }
-      : {}),
-    ...(location ? { location } : {}),
-    ...(coordinates ? { coordinates } : {}),
-    ...(organizer ? { organizer } : {}),
-    ...(performer ? { performer } : {}),
+    endsAt: ends?.at,
+    endsIso: ends?.iso,
+    endsTime: ends?.time,
+    location,
+    coordinates,
+    organizer,
+    performer,
   };
 }
 
@@ -422,8 +433,11 @@ function normalizeArticle(
     authorId(entry.data.author),
     `news article "${entry.id}"`,
   );
-  const cover = entry.data.cover;
-  const coverUrl = assetUrl(cover);
+  const articleCover = cover(
+    entry.data.cover,
+    entry.data.cover_alt,
+    `news article "${entry.id}"`,
+  );
   const events = normalizeEvents(entry.data.events, entry.id, parts);
   const body = preprocessSiteMarkdownContent(
     entry.body ?? '',
@@ -433,7 +447,7 @@ function normalizeArticle(
   const article = {
     id: entry.id,
     title: entry.data.title,
-    ...(entry.data.seo ? { seo: entry.data.seo } : {}),
+    seo: entry.data.seo,
     author,
     year: Number(parts.year),
     month: Number(parts.month),
@@ -444,20 +458,13 @@ function normalizeArticle(
     canonical: articleCanonical(parts),
     publishedAt: published.at,
     publishedIso: published.iso,
-    ...(published.time ? { time: published.time } : {}),
+    time: published.time,
     appliesToAllAreas: area.appliesToAllAreas,
     areas: area.areas,
     tags: buildArticleTags(entry.data.tags),
     pinned: isPinnedAtBuild(entry.data),
-    ...(entry.data.source_url ? { sourceUrl: entry.data.source_url } : {}),
-    ...(coverUrl ? { coverUrl } : {}),
-    ...(cover
-      ? {
-          coverWidth: cover.width,
-          coverHeight: cover.height,
-        }
-      : {}),
-    ...(entry.data.cover_alt ? { coverAlt: entry.data.cover_alt } : {}),
+    sourceUrl: entry.data.source_url,
+    cover: articleCover,
     photos: photos(entry.data.photos),
     attachments: attachments(entry.data.attachments),
     events,
@@ -482,20 +489,13 @@ const toListArticle = (article: NewsArticle): NewsListArticle => ({
   canonical: article.canonical,
   publishedAt: article.publishedAt,
   publishedIso: article.publishedIso,
-  ...(article.time ? { time: article.time } : {}),
+  time: article.time,
   appliesToAllAreas: article.appliesToAllAreas,
   areas: article.areas,
   tags: article.tags,
   pinned: article.pinned,
-  ...(article.sourceUrl ? { sourceUrl: article.sourceUrl } : {}),
-  ...(article.coverUrl ? { coverUrl: article.coverUrl } : {}),
-  ...(article.coverWidth && article.coverHeight
-    ? {
-        coverWidth: article.coverWidth,
-        coverHeight: article.coverHeight,
-      }
-    : {}),
-  ...(article.coverAlt ? { coverAlt: article.coverAlt } : {}),
+  sourceUrl: article.sourceUrl,
+  cover: article.cover,
   events: article.events,
   summary: article.summary,
 });

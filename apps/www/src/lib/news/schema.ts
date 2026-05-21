@@ -1,9 +1,11 @@
 import { isAbsoluteUrl } from '@shelkovo/url';
 
+import { AREAS, type Area } from '../areas';
+
 export { isAbsoluteUrl };
 
-export const NEWS_AREAS = ['river', 'forest', 'park', 'village'] as const;
-export type NewsArea = (typeof NEWS_AREAS)[number];
+export const NEWS_AREAS = AREAS;
+export type NewsArea = Area;
 
 export const NEWS_AUTHOR_KINDS = [
   'official',

@@ -64,8 +64,8 @@ const schema = techArticleSchema({
     { name: 'Статус', url: statusUrl() },
     { name: incident.title, url: incident.url },
   ]),
-  datePublished: incident.startedIso,
-  ...(incident.endedIso ? { dateModified: incident.endedIso } : {}),
+  datePublished: incident.started.iso,
+  dateModified: incident.ended?.iso,
 });
 ---
 

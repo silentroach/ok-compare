@@ -61,9 +61,9 @@ const entry = (input: {
   body: input.body ?? '',
   data: {
     name: input.name,
-    ...(input.name_cases ? { name_cases: input.name_cases } : {}),
-    ...(input.company ? { company: input.company } : {}),
-    ...(input.position ? { position: input.position } : {}),
+    name_cases: input.name_cases,
+    company: input.company,
+    position: input.position,
     contacts: [...(input.contacts ?? [])],
   },
 });
@@ -114,8 +114,8 @@ const incident = (input: {
     service: input.service,
     kind: input.kind,
     started_at: input.started_at,
-    ...(input.ended_at ? { ended_at: input.ended_at } : {}),
-    ...(input.areas ? { areas: [...input.areas] } : {}),
+    ended_at: input.ended_at,
+    areas: input.areas ? [...input.areas] : undefined,
     source_url: `https://example.com/${input.id}`,
   },
 });

@@ -26,12 +26,16 @@ const incident = (input?: Partial<StatusIncident>): StatusIncident => ({
   url: '/status/incidents/2026/05/electricity-river-outage/',
   canonical:
     'https://example.com/status/incidents/2026/05/electricity-river-outage/',
-  startedAt: new Date('2026-05-01T04:32:00.000Z'),
-  startedIso: '2026-05-01T07:32:00+03:00',
-  startedHasTime: true,
-  endedAt: new Date('2026-05-01T13:38:00.000Z'),
-  endedIso: '2026-05-01T16:38:00+03:00',
-  endedHasTime: true,
+  started: {
+    at: new Date('2026-05-01T04:32:00.000Z'),
+    iso: '2026-05-01T07:32:00+03:00',
+    hasTime: true,
+  },
+  ended: {
+    at: new Date('2026-05-01T13:38:00.000Z'),
+    iso: '2026-05-01T16:38:00+03:00',
+    hasTime: true,
+  },
   isActive: false,
   appliesToAllAreas: false,
   areas: ['river'],

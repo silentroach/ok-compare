@@ -25,11 +25,11 @@ export const getHomeStatusAriaLabel = (state: HomeStatusState): string =>
   `Статус: ${HOME_STATUS_LABELS[state]}`;
 
 const isActiveAt = (
-  item: Pick<StatusIncident, 'startedAt' | 'endedAt'>,
+  item: Pick<StatusIncident, 'started' | 'ended'>,
   now: number,
 ): boolean =>
-  item.startedAt.valueOf() <= now &&
-  (item.endedAt === undefined || now < item.endedAt.valueOf());
+  item.started.at.valueOf() <= now &&
+  (item.ended === undefined || now < item.ended.at.valueOf());
 
 export const getHomeStatusState = (
   incidents: readonly StatusIncident[],
@@ -49,17 +49,17 @@ export const getHomeStatusState = (
 };
 
 export const getHomeStatusMaintenanceWindows = (
-  incidents: readonly Pick<StatusIncident, 'kind' | 'startedAt' | 'endedAt'>[],
+  incidents: readonly Pick<StatusIncident, 'kind' | 'started' | 'ended'>[],
   buildNow: number,
 ): readonly HomeStatusMaintenanceWindow[] =>
   incidents
     .flatMap((item): HomeStatusMaintenanceWindow[] => {
-      if (item.kind !== 'maintenance' || item.endedAt === undefined) {
+      if (item.kind !== 'maintenance' || item.ended === undefined) {
         return [];
       }
 
-      const start = item.startedAt.valueOf();
-      const end = item.endedAt.valueOf();
+      const start = item.started.at.valueOf();
+      const end = item.ended.at.valueOf();
       if (end <= buildNow) {
         return [];
       }

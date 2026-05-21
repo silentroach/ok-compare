@@ -47,7 +47,7 @@ export const GET: APIRoute = async (context) => {
       title: item.title,
       description: description(item),
       ...(item.hasPage ? { link: item.url } : {}),
-      pubDate: item.endedAt ?? item.startedAt,
+      pubDate: item.ended?.at ?? item.started.at,
       categories: categories(item),
     })),
     customData: '<language>ru-RU</language>',
