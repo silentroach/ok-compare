@@ -1,3 +1,5 @@
+// Stats
+
 export interface PublicStats {
   readonly shelkovoTariff: number;
   readonly medianTariff: number;
@@ -14,14 +16,6 @@ export interface PublicStats {
   readonly shelkovoVsMeanPercent: number;
 }
 
-export interface PublicComparison {
-  readonly tariffDelta: number;
-  readonly tariffDeltaPercent: number;
-  readonly isCheaper: boolean;
-}
-
-export type PublicComparisons = Record<string, PublicComparison>;
-
 export const toPublicStats = (stats: PublicStats): PublicStats => ({
   shelkovoTariff: stats.shelkovoTariff,
   medianTariff: stats.medianTariff,
@@ -37,6 +31,16 @@ export const toPublicStats = (stats: PublicStats): PublicStats => ({
   shelkovoVsPeerMedianPercent: stats.shelkovoVsPeerMedianPercent,
   shelkovoVsMeanPercent: stats.shelkovoVsMeanPercent,
 });
+
+// Comparisons
+
+export interface PublicComparison {
+  readonly tariffDelta: number;
+  readonly tariffDeltaPercent: number;
+  readonly isCheaper: boolean;
+}
+
+export type PublicComparisons = Record<string, PublicComparison>;
 
 export const toPublicComparisons = (
   comparisons: ReadonlyMap<string, PublicComparison>,

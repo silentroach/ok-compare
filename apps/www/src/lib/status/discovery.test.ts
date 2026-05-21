@@ -67,7 +67,7 @@ describe('status API catalog', () => {
 });
 
 describe('buildStatusPublicPayload', () => {
-  it('omits incident detail URLs when no detail page is published', () => {
+  it('leaves incident detail URLs undefined when no detail page is published', () => {
     const data = buildStatusDataset(
       [
         entry({
@@ -101,8 +101,8 @@ describe('buildStatusPublicPayload', () => {
     const water = payload.services.find((item) => item.service === 'water');
 
     expect(noPage).toBeDefined();
-    expect(noPage!).not.toHaveProperty('html_url');
-    expect(noPage!).not.toHaveProperty('markdown_url');
+    expect(noPage?.html_url).toBeUndefined();
+    expect(noPage?.markdown_url).toBeUndefined();
 
     expect(withPage).toMatchObject({
       html_url: 'https://example.com/status/incidents/2026/05/water-with-page/',
@@ -114,8 +114,8 @@ describe('buildStatusPublicPayload', () => {
       id: '2026/05/water-no-page',
       title: 'Краткая запись без body',
     });
-    expect(water?.latest_incident).not.toHaveProperty('html_url');
-    expect(water?.latest_incident).not.toHaveProperty('markdown_url');
+    expect(water?.latest_incident?.html_url).toBeUndefined();
+    expect(water?.latest_incident?.markdown_url).toBeUndefined();
   });
 
   it('marks incident detail URLs as optional in the schema', () => {

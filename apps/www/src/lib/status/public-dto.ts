@@ -128,21 +128,22 @@ const daysWithoutIncidentsMode = (
   }
 };
 
-const incidentLinks = (item: StatusIncident): StatusPublicIncidentLinksDto =>
-  item.hasPage
-    ? {
-        html_url: item.canonical,
-        markdown_url: fullUrl(statusIncidentMarkdownUrl(item)),
-      }
-    : {};
+const incidentLinks = (item: StatusIncident): StatusPublicIncidentLinksDto => ({
+  html_url: item.hasPage ? item.canonical : undefined,
+  markdown_url: item.hasPage
+    ? fullUrl(statusIncidentMarkdownUrl(item))
+    : undefined,
+});
 
 function incidentRef(item: StatusIncident): StatusPublicIncidentRefDto {
   const current = getStatusIncidentPhase(item);
+  const links = incidentLinks(item);
 
   return {
     id: item.id,
     title: item.title,
-    ...incidentLinks(item),
+    html_url: links.html_url,
+    markdown_url: links.markdown_url,
     phase: phase(item),
     phase_label: current.label,
   };
@@ -154,13 +155,14 @@ function daysWithoutIncidents(
   return {
     mode: daysWithoutIncidentsMode(value.mode),
     label: formatStatusDaysWithoutIncidents(value),
-    ...(value.days !== undefined ? { days: value.days } : {}),
-    ...(value.lastEndedIso ? { last_ended_iso: value.lastEndedIso } : {}),
+    days: value.days,
+    last_ended_iso: value.lastEndedIso,
   };
 }
 
 function incident(item: StatusIncident): StatusPublicIncidentDto {
   const current = getStatusIncidentPhase(item);
+  const links = incidentLinks(item);
 
   return {
     id: item.id,
@@ -172,20 +174,21 @@ function incident(item: StatusIncident): StatusPublicIncidentDto {
     year: item.year,
     month: item.month,
     slug: item.slug,
-    ...incidentLinks(item),
+    html_url: links.html_url,
+    markdown_url: links.markdown_url,
     started_at: item.started.iso,
     started_has_time: item.started.hasTime,
-    ...(item.ended ? { ended_at: item.ended.iso } : {}),
+    ended_at: item.ended?.iso,
     ended_has_time: item.ended?.hasTime ?? false,
     is_active: item.isActive,
     phase: phase(item),
     phase_label: current.label,
     applies_to_all_areas: item.appliesToAllAreas,
     areas: [...item.areas],
-    ...(item.sourceUrl ? { source_url: fullUrl(item.sourceUrl) } : {}),
-    ...(item.excerpt ? { excerpt: item.excerpt } : {}),
+    source_url: item.sourceUrl ? fullUrl(item.sourceUrl) : undefined,
+    excerpt: item.excerpt,
     body_markdown: item.body,
-    ...(item.duration ? { duration: duration(item.duration) } : {}),
+    duration: item.duration ? duration(item.duration) : undefined,
   };
 }
 
@@ -203,7 +206,7 @@ function summary(item: StatusServiceSummary): StatusPublicServiceSummaryDto {
     active_incident_ids: item.activeIncidents.map((entry) => entry.id),
     active_maintenance_ids: item.activeMaintenance.map((entry) => entry.id),
     days_without_incidents: daysWithoutIncidents(item.daysWithoutIncidents),
-    ...(latest ? { latest_incident: incidentRef(latest) } : {}),
+    latest_incident: latest ? incidentRef(latest) : undefined,
   };
 }
 
@@ -219,20 +222,24 @@ const latestUpdate = (data: StatusDataset): string | undefined => {
 
 export const buildStatusPublicPayload = (
   data: StatusDataset,
-): StatusPublicPayloadDto => ({
-  stats: {
-    incident_count: data.incidents.length,
-    active_count: data.active.length,
-    active_incident_count: data.active.filter(
-      (item) => item.kind === 'incident',
-    ).length,
-    active_maintenance_count: data.active.filter(
-      (item) => item.kind === 'maintenance',
-    ).length,
-    service_count: data.services.length,
-    ...(latestUpdate(data) ? { updated_at: latestUpdate(data) } : {}),
-  },
-  active: data.active.map(incident),
-  incidents: data.incidents.map(incident),
-  services: data.services.map(summary),
-});
+): StatusPublicPayloadDto => {
+  const updatedAt = latestUpdate(data);
+
+  return {
+    stats: {
+      incident_count: data.incidents.length,
+      active_count: data.active.length,
+      active_incident_count: data.active.filter(
+        (item) => item.kind === 'incident',
+      ).length,
+      active_maintenance_count: data.active.filter(
+        (item) => item.kind === 'maintenance',
+      ).length,
+      service_count: data.services.length,
+      updated_at: updatedAt,
+    },
+    active: data.active.map(incident),
+    incidents: data.incidents.map(incident),
+    services: data.services.map(summary),
+  };
+};
