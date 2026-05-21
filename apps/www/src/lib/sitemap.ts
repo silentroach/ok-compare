@@ -1,4 +1,5 @@
 import { ChangeFreqEnum, type SitemapItem } from '@astrojs/sitemap';
+import { compareRuText } from '@shelkovo/format';
 
 export interface SitemapMetadata {
   readonly lastmod?: string;
@@ -220,7 +221,7 @@ export const buildSitemapMetadataIndex = (
   addStatusMetadata(index, data.statusIncidents);
   addCompareMetadata(index, data.settlements);
 
-  return new Map([...index.entries()].sort(([a], [b]) => a.localeCompare(b)));
+  return new Map([...index.entries()].sort(([a], [b]) => compareRuText(a, b)));
 };
 
 export const applySitemapMetadata = (

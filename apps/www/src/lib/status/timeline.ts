@@ -1,3 +1,5 @@
+import { compareRuText } from '@shelkovo/format';
+
 import type { StatusArea, StatusKind } from './schema';
 import type { StatusDuration } from './types';
 
@@ -182,7 +184,7 @@ export const buildStatusTimelineProblemSegments = ({
     .filter((segment) => segment !== undefined)
     .sort(
       (a, b) =>
-        a.startMs - b.startMs || a.endMs - b.endMs || a.id.localeCompare(b.id),
+        a.startMs - b.startMs || a.endMs - b.endMs || compareRuText(a.id, b.id),
     );
 };
 

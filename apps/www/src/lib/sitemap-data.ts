@@ -2,6 +2,8 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { compareRuText } from '@shelkovo/format';
+
 import { parseNewsTimestamp } from './news/date';
 import { normalizeTagKey } from './news/schema';
 import {
@@ -73,7 +75,7 @@ function listFiles(root: string, extension: string): readonly string[] {
     }
   }
 
-  return files.sort((a, b) => a.localeCompare(b));
+  return files.sort(compareRuText);
 }
 
 const relativeEntryId = (

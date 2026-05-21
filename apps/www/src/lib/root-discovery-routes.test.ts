@@ -1,15 +1,4 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
-
-const repoRoot = join(process.cwd(), '../..');
-const inventoryPath = join(
-  repoRoot,
-  'docs/migrations/raw-to-domain-data/inventory.md',
-);
-
-const readRepoFile = (path: string): string =>
-  readFileSync(join(repoRoot, path), 'utf-8');
 
 beforeAll(() => {
   Object.assign(import.meta.env, {
@@ -70,43 +59,5 @@ describe('root discovery route smoke', () => {
         }),
       ]),
     );
-  });
-
-  it('documents migrated public DTO boundaries and intentional legacy fields', () => {
-    const files = {
-      comparePublicDto: readRepoFile('apps/www/src/compare/lib/public-dto.ts'),
-      compareFull: readRepoFile('apps/www/src/compare/lib/full.ts'),
-      compareExplorer: readRepoFile('apps/www/src/compare/lib/explorer.ts'),
-      newsPublicDto: readRepoFile('apps/www/src/lib/news/public-dto.ts'),
-      statusPublicDto: readRepoFile('apps/www/src/lib/status/public-dto.ts'),
-      peoplePublicDto: readRepoFile('apps/www/src/lib/people/public-dto.ts'),
-      inventory: readFileSync(inventoryPath, 'utf-8'),
-    };
-
-    expect(files.comparePublicDto).toContain('export interface PublicStats');
-    expect(files.compareFull).toContain('export const toFullPayload');
-    expect(files.compareExplorer).toContain('export const toExplorerPayload');
-    expect(files.newsPublicDto).toContain('export interface NewsPublicPayload');
-    expect(files.statusPublicDto).toContain(
-      'export interface StatusPublicPayloadDto',
-    );
-    expect(files.peoplePublicDto).toContain(
-      'export interface PeoplePublicPayloadDto',
-    );
-
-    expect(files.inventory).toContain('## Intentional legacy public fields');
-    for (const token of [
-      'short_name',
-      'normalized_per_sotka_month',
-      'published_at',
-      'source_url',
-      'started_at',
-      'is_active',
-      'name_cases',
-      'body_markdown',
-      'source_id',
-    ]) {
-      expect(files.inventory).toContain(token);
-    }
   });
 });

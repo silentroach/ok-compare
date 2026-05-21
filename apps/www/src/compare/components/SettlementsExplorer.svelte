@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { compareRuText } from '@shelkovo/format';
   import Link from '@shelkovo/ui/Link.svelte';
   import { onMount } from 'svelte';
   import type { ExplorerPayload, ExplorerSettlement } from '../lib/explorer';
@@ -108,7 +109,7 @@
         const diff =
           a.tariff.normalizedPerSotkaMonth - b.tariff.normalizedPerSotkaMonth;
         if (diff !== 0) return diff;
-        return a.shortName.localeCompare(b.shortName, 'ru');
+        return compareRuText(a.shortName, b.shortName);
       })
       .forEach((item) => {
         const tariff = item.tariff.normalizedPerSotkaMonth;
@@ -162,12 +163,12 @@
         case 'rating_desc': {
           const diff = b.rating - a.rating;
           if (diff !== 0) return diff;
-          return a.shortName.localeCompare(b.shortName, 'ru');
+          return compareRuText(a.shortName, b.shortName);
         }
         case 'rating_asc': {
           const diff = a.rating - b.rating;
           if (diff !== 0) return diff;
-          return a.shortName.localeCompare(b.shortName, 'ru');
+          return compareRuText(a.shortName, b.shortName);
         }
         case 'tariff_asc':
           return (
@@ -182,7 +183,7 @@
         case 'distance':
           return getDistanceFromShelkovo(a) - getDistanceFromShelkovo(b);
         case 'name':
-          return a.shortName.localeCompare(b.shortName, 'ru');
+          return compareRuText(a.shortName, b.shortName);
         default:
           return 0;
       }

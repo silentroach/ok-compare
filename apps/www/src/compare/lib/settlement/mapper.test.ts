@@ -190,6 +190,7 @@ describe('mapRawSettlement', () => {
               "value": 12000,
             },
             {
+              "note": undefined,
               "period": "month",
               "unit": "perSotka",
               "value": 100,
