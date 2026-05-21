@@ -17,6 +17,7 @@ import {
   statusServiceUrl,
   statusUrl,
 } from '@/lib/status/routes';
+import { toStatusTimelineIncidentInput } from '@/lib/status/timeline';
 import {
   formatStatusService,
   formatStatusServiceState,
@@ -55,10 +56,7 @@ const stateClass = {
   red: 'text-[color:var(--color-danger)]',
 } as const;
 const latestIncidents = summary.incidents.slice(0, 10);
-const timelineIncidents = summary.incidents.map(
-  ({ appliesToAllAreas, areas, ...incident }) =>
-    appliesToAllAreas ? incident : { ...incident, areas },
-);
+const timelineIncidents = summary.incidents.map(toStatusTimelineIncidentInput);
 const schemaItems = latestIncidents
   .filter((item) => item.hasPage)
   .map((item) => ({ name: item.title, url: item.url }));

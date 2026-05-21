@@ -5,6 +5,7 @@ import LightningIcon from '@shelkovo/ui/icons/services/Lightning.astro';
 import WaterDropIcon from '@shelkovo/ui/icons/services/WaterDrop.astro';
 
 import ShelkovoAreaIcon from '@/components/ShelkovoAreaIcon.astro';
+import { toStatusTimelineIncidentInput } from '@/lib/status/timeline';
 import StatusServiceTimeline from './StatusServiceTimeline.astro';
 import type { StatusServiceSummary } from '../../lib/status/types';
 import {
@@ -43,20 +44,7 @@ const latestDuration =
     : undefined;
 const latestAreas =
   latestRecord && !latestRecord.appliesToAllAreas ? latestRecord.areas : [];
-const timelineIncidents = summary.incidents.map((incident) => ({
-  id: incident.id,
-  url: incident.url,
-  hasPage: incident.hasPage,
-  title: incident.title,
-  kind: incident.kind,
-  startedIso: incident.started.iso,
-  startedHasTime: incident.started.hasTime,
-  endedIso: incident.ended?.iso,
-  endedHasTime: incident.ended?.hasTime ?? false,
-  isActive: incident.isActive,
-  areas: incident.appliesToAllAreas ? undefined : incident.areas,
-  duration: incident.duration,
-}));
+const timelineIncidents = summary.incidents.map(toStatusTimelineIncidentInput);
 const stateClass = {
   green: 'text-[color:var(--color-success)]',
   amber: 'text-[color:var(--color-warning-text)]',

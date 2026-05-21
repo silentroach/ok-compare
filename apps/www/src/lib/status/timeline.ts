@@ -1,7 +1,7 @@
 import { compareRuText } from '@shelkovo/format';
 
 import type { StatusArea, StatusKind } from './schema';
-import type { StatusDuration } from './types';
+import type { StatusDuration, StatusIncident } from './types';
 
 export const STATUS_TIMELINE_DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -51,6 +51,23 @@ export interface StatusTimelineSegmentGeometry {
   readonly leftPercent: number;
   readonly widthPercent: number;
 }
+
+export const toStatusTimelineIncidentInput = (
+  incident: StatusIncident,
+): StatusTimelineIncidentInput => ({
+  id: incident.id,
+  url: incident.url,
+  hasPage: incident.hasPage,
+  title: incident.title,
+  kind: incident.kind,
+  startedIso: incident.started.iso,
+  startedHasTime: incident.started.hasTime,
+  endedIso: incident.ended?.iso,
+  endedHasTime: incident.ended?.hasTime ?? false,
+  isActive: incident.isActive,
+  areas: incident.appliesToAllAreas ? undefined : incident.areas,
+  duration: incident.duration,
+});
 
 interface BuildStatusTimelineProblemSegmentsInput {
   readonly incidents: readonly StatusTimelineIncidentInput[];
