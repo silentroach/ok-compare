@@ -212,7 +212,7 @@ function add(
   item?: string,
 ): void {
   if (!value) return;
-  rows.push({ title, value, ...(item ? { note: item } : {}) });
+  rows.push({ title, value, note: item });
 }
 
 export function getLotBreakdown(
@@ -224,9 +224,9 @@ export function getLotBreakdown(
     return {
       size: lots.average_sotka,
       exact: true,
-      ...(lots.count !== undefined ? { count: lots.count } : {}),
-      ...(lots.area_ha !== undefined ? { area_ha: lots.area_ha } : {}),
-      ...(lots.average_note ? { note: lots.average_note } : {}),
+      count: lots.count,
+      area_ha: lots.area_ha,
+      note: lots.average_note,
     };
   }
 

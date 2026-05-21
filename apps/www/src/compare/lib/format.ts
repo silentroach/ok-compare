@@ -198,7 +198,7 @@ export function getLotCalc(
           : item.count
             ? `${num(item.count)} участков.`
             : 'Подтвержденные данные.',
-      ...(item.note ? { factors: item.note } : {}),
+      factors: item.note,
       total: area(item.size),
     };
   }

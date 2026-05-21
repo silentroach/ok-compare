@@ -87,7 +87,7 @@ const add = (
   item?: string,
 ): void => {
   if (!value) return;
-  rows.push({ title, value, ...(item ? { note: item } : {}) });
+  rows.push({ title, value, note: item });
 };
 
 export function getLotBreakdown(
@@ -99,9 +99,9 @@ export function getLotBreakdown(
     return {
       size: lots.averageSotka,
       exact: true,
-      ...(lots.count !== undefined ? { count: lots.count } : {}),
-      ...(lots.areaHa !== undefined ? { areaHa: lots.areaHa } : {}),
-      ...(lots.averageNote ? { note: lots.averageNote } : {}),
+      count: lots.count,
+      areaHa: lots.areaHa,
+      note: lots.averageNote,
     };
   }
 
