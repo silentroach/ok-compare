@@ -1,4 +1,5 @@
 import { ChangeFreqEnum, type SitemapItem } from '@astrojs/sitemap';
+import { compareRuText } from '@shelkovo/format';
 
 export interface SitemapMetadata {
   readonly lastmod?: string;
@@ -9,8 +10,8 @@ export type SitemapMetadataIndex = ReadonlyMap<string, SitemapMetadata>;
 
 export interface SitemapNewsArticleInput {
   readonly url: string;
-  readonly published_iso: string;
-  readonly updated_iso?: string;
+  readonly publishedIso: string;
+  readonly updatedIso?: string;
   readonly year: number;
   readonly month: number;
   readonly tags: readonly {
@@ -21,21 +22,21 @@ export interface SitemapNewsArticleInput {
 export interface SitemapStatusIncidentInput {
   readonly url: string;
   readonly service: string;
-  readonly started_iso: string;
-  readonly ended_iso?: string;
-  readonly has_page: boolean;
+  readonly startedIso: string;
+  readonly endedIso?: string;
+  readonly hasPage: boolean;
 }
 
 export interface SitemapSettlementInput {
   readonly slug: string;
   readonly sources: readonly {
-    readonly date_checked: string;
+    readonly dateChecked: string;
   }[];
 }
 
 export interface SitemapMetadataSourceData {
-  readonly news_articles: readonly SitemapNewsArticleInput[];
-  readonly status_incidents: readonly SitemapStatusIncidentInput[];
+  readonly newsArticles: readonly SitemapNewsArticleInput[];
+  readonly statusIncidents: readonly SitemapStatusIncidentInput[];
   readonly settlements: readonly SitemapSettlementInput[];
 }
 
@@ -126,7 +127,7 @@ const setMetadata = (
 };
 
 const articleLastmod = (article: SitemapNewsArticleInput): string =>
-  article.updated_iso ?? article.published_iso;
+  article.updatedIso ?? article.publishedIso;
 
 const addNewsMetadata = (
   index: Map<string, SitemapMetadata>,
@@ -160,7 +161,7 @@ const addNewsMetadata = (
 };
 
 const incidentLastmod = (incident: SitemapStatusIncidentInput): string =>
-  incident.ended_iso ?? incident.started_iso;
+  incident.endedIso ?? incident.startedIso;
 
 const addStatusMetadata = (
   index: Map<string, SitemapMetadata>,
@@ -174,10 +175,10 @@ const addStatusMetadata = (
     setMetadata(index, '/status/', hourly);
     setMetadata(index, `/status/${incident.service}/`, hourly);
 
-    if (incident.has_page) {
+    if (incident.hasPage) {
       setMetadata(index, incident.url, {
         lastmod,
-        changefreq: incident.ended_iso ? CHANGEFREQ.yearly : CHANGEFREQ.hourly,
+        changefreq: incident.endedIso ? CHANGEFREQ.yearly : CHANGEFREQ.hourly,
       });
     }
   }
@@ -197,7 +198,7 @@ const addCompareMetadata = (
 
   for (const settlement of settlements) {
     const lastmod = maxLastmod(
-      settlement.sources.map((source) => source.date_checked),
+      settlement.sources.map((source) => source.dateChecked),
     );
 
     if (!lastmod) {
@@ -216,11 +217,11 @@ export const buildSitemapMetadataIndex = (
 ): SitemapMetadataIndex => {
   const index = new Map<string, SitemapMetadata>();
 
-  addNewsMetadata(index, data.news_articles);
-  addStatusMetadata(index, data.status_incidents);
+  addNewsMetadata(index, data.newsArticles);
+  addStatusMetadata(index, data.statusIncidents);
   addCompareMetadata(index, data.settlements);
 
-  return new Map([...index.entries()].sort(([a], [b]) => a.localeCompare(b)));
+  return new Map([...index.entries()].sort(([a], [b]) => compareRuText(a, b)));
 };
 
 export const applySitemapMetadata = (

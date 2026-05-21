@@ -1,23 +1,23 @@
 import { describe, it, expect } from 'vitest';
 import { render, fireEvent } from '@testing-library/svelte';
 import ServiceTable from './ServiceTable.svelte';
-import type { ServiceModel } from '../lib/schema';
+import type { ServiceModel } from '../lib/settlement/types';
 
 describe('ServiceTable', () => {
   const mockServices: ServiceModel = {
-    garbage_collection: 'yes',
-    snow_removal: 'partial',
-    road_cleaning: 'yes',
+    garbageCollection: 'yes',
+    snowRemoval: 'partial',
+    roadCleaning: 'yes',
     landscaping: 'yes',
-    emergency_service: 'no',
+    emergencyService: 'no',
   };
 
   const mockShelkovoServices: ServiceModel = {
-    garbage_collection: 'yes',
-    snow_removal: 'yes',
-    road_cleaning: 'yes',
+    garbageCollection: 'yes',
+    snowRemoval: 'yes',
+    roadCleaning: 'yes',
     landscaping: 'yes',
-    emergency_service: 'yes',
+    emergencyService: 'yes',
     dispatcher: 'yes',
   };
 
@@ -28,7 +28,7 @@ describe('ServiceTable', () => {
       },
     });
 
-    // Check Russian labels are displayed
+    // Проверяем, что русские подписи отображаются.
     expect(getByText('Вывоз мусора')).toBeTruthy();
     expect(getByText('Уборка снега')).toBeTruthy();
     expect(getByText('Уборка дорог')).toBeTruthy();
@@ -45,10 +45,10 @@ describe('ServiceTable', () => {
       },
     });
 
-    // Should have comparison column header
+    // Должен быть заголовок колонки сравнения.
     expect(getByText('Шелково')).toBeTruthy();
 
-    // Should have comparison column
+    // Должна быть колонка сравнения.
     const comparisonCells = container.querySelectorAll(
       '[data-testid="shelkovo-service-status"]',
     );
@@ -62,10 +62,10 @@ describe('ServiceTable', () => {
       },
     });
 
-    // Should not have comparison column header
+    // Заголовка колонки сравнения быть не должно.
     expect(queryByText('Шелково')).toBeNull();
 
-    // Should not have comparison cells
+    // Ячеек сравнения быть не должно.
     const comparisonCells = container.querySelectorAll(
       '[data-testid="shelkovo-service-status"]',
     );

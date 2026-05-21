@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import type { PersonProfile } from './schema';
+import type { PersonProfile } from './types';
 import type {
   peoplePublicSurfaceSlice as peoplePublicSurfaceSliceType,
   PublicSurfaceSlice,
@@ -23,7 +23,7 @@ const profile = (): PersonProfile => ({
   company: 'ОК "Комфорт"',
   position: 'Исполняющий обязанности директора по эксплуатации',
   url: '/people/kschemelinin/',
-  markdown_url: '/people/kschemelinin/index.md',
+  markdownUrl: '/people/kschemelinin/index.md',
   canonical: 'https://example.com/people/kschemelinin/',
   contacts: [
     {
@@ -39,8 +39,8 @@ const profile = (): PersonProfile => ({
       type: 'person',
       slug: 'apetrov',
       label: 'Андрей Петров',
-      html_url: '/people/apetrov/',
-      markdown_url: '/people/apetrov/index.md',
+      htmlUrl: '/people/apetrov/',
+      markdownUrl: '/people/apetrov/index.md',
     },
   ],
   backlinks: {
@@ -48,26 +48,26 @@ const profile = (): PersonProfile => ({
       {
         section: 'news',
         kind: 'article',
-        source_id: '2026/05/power-outage',
+        sourceId: '2026/05/power-outage',
         title: 'Повреждение линии 10 кВ',
-        html_url: '/news/2026/05/power-outage/',
-        markdown_url: '/news/2026/05/power-outage/index.md',
+        htmlUrl: '/news/2026/05/power-outage/',
+        markdownUrl: '/news/2026/05/power-outage/index.md',
         excerpt: 'Разбор причин аварии.',
-        mentioned_at: '2026-05-03T08:00:00.000+03:00',
+        mentionedAt: '2026-05-03T08:00:00.000+03:00',
       },
     ],
     status: [
       {
         section: 'status',
         kind: 'incident',
-        source_id: '2026/04/electricity-river-10kv-line-damage',
+        sourceId: '2026/04/electricity-river-10kv-line-damage',
         title: 'Отключение электричества в Шелково Ривер',
-        html_url:
+        htmlUrl:
           '/status/incidents/2026/04/electricity-river-10kv-line-damage/',
-        markdown_url:
+        markdownUrl:
           '/status/incidents/2026/04/electricity-river-10kv-line-damage/index.md',
         excerpt: 'Как отметил Кирилл Щемелинин, повреждение было редким.',
-        mentioned_at: '2026-04-22T11:30:00.000+03:00',
+        mentionedAt: '2026-04-22T11:30:00.000+03:00',
       },
     ],
     people: [],

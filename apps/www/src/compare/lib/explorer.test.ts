@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { toExplorer } from './explorer';
+import { toExplorer, toExplorerPayload } from './explorer';
 import type { Rating } from './rating';
-import type { Settlement } from './schema';
+import { mapRawSettlement } from './settlement/mapper';
+import type { RawSettlement } from './settlement/schema';
 
-const settlement: Settlement = {
+const settlement = mapRawSettlement({
   name: 'КП Тестовый',
   short_name: 'Тестовый',
   slug: 'test',
@@ -42,7 +43,7 @@ const settlement: Settlement = {
       comment: 'ok',
     },
   ],
-};
+} satisfies RawSettlement);
 
 const ratings = new Map<string, Rating>([
   [
@@ -61,20 +62,20 @@ describe('toExplorer', () => {
 
     expect(item).toEqual({
       name: 'КП Тестовый',
-      short_name: 'Тестовый',
+      shortName: 'Тестовый',
       slug: 'test',
       rating: 72.4,
       rabstvo: true,
-      management_company: { title: 'УК Тест' },
-      is_baseline: false,
+      managementCompany: { title: 'УК Тест' },
+      isBaseline: false,
       location: {
         lat: 55.8,
         lng: 37.1,
         district: 'Истринский район',
       },
       tariff: {
-        normalized_per_sotka_month: 120,
-        normalized_is_estimate: true,
+        normalizedPerSotkaMonth: 120,
+        normalizedIsEstimate: true,
       },
     });
 
@@ -86,9 +87,49 @@ describe('toExplorer', () => {
     expect('unit' in item.tariff).toBe(false);
     expect('period' in item.tariff).toBe(false);
     expect('note' in item.tariff).toBe(false);
-    expect('url' in (item.management_company as { title: string })).toBe(false);
+    expect('url' in (item.managementCompany as { title: string })).toBe(false);
     expect(JSON.stringify([item]).length).toBeLessThan(
       JSON.stringify([settlement]).length,
     );
+  });
+
+  it('builds the explorer public payload through explicit DTO adapters', () => {
+    const payload = toExplorerPayload({
+      settlements: [settlement],
+      ratings,
+      stats: {
+        shelkovoTariff: 100,
+        medianTariff: 110,
+        peerMedianTariff: 120,
+        meanTariff: 115,
+        minTariff: 100,
+        maxTariff: 130,
+        shelkovoRank: 1,
+        totalSettlements: 1,
+        cheaperCount: 0,
+        moreExpensiveCount: 1,
+        shelkovoVsMedianPercent: -9.1,
+        shelkovoVsPeerMedianPercent: -16.7,
+        shelkovoVsMeanPercent: -13,
+      },
+      comparisons: new Map([
+        [
+          'test',
+          {
+            tariffDelta: 20,
+            tariffDeltaPercent: 20,
+            isCheaper: false,
+          },
+        ],
+      ]),
+    });
+
+    expect(payload.settlements[0]?.tariff.normalizedPerSotkaMonth).toBe(120);
+    expect(payload.stats.totalSettlements).toBe(1);
+    expect(payload.comparisons.test).toEqual({
+      tariffDelta: 20,
+      tariffDeltaPercent: 20,
+      isCheaper: false,
+    });
   });
 });

@@ -7,9 +7,9 @@ vi.mock('./data', () => ({
       ['white-park', { score: 84 }],
     ]),
     settlements: [
-      { is_baseline: true, short_name: 'Шелково', slug: 'shelkovo' },
-      { is_baseline: false, short_name: 'Гринвуд', slug: 'greenwood' },
-      { is_baseline: false, short_name: 'Белый парк', slug: 'white-park' },
+      { isBaseline: true, shortName: 'Шелково', slug: 'shelkovo' },
+      { isBaseline: false, shortName: 'Гринвуд', slug: 'greenwood' },
+      { isBaseline: false, shortName: 'Белый парк', slug: 'white-park' },
     ],
     stats: { totalSettlements: 3 },
   }),

@@ -1,33 +1,25 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/svelte';
 import SettlementCard from './SettlementCard.svelte';
-import type { Settlement, ComparisonResult } from '../lib/schema';
+import type { ExplorerSettlement } from '../lib/explorer';
+import type { ComparisonResult } from '../lib/settlement/types';
 
-const mockSettlement: Settlement = {
+const mockSettlement: ExplorerSettlement = {
   name: 'Тестовый поселок',
-  short_name: 'Тестово',
+  shortName: 'Тестово',
   slug: 'testovo',
-  website: 'https://testovo.ru',
-  management_company: 'УК Тестово',
-  is_baseline: false,
+  managementCompany: 'УК Тестово',
+  isBaseline: false,
+  rating: 64,
   location: {
-    address_text: 'МО, Тестовский р-н',
     lat: 55.5,
     lng: 37.5,
     district: 'Тестовский район',
   },
   tariff: {
-    value: 100,
-    unit: 'rub_per_sotka',
-    period: 'month',
-    normalized_per_sotka_month: 100,
-    normalized_is_estimate: false,
-    note: '',
+    normalizedPerSotkaMonth: 100,
+    normalizedIsEstimate: false,
   },
-  infrastructure: {},
-  common_spaces: {},
-  service_model: {},
-  sources: [],
 };
 
 const mockComparisonCheaper: ComparisonResult = {
@@ -112,11 +104,8 @@ describe('SettlementCard', () => {
     const settlement = {
       ...mockSettlement,
       tariff: {
-        value: 12000,
-        unit: 'rub_per_lot' as const,
-        period: 'month' as const,
-        normalized_per_sotka_month: 1200,
-        normalized_is_estimate: true,
+        normalizedPerSotkaMonth: 1200,
+        normalizedIsEstimate: true,
       },
     };
 
@@ -173,7 +162,7 @@ describe('SettlementCard', () => {
   });
 
   it('renders "базовый тариф" for baseline settlement', () => {
-    const baselineSettlement = { ...mockSettlement, is_baseline: true };
+    const baselineSettlement = { ...mockSettlement, isBaseline: true };
     const { container } = render(SettlementCard, {
       props: {
         settlement: baselineSettlement,
@@ -254,11 +243,11 @@ describe('SettlementCard', () => {
       },
     });
 
-    // Should still render without errors
+    // Должна рендериться без ошибок.
     expect(
       container.querySelector('[data-testid="settlement-card"]'),
     ).toBeTruthy();
-    // Should render tariff but no comparison text
+    // Должен рендериться тариф, но не текст сравнения.
     expect(container.textContent).toContain('100 ₽/сотка');
     expect(container.textContent).not.toContain('дешевле на');
     expect(container.textContent).not.toContain('дороже на');

@@ -1,5 +1,8 @@
 <script lang="ts">
-  import type { ServiceModel, AvailabilityStatus } from '../lib/schema';
+  import type {
+    ServiceModel,
+    AvailabilityStatus,
+  } from '../lib/settlement/types';
 
   interface Props {
     title?: string;
@@ -10,31 +13,33 @@
   let { title = '', services, shelkovoServices }: Props = $props();
   let only = $state(false);
 
-  // Service item labels in Russian
-  const labels: Record<string, string> = {
-    garbage_collection: 'Вывоз мусора',
-    snow_removal: 'Уборка снега',
-    road_cleaning: 'Уборка дорог',
+  type ServiceKey = keyof ServiceModel;
+
+  // Русские подписи услуг.
+  const labels: Record<ServiceKey, string> = {
+    garbageCollection: 'Вывоз мусора',
+    snowRemoval: 'Уборка снега',
+    roadCleaning: 'Уборка дорог',
     landscaping: 'Благоустройство',
-    emergency_service: 'Аварийная служба',
+    emergencyService: 'Аварийная служба',
     dispatcher: 'Диспетчерская служба',
   };
 
-  // Status icons
+  // Иконки статусов.
   const icons: Record<AvailabilityStatus, string> = {
     yes: '✓',
     no: '✗',
     partial: '◐',
   };
 
-  // Status colors for badges
+  // Цвета бейджей статусов.
   const tones: Record<AvailabilityStatus, string> = {
     yes: 'ui-badge-success',
     no: 'ui-badge-danger',
     partial: 'ui-badge-warning',
   };
 
-  // Get status text
+  // Текст статуса.
   const statusText: Record<AvailabilityStatus, string> = {
     yes: 'Есть',
     no: 'Нет',
@@ -47,7 +52,7 @@
     tone: 'ui-badge-muted',
   };
 
-  function getDisplay(value: AvailabilityStatus | undefined): {
+  function getDisplay(value?: AvailabilityStatus): {
     icon: string;
     text: string;
     tone: string;
@@ -63,24 +68,21 @@
 
   type Display = { icon: string; text: string; tone: string };
 
-  // Check if there's a difference between settlement and Shelkovo
-  function hasDifference(key: string): boolean {
+  // Проверяем отличие поселка от Шелково.
+  function hasDifference(key: ServiceKey): boolean {
     if (!shelkovoServices) return false;
-    return (
-      services[key as keyof ServiceModel] !==
-      shelkovoServices[key as keyof ServiceModel]
-    );
+    return services[key] !== shelkovoServices[key];
   }
 
-  // Order of service items for display
+  // Порядок отображения услуг.
   const serviceOrder = [
-    'garbage_collection',
-    'snow_removal',
-    'road_cleaning',
+    'garbageCollection',
+    'snowRemoval',
+    'roadCleaning',
     'landscaping',
-    'emergency_service',
+    'emergencyService',
     'dispatcher',
-  ];
+  ] as const satisfies readonly ServiceKey[];
 
   const rows = $derived(
     only && shelkovoServices
@@ -133,7 +135,7 @@
     </span>
   {/snippet}
 
-  <!-- Keyboard focus is intentional so arrow keys can scroll the table. -->
+  <!-- Фокус нужен, чтобы стрелками прокручивать таблицу. -->
   <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
   <div
     class="ui-sticky-table-shell ui-sticky-table-surface"
@@ -165,16 +167,15 @@
           </tr>
         {:else}
           {#each rows as key (key)}
-            {@const value = services[key as keyof ServiceModel]}
-            {@const shelkovoValue =
-              shelkovoServices?.[key as keyof ServiceModel]}
+            {@const value = services[key]}
+            {@const shelkovoValue = shelkovoServices?.[key]}
             {@const display = getDisplay(value)}
             {@const shelkovoDisplay = shelkovoServices
               ? getDisplay(shelkovoValue)
               : undefined}
             <tr data-testid="service-row" class="ui-table-row">
               <td class="ui-table-cell text-sm text-foreground">
-                {labels[key] || key}
+                {labels[key]}
               </td>
               <td class="ui-table-cell ui-table-cell-center">
                 {@render badge(display, 'service-status')}

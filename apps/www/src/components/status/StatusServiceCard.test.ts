@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 // @ts-expect-error Astro component modules are resolved by Astro/Vitest at test time.
 import StatusServiceCard from './StatusServiceCard.astro';
-import type { StatusIncident, StatusServiceSummary } from '@/lib/status/schema';
+import type { StatusIncident, StatusServiceSummary } from '@/lib/status/types';
 
 const incident = (): StatusIncident => ({
   id: 'overview-tooltip',
@@ -17,30 +17,34 @@ const incident = (): StatusIncident => ({
   slug: 'overview-tooltip',
   url: '/status/incidents/overview-tooltip',
   canonical: 'https://kpshelkovo.online/status/incidents/overview-tooltip/',
-  started_at: new Date('2026-05-09T00:00:00Z'),
-  started_iso: '2026-05-09T00:00:00Z',
-  started_has_time: true,
-  ended_at: new Date('2026-05-09T01:00:00Z'),
-  ended_iso: '2026-05-09T01:00:00Z',
-  ended_has_time: true,
-  is_active: false,
-  applies_to_all_areas: true,
+  started: {
+    at: new Date('2026-05-09T00:00:00Z'),
+    iso: '2026-05-09T00:00:00Z',
+    hasTime: true,
+  },
+  ended: {
+    at: new Date('2026-05-09T01:00:00Z'),
+    iso: '2026-05-09T01:00:00Z',
+    hasTime: true,
+  },
+  isActive: false,
+  appliesToAllAreas: true,
   areas: [],
-  has_page: true,
+  hasPage: true,
   body: '',
   mentions: [],
-  sort_started_at: Date.parse('2026-05-09T00:00:00Z'),
-  sort_last_change_at: Date.parse('2026-05-09T01:00:00Z'),
-  duration: { total_minutes: 60 },
+  sortStartedAt: Date.parse('2026-05-09T00:00:00Z'),
+  sortLastChangeAt: Date.parse('2026-05-09T01:00:00Z'),
+  duration: { totalMinutes: 60 },
 });
 
 const summary = (): StatusServiceSummary => ({
   service: 'water',
-  service_status: 'green',
+  serviceStatus: 'green',
   incidents: [incident()],
-  active_incidents: [],
-  active_maintenance: [],
-  days_without_incidents: { mode: 'count', days: 1 },
+  activeIncidents: [],
+  activeMaintenance: [],
+  daysWithoutIncidents: { mode: 'count', days: 1 },
 });
 
 describe('StatusServiceCard', () => {

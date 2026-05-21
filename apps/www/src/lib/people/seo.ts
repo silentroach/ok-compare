@@ -1,7 +1,7 @@
 import type { SchemaDoc } from '@shelkovo/seo';
 
 import { absoluteUrl } from '../site';
-import type { PersonContact } from './schema';
+import type { PersonContact } from './types';
 
 const CONTEXT = 'https://schema.org';
 const LANG = 'ru-RU';

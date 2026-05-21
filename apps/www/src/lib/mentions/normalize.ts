@@ -99,7 +99,7 @@ const mentionLabel = (
     return target.label;
   }
 
-  const label = target.label_cases?.[labelCase];
+  const label = target.labelCases?.[labelCase];
 
   return (
     label ??
@@ -115,11 +115,11 @@ const mentionLink = (
   labelCase: EntityMentionLabelCase,
   context: string,
 ): string => {
-  const titlePart = target.link_title
-    ? ` "${escapeLinkTitle(target.link_title)}"`
+  const titlePart = target.linkTitle
+    ? ` "${escapeLinkTitle(target.linkTitle)}"`
     : '';
 
-  return `[${escapeLinkText(mentionLabel(target, labelCase, context))}](${target.html_url}${titlePart})`;
+  return `[${escapeLinkText(mentionLabel(target, labelCase, context))}](${target.htmlUrl}${titlePart})`;
 };
 
 const absoluteOffsets = (
@@ -336,7 +336,7 @@ function collectLabelledMentionReplacements(
     return [
       {
         ...linkDestinationOffsets(markdown, node, context),
-        markdown: target.html_url,
+        markdown: target.htmlUrl,
         target,
       },
     ];
@@ -366,12 +366,12 @@ const mentionCase = (
   slugEnd: number,
   context: string,
 ): {
-  readonly label_case: EntityMentionLabelCase;
+  readonly labelCase: EntityMentionLabelCase;
   readonly end: number;
 } => {
   if (segment[slugEnd] !== ':' || !CASE_CHAR.test(segment[slugEnd + 1] ?? '')) {
     return {
-      label_case: ENTITY_MENTION_DEFAULT_LABEL_CASE,
+      labelCase: ENTITY_MENTION_DEFAULT_LABEL_CASE,
       end: slugEnd,
     };
   }
@@ -386,7 +386,7 @@ const mentionCase = (
 
   if (isEntityMentionLabelCase(labelCase)) {
     return {
-      label_case: labelCase,
+      labelCase,
       end,
     };
   }
@@ -459,7 +459,7 @@ function mentionReplacements(
     replacements.push({
       start: absoluteStart + index,
       end: absoluteStart + labelCase.end,
-      markdown: mentionLink(target, labelCase.label_case, context),
+      markdown: mentionLink(target, labelCase.labelCase, context),
       target,
     });
 
@@ -489,7 +489,7 @@ export const normalizeEntityMentions = (input: {
   readonly markdown: string;
   readonly context: string;
   readonly registry: SiteMentionRegistry;
-  readonly source_entity?: EntityMentionSourceEntity;
+  readonly sourceEntity?: EntityMentionSourceEntity;
 }): NormalizedEntityMentions => {
   if (!input.markdown.includes('@')) {
     return {
@@ -530,7 +530,7 @@ export const normalizeEntityMentions = (input: {
   for (const replacement of replacements) {
     validateNotSelfMention(
       replacement.target,
-      input.source_entity,
+      input.sourceEntity,
       input.context,
     );
 

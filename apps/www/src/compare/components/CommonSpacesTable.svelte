@@ -1,5 +1,8 @@
 <script lang="ts">
-  import type { CommonSpaces, AvailabilityStatus } from '../lib/schema';
+  import type {
+    CommonSpaces,
+    AvailabilityStatus,
+  } from '../lib/settlement/types';
 
   interface Props {
     title?: string;
@@ -10,21 +13,23 @@
   let { title = '', spaces, shelkovoSpaces }: Props = $props();
   let only = $state(false);
 
-  const labels: Record<string, string> = {
-    club_infrastructure: 'Клубная инфраструктура',
+  type CommonSpaceKey = keyof CommonSpaces;
+
+  const labels: Record<CommonSpaceKey, string> = {
+    clubInfrastructure: 'Клубная инфраструктура',
     playgrounds: 'Детские площадки',
     sports: 'Спортивные площадки',
     pool: 'Бассейн',
-    fitness_club: 'Фитнес-клуб',
+    fitnessClub: 'Фитнес-клуб',
     restaurant: 'Ресторан',
-    spa_center: 'Спа-центр',
-    walking_routes: 'Маршруты для прогулок',
-    water_access: 'Выход к воде',
-    beach_zones: 'Пляжные зоны',
-    kids_club: 'Детский клуб',
-    sports_camp: 'Спортивный лагерь',
-    primary_school: 'Начальная школа',
-    bbq_zones: 'Зоны барбекю',
+    spaCenter: 'Спа-центр',
+    walkingRoutes: 'Маршруты для прогулок',
+    waterAccess: 'Выход к воде',
+    beachZones: 'Пляжные зоны',
+    kidsClub: 'Детский клуб',
+    sportsCamp: 'Спортивный лагерь',
+    primarySchool: 'Начальная школа',
+    bbqZones: 'Зоны барбекю',
   };
 
   const icons: Record<AvailabilityStatus, string> = {
@@ -51,7 +56,7 @@
     tone: 'ui-badge-muted',
   };
 
-  function getDisplay(value: AvailabilityStatus | undefined): {
+  function getDisplay(value?: AvailabilityStatus): {
     icon: string;
     text: string;
     tone: string;
@@ -67,31 +72,28 @@
 
   type Display = { icon: string; text: string; tone: string };
 
-  function hasDifference(key: string): boolean {
+  function hasDifference(key: CommonSpaceKey): boolean {
     if (!shelkovoSpaces) return false;
-    return (
-      spaces[key as keyof CommonSpaces] !==
-      shelkovoSpaces[key as keyof CommonSpaces]
-    );
+    return spaces[key] !== shelkovoSpaces[key];
   }
 
-  // Keep this first: it summarizes access to many items listed below.
+  // Держим первым: это краткая сводка доступа ко многим пунктам ниже.
   const order = [
-    'club_infrastructure',
+    'clubInfrastructure',
     'playgrounds',
     'sports',
     'pool',
-    'fitness_club',
+    'fitnessClub',
     'restaurant',
-    'spa_center',
-    'walking_routes',
-    'water_access',
-    'beach_zones',
-    'kids_club',
-    'sports_camp',
-    'primary_school',
-    'bbq_zones',
-  ];
+    'spaCenter',
+    'walkingRoutes',
+    'waterAccess',
+    'beachZones',
+    'kidsClub',
+    'sportsCamp',
+    'primarySchool',
+    'bbqZones',
+  ] as const satisfies readonly CommonSpaceKey[];
 
   const rows = $derived(
     only && shelkovoSpaces ? order.filter((key) => hasDifference(key)) : order,
@@ -142,7 +144,7 @@
     </span>
   {/snippet}
 
-  <!-- Keyboard focus is intentional so arrow keys can scroll the table. -->
+  <!-- Фокус нужен, чтобы стрелками прокручивать таблицу. -->
   <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
   <div
     class="ui-sticky-table-shell ui-sticky-table-surface"
@@ -174,15 +176,15 @@
           </tr>
         {:else}
           {#each rows as key (key)}
-            {@const value = spaces[key as keyof CommonSpaces]}
-            {@const shelkovoValue = shelkovoSpaces?.[key as keyof CommonSpaces]}
+            {@const value = spaces[key]}
+            {@const shelkovoValue = shelkovoSpaces?.[key]}
             {@const display = getDisplay(value)}
             {@const shelkovoDisplay = shelkovoSpaces
               ? getDisplay(shelkovoValue)
               : undefined}
             <tr data-testid="space-row" class="ui-table-row">
               <td class="ui-table-cell text-sm text-foreground">
-                {labels[key] || key}
+                {labels[key]}
               </td>
               <td class="ui-table-cell ui-table-cell-center">
                 {@render badge(display, 'space-status')}

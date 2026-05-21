@@ -62,7 +62,7 @@ describe('ComparisonBadge', () => {
 
     expect(container.textContent).toContain('Наш');
 
-    // Baseline badge should render (wrapper has data-testid)
+    // Бейдж базового поселка должен рендериться: у обертки есть data-testid.
     const badge = container.querySelector('[data-testid="comparison-badge"]');
     expect(badge).toBeTruthy();
   });
@@ -77,7 +77,7 @@ describe('ComparisonBadge', () => {
       },
     });
 
-    // Svelte renders <!----> when conditional is false
+    // При ложном условии Svelte рендерит <!---->.
     const badge = container.querySelector('[data-testid="comparison-badge"]');
     expect(badge).toBeFalsy();
   });

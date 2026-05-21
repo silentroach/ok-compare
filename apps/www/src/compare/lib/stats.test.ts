@@ -6,7 +6,11 @@ import {
   rankSettlements,
 } from './stats';
 import type { Rating } from './rating';
-import type { Settlement } from './schema';
+import { mapRawSettlement } from './settlement/mapper';
+import type { RawSettlement } from './settlement/schema';
+import type { Settlement } from './settlement/types';
+
+const toDomain = (item: RawSettlement): Settlement => mapRawSettlement(item);
 
 describe('Stats Module', () => {
   describe('calculateMedian', () => {
@@ -44,7 +48,7 @@ describe('Stats Module', () => {
 
   describe('rankSettlements', () => {
     it('should share ranks for equal tariffs', () => {
-      const settlements: Settlement[] = [
+      const settlements = [
         {
           name: 'Gamma',
           short_name: 'Гамма',
@@ -141,7 +145,7 @@ describe('Stats Module', () => {
             },
           ],
         },
-      ];
+      ].map((item) => toDomain(item as RawSettlement));
 
       const ranks = rankSettlements(settlements);
 
@@ -153,12 +157,12 @@ describe('Stats Module', () => {
 
   describe('calculatePercentile', () => {
     it('should calculate positive percentile when value is higher', () => {
-      // Shelkovo 120, median 80 → +50%
+      // Шелково 120, медиана 80 → +50%.
       expect(calculatePercentile(120, 80)).toBe(50);
     });
 
     it('should calculate negative percentile when value is lower', () => {
-      // Shelkovo 120, median 150 → -20%
+      // Шелково 120, медиана 150 → -20%.
       expect(calculatePercentile(120, 150)).toBe(-20);
     });
 
@@ -167,13 +171,13 @@ describe('Stats Module', () => {
     });
 
     it('should handle decimal percentages', () => {
-      // Shelkovo 100, median 66.67 → +50%
+      // Шелково 100, медиана 66.67 → +50%.
       expect(calculatePercentile(100, 66.666666)).toBeCloseTo(50, 1);
     });
   });
 
   describe('computeStats', () => {
-    const mockSettlements: Settlement[] = [
+    const mockSettlements = [
       {
         name: 'Shelkovo',
         short_name: 'Shelkovo',
@@ -387,7 +391,7 @@ describe('Stats Module', () => {
           },
         ],
       },
-    ];
+    ].map((item) => toDomain(item as RawSettlement));
 
     const ratings = new Map<string, Rating>([
       ['shelkovo', { score: 62.6, km: 0, ring: 0 }],
@@ -399,15 +403,15 @@ describe('Stats Module', () => {
       const stats = computeStats(mockSettlements, ratings);
 
       expect(stats.shelkovoTariff).toBe(4500);
-      expect(stats.medianTariff).toBe(4500); // Middle value of [3500, 4500, 5500]
+      expect(stats.medianTariff).toBe(4500); // Среднее значение из [3500, 4500, 5500].
       expect(stats.peerMedianTariff).toBe(4500);
       expect(stats.meanTariff).toBe(4500); // (3500 + 4500 + 5500) / 3
       expect(stats.minTariff).toBe(3500);
       expect(stats.maxTariff).toBe(5500);
       expect(stats.shelkovoRank).toBe(2); // 2nd cheapest out of 3
       expect(stats.totalSettlements).toBe(3);
-      expect(stats.cheaperCount).toBe(1); // Lesnoe is cheaper
-      expect(stats.moreExpensiveCount).toBe(1); // Usadby is more expensive
+      expect(stats.cheaperCount).toBe(1); // Лесное дешевле.
+      expect(stats.moreExpensiveCount).toBe(1); // Усадьбы дороже.
       expect(stats.shelkovoVsMedianPercent).toBe(0); // 4500 vs 4500
       expect(stats.shelkovoVsPeerMedianPercent).toBe(0); // 4500 vs 4500
       expect(stats.shelkovoVsMeanPercent).toBe(0); // 4500 vs 4500
@@ -438,7 +442,7 @@ describe('Stats Module', () => {
     it('should throw error when no baseline settlement found', () => {
       const noBaselineSettlements = mockSettlements.map((s) => ({
         ...s,
-        is_baseline: false,
+        isBaseline: false,
       }));
       expect(() => computeStats(noBaselineSettlements, ratings)).toThrow(
         'Baseline settlement (Shelkovo) not found',
@@ -455,14 +459,14 @@ describe('Stats Module', () => {
       const list = Array.from({ length: 9 }, (_, i) => ({
         ...mockSettlements[1],
         name: `Поселок ${i + 1}`,
-        short_name: `Поселок ${i + 1}`,
+        shortName: `Поселок ${i + 1}`,
         slug: `row-${i + 1}`,
         website: `https://row-${i + 1}.ru`,
-        is_baseline: false,
+        isBaseline: false,
         tariff: {
           ...mockSettlements[1].tariff,
           value: 3000 + i * 100,
-          normalized_per_sotka_month: 3000 + i * 100,
+          normalizedPerSotkaMonth: 3000 + i * 100,
         },
       }));
       const settlements = [
@@ -474,7 +478,7 @@ describe('Stats Module', () => {
           tariff: {
             ...mockSettlements[0].tariff,
             value: 4500,
-            normalized_per_sotka_month: 4500,
+            normalizedPerSotkaMonth: 4500,
           },
         },
         list[3],

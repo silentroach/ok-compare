@@ -1,6 +1,6 @@
 ---
 import StarIcon from '@shelkovo/ui/icons/system/Star.astro';
-import type { NewsListArticle } from '../../lib/news/schema';
+import type { NewsListArticle } from '../../lib/news/types';
 import NewsMeta from './NewsMeta.astro';
 import NewsTagList from './NewsTagList.astro';
 
@@ -19,13 +19,13 @@ const { article, featured = false } = Astro.props;
   ]}
 >
   {
-    featured && article.cover_url && (
+    featured && article.cover && (
       <img
-        src={article.cover_url}
-        alt={article.cover_alt ?? article.title}
+        src={article.cover.url}
+        alt={article.cover.alt}
         loading="lazy"
-        width={article.cover_width}
-        height={article.cover_height}
+        width={article.cover.width}
+        height={article.cover.height}
         class="aspect-video w-full border-b border-border-strong object-cover"
       />
     )
@@ -54,7 +54,7 @@ const { article, featured = false } = Astro.props;
       </h3>
 
       <NewsMeta
-        publishedIso={article.published_iso}
+        publishedIso={article.publishedIso}
         author={article.author}
         fullAuthorName
       />

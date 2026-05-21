@@ -13,7 +13,7 @@ const fixtures = vi.hoisted(() => ({
     profiles: [
       {
         canonical: 'https://example.com/people/kschemelinin/',
-        markdown_url: '/people/kschemelinin/index.md',
+        markdownUrl: '/people/kschemelinin/index.md',
       },
     ],
   },

@@ -55,7 +55,7 @@ function buildTimestamp(input: {
     at: zoned.toJSDate(),
     iso,
     has_time: input.has_time,
-    ...(input.has_time ? { time: timeLabel(input.hour, input.minute) } : {}),
+    time: input.has_time ? timeLabel(input.hour, input.minute) : undefined,
   };
 }
 

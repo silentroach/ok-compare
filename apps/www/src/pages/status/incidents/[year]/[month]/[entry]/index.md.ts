@@ -13,7 +13,7 @@ export const getStaticPaths = (async () => {
   const incidents = await loadStatusIncidents();
 
   return incidents
-    .filter((item) => item.has_page)
+    .filter((item) => item.hasPage)
     .map((item) => ({
       params: {
         year: String(item.year),
@@ -34,7 +34,7 @@ export const GET: APIRoute = async ({ params }) => {
 
   const incident = await loadStatusIncident(`${year}/${month}/${entry}`);
 
-  if (!incident || !incident.has_page) {
+  if (!incident || !incident.hasPage) {
     throw new Error(`status incident "${year}/${month}/${entry}" not found`);
   }
 

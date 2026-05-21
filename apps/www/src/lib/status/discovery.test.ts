@@ -28,14 +28,14 @@ const entry = (input: EntryInput): StatusIncidentEntry => ({
     service: input.service,
     kind: input.kind,
     started_at: input.started_at,
-    ...(input.ended_at ? { ended_at: input.ended_at } : {}),
-    ...(input.areas ? { areas: [...input.areas] } : {}),
+    ended_at: input.ended_at,
+    areas: input.areas ? [...input.areas] : undefined,
     source_url: input.source_url ?? `https://example.com/${input.id}`,
   },
 });
 
 let buildStatusDataset: typeof import('./load').buildStatusDataset;
-let buildStatusPayload: typeof import('./discovery').buildStatusPayload;
+let buildStatusPublicPayload: typeof import('./public-dto').buildStatusPublicPayload;
 let catalog: typeof import('./discovery').catalog;
 let expectSectionCatalogMatchesRegistry: typeof expectSectionCatalogMatchesRegistryType;
 let statusSchema: typeof import('./discovery').schema;
@@ -49,11 +49,8 @@ beforeAll(async () => {
   });
 
   ({ buildStatusDataset } = await import('./load'));
-  ({
-    buildStatusPayload,
-    catalog,
-    schema: statusSchema,
-  } = await import('./discovery'));
+  ({ catalog, schema: statusSchema } = await import('./discovery'));
+  ({ buildStatusPublicPayload } = await import('./public-dto'));
   ({ expectSectionCatalogMatchesRegistry } =
     await import('@/lib/public-surface/catalog-contract.test-helper'));
   ({ statusPublicSurfaceSlice } = await import('@/lib/public-surface'));
@@ -69,8 +66,8 @@ describe('status API catalog', () => {
   });
 });
 
-describe('buildStatusPayload', () => {
-  it('omits incident detail URLs when no detail page is published', () => {
+describe('buildStatusPublicPayload', () => {
+  it('leaves incident detail URLs undefined when no detail page is published', () => {
     const data = buildStatusDataset(
       [
         entry({
@@ -94,7 +91,7 @@ describe('buildStatusPayload', () => {
       },
     );
 
-    const payload = buildStatusPayload(data);
+    const payload = buildStatusPublicPayload(data);
     const noPage = payload.incidents.find(
       (item) => item.id === '2026/05/water-no-page',
     );
@@ -104,8 +101,8 @@ describe('buildStatusPayload', () => {
     const water = payload.services.find((item) => item.service === 'water');
 
     expect(noPage).toBeDefined();
-    expect(noPage!).not.toHaveProperty('html_url');
-    expect(noPage!).not.toHaveProperty('markdown_url');
+    expect(noPage?.html_url).toBeUndefined();
+    expect(noPage?.markdown_url).toBeUndefined();
 
     expect(withPage).toMatchObject({
       html_url: 'https://example.com/status/incidents/2026/05/water-with-page/',
@@ -117,8 +114,8 @@ describe('buildStatusPayload', () => {
       id: '2026/05/water-no-page',
       title: 'Краткая запись без body',
     });
-    expect(water?.latest_incident).not.toHaveProperty('html_url');
-    expect(water?.latest_incident).not.toHaveProperty('markdown_url');
+    expect(water?.latest_incident?.html_url).toBeUndefined();
+    expect(water?.latest_incident?.markdown_url).toBeUndefined();
   });
 
   it('marks incident detail URLs as optional in the schema', () => {

@@ -1,9 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { compareSettlements, calculateTariffDelta } from './comparisons';
-import type { Settlement } from './schema';
+import { mapRawSettlement } from './settlement/mapper';
+import type { RawSettlement } from './settlement/schema';
 
 describe('Comparisons Module', () => {
-  const mockShelkovo: Settlement = {
+  const mockShelkovo = mapRawSettlement({
     name: 'Shelkovo',
     short_name: 'Shelkovo',
     slug: 'shelkovo',
@@ -73,11 +74,11 @@ describe('Comparisons Module', () => {
         comment: '',
       },
     ],
-  };
+  } satisfies RawSettlement);
 
   describe('calculateTariffDelta', () => {
     it('should calculate positive delta when other is cheaper', () => {
-      // Shelkovo 120, Other 80 -> +40 rub, +33%
+      // Шелково 120, другой поселок 80 -> +40 руб., +33%.
       const result = calculateTariffDelta(120, 80);
       expect(result.delta).toBe(40);
       expect(result.deltaPercent).toBe(33);
@@ -85,7 +86,7 @@ describe('Comparisons Module', () => {
     });
 
     it('should calculate negative delta when other is more expensive', () => {
-      // Shelkovo 120, Other 150 -> -30 rub, -25%
+      // Шелково 120, другой поселок 150 -> -30 руб., -25%.
       const result = calculateTariffDelta(120, 150);
       expect(result.delta).toBe(-30);
       expect(result.deltaPercent).toBe(-25);
@@ -102,18 +103,18 @@ describe('Comparisons Module', () => {
 
   describe('compareSettlements', () => {
     it('should return complete comparison result', () => {
-      const otherSettlement: Settlement = {
+      const otherSettlement = {
         ...mockShelkovo,
         slug: 'lesnoe',
-        short_name: 'Lesnoe',
+        shortName: 'Lesnoe',
         name: 'Lesnoe',
-        is_baseline: false,
+        isBaseline: false,
         tariff: {
           value: 80,
-          unit: 'rub_per_sotka',
-          period: 'month',
-          normalized_per_sotka_month: 80,
-          normalized_is_estimate: false,
+          unit: 'perSotka' as const,
+          period: 'month' as const,
+          normalizedPerSotkaMonth: 80,
+          normalizedIsEstimate: false,
           note: '',
         },
       };

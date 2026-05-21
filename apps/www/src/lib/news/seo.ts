@@ -1,6 +1,6 @@
 import type { SchemaDoc } from '@shelkovo/seo';
 import { absoluteUrl } from '../site';
-import type { NewsEvent } from './schema';
+import type { NewsEvent } from './types';
 
 const CONTEXT = 'https://schema.org';
 const LANG = 'ru-RU';
@@ -43,8 +43,8 @@ export interface NewsArticleEventInput extends Pick<
   | 'slug'
   | 'title'
   | 'description'
-  | 'starts_iso'
-  | 'ends_iso'
+  | 'startsIso'
+  | 'endsIso'
   | 'location'
   | 'coordinates'
   | 'organizer'
@@ -188,8 +188,8 @@ const newsEventSchema = (input: NewsArticleInput): readonly SchemaDoc[] => {
       inLanguage: LANG,
       eventStatus: 'https://schema.org/EventScheduled',
       eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-      startDate: event.starts_iso,
-      ...(event.ends_iso ? { endDate: event.ends_iso } : {}),
+      startDate: event.startsIso,
+      ...(event.endsIso ? { endDate: event.endsIso } : {}),
       ...(location ? { location } : {}),
       ...(event.organizer
         ? {

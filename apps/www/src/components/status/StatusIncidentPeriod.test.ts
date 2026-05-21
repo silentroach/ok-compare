@@ -16,12 +16,18 @@ describe('StatusIncidentPeriod', () => {
     const html = await container.renderToString(StatusIncidentPeriod, {
       props: {
         incident: {
-          is_active: false,
-          started_iso: `${currentYear}-05-01T07:32:00+03:00`,
-          started_has_time: true,
-          ended_iso: `${currentYear}-05-01T16:38:00+03:00`,
-          ended_has_time: true,
-          duration: { total_minutes: 9 * 60 + 6 },
+          isActive: false,
+          started: {
+            at: new Date(`${currentYear}-05-01T07:32:00+03:00`),
+            iso: `${currentYear}-05-01T07:32:00+03:00`,
+            hasTime: true,
+          },
+          ended: {
+            at: new Date(`${currentYear}-05-01T16:38:00+03:00`),
+            iso: `${currentYear}-05-01T16:38:00+03:00`,
+            hasTime: true,
+          },
+          duration: { totalMinutes: 9 * 60 + 6 },
         },
       },
     });

@@ -32,7 +32,7 @@ export const preprocessSiteMarkdown = (
     markdown,
     context: options.mentions.context,
     registry: options.mentions.registry,
-    source_entity: options.mentions.source_entity,
+    sourceEntity: options.mentions.sourceEntity,
   });
 };
 
@@ -49,7 +49,7 @@ export const preprocessSiteMarkdownContent = (
         mentions: {
           context,
           registry,
-          source_entity: sourceEntity,
+          sourceEntity,
         },
       })
     : {

@@ -3,119 +3,32 @@ import {
   statusApiCatalogPath,
   statusDataPath,
   statusFeedPath,
-  statusIncidentMarkdownUrl,
   statusLlmsFullPath,
   statusLlmsPath,
   statusMarkdownUrl,
   statusOpenApiPath,
   statusPath,
   statusSchemaPath,
-  statusServiceMarkdownUrl,
-  statusServiceUrl,
 } from './routes';
-import type {
-  StatusDataset,
-  StatusDaysWithoutIncidents,
-  StatusDuration,
-  StatusIncident,
-  StatusServiceSummary,
-} from './schema';
 import {
   STATUS_AREAS,
   STATUS_KINDS,
   STATUS_SERVICE_STATES,
   STATUS_SERVICES,
 } from './schema';
-import {
-  formatStatusDuration,
-  formatStatusDaysWithoutIncidents,
-  formatStatusKind,
-  formatStatusService,
-  formatStatusServiceState,
-  getStatusIncidentPhase,
-} from './view';
+export { buildStatusPublicPayload as buildStatusPayload } from './public-dto';
+export type {
+  StatusPublicDaysWithoutIncidentsDto as StatusDiscoveryDaysWithoutIncidents,
+  StatusPublicDurationDto as StatusDiscoveryDuration,
+  StatusPublicIncidentDto as StatusDiscoveryIncident,
+  StatusPublicIncidentPhase as StatusDiscoveryIncidentPhase,
+  StatusPublicIncidentRefDto as StatusDiscoveryIncidentRef,
+  StatusPublicPayloadDto as StatusDiscoveryPayload,
+  StatusPublicServiceSummaryDto as StatusDiscoveryServiceSummary,
+} from './public-dto';
 
 export const PROFILE = 'https://www.rfc-editor.org/info/rfc9727';
 export const OAS = 'application/vnd.oai.openapi+json';
-
-export type StatusDiscoveryIncidentPhase = 'active' | 'resolved' | 'scheduled';
-
-export interface StatusDiscoveryDuration {
-  readonly total_minutes: number;
-  readonly human: string;
-}
-
-export interface StatusDiscoveryDaysWithoutIncidents {
-  readonly mode: StatusDaysWithoutIncidents['mode'];
-  readonly label: string;
-  readonly days?: number;
-  readonly last_ended_iso?: string;
-}
-
-interface StatusDiscoveryIncidentLinks {
-  readonly html_url?: string;
-  readonly markdown_url?: string;
-}
-
-export interface StatusDiscoveryIncidentRef extends StatusDiscoveryIncidentLinks {
-  readonly id: string;
-  readonly title: string;
-  readonly phase: StatusDiscoveryIncidentPhase;
-  readonly phase_label: string;
-}
-
-export interface StatusDiscoveryIncident extends StatusDiscoveryIncidentLinks {
-  readonly id: string;
-  readonly title: string;
-  readonly service: StatusIncident['service'];
-  readonly service_label: string;
-  readonly kind: StatusIncident['kind'];
-  readonly kind_label: string;
-  readonly year: number;
-  readonly month: number;
-  readonly slug: string;
-  readonly started_at: string;
-  readonly started_has_time: boolean;
-  readonly ended_at?: string;
-  readonly ended_has_time: boolean;
-  readonly is_active: boolean;
-  readonly phase: StatusDiscoveryIncidentPhase;
-  readonly phase_label: string;
-  readonly applies_to_all_areas: boolean;
-  readonly areas: StatusIncident['areas'];
-  readonly source_url?: string;
-  readonly excerpt?: string;
-  readonly body_markdown: string;
-  readonly duration?: StatusDiscoveryDuration;
-}
-
-export interface StatusDiscoveryServiceSummary {
-  readonly service: StatusServiceSummary['service'];
-  readonly service_label: string;
-  readonly service_status: StatusServiceSummary['service_status'];
-  readonly service_status_label: string;
-  readonly html_url: string;
-  readonly markdown_url: string;
-  readonly incident_ids: readonly string[];
-  readonly active_incident_ids: readonly string[];
-  readonly active_maintenance_ids: readonly string[];
-  readonly days_without_incidents: StatusDiscoveryDaysWithoutIncidents;
-  readonly latest_incident?: StatusDiscoveryIncidentRef;
-}
-
-export interface StatusDiscoveryPayload {
-  readonly stats: {
-    readonly incident_count: number;
-    readonly active_count: number;
-    readonly active_incident_count: number;
-    readonly active_maintenance_count: number;
-    readonly service_count: number;
-    readonly updated_at?: string;
-  };
-  readonly active: readonly StatusDiscoveryIncident[];
-  readonly incidents: readonly StatusDiscoveryIncident[];
-  readonly services: readonly StatusDiscoveryServiceSummary[];
-}
 
 const STATUS_PAYLOAD_SCHEMA = 'StatusPayload';
 
@@ -198,125 +111,6 @@ function rewriteSchemaRefs(value: unknown, schemaRef: string): unknown {
     }),
   );
 }
-
-const phase = (
-  item: Pick<StatusIncident, 'is_active' | 'ended_iso'>,
-): StatusDiscoveryIncidentPhase =>
-  item.is_active ? 'active' : item.ended_iso ? 'resolved' : 'scheduled';
-
-const duration = (item: StatusDuration): StatusDiscoveryDuration => ({
-  total_minutes: item.total_minutes,
-  human: formatStatusDuration(item),
-});
-
-const incidentLinks = (item: StatusIncident): StatusDiscoveryIncidentLinks =>
-  item.has_page
-    ? {
-        html_url: item.canonical,
-        markdown_url: fullUrl(statusIncidentMarkdownUrl(item)),
-      }
-    : {};
-
-function incidentRef(item: StatusIncident): StatusDiscoveryIncidentRef {
-  const current = getStatusIncidentPhase(item);
-
-  return {
-    id: item.id,
-    title: item.title,
-    ...incidentLinks(item),
-    phase: phase(item),
-    phase_label: current.label,
-  };
-}
-
-function daysWithoutIncidents(
-  value: StatusDaysWithoutIncidents,
-): StatusDiscoveryDaysWithoutIncidents {
-  return {
-    mode: value.mode,
-    label: formatStatusDaysWithoutIncidents(value),
-    ...(value.days !== undefined ? { days: value.days } : {}),
-    ...(value.last_ended_iso ? { last_ended_iso: value.last_ended_iso } : {}),
-  };
-}
-
-function incident(item: StatusIncident): StatusDiscoveryIncident {
-  const current = getStatusIncidentPhase(item);
-
-  return {
-    id: item.id,
-    title: item.title,
-    service: item.service,
-    service_label: formatStatusService(item.service),
-    kind: item.kind,
-    kind_label: formatStatusKind(item.kind),
-    year: item.year,
-    month: item.month,
-    slug: item.slug,
-    ...incidentLinks(item),
-    started_at: item.started_iso,
-    started_has_time: item.started_has_time,
-    ...(item.ended_iso ? { ended_at: item.ended_iso } : {}),
-    ended_has_time: item.ended_has_time,
-    is_active: item.is_active,
-    phase: phase(item),
-    phase_label: current.label,
-    applies_to_all_areas: item.applies_to_all_areas,
-    areas: [...item.areas],
-    ...(item.source_url ? { source_url: fullUrl(item.source_url) } : {}),
-    ...(item.excerpt ? { excerpt: item.excerpt } : {}),
-    body_markdown: item.body,
-    ...(item.duration ? { duration: duration(item.duration) } : {}),
-  };
-}
-
-function summary(item: StatusServiceSummary): StatusDiscoveryServiceSummary {
-  const latest = item.incidents[0];
-
-  return {
-    service: item.service,
-    service_label: formatStatusService(item.service),
-    service_status: item.service_status,
-    service_status_label: formatStatusServiceState(item.service_status),
-    html_url: fullUrl(statusServiceUrl(item.service)),
-    markdown_url: fullUrl(statusServiceMarkdownUrl(item.service)),
-    incident_ids: item.incidents.map((entry) => entry.id),
-    active_incident_ids: item.active_incidents.map((entry) => entry.id),
-    active_maintenance_ids: item.active_maintenance.map((entry) => entry.id),
-    days_without_incidents: daysWithoutIncidents(item.days_without_incidents),
-    ...(latest ? { latest_incident: incidentRef(latest) } : {}),
-  };
-}
-
-const latestUpdate = (data: StatusDataset): string | undefined => {
-  const item = data.incidents[0];
-
-  if (!item) {
-    return undefined;
-  }
-
-  return item.ended_iso ?? item.started_iso;
-};
-
-export const buildStatusPayload = (
-  data: StatusDataset,
-): StatusDiscoveryPayload => ({
-  stats: {
-    incident_count: data.incidents.length,
-    active_count: data.active.length,
-    active_incident_count: data.active.filter(
-      (item) => item.kind === 'incident',
-    ).length,
-    active_maintenance_count: data.active.filter(
-      (item) => item.kind === 'maintenance',
-    ).length,
-    service_count: data.services.length,
-    ...(latestUpdate(data) ? { updated_at: latestUpdate(data) } : {}),
-  },
-  active: data.active.map(incident),
-  incidents: data.incidents.map(incident),
-  services: data.services.map(summary),
-});
 
 export function schema(root: string): Record<string, unknown> {
   return {

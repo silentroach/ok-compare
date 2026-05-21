@@ -1,0 +1,125 @@
+import { beforeAll, describe, expect, it } from 'vitest';
+
+import type { PersonProfile } from './types';
+
+let buildPeoplePublicPayload: typeof import('./public-dto').buildPeoplePublicPayload;
+
+beforeAll(async () => {
+  Object.assign(import.meta.env, {
+    SITE: 'https://example.com',
+    BASE_URL: '/',
+  });
+
+  ({ buildPeoplePublicPayload } = await import('./public-dto'));
+});
+
+const profile = (): PersonProfile => ({
+  id: 'kschemelinin',
+  slug: 'kschemelinin',
+  name: 'Кирилл Щемелинин',
+  nameCases: {
+    gen: 'Кирилла Щемелинина',
+  },
+  company: 'ОК "Комфорт"',
+  position: 'Исполняющий обязанности директора по эксплуатации',
+  url: '/people/kschemelinin/',
+  markdownUrl: '/people/kschemelinin/index.md',
+  canonical: 'https://example.com/people/kschemelinin/',
+  contacts: [
+    {
+      type: 'telegram',
+      value: '@Kirill_ZemlyaMO',
+      display: '@Kirill_ZemlyaMO',
+      href: 'https://t.me/Kirill_ZemlyaMO',
+    },
+  ],
+  body: 'Публичный профиль.',
+  mentions: [
+    {
+      type: 'person',
+      slug: 'apetrov',
+      label: 'Андрей Петров',
+      htmlUrl: '/people/apetrov/',
+      markdownUrl: '/people/apetrov/index.md',
+    },
+  ],
+  backlinks: {
+    news: [
+      {
+        section: 'news',
+        kind: 'article',
+        sourceId: '2026/05/power-outage',
+        title: 'Повреждение линии 10 кВ',
+        htmlUrl: '/news/2026/05/power-outage/',
+        markdownUrl: '/news/2026/05/power-outage/index.md',
+        mentionedAt: '2026-05-03T08:00:00.000+03:00',
+      },
+    ],
+    status: [],
+    people: [],
+  },
+});
+
+describe('people public DTO adapters', () => {
+  it('documents legacy snake_case names kept in the public people JSON contract', () => {
+    const payload = buildPeoplePublicPayload({ profiles: [profile()] });
+
+    expect(payload).toMatchInlineSnapshot(`
+      {
+        "profiles": [
+          {
+            "backlink_count": 1,
+            "backlinks": {
+              "news": [
+                {
+                  "html_url": "https://example.com/news/2026/05/power-outage/",
+                  "kind": "article",
+                  "markdown_url": "https://example.com/news/2026/05/power-outage/index.md",
+                  "mentioned_at": "2026-05-03T08:00:00.000+03:00",
+                  "section": "news",
+                  "source_id": "2026/05/power-outage",
+                  "title": "Повреждение линии 10 кВ",
+                },
+              ],
+              "people": [],
+              "status": [],
+            },
+            "body_markdown": "Публичный профиль.",
+            "company": "ОК \"Комфорт\"",
+            "contacts": [
+              {
+                "display": "@Kirill_ZemlyaMO",
+                "href": "https://t.me/Kirill_ZemlyaMO",
+                "type": "telegram",
+                "value": "@Kirill_ZemlyaMO",
+              },
+            ],
+            "html_url": "https://example.com/people/kschemelinin/",
+            "id": "kschemelinin",
+            "markdown_url": "https://example.com/people/kschemelinin/index.md",
+            "mention_count": 1,
+            "mentions": [
+              {
+                "html_url": "https://example.com/people/apetrov/",
+                "markdown_url": "https://example.com/people/apetrov/index.md",
+                "name": "Андрей Петров",
+                "slug": "apetrov",
+              },
+            ],
+            "name": "Кирилл Щемелинин",
+            "name_cases": {
+              "gen": "Кирилла Щемелинина",
+            },
+            "position": "Исполняющий обязанности директора по эксплуатации",
+            "slug": "kschemelinin",
+          },
+        ],
+        "stats": {
+          "backlink_count": 1,
+          "mention_count": 1,
+          "profile_count": 1,
+        },
+      }
+    `);
+  });
+});

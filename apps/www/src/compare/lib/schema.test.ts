@@ -1,6 +1,6 @@
 import { describe, it, expect, expectTypeOf } from 'vitest';
 import type { CollectionEntry } from 'astro:content';
-import type { Settlement } from '../lib/schema';
+import type { RawSettlement } from './settlement/schema';
 import {
   getLotAverage,
   SettlementSchema,
@@ -13,6 +13,7 @@ import {
   TariffPeriodEnum,
   SourceTypeEnum,
 } from '../lib/schema';
+import { RawSettlementSchema, RawTariffUnitSchema } from './settlement/schema';
 
 describe('Schema Validation', () => {
   describe('Valid Settlement Parses', () => {
@@ -481,7 +482,7 @@ describe('Schema Validation', () => {
         },
         tariff: {
           value: 3000,
-          unit: 'per_day', // Invalid unit
+          unit: 'per_day', // Некорректная единица.
           period: 'month',
           note: '',
         },
@@ -552,7 +553,7 @@ describe('Schema Validation', () => {
     it('should fail when latitude is out of range', () => {
       const invalidLocation = {
         address_text: 'Адрес',
-        lat: 999, // Invalid latitude
+        lat: 999, // Некорректная широта.
         lng: 37.6173,
         district: 'Район',
       };
@@ -571,7 +572,7 @@ describe('Schema Validation', () => {
       const invalidLocation = {
         address_text: 'Адрес',
         lat: 55.7558,
-        lng: 999, // Invalid longitude
+        lng: 999, // Некорректная долгота.
         district: 'Район',
       };
 
@@ -594,7 +595,7 @@ describe('Schema Validation', () => {
         lighting: 'yes',
         gas: 'yes',
         water: 'yes',
-        // Missing other optional fields
+        // Остальные необязательные поля отсутствуют.
       };
 
       const result = InfrastructureSchema.safeParse(partialInfrastructure);
@@ -602,8 +603,8 @@ describe('Schema Validation', () => {
       if (result.success) {
         expect(result.data.roads).toBe('asphalt');
         expect(result.data.sidewalks).toBe('yes');
-        expect(result.data.drainage).toBe(undefined); // Not specified
-        expect(result.data.security).toBe(undefined); // Not specified
+        expect(result.data.drainage).toBe(undefined); // Не задано.
+        expect(result.data.security).toBe(undefined); // Не задано.
       }
     });
 
@@ -728,7 +729,7 @@ describe('Schema Validation', () => {
       const settlementWithInvalidSlug = {
         name: 'Тест',
         short_name: 'Тест',
-        slug: 'Invalid Slug!', // Invalid characters
+        slug: 'Invalid Slug!', // Некорректные символы.
         website: 'https://test.com',
         management_company: 'УК Тест',
         location: {
@@ -760,9 +761,19 @@ describe('Schema Validation', () => {
   });
 
   describe('Type Contracts', () => {
-    it('should keep settlement schema and collection data aligned', () => {
+    it('should keep settlement raw schema and collection data aligned', () => {
       type Data = CollectionEntry<'settlements'>['data'];
-      expectTypeOf<Data>().toMatchTypeOf<Settlement>();
+      expectTypeOf<Data>().toMatchTypeOf<RawSettlement>();
+    });
+
+    it('should expose raw settlement schemas and z.output raw types separately', () => {
+      expect(RawTariffUnitSchema.safeParse('rub_per_sotka').success).toBe(true);
+      expect(RawTariffUnitSchema.safeParse('perSotka').success).toBe(false);
+
+      type RawData = CollectionEntry<'settlements'>['data'];
+      expectTypeOf<RawSettlement>().toMatchTypeOf<RawData>();
+      expectTypeOf<RawData>().toMatchTypeOf<RawSettlement>();
+      expect(RawSettlementSchema).toBe(SettlementSchema);
     });
   });
 });

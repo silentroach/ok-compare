@@ -2,7 +2,7 @@ import rss from '@astrojs/rss';
 import type { APIRoute } from 'astro';
 
 import { loadStatusData } from '../../lib/status/load';
-import type { StatusIncident } from '../../lib/status/schema';
+import type { StatusIncident } from '../../lib/status/types';
 import {
   formatStatusArea,
   formatStatusIncidentPeriodText,
@@ -14,7 +14,7 @@ import {
 export const prerender = true;
 
 const impact = (item: StatusIncident): string =>
-  item.applies_to_all_areas
+  item.appliesToAllAreas
     ? 'весь поселок'
     : item.areas.map(formatStatusArea).join(', ');
 
@@ -32,7 +32,7 @@ const description = (item: StatusIncident): string =>
 const categories = (item: StatusIncident): string[] => [
   formatStatusService(item.service),
   formatStatusKind(item.kind),
-  ...(item.applies_to_all_areas ? [] : item.areas.map(formatStatusArea)),
+  ...(item.appliesToAllAreas ? [] : item.areas.map(formatStatusArea)),
 ];
 
 export const GET: APIRoute = async (context) => {
@@ -46,8 +46,8 @@ export const GET: APIRoute = async (context) => {
     items: data.incidents.map((item) => ({
       title: item.title,
       description: description(item),
-      ...(item.has_page ? { link: item.url } : {}),
-      pubDate: item.ended_at ?? item.started_at,
+      ...(item.hasPage ? { link: item.url } : {}),
+      pubDate: item.ended?.at ?? item.started.at,
       categories: categories(item),
     })),
     customData: '<language>ru-RU</language>',

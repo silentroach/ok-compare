@@ -2,7 +2,7 @@
 import AlertCircleIcon from '@shelkovo/ui/icons/system/AlertCircle.astro';
 import CheckCircleIcon from '@shelkovo/ui/icons/system/CheckCircle.astro';
 
-import type { StatusIncident } from '../../lib/status/schema';
+import type { StatusIncident } from '../../lib/status/types';
 import { renderNewsMarkdown } from '../../lib/news/html';
 import StatusIncidentMeta from './StatusIncidentMeta.astro';
 
@@ -18,12 +18,12 @@ const excerptHtml = incident.excerpt
 const titleIcon =
   incident.kind !== 'incident'
     ? undefined
-    : incident.is_active
+    : incident.isActive
       ? {
           Icon: AlertCircleIcon,
           toneClass: 'text-[color:var(--color-danger)]',
         }
-      : incident.ended_iso
+      : incident.ended
         ? {
             Icon: CheckCircleIcon,
             toneClass: 'text-[color:var(--color-success)]',
@@ -52,7 +52,7 @@ const TitleIcon = titleIcon?.Icon;
           )
         }
         {
-          incident.has_page ? (
+          incident.hasPage ? (
             // prettier-ignore
             <a href={incident.url} class="ui-link min-w-0">{incident.title}</a>
           ) : (

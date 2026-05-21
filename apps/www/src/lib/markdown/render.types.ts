@@ -9,7 +9,7 @@ export type PreprocessedSiteMarkdownBody = string;
 export interface RenderEntityMentionsOptions {
   readonly registry: SiteMentionRegistry;
   readonly context: string;
-  readonly source_entity?: EntityMentionSourceEntity;
+  readonly sourceEntity?: EntityMentionSourceEntity;
 }
 
 export interface RenderSiteMarkdownOptions {

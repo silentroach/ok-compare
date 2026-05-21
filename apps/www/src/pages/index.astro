@@ -283,8 +283,8 @@ const heroImage = heroMode === 'day' ? dayHeroImage : nightHeroImage;
               {latestNews.map((article) => (
                 <article class="grid grid-cols-1 gap-4 py-6 md:grid-cols-[10rem_minmax(0,1fr)] md:gap-8 md:py-7">
                   <p class="flex flex-wrap items-center gap-2 text-sm font-normal leading-tight tracking-tight text-foreground md:flex-col md:items-center md:gap-1 md:pt-1 md:text-center md:text-base">
-                    <time datetime={article.published_iso}>
-                      {formatNewsDate(article.published_iso)}
+                    <time datetime={article.publishedIso}>
+                      {formatNewsDate(article.publishedIso)}
                     </time>
                   </p>
 

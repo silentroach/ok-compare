@@ -17,26 +17,26 @@ interface IncidentInput {
   readonly id: string;
   readonly kind?: StatusTimelineIncidentInput['kind'];
   readonly url?: string;
-  readonly has_page?: boolean;
+  readonly hasPage?: boolean;
   readonly title?: string;
-  readonly started_iso: string;
-  readonly started_has_time?: boolean;
-  readonly ended_iso?: string;
-  readonly ended_has_time?: boolean;
-  readonly is_active?: boolean;
+  readonly startedIso: string;
+  readonly startedHasTime?: boolean;
+  readonly endedIso?: string;
+  readonly endedHasTime?: boolean;
+  readonly isActive?: boolean;
 }
 
 const incident = (input: IncidentInput): StatusTimelineIncidentInput => ({
   id: input.id,
   url: input.url ?? `/status/incidents/${input.id}`,
-  has_page: input.has_page ?? true,
+  hasPage: input.hasPage ?? true,
   title: input.title ?? `Incident ${input.id}`,
   kind: input.kind ?? 'incident',
-  started_iso: input.started_iso,
-  started_has_time: input.started_has_time ?? true,
-  ...(input.ended_iso ? { ended_iso: input.ended_iso } : {}),
-  ended_has_time: input.ended_has_time ?? true,
-  is_active: input.is_active ?? !input.ended_iso,
+  startedIso: input.startedIso,
+  startedHasTime: input.startedHasTime ?? true,
+  endedIso: input.endedIso,
+  endedHasTime: input.endedHasTime ?? true,
+  isActive: input.isActive ?? !input.endedIso,
 });
 
 describe('getStatusTimelineRange', () => {
@@ -75,8 +75,8 @@ describe('buildStatusTimelineProblemSegments', () => {
       incidents: [
         incident({
           id: 'inside',
-          started_iso: '2026-05-02T00:00:00Z',
-          ended_iso: '2026-05-04T00:00:00Z',
+          startedIso: '2026-05-02T00:00:00Z',
+          endedIso: '2026-05-04T00:00:00Z',
         }),
       ],
       range: RANGE,
@@ -97,9 +97,9 @@ describe('buildStatusTimelineProblemSegments', () => {
       incidents: [
         incident({
           id: 'no-page',
-          has_page: false,
-          started_iso: '2026-05-02T00:00:00Z',
-          ended_iso: '2026-05-04T00:00:00Z',
+          hasPage: false,
+          startedIso: '2026-05-02T00:00:00Z',
+          endedIso: '2026-05-04T00:00:00Z',
         }),
       ],
       range: RANGE,
@@ -113,8 +113,8 @@ describe('buildStatusTimelineProblemSegments', () => {
       incidents: [
         incident({
           id: 'right-clipped',
-          started_iso: '2026-05-08T00:00:00Z',
-          ended_iso: '2026-05-12T00:00:00Z',
+          startedIso: '2026-05-08T00:00:00Z',
+          endedIso: '2026-05-12T00:00:00Z',
         }),
       ],
       range: RANGE,
@@ -133,7 +133,7 @@ describe('buildStatusTimelineProblemSegments', () => {
       incidents: [
         incident({
           id: 'active',
-          started_iso: '2026-05-09T00:00:00Z',
+          startedIso: '2026-05-09T00:00:00Z',
         }),
       ],
       range: RANGE,
@@ -154,8 +154,8 @@ describe('buildStatusTimelineProblemSegments', () => {
         incidents: [
           incident({
             id: 'past',
-            started_iso: '2026-04-20T00:00:00Z',
-            ended_iso: '2026-04-22T00:00:00Z',
+            startedIso: '2026-04-20T00:00:00Z',
+            endedIso: '2026-04-22T00:00:00Z',
           }),
         ],
         range: RANGE,
@@ -170,8 +170,8 @@ describe('buildStatusTimelineProblemSegments', () => {
           incident({
             id: 'future-maintenance',
             kind: 'maintenance',
-            started_iso: '2026-05-12T00:00:00Z',
-            ended_iso: '2026-05-13T00:00:00Z',
+            startedIso: '2026-05-12T00:00:00Z',
+            endedIso: '2026-05-13T00:00:00Z',
           }),
         ],
         range: RANGE,
@@ -185,8 +185,8 @@ describe('buildStatusTimelineProblemSegments', () => {
         incidents: [
           incident({
             id: 'invalid-range',
-            started_iso: '2026-05-02T00:00:00Z',
-            ended_iso: '2026-05-04T00:00:00Z',
+            startedIso: '2026-05-02T00:00:00Z',
+            endedIso: '2026-05-04T00:00:00Z',
           }),
         ],
         range: getStatusTimelineRange(NOW_MS, 0),
@@ -224,13 +224,13 @@ describe('buildStatusTimelineStableSegments', () => {
         incidents: [
           incident({
             id: 'first',
-            started_iso: '2026-05-02T00:00:00Z',
-            ended_iso: '2026-05-03T00:00:00Z',
+            startedIso: '2026-05-02T00:00:00Z',
+            endedIso: '2026-05-03T00:00:00Z',
           }),
           incident({
             id: 'second',
-            started_iso: '2026-05-05T00:00:00Z',
-            ended_iso: '2026-05-07T00:00:00Z',
+            startedIso: '2026-05-05T00:00:00Z',
+            endedIso: '2026-05-07T00:00:00Z',
           }),
         ],
         range: RANGE,
@@ -253,13 +253,13 @@ describe('buildStatusTimelineStableSegments', () => {
         incidents: [
           incident({
             id: 'overlap-a',
-            started_iso: '2026-05-02T00:00:00Z',
-            ended_iso: '2026-05-05T00:00:00Z',
+            startedIso: '2026-05-02T00:00:00Z',
+            endedIso: '2026-05-05T00:00:00Z',
           }),
           incident({
             id: 'overlap-b',
-            started_iso: '2026-05-04T00:00:00Z',
-            ended_iso: '2026-05-06T00:00:00Z',
+            startedIso: '2026-05-04T00:00:00Z',
+            endedIso: '2026-05-06T00:00:00Z',
           }),
         ],
         range: RANGE,

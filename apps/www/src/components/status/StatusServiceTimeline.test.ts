@@ -13,28 +13,28 @@ const NBSP = '\u00A0';
 interface IncidentInput {
   readonly id: string;
   readonly kind?: StatusTimelineIncidentInput['kind'];
-  readonly has_page?: boolean;
+  readonly hasPage?: boolean;
   readonly title?: string;
-  readonly started_iso: string;
-  readonly started_has_time?: boolean;
-  readonly ended_iso?: string;
-  readonly ended_has_time?: boolean;
-  readonly is_active?: boolean;
+  readonly startedIso: string;
+  readonly startedHasTime?: boolean;
+  readonly endedIso?: string;
+  readonly endedHasTime?: boolean;
+  readonly isActive?: boolean;
   readonly areas?: readonly StatusArea[];
 }
 
 const incident = (input: IncidentInput): StatusTimelineIncidentInput => ({
   id: input.id,
   url: `/status/incidents/${input.id}`,
-  has_page: input.has_page ?? true,
+  hasPage: input.hasPage ?? true,
   title: input.title ?? `Запись ${input.id}`,
   kind: input.kind ?? 'incident',
-  started_iso: input.started_iso,
-  started_has_time: input.started_has_time ?? true,
-  ...(input.ended_iso ? { ended_iso: input.ended_iso } : {}),
-  ended_has_time: input.ended_has_time ?? true,
-  is_active: input.is_active ?? !input.ended_iso,
-  ...(input.areas ? { areas: input.areas } : {}),
+  startedIso: input.startedIso,
+  startedHasTime: input.startedHasTime ?? true,
+  endedIso: input.endedIso,
+  endedHasTime: input.endedHasTime ?? true,
+  isActive: input.isActive ?? !input.endedIso,
+  areas: input.areas,
 });
 
 const renderTimeline = async (
@@ -88,28 +88,28 @@ describe('StatusServiceTimeline', () => {
     const html = await renderTimeline([
       incident({
         id: 'old-past',
-        started_iso: '2026-04-20T00:00:00Z',
-        ended_iso: '2026-04-22T00:00:00Z',
-        is_active: false,
+        startedIso: '2026-04-20T00:00:00Z',
+        endedIso: '2026-04-22T00:00:00Z',
+        isActive: false,
       }),
       incident({
         id: 'maintenance-visible',
         kind: 'maintenance',
-        started_iso: '2026-05-02T00:00:00Z',
-        ended_iso: '2026-05-03T00:00:00Z',
-        is_active: false,
+        startedIso: '2026-05-02T00:00:00Z',
+        endedIso: '2026-05-03T00:00:00Z',
+        isActive: false,
       }),
       incident({
         id: 'incident-active',
-        started_iso: '2026-05-09T00:00:00Z',
-        is_active: true,
+        startedIso: '2026-05-09T00:00:00Z',
+        isActive: true,
       }),
       incident({
         id: 'maintenance-future',
         kind: 'maintenance',
-        started_iso: '2026-05-12T00:00:00Z',
-        ended_iso: '2026-05-13T00:00:00Z',
-        is_active: false,
+        startedIso: '2026-05-12T00:00:00Z',
+        endedIso: '2026-05-13T00:00:00Z',
+        isActive: false,
       }),
     ]);
 
@@ -128,21 +128,21 @@ describe('StatusServiceTimeline', () => {
       incident({
         id: 'maintenance-visible',
         kind: 'maintenance',
-        started_iso: '2026-05-02T00:00:00Z',
-        ended_iso: '2026-05-03T00:00:00Z',
-        is_active: false,
+        startedIso: '2026-05-02T00:00:00Z',
+        endedIso: '2026-05-03T00:00:00Z',
+        isActive: false,
       }),
       incident({
         id: 'incident-active',
-        started_iso: '2026-05-09T00:00:00Z',
-        is_active: true,
+        startedIso: '2026-05-09T00:00:00Z',
+        isActive: true,
       }),
       incident({
         id: 'maintenance-future',
         kind: 'maintenance',
-        started_iso: '2026-05-12T00:00:00Z',
-        ended_iso: '2026-05-13T00:00:00Z',
-        is_active: false,
+        startedIso: '2026-05-12T00:00:00Z',
+        endedIso: '2026-05-13T00:00:00Z',
+        isActive: false,
       }),
     ]);
 
@@ -167,21 +167,21 @@ describe('StatusServiceTimeline', () => {
     const html = await renderTimeline([
       incident({
         id: 'same-day-a',
-        started_iso: '2026-05-09T03:00:00Z',
-        ended_iso: '2026-05-09T03:40:00Z',
-        is_active: false,
+        startedIso: '2026-05-09T03:00:00Z',
+        endedIso: '2026-05-09T03:40:00Z',
+        isActive: false,
       }),
       incident({
         id: 'same-day-b',
-        started_iso: '2026-05-09T08:10:00Z',
-        ended_iso: '2026-05-09T08:45:00Z',
-        is_active: false,
+        startedIso: '2026-05-09T08:10:00Z',
+        endedIso: '2026-05-09T08:45:00Z',
+        isActive: false,
       }),
       incident({
         id: 'same-day-c',
-        started_iso: '2026-05-09T19:20:00Z',
-        ended_iso: '2026-05-09T20:05:00Z',
-        is_active: false,
+        startedIso: '2026-05-09T19:20:00Z',
+        endedIso: '2026-05-09T20:05:00Z',
+        isActive: false,
       }),
     ]);
 
@@ -195,8 +195,8 @@ describe('StatusServiceTimeline', () => {
     const html = await renderTimeline([
       incident({
         id: 'incident-active',
-        started_iso: '2026-05-09T00:00:00Z',
-        is_active: true,
+        startedIso: '2026-05-09T00:00:00Z',
+        isActive: true,
       }),
     ]);
 
@@ -212,15 +212,15 @@ describe('StatusServiceTimeline', () => {
     const html = await renderTimeline([
       incident({
         id: 'park-outage',
-        started_iso: '2026-05-09T00:00:00Z',
-        is_active: true,
+        startedIso: '2026-05-09T00:00:00Z',
+        isActive: true,
         areas: ['park'],
       }),
       incident({
         id: 'all-village-outage',
-        started_iso: '2026-05-08T00:00:00Z',
-        ended_iso: '2026-05-08T01:00:00Z',
-        is_active: false,
+        startedIso: '2026-05-08T00:00:00Z',
+        endedIso: '2026-05-08T01:00:00Z',
+        isActive: false,
       }),
     ]);
 
@@ -242,8 +242,8 @@ describe('StatusServiceTimeline', () => {
       incident({
         id: 'park-outage',
         title: 'Нет воды в Шелково Парк',
-        started_iso: '2026-05-09T00:00:00Z',
-        is_active: true,
+        startedIso: '2026-05-09T00:00:00Z',
+        isActive: true,
       }),
     ]);
 
@@ -256,16 +256,16 @@ describe('StatusServiceTimeline', () => {
     const html = await renderTimeline([
       incident({
         id: 'no-page',
-        has_page: false,
-        started_iso: '2026-05-08T00:00:00Z',
-        ended_iso: '2026-05-08T01:00:00Z',
-        is_active: false,
+        hasPage: false,
+        startedIso: '2026-05-08T00:00:00Z',
+        endedIso: '2026-05-08T01:00:00Z',
+        isActive: false,
       }),
       incident({
         id: 'with-page',
-        started_iso: '2026-05-09T00:00:00Z',
-        ended_iso: '2026-05-09T01:00:00Z',
-        is_active: false,
+        startedIso: '2026-05-09T00:00:00Z',
+        endedIso: '2026-05-09T01:00:00Z',
+        isActive: false,
       }),
     ]);
 
@@ -284,20 +284,20 @@ describe('StatusServiceTimeline', () => {
     const html = await renderTimeline([
       incident({
         id: 'short-single-day',
-        started_iso: '2026-05-07T00:00:00Z',
-        ended_iso: '2026-05-07T00:15:00Z',
-        is_active: false,
+        startedIso: '2026-05-07T00:00:00Z',
+        endedIso: '2026-05-07T00:15:00Z',
+        isActive: false,
       }),
       incident({
         id: 'long-single-day',
-        started_iso: '2026-05-08T00:00:00Z',
-        ended_iso: '2026-05-08T09:00:00Z',
-        is_active: false,
+        startedIso: '2026-05-08T00:00:00Z',
+        endedIso: '2026-05-08T09:00:00Z',
+        isActive: false,
       }),
       incident({
         id: 'active-single-day',
-        started_iso: '2026-05-09T21:00:00Z',
-        is_active: true,
+        startedIso: '2026-05-09T21:00:00Z',
+        isActive: true,
       }),
     ]);
 
@@ -321,9 +321,9 @@ describe('StatusServiceTimeline', () => {
       [
         incident({
           id: 'shorter-range-single-day',
-          started_iso: '2026-05-09T00:00:00Z',
-          ended_iso: '2026-05-09T01:00:00Z',
-          is_active: false,
+          startedIso: '2026-05-09T00:00:00Z',
+          endedIso: '2026-05-09T01:00:00Z',
+          isActive: false,
         }),
       ],
       5,
@@ -338,9 +338,9 @@ describe('StatusServiceTimeline', () => {
     const html = await renderTimeline([
       incident({
         id: 'cross-day-short',
-        started_iso: '2026-05-08T20:30:00Z',
-        ended_iso: '2026-05-08T22:00:00Z',
-        is_active: false,
+        startedIso: '2026-05-08T20:30:00Z',
+        endedIso: '2026-05-08T22:00:00Z',
+        isActive: false,
       }),
     ]);
 
@@ -353,20 +353,20 @@ describe('StatusServiceTimeline', () => {
     const html = await renderTimeline([
       incident({
         id: 'same-day-a',
-        started_iso: '2026-05-09T03:00:00Z',
-        ended_iso: '2026-05-09T03:40:00Z',
-        is_active: false,
+        startedIso: '2026-05-09T03:00:00Z',
+        endedIso: '2026-05-09T03:40:00Z',
+        isActive: false,
       }),
       incident({
         id: 'same-day-b',
-        started_iso: '2026-05-09T08:10:00Z',
-        ended_iso: '2026-05-09T08:45:00Z',
-        is_active: false,
+        startedIso: '2026-05-09T08:10:00Z',
+        endedIso: '2026-05-09T08:45:00Z',
+        isActive: false,
       }),
     ]);
 
     expect(incidentSegmentTag(html, 'same-day-a')).toMatchInlineSnapshot(
-      `"<button type="button" title="Вода. 2·события за·9·мая. Запись same-day-a. 9·мая, 06:00·—·06:40. Запись same-day-b. 9·мая, 11:10·—·11:45" aria-label="Вода. 2·события за·9·мая. Запись same-day-a. 9·мая, 06:00·—·06:40. Запись same-day-b. 9·мая, 11:10·—·11:45" data-incident-id="same-day-a" data-status-problem="true" data-status-kind="incident" data-status-service="water" data-start="2026-05-09T03:00:00Z" data-end="2026-05-09T08:45:00Z" data-geometry-start="2026-05-08T21:00:00.000Z" data-geometry-end="2026-05-09T21:00:00.000Z" data-tooltip-service-label="Вода" data-tooltip-group-title="2·события за·9·мая" data-tooltip-items="[{&#34;kind&#34;:&#34;incident&#34;,&#34;title&#34;:&#34;Запись same-day-a&#34;,&#34;is_active&#34;:false,&#34;started_iso&#34;:&#34;2026-05-09T03:00:00Z&#34;,&#34;started_has_time&#34;:true,&#34;ended_iso&#34;:&#34;2026-05-09T03:40:00Z&#34;,&#34;ended_has_time&#34;:true},{&#34;kind&#34;:&#34;incident&#34;,&#34;title&#34;:&#34;Запись same-day-b&#34;,&#34;is_active&#34;:false,&#34;started_iso&#34;:&#34;2026-05-09T08:10:00Z&#34;,&#34;started_has_time&#34;:true,&#34;ended_iso&#34;:&#34;2026-05-09T08:45:00Z&#34;,&#34;ended_has_time&#34;:true}]" style="--segment-left: 88.75; --segment-width: 10;" class="status-service-timeline__segment status-service-timeline__segment--problem status-service-timeline__segment--compact-marker status-service-timeline__segment--red">"`,
+      `"<button type="button" title="Вода. 2·события за·9·мая. Запись same-day-a. 9·мая, 06:00·—·06:40. Запись same-day-b. 9·мая, 11:10·—·11:45" aria-label="Вода. 2·события за·9·мая. Запись same-day-a. 9·мая, 06:00·—·06:40. Запись same-day-b. 9·мая, 11:10·—·11:45" data-incident-id="same-day-a" data-status-problem="true" data-status-kind="incident" data-status-service="water" data-start="2026-05-09T03:00:00Z" data-end="2026-05-09T08:45:00Z" data-geometry-start="2026-05-08T21:00:00.000Z" data-geometry-end="2026-05-09T21:00:00.000Z" data-tooltip-service-label="Вода" data-tooltip-group-title="2·события за·9·мая" data-tooltip-items="[{&#34;kind&#34;:&#34;incident&#34;,&#34;title&#34;:&#34;Запись same-day-a&#34;,&#34;isActive&#34;:false,&#34;startedIso&#34;:&#34;2026-05-09T03:00:00Z&#34;,&#34;startedHasTime&#34;:true,&#34;endedIso&#34;:&#34;2026-05-09T03:40:00Z&#34;,&#34;endedHasTime&#34;:true},{&#34;kind&#34;:&#34;incident&#34;,&#34;title&#34;:&#34;Запись same-day-b&#34;,&#34;isActive&#34;:false,&#34;startedIso&#34;:&#34;2026-05-09T08:10:00Z&#34;,&#34;startedHasTime&#34;:true,&#34;endedIso&#34;:&#34;2026-05-09T08:45:00Z&#34;,&#34;endedHasTime&#34;:true}]" style="--segment-left: 88.75; --segment-width: 10;" class="status-service-timeline__segment status-service-timeline__segment--problem status-service-timeline__segment--compact-marker status-service-timeline__segment--red">"`,
     );
   });
 
@@ -374,14 +374,14 @@ describe('StatusServiceTimeline', () => {
     const html = await renderTimeline([
       incident({
         id: 'dense-ended',
-        started_iso: '2026-05-09T22:10:00Z',
-        ended_iso: '2026-05-09T22:30:00Z',
-        is_active: false,
+        startedIso: '2026-05-09T22:10:00Z',
+        endedIso: '2026-05-09T22:30:00Z',
+        isActive: false,
       }),
       incident({
         id: 'dense-active',
-        started_iso: '2026-05-09T23:40:00Z',
-        is_active: true,
+        startedIso: '2026-05-09T23:40:00Z',
+        isActive: true,
       }),
     ]);
 
@@ -399,8 +399,8 @@ describe('StatusServiceTimeline', () => {
     const html = await renderTimeline([
       incident({
         id: 'incident-active',
-        started_iso: '2026-05-09T00:00:00Z',
-        is_active: true,
+        startedIso: '2026-05-09T00:00:00Z',
+        isActive: true,
       }),
     ]);
 
@@ -416,15 +416,15 @@ describe('StatusServiceTimeline', () => {
       incident({
         id: 'maintenance-visible',
         kind: 'maintenance',
-        started_iso: '2026-05-02T00:00:00Z',
-        ended_iso: '2026-05-03T00:00:00Z',
-        is_active: false,
+        startedIso: '2026-05-02T00:00:00Z',
+        endedIso: '2026-05-03T00:00:00Z',
+        isActive: false,
       }),
       incident({
         id: 'incident-visible',
-        started_iso: '2026-05-05T00:00:00Z',
-        ended_iso: '2026-05-06T00:00:00Z',
-        is_active: false,
+        startedIso: '2026-05-05T00:00:00Z',
+        endedIso: '2026-05-06T00:00:00Z',
+        isActive: false,
       }),
     ]);
 
@@ -440,8 +440,8 @@ describe('StatusServiceTimeline', () => {
     const html = await renderTimeline([
       incident({
         id: 'incident-active',
-        started_iso: '2026-05-09T23:40:00Z',
-        is_active: true,
+        startedIso: '2026-05-09T23:40:00Z',
+        isActive: true,
       }),
     ]);
 

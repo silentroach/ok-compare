@@ -1,4 +1,4 @@
-import type { Settlement, ComparisonResult } from './schema';
+import type { ComparisonResult, Settlement } from './settlement/types';
 
 /**
  * Calculate tariff delta between Shelkovo and another settlement
@@ -25,8 +25,8 @@ export function compareSettlements(
   other: Settlement,
 ): ComparisonResult {
   const tariff = calculateTariffDelta(
-    baseline.tariff.normalized_per_sotka_month,
-    other.tariff.normalized_per_sotka_month,
+    baseline.tariff.normalizedPerSotkaMonth,
+    other.tariff.normalizedPerSotkaMonth,
   );
 
   return {

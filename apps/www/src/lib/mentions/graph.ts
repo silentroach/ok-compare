@@ -11,24 +11,24 @@ const targetKey = (type: EntityMentionType, slug: string): string =>
   `${type}:${slug}`;
 
 const sourceUnitKey = (ref: EntityMentionSourceRef): string =>
-  `${targetKey(ref.target_type, ref.target_slug)}:${ref.source_section}:${ref.source_kind}:${ref.source_id}`;
+  `${targetKey(ref.target.type, ref.target.slug)}:${ref.source.section}:${ref.source.kind}:${ref.source.id}`;
 
 const compareRefs = (
   a: EntityMentionSourceRef,
   b: EntityMentionSourceRef,
 ): number =>
-  (b.sort_key ?? Number.NEGATIVE_INFINITY) -
-    (a.sort_key ?? Number.NEGATIVE_INFINITY) ||
+  (b.sortKey ?? Number.NEGATIVE_INFINITY) -
+    (a.sortKey ?? Number.NEGATIVE_INFINITY) ||
   compareRuText(a.title, b.title) ||
-  compareRuText(a.source_id, b.source_id);
+  compareRuText(a.source.id, b.source.id);
 
 const assertNotSelfLink = (ref: EntityMentionSourceRef): void => {
   if (
-    ref.source_entity?.type === ref.target_type &&
-    ref.source_entity.slug === ref.target_slug
+    ref.sourceEntity?.type === ref.target.type &&
+    ref.sourceEntity.slug === ref.target.slug
   ) {
     throw new Error(
-      `self-link mention ref ${targetKey(ref.target_type, ref.target_slug)}`,
+      `self-link mention ref ${targetKey(ref.target.type, ref.target.slug)}`,
     );
   }
 };
@@ -59,13 +59,13 @@ export const createEntityMentionGraph = (
 
     seen.add(unitKey);
 
-    const key = targetKey(ref.target_type, ref.target_slug);
+    const key = targetKey(ref.target.type, ref.target.slug);
     const target =
-      targets.get(key) ?? createGraphTarget(ref.target_type, ref.target_slug);
+      targets.get(key) ?? createGraphTarget(ref.target.type, ref.target.slug);
     const sections = new Map(target.sections);
-    const current = sections.get(ref.source_section) ?? [];
+    const current = sections.get(ref.source.section) ?? [];
 
-    sections.set(ref.source_section, [...current, ref].sort(compareRefs));
+    sections.set(ref.source.section, [...current, ref].sort(compareRefs));
     targets.set(key, { ...target, sections });
   }
 

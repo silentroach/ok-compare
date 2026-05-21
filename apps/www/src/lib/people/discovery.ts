@@ -1,12 +1,12 @@
-import { absoluteUrl } from '../site';
-import type { EntityMentionTarget } from '../mentions';
-import type { PersonNameCaseForms } from './name-cases';
-import type {
-  PersonBacklinks,
-  PersonContact,
-  PersonMentionRef,
-  PersonProfile,
-} from './schema';
+export {
+  buildPeoplePublicPayload as buildPeoplePayload,
+  type PeoplePublicBacklinkDto as PeopleDiscoveryBacklink,
+  type PeoplePublicBacklinksDto as PeopleDiscoveryBacklinks,
+  type PeoplePublicContactDto as PeopleDiscoveryContact,
+  type PeoplePublicMentionDto as PeopleDiscoveryMention,
+  type PeoplePublicPayloadDto as PeopleDiscoveryPayload,
+  type PeoplePublicProfileDto as PeopleDiscoveryProfile,
+} from './public-dto';
 import {
   peopleApiCatalogPath,
   peopleDataPath,
@@ -20,71 +20,10 @@ import {
 export const PROFILE = 'https://www.rfc-editor.org/info/rfc9727';
 export const OAS = 'application/vnd.oai.openapi+json';
 
-export interface PeopleDiscoveryContact {
-  readonly type: PersonContact['type'];
-  readonly value: string;
-  readonly display: string;
-  readonly href: string;
-}
-
-export interface PeopleDiscoveryMention {
-  readonly slug: string;
-  readonly name: string;
-  readonly company?: string;
-  readonly position?: string;
-  readonly html_url: string;
-  readonly markdown_url: string;
-}
-
-export interface PeopleDiscoveryBacklink {
-  readonly section: PersonMentionRef['section'];
-  readonly kind: PersonMentionRef['kind'];
-  readonly source_id: string;
-  readonly title: string;
-  readonly html_url: string;
-  readonly markdown_url: string;
-  readonly excerpt?: string;
-  readonly mentioned_at?: string;
-}
-
-export interface PeopleDiscoveryBacklinks {
-  readonly news: readonly PeopleDiscoveryBacklink[];
-  readonly status: readonly PeopleDiscoveryBacklink[];
-  readonly people: readonly PeopleDiscoveryBacklink[];
-}
-
-export interface PeopleDiscoveryProfile {
-  readonly id: string;
-  readonly slug: string;
-  readonly name: string;
-  readonly name_cases?: PersonNameCaseForms;
-  readonly company?: string;
-  readonly position?: string;
-  readonly html_url: string;
-  readonly markdown_url: string;
-  readonly contacts: readonly PeopleDiscoveryContact[];
-  readonly body_markdown: string;
-  readonly mentions: readonly PeopleDiscoveryMention[];
-  readonly mention_count: number;
-  readonly backlinks: PeopleDiscoveryBacklinks;
-  readonly backlink_count: number;
-}
-
-export interface PeopleDiscoveryPayload {
-  readonly stats: {
-    readonly profile_count: number;
-    readonly mention_count: number;
-    readonly backlink_count: number;
-  };
-  readonly profiles: readonly PeopleDiscoveryProfile[];
-}
-
 const PEOPLE_PAYLOAD_SCHEMA = 'PeoplePayload';
 
 const abs = (root: string, path: string): string =>
   new URL(path.replace(/^\//, ''), `${root}/`).toString();
-
-const fullUrl = (value: string): string => absoluteUrl(value);
 
 const server = (root: string): string => root.replace(/\/$/, '');
 
@@ -156,85 +95,6 @@ function rewriteSchemaRefs(value: unknown, schemaRef: string): unknown {
     }),
   );
 }
-
-const backlinksCount = (backlinks: PersonBacklinks): number =>
-  backlinks.news.length + backlinks.status.length + backlinks.people.length;
-
-const contact = (item: PersonContact): PeopleDiscoveryContact => ({
-  type: item.type,
-  value: item.value,
-  display: item.display,
-  href: item.href,
-});
-
-const mention = (item: EntityMentionTarget): PeopleDiscoveryMention => {
-  const company = 'company' in item ? item.company : undefined;
-  const position = 'position' in item ? item.position : undefined;
-
-  return {
-    slug: item.slug,
-    name: item.label,
-    ...(typeof company === 'string' ? { company } : {}),
-    ...(typeof position === 'string' ? { position } : {}),
-    html_url: fullUrl(item.html_url),
-    markdown_url: fullUrl(item.markdown_url),
-  };
-};
-
-const backlink = (item: PersonMentionRef): PeopleDiscoveryBacklink => ({
-  section: item.section,
-  kind: item.kind,
-  source_id: item.source_id,
-  title: item.title,
-  html_url: fullUrl(item.html_url),
-  markdown_url: fullUrl(item.markdown_url),
-  ...(item.excerpt ? { excerpt: item.excerpt } : {}),
-  ...(item.mentioned_at ? { mentioned_at: item.mentioned_at } : {}),
-});
-
-const backlinks = (value: PersonBacklinks): PeopleDiscoveryBacklinks => ({
-  news: value.news.map(backlink),
-  status: value.status.map(backlink),
-  people: value.people.map(backlink),
-});
-
-const profile = (item: PersonProfile): PeopleDiscoveryProfile => ({
-  id: item.id,
-  slug: item.slug,
-  name: item.name,
-  ...(item.name_cases ? { name_cases: item.name_cases } : {}),
-  ...(item.company ? { company: item.company } : {}),
-  ...(item.position ? { position: item.position } : {}),
-  html_url: item.canonical,
-  markdown_url: fullUrl(item.markdown_url),
-  contacts: item.contacts.map(contact),
-  body_markdown: item.body,
-  mentions: item.mentions.map(mention),
-  mention_count: item.mentions.length,
-  backlinks: backlinks(item.backlinks),
-  backlink_count: backlinksCount(item.backlinks),
-});
-
-export const buildPeoplePayload = (data: {
-  readonly profiles: readonly PersonProfile[];
-}): PeopleDiscoveryPayload => {
-  const profiles = data.profiles.map(profile);
-
-  return {
-    stats: {
-      profile_count: profiles.length,
-      mention_count: profiles.reduce(
-        (total, item) => total + item.mention_count,
-        0,
-      ),
-      backlink_count: profiles.reduce(
-        (total, item) => total + item.backlink_count,
-        0,
-      ),
-    },
-    profiles,
-  };
-};
 
 export function schema(root: string): Record<string, unknown> {
   return {

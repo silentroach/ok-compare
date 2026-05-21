@@ -113,7 +113,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
   const peopleFull = registeredSurfaceUrl('people:llms-full');
   const personHtml = person?.canonical ?? '/people/[slug]/';
   const personMarkdown = person
-    ? absoluteUrl(person.markdown_url)
+    ? absoluteUrl(person.markdownUrl)
     : '/people/[slug]/index.md';
   const compareHome = registeredSurfaceUrl('compare:index');
   const compareMarkdown = registeredSurfaceUrl('compare:index-markdown');

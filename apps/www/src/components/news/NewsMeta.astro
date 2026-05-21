@@ -1,12 +1,13 @@
 ---
 import ShelkovoAreaIcon from '../ShelkovoAreaIcon.astro';
 import LinkWithIcon from '@shelkovo/ui/LinkWithIcon.astro';
-import type { NewsArea, NewsAuthor } from '../../lib/news/schema';
+import type { NewsArea } from '../../lib/news/schema';
+import type { NewsAuthor } from '../../lib/news/types';
 import { formatNewsAuthor, formatNewsDate } from '../../lib/news/view';
 
 interface Props {
   readonly publishedIso: string;
-  readonly author?: Pick<NewsAuthor, 'name' | 'short_name' | 'url'>;
+  readonly author?: Pick<NewsAuthor, 'name' | 'shortName' | 'url'>;
   readonly fullAuthorName?: boolean;
   readonly areas?: readonly NewsArea[];
   readonly appliesToAllAreas?: boolean;

@@ -48,7 +48,7 @@ if (!summary) {
 }
 
 const serviceLabel = formatStatusService(service);
-const stateLabel = formatStatusServiceState(summary.service_status);
+const stateLabel = formatStatusServiceState(summary.serviceStatus);
 const stateClass = {
   green: 'text-[color:var(--color-success)]',
   amber: 'text-[color:var(--color-warning-text)]',
@@ -56,11 +56,11 @@ const stateClass = {
 } as const;
 const latestIncidents = summary.incidents.slice(0, 10);
 const timelineIncidents = summary.incidents.map(
-  ({ applies_to_all_areas, areas, ...incident }) =>
-    applies_to_all_areas ? incident : { ...incident, areas },
+  ({ appliesToAllAreas, areas, ...incident }) =>
+    appliesToAllAreas ? incident : { ...incident, areas },
 );
 const schemaItems = latestIncidents
-  .filter((item) => item.has_page)
+  .filter((item) => item.hasPage)
   .map((item) => ({ name: item.title, url: item.url }));
 const title = `${serviceLabel} — Статус — Шелково Онлайн`;
 const description = `Текущее состояние сервиса ${serviceLabel.toLowerCase()} в КП Шелково: последние инциденты, плановые работы и история изменений.`;
@@ -105,7 +105,7 @@ const schema = collectionPageSchema({
         <p
           class:list={[
             'text-base font-medium',
-            stateClass[summary.service_status],
+            stateClass[summary.serviceStatus],
           ]}
         >
           {stateLabel}

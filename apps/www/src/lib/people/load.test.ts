@@ -61,9 +61,9 @@ const entry = (input: {
   body: input.body ?? '',
   data: {
     name: input.name,
-    ...(input.name_cases ? { name_cases: input.name_cases } : {}),
-    ...(input.company ? { company: input.company } : {}),
-    ...(input.position ? { position: input.position } : {}),
+    name_cases: input.name_cases,
+    company: input.company,
+    position: input.position,
     contacts: [...(input.contacts ?? [])],
   },
 });
@@ -114,19 +114,21 @@ const incident = (input: {
     service: input.service,
     kind: input.kind,
     started_at: input.started_at,
-    ...(input.ended_at ? { ended_at: input.ended_at } : {}),
-    ...(input.areas ? { areas: [...input.areas] } : {}),
+    ended_at: input.ended_at,
+    areas: input.areas ? [...input.areas] : undefined,
     source_url: `https://example.com/${input.id}`,
   },
 });
 
 describe('buildPeopleDataset', () => {
   it('keeps news and status loaders off the backlink-enabled people loader', async () => {
-    const [newsLoad, statusLoad] = await Promise.all([
+    const [peopleLoad, newsLoad, statusLoad] = await Promise.all([
+      readFile(new URL('./load.ts', import.meta.url), 'utf8'),
       readFile(new URL('../news/load.ts', import.meta.url), 'utf8'),
       readFile(new URL('../status/load.ts', import.meta.url), 'utf8'),
     ]);
 
+    expect(peopleLoad).not.toContain("from './public-dto'");
     expect(newsLoad).not.toContain('../people/load');
     expect(statusLoad).not.toContain('../people/load');
   });
@@ -160,13 +162,13 @@ describe('buildPeopleDataset', () => {
       }),
     ]);
 
-    expect(data.by_slug.get('apetrov')?.body).toMatchInlineSnapshot(
+    expect(data.bySlug.get('apetrov')?.body).toMatchInlineSnapshot(
       `"Работал вместе с [Кирилл Щемелинин](/people/kschemelinin/ \"Исполняющий обязанности директора по эксплуатации, ОК \\\"Комфорт\\\"\") над разбором аварии."`,
     );
     expect(
-      data.by_slug.get('apetrov')?.mentions.map((item) => item.slug),
+      data.bySlug.get('apetrov')?.mentions.map((item) => item.slug),
     ).toEqual(['kschemelinin']);
-    expect(data.by_slug.get('kschemelinin')?.contacts).toEqual([
+    expect(data.bySlug.get('kschemelinin')?.contacts).toEqual([
       {
         type: 'telegram',
         value: 'Kirill_ZemlyaMO',
@@ -180,11 +182,11 @@ describe('buildPeopleDataset', () => {
         href: 'tel:+79165551234',
       },
     ]);
-    expect(data.by_slug.get('kschemelinin')?.name_cases).toEqual({
+    expect(data.bySlug.get('kschemelinin')?.nameCases).toEqual({
       gen: 'Кирилла Щемелинина',
     });
-    expect(data.by_slug.get('kschemelinin')?.company).toBe('ОК "Комфорт"');
-    expect(data.by_slug.get('kschemelinin')?.position).toBe(
+    expect(data.bySlug.get('kschemelinin')?.company).toBe('ОК "Комфорт"');
+    expect(data.bySlug.get('kschemelinin')?.position).toBe(
       'Исполняющий обязанности директора по эксплуатации',
     );
   });
@@ -203,11 +205,11 @@ describe('buildPeopleDataset', () => {
       }),
     ]);
 
-    expect(data.by_slug.get('apetrov')?.body).toBe(
+    expect(data.bySlug.get('apetrov')?.body).toBe(
       'Работал вместе с [главным инженером](/people/kschemelinin/) над разбором аварии.',
     );
     expect(
-      data.by_slug.get('apetrov')?.mentions.map((item) => item.slug),
+      data.bySlug.get('apetrov')?.mentions.map((item) => item.slug),
     ).toEqual(['kschemelinin']);
   });
 
@@ -227,7 +229,7 @@ describe('buildPeopleDataset', () => {
       }),
     ]);
 
-    expect(data.by_slug.get('kschemelinin')).toMatchObject({
+    expect(data.bySlug.get('kschemelinin')).toMatchObject({
       body: '',
       company: 'ОК "Комфорт"',
       position: 'Исполняющий обязанности директора по эксплуатации',
@@ -274,7 +276,7 @@ describe('buildPeopleDataset', () => {
         }),
       ],
       {
-        mention_registry: people.mention_registry,
+        mentionRegistry: people.mentionRegistry,
       },
     );
     const status = buildStatusDataset(
@@ -291,7 +293,7 @@ describe('buildPeopleDataset', () => {
         }),
       ],
       {
-        mention_registry: people.mention_registry,
+        mentionRegistry: people.mentionRegistry,
       },
     );
     const graph = buildPeopleGraphDataset(
@@ -299,20 +301,20 @@ describe('buildPeopleDataset', () => {
       sourceRefs({ people, news, status }),
     );
 
-    expect(graph.by_slug.get('kschemelinin')?.backlinks).toMatchObject({
+    expect(graph.bySlug.get('kschemelinin')?.backlinks).toMatchObject({
       news: [
         {
           kind: 'article',
-          source_id: '2026/05/electricity',
+          sourceId: '2026/05/electricity',
           title: 'Авария на линии',
         },
       ],
       status: [
         {
           kind: 'incident',
-          source_id: '2026/04/electricity-river-10kv-line-damage',
+          sourceId: '2026/04/electricity-river-10kv-line-damage',
           title: 'Отключение электричества в Шелково Ривер',
-          markdown_url:
+          markdownUrl:
             '/status/incidents/2026/04/electricity-river-10kv-line-damage/index.md',
           excerpt: 'Как отметил Кирилл Щемелинин, повреждение было редким.',
         },
@@ -320,7 +322,7 @@ describe('buildPeopleDataset', () => {
       people: [
         {
           kind: 'person',
-          source_id: 'apetrov',
+          sourceId: 'apetrov',
           title: 'Андрей Петров',
         },
       ],
@@ -352,7 +354,7 @@ describe('buildPeopleDataset', () => {
         }),
       ],
       {
-        mention_registry: people.mention_registry,
+        mentionRegistry: people.mentionRegistry,
       },
     );
     const status = buildStatusDataset(
@@ -369,20 +371,20 @@ describe('buildPeopleDataset', () => {
         }),
       ],
       {
-        mention_registry: people.mention_registry,
+        mentionRegistry: people.mentionRegistry,
       },
     );
     const graph = buildPeopleGraphDataset(
       people,
       sourceRefs({ people, news, status }),
     );
-    const backlinks = graph.by_slug.get('kschemelinin')?.backlinks;
+    const backlinks = graph.bySlug.get('kschemelinin')?.backlinks;
 
     expect(backlinks).toMatchObject({
       news: [
         {
           kind: 'article',
-          source_id: '2026/05/electricity',
+          sourceId: '2026/05/electricity',
           excerpt:
             'Основной текст после комментария специалиста. Позже добавили уточнение от дежурного инженера.',
         },
@@ -390,14 +392,14 @@ describe('buildPeopleDataset', () => {
       status: [
         {
           kind: 'incident',
-          source_id: '2026/04/electricity-river-10kv-line-damage',
+          sourceId: '2026/04/electricity-river-10kv-line-damage',
           excerpt: 'После осмотра линии повреждение признали редким.',
         },
       ],
       people: [
         {
           kind: 'person',
-          source_id: 'apetrov',
+          sourceId: 'apetrov',
           excerpt: 'Работал вместе с главным инженером над разбором аварии.',
         },
       ],

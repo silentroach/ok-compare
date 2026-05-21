@@ -52,9 +52,9 @@ const article = (input: {
     summary: input.summary,
     date: input.date,
     author: { id: 'ig' } as NewsArticleEntry['data']['author'],
-    ...(input.pinned !== undefined ? { pinned: input.pinned } : {}),
-    ...(input.pinned_until ? { pinned_until: input.pinned_until } : {}),
-    ...(input.events ? { events: input.events } : {}),
+    pinned: input.pinned,
+    pinned_until: input.pinned_until,
+    events: input.events,
   },
 });
 
@@ -182,7 +182,7 @@ describe('buildNewsDataset', () => {
         }),
       ],
       {
-        mention_registry: new Map([
+        mentionRegistry: new Map([
           [
             'kschemelinin',
             createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),
@@ -209,7 +209,7 @@ describe('buildNewsDataset', () => {
         }),
       ],
       {
-        mention_registry: new Map([
+        mentionRegistry: new Map([
           [
             'kschemelinin',
             createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),
@@ -239,7 +239,7 @@ describe('buildNewsDataset', () => {
         }),
       ],
       {
-        mention_registry: new Map([
+        mentionRegistry: new Map([
           [
             'kschemelinin',
             createPersonMentionTarget(
@@ -273,7 +273,7 @@ describe('buildNewsDataset', () => {
           }),
         ],
         {
-          mention_registry: new Map([
+          mentionRegistry: new Map([
             [
               'kschemelinin',
               createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),
@@ -314,22 +314,69 @@ describe('buildNewsDataset', () => {
       slug: 'event',
       title: 'Встреча по регламенту',
       description: 'Описание календарного события.',
-      starts_iso: '2026-05-31T19:00:00+03:00',
-      starts_time: '19:00',
-      ends_iso: '2026-05-31T21:00:00+03:00',
-      ends_time: '21:00',
-      ics_url: '/news/2026/05/event/event.ics',
+      startsIso: '2026-05-31T19:00:00+03:00',
+      startsTime: '19:00',
+      endsIso: '2026-05-31T21:00:00+03:00',
+      endsTime: '21:00',
+      icsUrl: '/news/2026/05/event/event.ics',
       location: 'КП Шелково, эко-клуб',
       coordinates: {
         lat: 55,
         lng: 38,
       },
     });
-    expect(data.articles[0]?.events[0]?.starts_at).toBeInstanceOf(Date);
-    expect(data.articles[0]?.events[0]?.ends_at).toBeInstanceOf(Date);
-    expect(data.home.latest[0]?.events[0]?.starts_iso).toBe(
+    expect(data.articles[0]?.events[0]?.startsAt).toBeInstanceOf(Date);
+    expect(data.articles[0]?.events[0]?.endsAt).toBeInstanceOf(Date);
+    expect(data.home.latest[0]?.events[0]?.startsIso).toBe(
       '2026-05-31T19:00:00+03:00',
     );
+  });
+
+  it('maps raw article fields into camelCase domain article and dataset fields', () => {
+    const data = buildNewsDataset(
+      [author({ id: 'ig', name: 'Редакция' })],
+      [
+        {
+          ...article({
+            id: '2026/05/article-domain',
+            title: 'Доменная новость',
+            summary: 'Проверка доменной формы',
+            date: '04.05.2026 10:00',
+          }),
+          data: {
+            ...article({
+              id: '2026/05/article-domain',
+              title: 'Доменная новость',
+              summary: 'Проверка доменной формы',
+              date: '04.05.2026 10:00',
+            }).data,
+            source_url: 'https://example.com/source',
+            cover: {
+              src: '/cover.jpg',
+              width: 1200,
+              height: 675,
+            } as NewsArticleEntry['data']['cover'],
+            cover_alt: 'Обложка новости',
+          },
+        },
+      ],
+    );
+    const domainArticle = data.articles[0];
+
+    expect(domainArticle).toMatchObject({
+      markdownUrl: '/news/2026/05/article-domain/index.md',
+      publishedIso: '2026-05-04T10:00:00+03:00',
+      appliesToAllAreas: true,
+      sourceUrl: 'https://example.com/source',
+      cover: {
+        url: '/cover.jpg',
+        width: 1200,
+        height: 675,
+        alt: 'Обложка новости',
+      },
+    });
+    expect(domainArticle?.publishedAt).toBeInstanceOf(Date);
+    expect(data.byId.get('2026/05/article-domain')).toBe(domainArticle);
   });
 
   it('normalizes event organizer and performer', () => {
@@ -384,12 +431,12 @@ describe('buildNewsDataset', () => {
     );
 
     expect(data.articles[0]?.events[0]).toMatchObject({
-      starts_iso: '2026-05-31T19:00:00+03:00',
-      starts_time: '19:00',
+      startsIso: '2026-05-31T19:00:00+03:00',
+      startsTime: '19:00',
     });
-    expect(data.articles[0]?.events[0]?.ends_at).toBeUndefined();
-    expect(data.articles[0]?.events[0]?.ends_iso).toBeUndefined();
-    expect(data.articles[0]?.events[0]?.ends_time).toBeUndefined();
+    expect(data.articles[0]?.events[0]?.endsAt).toBeUndefined();
+    expect(data.articles[0]?.events[0]?.endsIso).toBeUndefined();
+    expect(data.articles[0]?.events[0]?.endsTime).toBeUndefined();
   });
 
   it('rejects an event start without time', () => {

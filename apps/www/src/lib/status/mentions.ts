@@ -1,7 +1,7 @@
 import { createEntityMentionSourceRefs } from '../mentions';
 import type { EntityMentionSourceRef } from '../mentions';
 import { statusIncidentMarkdownUrl } from './routes';
-import type { StatusIncident } from './schema';
+import type { StatusIncident } from './types';
 
 type StatusIncidentMentionRefSource = Pick<
   StatusIncident,
@@ -13,21 +13,23 @@ type StatusIncidentMentionRefSource = Pick<
   | 'slug'
   | 'excerpt'
   | 'mentions'
-  | 'started_iso'
-  | 'sort_last_change_at'
+  | 'started'
+  | 'sortLastChangeAt'
 >;
 
 export const createStatusIncidentMentionRefs = (
   incident: StatusIncidentMentionRefSource,
 ): readonly EntityMentionSourceRef[] =>
   createEntityMentionSourceRefs(incident.mentions, {
-    source_section: 'status',
-    source_kind: 'incident',
-    source_id: incident.id,
+    source: {
+      section: 'status',
+      kind: 'incident',
+      id: incident.id,
+    },
     title: incident.title,
-    html_url: incident.url,
-    markdown_url: statusIncidentMarkdownUrl(incident),
-    ...(incident.excerpt ? { excerpt: incident.excerpt } : {}),
-    mentioned_at: incident.started_iso,
-    sort_key: incident.sort_last_change_at,
+    htmlUrl: incident.url,
+    markdownUrl: statusIncidentMarkdownUrl(incident),
+    excerpt: incident.excerpt,
+    mentionedAt: incident.started.iso,
+    sortKey: incident.sortLastChangeAt,
   });

@@ -10,7 +10,7 @@
 
   let { delta, deltaPercent, isCheaper, isBaseline }: Props = $props();
 
-  // Don't render if no delta and not baseline
+  // Не рендерим без дельты и вне базового поселка.
   const shouldRender = $derived(isBaseline || delta !== 0);
 </script>
 

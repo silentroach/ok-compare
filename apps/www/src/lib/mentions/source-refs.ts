@@ -20,8 +20,7 @@ export const createEntityMentionSourceRefs = (
 
     seen.add(key);
     refs.push({
-      target_type: mention.type,
-      target_slug: mention.slug,
+      target: { type: mention.type, slug: mention.slug },
       ...source,
     });
   }

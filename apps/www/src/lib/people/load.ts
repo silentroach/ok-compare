@@ -1,20 +1,13 @@
 import {
   createEntityMentionGraph,
-  getEntityMentionGraphRefs,
   type EntityMentionSourceRef,
 } from '../mentions';
 import { createNewsArticleMentionRefs } from '../news/mentions';
 import { createStatusIncidentMentionRefs } from '../status/mentions';
+import { createPeopleBacklinksFromGraph } from './backlinks';
 import { createPersonProfileMentionRefs } from './mention-refs';
-import {
-  PERSON_BACKLINK_KINDS,
-  PERSON_MENTION_SECTIONS,
-  type PersonBacklinkKind,
-  type PersonMentionRef,
-  type PersonMentionSection,
-  type PersonProfile,
-} from './schema';
 import { loadPeopleData, type PeopleDataset } from './registry';
+import type { PersonProfile } from './types';
 
 export {
   buildPeopleDataset,
@@ -25,47 +18,6 @@ export type { PeopleDataset, PersonProfileEntry } from './registry';
 
 let graphCache: Promise<PeopleDataset> | undefined;
 
-const PERSON_MENTION_SECTION_SET = new Set<string>(PERSON_MENTION_SECTIONS);
-const PERSON_BACKLINK_KIND_SET = new Set<string>(PERSON_BACKLINK_KINDS);
-
-const isPersonMentionSection = (value: string): value is PersonMentionSection =>
-  PERSON_MENTION_SECTION_SET.has(value);
-
-const isPersonBacklinkKind = (value: string): value is PersonBacklinkKind =>
-  PERSON_BACKLINK_KIND_SET.has(value);
-
-const toPersonMentionRef = (
-  ref: EntityMentionSourceRef,
-): PersonMentionRef | undefined => {
-  if (
-    !isPersonMentionSection(ref.source_section) ||
-    !isPersonBacklinkKind(ref.source_kind)
-  ) {
-    return undefined;
-  }
-
-  return {
-    section: ref.source_section,
-    kind: ref.source_kind,
-    source_id: ref.source_id,
-    title: ref.title,
-    html_url: ref.html_url,
-    markdown_url: ref.markdown_url,
-    ...(ref.excerpt ? { excerpt: ref.excerpt } : {}),
-    ...(ref.mentioned_at ? { mentioned_at: ref.mentioned_at } : {}),
-    ...(ref.sort_key !== undefined ? { sort_key: ref.sort_key } : {}),
-  };
-};
-
-const toPersonMentionRefs = (
-  refs: readonly EntityMentionSourceRef[],
-): readonly PersonMentionRef[] =>
-  refs.flatMap((ref) => {
-    const backlink = toPersonMentionRef(ref);
-
-    return backlink ? [backlink] : [];
-  });
-
 export const buildPeopleGraphDataset = (
   people: PeopleDataset,
   refs: readonly EntityMentionSourceRef[],
@@ -74,23 +26,13 @@ export const buildPeopleGraphDataset = (
 
   const profiles = people.profiles.map((profile) => ({
     ...profile,
-    backlinks: {
-      news: toPersonMentionRefs(
-        getEntityMentionGraphRefs(graph, 'person', profile.slug, 'news'),
-      ),
-      status: toPersonMentionRefs(
-        getEntityMentionGraphRefs(graph, 'person', profile.slug, 'status'),
-      ),
-      people: toPersonMentionRefs(
-        getEntityMentionGraphRefs(graph, 'person', profile.slug, 'people'),
-      ),
-    },
+    backlinks: createPeopleBacklinksFromGraph(graph, profile),
   }));
 
   return {
     profiles,
-    by_slug: new Map(profiles.map((profile) => [profile.slug, profile])),
-    mention_registry: people.mention_registry,
+    bySlug: new Map(profiles.map((profile) => [profile.slug, profile])),
+    mentionRegistry: people.mentionRegistry,
   };
 };
 
@@ -128,7 +70,7 @@ export const loadPersonProfile = async (
 ): Promise<PersonProfile | undefined> => {
   const key = slug.trim();
 
-  return key ? (await loadPeopleData()).by_slug.get(key) : undefined;
+  return key ? (await loadPeopleData()).bySlug.get(key) : undefined;
 };
 
 export const loadPersonProfileWithBacklinks = async (
@@ -137,6 +79,6 @@ export const loadPersonProfileWithBacklinks = async (
   const key = slug.trim();
 
   return key
-    ? (await loadPeopleDataWithBacklinks()).by_slug.get(key)
+    ? (await loadPeopleDataWithBacklinks()).bySlug.get(key)
     : undefined;
 };

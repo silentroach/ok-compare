@@ -5,7 +5,7 @@ const fixtures = vi.hoisted(() => ({
     articles: [
       {
         canonical: 'https://example.com/news/2026/05/event/',
-        markdown_url: '/news/2026/05/event/index.md',
+        markdownUrl: '/news/2026/05/event/index.md',
       },
     ],
     archives: {

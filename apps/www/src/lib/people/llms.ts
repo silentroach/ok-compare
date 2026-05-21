@@ -2,7 +2,7 @@ import { count } from '@shelkovo/format';
 
 import { absoluteUrl } from '../site';
 import { loadPeopleDataWithBacklinks } from './load';
-import type { PersonBacklinks } from './schema';
+import type { PersonBacklinks } from './types';
 import {
   llmsSection,
   markdownList,
@@ -42,7 +42,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
   const openapi = absoluteUrl(peopleOpenApiUrl());
   const detailHtml = profile?.canonical ?? '/people/[slug]/';
   const detailMarkdown = profile
-    ? absoluteUrl(profile.markdown_url)
+    ? absoluteUrl(profile.markdownUrl)
     : '/people/[slug]/index.md';
 
   return kind === 'short'

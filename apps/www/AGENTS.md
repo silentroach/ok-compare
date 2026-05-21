@@ -64,6 +64,10 @@ pnpm typecheck
 - Для атрибуции к внешнему источнику ссылку ставь на вводную фразу, например `[По словам](https://t.me/...) @kschemelinin, ...`.
 - Source refs для backlinks публикуют соседние адаптеры разделов: `news/mentions.ts`, `status/mentions.ts`, `people/mention-refs.ts`; общий graph не должен импортировать доменные datasets источников.
 
+## Data Boundaries
+
+- YAML/frontmatter читать как Raw DTO через Zod-схему, переводить в handwritten readonly domain model через mapper, а публичные JSON/agent-facing форматы собирать отдельным Public DTO adapter. `snake_case` допустим только на raw/public legacy границах, fixtures и в документации внешнего формата.
+
 ## Agent-Facing Surfaces
 
 Если меняются section routes, markdown companions, JSON feeds, `llms.txt`, skills или discovery docs для разделов, связанные agent-facing поверхности нужно синхронно пересматривать.

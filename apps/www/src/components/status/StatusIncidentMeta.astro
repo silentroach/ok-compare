@@ -2,7 +2,7 @@
 import ShelkovoAreaIcon from '../ShelkovoAreaIcon.astro';
 import LinkWithIcon from '@shelkovo/ui/LinkWithIcon.astro';
 
-import type { StatusIncident } from '../../lib/status/schema';
+import type { StatusIncident } from '../../lib/status/types';
 import StatusIncidentPeriod from './StatusIncidentPeriod.astro';
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
 
 const { incident, className } = Astro.props;
 
-const sourceUrl = incident.source_url;
+const sourceUrl = incident.sourceUrl;
 ---
 
 <div
@@ -24,7 +24,7 @@ const sourceUrl = incident.source_url;
   <StatusIncidentPeriod incident={incident} />
 
   {
-    !incident.applies_to_all_areas &&
+    !incident.appliesToAllAreas &&
       incident.areas.map((area) => <ShelkovoAreaIcon area={area} />)
   }
 

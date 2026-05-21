@@ -10,10 +10,10 @@ describe('formatNewsEventRange', () => {
   it('formats same-day event ranges', () => {
     expect(
       formatNewsEventRange({
-        starts_iso: '2026-05-31T19:00:00+03:00',
-        starts_time: '19:00',
-        ends_iso: '2026-05-31T21:00:00+03:00',
-        ends_time: '21:00',
+        startsIso: '2026-05-31T19:00:00+03:00',
+        startsTime: '19:00',
+        endsIso: '2026-05-31T21:00:00+03:00',
+        endsTime: '21:00',
       }),
     ).toBe('31 мая 2026, 19:00-21:00');
   });
@@ -21,10 +21,10 @@ describe('formatNewsEventRange', () => {
   it('formats multi-day event ranges', () => {
     expect(
       formatNewsEventRange({
-        starts_iso: '2026-05-31T23:30:00+03:00',
-        starts_time: '23:30',
-        ends_iso: '2026-06-01T01:00:00+03:00',
-        ends_time: '01:00',
+        startsIso: '2026-05-31T23:30:00+03:00',
+        startsTime: '23:30',
+        endsIso: '2026-06-01T01:00:00+03:00',
+        endsTime: '01:00',
       }),
     ).toBe('31 мая 2026, 23:30 - 1 июня 2026, 01:00');
   });
@@ -32,8 +32,8 @@ describe('formatNewsEventRange', () => {
   it('formats open-ended event ranges with start time only', () => {
     expect(
       formatNewsEventRange({
-        starts_iso: '2026-05-31T19:00:00+03:00',
-        starts_time: '19:00',
+        startsIso: '2026-05-31T19:00:00+03:00',
+        startsTime: '19:00',
       }),
     ).toBe('31 мая 2026, 19:00');
   });

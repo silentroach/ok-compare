@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { createPersonMentionTarget } from '../people/mentions';
-import type { StatusIncident } from './schema';
+import type { StatusIncident } from './types';
 
 let createStatusIncidentMentionRefs: typeof import('./mentions').createStatusIncidentMentionRefs;
 
@@ -23,8 +23,8 @@ const incident = (input?: {
   | 'slug'
   | 'excerpt'
   | 'mentions'
-  | 'started_iso'
-  | 'sort_last_change_at'
+  | 'started'
+  | 'sortLastChangeAt'
 > => ({
   id: '2026/04/electricity-river-10kv-line-damage',
   title: 'Отключение электричества в Шелково Ривер',
@@ -34,27 +34,32 @@ const incident = (input?: {
   slug: 'electricity-river-10kv-line-damage',
   excerpt: 'Как отметил Кирилл Щемелинин, повреждение было редким.',
   mentions: input?.mentions ?? [target],
-  started_iso: '2026-04-22T11:30:00+03:00',
-  sort_last_change_at: 1770000000000,
+  started: {
+    at: new Date('2026-04-22T11:30:00+03:00'),
+    iso: '2026-04-22T11:30:00+03:00',
+    hasTime: true,
+  },
+  sortLastChangeAt: 1770000000000,
 });
 
 describe('createStatusIncidentMentionRefs', () => {
   it('creates incident source refs with status presentation fields', () => {
     expect(createStatusIncidentMentionRefs(incident())).toEqual([
       {
-        target_type: 'person',
-        target_slug: 'kschemelinin',
-        source_section: 'status',
-        source_kind: 'incident',
-        source_id: '2026/04/electricity-river-10kv-line-damage',
+        target: { type: 'person', slug: 'kschemelinin' },
+        source: {
+          section: 'status',
+          kind: 'incident',
+          id: '2026/04/electricity-river-10kv-line-damage',
+        },
         title: 'Отключение электричества в Шелково Ривер',
-        html_url:
+        htmlUrl:
           '/status/incidents/2026/04/electricity-river-10kv-line-damage/',
-        markdown_url:
+        markdownUrl:
           '/status/incidents/2026/04/electricity-river-10kv-line-damage/index.md',
         excerpt: 'Как отметил Кирилл Щемелинин, повреждение было редким.',
-        mentioned_at: '2026-04-22T11:30:00+03:00',
-        sort_key: 1770000000000,
+        mentionedAt: '2026-04-22T11:30:00+03:00',
+        sortKey: 1770000000000,
       },
     ]);
   });

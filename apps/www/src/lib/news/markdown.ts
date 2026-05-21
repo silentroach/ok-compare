@@ -17,7 +17,7 @@ import type {
   NewsPhoto,
   NewsTagPage,
   NewsYearArchive,
-} from './schema';
+} from './types';
 import {
   formatNewsArea,
   formatNewsAuthor,
@@ -52,9 +52,9 @@ const section = (
 const inline = (value: string): string => value.replace(/\s+/g, ' ').trim();
 
 function areaLabels(
-  item: Pick<NewsArticle, 'applies_to_all_areas' | 'areas'>,
+  item: Pick<NewsArticle, 'appliesToAllAreas' | 'areas'>,
 ): readonly string[] {
-  if (item.applies_to_all_areas) {
+  if (item.appliesToAllAreas) {
     return [];
   }
 
@@ -86,11 +86,11 @@ const photoLine = (label: string, photo: NewsPhoto): MarkdownListItem =>
 
 function photoSection(article: NewsArticle): readonly MarkdownNode[] {
   const rows = pick<MarkdownListItem>([
-    article.cover_url
+    article.cover
       ? md.listItem(
           `Обложка: ${pick([
-            abs(article.cover_url),
-            `alt: ${inline(article.cover_alt ?? article.title)}`,
+            abs(article.cover.url),
+            `alt: ${inline(article.cover.alt)}`,
           ]).join(' — ')}`,
         )
       : undefined,
@@ -114,10 +114,10 @@ function attachmentSection(
 }
 
 function articleLine(article: NewsListArticle): MarkdownListItem {
-  const meta = pick<string>([when(article.published_iso, article.time)]);
+  const meta = pick<string>([when(article.publishedIso, article.time)]);
   const summary = inline(article.summary);
   const titleLine = [
-    md.link(abs(article.markdown_url), article.title),
+    md.link(abs(article.markdownUrl), article.title),
     ...(meta.length > 0 ? [md.text(` — ${meta.join('; ')}`)] : []),
   ];
 
@@ -152,7 +152,7 @@ function articleFrontmatter(
   return {
     title: article.title,
     summary: article.summary,
-    published_at: machineDate(article.published_iso, article.time),
+    published_at: machineDate(article.publishedIso, article.time),
     author: {
       id: article.author.id,
       name: formatNewsAuthor(article.author, { short: false }),
@@ -160,7 +160,7 @@ function articleFrontmatter(
     },
     ...(areas.length > 0 ? { areas } : {}),
     ...(tags.length > 0 ? { tags } : {}),
-    ...(article.source_url ? { source_url: abs(article.source_url) } : {}),
+    ...(article.sourceUrl ? { source_url: abs(article.sourceUrl) } : {}),
   };
 }
 
@@ -168,7 +168,7 @@ const monthLine = (item: NewsMonthArchive): MarkdownListItem =>
   md.listItem([
     md.paragraph([
       md.link(
-        abs(item.markdown_url),
+        abs(item.markdownUrl),
         formatNewsMonth(item.year, item.month, { capitalize: true }),
       ),
       md.text(
@@ -180,7 +180,7 @@ const monthLine = (item: NewsMonthArchive): MarkdownListItem =>
 const tagLine = (item: NewsTagPage): MarkdownListItem =>
   md.listItem([
     md.paragraph([
-      md.link(abs(item.markdown_url), item.label),
+      md.link(abs(item.markdownUrl), item.label),
       md.text(
         ` — ${count(item.count, ['публикация', 'публикации', 'публикаций'])}`,
       ),

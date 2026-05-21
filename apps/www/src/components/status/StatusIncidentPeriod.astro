@@ -1,16 +1,11 @@
 ---
-import type { StatusIncident } from '../../lib/status/schema';
+import type { StatusIncident } from '../../lib/status/types';
 import { getStatusIncidentPeriod } from '../../lib/status/view';
 
 interface Props {
   readonly incident: Pick<
     StatusIncident,
-    | 'is_active'
-    | 'started_iso'
-    | 'started_has_time'
-    | 'ended_iso'
-    | 'ended_has_time'
-    | 'duration'
+    'isActive' | 'started' | 'ended' | 'duration'
   >;
 }
 

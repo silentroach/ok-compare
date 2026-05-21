@@ -1,13 +1,9 @@
 <script lang="ts">
   import Link from '@shelkovo/ui/Link.svelte';
   import type { ExplorerSettlement } from '../lib/explorer';
-  import type { ComparisonResult } from '../lib/schema';
+  import type { ComparisonResult } from '../lib/settlement/types';
   import { withBase } from '../lib/url';
-  import {
-    formatTariffAuto,
-    formatCurrency,
-    getTariffHint,
-  } from '../lib/format';
+  import { formatCurrency, formatTariff } from '../lib/format';
   import TariffRank from './TariffRank.svelte';
 
   interface Props {
@@ -27,6 +23,17 @@
       return 'info';
     return comparison.isCheaper ? 'success' : 'warning';
   });
+
+  const tariffText = $derived.by(() => {
+    const text = formatTariff(settlement.tariff.normalizedPerSotkaMonth);
+    return settlement.tariff.normalizedIsEstimate ? `~${text}` : text;
+  });
+
+  const tariffHint = $derived(
+    settlement.tariff.normalizedIsEstimate
+      ? 'Тариф приведен к сотке автоматически.'
+      : undefined,
+  );
 </script>
 
 <article
@@ -40,7 +47,7 @@
           href={withBase(`settlements/${settlement.slug}/`)}
           class="ui-link"
         >
-          {settlement.short_name}
+          {settlement.shortName}
         </Link>
       </h3>
       <p class="text-sm leading-snug text-muted-foreground">
@@ -85,9 +92,9 @@
     >
       <span
         class="ui-num text-[1.65rem] font-bold leading-none text-foreground md:text-2xl"
-        title={getTariffHint(settlement.tariff)}
+        title={tariffHint}
       >
-        {formatTariffAuto(settlement.tariff)}
+        {tariffText}
       </span>
       {#if !isBaseline && comparison && comparison.tariffDelta !== 0}
         {#if comparison.isCheaper}

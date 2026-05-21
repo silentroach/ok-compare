@@ -6,7 +6,7 @@
     DrainageType,
     VideoSurveillance,
     UndergroundElectricity,
-  } from '../lib/schema';
+  } from '../lib/settlement/types';
 
   interface Props {
     title?: string;
@@ -17,8 +17,11 @@
   let { title = '', infra, shelkovoInfra }: Props = $props();
   let only = $state(false);
 
-  // Infrastructure item labels in Russian
-  const labels: Record<string, string> = {
+  type InfrastructureKey = keyof Infrastructure;
+  type Display = { icon: string; text: string; tone: string };
+
+  // Русские подписи инфраструктуры.
+  const labels: Record<InfrastructureKey, string> = {
     roads: 'Дороги',
     sidewalks: 'Тротуары',
     lighting: 'Уличное освещение',
@@ -29,40 +32,37 @@
     checkpoints: 'КПП',
     security: 'Охрана',
     fencing: 'Закрытая территория',
-    video_surveillance: 'Видеонаблюдение',
-    underground_electricity: 'Подземная электросеть',
-    admin_building: 'Административное здание',
-    retail_or_services: 'Магазины',
+    videoSurveillance: 'Видеонаблюдение',
+    undergroundElectricity: 'Подземная электросеть',
+    adminBuilding: 'Административное здание',
+    retailOrServices: 'Магазины',
   };
 
-  // Status icons for AvailabilityStatus
+  // Иконки базовых статусов.
   const icons: Record<AvailabilityStatus, string> = {
     yes: '✓',
     no: '✗',
     partial: '◐',
   };
 
-  // Status colors for badges
+  // Цвета бейджей базовых статусов.
   const tones: Record<AvailabilityStatus, string> = {
     yes: 'ui-badge-success',
     no: 'ui-badge-danger',
     partial: 'ui-badge-warning',
   };
 
-  // Get status text for AvailabilityStatus
+  // Текст базовых статусов.
   const statusText: Record<AvailabilityStatus, string> = {
     yes: 'Есть',
     no: 'Нет',
     partial: 'Частично',
   };
 
-  // Road type display config
-  const roadConfig: Record<
-    RoadType,
-    { icon: string; text: string; tone: string }
-  > = {
+  // Отображение типов дорог.
+  const roadConfig: Record<RoadType, Display> = {
     asphalt: { icon: '●', text: 'Асфальт', tone: 'ui-badge-success' },
-    partial_asphalt: {
+    partlyAsphalt: {
       icon: '◐',
       text: 'Частично асфальт',
       tone: 'ui-badge-warning',
@@ -71,23 +71,17 @@
     dirt: { icon: '✗', text: 'Грунт', tone: 'ui-badge-danger' },
   };
 
-  // Drainage type display config
-  const drainageConfig: Record<
-    DrainageType,
-    { icon: string; text: string; tone: string }
-  > = {
+  // Отображение типов ливневки.
+  const drainageConfig: Record<DrainageType, Display> = {
     closed: { icon: '✓', text: 'Закрытая', tone: 'ui-badge-success' },
     open: { icon: '◐', text: 'Открытая', tone: 'ui-badge-warning' },
     none: { icon: '✗', text: 'Отсутствует', tone: 'ui-badge-danger' },
   };
 
-  // Video surveillance display config
-  const videoConfig: Record<
-    VideoSurveillance,
-    { icon: string; text: string; tone: string }
-  > = {
+  // Отображение типов видеонаблюдения.
+  const videoConfig: Record<VideoSurveillance, Display> = {
     full: { icon: '✓', text: 'Есть', tone: 'ui-badge-success' },
-    checkpoint_only: {
+    checkpointOnly: {
       icon: '◐',
       text: 'Только на КПП',
       tone: 'ui-badge-warning',
@@ -95,80 +89,59 @@
     none: { icon: '✗', text: 'Нет', tone: 'ui-badge-danger' },
   };
 
-  // Underground electricity display config
-  const electricityConfig: Record<
-    UndergroundElectricity,
-    { icon: string; text: string; tone: string }
-  > = {
+  // Отображение типов подземной электросети.
+  const electricityConfig: Record<UndergroundElectricity, Display> = {
     full: { icon: '✓', text: 'Полностью', tone: 'ui-badge-success' },
     partial: { icon: '◐', text: 'Частично', tone: 'ui-badge-warning' },
     none: { icon: '✗', text: 'По столбам', tone: 'ui-badge-danger' },
   };
 
-  // Get display config for a specific infrastructure key and value
-  function getDisplayConfig(
-    key: string,
-    value: string | undefined,
-  ): { icon: string; text: string; tone: string } {
-    if (value === undefined) {
-      return { icon: '?', text: 'Неизвестно', tone: 'ui-badge-muted' };
-    }
+  const unknown: Display = {
+    icon: '?',
+    text: 'Неизвестно',
+    tone: 'ui-badge-muted',
+  };
 
+  const getFromConfig = <Value extends string>(
+    value: Value | undefined,
+    config: Record<Value, Display>,
+  ): Display => (value === undefined ? unknown : config[value]);
+
+  const getAvailabilityDisplay = (value?: AvailabilityStatus): Display =>
+    value === undefined
+      ? unknown
+      : {
+          icon: icons[value],
+          text: statusText[value],
+          tone: tones[value],
+        };
+
+  // Подбираем отображение по конкретному ключу инфраструктуры.
+  function getDisplayConfig(
+    key: InfrastructureKey,
+    source: Infrastructure,
+  ): Display {
     switch (key) {
       case 'roads':
-        return (
-          roadConfig[value as RoadType] || {
-            icon: '?',
-            text: 'Неизвестно',
-            tone: 'ui-badge-muted',
-          }
-        );
+        return getFromConfig(source.roads, roadConfig);
       case 'drainage':
-        return (
-          drainageConfig[value as DrainageType] || {
-            icon: '?',
-            text: 'Неизвестно',
-            tone: 'ui-badge-muted',
-          }
-        );
-      case 'video_surveillance':
-        return (
-          videoConfig[value as VideoSurveillance] || {
-            icon: '?',
-            text: 'Неизвестно',
-            tone: 'ui-badge-muted',
-          }
-        );
-      case 'underground_electricity':
-        return (
-          electricityConfig[value as UndergroundElectricity] || {
-            icon: '?',
-            text: 'Неизвестно',
-            tone: 'ui-badge-muted',
-          }
-        );
+        return getFromConfig(source.drainage, drainageConfig);
+      case 'videoSurveillance':
+        return getFromConfig(source.videoSurveillance, videoConfig);
+      case 'undergroundElectricity':
+        return getFromConfig(source.undergroundElectricity, electricityConfig);
       default:
-        // Use AvailabilityStatus config for other fields
-        return {
-          icon: icons[value as AvailabilityStatus] || '?',
-          text: statusText[value as AvailabilityStatus] || 'Неизвестно',
-          tone: tones[value as AvailabilityStatus] || 'ui-badge-muted',
-        };
+        return getAvailabilityDisplay(source[key]);
     }
   }
 
-  type Display = { icon: string; text: string; tone: string };
-
-  // Check if there's a difference between settlement and Shelkovo
-  function hasDifference(key: string): boolean {
+  // Проверяем отличие поселка от Шелково.
+  function hasDifference(key: InfrastructureKey): boolean {
     if (!shelkovoInfra) return false;
-    return (
-      infra[key as keyof Infrastructure] !==
-      shelkovoInfra[key as keyof Infrastructure]
-    );
+    return infra[key] !== shelkovoInfra[key];
   }
 
-  // Order of infrastructure items for display
+  // Порядок отображения инфраструктуры.
   const infraOrder = [
     'roads',
     'sidewalks',
@@ -180,11 +153,11 @@
     'checkpoints',
     'security',
     'fencing',
-    'video_surveillance',
-    'underground_electricity',
-    'admin_building',
-    'retail_or_services',
-  ];
+    'videoSurveillance',
+    'undergroundElectricity',
+    'adminBuilding',
+    'retailOrServices',
+  ] as const satisfies readonly InfrastructureKey[];
 
   const rows = $derived(
     only && shelkovoInfra
@@ -237,7 +210,7 @@
     </span>
   {/snippet}
 
-  <!-- Keyboard focus is intentional so arrow keys can scroll the table. -->
+  <!-- Фокус нужен, чтобы стрелками прокручивать таблицу. -->
   <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
   <div
     class="ui-sticky-table-shell ui-sticky-table-surface"
@@ -269,16 +242,13 @@
           </tr>
         {:else}
           {#each rows as key (key)}
-            {@const value = infra[key as keyof Infrastructure]}
-            {@const shelkovoValue =
-              shelkovoInfra?.[key as keyof Infrastructure]}
-            {@const display = getDisplayConfig(key, value)}
+            {@const display = getDisplayConfig(key, infra)}
             {@const shelkovoDisplay = shelkovoInfra
-              ? getDisplayConfig(key, shelkovoValue)
+              ? getDisplayConfig(key, shelkovoInfra)
               : undefined}
             <tr data-testid="infra-row" class="ui-table-row">
               <td class="ui-table-cell text-sm text-foreground">
-                {labels[key] || key}
+                {labels[key]}
               </td>
               <td class="ui-table-cell ui-table-cell-center">
                 {@render badge(display, 'infra-status')}

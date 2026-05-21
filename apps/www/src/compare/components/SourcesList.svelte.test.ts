@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/svelte';
 import SourcesList from './SourcesList.svelte';
-import type { Source } from '../lib/schema';
+import type { Source } from '../lib/settlement/types';
 
 describe('SourcesList', () => {
   const mockSources: Source[] = [
@@ -9,21 +9,21 @@ describe('SourcesList', () => {
       title: 'Сайт УК КП Шелково',
       url: 'https://shelkovo-kp.ru',
       type: 'official',
-      date_checked: '2026-03-10',
+      dateChecked: '2026-03-10',
       comment: 'Официальный сайт управляющей компании',
     },
     {
       title: 'Чат жителей (Telegram)',
       url: 'https://t.me/shelkovo_chat',
       type: 'community',
-      date_checked: '2026-03-15',
+      dateChecked: '2026-03-15',
       comment: '',
     },
     {
       title: 'Статья в газете',
       url: 'https://example.com/article',
       type: 'media',
-      date_checked: '2026-02-20',
+      dateChecked: '2026-02-20',
       comment: 'Публикация о тарифах',
     },
   ];
@@ -37,7 +37,7 @@ describe('SourcesList', () => {
     expect(container.textContent).toContain('Чат жителей (Telegram)');
     expect(container.textContent).toContain('Статья в газете');
 
-    // Check dates are rendered in Russian format (DD MMMM YYYY)
+    // Проверяем, что даты рендерятся в русском формате DD MMMM YYYY.
     expect(container.textContent).toContain('10 марта 2026');
     expect(container.textContent).toContain('15 марта 2026');
     expect(container.textContent).toContain('20 февраля 2026');
@@ -96,7 +96,7 @@ describe('SourcesList', () => {
         title: 'Личное наблюдение',
         url: 'https://example.com',
         type: 'personal',
-        date_checked: '2026-03-01',
+        dateChecked: '2026-03-01',
         comment: '',
       },
     ];

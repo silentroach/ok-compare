@@ -1,23 +1,23 @@
 import { z } from 'zod';
 
-// Enums
+// Перечисления.
 export const AvailabilityStatusEnum = z.enum(['yes', 'no', 'partial']);
-export type AvailabilityStatus = z.infer<typeof AvailabilityStatusEnum>;
+type RawAvailabilityStatus = z.output<typeof AvailabilityStatusEnum>;
 
 export const TariffUnitEnum = z.enum([
   'rub_per_sotka',
   'rub_per_lot',
   'rub_fixed',
 ]);
-export type TariffUnit = z.infer<typeof TariffUnitEnum>;
+type RawTariffUnit = z.output<typeof TariffUnitEnum>;
 
 export const TariffPeriodEnum = z.enum(['month', 'quarter', 'year']);
-export type TariffPeriod = z.infer<typeof TariffPeriodEnum>;
+type RawTariffPeriod = z.output<typeof TariffPeriodEnum>;
 
 type TariffValue = {
   value: number;
-  unit: TariffUnit;
-  period: TariffPeriod;
+  unit: RawTariffUnit;
+  period: RawTariffPeriod;
 };
 
 export const SourceTypeEnum = z.enum([
@@ -26,34 +26,31 @@ export const SourceTypeEnum = z.enum([
   'media',
   'personal',
 ]);
-export type SourceType = z.infer<typeof SourceTypeEnum>;
 
-// Road type enum (ordered from best to worst)
+// Типы дорог от лучшего к худшему.
 export const RoadTypeEnum = z.enum([
   'asphalt',
   'partial_asphalt',
   'gravel',
   'dirt',
 ]);
-export type RoadType = z.infer<typeof RoadTypeEnum>;
+type RawRoadType = z.output<typeof RoadTypeEnum>;
 
-// Drainage type enum (ordered from best to worst)
+// Типы ливневки от лучшего к худшему.
 export const DrainageTypeEnum = z.enum(['closed', 'open', 'none']);
-export type DrainageType = z.infer<typeof DrainageTypeEnum>;
+type RawDrainageType = z.output<typeof DrainageTypeEnum>;
 
-// Video surveillance enum (ordered from best to worst)
+// Типы видеонаблюдения от лучшего к худшему.
 export const VideoSurveillanceEnum = z.enum([
   'full',
   'checkpoint_only',
   'none',
 ]);
-export type VideoSurveillance = z.infer<typeof VideoSurveillanceEnum>;
 
-// Underground electricity enum (ordered from best to worst)
+// Типы подземной электросети от лучшего к худшему.
 export const UndergroundElectricityEnum = z.enum(['full', 'partial', 'none']);
-export type UndergroundElectricity = z.infer<typeof UndergroundElectricityEnum>;
 
-// Location schema with coordinate validation
+// Схема локации с проверкой координат.
 export const LocationSchema = z.object({
   address_text: z.string().min(1),
   lat: z.number().min(-90).max(90),
@@ -61,13 +58,12 @@ export const LocationSchema = z.object({
   map_url: z.string().url().optional(),
   district: z.string().min(1),
 });
-export type Location = z.infer<typeof LocationSchema>;
 
-// Tariff schema
+// Схема тарифа.
 const LOT = 10;
 const SOTKA = 100;
 
-function month(period: TariffPeriod): number {
+function month(period: RawTariffPeriod): number {
   if (period === 'month') return 1;
   if (period === 'quarter') return 3;
   return 12;
@@ -75,8 +71,8 @@ function month(period: TariffPeriod): number {
 
 function norm(
   value: number,
-  unit: TariffUnit,
-  period: TariffPeriod,
+  unit: RawTariffUnit,
+  period: RawTariffPeriod,
   lot = LOT,
 ): number {
   const monthly = value / month(period);
@@ -120,7 +116,6 @@ export const TariffSchema = z
     if (list.length === 1) return base;
     return { ...base, parts: list };
   });
-export type Tariff = z.infer<typeof TariffSchema>;
 
 export const LotsSchema = z
   .object({
@@ -133,7 +128,11 @@ export const LotsSchema = z
     message: 'average_note requires average_sotka',
     path: ['average_note'],
   });
-export type Lots = z.infer<typeof LotsSchema>;
+
+type Lots = z.output<typeof LotsSchema>;
+type Infrastructure = z.output<typeof InfrastructureSchema>;
+type CommonSpaces = z.output<typeof CommonSpacesSchema>;
+type Tariff = z.output<typeof TariffSchema>;
 
 export interface LotPart {
   title: string;
@@ -163,7 +162,7 @@ export interface LotEstimate {
 export type LotBreakdown = LotExact | LotEstimate;
 
 function share(
-  value: AvailabilityStatus | undefined,
+  value: RawAvailabilityStatus | undefined,
   yes: number,
   part = yes / 2,
 ): number {
@@ -172,7 +171,7 @@ function share(
   return 0;
 }
 
-function road(value: RoadType | undefined): number {
+function road(value?: RawRoadType): number {
   if (value === 'asphalt') return 0.9;
   if (value === 'partial_asphalt') return 0.8;
   if (value === 'gravel') return 0.7;
@@ -180,19 +179,19 @@ function road(value: RoadType | undefined): number {
   return 0;
 }
 
-function drain(value: DrainageType | undefined): number {
+function drain(value?: RawDrainageType): number {
   if (value === 'closed') return 0.25;
   if (value === 'open') return 0.15;
   return 0;
 }
 
-function note(value: AvailabilityStatus | undefined): string | undefined {
+function note(value?: RawAvailabilityStatus): string | undefined {
   if (value === 'yes') return 'подтверждено';
   if (value === 'partial') return 'частично подтверждено';
   return;
 }
 
-function roadNote(value: RoadType | undefined): string | undefined {
+function roadNote(value?: RawRoadType): string | undefined {
   if (value === 'asphalt') return 'асфальт';
   if (value === 'partial_asphalt') return 'частично асфальт';
   if (value === 'gravel') return 'гравий';
@@ -200,7 +199,7 @@ function roadNote(value: RoadType | undefined): string | undefined {
   return;
 }
 
-function drainNote(value: DrainageType | undefined): string | undefined {
+function drainNote(value?: RawDrainageType): string | undefined {
   if (value === 'closed') return 'закрытая';
   if (value === 'open') return 'открытая';
   return;
@@ -213,7 +212,7 @@ function add(
   item?: string,
 ): void {
   if (!value) return;
-  rows.push({ title, value, ...(item ? { note: item } : {}) });
+  rows.push({ title, value, note: item });
 }
 
 export function getLotBreakdown(
@@ -225,9 +224,9 @@ export function getLotBreakdown(
     return {
       size: lots.average_sotka,
       exact: true,
-      ...(lots.count !== undefined ? { count: lots.count } : {}),
-      ...(lots.area_ha !== undefined ? { area_ha: lots.area_ha } : {}),
-      ...(lots.average_note ? { note: lots.average_note } : {}),
+      count: lots.count,
+      area_ha: lots.area_ha,
+      note: lots.average_note,
     };
   }
 
@@ -377,34 +376,32 @@ export function normalizeSettlement<
   };
 }
 
-// Infrastructure schema - all fields optional
+// Схема инфраструктуры: все поля необязательные.
 export const InfrastructureSchema = z.object({
-  // Road type (allows comparison: asphalt > partial_asphalt > gravel > dirt)
+  // Тип дороги для сравнения: asphalt > partial_asphalt > gravel > dirt.
   roads: RoadTypeEnum.optional(),
   sidewalks: AvailabilityStatusEnum.optional(),
   lighting: AvailabilityStatusEnum.optional(),
   gas: AvailabilityStatusEnum.optional(),
-  // Central water supply
+  // Центральное водоснабжение.
   water: AvailabilityStatusEnum.optional(),
-  // Central sewage
+  // Центральная канализация.
   sewage: AvailabilityStatusEnum.optional(),
-  // Drainage/stormwater (allows comparison: closed > open > none)
+  // Ливневка для сравнения: closed > open > none.
   drainage: DrainageTypeEnum.optional(),
   checkpoints: AvailabilityStatusEnum.optional(),
   security: AvailabilityStatusEnum.optional(),
-  // Closed territory (fencing)
+  // Закрытая территория с ограждением.
   fencing: AvailabilityStatusEnum.optional(),
-  // Video surveillance (allows comparison: full > checkpoint_only > none)
+  // Видеонаблюдение для сравнения: full > checkpoint_only > none.
   video_surveillance: VideoSurveillanceEnum.optional(),
-  // Underground electricity (allows comparison: full > partial > none)
+  // Подземная электросеть для сравнения: full > partial > none.
   underground_electricity: UndergroundElectricityEnum.optional(),
   admin_building: AvailabilityStatusEnum.optional(),
-  // Shops
+  // Магазины и сервисы.
   retail_or_services: AvailabilityStatusEnum.optional(),
 });
-export type Infrastructure = z.infer<typeof InfrastructureSchema>;
-
-// Common spaces schema - all fields optional
+// Схема общих пространств: все поля необязательные.
 export const CommonSpacesSchema = z.object({
   playgrounds: AvailabilityStatusEnum.optional(),
   sports: AvailabilityStatusEnum.optional(),
@@ -421,9 +418,8 @@ export const CommonSpacesSchema = z.object({
   club_infrastructure: AvailabilityStatusEnum.optional(),
   bbq_zones: AvailabilityStatusEnum.optional(),
 });
-export type CommonSpaces = z.infer<typeof CommonSpacesSchema>;
 
-// Service model schema
+// Схема сервисной модели.
 export const ServiceModelSchema = z.object({
   garbage_collection: AvailabilityStatusEnum.optional(),
   snow_removal: AvailabilityStatusEnum.optional(),
@@ -432,9 +428,8 @@ export const ServiceModelSchema = z.object({
   emergency_service: AvailabilityStatusEnum.optional(),
   dispatcher: AvailabilityStatusEnum.optional(),
 });
-export type ServiceModel = z.infer<typeof ServiceModelSchema>;
 
-// Source schema
+// Схема источника.
 export const SourceSchema = z.object({
   title: z.string().min(1),
   url: z.string().url(),
@@ -445,7 +440,6 @@ export const SourceSchema = z.object({
   ]),
   comment: z.string().default(''),
 });
-export type Source = z.infer<typeof SourceSchema>;
 
 export const ManagementCompanySchema = z.union([
   z.string().min(1),
@@ -454,16 +448,14 @@ export const ManagementCompanySchema = z.union([
     url: z.string().url(),
   }),
 ]);
-export type ManagementCompany = z.infer<typeof ManagementCompanySchema>;
 
 export const TelegramSchema = z
   .string()
   .trim()
   .regex(/^@?[A-Za-z0-9_]{5,32}$/)
   .transform((item) => item.replace(/^@/, ''));
-export type Telegram = z.infer<typeof TelegramSchema>;
 
-// Main Settlement schema
+// Основная схема поселка.
 export const SettlementSchema = z
   .object({
     name: z.string().min(1),
@@ -497,28 +489,3 @@ export const SettlementSchema = z
     }
   })
   .transform((item) => normalizeSettlement(item));
-export type Settlement = z.infer<typeof SettlementSchema>;
-
-// Stats type (computed, not from YAML)
-export interface Stats {
-  shelkovoTariff: number;
-  medianTariff: number;
-  peerMedianTariff: number;
-  meanTariff: number;
-  minTariff: number;
-  maxTariff: number;
-  shelkovoRank: number;
-  totalSettlements: number;
-  cheaperCount: number;
-  moreExpensiveCount: number;
-  shelkovoVsMedianPercent: number;
-  shelkovoVsPeerMedianPercent: number;
-  shelkovoVsMeanPercent: number;
-}
-
-// Comparison result type (computed)
-export interface ComparisonResult {
-  tariffDelta: number;
-  tariffDeltaPercent: number;
-  isCheaper: boolean;
-}

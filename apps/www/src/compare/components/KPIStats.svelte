@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Stats } from '../lib/schema';
+  import type { Stats } from '../lib/settlement/types';
   import { formatPercentage, formatTariff } from '../lib/format';
 
   interface Props {

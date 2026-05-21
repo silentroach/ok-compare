@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 
 import { findBaseline, loadAllData } from '@/compare/lib/data';
 import { buildSettlementMd } from '@/compare/lib/markdown';
-import type { Settlement } from '@/compare/lib/schema';
+import type { Settlement } from '@/compare/lib/settlement/types';
 
 export const prerender = true;
 

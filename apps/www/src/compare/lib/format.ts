@@ -6,14 +6,14 @@ import {
   formatTariff,
 } from '@shelkovo/format';
 import { calculateDistance } from '@shelkovo/geo';
-import {
-  getLotBreakdown,
-  getLotAverage,
-  type CommonSpaces,
-  type Infrastructure,
-  type Lots,
-  type Tariff,
-} from './schema';
+import { getLotBreakdown, getLotAverage } from './settlement/lots';
+import type {
+  CommonSpaces,
+  Infrastructure,
+  Lots,
+  Tariff,
+  TariffPart,
+} from './settlement/types';
 
 export {
   calculateDistance,
@@ -26,7 +26,7 @@ export {
 
 type TariffView = Pick<
   Tariff,
-  'normalized_per_sotka_month' | 'normalized_is_estimate'
+  'normalizedPerSotkaMonth' | 'normalizedIsEstimate'
 >;
 type TariffLike = Tariff | TariffView;
 
@@ -64,14 +64,14 @@ function area(value: number): string {
 }
 
 function why(lots: Lots | undefined): string {
-  if (lots?.average_sotka) {
+  if (lots?.averageSotka) {
     return (
-      lots.average_note ??
+      lots.averageNote ??
       'Средняя площадь участка добавлена по подтвержденным данным.'
     );
   }
 
-  if (lots?.count && lots.area_ha) {
+  if (lots?.count && lots.areaHa) {
     return 'Площадь участка оценочная.';
   }
 
@@ -82,12 +82,25 @@ function join(value: string): string {
   return value.endsWith('.') ? ' ' : '. ';
 }
 
+const numeric = (item: TariffLike): number => item.normalizedPerSotkaMonth;
+
+const estimated = (item: TariffLike): boolean => item.normalizedIsEstimate;
+
+const unit = (value: unknown): Tariff['unit'] => {
+  if (value === 'perSotka') return 'perSotka';
+  if (value === 'perLot') return 'perLot';
+  return 'fixed';
+};
+
+const tariffParts = (tariff: Tariff): readonly TariffPart[] =>
+  tariff.parts ?? [tariff];
+
 /**
  * Format normalized tariff and add '~' for estimated values.
  */
 export function formatTariffAuto(tariff: TariffLike): string {
-  const text = formatTariff(tariff.normalized_per_sotka_month);
-  if (!tariff.normalized_is_estimate) return text;
+  const text = formatTariff(numeric(tariff));
+  if (!estimated(tariff)) return text;
   return `~${text}`;
 }
 
@@ -95,11 +108,11 @@ export function formatTariffAuto(tariff: TariffLike): string {
  * Format original tariff (before normalization).
  */
 export function formatTariffBase(tariff: Tariff): string {
-  if ('parts' in tariff) {
+  if (tariff.parts) {
     return tariff.parts
       .map((item) => {
         const val = formatCurrency(item.value);
-        if (item.unit === 'rub_per_sotka') {
+        if (unit(item.unit) === 'perSotka') {
           return `${val}/сотка`;
         }
         return `${val}/участок`;
@@ -108,7 +121,7 @@ export function formatTariffBase(tariff: Tariff): string {
   }
 
   const val = formatCurrency(tariff.value);
-  if (tariff.unit === 'rub_per_sotka') {
+  if (unit(tariff.unit) === 'perSotka') {
     return `${val}/сотка`;
   }
   return `${val}/участок`;
@@ -124,12 +137,12 @@ function period(value: Tariff['period']): string {
  * Format original tariff with period included (for markdown/long-form display).
  */
 export function formatTariffOriginal(tariff: Tariff): string {
-  const list = 'parts' in tariff ? tariff.parts : [tariff];
+  const list = tariffParts(tariff);
   return list
     .map((item) => {
       const val = formatCurrency(item.value);
       const base =
-        item.unit === 'rub_per_sotka' ? `${val}/сотка` : `${val}/участок`;
+        unit(item.unit) === 'perSotka' ? `${val}/сотка` : `${val}/участок`;
       return `${base} ${period(item.period)}`;
     })
     .join(' + ');
@@ -139,8 +152,7 @@ export function formatTariffOriginal(tariff: Tariff): string {
  * True when any part of the tariff is not expressed in ₽/сотка.
  */
 export function hasNonSotkaUnit(tariff: Tariff): boolean {
-  const list = 'parts' in tariff ? tariff.parts : [tariff];
-  return list.some((item) => item.unit !== 'rub_per_sotka');
+  return tariffParts(tariff).some((item) => unit(item.unit) !== 'perSotka');
 }
 
 export interface TariffCalcRow {
@@ -166,7 +178,7 @@ export interface LotCalc {
  * Generic tooltip for compact cards.
  */
 export function getTariffHint(tariff: TariffLike): string | undefined {
-  if (!tariff.normalized_is_estimate) return;
+  if (!estimated(tariff)) return;
   return 'Тариф приведен к сотке автоматически.';
 }
 
@@ -181,12 +193,12 @@ export function getLotCalc(
   if (item.exact) {
     return {
       known:
-        item.area_ha && item.count
-          ? `${num(item.area_ha)} га и ${num(item.count)} участков.`
+        item.areaHa && item.count
+          ? `${num(item.areaHa)} га и ${num(item.count)} участков.`
           : item.count
             ? `${num(item.count)} участков.`
             : 'Подтвержденные данные.',
-      ...(item.note ? { factors: item.note } : {}),
+      factors: item.note,
       total: area(item.size),
     };
   }
@@ -202,7 +214,7 @@ export function getLotCalc(
         : `${head}.`;
 
   return {
-    known: `${num(item.area_ha)} га и ${num(item.count)} участков.`,
+    known: `${num(item.areaHa)} га и ${num(item.count)} участков.`,
     factors: item.cap
       ? `${factors} Вычет ограничен 2,5 сот. на участок.`
       : factors,
@@ -220,35 +232,37 @@ export function getTariffCalc(
   common?: CommonSpaces,
 ): TariffCalc | undefined {
   const size = getLotAverage(lots, infra, common) ?? LOT;
-  const list = 'parts' in tariff ? tariff.parts : [tariff];
+  const list = tariffParts(tariff);
   const multi = list.length > 1;
-  const lot = list.some((item) => item.unit !== 'rub_per_sotka');
+  const lot = list.some((item) => unit(item.unit) !== 'perSotka');
 
   if (!multi && !lot) return;
 
   const rows = list.map((item, i) => {
     const m = months(item.period);
     const mons = word(m, 'месяц', 'месяца', 'месяцев');
-    const monthly = item.value / m;
-    const normalized = item.unit === 'rub_per_sotka' ? monthly : monthly / size;
+    const value = item.value;
+    const monthly = value / m;
+    const normalized =
+      unit(item.unit) === 'perSotka' ? monthly : monthly / size;
     const title = multi ? `Часть ${i + 1}` : 'Тариф';
     const source =
-      item.unit === 'rub_per_sotka'
+      unit(item.unit) === 'perSotka'
         ? 'Указан за сотку.'
-        : item.unit === 'rub_per_lot'
+        : unit(item.unit) === 'perLot'
           ? 'Указан за участок.'
           : 'Указан фиксированной суммой за участок.';
     const formula =
-      item.unit === 'rub_per_sotka'
-        ? `${num(item.value)} ₽ / ${m} ${mons} = ${num(normalized)} ₽/сотка в месяц`
-        : `(${num(item.value)} ₽ / ${m} ${mons}) / ${area(size)} = ${num(normalized)} ₽/сотка в месяц`;
+      unit(item.unit) === 'perSotka'
+        ? `${num(value)} ₽ / ${m} ${mons} = ${num(normalized)} ₽/сотка в месяц`
+        : `(${num(value)} ₽ / ${m} ${mons}) / ${area(size)} = ${num(normalized)} ₽/сотка в месяц`;
 
     return { title, source, formula };
   });
 
   const total = list.reduce((sum, item) => {
     const monthly = item.value / months(item.period);
-    if (item.unit === 'rub_per_sotka') return sum + monthly;
+    if (unit(item.unit) === 'perSotka') return sum + monthly;
     return sum + monthly / size;
   }, 0);
 
