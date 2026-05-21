@@ -5,16 +5,18 @@ import {
   RABSTVO_PENALTY,
   WATER_BONUS,
 } from './rating';
-import type { Settlement } from './schema';
+import { mapRawSettlement } from './settlement/mapper';
+import type { RawSettlement } from './settlement/schema';
+import type { Settlement } from './settlement/types';
 
 function mk(
   slug: string,
-  opts?: Partial<Settlement> & {
+  opts?: Partial<RawSettlement> & {
     lat?: number;
     lng?: number;
   },
 ): Settlement {
-  return {
+  return mapRawSettlement({
     name: slug,
     short_name: slug,
     slug,
@@ -46,7 +48,7 @@ function mk(
       },
     ],
     ...opts,
-  };
+  } satisfies RawSettlement);
 }
 
 describe('buildRatings', () => {

@@ -7,13 +7,15 @@ import {
 import { formatNewsArea } from '../news/view';
 import type {
   StatusArea,
-  StatusDaysWithoutIncidents,
-  StatusDuration,
-  StatusIncident,
   StatusKind,
   StatusService,
   StatusServiceState,
 } from './schema';
+import type {
+  StatusDaysWithoutIncidents,
+  StatusDuration,
+  StatusIncident,
+} from './types';
 
 const SERVICE_LABELS: Record<StatusService, string> = {
   electricity: 'Электричество',
@@ -85,11 +87,11 @@ type StatusTimelineTooltipIncident = Pick<
   StatusIncident,
   | 'kind'
   | 'title'
-  | 'is_active'
-  | 'ended_iso'
-  | 'started_iso'
-  | 'started_has_time'
-  | 'ended_has_time'
+  | 'isActive'
+  | 'endedIso'
+  | 'startedIso'
+  | 'startedHasTime'
+  | 'endedHasTime'
   | 'duration'
 > & {
   readonly service?: StatusService;
@@ -156,7 +158,7 @@ export const formatStatusDuration = (
   duration: StatusDuration,
   opts?: StatusTypographyOptions,
 ): string => {
-  const total = Math.max(0, duration.total_minutes);
+  const total = Math.max(0, duration.totalMinutes);
   const days = Math.floor(total / (24 * 60));
   const hours = Math.floor((total % (24 * 60)) / 60);
   const minutes = total % 60;
@@ -180,55 +182,55 @@ export const formatStatusDuration = (
 export const getStatusIncidentPeriod = (
   incident: Pick<
     StatusIncident,
-    | 'is_active'
-    | 'started_iso'
-    | 'started_has_time'
-    | 'ended_iso'
-    | 'ended_has_time'
+    | 'isActive'
+    | 'startedIso'
+    | 'startedHasTime'
+    | 'endedIso'
+    | 'endedHasTime'
     | 'duration'
   >,
   opts?: StatusTypographyOptions,
 ): StatusIncidentPeriod => {
   const start = {
-    iso: incident.started_iso,
-    text: formatStatusDate(incident.started_iso, {
-      hasTime: incident.started_has_time,
+    iso: incident.startedIso,
+    text: formatStatusDate(incident.startedIso, {
+      hasTime: incident.startedHasTime,
       nonBreaking: opts?.nonBreaking,
     }),
   };
-  const endedIso = incident.ended_iso;
+  const endedIso = incident.endedIso;
 
   if (!endedIso) {
     return {
-      prefix: incident.is_active ? 'Начиная с' : 'Начало',
+      prefix: incident.isActive ? 'Начиная с' : 'Начало',
       start,
     };
   }
 
   const hasSameDayDateRange =
-    !incident.started_has_time &&
-    !incident.ended_has_time &&
-    isSameStatusDay(incident.started_iso, endedIso);
+    !incident.startedHasTime &&
+    !incident.endedHasTime &&
+    isSameStatusDay(incident.startedIso, endedIso);
 
   if (hasSameDayDateRange) {
     return {
       start: {
-        iso: incident.started_iso,
-        text: formatStatusCalendarDate(incident.started_iso, opts),
+        iso: incident.startedIso,
+        text: formatStatusCalendarDate(incident.startedIso, opts),
       },
     };
   }
 
   const hasSameDayTimeRange =
-    incident.started_has_time &&
-    incident.ended_has_time &&
-    isSameStatusDay(incident.started_iso, endedIso);
+    incident.startedHasTime &&
+    incident.endedHasTime &&
+    isSameStatusDay(incident.startedIso, endedIso);
 
   return {
     start: hasSameDayTimeRange
       ? {
-          iso: incident.started_iso,
-          text: formatStatusDate(incident.started_iso, {
+          iso: incident.startedIso,
+          text: formatStatusDate(incident.startedIso, {
             hasTime: true,
             nonBreaking: opts?.nonBreaking,
           }),
@@ -239,7 +241,7 @@ export const getStatusIncidentPeriod = (
       text: hasSameDayTimeRange
         ? formatStatusTime(endedIso)
         : formatStatusDate(endedIso, {
-            hasTime: incident.ended_has_time,
+            hasTime: incident.endedHasTime,
             nonBreaking: opts?.nonBreaking,
           }),
     },
@@ -252,11 +254,11 @@ export const getStatusIncidentPeriod = (
 export const formatStatusIncidentPeriodText = (
   incident: Pick<
     StatusIncident,
-    | 'is_active'
-    | 'started_iso'
-    | 'started_has_time'
-    | 'ended_iso'
-    | 'ended_has_time'
+    | 'isActive'
+    | 'startedIso'
+    | 'startedHasTime'
+    | 'endedIso'
+    | 'endedHasTime'
     | 'duration'
   >,
   opts?: StatusTypographyOptions,
@@ -337,9 +339,9 @@ export const buildStatusTimelineTooltipListItemData = (
     : {}),
   ...(incident.kind !== 'incident'
     ? {}
-    : incident.is_active
+    : incident.isActive
       ? { phaseIcon: 'alert' as const }
-      : incident.ended_iso
+      : incident.endedIso
         ? { phaseIcon: 'check' as const }
         : {}),
 });
@@ -379,9 +381,9 @@ export const formatStatusDaysWithoutIncidents = (
   value: StatusDaysWithoutIncidents,
 ): string => {
   switch (value.mode) {
-    case 'active_incident':
+    case 'activeIncident':
       return 'идет инцидент';
-    case 'no_incidents':
+    case 'noIncidents':
       return 'пока без инцидентов в истории';
     case 'count': {
       const days = value.days ?? 0;
@@ -394,7 +396,7 @@ export const formatStatusDaysWithoutIncidents = (
 export const getStatusIncidentPhase = (
   incident: Pick<
     StatusIncident,
-    'kind' | 'is_active' | 'started_iso' | 'ended_iso'
+    'kind' | 'isActive' | 'startedIso' | 'endedIso'
   > & {
     readonly service?: StatusService;
   },
@@ -402,21 +404,21 @@ export const getStatusIncidentPhase = (
     readonly nowMs?: number;
   },
 ): StatusIncidentPhase => {
-  if (incident.is_active) {
+  if (incident.isActive) {
     return {
       label: 'идет',
       tone: incident.kind === 'maintenance' ? 'warning' : 'danger',
     };
   }
 
-  if (Date.parse(incident.started_iso) > (opts?.nowMs ?? Date.now())) {
+  if (Date.parse(incident.startedIso) > (opts?.nowMs ?? Date.now())) {
     return {
       label: incident.kind === 'maintenance' ? 'запланировано' : 'ожидается',
       tone: incident.kind === 'maintenance' ? 'warning' : 'info',
     };
   }
 
-  if (incident.ended_iso) {
+  if (incident.endedIso) {
     return {
       label:
         incident.kind === 'maintenance'

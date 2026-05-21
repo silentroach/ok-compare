@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/svelte';
 import KPIStats from './KPIStats.svelte';
-import type { Stats } from '../lib/schema';
+import type { Stats } from '../lib/settlement/types';
 
 describe('KPIStats', () => {
   const mockStats: Stats = {

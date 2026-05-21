@@ -1,4 +1,4 @@
-import type { NewsListArticle, NewsTag, NewsTagPage } from './schema';
+import type { NewsListArticle, NewsTag, NewsTagPage } from './types';
 
 import { compareRuText } from '@shelkovo/format';
 
@@ -65,7 +65,7 @@ export function buildTagIndex(
       label: tag.label,
       key: tag.key,
       url: tagUrl(tag.key),
-      markdown_url: tagMarkdownUrl(tag.key),
+      markdownUrl: tagMarkdownUrl(tag.key),
       count: tag.articles.length,
       latest: latestFirst(tag.articles).slice(0, NEWS_LATEST_LIMIT),
     }))

@@ -152,8 +152,8 @@ const loadNewsArticlesForSitemap = (): readonly SitemapNewsArticleInput[] =>
 
     return {
       url: `/news/${year}/${month}/${entry}/`,
-      published_iso: dates[0] ?? latest,
-      ...(latest !== dates[0] ? { updated_iso: latest } : {}),
+      publishedIso: dates[0] ?? latest,
+      ...(latest !== dates[0] ? { updatedIso: latest } : {}),
       year: Number(year),
       month: Number(month),
       tags: newsTags(frontmatter),
@@ -182,11 +182,11 @@ const loadStatusIncidentsForSitemap =
         return {
           url: `/status/incidents/${year}/${month}/${slug}/`,
           service,
-          started_iso: parseTimestamp(startedAt, `${context} started_at`),
+          startedIso: parseTimestamp(startedAt, `${context} started_at`),
           ...(endedAt
-            ? { ended_iso: parseTimestamp(endedAt, `${context} ended_at`) }
+            ? { endedIso: parseTimestamp(endedAt, `${context} ended_at`) }
             : {}),
-          has_page: body.trim().length > 0,
+          hasPage: body.trim().length > 0,
         };
       });
 
@@ -204,7 +204,7 @@ const loadSettlementsForSitemap = (): readonly SitemapSettlementInput[] =>
       return {
         slug,
         sources: [...source.matchAll(SOURCE_DATE_CHECKED)].map((match) => ({
-          date_checked: match.groups?.value ?? '',
+          dateChecked: match.groups?.value ?? '',
         })),
       };
     });
@@ -212,7 +212,7 @@ const loadSettlementsForSitemap = (): readonly SitemapSettlementInput[] =>
 export const loadSitemapMetadataIndex =
   async (): Promise<SitemapMetadataIndex> =>
     buildSitemapMetadataIndex({
-      news_articles: loadNewsArticlesForSitemap(),
-      status_incidents: loadStatusIncidentsForSitemap(),
+      newsArticles: loadNewsArticlesForSitemap(),
+      statusIncidents: loadStatusIncidentsForSitemap(),
       settlements: loadSettlementsForSitemap(),
     });

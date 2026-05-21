@@ -1,17 +1,17 @@
 import { compareRuText } from '@shelkovo/format';
 
-import type { NewsListArticle, NewsTagPage } from './schema';
+import type { NewsListArticle, NewsTagPage } from './types';
 
 interface PublishedLike {
   readonly id: string;
-  readonly published_at: Date;
+  readonly publishedAt: Date;
 }
 
 export function compareArticlesPublishedDesc(
   a: PublishedLike,
   b: PublishedLike,
 ): number {
-  const delta = b.published_at.valueOf() - a.published_at.valueOf();
+  const delta = b.publishedAt.valueOf() - a.publishedAt.valueOf();
 
   return delta || compareRuText(a.id, b.id);
 }
@@ -24,8 +24,8 @@ export function compareTagPages(a: NewsTagPage, b: NewsTagPage): number {
   }
 
   const recent =
-    (b.latest[0]?.published_at.valueOf() ?? 0) -
-    (a.latest[0]?.published_at.valueOf() ?? 0);
+    (b.latest[0]?.publishedAt.valueOf() ?? 0) -
+    (a.latest[0]?.publishedAt.valueOf() ?? 0);
 
   if (recent) {
     return recent;

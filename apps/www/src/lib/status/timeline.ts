@@ -1,18 +1,19 @@
-import type { StatusArea, StatusDuration, StatusKind } from './schema';
+import type { StatusArea, StatusKind } from './schema';
+import type { StatusDuration } from './types';
 
 export const STATUS_TIMELINE_DAY_MS = 24 * 60 * 60 * 1000;
 
 export interface StatusTimelineIncidentInput {
   readonly id: string;
   readonly url: string;
-  readonly has_page: boolean;
+  readonly hasPage: boolean;
   readonly title: string;
   readonly kind: StatusKind;
-  readonly started_iso: string;
-  readonly started_has_time: boolean;
-  readonly ended_iso?: string;
-  readonly ended_has_time: boolean;
-  readonly is_active: boolean;
+  readonly startedIso: string;
+  readonly startedHasTime: boolean;
+  readonly endedIso?: string;
+  readonly endedHasTime: boolean;
+  readonly isActive: boolean;
   readonly areas?: readonly StatusArea[];
   readonly duration?: StatusDuration;
 }
@@ -150,9 +151,9 @@ export const buildStatusTimelineProblemSegments = ({
 
   return incidents
     .map((incident) => {
-      const startMs = Date.parse(incident.started_iso);
-      const endMs = incident.ended_iso
-        ? Date.parse(incident.ended_iso)
+      const startMs = Date.parse(incident.startedIso);
+      const endMs = incident.endedIso
+        ? Date.parse(incident.endedIso)
         : undefined;
       const span = clipStatusTimelineSpan(
         {
@@ -169,10 +170,10 @@ export const buildStatusTimelineProblemSegments = ({
       return toStatusTimelineSegment(
         {
           id: incident.id,
-          ...(incident.has_page ? { href: incident.url } : {}),
+          ...(incident.hasPage ? { href: incident.url } : {}),
           tone: incident.kind === 'maintenance' ? 'amber' : 'red',
-          startedIso: incident.started_iso,
-          ...(incident.ended_iso ? { endedIso: incident.ended_iso } : {}),
+          startedIso: incident.startedIso,
+          ...(incident.endedIso ? { endedIso: incident.endedIso } : {}),
           ...span,
         },
         range,

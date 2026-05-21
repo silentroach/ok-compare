@@ -1,8 +1,10 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
-import type { Settlement, Stats, ComparisonResult } from './schema';
+import type { ComparisonResult, Settlement, Stats } from './settlement/types';
 import { computeStats } from './stats';
 import { compareSettlements } from './comparisons';
 import { buildRatings, type Rating } from './rating';
+import { mapRawSettlement } from './settlement/mapper';
+import type { RawSettlement } from './settlement/schema';
 
 /**
  * Load all settlements from content collection
@@ -10,7 +12,8 @@ import { buildRatings, type Rating } from './rating';
 export async function loadSettlements(): Promise<Settlement[]> {
   const settlements = await getCollection('settlements');
   return settlements.map(
-    (entry: CollectionEntry<'settlements'>): Settlement => entry.data,
+    (entry: CollectionEntry<'settlements'>): Settlement =>
+      mapRawSettlement(entry.data as RawSettlement),
   );
 }
 
@@ -20,7 +23,7 @@ export async function loadSettlements(): Promise<Settlement[]> {
 export function findBaseline(
   settlements: Settlement[],
 ): Settlement | undefined {
-  return settlements.find((s) => s.is_baseline);
+  return settlements.find((s) => s.isBaseline);
 }
 
 /**

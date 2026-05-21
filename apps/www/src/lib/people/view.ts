@@ -11,18 +11,16 @@ import { MARKDOWN_ROBOTS } from '../news/seo';
 import { formatNewsDate, NEWS_PROSE } from '../news/view';
 import { absoluteUrl } from '../site';
 import { formatStatusDate } from '../status/view';
-import {
-  PERSON_MENTION_SECTIONS,
-  type PersonBacklinks,
-  type PersonBacklinkKind,
-  type PersonContact,
-  type PersonContactType,
-  type PersonMentionRef,
-  type PersonMentionSection,
-  type PersonProfile,
-} from './schema';
-
-const TELEGRAM_HANDLE = /^@?([A-Za-z0-9_]+)$/u;
+import { PERSON_MENTION_SECTIONS } from './schema';
+import type {
+  PersonBacklinks,
+  PersonBacklinkKind,
+  PersonContact,
+  PersonContactType,
+  PersonMentionRef,
+  PersonMentionSection,
+  PersonProfile,
+} from './types';
 
 const CONTACT_LABELS: Record<PersonContactType, string> = {
   phone: 'Телефон',
@@ -75,13 +73,13 @@ const contactLine = (contact: PersonContact): MarkdownListItem =>
   ]);
 
 const backlinkDate = (backlink: PersonMentionRef): string | undefined => {
-  if (!backlink.mentioned_at) {
+  if (!backlink.mentionedAt) {
     return undefined;
   }
 
   return backlink.section === 'status'
-    ? formatStatusDate(backlink.mentioned_at)
-    : formatNewsDate(backlink.mentioned_at);
+    ? formatStatusDate(backlink.mentionedAt)
+    : formatNewsDate(backlink.mentionedAt);
 };
 
 const backlinkLine = (backlink: PersonMentionRef): MarkdownListItem => {
@@ -92,7 +90,7 @@ const backlinkLine = (backlink: PersonMentionRef): MarkdownListItem => {
   const details = meta.length > 0 ? ` — ${meta.join('; ')}` : '';
   const summary = backlink.excerpt ? inline(backlink.excerpt) : undefined;
   const titleLine: MarkdownPhrasingNode[] = [
-    md.link(absoluteUrl(backlink.markdown_url), backlink.title),
+    md.link(absoluteUrl(backlink.markdownUrl), backlink.title),
     ...(details ? [md.text(details)] : []),
   ];
 
@@ -121,40 +119,6 @@ const backlinksSection = (
       md.list(group.items.map(backlinkLine)),
     ]),
   ];
-};
-
-const phoneHref = (value: string, context: string): string => {
-  const display = value.trim();
-  const digits = display.replace(/\D/gu, '');
-
-  if (!digits) {
-    throw new Error(`${context} phone must contain digits`);
-  }
-
-  return display.startsWith('+') ? `tel:+${digits}` : `tel:${digits}`;
-};
-
-const telegramParts = (
-  value: string,
-  context: string,
-): {
-  readonly display: string;
-  readonly href: string;
-} => {
-  const match = value.trim().match(TELEGRAM_HANDLE);
-
-  if (!match) {
-    throw new Error(
-      `${context} telegram must use a handle like @username or username`,
-    );
-  }
-
-  const handle = match[1];
-
-  return {
-    display: `@${handle}`,
-    href: `https://t.me/${handle}`,
-  };
 };
 
 export const formatPersonContactType = (type: PersonContactType): string =>
@@ -200,38 +164,6 @@ export const personBacklinkGroups = (
 export const formatPersonBacklinkDate = (
   backlink: PersonMentionRef,
 ): string | undefined => backlinkDate(backlink);
-
-export const normalizePersonContact = (
-  input: {
-    readonly type: PersonContactType;
-    readonly value: string;
-  },
-  context: string,
-): PersonContact => {
-  const value = input.value.trim();
-
-  if (!value) {
-    throw new Error(`${context} value is required`);
-  }
-
-  if (input.type === 'phone') {
-    return {
-      type: input.type,
-      value,
-      display: value,
-      href: phoneHref(value, context),
-    };
-  }
-
-  const telegram = telegramParts(value, context);
-
-  return {
-    type: input.type,
-    value,
-    display: telegram.display,
-    href: telegram.href,
-  };
-};
 
 export const describePersonProfile = (
   profile: Pick<PersonProfile, 'body' | 'company' | 'name' | 'position'>,

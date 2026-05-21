@@ -6,7 +6,7 @@ import type {
   Settlement,
   UndergroundElectricity,
   VideoSurveillance,
-} from './schema';
+} from './settlement/types';
 
 export interface Rating {
   score: number;
@@ -56,7 +56,7 @@ const AVAIL = {
 
 const ROAD = {
   asphalt: 1,
-  partial_asphalt: 0.75,
+  partlyAsphalt: 0.75,
   gravel: 0.35,
   dirt: 0,
 } as const satisfies Record<RoadType, number>;
@@ -69,7 +69,7 @@ const DRAIN = {
 
 const VIDEO = {
   full: 1,
-  checkpoint_only: 0.55,
+  checkpointOnly: 0.55,
   none: 0,
 } as const satisfies Record<VideoSurveillance, number>;
 
@@ -89,7 +89,7 @@ export function getRing(lat: number, lng: number): number {
 
 function tune(item: Settlement): number {
   return (
-    (item.water_in_tariff ? WATER_BONUS : 0) -
+    (item.waterInTariff ? WATER_BONUS : 0) -
     (item.rabstvo ? RABSTVO_PENALTY : 0)
   );
 }
@@ -172,43 +172,43 @@ function infra(item: Settlement): Group {
     { value: avail(info.checkpoints), weight: 0.6 },
     { value: avail(info.security), weight: 0.95 },
     { value: avail(info.fencing), weight: 0.35 },
-    { value: video(info.video_surveillance), weight: 0.75 },
-    { value: wire(info.underground_electricity), weight: 0.35 },
-    { value: avail(info.admin_building), weight: 0.25 },
-    { value: avail(info.retail_or_services), weight: 0.55 },
+    { value: video(info.videoSurveillance), weight: 0.75 },
+    { value: wire(info.undergroundElectricity), weight: 0.35 },
+    { value: avail(info.adminBuilding), weight: 0.25 },
+    { value: avail(info.retailOrServices), weight: 0.55 },
   ]);
 }
 
 function spaces(item: Settlement): Group {
-  const info = item.common_spaces;
+  const info = item.commonSpaces;
 
   return mean([
-    { value: avail(info.club_infrastructure), weight: 0.6 },
+    { value: avail(info.clubInfrastructure), weight: 0.6 },
     { value: avail(info.playgrounds), weight: 0.9 },
     { value: avail(info.sports), weight: 0.8 },
-    { value: avail(info.walking_routes), weight: 0.8 },
-    { value: avail(info.water_access), weight: 0.6 },
-    { value: avail(info.beach_zones), weight: 0.35 },
-    { value: avail(info.bbq_zones), weight: 0.25 },
+    { value: avail(info.walkingRoutes), weight: 0.8 },
+    { value: avail(info.waterAccess), weight: 0.6 },
+    { value: avail(info.beachZones), weight: 0.35 },
+    { value: avail(info.bbqZones), weight: 0.25 },
     { value: avail(info.pool), weight: 0.45 },
-    { value: avail(info.fitness_club), weight: 0.4 },
+    { value: avail(info.fitnessClub), weight: 0.4 },
     { value: avail(info.restaurant), weight: 0.35 },
-    { value: avail(info.spa_center), weight: 0.2 },
-    { value: avail(info.kids_club), weight: 0.3 },
-    { value: avail(info.sports_camp), weight: 0.15 },
-    { value: avail(info.primary_school), weight: 0.15 },
+    { value: avail(info.spaCenter), weight: 0.2 },
+    { value: avail(info.kidsClub), weight: 0.3 },
+    { value: avail(info.sportsCamp), weight: 0.15 },
+    { value: avail(info.primarySchool), weight: 0.15 },
   ]);
 }
 
 function service(item: Settlement): Group {
-  const info = item.service_model;
+  const info = item.serviceModel;
 
   return mean([
-    { value: avail(info.garbage_collection), weight: 1 },
-    { value: avail(info.snow_removal), weight: 0.9 },
-    { value: avail(info.road_cleaning), weight: 0.8 },
+    { value: avail(info.garbageCollection), weight: 1 },
+    { value: avail(info.snowRemoval), weight: 0.9 },
+    { value: avail(info.roadCleaning), weight: 0.8 },
     { value: avail(info.landscaping), weight: 0.6 },
-    { value: avail(info.emergency_service), weight: 0.6 },
+    { value: avail(info.emergencyService), weight: 0.6 },
     { value: avail(info.dispatcher), weight: 0.4 },
   ]);
 }

@@ -1,5 +1,8 @@
 <script lang="ts">
-  import type { CommonSpaces, AvailabilityStatus } from '../lib/schema';
+  import type {
+    CommonSpaces,
+    AvailabilityStatus,
+  } from '../lib/settlement/types';
 
   interface Props {
     title?: string;
@@ -11,20 +14,20 @@
   let only = $state(false);
 
   const labels: Record<string, string> = {
-    club_infrastructure: 'Клубная инфраструктура',
+    clubInfrastructure: 'Клубная инфраструктура',
     playgrounds: 'Детские площадки',
     sports: 'Спортивные площадки',
     pool: 'Бассейн',
-    fitness_club: 'Фитнес-клуб',
+    fitnessClub: 'Фитнес-клуб',
     restaurant: 'Ресторан',
-    spa_center: 'Спа-центр',
-    walking_routes: 'Маршруты для прогулок',
-    water_access: 'Выход к воде',
-    beach_zones: 'Пляжные зоны',
-    kids_club: 'Детский клуб',
-    sports_camp: 'Спортивный лагерь',
-    primary_school: 'Начальная школа',
-    bbq_zones: 'Зоны барбекю',
+    spaCenter: 'Спа-центр',
+    walkingRoutes: 'Маршруты для прогулок',
+    waterAccess: 'Выход к воде',
+    beachZones: 'Пляжные зоны',
+    kidsClub: 'Детский клуб',
+    sportsCamp: 'Спортивный лагерь',
+    primarySchool: 'Начальная школа',
+    bbqZones: 'Зоны барбекю',
   };
 
   const icons: Record<AvailabilityStatus, string> = {
@@ -77,20 +80,20 @@
 
   // Keep this first: it summarizes access to many items listed below.
   const order = [
-    'club_infrastructure',
+    'clubInfrastructure',
     'playgrounds',
     'sports',
     'pool',
-    'fitness_club',
+    'fitnessClub',
     'restaurant',
-    'spa_center',
-    'walking_routes',
-    'water_access',
-    'beach_zones',
-    'kids_club',
-    'sports_camp',
-    'primary_school',
-    'bbq_zones',
+    'spaCenter',
+    'walkingRoutes',
+    'waterAccess',
+    'beachZones',
+    'kidsClub',
+    'sportsCamp',
+    'primarySchool',
+    'bbqZones',
   ];
 
   const rows = $derived(

@@ -1,5 +1,8 @@
 <script lang="ts">
-  import type { ServiceModel, AvailabilityStatus } from '../lib/schema';
+  import type {
+    ServiceModel,
+    AvailabilityStatus,
+  } from '../lib/settlement/types';
 
   interface Props {
     title?: string;
@@ -12,11 +15,11 @@
 
   // Service item labels in Russian
   const labels: Record<string, string> = {
-    garbage_collection: 'Вывоз мусора',
-    snow_removal: 'Уборка снега',
-    road_cleaning: 'Уборка дорог',
+    garbageCollection: 'Вывоз мусора',
+    snowRemoval: 'Уборка снега',
+    roadCleaning: 'Уборка дорог',
     landscaping: 'Благоустройство',
-    emergency_service: 'Аварийная служба',
+    emergencyService: 'Аварийная служба',
     dispatcher: 'Диспетчерская служба',
   };
 
@@ -74,11 +77,11 @@
 
   // Order of service items for display
   const serviceOrder = [
-    'garbage_collection',
-    'snow_removal',
-    'road_cleaning',
+    'garbageCollection',
+    'snowRemoval',
+    'roadCleaning',
     'landscaping',
-    'emergency_service',
+    'emergencyService',
     'dispatcher',
   ];
 

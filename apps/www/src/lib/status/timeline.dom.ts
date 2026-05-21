@@ -12,6 +12,7 @@ import {
   type StatusTimelineTooltipListItemData,
 } from './view';
 import { STATUS_SERVICES, type StatusArea, type StatusService } from './schema';
+import type { StatusTimelineTooltipItemDto } from './timeline-tooltip-dto';
 
 export interface StatusTimelineHydrationOptions {
   readonly nowMs?: number;
@@ -27,20 +28,6 @@ interface StatusTimelineProblemNode {
   readonly endMs?: number;
   readonly geometryStartMs?: number;
   readonly geometryEndMs?: number;
-}
-
-interface StatusTimelineTooltipSerializedItem {
-  readonly kind: 'incident' | 'maintenance';
-  readonly title: string;
-  readonly is_active: boolean;
-  readonly started_iso: string;
-  readonly started_has_time: boolean;
-  readonly ended_iso?: string;
-  readonly ended_has_time: boolean;
-  readonly areas?: readonly StatusArea[];
-  readonly duration?: {
-    readonly total_minutes: number;
-  };
 }
 
 interface StatusTimelineTooltipData {
@@ -186,29 +173,29 @@ const parseStatusTimelineTooltipAreas = (
 
 const isTimelineTooltipSerializedItem = (
   value: unknown,
-): value is StatusTimelineTooltipSerializedItem => {
+): value is StatusTimelineTooltipItemDto => {
   if (!value || typeof value !== 'object') {
     return false;
   }
 
-  const candidate = value as Partial<StatusTimelineTooltipSerializedItem>;
+  const candidate = value as Partial<StatusTimelineTooltipItemDto>;
 
   return (
     (candidate.kind === 'incident' || candidate.kind === 'maintenance') &&
     typeof candidate.title === 'string' &&
-    typeof candidate.is_active === 'boolean' &&
-    typeof candidate.started_iso === 'string' &&
-    Number.isFinite(Date.parse(candidate.started_iso)) &&
-    typeof candidate.started_has_time === 'boolean' &&
-    typeof candidate.ended_has_time === 'boolean' &&
-    (candidate.ended_iso === undefined ||
-      (typeof candidate.ended_iso === 'string' &&
-        Number.isFinite(Date.parse(candidate.ended_iso)))) &&
+    typeof candidate.isActive === 'boolean' &&
+    typeof candidate.startedIso === 'string' &&
+    Number.isFinite(Date.parse(candidate.startedIso)) &&
+    typeof candidate.startedHasTime === 'boolean' &&
+    typeof candidate.endedHasTime === 'boolean' &&
+    (candidate.endedIso === undefined ||
+      (typeof candidate.endedIso === 'string' &&
+        Number.isFinite(Date.parse(candidate.endedIso)))) &&
     (candidate.duration === undefined ||
-      (typeof candidate.duration === 'object' &&
-        candidate.duration !== null &&
-        typeof candidate.duration.total_minutes === 'number' &&
-        Number.isFinite(candidate.duration.total_minutes))) &&
+      (Boolean(candidate.duration) &&
+        typeof candidate.duration === 'object' &&
+        typeof candidate.duration.totalMinutes === 'number' &&
+        Number.isFinite(candidate.duration.totalMinutes))) &&
     (candidate.areas === undefined ||
       (Array.isArray(candidate.areas) &&
         candidate.areas.length > 0 &&
@@ -218,7 +205,7 @@ const isTimelineTooltipSerializedItem = (
 
 const parseStatusTimelineTooltipItems = (
   value?: string,
-): readonly StatusTimelineTooltipSerializedItem[] | undefined => {
+): readonly StatusTimelineTooltipItemDto[] | undefined => {
   if (!value) {
     return undefined;
   }
@@ -236,6 +223,26 @@ const parseStatusTimelineTooltipItems = (
   }
 };
 
+const toStatusTimelineTooltipListItemData = (
+  item: StatusTimelineTooltipItemDto,
+): StatusTimelineTooltipListItemData =>
+  buildStatusTimelineTooltipListItemData(
+    {
+      kind: item.kind,
+      title: item.title,
+      isActive: item.isActive,
+      startedIso: item.startedIso,
+      startedHasTime: item.startedHasTime,
+      ...(item.endedIso ? { endedIso: item.endedIso } : {}),
+      endedHasTime: item.endedHasTime,
+      ...(item.areas ? { areas: item.areas } : {}),
+      ...(item.duration
+        ? { duration: { totalMinutes: item.duration.totalMinutes } }
+        : {}),
+    },
+    { nonBreaking: true },
+  );
+
 const readStatusTimelineTooltipData = (
   trigger: HTMLElement,
 ): StatusTimelineTooltipData | undefined => {
@@ -246,9 +253,7 @@ const readStatusTimelineTooltipData = (
   );
 
   if (serviceLabel && groupTitle && tooltipItems) {
-    const items = tooltipItems.map((item) =>
-      buildStatusTimelineTooltipListItemData(item, { nonBreaking: true }),
-    );
+    const items = tooltipItems.map(toStatusTimelineTooltipListItemData);
 
     return {
       title: groupTitle,
@@ -435,9 +440,9 @@ const syncStatusTimelineProblemPhase = (
   problemNode.element.dataset.tooltipPhaseLabel = getStatusIncidentPhase(
     {
       kind: problemNode.kind,
-      is_active: false,
-      started_iso: problemNode.startIso,
-      ended_iso: problemNode.endIso,
+      isActive: false,
+      startedIso: problemNode.startIso,
+      endedIso: problemNode.endIso,
       ...(problemNode.service ? { service: problemNode.service } : {}),
     },
     { nowMs },

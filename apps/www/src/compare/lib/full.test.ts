@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
 import { calculateDistance } from './format';
-import { toFull } from './full';
+import { toFull, toFullPayload } from './full';
 import type { Rating } from './rating';
-import type { Settlement } from './schema';
+import { mapRawSettlement } from './settlement/mapper';
+import type { RawSettlement } from './settlement/schema';
 
-const base: Settlement = {
+const base = mapRawSettlement({
   name: 'КП Шелково',
   short_name: 'Шелково',
   slug: 'shelkovo',
@@ -37,9 +38,9 @@ const base: Settlement = {
       comment: '',
     },
   ],
-};
+} satisfies RawSettlement);
 
-const row: Settlement = {
+const row = mapRawSettlement({
   name: 'КП Тестовый',
   short_name: 'Тестовый',
   slug: 'test',
@@ -79,7 +80,7 @@ const row: Settlement = {
       comment: '',
     },
   ],
-};
+} satisfies RawSettlement);
 
 const ratings = new Map<string, Rating>([
   [
@@ -130,5 +131,63 @@ describe('toFull', () => {
     expect(item?.website).toBe('https://example.com');
     expect(item?.location.address_text).toBe('МО, округ Истра, д. Тестово');
     expect(item?.tariff.note).toBe('Тестовое примечание');
+  });
+
+  it('builds the full public payload through explicit DTO adapters', () => {
+    const payload = toFullPayload({
+      settlements: [base, row],
+      ratings,
+      stats: {
+        shelkovoTariff: 100,
+        medianTariff: 110,
+        peerMedianTariff: 120,
+        meanTariff: 115,
+        minTariff: 100,
+        maxTariff: 130,
+        shelkovoRank: 1,
+        totalSettlements: 2,
+        cheaperCount: 0,
+        moreExpensiveCount: 1,
+        shelkovoVsMedianPercent: -9.1,
+        shelkovoVsPeerMedianPercent: -16.7,
+        shelkovoVsMeanPercent: -13,
+      },
+      comparisons: new Map([
+        [
+          'test',
+          {
+            tariffDelta: 20,
+            tariffDeltaPercent: 20,
+            isCheaper: false,
+          },
+        ],
+      ]),
+    });
+
+    expect(payload.stats).toEqual({
+      shelkovoTariff: 100,
+      medianTariff: 110,
+      peerMedianTariff: 120,
+      meanTariff: 115,
+      minTariff: 100,
+      maxTariff: 130,
+      shelkovoRank: 1,
+      totalSettlements: 2,
+      cheaperCount: 0,
+      moreExpensiveCount: 1,
+      shelkovoVsMedianPercent: -9.1,
+      shelkovoVsPeerMedianPercent: -16.7,
+      shelkovoVsMeanPercent: -13,
+    });
+    expect(payload.comparisons).toEqual({
+      test: {
+        tariffDelta: 20,
+        tariffDeltaPercent: 20,
+        isCheaper: false,
+      },
+    });
+    expect(payload.settlements[0]?.location.address_text).toBe(
+      'МО, округ Истра, д. Шелково',
+    );
   });
 });

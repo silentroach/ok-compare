@@ -1,12 +1,12 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import type { PersonProfile } from './schema';
+import type { PersonProfile } from './types';
 
 let buildPersonMarkdown: typeof import('./view').buildPersonMarkdown;
 let describePersonProfile: typeof import('./view').describePersonProfile;
 let formatPersonContactCompactDisplay: typeof import('./view').formatPersonContactCompactDisplay;
 let formatPersonHeadline: typeof import('./view').formatPersonHeadline;
-let normalizePersonContact: typeof import('./view').normalizePersonContact;
+let mapRawPersonContact: typeof import('./mapper').mapRawPersonContact;
 
 beforeAll(async () => {
   Object.assign(import.meta.env, {
@@ -19,14 +19,14 @@ beforeAll(async () => {
     describePersonProfile,
     formatPersonContactCompactDisplay,
     formatPersonHeadline,
-    normalizePersonContact,
   } = await import('./view'));
+  ({ mapRawPersonContact } = await import('./mapper'));
 });
 
-describe('normalizePersonContact', () => {
+describe('mapRawPersonContact', () => {
   it('normalizes telegram handles with or without @', () => {
     expect(
-      normalizePersonContact(
+      mapRawPersonContact(
         {
           type: 'telegram',
           value: 'Kirill_ZemlyaMO',
@@ -39,7 +39,7 @@ describe('normalizePersonContact', () => {
     });
 
     expect(
-      normalizePersonContact(
+      mapRawPersonContact(
         {
           type: 'telegram',
           value: '@Kirill_ZemlyaMO',
@@ -54,7 +54,7 @@ describe('normalizePersonContact', () => {
 
   it('builds tel links from formatted phone numbers', () => {
     expect(
-      normalizePersonContact(
+      mapRawPersonContact(
         {
           type: 'phone',
           value: '+7 (916) 555-12-34',
@@ -139,7 +139,7 @@ describe('buildPersonMarkdown', () => {
       company: 'ОК "Комфорт"',
       position: 'Исполняющий обязанности директора по эксплуатации',
       url: '/people/kschemelinin/',
-      markdown_url: '/people/kschemelinin/index.md',
+      markdownUrl: '/people/kschemelinin/index.md',
       canonical: 'https://example.com/people/kschemelinin/',
       contacts: [
         {
@@ -156,28 +156,28 @@ describe('buildPersonMarkdown', () => {
           {
             section: 'news',
             kind: 'article',
-            source_id: '2026/05/electricity',
+            sourceId: '2026/05/electricity',
             title: 'Авария на линии',
-            html_url: '/news/2026/05/electricity/',
-            markdown_url: '/news/2026/05/electricity/index.md',
+            htmlUrl: '/news/2026/05/electricity/',
+            markdownUrl: '/news/2026/05/electricity/index.md',
             excerpt: 'Основной текст про Кирилла Щемелинина.',
-            mentioned_at: '2026-05-03T09:00:00+03:00',
-            sort_key: 1,
+            mentionedAt: '2026-05-03T09:00:00+03:00',
+            sortKey: 1,
           },
         ],
         status: [
           {
             section: 'status',
             kind: 'incident',
-            source_id: '2026/04/electricity-river-10kv-line-damage',
+            sourceId: '2026/04/electricity-river-10kv-line-damage',
             title: 'Отключение электричества в Шелково Ривер',
-            html_url:
+            htmlUrl:
               '/status/incidents/2026/04/electricity-river-10kv-line-damage/',
-            markdown_url:
+            markdownUrl:
               '/status/incidents/2026/04/electricity-river-10kv-line-damage/index.md',
             excerpt: 'Как отметил Кирилл Щемелинин, повреждение было редким.',
-            mentioned_at: '2026-04-22T11:30:00+03:00',
-            sort_key: 2,
+            mentionedAt: '2026-04-22T11:30:00+03:00',
+            sortKey: 2,
           },
         ],
         people: [],
@@ -224,7 +224,7 @@ describe('buildPersonMarkdown', () => {
       company: 'ОК "Комфорт"',
       position: 'Исполняющий обязанности директора по эксплуатации',
       url: '/people/kschemelinin/',
-      markdown_url: '/people/kschemelinin/index.md',
+      markdownUrl: '/people/kschemelinin/index.md',
       canonical: 'https://example.com/people/kschemelinin/',
       contacts: [],
       body: [
@@ -276,7 +276,7 @@ describe('buildPersonMarkdown', () => {
       company: 'ОК "Комфорт"',
       position: 'Исполняющий обязанности директора по эксплуатации',
       url: '/people/kschemelinin/',
-      markdown_url: '/people/kschemelinin/index.md',
+      markdownUrl: '/people/kschemelinin/index.md',
       canonical: 'https://example.com/people/kschemelinin/',
       contacts: [
         {

@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import type { StatusIncident, StatusServiceSummary } from './schema';
+import type { StatusIncident, StatusServiceSummary } from './types';
 
 let buildStatusHomeMarkdown: typeof import('./markdown').buildStatusHomeMarkdown;
 let buildStatusIncidentMarkdown: typeof import('./markdown').buildStatusIncidentMarkdown;
@@ -26,22 +26,22 @@ const incident = (input?: Partial<StatusIncident>): StatusIncident => ({
   url: '/status/incidents/2026/05/electricity-river-outage/',
   canonical:
     'https://example.com/status/incidents/2026/05/electricity-river-outage/',
-  started_at: new Date('2026-05-01T04:32:00.000Z'),
-  started_iso: '2026-05-01T07:32:00+03:00',
-  started_has_time: true,
-  ended_at: new Date('2026-05-01T13:38:00.000Z'),
-  ended_iso: '2026-05-01T16:38:00+03:00',
-  ended_has_time: true,
-  is_active: false,
-  applies_to_all_areas: false,
+  startedAt: new Date('2026-05-01T04:32:00.000Z'),
+  startedIso: '2026-05-01T07:32:00+03:00',
+  startedHasTime: true,
+  endedAt: new Date('2026-05-01T13:38:00.000Z'),
+  endedIso: '2026-05-01T16:38:00+03:00',
+  endedHasTime: true,
+  isActive: false,
+  appliesToAllAreas: false,
   areas: ['river'],
-  source_url: 'https://example.com/source',
-  has_page: true,
+  sourceUrl: 'https://example.com/source',
+  hasPage: true,
   body: 'Основной текст инцидента.',
   mentions: [],
-  sort_started_at: new Date('2026-05-01T04:32:00.000Z').valueOf(),
-  sort_last_change_at: new Date('2026-05-01T13:38:00.000Z').valueOf(),
-  duration: { total_minutes: 546 },
+  sortStartedAt: new Date('2026-05-01T04:32:00.000Z').valueOf(),
+  sortLastChangeAt: new Date('2026-05-01T13:38:00.000Z').valueOf(),
+  duration: { totalMinutes: 546 },
   ...input,
 });
 
@@ -49,11 +49,11 @@ const summary = (
   input?: Partial<StatusServiceSummary>,
 ): StatusServiceSummary => ({
   service: 'electricity',
-  service_status: 'green',
+  serviceStatus: 'green',
   incidents: [incident()],
-  active_incidents: [],
-  active_maintenance: [],
-  days_without_incidents: { mode: 'count', days: 3 },
+  activeIncidents: [],
+  activeMaintenance: [],
+  daysWithoutIncidents: { mode: 'count', days: 3 },
   ...input,
 });
 
@@ -65,8 +65,8 @@ describe('buildStatusHomeMarkdown', () => {
       incidents: [testIncident],
       active: [],
       services: [testSummary],
-      by_id: new Map([[testIncident.id, testIncident]]),
-      by_service: new Map([['electricity', testSummary]]),
+      byId: new Map([[testIncident.id, testIncident]]),
+      byService: new Map([['electricity', testSummary]]),
     });
 
     expect(markdown).toMatchInlineSnapshot(`
@@ -98,13 +98,13 @@ describe('buildStatusIncidentMarkdown', () => {
         id: incident
         name: Инцидент
       phase: восстановлено
-      started_at: 2026-05-01T07:32:00+03:00
-      started_has_time: true
-      ended_at: 2026-05-01T16:38:00+03:00
-      ended_has_time: true
+      startedAt: 2026-05-01T07:32:00+03:00
+      startedHasTime: true
+      endedAt: 2026-05-01T16:38:00+03:00
+      endedHasTime: true
       areas:
         - Шелково Ривер
-      source_url: https://example.com/source
+      sourceUrl: https://example.com/source
       ---
 
       # Отключение электричества в Шелково Ривер
@@ -117,7 +117,7 @@ describe('buildStatusIncidentMarkdown', () => {
   it('omits settlement-wide areas from frontmatter', () => {
     const markdown = buildStatusIncidentMarkdown(
       incident({
-        applies_to_all_areas: true,
+        appliesToAllAreas: true,
         areas: ['river', 'forest', 'park', 'village'],
       }),
     );
@@ -152,13 +152,13 @@ describe('buildStatusIncidentMarkdown', () => {
         id: incident
         name: Инцидент
       phase: восстановлено
-      started_at: 2026-05-01T07:32:00+03:00
-      started_has_time: true
-      ended_at: 2026-05-01T16:38:00+03:00
-      ended_has_time: true
+      startedAt: 2026-05-01T07:32:00+03:00
+      startedHasTime: true
+      endedAt: 2026-05-01T16:38:00+03:00
+      endedHasTime: true
       areas:
         - Шелково Ривер
-      source_url: https://example.com/source
+      sourceUrl: https://example.com/source
       ---
 
       # Отключение электричества в Шелково Ривер

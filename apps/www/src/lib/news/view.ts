@@ -1,5 +1,6 @@
 import { dateTimeFromISO, formatDate, formatMonth } from '@shelkovo/format';
-import type { NewsArea, NewsAuthor, NewsEvent } from './schema';
+import type { NewsArea } from './schema';
+import type { NewsAuthor, NewsEvent } from './types';
 
 const AREA_LABELS: Record<NewsArea, string> = {
   river: 'Шелково Ривер',
@@ -79,31 +80,28 @@ export const formatNewsMonth = (
 export const formatNewsArea = (area: NewsArea): string => AREA_LABELS[area];
 
 export const formatNewsAuthor = (
-  author: Pick<NewsAuthor, 'name' | 'short_name'>,
+  author: Pick<NewsAuthor, 'name' | 'shortName'>,
   opts?: {
     readonly short?: boolean;
   },
 ): string =>
-  opts?.short === false ? author.name : (author.short_name ?? author.name);
+  opts?.short === false ? author.name : (author.shortName ?? author.name);
 
 export const formatNewsDateTime = (iso: string, time?: string): string =>
   `${formatNewsCalendarDate(iso)}, ${time ?? formatNewsTime(iso)}`;
 
 export const formatNewsEventRange = (
-  event: Pick<
-    NewsEvent,
-    'starts_iso' | 'starts_time' | 'ends_iso' | 'ends_time'
-  >,
+  event: Pick<NewsEvent, 'startsIso' | 'startsTime' | 'endsIso' | 'endsTime'>,
 ): string => {
-  if (!event.ends_iso || !event.ends_time) {
-    return formatNewsDateTime(event.starts_iso, event.starts_time);
+  if (!event.endsIso || !event.endsTime) {
+    return formatNewsDateTime(event.startsIso, event.startsTime);
   }
 
-  if (isSameNewsDay(event.starts_iso, event.ends_iso)) {
-    return `${formatNewsCalendarDate(event.starts_iso)}, ${event.starts_time}-${event.ends_time}`;
+  if (isSameNewsDay(event.startsIso, event.endsIso)) {
+    return `${formatNewsCalendarDate(event.startsIso)}, ${event.startsTime}-${event.endsTime}`;
   }
 
-  return `${formatNewsDateTime(event.starts_iso, event.starts_time)} - ${formatNewsDateTime(event.ends_iso, event.ends_time)}`;
+  return `${formatNewsDateTime(event.startsIso, event.startsTime)} - ${formatNewsDateTime(event.endsIso, event.endsTime)}`;
 };
 
 export const buildNewsEventMapUrl = (

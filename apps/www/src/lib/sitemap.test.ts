@@ -6,24 +6,24 @@ import { applySitemapMetadata, buildSitemapMetadataIndex } from './sitemap';
 describe('buildSitemapMetadataIndex', () => {
   it('uses publication and update dates for news pages and archives', () => {
     const index = buildSitemapMetadataIndex({
-      news_articles: [
+      newsArticles: [
         {
           url: '/news/2026/05/first/',
-          published_iso: '2026-05-02T10:00:00+03:00',
-          updated_iso: '2026-05-04T12:30:00+03:00',
+          publishedIso: '2026-05-02T10:00:00+03:00',
+          updatedIso: '2026-05-04T12:30:00+03:00',
           year: 2026,
           month: 5,
           tags: [{ url: '/news/tags/дороги/' }],
         },
         {
           url: '/news/2026/04/older/',
-          published_iso: '2026-04-20T09:00:00+03:00',
+          publishedIso: '2026-04-20T09:00:00+03:00',
           year: 2026,
           month: 4,
           tags: [{ url: '/news/tags/дороги/' }],
         },
       ],
-      status_incidents: [],
+      statusIncidents: [],
       settlements: [],
     });
 
@@ -61,33 +61,33 @@ describe('buildSitemapMetadataIndex', () => {
 
   it('uses incident end/start dates and settlement source check dates', () => {
     const index = buildSitemapMetadataIndex({
-      news_articles: [],
-      status_incidents: [
+      newsArticles: [],
+      statusIncidents: [
         {
           url: '/status/incidents/2026/05/electricity/',
           service: 'electricity',
-          started_iso: '2026-05-01T08:00:00+03:00',
-          ended_iso: '2026-05-01T09:00:00+03:00',
-          has_page: true,
+          startedIso: '2026-05-01T08:00:00+03:00',
+          endedIso: '2026-05-01T09:00:00+03:00',
+          hasPage: true,
         },
         {
           url: '/status/incidents/2026/05/water/',
           service: 'water',
-          started_iso: '2026-05-03T14:00:00+03:00',
-          has_page: false,
+          startedIso: '2026-05-03T14:00:00+03:00',
+          hasPage: false,
         },
       ],
       settlements: [
         {
           slug: 'river',
           sources: [
-            { date_checked: '2026-04-03' },
-            { date_checked: '2026-04-12' },
+            { dateChecked: '2026-04-03' },
+            { dateChecked: '2026-04-12' },
           ],
         },
         {
           slug: 'forest',
-          sources: [{ date_checked: '2026-03-10' }],
+          sources: [{ dateChecked: '2026-03-10' }],
         },
       ],
     });

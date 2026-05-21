@@ -1,41 +1,41 @@
 import { describe, it, expect } from 'vitest';
 import { render, fireEvent } from '@testing-library/svelte';
 import CommonSpacesTable from './CommonSpacesTable.svelte';
-import type { CommonSpaces } from '../lib/schema';
+import type { CommonSpaces } from '../lib/settlement/types';
 
 describe('CommonSpacesTable', () => {
   const mockSpaces: CommonSpaces = {
-    club_infrastructure: 'yes',
+    clubInfrastructure: 'yes',
     playgrounds: 'yes',
     sports: 'yes',
     pool: 'no',
-    fitness_club: 'no',
+    fitnessClub: 'no',
     restaurant: 'no',
-    spa_center: 'no',
-    walking_routes: 'no',
-    water_access: 'yes',
-    beach_zones: 'no',
-    kids_club: 'no',
-    sports_camp: 'no',
-    primary_school: 'no',
-    bbq_zones: 'no',
+    spaCenter: 'no',
+    walkingRoutes: 'no',
+    waterAccess: 'yes',
+    beachZones: 'no',
+    kidsClub: 'no',
+    sportsCamp: 'no',
+    primarySchool: 'no',
+    bbqZones: 'no',
   };
 
   const mockShelkovoSpaces: CommonSpaces = {
-    club_infrastructure: 'yes',
+    clubInfrastructure: 'yes',
     playgrounds: 'yes',
     sports: 'yes',
     pool: 'no',
-    fitness_club: 'no',
+    fitnessClub: 'no',
     restaurant: 'no',
-    spa_center: 'no',
-    walking_routes: 'no',
-    water_access: 'yes',
-    beach_zones: 'no',
-    kids_club: 'no',
-    sports_camp: 'no',
-    primary_school: 'no',
-    bbq_zones: 'no',
+    spaCenter: 'no',
+    walkingRoutes: 'no',
+    waterAccess: 'yes',
+    beachZones: 'no',
+    kidsClub: 'no',
+    sportsCamp: 'no',
+    primarySchool: 'no',
+    bbqZones: 'no',
   };
 
   it('displays correct labels for common spaces', () => {

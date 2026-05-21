@@ -5,7 +5,7 @@ import { personMarkdownUrl, personUrl } from './routes';
 export interface PersonMentionTarget extends EntityMentionTarget {
   readonly type: 'person';
   readonly name: string;
-  readonly name_cases?: PersonNameCaseForms;
+  readonly nameCases?: PersonNameCaseForms;
   readonly company?: string;
   readonly position?: string;
 }
@@ -26,7 +26,7 @@ const mentionTitle = (
 export const createPersonMentionTarget = (
   slug: string,
   name: string,
-  name_cases?: PersonNameCaseForms,
+  nameCases?: PersonNameCaseForms,
   company?: string,
   position?: string,
 ): PersonMentionTarget => {
@@ -37,11 +37,11 @@ export const createPersonMentionTarget = (
     slug,
     label: name,
     name,
-    ...(name_cases ? { label_cases: name_cases, name_cases } : {}),
+    ...(nameCases ? { labelCases: nameCases, nameCases } : {}),
     ...(company ? { company } : {}),
     ...(position ? { position } : {}),
-    ...(linkTitle ? { link_title: linkTitle } : {}),
-    html_url: personUrl(slug),
-    markdown_url: personMarkdownUrl(slug),
+    ...(linkTitle ? { linkTitle } : {}),
+    htmlUrl: personUrl(slug),
+    markdownUrl: personMarkdownUrl(slug),
   };
 };

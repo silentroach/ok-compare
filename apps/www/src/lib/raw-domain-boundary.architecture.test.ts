@@ -17,6 +17,7 @@ const externalBoundaryPathParts = [
   '/llms.ts',
   '/markdown.ts',
   '/content.config.ts',
+  '/sitemap-data.ts',
   '/compare/lib/schema.ts',
   '/compare/lib/full.ts',
   '/compare/lib/explorer.ts',
@@ -36,27 +37,41 @@ const snakeCaseToken = /(?<![A-Z])\b[a-z][a-z0-9]*_[a-z0-9_]*\b/g;
 const zodShortcutToken = /\bz\.(infer|output)</;
 const exportedZodDomainTypeToken =
   /export type (?!Raw)[A-Z][A-Za-z0-9]* = z\.(infer|output)</;
+const schemaDomainImportToken = /from ['"]\.\/types['"]/;
 const readonlyPropertyToken = /readonly\s+\w+\??:/;
-const allowedInternalSnakeTokens = new Set([
-  'active_incident',
-  'cover_alt',
-  'date_checked',
-  'ended_at',
-  'ends_at',
-  'has_time',
-  'more_expensive',
-  'no_incidents',
-  'pinned_until',
-  'rating_asc',
-  'rating_desc',
-  'site_name',
-  'source_url',
-  'started_at',
-  'starts_at',
-  'summary_large_image',
-  'tariff_asc',
-  'tariff_desc',
-]);
+const scopedInternalSnakeTokens: Record<string, ReadonlySet<string>> = {
+  'src/compare/components/SettlementsExplorer.svelte': new Set([
+    'more_expensive',
+    'rating_asc',
+    'rating_desc',
+    'tariff_asc',
+    'tariff_desc',
+  ]),
+  'src/layouts/BaseLayout.astro': new Set(['site_name', 'summary_large_image']),
+  'src/components/Seo.astro': new Set(['site_name', 'summary_large_image']),
+  'src/lib/news/date.ts': new Set(['has_time']),
+  'src/lib/news/load.ts': new Set([
+    'cover_alt',
+    'ends_at',
+    'has_time',
+    'pinned_until',
+    'source_url',
+    'starts_at',
+  ]),
+};
+
+const scopedInternalSnakeTokenComments: Record<string, string> = {
+  'src/compare/components/SettlementsExplorer.svelte':
+    'compare explorer select values are an existing browser-facing filter contract',
+  'src/layouts/BaseLayout.astro':
+    'SEO meta names are third-party protocol names, not app data contracts',
+  'src/components/Seo.astro':
+    'SEO meta names are third-party protocol names, not app data contracts',
+  'src/lib/news/date.ts':
+    'news timestamp parser returns raw timestamp parts consumed at raw mapping boundaries',
+  'src/lib/news/load.ts':
+    'news loader still maps Astro raw frontmatter near getCollection before returning domain data',
+};
 
 const toRepoPath = (path: string): string =>
   relative(process.cwd(), path).split('\\').join('/');
@@ -73,6 +88,13 @@ const walk = (dir: string): readonly string[] =>
 
 const isExternalBoundaryFile = (repoPath: string): boolean =>
   externalBoundaryPathParts.some((part) => `/${repoPath}`.includes(part));
+
+const isAllowedScopedInternalSnakeToken = (
+  repoPath: string,
+  token: string,
+): boolean =>
+  (scopedInternalSnakeTokens[repoPath]?.has(token) ?? false) &&
+  Boolean(scopedInternalSnakeTokenComments[repoPath]);
 
 const loadSourceFiles = (): readonly {
   readonly repoPath: string;
@@ -92,7 +114,9 @@ describe('raw/domain/public data boundary architecture', () => {
           .filter(
             (token) => !token.includes('__') && !token.startsWith('a11y_'),
           )
-          .filter((token) => !allowedInternalSnakeTokens.has(token))
+          .filter(
+            (token) => !isAllowedScopedInternalSnakeToken(repoPath, token),
+          )
           .map((token) => `${repoPath}: ${token}`),
       );
 
@@ -113,6 +137,17 @@ describe('raw/domain/public data boundary architecture', () => {
 
       return [];
     });
+
+    expect(violations).toEqual([]);
+  });
+
+  it('keeps raw schemas from importing domain types', () => {
+    const violations = loadSourceFiles()
+      .filter(({ repoPath }) => repoPath.endsWith('/schema.ts'))
+      .filter(({ code }) => schemaDomainImportToken.test(code))
+      .map(
+        ({ repoPath }) => `${repoPath}: schema.ts must not import domain types`,
+      );
 
     expect(violations).toEqual([]);
   });

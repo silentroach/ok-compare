@@ -3,7 +3,7 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 
-import type { NewsListArticle } from '../../lib/news/schema';
+import type { NewsListArticle } from '../../lib/news/types';
 
 // @ts-expect-error Astro component modules are resolved by Astro/Vitest at test time.
 import NewsCard from './NewsCard.astro';
@@ -29,11 +29,11 @@ const baseArticle: NewsListArticle = {
   day: 14,
   entry: 'pinned',
   url: '/news/2026/05/pinned/',
-  markdown_url: '/news/2026/05/pinned/index.md',
+  markdownUrl: '/news/2026/05/pinned/index.md',
   canonical: 'https://example.com/news/2026/05/pinned/',
-  published_at: new Date('2026-05-14T09:00:00+03:00'),
-  published_iso: '2026-05-14T09:00:00+03:00',
-  applies_to_all_areas: true,
+  publishedAt: new Date('2026-05-14T09:00:00+03:00'),
+  publishedIso: '2026-05-14T09:00:00+03:00',
+  appliesToAllAreas: true,
   areas: [],
   tags: [],
   pinned: true,

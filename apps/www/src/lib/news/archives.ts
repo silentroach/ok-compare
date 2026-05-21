@@ -5,7 +5,7 @@ import type {
   NewsListArticle,
   NewsMonthArchive,
   NewsYearArchive,
-} from './schema';
+} from './types';
 import { monthMarkdownUrl, monthUrl, yearMarkdownUrl, yearUrl } from './routes';
 import { latestFirst } from './sort';
 
@@ -43,7 +43,7 @@ export function buildArchives(items: readonly NewsListArticle[]): NewsArchives {
             year,
             month,
             url: monthUrl(year, month),
-            markdown_url: monthMarkdownUrl(year, month),
+            markdownUrl: monthMarkdownUrl(year, month),
             count: articles.length,
             articles: latestFirst(articles),
           };
@@ -54,7 +54,7 @@ export function buildArchives(items: readonly NewsListArticle[]): NewsArchives {
       const item: NewsYearArchive = {
         year,
         url: yearUrl(year),
-        markdown_url: yearMarkdownUrl(year),
+        markdownUrl: yearMarkdownUrl(year),
         count: months.reduce((sum, month) => sum + month.count, 0),
         months,
       };
@@ -65,7 +65,7 @@ export function buildArchives(items: readonly NewsListArticle[]): NewsArchives {
 
   return {
     years: list,
-    by_year: byYear,
-    by_month: byMonth,
+    byYear,
+    byMonth,
   };
 }

@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, waitFor, fireEvent } from '@testing-library/svelte';
 import SettlementsExplorer from './SettlementsExplorer.svelte';
-import type { ComparisonResult, Settlement, Stats } from '../lib/schema';
+import type { ExplorerSettlement } from '../lib/explorer';
+import type { ComparisonResult, Stats } from '../lib/settlement/types';
 
-type Row = Settlement & { rating: number };
+type Row = ExplorerSettlement;
 
 const mockMap = {
   addChild: vi.fn(),
@@ -47,84 +48,54 @@ const stats: Stats = {
 const settlements: Row[] = [
   {
     name: 'КП Шелково',
-    short_name: 'Шелково',
+    shortName: 'Шелково',
     slug: 'shelkovo',
     rating: 71.2,
-    website: 'https://example.com/shelkovo',
-    management_company: 'УК Шелково',
-    is_baseline: true,
+    managementCompany: 'УК Шелково',
+    isBaseline: true,
     location: {
-      address_text: 'Московская область',
       lat: 55.82,
       lng: 37.14,
       district: 'Истринский район',
     },
     tariff: {
-      value: 120,
-      unit: 'rub_per_sotka',
-      period: 'month',
-      normalized_per_sotka_month: 120,
-      normalized_is_estimate: false,
-      note: '',
+      normalizedPerSotkaMonth: 120,
+      normalizedIsEstimate: false,
     },
-    infrastructure: { gas: 'yes', security: 'yes', roads: 'asphalt' },
-    common_spaces: {},
-    service_model: {},
-    sources: [],
   },
   {
     name: 'КП Лесное',
-    short_name: 'Лесное',
+    shortName: 'Лесное',
     slug: 'lesnoe',
     rating: 58.4,
-    website: 'https://example.com/lesnoe',
-    management_company: 'УК Лесное',
-    is_baseline: false,
+    managementCompany: 'УК Лесное',
+    isBaseline: false,
     location: {
-      address_text: 'Московская область',
       lat: 55.85,
       lng: 37.2,
       district: 'Истринский район',
     },
     tariff: {
-      value: 90,
-      unit: 'rub_per_sotka',
-      period: 'month',
-      normalized_per_sotka_month: 90,
-      normalized_is_estimate: false,
-      note: '',
+      normalizedPerSotkaMonth: 90,
+      normalizedIsEstimate: false,
     },
-    infrastructure: { gas: 'yes', security: 'no', roads: 'gravel' },
-    common_spaces: {},
-    service_model: {},
-    sources: [],
   },
   {
     name: 'КП Усадьбы',
-    short_name: 'Усадьбы',
+    shortName: 'Усадьбы',
     slug: 'usadby',
     rating: 84.7,
-    website: 'https://example.com/usadby',
-    management_company: 'УК Усадьбы',
-    is_baseline: false,
+    managementCompany: 'УК Усадьбы',
+    isBaseline: false,
     location: {
-      address_text: 'Московская область',
       lat: 55.83,
       lng: 37.16,
       district: 'Истринский район',
     },
     tariff: {
-      value: 150,
-      unit: 'rub_per_sotka',
-      period: 'month',
-      normalized_per_sotka_month: 150,
-      normalized_is_estimate: false,
-      note: '',
+      normalizedPerSotkaMonth: 150,
+      normalizedIsEstimate: false,
     },
-    infrastructure: { gas: 'yes', security: 'yes', roads: 'asphalt' },
-    common_spaces: {},
-    service_model: {},
-    sources: [],
   },
 ];
 
@@ -419,9 +390,8 @@ describe('SettlementsExplorer', () => {
       {
         ...settlements[2],
         name: 'КП Усадьбы 2',
-        short_name: 'Усадьбы 2',
+        shortName: 'Усадьбы 2',
         slug: 'usadby-2',
-        website: 'https://example.com/usadby-2',
       },
     ];
 

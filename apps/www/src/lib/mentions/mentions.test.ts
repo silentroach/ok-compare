@@ -11,26 +11,26 @@ const targets = [
     type: 'person',
     slug: 'kschemelinin',
     label: 'Кирилл Щемелинин',
-    label_cases: {
+    labelCases: {
       gen: 'Кирилла Щемелинина',
     },
-    html_url: '/people/kschemelinin/',
-    markdown_url: '/people/kschemelinin/index.md',
-    link_title: 'депутат, КПРФ',
+    htmlUrl: '/people/kschemelinin/',
+    markdownUrl: '/people/kschemelinin/index.md',
+    linkTitle: 'депутат, КПРФ',
   },
   {
     type: 'person',
     slug: 'apetrov',
     label: 'Андрей Петров',
-    html_url: '/people/apetrov/',
-    markdown_url: '/people/apetrov/index.md',
+    htmlUrl: '/people/apetrov/',
+    markdownUrl: '/people/apetrov/index.md',
   },
   {
     type: 'person',
     slug: 'encoded-url',
     label: 'Адрес с пробелом',
-    html_url: '/people/иван%20петров/',
-    markdown_url: '/people/иван%20петров/index.md',
+    htmlUrl: '/people/иван%20петров/',
+    markdownUrl: '/people/иван%20петров/index.md',
   },
 ] as const;
 
@@ -45,8 +45,8 @@ describe('createSiteMentionRegistry', () => {
           type: 'person',
           slug: 'kschemelinin',
           label: 'Другой Кирилл',
-          html_url: '/people/other/',
-          markdown_url: '/people/other/index.md',
+          htmlUrl: '/people/other/',
+          markdownUrl: '/people/other/index.md',
         },
       ]),
     ).toThrow('duplicate entity mention slug "kschemelinin"');
@@ -181,7 +181,7 @@ describe('normalizeEntityMentions', () => {
         markdown: 'Профиль ведет на @kschemelinin.',
         context: 'people profile "kschemelinin" body',
         registry,
-        source_entity: { type: 'person', slug: 'kschemelinin' },
+        sourceEntity: { type: 'person', slug: 'kschemelinin' },
       }),
     ).toThrow(
       'people profile "kschemelinin" body contains self entity mention "person:kschemelinin"',
@@ -194,7 +194,7 @@ describe('normalizeEntityMentions', () => {
         markdown: 'Профиль ведет на [свой профиль](@kschemelinin).',
         context: 'people profile "kschemelinin" body',
         registry,
-        source_entity: { type: 'person', slug: 'kschemelinin' },
+        sourceEntity: { type: 'person', slug: 'kschemelinin' },
       }),
     ).toThrow(
       'people profile "kschemelinin" body contains self entity mention "person:kschemelinin"',

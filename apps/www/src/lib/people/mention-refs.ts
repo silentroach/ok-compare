@@ -2,11 +2,11 @@ import { extractFirstMarkdownText } from '@shelkovo/markdown';
 
 import { createEntityMentionSourceRefs } from '../mentions';
 import type { EntityMentionSourceRef } from '../mentions';
-import type { PersonProfile } from './schema';
+import type { PersonProfile } from './types';
 
 type PersonProfileMentionRefSource = Pick<
   PersonProfile,
-  'id' | 'slug' | 'name' | 'url' | 'markdown_url' | 'body' | 'mentions'
+  'id' | 'slug' | 'name' | 'url' | 'markdownUrl' | 'body' | 'mentions'
 >;
 
 const SPACE = /\s+/gu;
@@ -23,13 +23,13 @@ export const createPersonProfileMentionRefs = (
   const summary = excerpt(profile.body);
 
   return createEntityMentionSourceRefs(profile.mentions, {
-    source_section: 'people',
-    source_kind: 'person',
-    source_id: profile.id,
-    source_entity: { type: 'person', slug: profile.slug },
+    sourceSection: 'people',
+    sourceKind: 'person',
+    sourceId: profile.id,
+    sourceEntity: { type: 'person', slug: profile.slug },
     title: profile.name,
-    html_url: profile.url,
-    markdown_url: profile.markdown_url,
+    htmlUrl: profile.url,
+    markdownUrl: profile.markdownUrl,
     ...(summary ? { excerpt: summary } : {}),
   });
 };

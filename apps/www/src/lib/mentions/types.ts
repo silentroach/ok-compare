@@ -24,11 +24,11 @@ export interface EntityMentionTarget {
   readonly type: EntityMentionType;
   readonly slug: string;
   readonly label: string;
-  readonly label_cases?: EntityMentionLabelCaseForms;
-  readonly html_url: string;
-  readonly markdown_url: string;
-  readonly link_title?: string;
-  readonly link_context?: string;
+  readonly labelCases?: EntityMentionLabelCaseForms;
+  readonly htmlUrl: string;
+  readonly markdownUrl: string;
+  readonly linkTitle?: string;
+  readonly linkContext?: string;
 }
 
 export interface EntityMentionSourceEntity {
@@ -37,23 +37,23 @@ export interface EntityMentionSourceEntity {
 }
 
 export interface EntityMentionSourceRef {
-  readonly target_type: EntityMentionType;
-  readonly target_slug: string;
-  readonly source_section: string;
-  readonly source_kind: string;
-  readonly source_id: string;
+  readonly targetType: EntityMentionType;
+  readonly targetSlug: string;
+  readonly sourceSection: string;
+  readonly sourceKind: string;
+  readonly sourceId: string;
   readonly title: string;
-  readonly html_url: string;
-  readonly markdown_url: string;
+  readonly htmlUrl: string;
+  readonly markdownUrl: string;
   readonly excerpt?: string;
-  readonly mentioned_at?: string;
-  readonly sort_key?: number;
-  readonly source_entity?: EntityMentionSourceEntity;
+  readonly mentionedAt?: string;
+  readonly sortKey?: number;
+  readonly sourceEntity?: EntityMentionSourceEntity;
 }
 
 export type EntityMentionSourceRefSource = Omit<
   EntityMentionSourceRef,
-  'target_type' | 'target_slug'
+  'targetType' | 'targetSlug'
 >;
 
 export interface EntityMentionGraphTarget {

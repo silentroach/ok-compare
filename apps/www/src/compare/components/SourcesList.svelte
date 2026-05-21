@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Source } from '../lib/schema';
+  import type { Source } from '../lib/settlement/types';
   import { formatDate } from '../lib/format';
 
   interface Props {
@@ -48,7 +48,7 @@
         {/if}
       </div>
       <div class="whitespace-nowrap text-sm text-muted-foreground sm:ml-4">
-        {formatDate(source.date_checked)}
+        {formatDate(source.dateChecked)}
       </div>
     </li>
   {/each}

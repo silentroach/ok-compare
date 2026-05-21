@@ -1,10 +1,10 @@
 import { compareRuText } from '@shelkovo/format';
 
-import type { Settlement, Stats } from './schema';
 import type { Rating } from './rating';
+import type { Settlement, Stats } from './settlement/types';
 
-type Ranked = Pick<Settlement, 'slug' | 'short_name'> & {
-  tariff: Pick<Settlement['tariff'], 'normalized_per_sotka_month'>;
+type Ranked = Pick<Settlement, 'slug' | 'shortName'> & {
+  tariff: Pick<Settlement['tariff'], 'normalizedPerSotkaMonth'>;
 };
 
 type Rated = Ranked & {
@@ -14,9 +14,9 @@ type Rated = Ranked & {
 function sort<T extends Ranked>(settlements: T[]): T[] {
   return [...settlements].sort((a, b) => {
     const diff =
-      a.tariff.normalized_per_sotka_month - b.tariff.normalized_per_sotka_month;
+      a.tariff.normalizedPerSotkaMonth - b.tariff.normalizedPerSotkaMonth;
     if (diff !== 0) return diff;
-    return compareRuText(a.short_name, b.short_name);
+    return compareRuText(a.shortName, b.shortName);
   });
 }
 
@@ -50,7 +50,7 @@ export function rankSettlements(settlements: Ranked[]): Map<string, number> {
   const ranks = new Map<string, number>();
 
   sort(settlements).forEach((item) => {
-    const tariff = item.tariff.normalized_per_sotka_month;
+    const tariff = item.tariff.normalizedPerSotkaMonth;
 
     if (tariff !== prev) {
       prev = tariff;
@@ -92,14 +92,14 @@ function peers(
   const list = settlements
     .map((item) => ({
       slug: item.slug,
-      short_name: item.short_name,
+      shortName: item.shortName,
       tariff: item.tariff,
       score: ratings.get(item.slug)?.score ?? 0,
     }))
     .sort((a, b) => {
       const diff = a.score - b.score;
       if (diff !== 0) return diff;
-      return compareRuText(a.short_name, b.short_name);
+      return compareRuText(a.shortName, b.shortName);
     });
 
   const band =
@@ -113,7 +113,7 @@ function peers(
 
   return {
     peerMedianTariff: calculateMedian(
-      band.map((item) => item.tariff.normalized_per_sotka_month),
+      band.map((item) => item.tariff.normalizedPerSotkaMonth),
     ),
   };
 }
@@ -130,13 +130,13 @@ export function computeStats(
     throw new Error('No settlements provided');
   }
 
-  const baseline = settlements.find((s) => s.is_baseline);
+  const baseline = settlements.find((s) => s.isBaseline);
   if (!baseline) {
     throw new Error('Baseline settlement (Shelkovo) not found');
   }
 
-  const tariffs = settlements.map((s) => s.tariff.normalized_per_sotka_month);
-  const shelkovoTariff = baseline.tariff.normalized_per_sotka_month;
+  const tariffs = settlements.map((s) => s.tariff.normalizedPerSotkaMonth);
+  const shelkovoTariff = baseline.tariff.normalizedPerSotkaMonth;
   const ranks = rankSettlements(settlements);
   const peer = peers(settlements, ratings, baseline);
 
@@ -147,10 +147,10 @@ export function computeStats(
   const shelkovoRank = ranks.get(baseline.slug) ?? settlements.length;
   const totalSettlements = settlements.length;
   const cheaperCount = settlements.filter(
-    (s) => s.tariff.normalized_per_sotka_month < shelkovoTariff,
+    (s) => s.tariff.normalizedPerSotkaMonth < shelkovoTariff,
   ).length;
   const moreExpensiveCount = settlements.filter(
-    (s) => s.tariff.normalized_per_sotka_month > shelkovoTariff,
+    (s) => s.tariff.normalizedPerSotkaMonth > shelkovoTariff,
   ).length;
   const shelkovoVsMedianPercent = calculatePercentile(
     shelkovoTariff,

@@ -1,9 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { compareSettlements, calculateTariffDelta } from './comparisons';
-import type { Settlement } from './schema';
+import { mapRawSettlement } from './settlement/mapper';
+import type { RawSettlement } from './settlement/schema';
 
 describe('Comparisons Module', () => {
-  const mockShelkovo: Settlement = {
+  const mockShelkovo = mapRawSettlement({
     name: 'Shelkovo',
     short_name: 'Shelkovo',
     slug: 'shelkovo',
@@ -73,7 +74,7 @@ describe('Comparisons Module', () => {
         comment: '',
       },
     ],
-  };
+  } satisfies RawSettlement);
 
   describe('calculateTariffDelta', () => {
     it('should calculate positive delta when other is cheaper', () => {
@@ -102,18 +103,18 @@ describe('Comparisons Module', () => {
 
   describe('compareSettlements', () => {
     it('should return complete comparison result', () => {
-      const otherSettlement: Settlement = {
+      const otherSettlement = {
         ...mockShelkovo,
         slug: 'lesnoe',
-        short_name: 'Lesnoe',
+        shortName: 'Lesnoe',
         name: 'Lesnoe',
-        is_baseline: false,
+        isBaseline: false,
         tariff: {
           value: 80,
-          unit: 'rub_per_sotka',
-          period: 'month',
-          normalized_per_sotka_month: 80,
-          normalized_is_estimate: false,
+          unit: 'perSotka' as const,
+          period: 'month' as const,
+          normalizedPerSotkaMonth: 80,
+          normalizedIsEstimate: false,
           note: '',
         },
       };

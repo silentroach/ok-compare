@@ -6,7 +6,7 @@ import WaterDropIcon from '@shelkovo/ui/icons/services/WaterDrop.astro';
 
 import ShelkovoAreaIcon from '@/components/ShelkovoAreaIcon.astro';
 import StatusServiceTimeline from './StatusServiceTimeline.astro';
-import type { StatusServiceSummary } from '../../lib/status/schema';
+import type { StatusServiceSummary } from '../../lib/status/types';
 import {
   formatStatusDate,
   formatStatusDuration,
@@ -29,23 +29,23 @@ const {
 } = Astro.props;
 
 const serviceLabel = formatStatusService(summary.service);
-const stateLabel = formatStatusServiceState(summary.service_status);
+const stateLabel = formatStatusServiceState(summary.serviceStatus);
 const latestRecord = summary.incidents[0];
 const latestMoment = latestRecord
-  ? formatStatusDate(latestRecord.started_iso, {
-      hasTime: latestRecord.started_has_time,
+  ? formatStatusDate(latestRecord.startedIso, {
+      hasTime: latestRecord.startedHasTime,
       nonBreaking: true,
     })
   : undefined;
 const latestDuration =
-  latestRecord && !latestRecord.is_active && latestRecord.duration
+  latestRecord && !latestRecord.isActive && latestRecord.duration
     ? formatStatusDuration(latestRecord.duration, { nonBreaking: true })
     : undefined;
 const latestAreas =
-  latestRecord && !latestRecord.applies_to_all_areas ? latestRecord.areas : [];
+  latestRecord && !latestRecord.appliesToAllAreas ? latestRecord.areas : [];
 const timelineIncidents = summary.incidents.map(
-  ({ applies_to_all_areas, areas, ...incident }) =>
-    applies_to_all_areas ? incident : { ...incident, areas },
+  ({ appliesToAllAreas, areas, ...incident }) =>
+    appliesToAllAreas ? incident : { ...incident, areas },
 );
 const stateClass = {
   green: 'text-[color:var(--color-success)]',
@@ -158,7 +158,7 @@ const hasResponsiveTimeline = resolvedMobileTimelineDays !== timelineDays;
       <p
         class:list={[
           'text-[0.9375rem] font-semibold leading-5',
-          stateClass[summary.service_status],
+          stateClass[summary.serviceStatus],
         ]}
       >
         {stateLabel}
@@ -175,7 +175,7 @@ const hasResponsiveTimeline = resolvedMobileTimelineDays !== timelineDays;
       {
         latestRecord ? (
           <div class="space-y-1">
-            {latestRecord.has_page ? (
+            {latestRecord.hasPage ? (
               <a
                 href={latestRecord.url}
                 class="site-inline-link block text-[0.9375rem] font-medium leading-[1.35] text-foreground"

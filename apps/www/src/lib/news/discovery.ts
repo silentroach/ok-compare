@@ -1,4 +1,3 @@
-import { absoluteUrl } from '../site';
 import {
   apiCatalogPath,
   articlesDataPath,
@@ -10,139 +9,45 @@ import {
   newsMarkdownPath,
   newsPath,
 } from './routes';
+import { NEWS_AREAS, NEWS_AUTHOR_KINDS } from './schema';
+import type { NewsDataset } from './types';
 import {
-  NEWS_AREAS,
-  NEWS_AUTHOR_KINDS,
-  type NewsArticle,
-  type NewsAttachment,
-  type NewsAuthor,
-  type NewsDataset,
-  type NewsEvent,
-  type NewsMonthArchive,
-  type NewsPhoto,
-  type NewsTag,
-  type NewsTagPage,
-  type NewsYearArchive,
-} from './schema';
-import { buildNewsEventMapUrl } from './view';
+  NEWS_PUBLIC_PAYLOAD_SCHEMA_VERSION,
+  toNewsPublicPayload,
+  type NewsPublicArchiveMonth as NewsDiscoveryArchiveMonth,
+  type NewsPublicArchiveYear as NewsDiscoveryArchiveYear,
+  type NewsPublicArticle as NewsDiscoveryArticle,
+  type NewsPublicAttachment as NewsDiscoveryAttachment,
+  type NewsPublicAuthor as NewsDiscoveryAuthor,
+  type NewsPublicCover as NewsDiscoveryCover,
+  type NewsPublicEvent as NewsDiscoveryEvent,
+  type NewsPublicEventOrganizer as NewsDiscoveryEventOrganizer,
+  type NewsPublicPayload as NewsDiscoveryPayload,
+  type NewsPublicPhoto as NewsDiscoveryPhoto,
+  type NewsPublicTag as NewsDiscoveryTag,
+  type NewsPublicTagPage as NewsDiscoveryTagPage,
+} from './public-dto';
 
 export const PROFILE = 'https://www.rfc-editor.org/info/rfc9727';
 export const OAS = 'application/vnd.oai.openapi+json';
 
-export interface NewsDiscoveryAuthor {
-  readonly id: string;
-  readonly name: string;
-  readonly kind: NewsAuthor['kind'];
-  readonly url?: string;
-}
-
-export interface NewsDiscoveryTag {
-  readonly label: string;
-  readonly key: string;
-  readonly url: string;
-}
-
-export interface NewsDiscoveryPhoto {
-  readonly url: string;
-  readonly alt: string;
-  readonly caption?: string;
-}
-
-export interface NewsDiscoveryAttachment {
-  readonly title: string;
-  readonly url: string;
-  readonly type?: string;
-  readonly size?: string;
-}
-
-export interface NewsDiscoveryCover {
-  readonly url: string;
-  readonly alt: string;
-}
-
-export interface NewsDiscoveryEventOrganizer {
-  readonly name: string;
-  readonly type: 'organization' | 'person';
-}
-
-export interface NewsDiscoveryEvent {
-  readonly slug: string;
-  readonly title: string;
-  readonly description?: string;
-  readonly starts_at: string;
-  readonly ends_at?: string;
-  readonly location?: string;
-  readonly coordinates?: {
-    readonly lat: number;
-    readonly lng: number;
-  };
-  readonly map_url?: string;
-  readonly ics_url: string;
-  readonly organizer?: NewsDiscoveryEventOrganizer;
-  readonly performer?: readonly NewsDiscoveryEventOrganizer[];
-}
-
-export interface NewsDiscoveryArticle {
-  readonly id: string;
-  readonly title: string;
-  readonly summary: string;
-  readonly published_at: string;
-  readonly year: number;
-  readonly month: number;
-  readonly day: number;
-  readonly entry: string;
-  readonly html_url: string;
-  readonly markdown_url: string;
-  readonly source_url?: string;
-  readonly pinned: boolean;
-  readonly author: NewsDiscoveryAuthor;
-  readonly areas: readonly string[];
-  readonly tags: readonly NewsDiscoveryTag[];
-  readonly cover?: NewsDiscoveryCover;
-  readonly events?: readonly NewsDiscoveryEvent[];
-  readonly photos: readonly NewsDiscoveryPhoto[];
-  readonly attachments: readonly NewsDiscoveryAttachment[];
-  readonly body_markdown: string;
-}
-
-export interface NewsDiscoveryArchiveMonth {
-  readonly year: number;
-  readonly month: number;
-  readonly count: number;
-  readonly url: string;
-  readonly markdown_url: string;
-}
-
-export interface NewsDiscoveryArchiveYear {
-  readonly year: number;
-  readonly count: number;
-  readonly url: string;
-  readonly markdown_url: string;
-  readonly months: readonly NewsDiscoveryArchiveMonth[];
-}
-
-export interface NewsDiscoveryTagPage {
-  readonly label: string;
-  readonly key: string;
-  readonly count: number;
-  readonly url: string;
-  readonly markdown_url: string;
-}
-
-export interface NewsDiscoveryPayload {
-  readonly schema_version: string;
-  readonly generated_at: string;
-  readonly updated_at: string;
-  readonly total_count: number;
-  readonly articles: readonly NewsDiscoveryArticle[];
-  readonly archives: {
-    readonly years: readonly NewsDiscoveryArchiveYear[];
-  };
-  readonly tags: readonly NewsDiscoveryTagPage[];
-}
+export type {
+  NewsDiscoveryArchiveMonth,
+  NewsDiscoveryArchiveYear,
+  NewsDiscoveryArticle,
+  NewsDiscoveryAttachment,
+  NewsDiscoveryAuthor,
+  NewsDiscoveryCover,
+  NewsDiscoveryEvent,
+  NewsDiscoveryEventOrganizer,
+  NewsDiscoveryPayload,
+  NewsDiscoveryPhoto,
+  NewsDiscoveryTag,
+  NewsDiscoveryTagPage,
+};
 
 const NEWS_ARTICLES_PAYLOAD_SCHEMA = 'NewsArticlesPayload';
-const NEWS_PAYLOAD_SCHEMA_VERSION = '1.0.0';
+const NEWS_PAYLOAD_SCHEMA_VERSION = NEWS_PUBLIC_PAYLOAD_SCHEMA_VERSION;
 
 const abs = (root: string, path: string): string =>
   new URL(path.replace(/^\//, ''), `${root}/`).toString();
@@ -235,170 +140,11 @@ function rewriteSchemaRefs(value: unknown, schemaRef: string): unknown {
   );
 }
 
-const fullUrl = (value: string): string => absoluteUrl(value);
-
-const author = (author: NewsAuthor): NewsDiscoveryAuthor => ({
-  id: author.id,
-  name: author.name,
-  kind: author.kind,
-  ...(author.url ? { url: fullUrl(author.url) } : {}),
-});
-
-const tag = (tag: NewsTag): NewsDiscoveryTag => ({
-  label: tag.label,
-  key: tag.key,
-  url: fullUrl(tag.url),
-});
-
-const photo = (item: NewsPhoto): NewsDiscoveryPhoto => ({
-  url: fullUrl(item.url),
-  alt: item.alt,
-  ...(item.caption ? { caption: item.caption } : {}),
-});
-
-const attachment = (item: NewsAttachment): NewsDiscoveryAttachment => ({
-  title: item.title,
-  url: fullUrl(item.url),
-  ...(item.type ? { type: item.type } : {}),
-  ...(item.size ? { size: item.size } : {}),
-});
-
-function cover(article: NewsArticle): NewsDiscoveryCover | undefined {
-  if (!article.cover_url) {
-    return undefined;
-  }
-
-  if (!article.cover_alt) {
-    throw new Error(
-      `news article "${article.id}" cover_alt is required when cover is present`,
-    );
-  }
-
-  return {
-    url: fullUrl(article.cover_url),
-    alt: article.cover_alt,
-  };
-}
-
-const discoveryUrl = (value: string): string =>
-  value.startsWith('/') ? fullUrl(value) : value;
-
-function event(item: NewsEvent): NewsDiscoveryEvent {
-  const mapUrl = buildNewsEventMapUrl(item);
-
-  return {
-    slug: item.slug,
-    title: item.title,
-    ...(item.description ? { description: item.description } : {}),
-    starts_at: item.starts_iso,
-    ...(item.ends_iso ? { ends_at: item.ends_iso } : {}),
-    ...(item.location ? { location: item.location } : {}),
-    ...(item.coordinates
-      ? {
-          coordinates: {
-            lat: item.coordinates.lat,
-            lng: item.coordinates.lng,
-          },
-        }
-      : {}),
-    ...(mapUrl ? { map_url: discoveryUrl(mapUrl) } : {}),
-    ics_url: fullUrl(item.ics_url),
-    ...(item.organizer ? { organizer: item.organizer } : {}),
-    ...(item.performer ? { performer: item.performer } : {}),
-  };
-}
-
-function article(item: NewsArticle): NewsDiscoveryArticle {
-  const image = cover(item);
-
-  return {
-    id: item.id,
-    title: item.title,
-    summary: item.summary,
-    published_at: item.published_iso,
-    year: item.year,
-    month: item.month,
-    day: item.day,
-    entry: item.entry,
-    html_url: item.canonical,
-    markdown_url: fullUrl(item.markdown_url),
-    ...(item.source_url ? { source_url: fullUrl(item.source_url) } : {}),
-    pinned: item.pinned,
-    author: author(item.author),
-    areas: [...item.areas],
-    tags: item.tags.map(tag),
-    ...(image ? { cover: image } : {}),
-    ...(item.events.length > 0 ? { events: item.events.map(event) } : {}),
-    photos: item.photos.map(photo),
-    attachments: item.attachments.map(attachment),
-    body_markdown: item.body,
-  };
-}
-
-const archiveMonth = (item: NewsMonthArchive): NewsDiscoveryArchiveMonth => ({
-  year: item.year,
-  month: item.month,
-  count: item.count,
-  url: fullUrl(item.url),
-  markdown_url: fullUrl(item.markdown_url),
-});
-
-const archiveYear = (item: NewsYearArchive): NewsDiscoveryArchiveYear => ({
-  year: item.year,
-  count: item.count,
-  url: fullUrl(item.url),
-  markdown_url: fullUrl(item.markdown_url),
-  months: item.months.map(archiveMonth),
-});
-
-const tagPage = (item: NewsTagPage): NewsDiscoveryTagPage => ({
-  label: item.label,
-  key: item.key,
-  count: item.count,
-  url: fullUrl(item.url),
-  markdown_url: fullUrl(item.markdown_url),
-});
-
-function latestUpdate(data: NewsDataset): string | undefined {
-  let latest:
-    | {
-        readonly at: Date;
-        readonly iso: string;
-      }
-    | undefined;
-
-  for (const item of data.articles) {
-    const current = {
-      at: item.published_at,
-      iso: item.published_iso,
-    };
-
-    if (!latest || current.at.valueOf() > latest.at.valueOf()) {
-      latest = current;
-    }
-  }
-
-  return latest?.iso;
-}
-
 export const buildNewsPayload = (
   data: NewsDataset,
   opts?: { readonly generated_at?: Date },
-): NewsDiscoveryPayload => {
-  const generatedAt = (opts?.generated_at ?? new Date()).toISOString();
-
-  return {
-    schema_version: NEWS_PAYLOAD_SCHEMA_VERSION,
-    generated_at: generatedAt,
-    updated_at: latestUpdate(data) ?? generatedAt,
-    total_count: data.articles.length,
-    articles: data.articles.map(article),
-    archives: {
-      years: data.archives.years.map(archiveYear),
-    },
-    tags: data.tags.map(tagPage),
-  };
-};
+): NewsDiscoveryPayload =>
+  toNewsPublicPayload(data, { generatedAt: opts?.generated_at });
 
 export function schema(root: string): Record<string, unknown> {
   return {

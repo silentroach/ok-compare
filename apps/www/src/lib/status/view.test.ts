@@ -22,10 +22,10 @@ describe('getStatusIncidentPeriod', () => {
   it('shows start label when there is no end date', () => {
     expect(
       getStatusIncidentPeriod({
-        is_active: false,
-        started_iso: `${currentYear}-05-01T07:32:00+03:00`,
-        started_has_time: true,
-        ended_has_time: false,
+        isActive: false,
+        startedIso: `${currentYear}-05-01T07:32:00+03:00`,
+        startedHasTime: true,
+        endedHasTime: false,
       }),
     ).toEqual({
       prefix: 'Начало',
@@ -39,10 +39,10 @@ describe('getStatusIncidentPeriod', () => {
   it('shows since label for active entries without end date', () => {
     expect(
       getStatusIncidentPeriod({
-        is_active: true,
-        started_iso: `${currentYear}-05-01T07:32:00+03:00`,
-        started_has_time: true,
-        ended_has_time: false,
+        isActive: true,
+        startedIso: `${currentYear}-05-01T07:32:00+03:00`,
+        startedHasTime: true,
+        endedHasTime: false,
       }),
     ).toEqual({
       prefix: 'Начиная с',
@@ -56,12 +56,12 @@ describe('getStatusIncidentPeriod', () => {
   it('shows full date range without labels when both dates are present', () => {
     expect(
       getStatusIncidentPeriod({
-        is_active: false,
-        started_iso: `${currentYear}-05-01T00:00:00+03:00`,
-        started_has_time: false,
-        ended_iso: `${currentYear}-05-02T00:00:00+03:00`,
-        ended_has_time: false,
-        duration: { total_minutes: 24 * 60 },
+        isActive: false,
+        startedIso: `${currentYear}-05-01T00:00:00+03:00`,
+        startedHasTime: false,
+        endedIso: `${currentYear}-05-02T00:00:00+03:00`,
+        endedHasTime: false,
+        duration: { totalMinutes: 24 * 60 },
       }),
     ).toEqual({
       start: {
@@ -79,12 +79,12 @@ describe('getStatusIncidentPeriod', () => {
   it('compresses same-day ranges with time into one date and two times', () => {
     expect(
       getStatusIncidentPeriod({
-        is_active: false,
-        started_iso: `${currentYear}-05-01T07:32:00+03:00`,
-        started_has_time: true,
-        ended_iso: `${currentYear}-05-01T16:38:00+03:00`,
-        ended_has_time: true,
-        duration: { total_minutes: 9 * 60 + 6 },
+        isActive: false,
+        startedIso: `${currentYear}-05-01T07:32:00+03:00`,
+        startedHasTime: true,
+        endedIso: `${currentYear}-05-01T16:38:00+03:00`,
+        endedHasTime: true,
+        duration: { totalMinutes: 9 * 60 + 6 },
       }),
     ).toEqual({
       start: {
@@ -102,12 +102,12 @@ describe('getStatusIncidentPeriod', () => {
   it('shows one date without duration for same-day ranges without time', () => {
     expect(
       getStatusIncidentPeriod({
-        is_active: false,
-        started_iso: `${currentYear}-05-01T00:00:00+03:00`,
-        started_has_time: false,
-        ended_iso: `${currentYear}-05-01T00:00:00+03:00`,
-        ended_has_time: false,
-        duration: { total_minutes: 0 },
+        isActive: false,
+        startedIso: `${currentYear}-05-01T00:00:00+03:00`,
+        startedHasTime: false,
+        endedIso: `${currentYear}-05-01T00:00:00+03:00`,
+        endedHasTime: false,
+        duration: { totalMinutes: 0 },
       }),
     ).toEqual({
       start: {
@@ -120,12 +120,12 @@ describe('getStatusIncidentPeriod', () => {
   it('keeps the full end timestamp when only one side has time', () => {
     expect(
       getStatusIncidentPeriod({
-        is_active: false,
-        started_iso: `${currentYear}-05-01T00:00:00+03:00`,
-        started_has_time: false,
-        ended_iso: `${currentYear}-05-01T16:38:00+03:00`,
-        ended_has_time: true,
-        duration: { total_minutes: 16 * 60 + 38 },
+        isActive: false,
+        startedIso: `${currentYear}-05-01T00:00:00+03:00`,
+        startedHasTime: false,
+        endedIso: `${currentYear}-05-01T16:38:00+03:00`,
+        endedHasTime: true,
+        duration: { totalMinutes: 16 * 60 + 38 },
       }),
     ).toEqual({
       start: {
@@ -164,10 +164,10 @@ describe('formatStatusIncidentPeriodText', () => {
   it('uses the same active wording as meta and timeline', () => {
     expect(
       formatStatusIncidentPeriodText({
-        is_active: true,
-        started_iso: `${currentYear}-05-01T07:32:00+03:00`,
-        started_has_time: true,
-        ended_has_time: false,
+        isActive: true,
+        startedIso: `${currentYear}-05-01T07:32:00+03:00`,
+        startedHasTime: true,
+        endedHasTime: false,
       }),
     ).toBe('Начиная с 1 мая, 07:32');
   });
@@ -176,12 +176,12 @@ describe('formatStatusIncidentPeriodText', () => {
     expect(
       formatStatusIncidentPeriodText(
         {
-          is_active: false,
-          started_iso: `${currentYear}-05-01T07:32:00+03:00`,
-          started_has_time: true,
-          ended_iso: `${currentYear}-05-01T16:38:00+03:00`,
-          ended_has_time: true,
-          duration: { total_minutes: 9 * 60 + 6 },
+          isActive: false,
+          startedIso: `${currentYear}-05-01T07:32:00+03:00`,
+          startedHasTime: true,
+          endedIso: `${currentYear}-05-01T16:38:00+03:00`,
+          endedHasTime: true,
+          duration: { totalMinutes: 9 * 60 + 6 },
         },
         { nonBreaking: true },
       ),
@@ -196,10 +196,10 @@ describe('buildStatusTimelineTooltipData', () => {
       incident: {
         kind: 'incident',
         title: 'Нет воды на Центральной',
-        is_active: true,
-        started_iso: `${currentYear}-05-01T07:32:00+03:00`,
-        started_has_time: true,
-        ended_has_time: false,
+        isActive: true,
+        startedIso: `${currentYear}-05-01T07:32:00+03:00`,
+        startedHasTime: true,
+        endedHasTime: false,
       },
     });
 
@@ -227,10 +227,10 @@ describe('buildStatusTimelineTooltipData', () => {
           incident: {
             kind: 'maintenance',
             title: 'Плановая профилактика сети',
-            is_active: false,
-            started_iso: `${currentYear}-05-03T00:00:00+03:00`,
-            started_has_time: false,
-            ended_has_time: false,
+            isActive: false,
+            startedIso: `${currentYear}-05-03T00:00:00+03:00`,
+            startedHasTime: false,
+            endedHasTime: false,
           },
         }),
       ),
@@ -252,11 +252,11 @@ describe('buildStatusTimelineTooltipData', () => {
         incident: {
           kind: 'maintenance',
           title: 'Плановая профилактика сети',
-          is_active: false,
-          started_iso: `${nextYear}-05-03T00:00:00+03:00`,
-          started_has_time: false,
-          ended_iso: `${nextYear}-05-04T00:00:00+03:00`,
-          ended_has_time: false,
+          isActive: false,
+          startedIso: `${nextYear}-05-03T00:00:00+03:00`,
+          startedHasTime: false,
+          endedIso: `${nextYear}-05-04T00:00:00+03:00`,
+          endedHasTime: false,
         },
       }),
     ).toEqual({
@@ -274,10 +274,10 @@ describe('buildStatusTimelineTooltipData', () => {
       incident: {
         kind: 'incident',
         title: 'Нет воды на Центральной',
-        is_active: true,
-        started_iso: `${currentYear}-05-01T07:32:00+03:00`,
-        started_has_time: true,
-        ended_has_time: false,
+        isActive: true,
+        startedIso: `${currentYear}-05-01T07:32:00+03:00`,
+        startedHasTime: true,
+        endedHasTime: false,
       },
       nonBreaking: true,
     });
@@ -308,22 +308,22 @@ describe('grouped timeline tooltip text', () => {
       buildStatusTimelineTooltipListItemData({
         kind: 'incident',
         title: 'Отключение 1',
-        is_active: false,
-        started_iso: `${currentYear}-05-09T07:32:00+03:00`,
-        started_has_time: true,
-        ended_iso: `${currentYear}-05-09T08:10:00+03:00`,
-        ended_has_time: true,
+        isActive: false,
+        startedIso: `${currentYear}-05-09T07:32:00+03:00`,
+        startedHasTime: true,
+        endedIso: `${currentYear}-05-09T08:10:00+03:00`,
+        endedHasTime: true,
         duration: {
-          total_minutes: 38,
+          totalMinutes: 38,
         },
       }),
       buildStatusTimelineTooltipListItemData({
         kind: 'incident',
         title: 'Отключение 2',
-        is_active: true,
-        started_iso: `${currentYear}-05-09T12:15:00+03:00`,
-        started_has_time: true,
-        ended_has_time: false,
+        isActive: true,
+        startedIso: `${currentYear}-05-09T12:15:00+03:00`,
+        startedHasTime: true,
+        endedHasTime: false,
       }),
     ];
 

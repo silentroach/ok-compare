@@ -8,6 +8,7 @@ import { withBase } from '../site';
 import { buildArchives, newsMonthKey } from './archives';
 import { NEWS_LATEST_LIMIT } from './config';
 import { parseNewsTimestamp, parseNewsTimestampInput } from './date';
+import { mapRawNewsAuthor } from './mapper';
 import {
   articleCanonical,
   articleEventIcsUrl,
@@ -15,25 +16,23 @@ import {
   articleUrl,
 } from './routes';
 import { compareArticlesPublishedDesc } from './sort';
-import {
-  NEWS_AREAS,
-  normalizeTagKey,
-  type NewsArea,
-  type NewsArticle,
-  type NewsArchives,
-  type NewsAttachment,
-  type NewsAuthor,
-  type NewsDataset,
-  type NewsEvent,
-  type NewsEventCoordinates,
-  type NewsEventPerformer,
-  type NewsHomeData,
-  type NewsListArticle,
-  type NewsMonthArchive,
-  type NewsPhoto,
-  type NewsTagPage,
-  type NewsYearArchive,
-} from './schema';
+import { NEWS_AREAS, normalizeTagKey, type NewsArea } from './schema';
+import type {
+  NewsArticle,
+  NewsArchives,
+  NewsAttachment,
+  NewsAuthor,
+  NewsDataset,
+  NewsEvent,
+  NewsEventCoordinates,
+  NewsEventPerformer,
+  NewsHomeData,
+  NewsListArticle,
+  NewsMonthArchive,
+  NewsPhoto,
+  NewsTagPage,
+  NewsYearArchive,
+} from './types';
 import { buildArticleTags, buildTagIndex } from './tags';
 
 export type NewsArticleEntry = Pick<
@@ -105,14 +104,7 @@ function parseEntryTimestamp(
 const authorId = (ref: AuthorReference): string => ref.id;
 
 function authorData(entry: AuthorEntry): NewsAuthor {
-  return {
-    id: entry.id,
-    name: entry.data.name,
-    kind: entry.data.kind,
-    ...(entry.data.short_name ? { short_name: entry.data.short_name } : {}),
-    ...(entry.data.url ? { url: entry.data.url } : {}),
-    ...(entry.data.role ? { role: entry.data.role } : {}),
-  };
+  return mapRawNewsAuthor(entry.id, entry.data);
 }
 
 const authorMap = (
@@ -325,15 +317,15 @@ function normalizeEvent(
           ),
         }
       : {}),
-    starts_at: starts.at,
-    starts_iso: starts.iso,
-    starts_time: starts.time,
-    ics_url: articleEventIcsUrl({ ...route, event: slug ?? 'event' }),
+    startsAt: starts.at,
+    startsIso: starts.iso,
+    startsTime: starts.time,
+    icsUrl: articleEventIcsUrl({ ...route, event: slug ?? 'event' }),
     ...(ends
       ? {
-          ends_at: ends.at,
-          ends_iso: ends.iso,
-          ends_time: ends.time,
+          endsAt: ends.at,
+          endsIso: ends.iso,
+          endsTime: ends.time,
         }
       : {}),
     ...(location ? { location } : {}),
@@ -394,18 +386,18 @@ function articleParts(entry: ArticleEntry): {
 const areas = (
   values: readonly NewsArea[] | undefined,
 ): {
-  readonly applies_to_all_areas: boolean;
+  readonly appliesToAllAreas: boolean;
   readonly areas: readonly NewsArea[];
 } => {
   if (!values?.length) {
     return {
-      applies_to_all_areas: true,
+      appliesToAllAreas: true,
       areas: [...NEWS_AREAS],
     };
   }
 
   return {
-    applies_to_all_areas: false,
+    appliesToAllAreas: false,
     areas: [...values],
   };
 };
@@ -448,24 +440,24 @@ function normalizeArticle(
     day: Number(published.day),
     entry: parts.entry,
     url: articleUrl(parts),
-    markdown_url: articleMarkdownUrl(parts),
+    markdownUrl: articleMarkdownUrl(parts),
     canonical: articleCanonical(parts),
-    published_at: published.at,
-    published_iso: published.iso,
+    publishedAt: published.at,
+    publishedIso: published.iso,
     ...(published.time ? { time: published.time } : {}),
-    applies_to_all_areas: area.applies_to_all_areas,
+    appliesToAllAreas: area.appliesToAllAreas,
     areas: area.areas,
     tags: buildArticleTags(entry.data.tags),
     pinned: isPinnedAtBuild(entry.data),
-    ...(entry.data.source_url ? { source_url: entry.data.source_url } : {}),
-    ...(coverUrl ? { cover_url: coverUrl } : {}),
+    ...(entry.data.source_url ? { sourceUrl: entry.data.source_url } : {}),
+    ...(coverUrl ? { coverUrl } : {}),
     ...(cover
       ? {
-          cover_width: cover.width,
-          cover_height: cover.height,
+          coverWidth: cover.width,
+          coverHeight: cover.height,
         }
       : {}),
-    ...(entry.data.cover_alt ? { cover_alt: entry.data.cover_alt } : {}),
+    ...(entry.data.cover_alt ? { coverAlt: entry.data.cover_alt } : {}),
     photos: photos(entry.data.photos),
     attachments: attachments(entry.data.attachments),
     events,
@@ -486,24 +478,24 @@ const toListArticle = (article: NewsArticle): NewsListArticle => ({
   day: article.day,
   entry: article.entry,
   url: article.url,
-  markdown_url: article.markdown_url,
+  markdownUrl: article.markdownUrl,
   canonical: article.canonical,
-  published_at: article.published_at,
-  published_iso: article.published_iso,
+  publishedAt: article.publishedAt,
+  publishedIso: article.publishedIso,
   ...(article.time ? { time: article.time } : {}),
-  applies_to_all_areas: article.applies_to_all_areas,
+  appliesToAllAreas: article.appliesToAllAreas,
   areas: article.areas,
   tags: article.tags,
   pinned: article.pinned,
-  ...(article.source_url ? { source_url: article.source_url } : {}),
-  ...(article.cover_url ? { cover_url: article.cover_url } : {}),
-  ...(article.cover_width && article.cover_height
+  ...(article.sourceUrl ? { sourceUrl: article.sourceUrl } : {}),
+  ...(article.coverUrl ? { coverUrl: article.coverUrl } : {}),
+  ...(article.coverWidth && article.coverHeight
     ? {
-        cover_width: article.cover_width,
-        cover_height: article.cover_height,
+        coverWidth: article.coverWidth,
+        coverHeight: article.coverHeight,
       }
     : {}),
-  ...(article.cover_alt ? { cover_alt: article.cover_alt } : {}),
+  ...(article.coverAlt ? { coverAlt: article.coverAlt } : {}),
   events: article.events,
   summary: article.summary,
 });
@@ -548,10 +540,10 @@ export function buildNewsDataset(
   authorsData: readonly NewsAuthorEntry[],
   articlesData: readonly NewsArticleEntry[],
   opts?: {
-    readonly mention_registry?: SiteMentionRegistry;
+    readonly mentionRegistry?: SiteMentionRegistry;
   },
 ): NewsDataset {
-  const mentionRegistry = opts?.mention_registry ?? new Map();
+  const mentionRegistry = opts?.mentionRegistry ?? new Map();
   const authors = authorMap(authorsData);
 
   const articles: readonly NewsArticle[] = articlesData
@@ -576,19 +568,19 @@ export function buildNewsDataset(
     home,
     archives,
     tags,
-    by_id: new Map(articles.map((item) => [item.id, item])),
-    by_tag: new Map(tags.map((item) => [item.key, item])),
+    byId: new Map(articles.map((item) => [item.id, item])),
+    byTag: new Map(tags.map((item) => [item.key, item])),
   };
 }
 
 async function buildNewsData(): Promise<NewsDataset> {
-  const [authorsData, articlesData, mention_registry] = await Promise.all([
+  const [authorsData, articlesData, mentionRegistry] = await Promise.all([
     getCollection('newsAuthors') as Promise<readonly NewsAuthorEntry[]>,
     getCollection('newsArticles') as Promise<readonly NewsArticleEntry[]>,
     loadPeopleMentionRegistry(),
   ]);
 
-  return buildNewsDataset(authorsData, articlesData, { mention_registry });
+  return buildNewsDataset(authorsData, articlesData, { mentionRegistry });
 }
 
 export const loadNewsData = (): Promise<NewsDataset> => {
@@ -610,23 +602,23 @@ export const loadNewsTags = async (): Promise<readonly NewsTagPage[]> =>
 
 export const loadNewsArticle = async (
   id: string,
-): Promise<NewsArticle | undefined> => (await loadNewsData()).by_id.get(id);
+): Promise<NewsArticle | undefined> => (await loadNewsData()).byId.get(id);
 
 export const loadNewsTag = async (
   key: string,
 ): Promise<NewsTagPage | undefined> =>
-  (await loadNewsData()).by_tag.get(normalizeTagKey(key));
+  (await loadNewsData()).byTag.get(normalizeTagKey(key));
 
 export const loadNewsYear = async (
   year: number,
 ): Promise<NewsYearArchive | undefined> =>
-  (await loadNewsData()).archives.by_year.get(year);
+  (await loadNewsData()).archives.byYear.get(year);
 
 export const loadNewsMonth = async (
   year: number,
   month: number,
 ): Promise<NewsMonthArchive | undefined> =>
-  (await loadNewsData()).archives.by_month.get(newsMonthKey(year, month));
+  (await loadNewsData()).archives.byMonth.get(newsMonthKey(year, month));
 
 export const toNewsListArticle = (article: NewsArticle): NewsListArticle =>
   toListArticle(article);

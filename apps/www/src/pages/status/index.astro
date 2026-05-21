@@ -19,14 +19,14 @@ const activeIncidents = data.active.filter((item) => item.kind === 'incident');
 const plannedWorks = data.incidents.filter(
   (item) =>
     item.kind === 'maintenance' &&
-    (item.is_active || item.started_at.valueOf() > now),
+    (item.isActive || item.startedAt.valueOf() > now),
 );
 const title = 'Статус поселка — Шелково Онлайн';
 const description =
   'Текущее состояние сервисов КП Шелково: отключения, ограничения интернета, плановые работы и история изменений.';
 const breadcrumbs = withHomeBreadcrumbs([{ label: 'Статус' }]);
 const schemaItems = data.incidents
-  .filter((item) => item.has_page)
+  .filter((item) => item.hasPage)
   .map((item) => ({ name: item.title, url: item.url }));
 const schema = collectionPageSchema({
   name: title,

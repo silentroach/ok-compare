@@ -72,17 +72,17 @@ describe('buildStatusDataset', () => {
       },
     );
 
-    expect(data.by_id.get('2026/05/day-only')).toMatchObject({
-      started_iso: '2026-05-01T00:00:00+03:00',
-      started_has_time: false,
+    expect(data.byId.get('2026/05/day-only')).toMatchObject({
+      startedIso: '2026-05-01T00:00:00+03:00',
+      startedHasTime: false,
     });
-    expect(data.by_id.get('2026/05/day-time')).toMatchObject({
-      started_iso: '2026-05-02T14:05:00+03:00',
-      started_has_time: true,
+    expect(data.byId.get('2026/05/day-time')).toMatchObject({
+      startedIso: '2026-05-02T14:05:00+03:00',
+      startedHasTime: true,
     });
-    expect(data.by_id.get('2026/05/iso-day')).toMatchObject({
-      started_iso: '2026-05-03T00:00:00+03:00',
-      started_has_time: false,
+    expect(data.byId.get('2026/05/iso-day')).toMatchObject({
+      startedIso: '2026-05-03T00:00:00+03:00',
+      startedHasTime: false,
     });
   });
 
@@ -138,59 +138,59 @@ describe('buildStatusDataset', () => {
       'dam',
     ]);
 
-    const damHistory = data.by_id.get('2026/03/dam-flood-closure');
+    const damHistory = data.byId.get('2026/03/dam-flood-closure');
 
     expect(damHistory).toMatchObject({
-      started_iso: '2026-03-15T00:00:00+03:00',
-      ended_iso: '2026-04-24T00:00:00+03:00',
-      started_has_time: false,
-      ended_has_time: false,
-      applies_to_all_areas: true,
+      startedIso: '2026-03-15T00:00:00+03:00',
+      endedIso: '2026-04-24T00:00:00+03:00',
+      startedHasTime: false,
+      endedHasTime: false,
+      appliesToAllAreas: true,
       excerpt: 'Первый абзац. С новой строкой.',
       duration: {
-        total_minutes: 57600,
+        totalMinutes: 57600,
       },
     });
 
-    const electricity = data.by_id.get('2026/05/electricity-river-outage');
+    const electricity = data.byId.get('2026/05/electricity-river-outage');
 
     expect(electricity).toMatchObject({
-      started_has_time: true,
-      ended_has_time: true,
-      applies_to_all_areas: false,
+      startedHasTime: true,
+      endedHasTime: true,
+      appliesToAllAreas: false,
       areas: ['river'],
       duration: {
-        total_minutes: 546,
+        totalMinutes: 546,
       },
     });
 
-    expect(data.by_service.get('dam')).toMatchObject({
-      service_status: 'red',
-      days_without_incidents: {
-        mode: 'active_incident',
+    expect(data.byService.get('dam')).toMatchObject({
+      serviceStatus: 'red',
+      daysWithoutIncidents: {
+        mode: 'activeIncident',
       },
     });
 
-    expect(data.by_service.get('water')).toMatchObject({
-      service_status: 'amber',
-      days_without_incidents: {
-        mode: 'no_incidents',
+    expect(data.byService.get('water')).toMatchObject({
+      serviceStatus: 'amber',
+      daysWithoutIncidents: {
+        mode: 'noIncidents',
       },
     });
 
-    expect(data.by_service.get('internet')).toMatchObject({
-      service_status: 'green',
-      days_without_incidents: {
-        mode: 'no_incidents',
+    expect(data.byService.get('internet')).toMatchObject({
+      serviceStatus: 'green',
+      daysWithoutIncidents: {
+        mode: 'noIncidents',
       },
     });
 
-    expect(data.by_service.get('electricity')).toMatchObject({
-      service_status: 'green',
-      days_without_incidents: {
+    expect(data.byService.get('electricity')).toMatchObject({
+      serviceStatus: 'green',
+      daysWithoutIncidents: {
         mode: 'count',
         days: 2,
-        last_ended_iso: '2026-05-01T16:38:00+03:00',
+        lastEndedIso: '2026-05-01T16:38:00+03:00',
       },
     });
   });
@@ -226,15 +226,13 @@ describe('buildStatusDataset', () => {
       },
     );
 
-    expect(
-      data.by_id.get('2026/05/electricity-active-incident')?.is_active,
-    ).toBe(true);
-    expect(data.by_id.get('2026/05/water-active-maintenance')?.is_active).toBe(
+    expect(data.byId.get('2026/05/electricity-active-incident')?.isActive).toBe(
       true,
     );
-    expect(data.by_id.get('2026/05/dam-closed-incident')?.is_active).toBe(
-      false,
+    expect(data.byId.get('2026/05/water-active-maintenance')?.isActive).toBe(
+      true,
     );
+    expect(data.byId.get('2026/05/dam-closed-incident')?.isActive).toBe(false);
   });
 
   it('does not mark future events as active before they start', () => {
@@ -254,10 +252,10 @@ describe('buildStatusDataset', () => {
     );
 
     expect(data.active).toHaveLength(0);
-    expect(data.by_service.get('water')).toMatchObject({
-      service_status: 'green',
-      days_without_incidents: {
-        mode: 'no_incidents',
+    expect(data.byService.get('water')).toMatchObject({
+      serviceStatus: 'green',
+      daysWithoutIncidents: {
+        mode: 'noIncidents',
       },
     });
   });
@@ -286,12 +284,12 @@ describe('buildStatusDataset', () => {
       },
     );
 
-    expect(data.by_service.get('electricity')).toMatchObject({
-      service_status: 'amber',
-      days_without_incidents: {
+    expect(data.byService.get('electricity')).toMatchObject({
+      serviceStatus: 'amber',
+      daysWithoutIncidents: {
         mode: 'count',
         days: 3,
-        last_ended_iso: '2026-05-01T05:00:00+03:00',
+        lastEndedIso: '2026-05-01T05:00:00+03:00',
       },
     });
   });
@@ -309,7 +307,7 @@ describe('buildStatusDataset', () => {
       }),
     ]);
 
-    expect(data.by_id.get('2026/05/electricity-excerpt')?.excerpt).toBe(
+    expect(data.byId.get('2026/05/electricity-excerpt')?.excerpt).toBe(
       'Первый абзац. Со второй строкой.',
     );
   });
@@ -327,7 +325,7 @@ describe('buildStatusDataset', () => {
         }),
       ],
       {
-        mention_registry: new Map([
+        mentionRegistry: new Map([
           [
             'kschemelinin',
             createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),
@@ -336,12 +334,10 @@ describe('buildStatusDataset', () => {
       },
     );
 
-    expect(data.by_id.get('2026/05/electricity-mention-excerpt')).toMatchObject(
-      {
-        body: 'Как отметил [Кирилл Щемелинин](/people/kschemelinin/), повреждение было редким.\n\nВторой абзац.',
-        excerpt: 'Как отметил Кирилл Щемелинин, повреждение было редким.',
-      },
-    );
+    expect(data.byId.get('2026/05/electricity-mention-excerpt')).toMatchObject({
+      body: 'Как отметил [Кирилл Щемелинин](/people/kschemelinin/), повреждение было редким.\n\nВторой абзац.',
+      excerpt: 'Как отметил Кирилл Щемелинин, повреждение было редким.',
+    });
   });
 
   it('normalizes labelled mentions and keeps excerpts human-readable', () => {
@@ -357,7 +353,7 @@ describe('buildStatusDataset', () => {
         }),
       ],
       {
-        mention_registry: new Map([
+        mentionRegistry: new Map([
           [
             'kschemelinin',
             createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин'),
@@ -366,19 +362,19 @@ describe('buildStatusDataset', () => {
       },
     );
 
+    expect(data.byId.get('2026/05/electricity-labelled-mention')).toMatchObject(
+      {
+        body: 'После [осмотра линии](/people/kschemelinin/) повреждение признали редким.\n\nВторой абзац.',
+        excerpt: 'После осмотра линии повреждение признали редким.',
+        mentions: [
+          {
+            slug: 'kschemelinin',
+          },
+        ],
+      },
+    );
     expect(
-      data.by_id.get('2026/05/electricity-labelled-mention'),
-    ).toMatchObject({
-      body: 'После [осмотра линии](/people/kschemelinin/) повреждение признали редким.\n\nВторой абзац.',
-      excerpt: 'После осмотра линии повреждение признали редким.',
-      mentions: [
-        {
-          slug: 'kschemelinin',
-        },
-      ],
-    });
-    expect(
-      data.by_id.get('2026/05/electricity-labelled-mention')?.excerpt,
+      data.byId.get('2026/05/electricity-labelled-mention')?.excerpt,
     ).not.toContain('@kschemelinin');
   });
 
@@ -405,8 +401,8 @@ describe('buildStatusDataset', () => {
       },
     );
 
-    expect(data.by_service.get('water')).toMatchObject({
-      service_status: 'red',
+    expect(data.byService.get('water')).toMatchObject({
+      serviceStatus: 'red',
     });
   });
 

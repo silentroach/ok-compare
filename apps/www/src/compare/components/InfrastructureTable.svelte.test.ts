@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, fireEvent } from '@testing-library/svelte';
 import InfrastructureTable from './InfrastructureTable.svelte';
-import type { Infrastructure } from '../lib/schema';
+import type { Infrastructure } from '../lib/settlement/types';
 
 describe('InfrastructureTable', () => {
   const mockInfra: Infrastructure = {
@@ -14,13 +14,13 @@ describe('InfrastructureTable', () => {
     checkpoints: 'yes',
     security: 'yes',
     fencing: 'no',
-    video_surveillance: 'checkpoint_only',
-    admin_building: 'yes',
-    retail_or_services: 'partial',
+    videoSurveillance: 'checkpointOnly',
+    adminBuilding: 'yes',
+    retailOrServices: 'partial',
   };
 
   const mockShelkovoInfra: Infrastructure = {
-    roads: 'partial_asphalt',
+    roads: 'partlyAsphalt',
     sidewalks: 'no',
     lighting: 'yes',
     gas: 'yes',
@@ -30,10 +30,10 @@ describe('InfrastructureTable', () => {
     checkpoints: 'yes',
     security: 'yes',
     fencing: 'yes',
-    video_surveillance: 'checkpoint_only',
-    underground_electricity: 'partial',
-    admin_building: 'no',
-    retail_or_services: 'no',
+    videoSurveillance: 'checkpointOnly',
+    undergroundElectricity: 'partial',
+    adminBuilding: 'no',
+    retailOrServices: 'no',
   };
 
   it('displays correct labels for infrastructure items', () => {
@@ -64,7 +64,7 @@ describe('InfrastructureTable', () => {
     // Should have comparison column header
     expect(getByText('Шелково')).toBeTruthy();
 
-    // Should have comparison column (14 with underground_electricity)
+    // Should have comparison column (14 with undergroundElectricity)
     const comparisonCells = container.querySelectorAll(
       '[data-testid="shelkovo-status"]',
     );

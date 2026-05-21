@@ -1,7 +1,7 @@
 import { BRAND_KEYWORDS, collectKeywords } from '@shelkovo/seo';
 
 import { formatCurrency, formatTariffAuto } from './format';
-import type { ComparisonResult, Settlement } from './schema';
+import type { ComparisonResult, Settlement } from './settlement/types';
 
 export const COMPARE_PRODUCT_NAME = 'Сравни с Шелково';
 
@@ -22,10 +22,10 @@ const cleanCompanyName = (title: string): string =>
   title.replaceAll('"', '').replace(/\s+/g, ' ').trim();
 
 const companyTitle = (settlement: Settlement): string | undefined => {
-  const company = settlement.management_company;
+  const company = settlement.managementCompany;
   if (!company) return;
 
-  return typeof company === 'string' ? company : company.title;
+  return company.title;
 };
 
 const companyName = (settlement: Settlement): string | undefined => {
@@ -48,7 +48,7 @@ const deltaDescription = (
   settlement: Settlement,
   comparison: ComparisonResult | undefined,
 ): string | undefined => {
-  if (settlement.is_baseline) return 'Базовый поселок для сравнения.';
+  if (settlement.isBaseline) return 'Базовый поселок для сравнения.';
   if (!comparison) return;
   if (comparison.tariffDelta === 0) return 'Тариф как в Шелково.';
 
@@ -80,7 +80,7 @@ export const settlementPageMeta = (
   const title = companyTitle(settlement);
   const name = companyName(settlement);
   const description = [
-    `${settlement.short_name}, ${settlement.location.district}.`,
+    `${settlement.shortName}, ${settlement.location.district}.`,
     companyDescription(settlement),
     `Тариф ${formatTariffAuto(settlement.tariff)} в месяц.`,
     deltaDescription(settlement, comparison),
@@ -89,13 +89,13 @@ export const settlementPageMeta = (
     .join(' ');
 
   return {
-    title: compareTitle(`${settlement.short_name}: тариф и инфраструктура`),
+    title: compareTitle(`${settlement.shortName}: тариф и инфраструктура`),
     description,
     keywords: collectKeywords(
       COMPARE_KEYWORDS,
       settlement.name,
-      settlement.short_name,
-      `коттеджный поселок ${settlement.short_name}`,
+      settlement.shortName,
+      `коттеджный поселок ${settlement.shortName}`,
       settlement.location.district,
       title,
       name,

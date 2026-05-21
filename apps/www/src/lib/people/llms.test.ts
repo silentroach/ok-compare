@@ -5,11 +5,11 @@ const fixtures = vi.hoisted(() => ({
     profiles: [
       {
         canonical: 'https://example.com/people/kschemelinin/',
-        markdown_url: '/people/kschemelinin/index.md',
+        markdownUrl: '/people/kschemelinin/index.md',
         mentions: [{ slug: 'apetrov' }],
         backlinks: {
-          news: [{ source_id: '2026/05/power-outage' }],
-          status: [{ source_id: '2026/04/electricity' }],
+          news: [{ sourceId: '2026/05/power-outage' }],
+          status: [{ sourceId: '2026/04/electricity' }],
           people: [],
         },
       },

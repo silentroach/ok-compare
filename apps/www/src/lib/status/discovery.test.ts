@@ -35,7 +35,7 @@ const entry = (input: EntryInput): StatusIncidentEntry => ({
 });
 
 let buildStatusDataset: typeof import('./load').buildStatusDataset;
-let buildStatusPayload: typeof import('./discovery').buildStatusPayload;
+let buildStatusPublicPayload: typeof import('./public-dto').buildStatusPublicPayload;
 let catalog: typeof import('./discovery').catalog;
 let expectSectionCatalogMatchesRegistry: typeof expectSectionCatalogMatchesRegistryType;
 let statusSchema: typeof import('./discovery').schema;
@@ -49,11 +49,8 @@ beforeAll(async () => {
   });
 
   ({ buildStatusDataset } = await import('./load'));
-  ({
-    buildStatusPayload,
-    catalog,
-    schema: statusSchema,
-  } = await import('./discovery'));
+  ({ catalog, schema: statusSchema } = await import('./discovery'));
+  ({ buildStatusPublicPayload } = await import('./public-dto'));
   ({ expectSectionCatalogMatchesRegistry } =
     await import('@/lib/public-surface/catalog-contract.test-helper'));
   ({ statusPublicSurfaceSlice } = await import('@/lib/public-surface'));
@@ -69,7 +66,7 @@ describe('status API catalog', () => {
   });
 });
 
-describe('buildStatusPayload', () => {
+describe('buildStatusPublicPayload', () => {
   it('omits incident detail URLs when no detail page is published', () => {
     const data = buildStatusDataset(
       [
@@ -94,7 +91,7 @@ describe('buildStatusPayload', () => {
       },
     );
 
-    const payload = buildStatusPayload(data);
+    const payload = buildStatusPublicPayload(data);
     const noPage = payload.incidents.find(
       (item) => item.id === '2026/05/water-no-page',
     );

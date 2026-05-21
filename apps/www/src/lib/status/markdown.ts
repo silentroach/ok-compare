@@ -11,7 +11,7 @@ import type {
   StatusDataset,
   StatusIncident,
   StatusServiceSummary,
-} from './schema';
+} from './types';
 import { statusIncidentMarkdownUrl, statusServiceMarkdownUrl } from './routes';
 import {
   formatStatusArea,
@@ -73,7 +73,7 @@ const sourceMarkdownLink = (url: string): ReturnType<typeof md.link> =>
 const incidentMarkdownLabel = (
   incident: StatusIncident,
 ): MarkdownPhrasingNodes =>
-  incident.has_page
+  incident.hasPage
     ? [md.link(incidentMarkdownHref(incident), incident.title)]
     : [md.text(incident.title)];
 
@@ -82,9 +82,9 @@ const incidentMarkdownHref = (
 ): string => abs(statusIncidentMarkdownUrl(incident));
 
 const areaLabels = (
-  incident: Pick<StatusIncident, 'applies_to_all_areas' | 'areas'>,
+  incident: Pick<StatusIncident, 'appliesToAllAreas' | 'areas'>,
 ): readonly string[] =>
-  incident.applies_to_all_areas
+  incident.appliesToAllAreas
     ? []
     : incident.areas.map((area) => formatStatusArea(area));
 
@@ -104,16 +104,16 @@ const incidentFrontmatter = (
       name: formatStatusKind(incident.kind),
     },
     phase: getStatusIncidentPhase(incident).label,
-    started_at: statusDate(incident.started_iso, incident.started_has_time),
-    started_has_time: incident.started_has_time,
-    ...(incident.ended_iso
+    startedAt: statusDate(incident.startedIso, incident.startedHasTime),
+    startedHasTime: incident.startedHasTime,
+    ...(incident.endedIso
       ? {
-          ended_at: statusDate(incident.ended_iso, incident.ended_has_time),
-          ended_has_time: incident.ended_has_time,
+          endedAt: statusDate(incident.endedIso, incident.endedHasTime),
+          endedHasTime: incident.endedHasTime,
         }
       : {}),
     ...(areas.length > 0 ? { areas } : {}),
-    ...(incident.source_url ? { source_url: abs(incident.source_url) } : {}),
+    ...(incident.sourceUrl ? { sourceUrl: abs(incident.sourceUrl) } : {}),
   };
 };
 
@@ -134,13 +134,13 @@ function incidentLine(
   const excerpt = incident.excerpt ? inline(incident.excerpt) : undefined;
   const children: MarkdownPhrasingNode[] = [...incidentMarkdownLabel(incident)];
 
-  if (meta.length > 0 || (!incident.has_page && incident.source_url)) {
+  if (meta.length > 0 || (!incident.hasPage && incident.sourceUrl)) {
     children.push(md.text(` — ${meta.join('; ')}`));
 
-    if (!incident.has_page && incident.source_url) {
+    if (!incident.hasPage && incident.sourceUrl) {
       children.push(
         md.text(meta.length > 0 ? '; ' : ''),
-        sourceMarkdownLink(incident.source_url),
+        sourceMarkdownLink(incident.sourceUrl),
       );
     }
   }
@@ -181,7 +181,7 @@ const serviceLine = (summary: StatusServiceSummary): MarkdownListItem => {
         formatStatusService(summary.service),
       ),
       md.text(
-        ` — ${formatStatusServiceState(summary.service_status)}; последняя запись: `,
+        ` — ${formatStatusServiceState(summary.serviceStatus)}; последняя запись: `,
       ),
       ...(latest
         ? incidentMarkdownLabel(latest)
@@ -203,7 +203,7 @@ export function buildStatusHomeMarkdown(
   const plannedWorks = data.incidents.filter(
     (item) =>
       item.kind === 'maintenance' &&
-      (item.is_active || item.started_at.valueOf() > now.valueOf()),
+      (item.isActive || item.startedAt.valueOf() > now.valueOf()),
   );
 
   return serialize([
@@ -246,7 +246,7 @@ export function buildStatusServiceMarkdown(
   const plannedWorks = summary.incidents.filter(
     (item) =>
       item.kind === 'maintenance' &&
-      (item.is_active || item.started_at.valueOf() > now.valueOf()),
+      (item.isActive || item.startedAt.valueOf() > now.valueOf()),
   );
   const serviceLabel = formatStatusService(summary.service);
 
@@ -256,17 +256,17 @@ export function buildStatusServiceMarkdown(
       'Сводка',
       pick([
         row('Сервис', serviceLabel),
-        row('Текущий статус', formatStatusServiceState(summary.service_status)),
+        row('Текущий статус', formatStatusServiceState(summary.serviceStatus)),
         row(
           'Последняя запись',
           latest ? incidentMarkdownLabel(latest) : [md.text('нет записей')],
         ),
       ]),
     ),
-    ...(summary.active_incidents.length > 0
+    ...(summary.activeIncidents.length > 0
       ? incidentSection({
           title: 'Активные инциденты',
-          items: summary.active_incidents,
+          items: summary.activeIncidents,
           empty: 'Сейчас нет активных инцидентов по этому сервису.',
           hideIncidentPhase: true,
         })

@@ -103,8 +103,8 @@ const schema = newsArticleSchema({
     { name: monthBreadcrumbName, url: monthUrl(article.year, article.month) },
     { name: article.title, url: articleUrl(article) },
   ]),
-  datePublished: article.published_iso,
-  ...(article.cover_url ? { image: article.cover_url } : {}),
+  datePublished: article.publishedIso,
+  ...(article.coverUrl ? { image: article.coverUrl } : {}),
   author,
   ...(hasEvents ? { events: article.events } : {}),
 });
@@ -114,8 +114,8 @@ const schema = newsArticleSchema({
   title={title}
   description={description}
   canonical={article.url}
-  image={article.cover_url}
-  imageAlt={article.cover_alt}
+  image={article.coverUrl}
+  imageAlt={article.coverAlt}
   type="article"
   keywords={[
     'новости Шелково',
@@ -167,12 +167,12 @@ const schema = newsArticleSchema({
                 </div>
 
                 <NewsMeta
-                  publishedIso={article.published_iso}
+                  publishedIso={article.publishedIso}
                   author={article.author}
                   fullAuthorName
                   areas={article.areas}
-                  appliesToAllAreas={article.applies_to_all_areas}
-                  sourceUrl={article.source_url}
+                  appliesToAllAreas={article.appliesToAllAreas}
+                  sourceUrl={article.sourceUrl}
                   className="gap-x-4 gap-y-1.5 text-[0.9375rem] leading-5"
                 />
               </div>
@@ -206,12 +206,12 @@ const schema = newsArticleSchema({
               </div>
 
               <NewsMeta
-                publishedIso={article.published_iso}
+                publishedIso={article.publishedIso}
                 author={article.author}
                 fullAuthorName
                 areas={article.areas}
-                appliesToAllAreas={article.applies_to_all_areas}
-                sourceUrl={article.source_url}
+                appliesToAllAreas={article.appliesToAllAreas}
+                sourceUrl={article.sourceUrl}
               />
             </div>
           </div>

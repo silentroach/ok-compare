@@ -1,34 +1,21 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { defineCollection, reference, type SchemaContext } from 'astro:content';
+import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
-import { z } from 'astro/zod';
+import { parseNewsTimestampInput } from './lib/news/date';
 import {
-  normalizeNewsTimestampInput,
-  parseNewsTimestampInput,
-} from './lib/news/date';
-import {
-  NEWS_AREAS,
-  NEWS_AUTHOR_KINDS,
-  isAbsoluteUrl,
-  isAttachmentUrl,
-  normalizeTagKey,
-} from './lib/news/schema';
-import { PERSON_CONTACT_TYPES } from './lib/people/schema';
-import {
-  normalizeStatusTimestampInput,
-  parseStatusTimestampInput,
-  STATUS_AREAS,
-  STATUS_KINDS,
-  STATUS_SERVICES,
-} from './lib/status/schema';
+  RawNewsAuthorSchema,
+  createRawNewsArticleSchema,
+} from './lib/news/raw-schema';
+import { RawPersonProfileSchema } from './lib/people/raw-schema';
+import { RawStatusIncidentSchema } from './lib/status/raw-schema';
+import { parseStatusTimestampInput } from './lib/status/schema';
 import { SettlementSchema } from './compare/lib/schema';
 
 const YEAR = /^\d{4}$/;
 const MONTH = /^(0[1-9]|1[0-2])$/;
 const DAY_KEY = /^(?:0?[1-9]|[12]\d|3[01])$/;
-const TAG = /^[а-яё0-9 -]+$/u;
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const MARKDOWN_FRONTMATTER = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n)*/u;
 const STATUS_INCIDENTS_DIR = fileURLToPath(
@@ -39,219 +26,6 @@ interface DateParts {
   readonly year: string;
   readonly month: string;
   readonly day: string;
-}
-
-const text = (name: string) =>
-  z
-    .string()
-    .min(1, `${name} is required`)
-    .refine((value) => value.trim().length > 0, `${name} must not be blank`)
-    .refine(
-      (value) => value === value.trim(),
-      `${name} must not start or end with whitespace`,
-    );
-
-const absoluteUrl = (name: string) =>
-  text(name).refine(
-    (value) => isAbsoluteUrl(value),
-    `${name} must be an absolute URL`,
-  );
-
-const attachmentUrl = (name: string) =>
-  text(name).refine(
-    (value) => isAttachmentUrl(value),
-    `${name} must be an absolute URL or a root-relative path`,
-  );
-
-const newsDate = (name: string) =>
-  z.union([text(name), z.date()]).transform((value, ctx) => {
-    const normalized = normalizeNewsTimestampInput(value);
-
-    if (normalized && parseNewsTimestampInput(value)) {
-      return normalized;
-    }
-
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: `${name} must use dd.mm.yyyy, dd.mm.yyyy hh:mm, or YYYY-MM-DD`,
-    });
-
-    return z.NEVER;
-  });
-
-const newsDateTime = (name: string) =>
-  z.union([text(name), z.date()]).transform((value, ctx) => {
-    const normalized = normalizeNewsTimestampInput(value);
-    const parsed = parseNewsTimestampInput(value);
-
-    if (normalized && parsed?.has_time) {
-      return normalized;
-    }
-
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: `${name} must use dd.mm.yyyy hh:mm and include time`,
-    });
-
-    return z.NEVER;
-  });
-
-const statusDate = (name: string) =>
-  z.union([text(name), z.date()]).transform((value, ctx) => {
-    const normalized = normalizeStatusTimestampInput(value);
-
-    if (normalized && parseStatusTimestampInput(value)) {
-      return normalized;
-    }
-
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: `${name} must use dd.mm.yyyy, dd.mm.yyyy hh:mm, or YYYY-MM-DD`,
-    });
-
-    return z.NEVER;
-  });
-
-const forbiddenTime = (name: string) =>
-  text(name).refine(
-    () => false,
-    `${name} is not supported; include time in date as dd.mm.yyyy hh:mm`,
-  );
-
-const tag = () =>
-  text('tags[]')
-    .refine(
-      (value) => value === value.toLowerCase(),
-      'tags[] must be lower-case',
-    )
-    .refine(
-      (value) => TAG.test(value),
-      'tags[] may contain only Cyrillic, digits, spaces, and hyphen',
-    );
-
-const attachment = () =>
-  z.object({
-    title: text('attachments[].title'),
-    url: attachmentUrl('attachments[].url'),
-    type: text('attachments[].type').optional(),
-    size: text('attachments[].size').optional(),
-  });
-
-const photo = (image: SchemaContext['image']) =>
-  z.object({
-    src: image(),
-    alt: text('photos[].alt'),
-    caption: text('photos[].caption').optional(),
-  });
-
-const media = (image: SchemaContext['image']) => ({
-  photos: z.array(photo(image)).min(1).optional(),
-  attachments: z.array(attachment()).min(1).optional(),
-});
-
-const personNameCases = () =>
-  z
-    .object({
-      gen: text('name_cases.gen').optional(),
-      dat: text('name_cases.dat').optional(),
-      acc: text('name_cases.acc').optional(),
-      ins: text('name_cases.ins').optional(),
-      prep: text('name_cases.prep').optional(),
-    })
-    .strict()
-    .partial();
-
-const eventOrganizer = () =>
-  z.union([
-    text('events[].organizer'),
-    z.object({
-      name: text('events[].organizer.name'),
-      type: z.enum(['organization', 'person']).optional(),
-    }),
-  ]);
-
-const eventPerformer = () =>
-  z.union([
-    text('events[].performer[]'),
-    z.object({
-      name: text('events[].performer[].name'),
-      type: z.enum(['organization', 'person']).optional(),
-    }),
-  ]);
-
-const event = () =>
-  z
-    .object({
-      slug: text('events[].slug')
-        .refine((value) => SLUG.test(value), 'events[].slug must be a slug')
-        .optional(),
-      title: text('events[].title'),
-      description: text('events[].description').optional(),
-      starts_at: newsDateTime('events[].starts_at'),
-      ends_at: newsDateTime('events[].ends_at').optional(),
-      location: text('events[].location').optional(),
-      coordinates: z
-        .object({
-          lat: z.number().min(-90).max(90),
-          lng: z.number().min(-180).max(180),
-        })
-        .optional(),
-      organizer: eventOrganizer().optional(),
-      performer: z.array(eventPerformer()).min(1).optional(),
-    })
-    .superRefine((data, ctx) => {
-      const starts = parseNewsTimestampInput(data.starts_at);
-      const ends = data.ends_at
-        ? parseNewsTimestampInput(data.ends_at)
-        : undefined;
-
-      if (starts && ends && ends.at.valueOf() <= starts.at.valueOf()) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['ends_at'],
-          message: 'events[].ends_at must be later than events[].starts_at',
-        });
-      }
-    });
-
-type NewsEventInput = z.infer<ReturnType<typeof event>>;
-
-function validateEventSlugs(
-  events: readonly NewsEventInput[] | undefined,
-  ctx: z.RefinementCtx,
-): void {
-  if (!events?.length) {
-    return;
-  }
-
-  const seen = new Set<string>();
-  const requiresExplicitSlug = events.length > 1;
-
-  events.forEach((item, index) => {
-    if (requiresExplicitSlug && !item.slug) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['events', index, 'slug'],
-        message: 'events[].slug is required when article has multiple events',
-      });
-      return;
-    }
-
-    if (!item.slug) {
-      return;
-    }
-
-    if (seen.has(item.slug)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['events', index, 'slug'],
-        message: `duplicate event slug "${item.slug}"`,
-      });
-      return;
-    }
-
-    seen.add(item.slug);
-  });
 }
 
 const trimMarkdown = (entry: string): string => entry.replace(/\.md$/i, '');
@@ -398,48 +172,12 @@ function validatePersonEntry(entry: string): void {
   }
 }
 
-function validateTags(
-  tags: readonly string[] | undefined,
-  ctx: z.RefinementCtx,
-): void {
-  if (!tags) {
-    return;
-  }
-
-  const seen = new Set<string>();
-
-  tags.forEach((item, index) => {
-    const key = normalizeTagKey(item);
-
-    if (!key) {
-      return;
-    }
-
-    if (seen.has(key)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['tags', index],
-        message: `duplicate tag key \"${key}\" after normalization`,
-      });
-      return;
-    }
-
-    seen.add(key);
-  });
-}
-
 const newsAuthors = defineCollection({
   loader: glob({
     pattern: '**/*.yaml',
     base: './src/data/news/authors',
   }),
-  schema: z.object({
-    name: text('name'),
-    kind: z.enum(NEWS_AUTHOR_KINDS),
-    short_name: text('short_name').optional(),
-    url: absoluteUrl('url').optional(),
-    role: text('role').optional(),
-  }),
+  schema: RawNewsAuthorSchema,
 });
 
 const newsArticles = defineCollection({
@@ -451,42 +189,7 @@ const newsArticles = defineCollection({
       return articleId(entry);
     },
   }),
-  schema: ({ image }) =>
-    z
-      .object({
-        title: text('title'),
-        summary: text('summary'),
-        date: newsDate('date'),
-        time: forbiddenTime('time').optional(),
-        author: reference('newsAuthors'),
-        pinned: z.boolean().optional(),
-        pinned_until: newsDate('pinned_until').optional(),
-        areas: z.array(z.enum(NEWS_AREAS)).min(1).optional(),
-        tags: z.array(tag()).min(1).optional(),
-        source_url: absoluteUrl('source_url').optional(),
-        cover: image().optional(),
-        cover_alt: text('cover_alt').optional(),
-        events: z.array(event()).min(1).optional(),
-        ...media(image),
-        seo: z
-          .object({
-            title: text('seo.title').optional(),
-            description: text('seo.description').optional(),
-          })
-          .optional(),
-      })
-      .superRefine((data, ctx) => {
-        if (data.cover && !data.cover_alt) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['cover_alt'],
-            message: 'cover_alt is required when cover is set',
-          });
-        }
-
-        validateTags(data.tags, ctx);
-        validateEventSlugs(data.events, ctx);
-      }),
+  schema: ({ image }) => createRawNewsArticleSchema(image),
 });
 
 const statusIncidents = defineCollection({
@@ -498,30 +201,7 @@ const statusIncidents = defineCollection({
       return trimMarkdown(entry);
     },
   }),
-  schema: z
-    .object({
-      title: text('title').optional(),
-      service: z.enum(STATUS_SERVICES),
-      kind: z.enum(STATUS_KINDS),
-      started_at: statusDate('started_at'),
-      ended_at: statusDate('ended_at').optional(),
-      areas: z.array(z.enum(STATUS_AREAS)).min(1).optional(),
-      source_url: absoluteUrl('source_url').optional(),
-    })
-    .superRefine((data, ctx) => {
-      const started = parseStatusTimestampInput(data.started_at);
-      const ended = data.ended_at
-        ? parseStatusTimestampInput(data.ended_at)
-        : undefined;
-
-      if (started && ended && ended.at.valueOf() < started.at.valueOf()) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['ended_at'],
-          message: 'ended_at must be later than or equal to started_at',
-        });
-      }
-    }),
+  schema: RawStatusIncidentSchema,
 });
 
 const peopleProfiles = defineCollection({
@@ -533,18 +213,7 @@ const peopleProfiles = defineCollection({
       return trimMarkdown(entry);
     },
   }),
-  schema: z.object({
-    name: text('name'),
-    name_cases: personNameCases().optional(),
-    company: text('company').optional(),
-    position: text('position').optional(),
-    contacts: z.array(
-      z.object({
-        type: z.enum(PERSON_CONTACT_TYPES),
-        value: text('contacts[].value'),
-      }),
-    ),
-  }),
+  schema: RawPersonProfileSchema,
 });
 
 const settlements = defineCollection({

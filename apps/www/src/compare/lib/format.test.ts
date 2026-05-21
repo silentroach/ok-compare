@@ -124,10 +124,10 @@ describe('Format Module', () => {
       expect(
         formatTariffAuto({
           value: 1000,
-          unit: 'rub_per_sotka',
+          unit: 'perSotka',
           period: 'month',
-          normalized_per_sotka_month: 1000,
-          normalized_is_estimate: false,
+          normalizedPerSotkaMonth: 1000,
+          normalizedIsEstimate: false,
         }),
       ).toBe('1\u00A0000 ₽/сотка');
     });
@@ -136,10 +136,10 @@ describe('Format Module', () => {
       expect(
         formatTariffAuto({
           value: 12000,
-          unit: 'rub_per_lot',
+          unit: 'perLot',
           period: 'month',
-          normalized_per_sotka_month: 1200,
-          normalized_is_estimate: true,
+          normalizedPerSotkaMonth: 1200,
+          normalizedIsEstimate: true,
         }),
       ).toBe('~1\u00A0200 ₽/сотка');
     });
@@ -150,10 +150,10 @@ describe('Format Module', () => {
       expect(
         formatTariffBase({
           value: 500,
-          unit: 'rub_per_sotka',
+          unit: 'perSotka',
           period: 'month',
-          normalized_per_sotka_month: 500,
-          normalized_is_estimate: false,
+          normalizedPerSotkaMonth: 500,
+          normalizedIsEstimate: false,
         }),
       ).toBe('500 ₽/сотка');
     });
@@ -162,10 +162,10 @@ describe('Format Module', () => {
       expect(
         formatTariffBase({
           value: 4000,
-          unit: 'rub_per_lot',
+          unit: 'perLot',
           period: 'month',
-          normalized_per_sotka_month: 400,
-          normalized_is_estimate: true,
+          normalizedPerSotkaMonth: 400,
+          normalizedIsEstimate: true,
         }),
       ).toBe('4\u00A0000 ₽/участок');
     });
@@ -174,10 +174,10 @@ describe('Format Module', () => {
       expect(
         formatTariffBase({
           value: 12000,
-          unit: 'rub_fixed',
+          unit: 'fixed',
           period: 'year',
-          normalized_per_sotka_month: 100,
-          normalized_is_estimate: true,
+          normalizedPerSotkaMonth: 100,
+          normalizedIsEstimate: true,
         }),
       ).toBe('12\u00A0000 ₽/участок');
     });
@@ -186,19 +186,19 @@ describe('Format Module', () => {
       expect(
         formatTariffBase({
           value: 5813,
-          unit: 'rub_per_lot',
+          unit: 'perLot',
           period: 'month',
-          normalized_per_sotka_month: 681.3,
-          normalized_is_estimate: true,
+          normalizedPerSotkaMonth: 681.3,
+          normalizedIsEstimate: true,
           parts: [
             {
               value: 5813,
-              unit: 'rub_per_lot',
+              unit: 'perLot',
               period: 'month',
             },
             {
               value: 100,
-              unit: 'rub_per_sotka',
+              unit: 'perSotka',
               period: 'month',
             },
           ],
@@ -212,10 +212,10 @@ describe('Format Module', () => {
       expect(
         getTariffHint({
           value: 1000,
-          unit: 'rub_per_sotka',
+          unit: 'perSotka',
           period: 'month',
-          normalized_per_sotka_month: 1000,
-          normalized_is_estimate: false,
+          normalizedPerSotkaMonth: 1000,
+          normalizedIsEstimate: false,
         }),
       ).toBe(undefined);
     });
@@ -223,19 +223,19 @@ describe('Format Module', () => {
     it('should return generic hint for estimated tariffs', () => {
       const hint = getTariffHint({
         value: 5813,
-        unit: 'rub_per_lot',
+        unit: 'perLot',
         period: 'month',
-        normalized_per_sotka_month: 681.3,
-        normalized_is_estimate: true,
+        normalizedPerSotkaMonth: 681.3,
+        normalizedIsEstimate: true,
         parts: [
           {
             value: 5813,
-            unit: 'rub_per_lot',
+            unit: 'perLot',
             period: 'month',
           },
           {
             value: 100,
-            unit: 'rub_per_sotka',
+            unit: 'perSotka',
             period: 'month',
           },
         ],
@@ -250,10 +250,10 @@ describe('Format Module', () => {
       expect(
         getTariffCalc({
           value: 1000,
-          unit: 'rub_per_sotka',
+          unit: 'perSotka',
           period: 'month',
-          normalized_per_sotka_month: 1000,
-          normalized_is_estimate: false,
+          normalizedPerSotkaMonth: 1000,
+          normalizedIsEstimate: false,
         }),
       ).toBe(undefined);
     });
@@ -261,10 +261,10 @@ describe('Format Module', () => {
     it('should build detailed calc for estimated single tariff', () => {
       const calc = getTariffCalc({
         value: 9000,
-        unit: 'rub_per_lot',
+        unit: 'perLot',
         period: 'quarter',
-        normalized_per_sotka_month: 300,
-        normalized_is_estimate: true,
+        normalizedPerSotkaMonth: 300,
+        normalizedIsEstimate: true,
       });
 
       expect(calc?.intro).toContain('приведен');
@@ -281,14 +281,14 @@ describe('Format Module', () => {
       const calc = getTariffCalc(
         {
           value: 1780,
-          unit: 'rub_per_lot',
+          unit: 'perLot',
           period: 'month',
-          normalized_per_sotka_month: 100,
-          normalized_is_estimate: true,
+          normalizedPerSotkaMonth: 100,
+          normalizedIsEstimate: true,
         },
         {
-          average_sotka: 17.8,
-          average_note:
+          averageSotka: 17.8,
+          averageNote:
             'Средняя площадь рассчитана по опубликованным площадям лотов.',
         },
       );
@@ -303,14 +303,14 @@ describe('Format Module', () => {
       const calc = getTariffCalc(
         {
           value: 12100,
-          unit: 'rub_per_lot',
+          unit: 'perLot',
           period: 'month',
-          normalized_per_sotka_month: 360.58,
-          normalized_is_estimate: true,
+          normalizedPerSotkaMonth: 360.58,
+          normalizedIsEstimate: true,
         },
         {
           count: 298,
-          area_ha: 100,
+          areaHa: 100,
         },
         {
           roads: 'asphalt',
@@ -330,19 +330,19 @@ describe('Format Module', () => {
     it('should build detailed calc for multi-part tariff', () => {
       const calc = getTariffCalc({
         value: 5813,
-        unit: 'rub_per_lot',
+        unit: 'perLot',
         period: 'month',
-        normalized_per_sotka_month: 681.3,
-        normalized_is_estimate: true,
+        normalizedPerSotkaMonth: 681.3,
+        normalizedIsEstimate: true,
         parts: [
           {
             value: 5813,
-            unit: 'rub_per_lot',
+            unit: 'perLot',
             period: 'month',
           },
           {
             value: 100,
-            unit: 'rub_per_sotka',
+            unit: 'perSotka',
             period: 'month',
           },
         ],
@@ -360,7 +360,7 @@ describe('Format Module', () => {
       const calc = getLotCalc(
         {
           count: 298,
-          area_ha: 100,
+          areaHa: 100,
         },
         {
           roads: 'asphalt',
@@ -382,9 +382,9 @@ describe('Format Module', () => {
     it('should build lot breakdown for explicit average', () => {
       const calc = getLotCalc({
         count: 150,
-        area_ha: 32,
-        average_sotka: 20.4,
-        average_note:
+        areaHa: 32,
+        averageSotka: 20.4,
+        averageNote:
           'Средняя площадь рассчитана по опубликованным площадям лотов.',
       });
 

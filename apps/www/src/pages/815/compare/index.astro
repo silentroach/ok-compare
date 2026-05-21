@@ -30,7 +30,7 @@ const ratingUrl = withBase('/rating/');
 const cards = [...list].sort((a, b) => {
   const d = b.rating - a.rating;
   if (d !== 0) return d;
-  return a.short_name.localeCompare(b.short_name, 'ru');
+  return a.shortName.localeCompare(b.shortName, 'ru');
 });
 
 const pageMeta = compareHomeMeta(stats.totalSettlements);
@@ -100,7 +100,7 @@ const schema = {
                 rank={ranks.get(settlement.slug) ?? levels}
                 base={stats.shelkovoRank}
                 total={levels}
-                isBaseline={settlement.is_baseline}
+                isBaseline={settlement.isBaseline}
               />
             ))
           }

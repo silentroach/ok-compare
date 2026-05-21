@@ -10,7 +10,6 @@ import {
 import { compareRuText } from '@shelkovo/format';
 
 import { loadAllData } from './data';
-import { toExplorer } from './explorer';
 import {
   calculateDistance,
   formatCurrency,
@@ -32,8 +31,8 @@ import type {
   SourceType,
   UndergroundElectricity,
   VideoSurveillance,
-} from './schema';
-import { getLotAverage } from './schema';
+} from './settlement/types';
+import { getLotAverage } from './settlement/lots';
 import { canon } from './site';
 import { telegram } from './url';
 
@@ -46,7 +45,7 @@ const src = {
 
 const road = {
   asphalt: 'асфальт',
-  partial_asphalt: 'частично асфальт',
+  partlyAsphalt: 'частично асфальт',
   gravel: 'гравий',
   dirt: 'грунт',
 } as const satisfies Record<RoadType, string>;
@@ -59,7 +58,7 @@ const drain = {
 
 const video = {
   full: 'полное',
-  checkpoint_only: 'только на КПП',
+  checkpointOnly: 'только на КПП',
   none: 'нет',
 } as const satisfies Record<VideoSurveillance, string>;
 
@@ -114,7 +113,7 @@ function num(value: number): string {
 function lots(item: Settlement): readonly MarkdownListItem[] {
   if (!item.lots) return [];
 
-  const avg = getLotAverage(item.lots, item.infrastructure, item.common_spaces);
+  const avg = getLotAverage(item.lots, item.infrastructure, item.commonSpaces);
 
   return [
     ...(item.lots.count
@@ -124,22 +123,18 @@ function lots(item: Settlement): readonly MarkdownListItem[] {
           ),
         ]
       : []),
-    ...(item.lots.area_ha
-      ? [md.listItem(`Площадь поселка: ${num(item.lots.area_ha)} га`)]
+    ...(item.lots.areaHa
+      ? [md.listItem(`Площадь поселка: ${num(item.lots.areaHa)} га`)]
       : []),
     ...(avg
       ? [
           md.listItem(
-            `Средняя площадь участка: ${num(avg)} сот.${item.lots.average_sotka ? '' : ' (оценка с вычетом дорог, тротуаров, ливневок и общих зон)'}`,
+            `Средняя площадь участка: ${num(avg)} сот.${item.lots.averageSotka ? '' : ' (оценка с вычетом дорог, тротуаров, ливневок и общих зон)'}`,
           ),
         ]
       : []),
-    ...(item.lots.average_note
-      ? [
-          md.listItem(
-            `Основание для средней площади: ${item.lots.average_note}`,
-          ),
-        ]
+    ...(item.lots.averageNote
+      ? [md.listItem(`Основание для средней площади: ${item.lots.averageNote}`)]
       : []),
   ];
 }
@@ -168,54 +163,51 @@ function infoRows(item: Settlement): readonly MarkdownListItem[] {
     row('Ограждение', avail(item.infrastructure.fencing)),
     row(
       'Видеонаблюдение',
-      item.infrastructure.video_surveillance &&
-        video[item.infrastructure.video_surveillance],
+      item.infrastructure.videoSurveillance &&
+        video[item.infrastructure.videoSurveillance],
     ),
     row(
       'Подземное электричество',
-      item.infrastructure.underground_electricity &&
-        wire[item.infrastructure.underground_electricity],
+      item.infrastructure.undergroundElectricity &&
+        wire[item.infrastructure.undergroundElectricity],
     ),
-    row('Административное здание', avail(item.infrastructure.admin_building)),
-    row('Магазины и сервисы', avail(item.infrastructure.retail_or_services)),
+    row('Административное здание', avail(item.infrastructure.adminBuilding)),
+    row('Магазины и сервисы', avail(item.infrastructure.retailOrServices)),
   ].filter((item): item is MarkdownListItem => Boolean(item));
 }
 
 function spaceRows(item: Settlement): readonly MarkdownListItem[] {
   return [
-    row(
-      'Клубная инфраструктура',
-      avail(item.common_spaces.club_infrastructure),
-    ),
-    row('Детские площадки', avail(item.common_spaces.playgrounds)),
-    row('Спорт', avail(item.common_spaces.sports)),
-    row('Пешие маршруты', avail(item.common_spaces.walking_routes)),
-    row('Доступ к воде', avail(item.common_spaces.water_access)),
-    row('Пляжные зоны', avail(item.common_spaces.beach_zones)),
-    row('BBQ-зоны', avail(item.common_spaces.bbq_zones)),
-    row('Бассейн', avail(item.common_spaces.pool)),
-    row('Фитнес-клуб', avail(item.common_spaces.fitness_club)),
-    row('Ресторан', avail(item.common_spaces.restaurant)),
-    row('SPA-центр', avail(item.common_spaces.spa_center)),
-    row('Детский клуб', avail(item.common_spaces.kids_club)),
-    row('Спортивный лагерь', avail(item.common_spaces.sports_camp)),
-    row('Начальная школа', avail(item.common_spaces.primary_school)),
+    row('Клубная инфраструктура', avail(item.commonSpaces.clubInfrastructure)),
+    row('Детские площадки', avail(item.commonSpaces.playgrounds)),
+    row('Спорт', avail(item.commonSpaces.sports)),
+    row('Пешие маршруты', avail(item.commonSpaces.walkingRoutes)),
+    row('Доступ к воде', avail(item.commonSpaces.waterAccess)),
+    row('Пляжные зоны', avail(item.commonSpaces.beachZones)),
+    row('BBQ-зоны', avail(item.commonSpaces.bbqZones)),
+    row('Бассейн', avail(item.commonSpaces.pool)),
+    row('Фитнес-клуб', avail(item.commonSpaces.fitnessClub)),
+    row('Ресторан', avail(item.commonSpaces.restaurant)),
+    row('SPA-центр', avail(item.commonSpaces.spaCenter)),
+    row('Детский клуб', avail(item.commonSpaces.kidsClub)),
+    row('Спортивный лагерь', avail(item.commonSpaces.sportsCamp)),
+    row('Начальная школа', avail(item.commonSpaces.primarySchool)),
   ].filter((item): item is MarkdownListItem => Boolean(item));
 }
 
 function serviceRows(item: Settlement): readonly MarkdownListItem[] {
   return [
-    row('Вывоз мусора', avail(item.service_model.garbage_collection)),
-    row('Уборка снега', avail(item.service_model.snow_removal)),
-    row('Уборка дорог', avail(item.service_model.road_cleaning)),
-    row('Благоустройство', avail(item.service_model.landscaping)),
-    row('Аварийная служба', avail(item.service_model.emergency_service)),
-    row('Диспетчер', avail(item.service_model.dispatcher)),
+    row('Вывоз мусора', avail(item.serviceModel.garbageCollection)),
+    row('Уборка снега', avail(item.serviceModel.snowRemoval)),
+    row('Уборка дорог', avail(item.serviceModel.roadCleaning)),
+    row('Благоустройство', avail(item.serviceModel.landscaping)),
+    row('Аварийная служба', avail(item.serviceModel.emergencyService)),
+    row('Диспетчер', avail(item.serviceModel.dispatcher)),
   ].filter((item): item is MarkdownListItem => Boolean(item));
 }
 
 function delta(item: Settlement, cmp?: ComparisonResult): string {
-  if (item.is_baseline) {
+  if (item.isBaseline) {
     return 'Базовый поселок для сравнения.';
   }
 
@@ -232,7 +224,7 @@ function delta(item: Settlement, cmp?: ComparisonResult): string {
 
 function map(item: Settlement): string {
   return (
-    item.location.map_url ??
+    item.location.mapUrl ??
     `https://yandex.ru/maps/?pt=${item.location.lng},${item.location.lat}&z=15&l=map`
   );
 }
@@ -260,7 +252,7 @@ const settlementLine = (item: {
   readonly slug: string;
   readonly tariff: Pick<
     Settlement['tariff'],
-    'normalized_per_sotka_month' | 'normalized_is_estimate'
+    'normalizedPerSotkaMonth' | 'normalizedIsEstimate'
   >;
   readonly rating: number;
   readonly location: Pick<Settlement['location'], 'district'>;
@@ -299,15 +291,25 @@ const codeListItem = (value: string): MarkdownListItem =>
 
 export async function buildHomeMd(): Promise<string> {
   const { settlements, stats, ratings } = await loadAllData();
-  const list = toExplorer(settlements, ratings).sort((a, b) => {
-    const d = b.rating - a.rating;
-    if (d !== 0) return d;
-    return compareRuText(a.short_name, b.short_name);
-  });
-  const base = list.find((item) => item.is_baseline);
+  const list = settlements
+    .map((item) => ({
+      name: item.name,
+      slug: item.slug,
+      shortName: item.shortName,
+      tariff: item.tariff,
+      rating: ratings.get(item.slug)?.score ?? 0,
+      location: { district: item.location.district },
+      isBaseline: item.isBaseline,
+    }))
+    .sort((a, b) => {
+      const d = b.rating - a.rating;
+      if (d !== 0) return d;
+      return compareRuText(a.shortName, b.shortName);
+    });
+  const base = list.find((item) => item.isBaseline);
   const picks = [
     ...(base ? [base] : []),
-    ...list.filter((item) => !item.is_baseline).slice(0, 5),
+    ...list.filter((item) => !item.isBaseline).slice(0, 5),
   ];
 
   return serialize([
@@ -436,7 +438,7 @@ export function buildSettlementMd({
   const markdownUrl = abs(`/settlements/${settlement.slug}/index.md`);
   const tg = settlement.telegram ? telegram(settlement.telegram) : undefined;
   const dist =
-    shelkovo && !settlement.is_baseline
+    shelkovo && !settlement.isBaseline
       ? formatDistance(
           calculateDistance(
             shelkovo.location.lat,
@@ -446,13 +448,11 @@ export function buildSettlementMd({
           ),
         )
       : undefined;
-  const company = settlement.management_company;
+  const company = settlement.managementCompany;
   const companyLine: MarkdownPhrasingInput | undefined =
-    typeof company === 'string'
-      ? company
-      : company
-        ? [md.text(`${company.title} — `), linkTo(company.url)]
-        : undefined;
+    company && company.url
+      ? [md.text(`${company.title} — `), linkTo(company.url)]
+      : company?.title;
   const score = rating ? `${num(rating.score)}/100` : undefined;
 
   return serialize([
@@ -462,12 +462,12 @@ export function buildSettlementMd({
         linkRow('HTML', html),
         linkRow('Markdown', markdownUrl),
         md.listItem(`Район: ${settlement.location.district}`),
-        md.listItem(`Адрес: ${settlement.location.address_text}`),
+        md.listItem(`Адрес: ${settlement.location.addressText}`),
         md.listItem(`Тариф: ${formatTariffOriginal(settlement.tariff)}`),
         ...(hasNonSotkaUnit(settlement.tariff)
           ? [
               md.listItem(
-                `Средняя за сотку: ${settlement.tariff.normalized_is_estimate ? '~' : ''}${formatTariff(settlement.tariff.normalized_per_sotka_month)} в месяц`,
+                `Средняя за сотку: ${settlement.tariff.normalizedIsEstimate ? '~' : ''}${formatTariff(settlement.tariff.normalizedPerSotkaMonth)} в месяц`,
               ),
             ]
           : []),
@@ -492,8 +492,8 @@ export function buildSettlementMd({
           : []),
         ...(dist ? [md.listItem(`Расстояние от Шелково: ${dist}`)] : []),
         md.listItem(`Сравнение с Шелково: ${delta(settlement, comparison)}`),
-        ...(settlement.is_baseline ? [md.listItem('Базовый поселок: да')] : []),
-        ...(settlement.water_in_tariff
+        ...(settlement.isBaseline ? [md.listItem('Базовый поселок: да')] : []),
+        ...(settlement.waterInTariff
           ? [md.listItem('Вода уже включена в тариф: да')]
           : []),
         ...(settlement.rabstvo
@@ -519,7 +519,7 @@ export function buildSettlementMd({
     md.list(
       settlement.sources.map((item) => {
         const info = [
-          formatDate(item.date_checked),
+          formatDate(item.dateChecked),
           src[item.type],
           item.title,
         ].join(' — ');

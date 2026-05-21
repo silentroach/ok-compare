@@ -42,7 +42,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
   const tagsMarkdown = absoluteUrl(tagsMarkdownUrl());
   const articleHtml = article?.canonical ?? '/news/YYYY/MM/[entry]/';
   const articleMarkdown = article
-    ? absoluteUrl(article.markdown_url)
+    ? absoluteUrl(article.markdownUrl)
     : '/news/YYYY/MM/[entry]/index.md';
   const yearUrl = year ? absoluteUrl(year.url) : '/news/YYYY/';
   const monthUrl = month ? absoluteUrl(month.url) : '/news/YYYY/MM/';

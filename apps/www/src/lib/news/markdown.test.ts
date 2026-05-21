@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { buildNewsArticleMarkdown, buildNewsMonthMarkdown } from './markdown';
-import type { NewsArticle } from './schema';
+import type { NewsArticle } from './types';
 
 const article = (input?: Partial<NewsArticle>): NewsArticle => ({
   id: '2026/05/ktp-upgrade',
@@ -16,12 +16,12 @@ const article = (input?: Partial<NewsArticle>): NewsArticle => ({
   day: 14,
   entry: 'ktp-upgrade',
   url: '/news/2026/05/ktp-upgrade/',
-  markdown_url: '/news/2026/05/ktp-upgrade/index.md',
+  markdownUrl: '/news/2026/05/ktp-upgrade/index.md',
   canonical: 'https://example.com/news/2026/05/ktp-upgrade/',
-  published_at: new Date('2026-05-14T19:16:00.000Z'),
-  published_iso: '2026-05-14T22:16:00+03:00',
+  publishedAt: new Date('2026-05-14T19:16:00.000Z'),
+  publishedIso: '2026-05-14T22:16:00+03:00',
   time: '22:16',
-  applies_to_all_areas: false,
+  appliesToAllAreas: false,
   areas: ['park', 'village'],
   tags: [
     {
@@ -31,7 +31,7 @@ const article = (input?: Partial<NewsArticle>): NewsArticle => ({
     },
   ],
   pinned: false,
-  source_url: 'https://example.com/source',
+  sourceUrl: 'https://example.com/source',
   photos: [],
   attachments: [],
   events: [],
@@ -72,7 +72,7 @@ describe('buildNewsArticleMarkdown', () => {
   it('omits settlement-wide areas', () => {
     const markdown = buildNewsArticleMarkdown(
       article({
-        applies_to_all_areas: true,
+        appliesToAllAreas: true,
         areas: ['river', 'forest', 'park', 'village'],
       }),
     );
@@ -127,7 +127,7 @@ ignored: true
           year: 2026,
           month: 5,
           url: '/news/2026/05/',
-          markdown_url: '/news/2026/05/index.md',
+          markdownUrl: '/news/2026/05/index.md',
           count: 1,
           articles: [article()],
         },

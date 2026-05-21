@@ -15,15 +15,15 @@ describe('createPersonMentionTarget', () => {
     ).toMatchInlineSnapshot(`
       {
         "company": "КПРФ",
-        "html_url": "/people/kschemelinin/",
+        "htmlUrl": "/people/kschemelinin/",
         "label": "Кирилл Щемелинин",
-        "label_cases": {
+        "labelCases": {
           "gen": "Кирилла Щемелинина",
         },
-        "link_title": "депутат, КПРФ",
-        "markdown_url": "/people/kschemelinin/index.md",
+        "linkTitle": "депутат, КПРФ",
+        "markdownUrl": "/people/kschemelinin/index.md",
         "name": "Кирилл Щемелинин",
-        "name_cases": {
+        "nameCases": {
           "gen": "Кирилла Щемелинина",
         },
         "position": "депутат",

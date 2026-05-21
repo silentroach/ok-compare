@@ -2,13 +2,8 @@
   import Link from '@shelkovo/ui/Link.svelte';
   import { onMount } from 'svelte';
   import type { ExplorerPayload, ExplorerSettlement } from '../lib/explorer';
-  import {
-    calculateDistance,
-    formatTariffAuto,
-    getTariffHint,
-  } from '../lib/format';
+  import { calculateDistance, formatTariff } from '../lib/format';
   import { getRing } from '../lib/rating';
-  import { rankSettlements } from '../lib/stats';
   import { withBase } from '../lib/url';
   import SettlementMap from './SettlementMap.svelte';
   import SettlementCard from './SettlementCard.svelte';
@@ -75,12 +70,12 @@
   });
 
   // Find Shelkovo (baseline) for distance calculations
-  const shelkovo = $derived(settlements.find((s) => s.is_baseline));
+  const shelkovo = $derived(settlements.find((s) => s.isBaseline));
 
   // Calculate distance from Shelkovo for a settlement
   function getDistanceFromShelkovo(settlement: ExplorerSettlement): number {
     const baseline = shelkovo;
-    if (!baseline || settlement.is_baseline) return 0;
+    if (!baseline || settlement.isBaseline) return 0;
     return calculateDistance(
       baseline.location.lat,
       baseline.location.lng,
@@ -91,6 +86,40 @@
 
   function getDistanceFromMkad(settlement: ExplorerSettlement): number {
     return getRing(settlement.location.lat, settlement.location.lng);
+  }
+
+  function tariffText(settlement: ExplorerSettlement): string {
+    const text = formatTariff(settlement.tariff.normalizedPerSotkaMonth);
+    return settlement.tariff.normalizedIsEstimate ? `~${text}` : text;
+  }
+
+  function tariffHint(settlement: ExplorerSettlement): string | undefined {
+    if (!settlement.tariff.normalizedIsEstimate) return;
+    return 'Тариф приведен к сотке автоматически.';
+  }
+
+  function rankExplorer(list: ExplorerSettlement[]): Map<string, number> {
+    let prev: number | undefined;
+    let rank = 0;
+    const ranks = new Map<string, number>();
+
+    [...list]
+      .sort((a, b) => {
+        const diff =
+          a.tariff.normalizedPerSotkaMonth - b.tariff.normalizedPerSotkaMonth;
+        if (diff !== 0) return diff;
+        return a.shortName.localeCompare(b.shortName, 'ru');
+      })
+      .forEach((item) => {
+        const tariff = item.tariff.normalizedPerSotkaMonth;
+        if (tariff !== prev) {
+          prev = tariff;
+          rank += 1;
+        }
+        ranks.set(item.slug, rank);
+      });
+
+    return ranks;
   }
 
   // Filter and sort state
@@ -121,7 +150,7 @@
           return (
             !comparison.isCheaper &&
             comparison.tariffDelta !== 0 &&
-            !s.is_baseline
+            !s.isBaseline
           );
         return true;
       });
@@ -133,29 +162,27 @@
         case 'rating_desc': {
           const diff = b.rating - a.rating;
           if (diff !== 0) return diff;
-          return a.short_name.localeCompare(b.short_name, 'ru');
+          return a.shortName.localeCompare(b.shortName, 'ru');
         }
         case 'rating_asc': {
           const diff = a.rating - b.rating;
           if (diff !== 0) return diff;
-          return a.short_name.localeCompare(b.short_name, 'ru');
+          return a.shortName.localeCompare(b.shortName, 'ru');
         }
         case 'tariff_asc':
           return (
-            a.tariff.normalized_per_sotka_month -
-            b.tariff.normalized_per_sotka_month
+            a.tariff.normalizedPerSotkaMonth - b.tariff.normalizedPerSotkaMonth
           );
         case 'tariff_desc':
           return (
-            b.tariff.normalized_per_sotka_month -
-            a.tariff.normalized_per_sotka_month
+            b.tariff.normalizedPerSotkaMonth - a.tariff.normalizedPerSotkaMonth
           );
         case 'mkad':
           return getDistanceFromMkad(a) - getDistanceFromMkad(b);
         case 'distance':
           return getDistanceFromShelkovo(a) - getDistanceFromShelkovo(b);
         case 'name':
-          return a.short_name.localeCompare(b.short_name, 'ru');
+          return a.shortName.localeCompare(b.shortName, 'ru');
         default:
           return 0;
       }
@@ -171,23 +198,23 @@
   let help = $derived(sortBy === 'rating_desc' || sortBy === 'rating_asc');
   let mapSettlements = $derived.by(() =>
     displayedSettlements.map((s) => {
-      const company = s.management_company;
+      const company = s.managementCompany;
 
       return {
         slug: s.slug,
         name: s.name,
-        shortName: s.short_name,
+        shortName: s.shortName,
         lat: s.location.lat,
         lng: s.location.lng,
-        normalizedTariff: s.tariff.normalized_per_sotka_month,
-        isBaseline: s.is_baseline,
-        tariffText: formatTariffAuto(s.tariff),
-        tariffHint: getTariffHint(s.tariff),
+        normalizedTariff: s.tariff.normalizedPerSotkaMonth,
+        isBaseline: s.isBaseline,
+        tariffText: tariffText(s),
+        tariffHint: tariffHint(s),
         companyText: typeof company === 'string' ? company : company?.title,
       };
     }),
   );
-  let ranks = $derived(rankSettlements(settlements));
+  let ranks = $derived(rankExplorer(settlements));
   let levels = $derived(Math.max(new Set(ranks.values()).size, 1));
 
   onMount(() => {
@@ -439,7 +466,7 @@
           rank={ranks.get(settlement.slug) ?? levels}
           base={stats?.shelkovoRank ?? 1}
           total={levels}
-          isBaseline={settlement.is_baseline}
+          isBaseline={settlement.isBaseline}
         />
       {/each}
     </div>

@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import type { NewsArticle, NewsDataset } from './schema';
+import type { NewsArticle, NewsDataset } from './types';
 import type {
   newsPublicSurfaceSlice as newsPublicSurfaceSliceType,
   PublicSurfaceSlice,
@@ -28,12 +28,12 @@ const articleWithEvent = (): NewsArticle => ({
   day: 1,
   entry: 'event',
   url: '/news/2026/05/event/',
-  markdown_url: '/news/2026/05/event/index.md',
+  markdownUrl: '/news/2026/05/event/index.md',
   canonical: 'https://example.com/news/2026/05/event/',
-  published_at: new Date('2026-05-01T09:00:00+03:00'),
-  published_iso: '2026-05-01T09:00:00.000+03:00',
+  publishedAt: new Date('2026-05-01T09:00:00+03:00'),
+  publishedIso: '2026-05-01T09:00:00.000+03:00',
   time: '09:00',
-  applies_to_all_areas: true,
+  appliesToAllAreas: true,
   areas: ['river', 'forest', 'park', 'village'],
   tags: [],
   pinned: false,
@@ -44,13 +44,13 @@ const articleWithEvent = (): NewsArticle => ({
       slug: 'event',
       title: 'Встреча по регламенту',
       description: 'Описание календарного события.',
-      starts_at: new Date('2026-05-31T19:00:00+03:00'),
-      starts_iso: '2026-05-31T19:00:00.000+03:00',
-      starts_time: '19:00',
-      ends_at: new Date('2026-05-31T21:00:00+03:00'),
-      ends_iso: '2026-05-31T21:00:00.000+03:00',
-      ends_time: '21:00',
-      ics_url: '/news/2026/05/event/event.ics',
+      startsAt: new Date('2026-05-31T19:00:00+03:00'),
+      startsIso: '2026-05-31T19:00:00.000+03:00',
+      startsTime: '19:00',
+      endsAt: new Date('2026-05-31T21:00:00+03:00'),
+      endsIso: '2026-05-31T21:00:00.000+03:00',
+      endsTime: '21:00',
+      icsUrl: '/news/2026/05/event/event.ics',
       location: 'КП Шелково, эко-клуб',
       coordinates: {
         lat: 55,
@@ -71,12 +71,12 @@ const dataset = (articles: readonly NewsArticle[]): NewsDataset => ({
   },
   archives: {
     years: [],
-    by_year: new Map(),
-    by_month: new Map(),
+    byYear: new Map(),
+    byMonth: new Map(),
   },
   tags: [],
-  by_id: new Map(articles.map((item) => [item.id, item])),
-  by_tag: new Map(),
+  byId: new Map(articles.map((item) => [item.id, item])),
+  byTag: new Map(),
 });
 
 beforeAll(async () => {
@@ -106,8 +106,8 @@ describe('news discovery payload', () => {
     const second = {
       ...articleWithEvent(),
       id: '2026/05/latest',
-      published_at: new Date('2026-05-02T09:00:00+03:00'),
-      published_iso: '2026-05-02T09:00:00.000+03:00',
+      publishedAt: new Date('2026-05-02T09:00:00+03:00'),
+      publishedIso: '2026-05-02T09:00:00.000+03:00',
     };
 
     const payload = buildNewsPayload(dataset([first, second]), {

@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import type { NewsArticle, NewsEvent } from './schema';
+import type { NewsArticle, NewsEvent } from './types';
 
 let articleEventIcsUrl: typeof import('./routes').articleEventIcsUrl;
 let buildArticleEventIcs: typeof import('./calendar').buildArticleEventIcs;
@@ -27,16 +27,16 @@ const event = (input?: {
   slug: input?.slug ?? 'event',
   title: input?.title ?? 'Встреча по регламенту',
   ...(input?.description ? { description: input.description } : {}),
-  starts_at: new Date('2026-05-31T16:00:00.000Z'),
-  starts_iso: '2026-05-31T19:00:00+03:00',
-  starts_time: '19:00',
-  ics_url: `/news/2026/04/ok-meeting-regulation/${input?.slug ?? 'event'}.ics`,
+  startsAt: new Date('2026-05-31T16:00:00.000Z'),
+  startsIso: '2026-05-31T19:00:00+03:00',
+  startsTime: '19:00',
+  icsUrl: `/news/2026/04/ok-meeting-regulation/${input?.slug ?? 'event'}.ics`,
   ...(input?.ends === false
     ? {}
     : {
-        ends_at: new Date('2026-05-31T18:00:00.000Z'),
-        ends_iso: '2026-05-31T21:00:00+03:00',
-        ends_time: '21:00',
+        endsAt: new Date('2026-05-31T18:00:00.000Z'),
+        endsIso: '2026-05-31T21:00:00+03:00',
+        endsTime: '21:00',
       }),
   ...(input?.location ? { location: input.location } : {}),
   ...(input?.coordinates ? { coordinates: input.coordinates } : {}),
@@ -58,11 +58,11 @@ const article = (input?: {
   day: 29,
   entry: 'ok-meeting-regulation',
   url: '/news/2026/04/ok-meeting-regulation/',
-  markdown_url: '/news/2026/04/ok-meeting-regulation/index.md',
+  markdownUrl: '/news/2026/04/ok-meeting-regulation/index.md',
   canonical: 'https://example.com/news/2026/04/ok-meeting-regulation/',
-  published_at: new Date('2026-04-28T21:00:00.000Z'),
-  published_iso: '2026-04-29T00:00:00+03:00',
-  applies_to_all_areas: true,
+  publishedAt: new Date('2026-04-28T21:00:00.000Z'),
+  publishedIso: '2026-04-29T00:00:00+03:00',
+  appliesToAllAreas: true,
   areas: ['river', 'forest', 'park', 'village'],
   tags: [],
   pinned: false,

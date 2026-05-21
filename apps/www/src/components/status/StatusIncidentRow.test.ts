@@ -3,7 +3,7 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 
-import type { StatusIncident } from '@/lib/status/schema';
+import type { StatusIncident } from '@/lib/status/types';
 
 // @ts-expect-error Astro component modules are resolved by Astro/Vitest at test time.
 import StatusIncidentRow from './StatusIncidentRow.astro';
@@ -18,21 +18,21 @@ const incident = {
   slug: 'outage',
   url: '/status/incidents/2026/05/outage/',
   canonical: 'https://kpshelkovo.online/status/incidents/2026/05/outage/',
-  started_at: new Date('2026-05-01T07:32:00+03:00'),
-  started_iso: '2026-05-01T07:32:00+03:00',
-  started_has_time: true,
-  ended_at: new Date('2026-05-01T16:38:00+03:00'),
-  ended_iso: '2026-05-01T16:38:00+03:00',
-  ended_has_time: true,
-  is_active: false,
-  applies_to_all_areas: true,
+  startedAt: new Date('2026-05-01T07:32:00+03:00'),
+  startedIso: '2026-05-01T07:32:00+03:00',
+  startedHasTime: true,
+  endedAt: new Date('2026-05-01T16:38:00+03:00'),
+  endedIso: '2026-05-01T16:38:00+03:00',
+  endedHasTime: true,
+  isActive: false,
+  appliesToAllAreas: true,
   areas: [],
-  has_page: true,
+  hasPage: true,
   body: '',
   mentions: [],
-  sort_started_at: new Date('2026-05-01T07:32:00+03:00').valueOf(),
-  sort_last_change_at: new Date('2026-05-01T16:38:00+03:00').valueOf(),
-  duration: { total_minutes: 9 * 60 + 6 },
+  sortStartedAt: new Date('2026-05-01T07:32:00+03:00').valueOf(),
+  sortLastChangeAt: new Date('2026-05-01T16:38:00+03:00').valueOf(),
+  duration: { totalMinutes: 9 * 60 + 6 },
 } satisfies StatusIncident;
 
 describe('StatusIncidentRow', () => {

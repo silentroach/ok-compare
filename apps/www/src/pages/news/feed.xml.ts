@@ -17,7 +17,7 @@ export const GET: APIRoute = async (context) => {
       title: item.title,
       description: item.summary,
       link: item.url,
-      pubDate: item.published_at,
+      pubDate: item.publishedAt,
       categories: item.tags.map((entry) => entry.label),
     })),
     customData: '<language>ru-RU</language>',

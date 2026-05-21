@@ -1,4 +1,4 @@
-import type { NewsArticle, NewsEvent } from './schema';
+import type { NewsArticle, NewsEvent } from './types';
 
 const CRLF = '\r\n';
 const MAX_CONTENT_LINE_BYTES = 75;
@@ -110,8 +110,8 @@ const articleEventUid = (article: NewsArticle, event: NewsEvent): string =>
   `${safeToken(`news-event-${article.id}-${event.slug}`)}@${articleHost(article)}`;
 
 const articleEventEnd = (event: NewsEvent): Date =>
-  event.ends_at ??
-  new Date(event.starts_at.valueOf() + DEFAULT_EVENT_DURATION_MS);
+  event.endsAt ??
+  new Date(event.startsAt.valueOf() + DEFAULT_EVENT_DURATION_MS);
 
 const structuredLocation = (event: NewsEvent): string | undefined => {
   if (!event.coordinates) {
@@ -137,8 +137,8 @@ export function buildArticleEventIcs(
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',
     rawLine(`UID:${articleEventUid(article, event)}`),
-    rawLine(`DTSTAMP:${formatUtcDateTime(article.published_at)}`),
-    rawLine(`DTSTART:${formatUtcDateTime(event.starts_at)}`),
+    rawLine(`DTSTAMP:${formatUtcDateTime(article.publishedAt)}`),
+    rawLine(`DTSTART:${formatUtcDateTime(event.startsAt)}`),
     rawLine(`DTEND:${formatUtcDateTime(articleEventEnd(event))}`),
     textLine('SUMMARY', event.title),
     textLine('DESCRIPTION', event.description ?? article.summary),

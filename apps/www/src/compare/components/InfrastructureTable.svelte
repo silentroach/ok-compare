@@ -6,7 +6,7 @@
     DrainageType,
     VideoSurveillance,
     UndergroundElectricity,
-  } from '../lib/schema';
+  } from '../lib/settlement/types';
 
   interface Props {
     title?: string;
@@ -29,10 +29,10 @@
     checkpoints: 'КПП',
     security: 'Охрана',
     fencing: 'Закрытая территория',
-    video_surveillance: 'Видеонаблюдение',
-    underground_electricity: 'Подземная электросеть',
-    admin_building: 'Административное здание',
-    retail_or_services: 'Магазины',
+    videoSurveillance: 'Видеонаблюдение',
+    undergroundElectricity: 'Подземная электросеть',
+    adminBuilding: 'Административное здание',
+    retailOrServices: 'Магазины',
   };
 
   // Status icons for AvailabilityStatus
@@ -62,7 +62,7 @@
     { icon: string; text: string; tone: string }
   > = {
     asphalt: { icon: '●', text: 'Асфальт', tone: 'ui-badge-success' },
-    partial_asphalt: {
+    partlyAsphalt: {
       icon: '◐',
       text: 'Частично асфальт',
       tone: 'ui-badge-warning',
@@ -87,7 +87,7 @@
     { icon: string; text: string; tone: string }
   > = {
     full: { icon: '✓', text: 'Есть', tone: 'ui-badge-success' },
-    checkpoint_only: {
+    checkpointOnly: {
       icon: '◐',
       text: 'Только на КПП',
       tone: 'ui-badge-warning',
@@ -131,7 +131,7 @@
             tone: 'ui-badge-muted',
           }
         );
-      case 'video_surveillance':
+      case 'videoSurveillance':
         return (
           videoConfig[value as VideoSurveillance] || {
             icon: '?',
@@ -139,7 +139,7 @@
             tone: 'ui-badge-muted',
           }
         );
-      case 'underground_electricity':
+      case 'undergroundElectricity':
         return (
           electricityConfig[value as UndergroundElectricity] || {
             icon: '?',
@@ -180,10 +180,10 @@
     'checkpoints',
     'security',
     'fencing',
-    'video_surveillance',
-    'underground_electricity',
-    'admin_building',
-    'retail_or_services',
+    'videoSurveillance',
+    'undergroundElectricity',
+    'adminBuilding',
+    'retailOrServices',
   ];
 
   const rows = $derived(

@@ -1,4 +1,4 @@
-import type { StatusIncident } from '@/lib/status/schema';
+import type { StatusIncident } from '@/lib/status/types';
 
 import type {
   HomeStatusMaintenanceWindow,
@@ -25,11 +25,11 @@ export const getHomeStatusAriaLabel = (state: HomeStatusState): string =>
   `Статус: ${HOME_STATUS_LABELS[state]}`;
 
 const isActiveAt = (
-  item: Pick<StatusIncident, 'started_at' | 'ended_at'>,
+  item: Pick<StatusIncident, 'startedAt' | 'endedAt'>,
   now: number,
 ): boolean =>
-  item.started_at.valueOf() <= now &&
-  (item.ended_at === undefined || now < item.ended_at.valueOf());
+  item.startedAt.valueOf() <= now &&
+  (item.endedAt === undefined || now < item.endedAt.valueOf());
 
 export const getHomeStatusState = (
   incidents: readonly StatusIncident[],
@@ -49,20 +49,17 @@ export const getHomeStatusState = (
 };
 
 export const getHomeStatusMaintenanceWindows = (
-  incidents: readonly Pick<
-    StatusIncident,
-    'kind' | 'started_at' | 'ended_at'
-  >[],
+  incidents: readonly Pick<StatusIncident, 'kind' | 'startedAt' | 'endedAt'>[],
   buildNow: number,
 ): readonly HomeStatusMaintenanceWindow[] =>
   incidents
     .flatMap((item): HomeStatusMaintenanceWindow[] => {
-      if (item.kind !== 'maintenance' || item.ended_at === undefined) {
+      if (item.kind !== 'maintenance' || item.endedAt === undefined) {
         return [];
       }
 
-      const start = item.started_at.valueOf();
-      const end = item.ended_at.valueOf();
+      const start = item.startedAt.valueOf();
+      const end = item.endedAt.valueOf();
       if (end <= buildNow) {
         return [];
       }

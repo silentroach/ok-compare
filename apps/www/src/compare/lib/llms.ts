@@ -9,27 +9,30 @@ import {
 
 import { loadAllData } from './data';
 import { canon } from './site';
+import type { Settlement } from './settlement/types';
 
 function abs(path: string): string {
   return canon(path);
 }
 
-function refs(list: Array<{ short_name: string; slug: string }>): string[] {
+function refs(
+  list: readonly Pick<Settlement, 'shortName' | 'slug'>[],
+): string[] {
   return list.map(
-    (item) => `${item.short_name}: ${abs(`/settlements/${item.slug}/`)}`,
+    (item) => `${item.shortName}: ${abs(`/settlements/${item.slug}/`)}`,
   );
 }
 
 export async function build(kind: 'short' | 'full'): Promise<string> {
   const { settlements, stats, ratings } = await loadAllData();
-  const base = settlements.find((item) => item.is_baseline);
+  const base = settlements.find((item) => item.isBaseline);
   const top = settlements
-    .filter((item) => !item.is_baseline)
+    .filter((item) => !item.isBaseline)
     .sort((a, b) => {
       const d =
         (ratings.get(b.slug)?.score ?? 0) - (ratings.get(a.slug)?.score ?? 0);
       if (d !== 0) return d;
-      return compareRuText(a.short_name, b.short_name);
+      return compareRuText(a.shortName, b.shortName);
     })
     .slice(0, 2);
   const list = [...(base ? [base] : []), ...top];
@@ -119,7 +122,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
           llmsSection('Описание data/explorer.json', [
             markdownList([
               'Это отдельная облегченная лента для главного списка и карты, а не основной источник для анализа.',
-              'Его `settlements[]` включает только `name`, `short_name`, `slug`, `rating`, `is_baseline`, `location.lat`, `location.lng`, `location.district`, `tariff.normalized_per_sotka_month`, `tariff.normalized_is_estimate`, а также необязательные `rabstvo` и сокращенный `management_company`.',
+              'Его `settlements[]` включает только `name`, `shortName`, `slug`, `rating`, `isBaseline`, `location.lat`, `location.lng`, `location.district`, `tariff.normalizedPerSotkaMonth`, `tariff.normalizedIsEstimate`, а также необязательные `rabstvo` и сокращенный `managementCompany`.',
               'Используйте его только когда нужен минимальный набор данных для массовой первичной выборки или повторения логики главной страницы.',
             ]),
           ]),

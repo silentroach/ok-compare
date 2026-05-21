@@ -6,7 +6,11 @@ import {
   rankSettlements,
 } from './stats';
 import type { Rating } from './rating';
-import type { Settlement } from './schema';
+import { mapRawSettlement } from './settlement/mapper';
+import type { RawSettlement } from './settlement/schema';
+import type { Settlement } from './settlement/types';
+
+const toDomain = (item: RawSettlement): Settlement => mapRawSettlement(item);
 
 describe('Stats Module', () => {
   describe('calculateMedian', () => {
@@ -44,7 +48,7 @@ describe('Stats Module', () => {
 
   describe('rankSettlements', () => {
     it('should share ranks for equal tariffs', () => {
-      const settlements: Settlement[] = [
+      const settlements = [
         {
           name: 'Gamma',
           short_name: 'Гамма',
@@ -141,7 +145,7 @@ describe('Stats Module', () => {
             },
           ],
         },
-      ];
+      ].map((item) => toDomain(item as RawSettlement));
 
       const ranks = rankSettlements(settlements);
 
@@ -173,7 +177,7 @@ describe('Stats Module', () => {
   });
 
   describe('computeStats', () => {
-    const mockSettlements: Settlement[] = [
+    const mockSettlements = [
       {
         name: 'Shelkovo',
         short_name: 'Shelkovo',
@@ -387,7 +391,7 @@ describe('Stats Module', () => {
           },
         ],
       },
-    ];
+    ].map((item) => toDomain(item as RawSettlement));
 
     const ratings = new Map<string, Rating>([
       ['shelkovo', { score: 62.6, km: 0, ring: 0 }],
@@ -438,7 +442,7 @@ describe('Stats Module', () => {
     it('should throw error when no baseline settlement found', () => {
       const noBaselineSettlements = mockSettlements.map((s) => ({
         ...s,
-        is_baseline: false,
+        isBaseline: false,
       }));
       expect(() => computeStats(noBaselineSettlements, ratings)).toThrow(
         'Baseline settlement (Shelkovo) not found',
@@ -455,14 +459,14 @@ describe('Stats Module', () => {
       const list = Array.from({ length: 9 }, (_, i) => ({
         ...mockSettlements[1],
         name: `Поселок ${i + 1}`,
-        short_name: `Поселок ${i + 1}`,
+        shortName: `Поселок ${i + 1}`,
         slug: `row-${i + 1}`,
         website: `https://row-${i + 1}.ru`,
-        is_baseline: false,
+        isBaseline: false,
         tariff: {
           ...mockSettlements[1].tariff,
           value: 3000 + i * 100,
-          normalized_per_sotka_month: 3000 + i * 100,
+          normalizedPerSotkaMonth: 3000 + i * 100,
         },
       }));
       const settlements = [
@@ -474,7 +478,7 @@ describe('Stats Module', () => {
           tariff: {
             ...mockSettlements[0].tariff,
             value: 4500,
-            normalized_per_sotka_month: 4500,
+            normalizedPerSotkaMonth: 4500,
           },
         },
         list[3],

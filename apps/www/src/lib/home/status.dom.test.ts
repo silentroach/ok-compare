@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
-import type { StatusIncident } from '@/lib/status/schema';
+import type { StatusIncident } from '@/lib/status/types';
 
 import {
   getHomeStatusMaintenanceWindows,
@@ -20,9 +20,9 @@ const STATUS_LABELS = {
 } as const;
 const MAINTENANCE_WINDOW = {
   kind: 'maintenance',
-  started_at: new Date(WINDOW_START),
-  ended_at: new Date(WINDOW_END),
-} as const satisfies Pick<StatusIncident, 'kind' | 'started_at' | 'ended_at'>;
+  startedAt: new Date(WINDOW_START),
+  endedAt: new Date(WINDOW_END),
+} as const satisfies Pick<StatusIncident, 'kind' | 'startedAt' | 'endedAt'>;
 
 const renderHomeStatus = ({
   state = 'green',

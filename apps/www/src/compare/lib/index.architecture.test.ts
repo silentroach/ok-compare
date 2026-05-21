@@ -3,7 +3,35 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const indexPath = join(process.cwd(), 'src/pages/815/compare/index.astro');
+const settlementPath = join(
+  process.cwd(),
+  'src/pages/815/compare/settlements/[slug]/index.astro',
+);
 const runtimePath = join(process.cwd(), 'src/scripts/site-runtime.ts');
+const explorerPath = join(
+  process.cwd(),
+  'src/compare/components/SettlementsExplorer.svelte',
+);
+const cardPath = join(
+  process.cwd(),
+  'src/compare/components/SettlementCard.svelte',
+);
+const fullAdapterPath = join(process.cwd(), 'src/compare/lib/full.ts');
+const explorerAdapterPath = join(process.cwd(), 'src/compare/lib/explorer.ts');
+const fullJsonRoutePath = join(
+  process.cwd(),
+  'src/pages/815/compare/data/settlements.json.ts',
+);
+const explorerJsonRoutePath = join(
+  process.cwd(),
+  'src/pages/815/compare/data/explorer.json.ts',
+);
+const tablePaths = [
+  'src/compare/components/CommonSpacesTable.svelte',
+  'src/compare/components/InfrastructureTable.svelte',
+  'src/compare/components/ServiceTable.svelte',
+  'src/compare/components/SourcesList.svelte',
+].map((path) => join(process.cwd(), path));
 
 /**
  * Intentional architecture guard for the main list:
@@ -13,7 +41,34 @@ const runtimePath = join(process.cwd(), 'src/scripts/site-runtime.ts');
  *    serializes large payload into HTML again (the regression we had).
  */
 const loadIndex = (): string => readFileSync(indexPath, 'utf-8');
+const loadSettlement = (): string => readFileSync(settlementPath, 'utf-8');
 const loadRuntime = (): string => readFileSync(runtimePath, 'utf-8');
+const loadExplorer = (): string => readFileSync(explorerPath, 'utf-8');
+const loadCard = (): string => readFileSync(cardPath, 'utf-8');
+const loadFullAdapter = (): string => readFileSync(fullAdapterPath, 'utf-8');
+const loadExplorerAdapter = (): string =>
+  readFileSync(explorerAdapterPath, 'utf-8');
+const loadFullJsonRoute = (): string =>
+  readFileSync(fullJsonRoutePath, 'utf-8');
+const loadExplorerJsonRoute = (): string =>
+  readFileSync(explorerJsonRoutePath, 'utf-8');
+const loadTables = (): Record<string, string> =>
+  Object.fromEntries(
+    tablePaths.map((path) => [path, readFileSync(path, 'utf-8')]),
+  );
+
+const rawSettlementTokens = [
+  'short_name',
+  'is_baseline',
+  'address_text',
+  'map_url',
+  'normalized_per_sotka_month',
+  'normalized_is_estimate',
+  'water_in_tariff',
+  'common_spaces',
+  'service_model',
+  'management_company',
+];
 
 describe('index page explorer architecture', () => {
   it('uses the shared page header without compare-home compensation CSS', () => {
@@ -76,6 +131,59 @@ describe('index page explorer architecture', () => {
           `Regression in index.astro: found \`${row.token}\`. ${row.why}`,
         );
       }
+    }
+  });
+
+  it('keeps raw settlement field names out of compare route and island code', () => {
+    const files = {
+      'index.astro': loadIndex(),
+      'settlement page': loadSettlement(),
+      'SettlementsExplorer.svelte': loadExplorer(),
+      'SettlementCard.svelte': loadCard(),
+      ...loadTables(),
+    };
+
+    for (const [label, code] of Object.entries(files)) {
+      for (const token of rawSettlementTokens) {
+        expect(code, `${label} must not read raw ${token}`).not.toContain(
+          token,
+        );
+      }
+    }
+  });
+
+  it('keeps public compare JSON behind whole-payload public adapters', () => {
+    const adapters = {
+      'full.ts': loadFullAdapter(),
+      'explorer.ts': loadExplorerAdapter(),
+    };
+    const routes = {
+      'settlements.json.ts': loadFullJsonRoute(),
+      'explorer.json.ts': loadExplorerJsonRoute(),
+    };
+
+    for (const [label, code] of Object.entries(adapters)) {
+      expect(
+        code,
+        `${label} must not expose domain comparison payloads directly`,
+      ).not.toContain('ComparisonResult');
+      expect(
+        code,
+        `${label} must not expose domain stats payloads directly`,
+      ).not.toMatch(/\bStats\b[\s\S]*from '\.\/settlement\/types';/);
+    }
+
+    expect(routes['settlements.json.ts']).toContain('toFullPayload(');
+    expect(routes['explorer.json.ts']).toContain('toExplorerPayload(');
+
+    for (const [label, code] of Object.entries(routes)) {
+      expect(code, `${label} must not assemble JSON body inline`).not.toContain(
+        'const body:',
+      );
+      expect(
+        code,
+        `${label} must not assemble comparisons inline`,
+      ).not.toContain('Object.fromEntries(comparisons)');
     }
   });
 });

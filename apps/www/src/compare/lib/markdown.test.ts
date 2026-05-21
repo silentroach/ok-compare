@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import type { Settlement } from './schema';
+import { mapRawSettlement } from './settlement/mapper';
+import type { RawSettlement } from './settlement/schema';
+
+const toDomain = (item: RawSettlement) => mapRawSettlement(item);
 
 vi.mock('./data', () => ({
   loadAllData: async () => ({
@@ -16,9 +19,25 @@ vi.mock('./data', () => ({
           district: 'Истринский район',
         },
         tariff: {
+          value: 100,
+          unit: 'rub_per_sotka',
+          period: 'month',
           normalized_per_sotka_month: 100,
           normalized_is_estimate: false,
         },
+        website: 'https://example.com/shelkovo',
+        infrastructure: {},
+        common_spaces: {},
+        service_model: {},
+        sources: [
+          {
+            title: 'Источник',
+            url: 'https://example.com/shelkovo/source',
+            type: 'official',
+            date_checked: '2026-05-01',
+            comment: '',
+          },
+        ],
       },
       {
         name: 'КП Тестовый',
@@ -31,11 +50,27 @@ vi.mock('./data', () => ({
           district: 'Истринский район',
         },
         tariff: {
+          value: 90,
+          unit: 'rub_per_sotka',
+          period: 'month',
           normalized_per_sotka_month: 90,
           normalized_is_estimate: false,
         },
+        website: 'https://example.com/test',
+        infrastructure: {},
+        common_spaces: {},
+        service_model: {},
+        sources: [
+          {
+            title: 'Источник',
+            url: 'https://example.com/test/source',
+            type: 'official',
+            date_checked: '2026-05-01',
+            comment: '',
+          },
+        ],
       },
-    ],
+    ].map((item) => toDomain(item as RawSettlement)),
     stats: {
       totalSettlements: 2,
       cheaperCount: 1,
@@ -58,7 +93,7 @@ vi.mock('./site', () => ({
 
 const loadMarkdown = () => import('./markdown');
 
-const settlement: Settlement = {
+const settlement = toDomain({
   name: 'КП Тестовый',
   short_name: 'Тестовый',
   slug: 'test',
@@ -114,7 +149,7 @@ const settlement: Settlement = {
       comment: 'тариф и инфраструктура',
     },
   ],
-};
+} satisfies RawSettlement);
 
 describe('compare markdown navigation', () => {
   it('keeps discovery links on the markdown home page', async () => {
@@ -226,9 +261,9 @@ describe('compare markdown navigation', () => {
         shelkovo: {
           ...settlement,
           name: 'КП Шелково',
-          short_name: 'Шелково',
+          shortName: 'Шелково',
           slug: 'shelkovo',
-          is_baseline: true,
+          isBaseline: true,
           location: {
             ...settlement.location,
             lat: 55.7,

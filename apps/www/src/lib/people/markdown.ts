@@ -7,7 +7,7 @@ import {
 } from '@shelkovo/markdown';
 
 import { absoluteUrl } from '../site';
-import type { PersonBacklinks, PersonProfile } from './schema';
+import type { PersonBacklinks, PersonProfile } from './types';
 import {
   buildPersonMarkdown,
   describePersonProfile,
@@ -59,7 +59,7 @@ const profileLine = (profile: PersonProfile): MarkdownListItem => {
 
   return md.listItem([
     md.paragraph([
-      md.link(absoluteUrl(profile.markdown_url), profile.name),
+      md.link(absoluteUrl(profile.markdownUrl), profile.name),
       md.text(` — ${meta.join('; ')}`),
     ]),
     ...(summary ? [md.paragraph(summary)] : []),
