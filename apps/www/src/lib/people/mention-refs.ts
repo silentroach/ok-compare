@@ -23,9 +23,11 @@ export const createPersonProfileMentionRefs = (
   const summary = excerpt(profile.body);
 
   return createEntityMentionSourceRefs(profile.mentions, {
-    sourceSection: 'people',
-    sourceKind: 'person',
-    sourceId: profile.id,
+    source: {
+      section: 'people',
+      kind: 'person',
+      id: profile.id,
+    },
     sourceEntity: { type: 'person', slug: profile.slug },
     title: profile.name,
     htmlUrl: profile.url,

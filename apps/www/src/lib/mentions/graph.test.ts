@@ -4,28 +4,47 @@ import type { EntityMentionSourceRef } from './types';
 
 import { createEntityMentionGraph, getEntityMentionGraphRefs } from './graph';
 
-const ref = (
-  input: Partial<EntityMentionSourceRef> &
-    Pick<EntityMentionSourceRef, 'sourceSection' | 'sourceId' | 'title'>,
-): EntityMentionSourceRef => ({
-  targetType: input.targetType ?? 'person',
-  targetSlug: input.targetSlug ?? 'kschemelinin',
-  sourceKind: input.sourceKind ?? 'article',
-  htmlUrl: input.htmlUrl ?? `/${input.sourceSection}/${input.sourceId}/`,
-  markdownUrl:
-    input.markdownUrl ?? `/${input.sourceSection}/${input.sourceId}/index.md`,
-  ...input,
-});
+type RefInput = Omit<Partial<EntityMentionSourceRef>, 'source' | 'target'> & {
+  readonly source: Pick<EntityMentionSourceRef['source'], 'id' | 'section'> &
+    Partial<Pick<EntityMentionSourceRef['source'], 'kind'>>;
+  readonly target?: Partial<EntityMentionSourceRef['target']>;
+  readonly title: string;
+};
+
+const ref = ({
+  htmlUrl,
+  markdownUrl,
+  source,
+  target,
+  ...input
+}: RefInput): EntityMentionSourceRef => {
+  const resolvedSource = {
+    section: source.section,
+    kind: source.kind ?? 'article',
+    id: source.id,
+  };
+
+  return {
+    target: {
+      type: target?.type ?? 'person',
+      slug: target?.slug ?? 'kschemelinin',
+    },
+    source: resolvedSource,
+    htmlUrl: htmlUrl ?? `/${resolvedSource.section}/${resolvedSource.id}/`,
+    markdownUrl:
+      markdownUrl ?? `/${resolvedSource.section}/${resolvedSource.id}/index.md`,
+    ...input,
+  };
+};
 
 describe('createEntityMentionGraph', () => {
   it('groups refs by target entity and source section', () => {
     const graph = createEntityMentionGraph([
-      ref({ sourceSection: 'news', sourceId: 'a', title: 'Новость' }),
-      ref({ sourceSection: 'status', sourceId: 'b', title: 'Инцидент' }),
+      ref({ source: { section: 'news', id: 'a' }, title: 'Новость' }),
+      ref({ source: { section: 'status', id: 'b' }, title: 'Инцидент' }),
       ref({
-        targetSlug: 'apetrov',
-        sourceSection: 'news',
-        sourceId: 'c',
+        target: { slug: 'apetrov' },
+        source: { section: 'news', id: 'c' },
         title: 'Другая новость',
       }),
     ]);
@@ -44,13 +63,11 @@ describe('createEntityMentionGraph', () => {
   it('dedupes repeated refs from one source unit to one target entity', () => {
     const graph = createEntityMentionGraph([
       ref({
-        sourceSection: 'news',
-        sourceId: 'a',
+        source: { section: 'news', id: 'a' },
         title: 'Первый заголовок',
       }),
       ref({
-        sourceSection: 'news',
-        sourceId: 'a',
+        source: { section: 'news', id: 'a' },
         title: 'Второй заголовок',
       }),
     ]);
@@ -59,7 +76,7 @@ describe('createEntityMentionGraph', () => {
       getEntityMentionGraphRefs(graph, 'person', 'kschemelinin', 'news'),
     ).toEqual([
       expect.objectContaining({
-        sourceId: 'a',
+        source: expect.objectContaining({ id: 'a' }),
         title: 'Первый заголовок',
       }),
     ]);
@@ -67,31 +84,28 @@ describe('createEntityMentionGraph', () => {
 
   it('sorts dated refs first by descending sort key, then ru title, then source id', () => {
     const graph = createEntityMentionGraph([
-      ref({ sourceSection: 'news', sourceId: 'z', title: 'Яма' }),
+      ref({ source: { section: 'news', id: 'z' }, title: 'Яма' }),
       ref({
-        sourceSection: 'news',
-        sourceId: 'b',
+        source: { section: 'news', id: 'b' },
         title: 'Бета',
         sortKey: 20,
       }),
       ref({
-        sourceSection: 'news',
-        sourceId: 'a',
+        source: { section: 'news', id: 'a' },
         title: 'Альфа',
         sortKey: 20,
       }),
       ref({
-        sourceSection: 'news',
-        sourceId: 'c',
+        source: { section: 'news', id: 'c' },
         title: 'Ремонт',
         sortKey: 30,
       }),
-      ref({ sourceSection: 'news', sourceId: 'y', title: 'Яма' }),
+      ref({ source: { section: 'news', id: 'y' }, title: 'Яма' }),
     ]);
 
     expect(
       getEntityMentionGraphRefs(graph, 'person', 'kschemelinin', 'news').map(
-        (item) => item.sourceId,
+        (item) => item.source.id,
       ),
     ).toEqual(['c', 'a', 'b', 'y', 'z']);
   });
@@ -100,9 +114,7 @@ describe('createEntityMentionGraph', () => {
     expect(() =>
       createEntityMentionGraph([
         ref({
-          sourceSection: 'people',
-          sourceKind: 'person',
-          sourceId: 'kschemelinin',
+          source: { section: 'people', kind: 'person', id: 'kschemelinin' },
           sourceEntity: { type: 'person', slug: 'kschemelinin' },
           title: 'Кирилл Щемелинин',
         }),

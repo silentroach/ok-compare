@@ -78,7 +78,7 @@ describe('Comparisons Module', () => {
 
   describe('calculateTariffDelta', () => {
     it('should calculate positive delta when other is cheaper', () => {
-      // Shelkovo 120, Other 80 -> +40 rub, +33%
+      // Шелково 120, другой поселок 80 -> +40 руб., +33%.
       const result = calculateTariffDelta(120, 80);
       expect(result.delta).toBe(40);
       expect(result.deltaPercent).toBe(33);
@@ -86,7 +86,7 @@ describe('Comparisons Module', () => {
     });
 
     it('should calculate negative delta when other is more expensive', () => {
-      // Shelkovo 120, Other 150 -> -30 rub, -25%
+      // Шелково 120, другой поселок 150 -> -30 руб., -25%.
       const result = calculateTariffDelta(120, 150);
       expect(result.delta).toBe(-30);
       expect(result.deltaPercent).toBe(-25);

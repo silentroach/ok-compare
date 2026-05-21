@@ -25,16 +25,16 @@ const toPeopleBacklink = (
   ref: EntityMentionSourceRef,
 ): PersonMentionRef | undefined => {
   if (
-    !isPersonMentionSection(ref.sourceSection) ||
-    !isPersonBacklinkKind(ref.sourceKind)
+    !isPersonMentionSection(ref.source.section) ||
+    !isPersonBacklinkKind(ref.source.kind)
   ) {
     return undefined;
   }
 
   return {
-    section: ref.sourceSection,
-    kind: ref.sourceKind,
-    sourceId: ref.sourceId,
+    section: ref.source.section,
+    kind: ref.source.kind,
+    sourceId: ref.source.id,
     title: ref.title,
     htmlUrl: ref.htmlUrl,
     markdownUrl: ref.markdownUrl,

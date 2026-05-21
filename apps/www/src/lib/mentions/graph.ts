@@ -11,7 +11,7 @@ const targetKey = (type: EntityMentionType, slug: string): string =>
   `${type}:${slug}`;
 
 const sourceUnitKey = (ref: EntityMentionSourceRef): string =>
-  `${targetKey(ref.targetType, ref.targetSlug)}:${ref.sourceSection}:${ref.sourceKind}:${ref.sourceId}`;
+  `${targetKey(ref.target.type, ref.target.slug)}:${ref.source.section}:${ref.source.kind}:${ref.source.id}`;
 
 const compareRefs = (
   a: EntityMentionSourceRef,
@@ -20,15 +20,15 @@ const compareRefs = (
   (b.sortKey ?? Number.NEGATIVE_INFINITY) -
     (a.sortKey ?? Number.NEGATIVE_INFINITY) ||
   compareRuText(a.title, b.title) ||
-  compareRuText(a.sourceId, b.sourceId);
+  compareRuText(a.source.id, b.source.id);
 
 const assertNotSelfLink = (ref: EntityMentionSourceRef): void => {
   if (
-    ref.sourceEntity?.type === ref.targetType &&
-    ref.sourceEntity.slug === ref.targetSlug
+    ref.sourceEntity?.type === ref.target.type &&
+    ref.sourceEntity.slug === ref.target.slug
   ) {
     throw new Error(
-      `self-link mention ref ${targetKey(ref.targetType, ref.targetSlug)}`,
+      `self-link mention ref ${targetKey(ref.target.type, ref.target.slug)}`,
     );
   }
 };
@@ -59,13 +59,13 @@ export const createEntityMentionGraph = (
 
     seen.add(unitKey);
 
-    const key = targetKey(ref.targetType, ref.targetSlug);
+    const key = targetKey(ref.target.type, ref.target.slug);
     const target =
-      targets.get(key) ?? createGraphTarget(ref.targetType, ref.targetSlug);
+      targets.get(key) ?? createGraphTarget(ref.target.type, ref.target.slug);
     const sections = new Map(target.sections);
-    const current = sections.get(ref.sourceSection) ?? [];
+    const current = sections.get(ref.source.section) ?? [];
 
-    sections.set(ref.sourceSection, [...current, ref].sort(compareRefs));
+    sections.set(ref.source.section, [...current, ref].sort(compareRefs));
     targets.set(key, { ...target, sections });
   }
 

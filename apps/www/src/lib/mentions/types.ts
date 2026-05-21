@@ -31,17 +31,22 @@ export interface EntityMentionTarget {
   readonly linkContext?: string;
 }
 
-export interface EntityMentionSourceEntity {
+export interface EntityMentionEntityRef {
   readonly type: EntityMentionType;
   readonly slug: string;
 }
 
+export type EntityMentionSourceEntity = EntityMentionEntityRef;
+
+export interface EntityMentionSourceUnit {
+  readonly section: string;
+  readonly kind: string;
+  readonly id: string;
+}
+
 export interface EntityMentionSourceRef {
-  readonly targetType: EntityMentionType;
-  readonly targetSlug: string;
-  readonly sourceSection: string;
-  readonly sourceKind: string;
-  readonly sourceId: string;
+  readonly target: EntityMentionEntityRef;
+  readonly source: EntityMentionSourceUnit;
   readonly title: string;
   readonly htmlUrl: string;
   readonly markdownUrl: string;
@@ -53,7 +58,7 @@ export interface EntityMentionSourceRef {
 
 export type EntityMentionSourceRefSource = Omit<
   EntityMentionSourceRef,
-  'targetType' | 'targetSlug'
+  'target'
 >;
 
 export interface EntityMentionGraphTarget {

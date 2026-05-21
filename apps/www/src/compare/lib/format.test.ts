@@ -15,7 +15,7 @@ import {
 describe('Format Module', () => {
   describe('formatCurrency', () => {
     it('should format 1234.56 as "1 235 ₽"', () => {
-      // toLocaleString uses non-breaking space (U+00A0) as thousands separator
+      // Метод toLocaleString использует неразрывный пробел U+00A0 как разделитель тысяч.
       expect(formatCurrency(1234.56)).toBe('1\u00A0235 ₽');
     });
 
@@ -86,8 +86,8 @@ describe('Format Module', () => {
     it('should use minus sign (U+2212) not hyphen', () => {
       const result = formatPercentage(-0.5);
       expect(result).toBe('−50%');
-      expect(result.charAt(0)).toBe('−'); // U+2212
-      expect(result.charAt(0)).not.toBe('-'); // U+002D
+      expect(result.charAt(0)).toBe('−'); // Минус U+2212.
+      expect(result.charAt(0)).not.toBe('-'); // Дефис U+002D.
     });
 
     it('should round to one decimal place', () => {

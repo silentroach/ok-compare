@@ -28,7 +28,7 @@ describe('ServiceTable', () => {
       },
     });
 
-    // Check Russian labels are displayed
+    // Проверяем, что русские подписи отображаются.
     expect(getByText('Вывоз мусора')).toBeTruthy();
     expect(getByText('Уборка снега')).toBeTruthy();
     expect(getByText('Уборка дорог')).toBeTruthy();
@@ -45,10 +45,10 @@ describe('ServiceTable', () => {
       },
     });
 
-    // Should have comparison column header
+    // Должен быть заголовок колонки сравнения.
     expect(getByText('Шелково')).toBeTruthy();
 
-    // Should have comparison column
+    // Должна быть колонка сравнения.
     const comparisonCells = container.querySelectorAll(
       '[data-testid="shelkovo-service-status"]',
     );
@@ -62,10 +62,10 @@ describe('ServiceTable', () => {
       },
     });
 
-    // Should not have comparison column header
+    // Заголовка колонки сравнения быть не должно.
     expect(queryByText('Шелково')).toBeNull();
 
-    // Should not have comparison cells
+    // Ячеек сравнения быть не должно.
     const comparisonCells = container.querySelectorAll(
       '[data-testid="shelkovo-service-status"]',
     );

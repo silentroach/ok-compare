@@ -37,7 +37,7 @@ describe('SourcesList', () => {
     expect(container.textContent).toContain('Чат жителей (Telegram)');
     expect(container.textContent).toContain('Статья в газете');
 
-    // Check dates are rendered in Russian format (DD MMMM YYYY)
+    // Проверяем, что даты рендерятся в русском формате DD MMMM YYYY.
     expect(container.textContent).toContain('10 марта 2026');
     expect(container.textContent).toContain('15 марта 2026');
     expect(container.textContent).toContain('20 февраля 2026');

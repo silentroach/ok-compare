@@ -8,7 +8,7 @@ export type UndergroundElectricity = 'full' | 'partial' | 'none';
 export type VideoSurveillance = 'full' | 'checkpointOnly' | 'none';
 
 export interface Location {
-  /** Human-readable address shown in compare cards and source summaries. */
+  /** Человекочитаемый адрес для карточек сравнения и сводок источников. */
   readonly addressText: string;
   readonly lat: number;
   readonly lng: number;
@@ -24,9 +24,9 @@ export interface TariffPart {
 }
 
 export interface Tariff extends TariffPart {
-  /** Monthly cost normalized to one sotka for cross-settlement comparison. */
+  /** Месячная стоимость, нормализованная на одну сотку для сравнения поселков. */
   readonly normalizedPerSotkaMonth: number;
-  /** True when normalization used lot-level or fixed tariff assumptions. */
+  /** Значение true, если нормализация использовала допущения по участку или фиксированному тарифу. */
   readonly normalizedIsEstimate: boolean;
   readonly parts?: readonly TariffPart[];
 }
@@ -34,7 +34,7 @@ export interface Tariff extends TariffPart {
 export interface Lots {
   readonly count?: number;
   readonly areaHa?: number;
-  /** Average sale lot size in sotkas. */
+  /** Средний размер участка в продаже в сотках. */
   readonly averageSotka?: number;
   readonly averageNote?: string;
 }
@@ -86,7 +86,7 @@ export interface Source {
   readonly title: string;
   readonly url: string;
   readonly type: SourceType;
-  /** ISO date when the source was checked. */
+  /** Дата проверки источника в формате ISO. */
   readonly dateChecked: string;
   readonly comment: string;
 }
@@ -103,13 +103,13 @@ export interface Settlement {
   readonly website: string;
   readonly telegram?: string;
   readonly managementCompany?: ManagementCompany;
-  /** Marks the baseline settlement used by compare calculations. */
+  /** Отмечает базовый поселок для расчетов сравнения. */
   readonly isBaseline: boolean;
   readonly location: Location;
   readonly tariff: Tariff;
   readonly lots?: Lots;
   readonly waterInTariff?: boolean;
-  /** Editorial flag for restrictive rules around service contracts. */
+  /** Редакционный флаг для ограничительных правил сервисных договоров. */
   readonly rabstvo?: boolean;
   readonly infrastructure: Infrastructure;
   readonly commonSpaces: CommonSpaces;

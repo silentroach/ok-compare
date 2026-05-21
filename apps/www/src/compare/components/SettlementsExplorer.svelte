@@ -69,10 +69,10 @@
     };
   });
 
-  // Find Shelkovo (baseline) for distance calculations
+  // Находим Шелково как базу для расчета расстояний.
   const shelkovo = $derived(settlements.find((s) => s.isBaseline));
 
-  // Calculate distance from Shelkovo for a settlement
+  // Считаем расстояние от Шелково до поселка.
   function getDistanceFromShelkovo(settlement: ExplorerSettlement): number {
     const baseline = shelkovo;
     if (!baseline || settlement.isBaseline) return 0;
@@ -122,7 +122,7 @@
     return ranks;
   }
 
-  // Filter and sort state
+  // Состояние фильтров и сортировки.
   let sortBy = $state<
     | 'tariff_asc'
     | 'tariff_desc'
@@ -136,11 +136,11 @@
   let showMap = $state(false);
   let mobile = $state(false);
 
-  // Derived: filtered and sorted settlements
+  // Производный список поселков после фильтрации и сортировки.
   let filteredSettlements = $derived.by(() => {
     let result = [...settlements];
 
-    // Apply price filter
+    // Применяем фильтр цены.
     if (priceFilter !== 'all') {
       result = result.filter((s) => {
         const comparison = comparisons[s.slug];
@@ -156,7 +156,7 @@
       });
     }
 
-    // Sort
+    // Сортируем.
     result.sort((a, b) => {
       switch (sortBy) {
         case 'rating_desc': {

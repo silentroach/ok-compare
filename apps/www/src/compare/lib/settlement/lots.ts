@@ -46,7 +46,7 @@ const share = (
   return 0;
 };
 
-const road = (value: RoadType | undefined): number => {
+const road = (value?: RoadType): number => {
   if (value === 'asphalt') return 0.9;
   if (value === 'partlyAsphalt') return 0.8;
   if (value === 'gravel') return 0.7;
@@ -54,19 +54,19 @@ const road = (value: RoadType | undefined): number => {
   return 0;
 };
 
-const drain = (value: DrainageType | undefined): number => {
+const drain = (value?: DrainageType): number => {
   if (value === 'closed') return 0.25;
   if (value === 'open') return 0.15;
   return 0;
 };
 
-const note = (value: AvailabilityStatus | undefined): string | undefined => {
+const note = (value?: AvailabilityStatus): string | undefined => {
   if (value === 'yes') return 'подтверждено';
   if (value === 'partial') return 'частично подтверждено';
   return;
 };
 
-const roadNote = (value: RoadType | undefined): string | undefined => {
+const roadNote = (value?: RoadType): string | undefined => {
   if (value === 'asphalt') return 'асфальт';
   if (value === 'partlyAsphalt') return 'частично асфальт';
   if (value === 'gravel') return 'гравий';
@@ -74,7 +74,7 @@ const roadNote = (value: RoadType | undefined): string | undefined => {
   return;
 };
 
-const drainNote = (value: DrainageType | undefined): string | undefined => {
+const drainNote = (value?: DrainageType): string | undefined => {
   if (value === 'closed') return 'закрытая';
   if (value === 'open') return 'открытая';
   return;

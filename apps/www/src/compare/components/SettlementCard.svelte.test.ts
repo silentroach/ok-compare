@@ -243,11 +243,11 @@ describe('SettlementCard', () => {
       },
     });
 
-    // Should still render without errors
+    // Должна рендериться без ошибок.
     expect(
       container.querySelector('[data-testid="settlement-card"]'),
     ).toBeTruthy();
-    // Should render tariff but no comparison text
+    // Должен рендериться тариф, но не текст сравнения.
     expect(container.textContent).toContain('100 ₽/сотка');
     expect(container.textContent).not.toContain('дешевле на');
     expect(container.textContent).not.toContain('дороже на');

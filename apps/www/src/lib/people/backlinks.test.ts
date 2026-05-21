@@ -8,11 +8,8 @@ import { createPeopleBacklinksFromGraph } from './backlinks';
 
 const refs: readonly EntityMentionSourceRef[] = [
   {
-    targetType: 'person',
-    targetSlug: 'kschemelinin',
-    sourceSection: 'news',
-    sourceKind: 'article',
-    sourceId: '2026/05/power-outage',
+    target: { type: 'person', slug: 'kschemelinin' },
+    source: { section: 'news', kind: 'article', id: '2026/05/power-outage' },
     title: 'Повреждение линии 10 кВ',
     htmlUrl: '/news/2026/05/power-outage/',
     markdownUrl: '/news/2026/05/power-outage/index.md',

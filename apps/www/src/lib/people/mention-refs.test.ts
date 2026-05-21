@@ -30,11 +30,8 @@ describe('createPersonProfileMentionRefs', () => {
   it('creates person profile source refs with people presentation fields', () => {
     expect(createPersonProfileMentionRefs(profile())).toEqual([
       {
-        targetType: 'person',
-        targetSlug: 'kschemelinin',
-        sourceSection: 'people',
-        sourceKind: 'person',
-        sourceId: 'apetrov',
+        target: { type: 'person', slug: 'kschemelinin' },
+        source: { section: 'people', kind: 'person', id: 'apetrov' },
         sourceEntity: { type: 'person', slug: 'apetrov' },
         title: 'Андрей Петров',
         htmlUrl: '/people/apetrov/',

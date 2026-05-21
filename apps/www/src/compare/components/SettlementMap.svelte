@@ -410,8 +410,8 @@
 
       isLoading = false;
 
-      // Apply margin via update() — passing margin only in the constructor
-      // produces a different (too-wide) zoom for bounds-based views.
+      // Применяем отступ через update(): если передать его только в конструктор,
+      // виды по границам карты получают другой, слишком широкий zoom.
       if (view.location.bounds) {
         map.update?.({
           location: { ...view.location, duration: 0 },

@@ -75,7 +75,7 @@ export function calculatePercentile(value: number, baseline: number): number {
 }
 
 function bands(list: Rated[]): Rated[][] {
-  // Keep rating cohorts broad enough to avoid noisy medians on small bases.
+  // Держим рейтинговые группы достаточно широкими, чтобы медианы не шумели на малых выборках.
   const count = Math.min(4, Math.max(1, Math.ceil(list.length / 8)));
   const size = Math.ceil(list.length / count);
 

@@ -482,7 +482,7 @@ describe('Schema Validation', () => {
         },
         tariff: {
           value: 3000,
-          unit: 'per_day', // Invalid unit
+          unit: 'per_day', // Некорректная единица.
           period: 'month',
           note: '',
         },
@@ -553,7 +553,7 @@ describe('Schema Validation', () => {
     it('should fail when latitude is out of range', () => {
       const invalidLocation = {
         address_text: 'Адрес',
-        lat: 999, // Invalid latitude
+        lat: 999, // Некорректная широта.
         lng: 37.6173,
         district: 'Район',
       };
@@ -572,7 +572,7 @@ describe('Schema Validation', () => {
       const invalidLocation = {
         address_text: 'Адрес',
         lat: 55.7558,
-        lng: 999, // Invalid longitude
+        lng: 999, // Некорректная долгота.
         district: 'Район',
       };
 
@@ -595,7 +595,7 @@ describe('Schema Validation', () => {
         lighting: 'yes',
         gas: 'yes',
         water: 'yes',
-        // Missing other optional fields
+        // Остальные необязательные поля отсутствуют.
       };
 
       const result = InfrastructureSchema.safeParse(partialInfrastructure);
@@ -603,8 +603,8 @@ describe('Schema Validation', () => {
       if (result.success) {
         expect(result.data.roads).toBe('asphalt');
         expect(result.data.sidewalks).toBe('yes');
-        expect(result.data.drainage).toBe(undefined); // Not specified
-        expect(result.data.security).toBe(undefined); // Not specified
+        expect(result.data.drainage).toBe(undefined); // Не задано.
+        expect(result.data.security).toBe(undefined); // Не задано.
       }
     });
 
@@ -729,7 +729,7 @@ describe('Schema Validation', () => {
       const settlementWithInvalidSlug = {
         name: 'Тест',
         short_name: 'Тест',
-        slug: 'Invalid Slug!', // Invalid characters
+        slug: 'Invalid Slug!', // Некорректные символы.
         website: 'https://test.com',
         management_company: 'УК Тест',
         location: {

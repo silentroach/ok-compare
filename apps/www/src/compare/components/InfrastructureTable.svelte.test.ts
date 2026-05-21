@@ -43,7 +43,7 @@ describe('InfrastructureTable', () => {
       },
     });
 
-    // Check Russian labels are displayed
+    // Проверяем, что русские подписи отображаются.
     expect(getByText('Дороги')).toBeTruthy();
     expect(getByText('Тротуары')).toBeTruthy();
     expect(getByText('Уличное освещение')).toBeTruthy();
@@ -61,10 +61,10 @@ describe('InfrastructureTable', () => {
       },
     });
 
-    // Should have comparison column header
+    // Должен быть заголовок колонки сравнения.
     expect(getByText('Шелково')).toBeTruthy();
 
-    // Should have comparison column (14 with undergroundElectricity)
+    // Должна быть колонка сравнения: 14 строк вместе с undergroundElectricity.
     const comparisonCells = container.querySelectorAll(
       '[data-testid="shelkovo-status"]',
     );
@@ -78,10 +78,10 @@ describe('InfrastructureTable', () => {
       },
     });
 
-    // Should not have comparison column header
+    // Заголовка колонки сравнения быть не должно.
     expect(queryByText('Шелково')).toBeNull();
 
-    // Should not have comparison cells
+    // Ячеек сравнения быть не должно.
     const comparisonCells = container.querySelectorAll(
       '[data-testid="shelkovo-status"]',
     );
@@ -97,7 +97,7 @@ describe('InfrastructureTable', () => {
       },
     });
 
-    // Should still render all 14 rows even with empty data
+    // Даже с пустыми данными должны рендериться все 14 строк.
     const rows = container.querySelectorAll('[data-testid="infra-row"]');
     expect(rows.length).toBe(14);
   });

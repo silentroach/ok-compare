@@ -157,12 +157,12 @@ describe('Stats Module', () => {
 
   describe('calculatePercentile', () => {
     it('should calculate positive percentile when value is higher', () => {
-      // Shelkovo 120, median 80 → +50%
+      // Шелково 120, медиана 80 → +50%.
       expect(calculatePercentile(120, 80)).toBe(50);
     });
 
     it('should calculate negative percentile when value is lower', () => {
-      // Shelkovo 120, median 150 → -20%
+      // Шелково 120, медиана 150 → -20%.
       expect(calculatePercentile(120, 150)).toBe(-20);
     });
 
@@ -171,7 +171,7 @@ describe('Stats Module', () => {
     });
 
     it('should handle decimal percentages', () => {
-      // Shelkovo 100, median 66.67 → +50%
+      // Шелково 100, медиана 66.67 → +50%.
       expect(calculatePercentile(100, 66.666666)).toBeCloseTo(50, 1);
     });
   });
@@ -403,15 +403,15 @@ describe('Stats Module', () => {
       const stats = computeStats(mockSettlements, ratings);
 
       expect(stats.shelkovoTariff).toBe(4500);
-      expect(stats.medianTariff).toBe(4500); // Middle value of [3500, 4500, 5500]
+      expect(stats.medianTariff).toBe(4500); // Среднее значение из [3500, 4500, 5500].
       expect(stats.peerMedianTariff).toBe(4500);
       expect(stats.meanTariff).toBe(4500); // (3500 + 4500 + 5500) / 3
       expect(stats.minTariff).toBe(3500);
       expect(stats.maxTariff).toBe(5500);
       expect(stats.shelkovoRank).toBe(2); // 2nd cheapest out of 3
       expect(stats.totalSettlements).toBe(3);
-      expect(stats.cheaperCount).toBe(1); // Lesnoe is cheaper
-      expect(stats.moreExpensiveCount).toBe(1); // Usadby is more expensive
+      expect(stats.cheaperCount).toBe(1); // Лесное дешевле.
+      expect(stats.moreExpensiveCount).toBe(1); // Усадьбы дороже.
       expect(stats.shelkovoVsMedianPercent).toBe(0); // 4500 vs 4500
       expect(stats.shelkovoVsPeerMedianPercent).toBe(0); // 4500 vs 4500
       expect(stats.shelkovoVsMeanPercent).toBe(0); // 4500 vs 4500

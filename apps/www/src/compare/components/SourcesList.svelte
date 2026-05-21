@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Source } from '../lib/settlement/types';
+  import type { Source, SourceType } from '../lib/settlement/types';
   import { formatDate } from '../lib/format';
 
   interface Props {
@@ -8,14 +8,14 @@
 
   let { sources }: Props = $props();
 
-  const typeLabels: Record<string, string> = {
+  const typeLabels: Record<SourceType, string> = {
     official: 'Официальный',
     community: 'Сообщество',
     media: 'СМИ',
     personal: 'Личное',
   };
 
-  const typeColors: Record<string, string> = {
+  const typeColors: Record<SourceType, string> = {
     official: 'ui-badge ui-badge-success',
     community: 'ui-badge ui-badge-info',
     media: 'ui-badge ui-badge-warning',

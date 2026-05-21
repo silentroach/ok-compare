@@ -38,11 +38,12 @@ describe('createNewsArticleMentionRefs', () => {
   it('creates article source refs with news presentation fields', () => {
     expect(createNewsArticleMentionRefs(article())).toEqual([
       {
-        targetType: 'person',
-        targetSlug: 'kschemelinin',
-        sourceSection: 'news',
-        sourceKind: 'article',
-        sourceId: '2026/05/electricity',
+        target: { type: 'person', slug: 'kschemelinin' },
+        source: {
+          section: 'news',
+          kind: 'article',
+          id: '2026/05/electricity',
+        },
         title: 'Авария на линии',
         htmlUrl: '/news/2026/05/electricity/',
         markdownUrl: '/news/2026/05/electricity/index.md',

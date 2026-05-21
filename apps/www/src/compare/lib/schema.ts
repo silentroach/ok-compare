@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// Enums
+// Перечисления.
 export const AvailabilityStatusEnum = z.enum(['yes', 'no', 'partial']);
 type RawAvailabilityStatus = z.output<typeof AvailabilityStatusEnum>;
 
@@ -27,7 +27,7 @@ export const SourceTypeEnum = z.enum([
   'personal',
 ]);
 
-// Road type enum (ordered from best to worst)
+// Типы дорог от лучшего к худшему.
 export const RoadTypeEnum = z.enum([
   'asphalt',
   'partial_asphalt',
@@ -36,21 +36,21 @@ export const RoadTypeEnum = z.enum([
 ]);
 type RawRoadType = z.output<typeof RoadTypeEnum>;
 
-// Drainage type enum (ordered from best to worst)
+// Типы ливневки от лучшего к худшему.
 export const DrainageTypeEnum = z.enum(['closed', 'open', 'none']);
 type RawDrainageType = z.output<typeof DrainageTypeEnum>;
 
-// Video surveillance enum (ordered from best to worst)
+// Типы видеонаблюдения от лучшего к худшему.
 export const VideoSurveillanceEnum = z.enum([
   'full',
   'checkpoint_only',
   'none',
 ]);
 
-// Underground electricity enum (ordered from best to worst)
+// Типы подземной электросети от лучшего к худшему.
 export const UndergroundElectricityEnum = z.enum(['full', 'partial', 'none']);
 
-// Location schema with coordinate validation
+// Схема локации с проверкой координат.
 export const LocationSchema = z.object({
   address_text: z.string().min(1),
   lat: z.number().min(-90).max(90),
@@ -59,7 +59,7 @@ export const LocationSchema = z.object({
   district: z.string().min(1),
 });
 
-// Tariff schema
+// Схема тарифа.
 const LOT = 10;
 const SOTKA = 100;
 
@@ -171,7 +171,7 @@ function share(
   return 0;
 }
 
-function road(value: RawRoadType | undefined): number {
+function road(value?: RawRoadType): number {
   if (value === 'asphalt') return 0.9;
   if (value === 'partial_asphalt') return 0.8;
   if (value === 'gravel') return 0.7;
@@ -179,19 +179,19 @@ function road(value: RawRoadType | undefined): number {
   return 0;
 }
 
-function drain(value: RawDrainageType | undefined): number {
+function drain(value?: RawDrainageType): number {
   if (value === 'closed') return 0.25;
   if (value === 'open') return 0.15;
   return 0;
 }
 
-function note(value: RawAvailabilityStatus | undefined): string | undefined {
+function note(value?: RawAvailabilityStatus): string | undefined {
   if (value === 'yes') return 'подтверждено';
   if (value === 'partial') return 'частично подтверждено';
   return;
 }
 
-function roadNote(value: RawRoadType | undefined): string | undefined {
+function roadNote(value?: RawRoadType): string | undefined {
   if (value === 'asphalt') return 'асфальт';
   if (value === 'partial_asphalt') return 'частично асфальт';
   if (value === 'gravel') return 'гравий';
@@ -199,7 +199,7 @@ function roadNote(value: RawRoadType | undefined): string | undefined {
   return;
 }
 
-function drainNote(value: RawDrainageType | undefined): string | undefined {
+function drainNote(value?: RawDrainageType): string | undefined {
   if (value === 'closed') return 'закрытая';
   if (value === 'open') return 'открытая';
   return;
@@ -376,32 +376,32 @@ export function normalizeSettlement<
   };
 }
 
-// Infrastructure schema - all fields optional
+// Схема инфраструктуры: все поля необязательные.
 export const InfrastructureSchema = z.object({
-  // Road type (allows comparison: asphalt > partial_asphalt > gravel > dirt)
+  // Тип дороги для сравнения: asphalt > partial_asphalt > gravel > dirt.
   roads: RoadTypeEnum.optional(),
   sidewalks: AvailabilityStatusEnum.optional(),
   lighting: AvailabilityStatusEnum.optional(),
   gas: AvailabilityStatusEnum.optional(),
-  // Central water supply
+  // Центральное водоснабжение.
   water: AvailabilityStatusEnum.optional(),
-  // Central sewage
+  // Центральная канализация.
   sewage: AvailabilityStatusEnum.optional(),
-  // Drainage/stormwater (allows comparison: closed > open > none)
+  // Ливневка для сравнения: closed > open > none.
   drainage: DrainageTypeEnum.optional(),
   checkpoints: AvailabilityStatusEnum.optional(),
   security: AvailabilityStatusEnum.optional(),
-  // Closed territory (fencing)
+  // Закрытая территория с ограждением.
   fencing: AvailabilityStatusEnum.optional(),
-  // Video surveillance (allows comparison: full > checkpoint_only > none)
+  // Видеонаблюдение для сравнения: full > checkpoint_only > none.
   video_surveillance: VideoSurveillanceEnum.optional(),
-  // Underground electricity (allows comparison: full > partial > none)
+  // Подземная электросеть для сравнения: full > partial > none.
   underground_electricity: UndergroundElectricityEnum.optional(),
   admin_building: AvailabilityStatusEnum.optional(),
-  // Shops
+  // Магазины и сервисы.
   retail_or_services: AvailabilityStatusEnum.optional(),
 });
-// Common spaces schema - all fields optional
+// Схема общих пространств: все поля необязательные.
 export const CommonSpacesSchema = z.object({
   playgrounds: AvailabilityStatusEnum.optional(),
   sports: AvailabilityStatusEnum.optional(),
@@ -419,7 +419,7 @@ export const CommonSpacesSchema = z.object({
   bbq_zones: AvailabilityStatusEnum.optional(),
 });
 
-// Service model schema
+// Схема сервисной модели.
 export const ServiceModelSchema = z.object({
   garbage_collection: AvailabilityStatusEnum.optional(),
   snow_removal: AvailabilityStatusEnum.optional(),
@@ -429,7 +429,7 @@ export const ServiceModelSchema = z.object({
   dispatcher: AvailabilityStatusEnum.optional(),
 });
 
-// Source schema
+// Схема источника.
 export const SourceSchema = z.object({
   title: z.string().min(1),
   url: z.string().url(),
@@ -455,7 +455,7 @@ export const TelegramSchema = z
   .regex(/^@?[A-Za-z0-9_]{5,32}$/)
   .transform((item) => item.replace(/^@/, ''));
 
-// Main Settlement schema
+// Основная схема поселка.
 export const SettlementSchema = z
   .object({
     name: z.string().min(1),

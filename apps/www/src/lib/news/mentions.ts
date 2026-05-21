@@ -30,9 +30,11 @@ export const createNewsArticleMentionRefs = (
   const summary = excerpt(article.body);
 
   return createEntityMentionSourceRefs(article.mentions, {
-    sourceSection: 'news',
-    sourceKind: 'article',
-    sourceId: article.id,
+    source: {
+      section: 'news',
+      kind: 'article',
+      id: article.id,
+    },
     title: article.title,
     htmlUrl: article.url,
     markdownUrl: article.markdownUrl,

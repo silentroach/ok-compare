@@ -42,11 +42,12 @@ describe('createStatusIncidentMentionRefs', () => {
   it('creates incident source refs with status presentation fields', () => {
     expect(createStatusIncidentMentionRefs(incident())).toEqual([
       {
-        targetType: 'person',
-        targetSlug: 'kschemelinin',
-        sourceSection: 'status',
-        sourceKind: 'incident',
-        sourceId: '2026/04/electricity-river-10kv-line-damage',
+        target: { type: 'person', slug: 'kschemelinin' },
+        source: {
+          section: 'status',
+          kind: 'incident',
+          id: '2026/04/electricity-river-10kv-line-damage',
+        },
         title: 'Отключение электричества в Шелково Ривер',
         htmlUrl:
           '/status/incidents/2026/04/electricity-river-10kv-line-damage/',

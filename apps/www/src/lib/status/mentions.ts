@@ -21,9 +21,11 @@ export const createStatusIncidentMentionRefs = (
   incident: StatusIncidentMentionRefSource,
 ): readonly EntityMentionSourceRef[] =>
   createEntityMentionSourceRefs(incident.mentions, {
-    sourceSection: 'status',
-    sourceKind: 'incident',
-    sourceId: incident.id,
+    source: {
+      section: 'status',
+      kind: 'incident',
+      id: incident.id,
+    },
     title: incident.title,
     htmlUrl: incident.url,
     markdownUrl: statusIncidentMarkdownUrl(incident),

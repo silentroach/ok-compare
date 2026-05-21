@@ -24,7 +24,7 @@ const MOSCOW = {
   lng: 37.6176,
 };
 
-// Rough MKAD sample points for an internal radius approximation.
+// Приближенные точки МКАД для внутренней оценки радиуса.
 const MKAD = [
   { lat: 55.9111, lng: 37.5424 },
   { lat: 55.8794, lng: 37.3911 },

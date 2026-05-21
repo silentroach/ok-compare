@@ -31,7 +31,7 @@ const mockYandexMaps = {
   }),
 };
 
-// Mock settlements data
+// Мок данных поселков.
 const mockSettlements = [
   {
     slug: 'shelkovo',
@@ -245,7 +245,7 @@ describe('SettlementMap', () => {
       props: { settlements: [] },
     });
 
-    // Should still render container without crashing
+    // Контейнер должен рендериться без падения.
     expect(
       container.querySelector('[data-testid="settlement-map"]'),
     ).toBeTruthy();
