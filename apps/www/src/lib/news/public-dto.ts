@@ -138,7 +138,7 @@ const toPublicAuthor = (author: NewsAuthor): NewsPublicAuthor => ({
   id: author.id,
   name: author.name,
   kind: author.kind,
-  ...(author.url ? { url: fullUrl(author.url) } : {}),
+  url: author.url ? fullUrl(author.url) : undefined,
 });
 
 const toPublicTag = (tag: NewsTag): NewsPublicTag => ({
@@ -150,14 +150,14 @@ const toPublicTag = (tag: NewsTag): NewsPublicTag => ({
 const toPublicPhoto = (item: NewsPhoto): NewsPublicPhoto => ({
   url: fullUrl(item.url),
   alt: item.alt,
-  ...(item.caption ? { caption: item.caption } : {}),
+  caption: item.caption,
 });
 
 const toPublicAttachment = (item: NewsAttachment): NewsPublicAttachment => ({
   title: item.title,
   url: fullUrl(item.url),
-  ...(item.type ? { type: item.type } : {}),
-  ...(item.size ? { size: item.size } : {}),
+  type: item.type,
+  size: item.size,
 });
 
 function toPublicCover(article: NewsArticle): NewsPublicCover | undefined {
@@ -179,28 +179,19 @@ function toPublicEvent(item: NewsEvent): NewsPublicEvent {
   return {
     slug: item.slug,
     title: item.title,
-    ...(item.description ? { description: item.description } : {}),
+    description: item.description,
     starts_at: item.startsIso,
-    ...(item.endsIso ? { ends_at: item.endsIso } : {}),
-    ...(item.location ? { location: item.location } : {}),
-    ...(item.coordinates
-      ? {
-          coordinates: {
-            lat: item.coordinates.lat,
-            lng: item.coordinates.lng,
-          },
-        }
-      : {}),
-    ...(mapUrl ? { map_url: discoveryUrl(mapUrl) } : {}),
+    ends_at: item.endsIso,
+    location: item.location,
+    coordinates: item.coordinates,
+    map_url: mapUrl ? discoveryUrl(mapUrl) : undefined,
     ics_url: fullUrl(item.icsUrl),
-    ...(item.organizer ? { organizer: item.organizer } : {}),
-    ...(item.performer ? { performer: item.performer } : {}),
+    organizer: item.organizer,
+    performer: item.performer,
   };
 }
 
 function toPublicArticle(item: NewsArticle): NewsPublicArticle {
-  const image = toPublicCover(item);
-
   return {
     id: item.id,
     title: item.title,
@@ -212,15 +203,13 @@ function toPublicArticle(item: NewsArticle): NewsPublicArticle {
     entry: item.entry,
     html_url: item.canonical,
     markdown_url: fullUrl(item.markdownUrl),
-    ...(item.sourceUrl ? { source_url: fullUrl(item.sourceUrl) } : {}),
+    source_url: item.sourceUrl ? fullUrl(item.sourceUrl) : undefined,
     pinned: item.pinned,
     author: toPublicAuthor(item.author),
     areas: [...item.areas],
     tags: item.tags.map(toPublicTag),
-    ...(image ? { cover: image } : {}),
-    ...(item.events.length > 0
-      ? { events: item.events.map(toPublicEvent) }
-      : {}),
+    cover: toPublicCover(item),
+    events: item.events.length > 0 ? item.events.map(toPublicEvent) : undefined,
     photos: item.photos.map(toPublicPhoto),
     attachments: item.attachments.map(toPublicAttachment),
     body_markdown: item.body,

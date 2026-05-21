@@ -147,7 +147,7 @@ describe('news discovery payload', () => {
     const article = { ...articleWithEvent(), events: [] };
     const payload = buildNewsPayload(dataset([article]));
 
-    expect(payload.articles[0]).not.toHaveProperty('events');
+    expect(payload.articles[0]?.events).toBeUndefined();
   });
 
   it('keeps schema, openapi, and catalog aligned around article-local events', () => {
