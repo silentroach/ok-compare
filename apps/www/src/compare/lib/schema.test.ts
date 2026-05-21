@@ -1,6 +1,6 @@
 import { describe, it, expect, expectTypeOf } from 'vitest';
 import type { CollectionEntry } from 'astro:content';
-import type { Settlement } from '../lib/schema';
+import type { RawSettlement } from './settlement/schema';
 import {
   getLotAverage,
   SettlementSchema,
@@ -13,6 +13,7 @@ import {
   TariffPeriodEnum,
   SourceTypeEnum,
 } from '../lib/schema';
+import { RawSettlementSchema, RawTariffUnitSchema } from './settlement/schema';
 
 describe('Schema Validation', () => {
   describe('Valid Settlement Parses', () => {
@@ -760,9 +761,19 @@ describe('Schema Validation', () => {
   });
 
   describe('Type Contracts', () => {
-    it('should keep settlement schema and collection data aligned', () => {
+    it('should keep settlement raw schema and collection data aligned', () => {
       type Data = CollectionEntry<'settlements'>['data'];
-      expectTypeOf<Data>().toMatchTypeOf<Settlement>();
+      expectTypeOf<Data>().toMatchTypeOf<RawSettlement>();
+    });
+
+    it('should expose raw settlement schemas and z.output raw types separately', () => {
+      expect(RawTariffUnitSchema.safeParse('rub_per_sotka').success).toBe(true);
+      expect(RawTariffUnitSchema.safeParse('perSotka').success).toBe(false);
+
+      type RawData = CollectionEntry<'settlements'>['data'];
+      expectTypeOf<RawSettlement>().toMatchTypeOf<RawData>();
+      expectTypeOf<RawData>().toMatchTypeOf<RawSettlement>();
+      expect(RawSettlementSchema).toBe(SettlementSchema);
     });
   });
 });
