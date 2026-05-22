@@ -31,7 +31,7 @@
     "@shelkovo/ui": "workspace:*",
     "@shelkovo/url": "workspace:*",
     "astro": "^6.3.3",
-    "svelte": "^5.55.5",
+    "svelte": "^5.55.7",
     "zod": "^4.4.3"
   },
   "devDependencies": {
