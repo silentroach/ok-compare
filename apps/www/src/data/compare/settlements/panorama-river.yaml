@@ -17,11 +17,20 @@ tariff:
   unit: rub_per_sotka
   period: month
 infrastructure:
-  roads: asphalt
-  gas: yes
+  roads: partial_asphalt
+  sidewalks: no
+  lighting: yes
+  gas: partial
   water: yes
+  sewage: no
+  drainage: open
+  checkpoints: yes
   security: yes
+  fencing: yes
+  video_surveillance: checkpoint_only
   underground_electricity: full
+  admin_building: no
+  retail_or_services: no
 common_spaces:
   club_infrastructure: yes
   playgrounds: yes
@@ -39,8 +48,8 @@ sources:
   - title: Panorama River — официальный сайт
     url: https://kp-panoramariver.ru/
     type: official
-    date_checked: 2026-04-07
-    comment: 'Центральные коммуникации, подземные сети, асфальтные дороги, парки, пляж и сервисная модель поселка.'
+    date_checked: 2026-05-25
+    comment: 'Центральные коммуникации, подземные сети, асфальтные дороги, парки, пляж и сервисная модель поселка; пользовательская сверка от 25.05.2026 уточнила газ как частично подтвержденный, видеонаблюдение только на КПП, а также тротуары, освещение, канализацию, ливневку, ограждение, административное здание и магазины.'
   - title: ОК Комфорт — Panorama River
     url: https://ok-komfort.ru/objects/panorama-river/
     type: official
