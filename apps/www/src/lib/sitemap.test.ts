@@ -1,7 +1,16 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { ChangeFreqEnum } from '@astrojs/sitemap';
 import { describe, expect, it } from 'vitest';
 
-import { applySitemapMetadata, buildSitemapMetadataIndex } from './sitemap';
+import {
+  applySitemapMetadata,
+  buildSitemapMetadataIndex,
+  isSitemapPageAllowed,
+} from './sitemap';
+
+const sourceText = (path: string): string =>
+  readFileSync(fileURLToPath(new URL(path, import.meta.url)), 'utf8');
 
 describe('buildSitemapMetadataIndex', () => {
   it('uses publication and update dates for news pages and archives', () => {
@@ -25,6 +34,7 @@ describe('buildSitemapMetadataIndex', () => {
       ],
       statusIncidents: [],
       settlements: [],
+      meetings: [],
     });
 
     expect({
@@ -90,6 +100,7 @@ describe('buildSitemapMetadataIndex', () => {
           sources: [{ dateChecked: '2026-03-10' }],
         },
       ],
+      meetings: [],
     });
 
     expect({
@@ -128,6 +139,66 @@ describe('buildSitemapMetadataIndex', () => {
     `);
     expect(index.has('/status/incidents/2026/05/water/')).toBe(false);
   });
+
+  it('includes meeting detail pages without promoting the meetings index', () => {
+    const index = buildSitemapMetadataIndex({
+      newsArticles: [],
+      statusIncidents: [],
+      settlements: [],
+      meetings: [
+        {
+          url: '/meetings/2026-05-27/public-hearing/',
+          date: '2026-05-27',
+        },
+      ],
+    });
+
+    expect({
+      meetingsIndex: index.get('/meetings/'),
+      detail: index.get('/meetings/2026-05-27/public-hearing/'),
+      markdown: index.get('/meetings/2026-05-27/public-hearing/index.md'),
+      data: index.get('/meetings/data/meetings.json'),
+      llms: index.get('/meetings/llms.txt'),
+    }).toMatchInlineSnapshot(`
+      {
+        "data": undefined,
+        "detail": {
+          "changefreq": "yearly",
+          "lastmod": "2026-05-27",
+        },
+        "llms": undefined,
+        "markdown": undefined,
+        "meetingsIndex": undefined,
+      }
+    `);
+  });
+});
+
+describe('isSitemapPageAllowed', () => {
+  it('excludes meetings index and agent/data surfaces while keeping detail pages', () => {
+    expect(
+      [
+        'https://kpshelkovo.online/meetings/',
+        'https://kpshelkovo.online/meetings/data/meetings.json',
+        'https://kpshelkovo.online/meetings/llms.txt',
+        'https://kpshelkovo.online/meetings/llms-full.txt',
+        'https://kpshelkovo.online/meetings/2026-05-27/public-hearing/index.md',
+        'https://kpshelkovo.online/meetings/2026-05-27/public-hearing/',
+        'https://kpshelkovo.online/404/',
+      ].map((page) => [page, isSitemapPageAllowed(page)]),
+    ).toEqual([
+      ['https://kpshelkovo.online/meetings/', false],
+      ['https://kpshelkovo.online/meetings/data/meetings.json', false],
+      ['https://kpshelkovo.online/meetings/llms.txt', false],
+      ['https://kpshelkovo.online/meetings/llms-full.txt', false],
+      [
+        'https://kpshelkovo.online/meetings/2026-05-27/public-hearing/index.md',
+        false,
+      ],
+      ['https://kpshelkovo.online/meetings/2026-05-27/public-hearing/', true],
+      ['https://kpshelkovo.online/404/', false],
+    ]);
+  });
 });
 
 describe('applySitemapMetadata', () => {
@@ -152,5 +223,16 @@ describe('applySitemapMetadata', () => {
     expect(
       applySitemapMetadata({ url: 'https://kpshelkovo.online/people/' }, index),
     ).toEqual({ url: 'https://kpshelkovo.online/people/' });
+  });
+});
+
+describe('main navigation', () => {
+  it('does not promote meetings in layout or home hero navigation', () => {
+    expect(sourceText('../layouts/BaseLayout.astro')).not.toContain(
+      'href="/meetings/"',
+    );
+    expect(sourceText('../pages/index.astro')).not.toContain(
+      'href="/meetings/"',
+    );
   });
 });

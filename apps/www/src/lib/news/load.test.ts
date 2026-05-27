@@ -1,12 +1,10 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
+import type { EntityMentionTarget } from '../mentions';
 import { createPersonMentionTarget } from '../people/mentions';
 import type { NewsArticleEntry, NewsAuthorEntry } from './load';
 
-type MutableMentionRegistry = Map<
-  string,
-  ReturnType<typeof createPersonMentionTarget>
->;
+type MutableMentionRegistry = Map<string, EntityMentionTarget>;
 
 let buildNewsDataset: typeof import('./load').buildNewsDataset;
 
@@ -57,6 +55,14 @@ const article = (input: {
     events: input.events,
   },
 });
+
+const meetingTarget: EntityMentionTarget = {
+  type: 'meeting',
+  slug: '2026-05-26-full-meeting',
+  label: 'Полная встреча',
+  htmlUrl: '/meetings/2026-05-26/full-meeting/',
+  markdownUrl: '/meetings/2026-05-26/full-meeting/index.md',
+};
 
 describe('buildNewsDataset', () => {
   it('keeps pinned news only before pinned_until date', () => {
@@ -224,6 +230,29 @@ describe('buildNewsDataset', () => {
     expect(data.articles[0]?.mentions.map((item) => item.slug)).toEqual([
       'kschemelinin',
     ]);
+  });
+
+  it('normalizes canonical and labelled meeting mentions in article bodies', () => {
+    const data = buildNewsDataset(
+      [author({ id: 'ig', name: 'Редакция' })],
+      [
+        article({
+          id: '2026/05/meeting-summary',
+          title: 'Итоги встречи',
+          summary: 'Краткая сводка',
+          date: '27.05.2026 09:00',
+          body: 'Подробности есть в @2026-05-26-full-meeting и [записи](@2026-05-26-full-meeting).',
+        }),
+      ],
+      {
+        mentionRegistry: new Map([[meetingTarget.slug, meetingTarget]]),
+      },
+    );
+
+    expect(data.articles[0]?.body).toBe(
+      'Подробности есть в [Полная встреча](/meetings/2026-05-26/full-meeting/) и [записи](/meetings/2026-05-26/full-meeting/).',
+    );
+    expect(data.articles[0]?.mentions).toEqual([meetingTarget]);
   });
 
   it('renders requested mention case and profile context in link title', () => {

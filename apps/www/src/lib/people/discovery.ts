@@ -119,10 +119,10 @@ export function schema(root: string): Record<string, unknown> {
         enum: ['phone', 'telegram'],
       },
       section: {
-        enum: ['news', 'status', 'people'],
+        enum: ['news', 'status', 'meetings', 'people'],
       },
       kind: {
-        enum: ['article', 'incident', 'person'],
+        enum: ['article', 'incident', 'meeting', 'person'],
       },
       nameCases: obj(
         {
@@ -181,11 +181,14 @@ export function schema(root: string): Record<string, unknown> {
           status: list({
             $ref: '#/$defs/backlink',
           }),
+          meetings: list({
+            $ref: '#/$defs/backlink',
+          }),
           people: list({
             $ref: '#/$defs/backlink',
           }),
         },
-        ['news', 'status', 'people'],
+        ['news', 'status', 'meetings', 'people'],
       ),
       profile: obj(
         {

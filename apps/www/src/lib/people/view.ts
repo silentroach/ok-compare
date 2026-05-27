@@ -30,12 +30,14 @@ const CONTACT_LABELS: Record<PersonContactType, string> = {
 const BACKLINK_SECTION_LABELS: Record<PersonMentionSection, string> = {
   news: 'Новости',
   status: 'Статус',
+  meetings: 'Встречи',
   people: 'Люди',
 };
 
 const BACKLINK_KIND_LABELS: Record<PersonBacklinkKind, string> = {
   article: 'Новость',
   incident: 'Инцидент',
+  meeting: 'Встреча',
   person: 'Профиль',
 };
 

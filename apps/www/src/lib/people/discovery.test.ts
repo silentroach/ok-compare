@@ -70,6 +70,7 @@ const profile = (): PersonProfile => ({
         mentionedAt: '2026-04-22T11:30:00.000+03:00',
       },
     ],
+    meetings: [],
     people: [],
   },
 });
@@ -144,6 +145,8 @@ describe('people discovery payload', () => {
               'https://example.com/status/incidents/2026/04/electricity-river-10kv-line-damage/index.md',
           },
         ],
+        meetings: [],
+        people: [],
       },
     });
   });

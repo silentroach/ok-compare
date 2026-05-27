@@ -9,6 +9,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { rehypeTypograf } from '@shelkovo/markdown';
 import {
   applySitemapMetadata,
+  isSitemapPageAllowed,
   type SitemapMetadataIndex,
 } from './src/lib/sitemap';
 import { loadSitemapMetadataIndex } from './src/lib/sitemap-data';
@@ -63,9 +64,7 @@ export default defineConfig({
   integrations: [
     svelte(),
     sitemap({
-      filter(page) {
-        return !/\/404(?:\/|\.html)?$/.test(page);
-      },
+      filter: isSitemapPageAllowed,
       serialize: serializeSitemapItem,
     }),
     compressor({

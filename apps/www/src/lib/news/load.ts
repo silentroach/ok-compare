@@ -2,8 +2,8 @@ import { padNumber } from '@shelkovo/format';
 import { getCollection, type CollectionEntry } from 'astro:content';
 
 import { preprocessSiteMarkdownContent } from '../markdown/render';
-import type { SiteMentionRegistry } from '../mentions';
-import { loadPeopleMentionRegistry } from '../people/registry';
+import { loadSiteMentionRegistry } from '../mentions/site-registry';
+import type { SiteMentionRegistry } from '../mentions/types';
 import { withBase } from '../site';
 import { buildArchives, newsMonthKey } from './archives';
 import { NEWS_LATEST_LIMIT } from './config';
@@ -577,7 +577,7 @@ async function buildNewsData(): Promise<NewsDataset> {
   const [authorsData, articlesData, mentionRegistry] = await Promise.all([
     getCollection('newsAuthors') as Promise<readonly NewsAuthorEntry[]>,
     getCollection('newsArticles') as Promise<readonly NewsArticleEntry[]>,
-    loadPeopleMentionRegistry(),
+    loadSiteMentionRegistry(),
   ]);
 
   return buildNewsDataset(authorsData, articlesData, { mentionRegistry });

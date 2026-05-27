@@ -1,0 +1,61 @@
+---
+import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+
+import MeetingList from '@/components/meetings/MeetingList.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import {
+  withHomeBreadcrumbs,
+  withHomeSchemaBreadcrumbs,
+} from '@/lib/breadcrumbs';
+import { loadMeetings } from '@/lib/meetings/load';
+import { meetingsUrl } from '@/lib/meetings/routes';
+import { collectionPageSchema } from '@/lib/news/seo';
+
+const meetings = await loadMeetings();
+const title = 'Встречи — Шелково Онлайн';
+const description =
+  'Архив встреч, созвонов и письменных ответов по КП Шелково: краткий смысл, протоколы, записи, расшифровки и источники.';
+const breadcrumbs = withHomeBreadcrumbs([{ label: 'Встречи' }]);
+const schema = collectionPageSchema({
+  name: title,
+  description,
+  url: meetingsUrl(),
+  breadcrumbs: withHomeSchemaBreadcrumbs([
+    { name: 'Встречи', url: meetingsUrl() },
+  ]),
+  items: meetings.map((meeting) => ({ name: meeting.title, url: meeting.url })),
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={meetingsUrl()}
+  keywords={[
+    'встречи Шелково',
+    'протоколы встреч Шелково',
+    'архив встреч Шелково',
+  ]}
+  schema={schema}
+>
+  <main class="ui-page pb-6 md:pb-10 lg:pb-12">
+    <section class="ui-page-header">
+      <div class="ui-page-header-stack max-w-4xl">
+        <Breadcrumbs items={breadcrumbs} />
+
+        <div class="space-y-3">
+          <h1 class="ui-page-title">Встречи</h1>
+          <p class="max-w-3xl text-base leading-7 text-muted-foreground">
+            Документный архив встреч, созвонов и ответов: сначала короткий
+            смысл, затем протокол, запись, расшифровка и ссылки на источники.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-8 px-5 md:px-6" aria-labelledby="meetings-list-title">
+      <h2 id="meetings-list-title" class="sr-only">Список встреч</h2>
+      <MeetingList meetings={meetings} />
+    </section>
+  </main>
+</BaseLayout>

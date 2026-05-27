@@ -1,0 +1,54 @@
+---
+import type { Meeting } from '@/lib/meetings/types';
+import { formatMeetingDate } from '@/lib/meetings/view';
+
+interface Props {
+  readonly meetings: readonly Meeting[];
+}
+
+const { meetings } = Astro.props;
+---
+
+{
+  meetings.length > 0 ? (
+    <ol class="divide-y divide-border border-y border-border" role="list">
+      {meetings.map((meeting) => (
+        <li class="py-5 md:py-6">
+          <article class="grid gap-3 md:grid-cols-[9rem_minmax(0,1fr)] md:gap-6">
+            <time
+              datetime={meeting.date}
+              class="text-sm font-semibold leading-6 text-muted-foreground"
+            >
+              {formatMeetingDate(meeting.date)}
+            </time>
+
+            <div class="max-w-3xl space-y-2.5">
+              <h2 class="text-2xl font-bold tracking-tight text-foreground">
+                <a href={meeting.url} class="ui-link">
+                  {meeting.title}
+                </a>
+              </h2>
+              <p class="text-base leading-7 text-muted-foreground">
+                {meeting.summary}
+              </p>
+              {(meeting.format || meeting.participants.length > 0) && (
+                <p class="text-sm leading-6 text-muted-foreground">
+                  {[meeting.format, meeting.participants.join(', ')]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </p>
+              )}
+            </div>
+          </article>
+        </li>
+      ))}
+    </ol>
+  ) : (
+    <div class="border-y border-border py-8 md:py-10" role="status">
+      <p class="max-w-2xl text-base leading-7 text-muted-foreground">
+        Архив встреч готовится. Когда появятся опубликованные протоколы, записи
+        или расшифровки, они будут собраны здесь в хронологическом порядке.
+      </p>
+    </div>
+  )
+}

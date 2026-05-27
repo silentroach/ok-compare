@@ -21,6 +21,9 @@ const fixtures = vi.hoisted(() => ({
     incidents: [{ id: 'status-1' }, { id: 'status-2' }],
     active: [{ kind: 'incident' }, { kind: 'maintenance' }],
   },
+  meetings: {
+    meetings: [{ id: 'meeting-1' }],
+  },
 }));
 
 vi.mock('./news/load', () => ({
@@ -33,6 +36,10 @@ vi.mock('./people/load', () => ({
 
 vi.mock('./status/load', () => ({
   loadStatusData: async () => fixtures.status,
+}));
+
+vi.mock('./meetings/load', () => ({
+  loadMeetingsData: async () => fixtures.meetings,
 }));
 
 let build: typeof import('./llms').build;
@@ -61,8 +68,8 @@ describe('root llms', () => {
       ## Описание
 
       - Это карта публичных данных и точек входа kpshelkovo.online.
-      - Основные разделы: новости, статус сервисов, регламент и смета тарифа 815, профили людей и сравнение тарифов поселков.
-      - Сейчас в новостях 3 статьи, в статусе 2 записи и 1 активный инцидент, в людях 1 профиль.
+      - Основные разделы: новости, статус сервисов, регламент и смета тарифа 815, профили людей, встречи и сравнение тарифов поселков.
+      - Сейчас в новостях 3 статьи, в статусе 2 записи и 1 активный инцидент, в людях 1 профиль, во встречах 1 запись.
       - Для массового чтения используйте JSON-ленты; HTML и Markdown удобнее для ссылок и точечного чтения.
 
       ## Главные URL
@@ -75,6 +82,7 @@ describe('root llms', () => {
       - Статус: <https://example.com/status/>
       - Регламент: <https://example.com/815/regulation/>
       - Люди в Markdown: <https://example.com/people/index.md>
+      - Встречи: <https://example.com/meetings/>; раздел публичный, но не пункт главного меню.
       - Сравнение тарифов: <https://example.com/815/compare/>
       - Расширенная версия этого текста: <https://example.com/llms-full.txt>
 
@@ -85,6 +93,7 @@ describe('root llms', () => {
       - Статус сервисов: <https://example.com/status/llms.txt>; основная лента: <https://example.com/status/data/status.json>.
       - Регламент и смета: <https://example.com/815/regulation/llms.txt>; смета: <https://example.com/815/regulation/data/estimate-2026.json>; полный регламент: <https://example.com/815/regulation/full.md>; набор данных: <https://example.com/815/regulation/data/full-2026.json>.
       - Люди: <https://example.com/people/llms.txt>; основная лента: <https://example.com/people/data/people.json>; одна персона: <https://example.com/people/kschemelinin/> или <https://example.com/people/kschemelinin/index.md>.
+      - Встречи: <https://example.com/meetings/llms.txt>; основная лента: <https://example.com/meetings/data/meetings.json>; одна встреча: \/meetings\/:date\/:slug\/ или \/meetings\/:date\/:slug\/index.md.
       - Сравнение тарифов поселков: <https://example.com/815/compare/llms.txt>; основная лента: <https://example.com/815/compare/data/settlements.json>.
       - Публичные инструкции помогают с типовыми задачами; у сравнения тарифов есть отдельный индекс.
       "
@@ -111,6 +120,8 @@ describe('root llms', () => {
       'https://example.com/people/data/people.json',
       'https://example.com/people/kschemelinin/',
       'https://example.com/people/kschemelinin/index.md',
+      'https://example.com/meetings/llms.txt',
+      'https://example.com/meetings/data/meetings.json',
       'https://example.com/815/compare/llms.txt',
       'https://example.com/815/compare/data/settlements.json',
     ]) {
@@ -173,5 +184,12 @@ describe('root llms', () => {
     const source = await readFile(sourcePath, 'utf8');
 
     expect(source).not.toContain('/815/compare');
+  });
+
+  it('uses meetings route helpers instead of root llms literals', async () => {
+    const sourcePath = fileURLToPath(new URL('./llms.ts', import.meta.url));
+    const source = await readFile(sourcePath, 'utf8');
+
+    expect(source).not.toMatch(/['"`]\/meetings\//u);
   });
 });

@@ -5,14 +5,17 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import type { NewsArticleEntry, NewsAuthorEntry } from '../news/load';
 import type { StatusIncidentEntry } from '../status/load';
 import type { StatusArea, StatusKind, StatusService } from '../status/schema';
+import type { MeetingEntry } from '../meetings/load';
 import type { PersonProfileEntry } from './load';
 
 let buildPeopleDataset: typeof import('./load').buildPeopleDataset;
 let buildPeopleGraphDataset: typeof import('./load').buildPeopleGraphDataset;
 let buildNewsDataset: typeof import('../news/load').buildNewsDataset;
 let buildStatusDataset: typeof import('../status/load').buildStatusDataset;
+let buildMeetingsDataset: typeof import('../meetings/load').buildMeetingsDataset;
 let createNewsArticleMentionRefs: typeof import('../news/mentions').createNewsArticleMentionRefs;
 let createStatusIncidentMentionRefs: typeof import('../status/mentions').createStatusIncidentMentionRefs;
+let createMeetingMentionRefs: typeof import('../meetings/mentions').createMeetingMentionRefs;
 let createPersonProfileMentionRefs: typeof import('./mention-refs').createPersonProfileMentionRefs;
 
 beforeAll(async () => {
@@ -24,8 +27,10 @@ beforeAll(async () => {
   ({ buildPeopleDataset, buildPeopleGraphDataset } = await import('./load'));
   ({ buildNewsDataset } = await import('../news/load'));
   ({ buildStatusDataset } = await import('../status/load'));
+  ({ buildMeetingsDataset } = await import('../meetings/load'));
   ({ createNewsArticleMentionRefs } = await import('../news/mentions'));
   ({ createStatusIncidentMentionRefs } = await import('../status/mentions'));
+  ({ createMeetingMentionRefs } = await import('../meetings/mentions'));
   ({ createPersonProfileMentionRefs } = await import('./mention-refs'));
 });
 
@@ -33,9 +38,11 @@ const sourceRefs = (input: {
   readonly people: ReturnType<typeof buildPeopleDataset>;
   readonly news: ReturnType<typeof buildNewsDataset>;
   readonly status: ReturnType<typeof buildStatusDataset>;
+  readonly meetings?: ReturnType<typeof buildMeetingsDataset>;
 }) => [
   ...input.news.articles.flatMap(createNewsArticleMentionRefs),
   ...input.status.incidents.flatMap(createStatusIncidentMentionRefs),
+  ...(input.meetings?.meetings.flatMap(createMeetingMentionRefs) ?? []),
   ...input.people.profiles.flatMap(createPersonProfileMentionRefs),
 ];
 
@@ -65,6 +72,24 @@ const entry = (input: {
     company: input.company,
     position: input.position,
     contacts: [...(input.contacts ?? [])],
+  },
+});
+
+const meeting = (input: {
+  readonly id: string;
+  readonly title: string;
+  readonly date: string;
+  readonly summary: string;
+  readonly slug: string;
+  readonly body?: string;
+}): MeetingEntry => ({
+  id: input.id,
+  body: input.body ?? '',
+  data: {
+    title: input.title,
+    date: input.date,
+    summary: input.summary,
+    slug: input.slug,
   },
 });
 
@@ -296,9 +321,24 @@ describe('buildPeopleDataset', () => {
         mentionRegistry: people.mentionRegistry,
       },
     );
+    const meetings = buildMeetingsDataset(
+      [
+        meeting({
+          id: '2026-05-26/full-meeting',
+          title: 'Полная встреча',
+          date: '2026-05-26',
+          summary: 'Все материалы встречи.',
+          slug: 'full-meeting',
+          body: 'На встрече выступил @kschemelinin.',
+        }),
+      ],
+      {
+        mentionRegistry: people.mentionRegistry,
+      },
+    );
     const graph = buildPeopleGraphDataset(
       people,
-      sourceRefs({ people, news, status }),
+      sourceRefs({ people, news, status, meetings }),
     );
 
     expect(graph.bySlug.get('kschemelinin')?.backlinks).toMatchObject({
@@ -324,6 +364,15 @@ describe('buildPeopleDataset', () => {
           kind: 'person',
           sourceId: 'apetrov',
           title: 'Андрей Петров',
+        },
+      ],
+      meetings: [
+        {
+          kind: 'meeting',
+          sourceId: '2026-05-26-full-meeting',
+          title: 'Полная встреча',
+          markdownUrl: '/meetings/2026-05-26/full-meeting/index.md',
+          excerpt: 'На встрече выступил Кирилл Щемелинин.',
         },
       ],
     });

@@ -8,6 +8,7 @@ import { parseNewsTimestamp } from './news/date';
 import { normalizeTagKey } from './news/schema';
 import {
   buildSitemapMetadataIndex,
+  type SitemapMeetingInput,
   type SitemapMetadataIndex,
   type SitemapNewsArticleInput,
   type SitemapSettlementInput,
@@ -35,6 +36,9 @@ const statusIncidentsDir = fileURLToPath(
 );
 const settlementsDir = fileURLToPath(
   new URL('../data/compare/settlements/', import.meta.url),
+);
+const meetingsDir = fileURLToPath(
+  new URL('../data/meetings/', import.meta.url),
 );
 
 const scalarField = (source: string, name: string): string | undefined => {
@@ -211,10 +215,45 @@ const loadSettlementsForSitemap = (): readonly SitemapSettlementInput[] =>
       };
     });
 
+const loadMeetingsForSitemap = (): readonly SitemapMeetingInput[] =>
+  listFiles(meetingsDir, '.md')
+    .filter((path) => path.endsWith('/index.md'))
+    .map((path) => {
+      const id = relativeEntryId(meetingsDir, path, '.md');
+      const parts = id.split('/');
+      const [pathDate, pathSlug] = parts;
+      const context = `meeting ${id}`;
+      const { frontmatter } = markdownParts(path);
+      const date = scalarField(frontmatter, 'date');
+      const slug = scalarField(frontmatter, 'slug');
+      const parsedDate = date ? parseTimestamp(date, `${context} date`) : '';
+      const parsedSlug = slug ? stripQuotes(slug) : '';
+
+      if (!pathDate || !pathSlug || parts.length !== 2) {
+        throw new Error(
+          `${context} must resolve to YYYY-MM-DD/[slug]/index.md`,
+        );
+      }
+
+      if (!parsedDate || !parsedSlug) {
+        throw new Error(`${context} must include date and slug`);
+      }
+
+      if (pathDate !== parsedDate || pathSlug !== parsedSlug) {
+        throw new Error(`${context} path must match frontmatter date and slug`);
+      }
+
+      return {
+        url: `/meetings/${parsedDate}/${parsedSlug}/`,
+        date: parsedDate,
+      };
+    });
+
 export const loadSitemapMetadataIndex =
   async (): Promise<SitemapMetadataIndex> =>
     buildSitemapMetadataIndex({
       newsArticles: loadNewsArticlesForSitemap(),
       statusIncidents: loadStatusIncidentsForSitemap(),
       settlements: loadSettlementsForSitemap(),
+      meetings: loadMeetingsForSitemap(),
     });

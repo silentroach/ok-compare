@@ -32,6 +32,13 @@ const targets = [
     htmlUrl: '/people/иван%20петров/',
     markdownUrl: '/people/иван%20петров/index.md',
   },
+  {
+    type: 'meeting',
+    slug: '2026-05-26-full-meeting',
+    label: 'Полная встреча',
+    htmlUrl: '/meetings/2026-05-26/full-meeting/',
+    markdownUrl: '/meetings/2026-05-26/full-meeting/index.md',
+  },
 ] as const;
 
 const registry = createSiteMentionRegistry(targets);
@@ -47,6 +54,21 @@ describe('createSiteMentionRegistry', () => {
           label: 'Другой Кирилл',
           htmlUrl: '/people/other/',
           markdownUrl: '/people/other/index.md',
+        },
+      ]),
+    ).toThrow('duplicate entity mention slug "kschemelinin"');
+  });
+
+  it('rejects short slug conflicts across people and meetings', () => {
+    expect(() =>
+      createSiteMentionRegistry([
+        targets[0],
+        {
+          type: 'meeting',
+          slug: 'kschemelinin',
+          label: 'Встреча с таким же id',
+          htmlUrl: '/meetings/2026-05-26/kschemelinin/',
+          markdownUrl: '/meetings/2026-05-26/kschemelinin/index.md',
         },
       ]),
     ).toThrow('duplicate entity mention slug "kschemelinin"');
@@ -81,6 +103,35 @@ describe('normalizeEntityMentions', () => {
       markdown:
         'По словам [главного по электричеству](/people/kschemelinin/), работы идут.',
       mentions: [targets[0]],
+    });
+  });
+
+  it('replaces meeting mentions with meeting labels and stable links', () => {
+    expect(
+      normalizeEntityMentions({
+        markdown: 'Подробности есть в @2026-05-26-full-meeting.',
+        context: 'news article "2026/05/test" body',
+        registry,
+      }),
+    ).toEqual({
+      markdown:
+        'Подробности есть в [Полная встреча](/meetings/2026-05-26/full-meeting/).',
+      mentions: [targets[3]],
+    });
+  });
+
+  it('replaces labelled meeting mention destinations while preserving visible text', () => {
+    expect(
+      normalizeEntityMentions({
+        markdown:
+          'Подробности есть в [записи встречи](@2026-05-26-full-meeting).',
+        context: 'news article "2026/05/test" body',
+        registry,
+      }),
+    ).toEqual({
+      markdown:
+        'Подробности есть в [записи встречи](/meetings/2026-05-26/full-meeting/).',
+      mentions: [targets[3]],
     });
   });
 

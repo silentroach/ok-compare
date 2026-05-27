@@ -1,0 +1,15 @@
+---
+interface Props {
+  readonly title: string;
+  readonly items: readonly string[];
+}
+
+const { title, items } = Astro.props;
+---
+
+<section class="border-t border-border pt-4">
+  <h3 class="text-lg font-bold tracking-tight text-foreground">{title}</h3>
+  <ul class="mt-3 space-y-2 text-base leading-7 text-foreground">
+    {items.map((item) => <li>{item}</li>)}
+  </ul>
+</section>

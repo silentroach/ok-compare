@@ -38,6 +38,7 @@ export interface PeoplePublicBacklinkDto {
 export interface PeoplePublicBacklinksDto {
   readonly news: readonly PeoplePublicBacklinkDto[];
   readonly status: readonly PeoplePublicBacklinkDto[];
+  readonly meetings: readonly PeoplePublicBacklinkDto[];
   readonly people: readonly PeoplePublicBacklinkDto[];
 }
 
@@ -70,7 +71,10 @@ export interface PeoplePublicPayloadDto {
 const fullUrl = (value: string): string => absoluteUrl(value);
 
 const backlinksCount = (backlinks: PersonBacklinks): number =>
-  backlinks.news.length + backlinks.status.length + backlinks.people.length;
+  backlinks.news.length +
+  backlinks.status.length +
+  backlinks.meetings.length +
+  backlinks.people.length;
 
 const contactDto = (item: PersonContact): PeoplePublicContactDto => ({
   type: item.type,
@@ -107,6 +111,7 @@ const backlinkDto = (item: PersonMentionRef): PeoplePublicBacklinkDto => ({
 const backlinksDto = (value: PersonBacklinks): PeoplePublicBacklinksDto => ({
   news: value.news.map(backlinkDto),
   status: value.status.map(backlinkDto),
+  meetings: value.meetings.map(backlinkDto),
   people: value.people.map(backlinkDto),
 });
 

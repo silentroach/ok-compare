@@ -1,0 +1,73 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+
+import MeetingDetail from '@/components/meetings/MeetingDetail.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import {
+  withHomeBreadcrumbs,
+  withHomeSchemaBreadcrumbs,
+} from '@/lib/breadcrumbs';
+import { loadMeetings } from '@/lib/meetings/load';
+import { meetingsUrl } from '@/lib/meetings/routes';
+import { meetingDescription } from '@/lib/meetings/view';
+import { techArticleSchema } from '@/lib/news/seo';
+
+export const getStaticPaths = (async () => {
+  const meetings = await loadMeetings();
+
+  return meetings.map((meeting) => ({
+    params: {
+      date: meeting.date,
+      slug: meeting.slug,
+    },
+    props: {
+      meeting,
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+const { meeting } = Astro.props;
+const title = `${meeting.title} — Встречи — Шелково Онлайн`;
+const description = meetingDescription(meeting);
+const breadcrumbs = withHomeBreadcrumbs([
+  { label: 'Встречи', href: meetingsUrl() },
+  { label: meeting.title },
+]);
+const schema = techArticleSchema({
+  name: meeting.title,
+  description,
+  url: meeting.url,
+  datePublished: meeting.date,
+  breadcrumbs: withHomeSchemaBreadcrumbs([
+    { name: 'Встречи', url: meetingsUrl() },
+    { name: meeting.title, url: meeting.url },
+  ]),
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={meeting.url}
+  type="article"
+  keywords={['встречи Шелково', meeting.title]}
+  schema={schema}
+>
+  <main class="ui-page pb-8 md:pb-12 lg:pb-14">
+    <header class="ui-page-header">
+      <div class="ui-page-header-stack max-w-4xl">
+        <Breadcrumbs items={breadcrumbs} linkLast />
+
+        <div class="space-y-3">
+          <h1 class="ui-page-title">{meeting.title}</h1>
+          <p class="max-w-3xl text-base leading-7 text-muted-foreground">
+            {description}
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <MeetingDetail meeting={meeting} />
+  </main>
+</BaseLayout>

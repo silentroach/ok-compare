@@ -29,7 +29,10 @@ const serialize = (children: readonly MarkdownNode[]): string =>
 const inline = (value: string): string => value.replace(/\s+/gu, ' ').trim();
 
 const backlinksCount = (backlinks: PersonBacklinks): number =>
-  backlinks.news.length + backlinks.status.length + backlinks.people.length;
+  backlinks.news.length +
+  backlinks.status.length +
+  backlinks.meetings.length +
+  backlinks.people.length;
 
 const profileLine = (profile: PersonProfile): MarkdownListItem => {
   const summary = profile.body

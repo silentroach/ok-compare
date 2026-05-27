@@ -4,6 +4,7 @@ import {
 } from '../mentions';
 import { createNewsArticleMentionRefs } from '../news/mentions';
 import { createStatusIncidentMentionRefs } from '../status/mentions';
+import { createMeetingMentionRefs } from '../meetings/mentions';
 import { createPeopleBacklinksFromGraph } from './backlinks';
 import { createPersonProfileMentionRefs } from './mention-refs';
 import { loadPeopleData, type PeopleDataset } from './registry';
@@ -42,10 +43,16 @@ const buildPeopleDataWithBacklinks = async (): Promise<PeopleDataset> => {
     import('../status/load'),
     loadPeopleData(),
   ]);
-  const [news, status] = await Promise.all([loadNewsData(), loadStatusData()]);
+  const [{ loadMeetingsData }, news, status] = await Promise.all([
+    import('../meetings/load'),
+    loadNewsData(),
+    loadStatusData(),
+  ]);
+  const meetings = await loadMeetingsData();
   const refs = [
     ...news.articles.flatMap(createNewsArticleMentionRefs),
     ...status.incidents.flatMap(createStatusIncidentMentionRefs),
+    ...meetings.meetings.flatMap(createMeetingMentionRefs),
     ...people.profiles.flatMap(createPersonProfileMentionRefs),
   ];
 

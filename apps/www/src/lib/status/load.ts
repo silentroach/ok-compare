@@ -3,8 +3,8 @@ import type { CollectionEntry } from 'astro:content';
 
 import { compareRuText } from '@shelkovo/format';
 
-import type { SiteMentionRegistry } from '../mentions';
-import { loadPeopleMentionRegistry } from '../people/registry';
+import { loadSiteMentionRegistry } from '../mentions/site-registry';
+import type { SiteMentionRegistry } from '../mentions/types';
 import { mapRawStatusIncident } from './mapper';
 import { STATUS_SERVICES, type StatusService } from './schema';
 import type {
@@ -128,7 +128,7 @@ export const loadStatusData = (): Promise<StatusDataset> => {
           readonly StatusIncidentEntry[]
         >,
     ),
-    loadPeopleMentionRegistry(),
+    loadSiteMentionRegistry(),
   ]).then(([entries, mentionRegistry]) =>
     buildStatusDataset(entries, { mentionRegistry }),
   );

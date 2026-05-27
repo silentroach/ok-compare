@@ -1,0 +1,277 @@
+---
+import { renderMarkdown } from '@/lib/markdown/render';
+import type { Meeting } from '@/lib/meetings/types';
+import {
+  MEETING_PROSE,
+  describeMeetingMeta,
+  hasMeetingProtocol,
+  hasMeetingRecording,
+  hasMeetingSummary,
+} from '@/lib/meetings/view';
+import MeetingProtocolList from './MeetingProtocolList.astro';
+
+interface Props {
+  readonly meeting: Meeting;
+}
+
+const { meeting } = Astro.props;
+const meta = describeMeetingMeta(meeting);
+const showSummary = hasMeetingSummary(meeting);
+const showProtocol = hasMeetingProtocol(meeting);
+const showRecording = hasMeetingRecording(meeting);
+const bodyHtml = meeting.body ? renderMarkdown(meeting.body) : undefined;
+const isExternalUrl = (url: string): boolean => /^https?:\/\//u.test(url);
+---
+
+<article class="space-y-10 px-5 md:px-6 lg:space-y-12">
+  {
+    meta.length > 0 && (
+      <dl class="grid gap-x-6 gap-y-4 border-y border-border py-5 text-sm leading-6 sm:grid-cols-2 lg:grid-cols-4">
+        {meta.map((item) => (
+          <div class="space-y-1">
+            <dt class="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
+              {item.label}
+            </dt>
+            <dd class="text-foreground">
+              {item.href ? (
+                <a
+                  href={item.href}
+                  class="site-inline-link"
+                  target={isExternalUrl(item.href) ? '_blank' : undefined}
+                  rel={isExternalUrl(item.href) ? 'noreferrer' : undefined}
+                >
+                  {item.value}
+                </a>
+              ) : (
+                item.value
+              )}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    )
+  }
+
+  <nav aria-label="Разделы встречи" class="border-b border-border pb-4">
+    <ul class="flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold leading-6">
+      {
+        showSummary && (
+          <li>
+            <a href="#summary" class="site-inline-link">
+              Смысл
+            </a>
+          </li>
+        )
+      }
+      {
+        showProtocol && (
+          <li>
+            <a href="#protocol" class="site-inline-link">
+              Протокол
+            </a>
+          </li>
+        )
+      }
+      {
+        showRecording && (
+          <li>
+            <a href="#recording" class="site-inline-link">
+              Запись и расшифровка
+            </a>
+          </li>
+        )
+      }
+      {
+        bodyHtml && (
+          <li>
+            <a href="#notes" class="site-inline-link">
+              Заметки
+            </a>
+          </li>
+        )
+      }
+    </ul>
+  </nav>
+
+  {
+    showSummary && (
+      <section id="summary" aria-labelledby="summary-title" class="scroll-mt-6">
+        <div class="max-w-3xl space-y-4">
+          <h2
+            id="summary-title"
+            class="text-3xl font-bold tracking-tight text-foreground"
+          >
+            Смысл встречи
+          </h2>
+          {meeting.summary.trim().length > 0 && (
+            <p class="text-lg leading-8 text-foreground">{meeting.summary}</p>
+          )}
+          {meeting.highlights.length > 0 && (
+            <ul class="space-y-2 border-t border-border pt-4 text-base leading-7 text-foreground">
+              {meeting.highlights.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          )}
+          {meeting.summary.trim().length === 0 &&
+            meeting.highlights.length === 0 && (
+              <p class="text-base leading-7 text-muted-foreground">
+                Ключевые решения и открытые вопросы вынесены ниже в протокол.
+              </p>
+            )}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    showProtocol && (
+      <section
+        id="protocol"
+        aria-labelledby="protocol-title"
+        class="scroll-mt-6"
+      >
+        <div class="space-y-5">
+          <div class="max-w-3xl space-y-2">
+            <h2
+              id="protocol-title"
+              class="text-3xl font-bold tracking-tight text-foreground"
+            >
+              Протокол
+            </h2>
+            <p class="text-base leading-7 text-muted-foreground">
+              Повестка, решения и открытые вопросы вынесены отдельно от полной
+              расшифровки.
+            </p>
+          </div>
+
+          <div class="grid gap-5 lg:grid-cols-2">
+            {meeting.agenda.length > 0 && (
+              <MeetingProtocolList title="Повестка" items={meeting.agenda} />
+            )}
+            {meeting.decisions.length > 0 && (
+              <MeetingProtocolList title="Решения" items={meeting.decisions} />
+            )}
+            {meeting.actionItems.length > 0 && (
+              <MeetingProtocolList
+                title="Действия"
+                items={meeting.actionItems}
+              />
+            )}
+            {meeting.questions.length > 0 && (
+              <MeetingProtocolList
+                title="Открытые вопросы"
+                items={meeting.questions}
+              />
+            )}
+          </div>
+
+          {meeting.documents.length > 0 && (
+            <div class="border-y border-border py-4">
+              <h3 class="text-lg font-bold tracking-tight text-foreground">
+                Документы
+              </h3>
+              <ul class="mt-3 space-y-2 text-base leading-7">
+                {meeting.documents.map((document) => (
+                  <li>
+                    <a
+                      href={document.url}
+                      class="site-inline-link"
+                      target={
+                        isExternalUrl(document.url) ? '_blank' : undefined
+                      }
+                      rel={
+                        isExternalUrl(document.url) ? 'noreferrer' : undefined
+                      }
+                    >
+                      {document.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    showRecording && (
+      <section
+        id="recording"
+        aria-labelledby="recording-title"
+        class="scroll-mt-6"
+      >
+        <div class="space-y-5">
+          <div class="max-w-3xl space-y-2">
+            <h2
+              id="recording-title"
+              class="text-3xl font-bold tracking-tight text-foreground"
+            >
+              Запись и расшифровка
+            </h2>
+            <p class="text-base leading-7 text-muted-foreground">
+              Видео открывается ссылкой. Встроенный плеер появится только после
+              проверки провайдера и CSP.
+            </p>
+          </div>
+
+          {meeting.recordingUrl && (
+            <p>
+              <a
+                href={meeting.recordingUrl}
+                class="site-inline-link"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Открыть запись встречи
+              </a>
+            </p>
+          )}
+
+          {meeting.transcript?.segments.length && (
+            <ol
+              class="divide-y divide-border border-y border-border text-base leading-7"
+              role="list"
+            >
+              {meeting.transcript.segments.map((segment) => (
+                <li
+                  id={segment.anchor}
+                  class="grid gap-2 py-4 md:grid-cols-[7rem_minmax(0,1fr)] md:gap-5"
+                >
+                  <a
+                    href={`#${segment.anchor}`}
+                    class="site-inline-link text-sm font-semibold text-muted-foreground"
+                    aria-label={`Перейти к фрагменту расшифровки ${segment.start}`}
+                  >
+                    {segment.start}
+                  </a>
+                  <div class="space-y-1">
+                    {segment.speakerLabel && (
+                      <p class="text-sm font-semibold text-foreground">
+                        {segment.speakerLabel}
+                      </p>
+                    )}
+                    <p class="text-muted-foreground">{segment.text}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          )}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    bodyHtml && (
+      <section id="notes" aria-labelledby="notes-title" class="scroll-mt-6">
+        <h2 id="notes-title" class="sr-only">
+          Редакционные заметки
+        </h2>
+        <div class={MEETING_PROSE} set:html={bodyHtml} />
+      </section>
+    )
+  }
+</article>

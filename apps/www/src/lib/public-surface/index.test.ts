@@ -24,6 +24,14 @@ import {
   compareSkillsPath,
 } from '@/compare/lib/public-surface';
 import {
+  meetingMarkdownPattern,
+  meetingPattern,
+  meetingsDataPath,
+  meetingsLlmsFullPath,
+  meetingsLlmsPath,
+  meetingsPath,
+} from '@/lib/meetings/routes';
+import {
   apiCatalogPath as newsApiCatalogPath,
   articleMarkdownPattern,
   articlePattern,
@@ -214,6 +222,53 @@ describe('public surface registry', () => {
     expect(byId.get('news:llms')).toMatchObject({ path: newsLlmsPath() });
     expect(byId.get('news:llms-full')).toMatchObject({
       path: newsLlmsFullPath(),
+    });
+  });
+
+  it('registers meetings surfaces from meetings route helpers', () => {
+    const surfaces = publicSurfaceRegistry.surfacesByOwner('meetings');
+    const byId = new Map(surfaces.map((surface) => [surface.id, surface]));
+
+    expect(publicSurfaceRegistry.surfaceOwner('meetings:data')).toEqual({
+      id: 'meetings',
+      label: 'Встречи',
+      entryPath: meetingsPath(),
+    });
+    expect(byId.get('meetings:index')).toMatchObject({
+      path: meetingsPath(),
+      mediaType: 'text/html',
+      cacheClass: 'html',
+      catalogRole: 'anchor',
+    });
+    expect(byId.get('meetings:detail')).toMatchObject({
+      routePattern: meetingPattern(),
+      discoveryRoles: ['detail-page'],
+    });
+    expect(byId.get('meetings:detail-markdown')).toMatchObject({
+      routePattern: meetingMarkdownPattern(),
+      mediaType: 'text/markdown',
+      cacheClass: 'markdown',
+    });
+    expect(byId.get('meetings:data')).toMatchObject({
+      path: meetingsDataPath(),
+      mediaType: 'application/json',
+      cacheClass: 'data',
+      discoveryRoles: ['data-feed', 'root-catalog'],
+      catalogRole: 'item',
+    });
+    expect(byId.get('meetings:llms')).toMatchObject({
+      path: meetingsLlmsPath(),
+      mediaType: 'text/plain',
+      cacheClass: 'static',
+      discoveryRoles: ['llms', 'root-catalog'],
+      catalogRole: 'item',
+    });
+    expect(byId.get('meetings:llms-full')).toMatchObject({
+      path: meetingsLlmsFullPath(),
+      mediaType: 'text/plain',
+      cacheClass: 'static',
+      discoveryRoles: ['llms'],
+      catalogRole: 'item',
     });
   });
 

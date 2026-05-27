@@ -2,7 +2,9 @@ import type { CollectionEntry } from 'astro:content';
 
 import { compareRuText } from '@shelkovo/format';
 
-import type { SiteMentionRegistry } from '../mentions';
+import { createSiteMentionRegistry } from '../mentions/normalize';
+import type { SiteMentionRegistry } from '../mentions/types';
+import { createMeetingMentionRegistry } from '../meetings/mentions';
 import { mapRawPersonMentionTarget, mapRawPersonProfile } from './mapper';
 import type { PeopleMentionRegistry } from './mentions';
 import type { PeopleDataset, PersonProfile } from './types';
@@ -13,10 +15,19 @@ export type PersonProfileEntry = Pick<
   CollectionEntry<'peopleProfiles'>,
   'id' | 'data' | 'body'
 >;
+export type PersonMentionEntry = Pick<
+  CollectionEntry<'peopleProfiles'>,
+  'id' | 'data'
+>;
+export type MeetingMentionEntry = Pick<
+  CollectionEntry<'meetings'>,
+  'id' | 'data'
+>;
+
 let cache: Promise<PeopleDataset> | undefined;
 
-const personRegistry = (
-  entries: readonly PersonProfileEntry[],
+export const createPeopleMentionRegistry = (
+  entries: readonly PersonMentionEntry[],
 ): PeopleMentionRegistry => {
   const registry = new Map(
     entries.map((entry) => [entry.id, mapRawPersonMentionTarget(entry)]),
@@ -36,8 +47,10 @@ const normalizePerson = (
 
 export const buildPeopleDataset = (
   entries: readonly PersonProfileEntry[],
+  opts?: { readonly mentionRegistry?: SiteMentionRegistry },
 ): PeopleDataset => {
-  const mentionRegistry = personRegistry(entries);
+  const peopleMentionRegistry = createPeopleMentionRegistry(entries);
+  const mentionRegistry = opts?.mentionRegistry ?? peopleMentionRegistry;
   const profiles = entries
     .map((entry) => normalizePerson(entry, mentionRegistry))
     .sort(
@@ -47,16 +60,26 @@ export const buildPeopleDataset = (
   return {
     profiles,
     bySlug: new Map(profiles.map((profile) => [profile.slug, profile])),
-    mentionRegistry,
+    mentionRegistry: peopleMentionRegistry,
   };
 };
 
+const buildPeopleData = async (): Promise<PeopleDataset> => {
+  const { getCollection } = await import('astro:content');
+  const [people, meetings] = await Promise.all([
+    getCollection('peopleProfiles') as Promise<readonly PersonProfileEntry[]>,
+    getCollection('meetings') as Promise<readonly MeetingMentionEntry[]>,
+  ]);
+  const mentionRegistry = createSiteMentionRegistry([
+    ...createPeopleMentionRegistry(people).values(),
+    ...createMeetingMentionRegistry(meetings).values(),
+  ]);
+
+  return buildPeopleDataset(people, { mentionRegistry });
+};
+
 export const loadPeopleData = (): Promise<PeopleDataset> => {
-  cache ??= import('astro:content').then(({ getCollection }) =>
-    getCollection('peopleProfiles').then(
-      (entries: readonly PersonProfileEntry[]) => buildPeopleDataset(entries),
-    ),
-  );
+  cache ??= buildPeopleData();
 
   return cache;
 };

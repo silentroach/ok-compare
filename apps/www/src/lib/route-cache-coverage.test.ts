@@ -20,6 +20,7 @@ const nginxConfigPath = join(
 const htmlCachePolicy = 'public,max-age=60,stale-while-revalidate=300';
 
 const routeParamExamples: Record<string, string> = {
+  date: '2026-05-26',
   month: '05',
   event: 'community-day',
   service: 'water',
@@ -185,6 +186,12 @@ const hasCalendarType = (block: string): boolean =>
 const hasLinksetType = (block: string): boolean =>
   block.includes('default_type application/linkset+json;');
 
+const hasJsonType = (block: string): boolean =>
+  block.includes('default_type application/json;');
+
+const hasPlainTextType = (block: string): boolean =>
+  block.includes('default_type text/plain;');
+
 const locationLabel = (location: NginxLocation): string =>
   `location ${location.modifier === undefined ? '' : `${location.modifier} `}${location.pattern}`;
 
@@ -230,13 +237,19 @@ const isDiscoveryOrDataRoute = (route: string): boolean =>
   route === '/llms.txt' ||
   route === '/llms-full.txt' ||
   route.startsWith('/.well-known/') ||
-  /^\/(?:news|status|people|815\/(?:compare|regulation))\/(?:data|openapi|schemas)\//u.test(
+  /^\/(?:news|status|people|meetings|815\/(?:compare|regulation))\/(?:data|openapi|schemas)\//u.test(
     route,
   ) ||
-  /^\/(?:news|status|people|815\/(?:compare|regulation))\/\.well-known\//u.test(
+  /^\/(?:news|status|people|meetings|815\/(?:compare|regulation))\/\.well-known\//u.test(
     route,
   ) ||
-  /^\/(?:news|status|people|815\/(?:compare|regulation))\/llms(?:-full)?\.txt$/u.test(
+  /^\/(?:news|status|people|meetings|815\/(?:compare|regulation))\/llms(?:-full)?\.txt$/u.test(
+    route,
+  );
+
+const isLlmsTextRoute = (route: string): boolean =>
+  /^\/(?:llms|llms-full)\.txt$/u.test(route) ||
+  /^\/(?:news|status|people|meetings|815\/(?:compare|regulation))\/llms(?:-full)?\.txt$/u.test(
     route,
   );
 
@@ -253,6 +266,8 @@ describe('nginx route cache coverage', () => {
         "/815/regulation/",
         "/815/regulation/assets/",
         "/815/regulation/services/",
+        "/meetings/",
+        "/meetings/[date]/[slug]/",
         "/news/",
         "/news/[year]/",
         "/news/[year]/[month]/",
@@ -337,6 +352,14 @@ describe('nginx route cache coverage', () => {
           hasLinksetType,
           'application/linkset+json MIME',
         );
+      }
+
+      if (route.startsWith('/meetings/data/') && route.endsWith('.json')) {
+        assertLocationHas(route, hasJsonType, 'application/json MIME');
+      }
+
+      if (isLlmsTextRoute(route)) {
+        assertLocationHas(route, hasPlainTextType, 'text/plain MIME');
       }
     }
   });

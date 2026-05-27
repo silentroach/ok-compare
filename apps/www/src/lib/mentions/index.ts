@@ -5,6 +5,10 @@ export {
 export { createEntityMentionSourceRefs } from './source-refs';
 export { createEntityMentionGraph, getEntityMentionGraphRefs } from './graph';
 export {
+  createCombinedSiteMentionRegistry,
+  loadSiteMentionRegistry,
+} from './site-registry';
+export {
   ENTITY_MENTION_ALTERNATE_LABEL_CASES,
   ENTITY_MENTION_DEFAULT_LABEL_CASE,
   ENTITY_MENTION_LABEL_CASES,

@@ -34,10 +34,16 @@ export interface SitemapSettlementInput {
   }[];
 }
 
+export interface SitemapMeetingInput {
+  readonly url: string;
+  readonly date: string;
+}
+
 export interface SitemapMetadataSourceData {
   readonly newsArticles: readonly SitemapNewsArticleInput[];
   readonly statusIncidents: readonly SitemapStatusIncidentInput[];
   readonly settlements: readonly SitemapSettlementInput[];
+  readonly meetings: readonly SitemapMeetingInput[];
 }
 
 const EXTENSION = /\.[^/]+$/u;
@@ -212,6 +218,41 @@ const addCompareMetadata = (
   }
 };
 
+const addMeetingsMetadata = (
+  index: Map<string, SitemapMetadata>,
+  meetings: readonly SitemapMeetingInput[],
+): void => {
+  for (const meeting of meetings) {
+    setMetadata(index, meeting.url, {
+      lastmod: meeting.date,
+      changefreq: CHANGEFREQ.yearly,
+    });
+  }
+};
+
+export const isSitemapPageAllowed = (page: string): boolean => {
+  const key = sitemapPathKey(page);
+
+  if (/\/404(?:\/|\.html)?$/u.test(key)) {
+    return false;
+  }
+
+  if (key === '/meetings/') {
+    return false;
+  }
+
+  if (
+    key.startsWith('/meetings/data/') ||
+    key === '/meetings/llms.txt' ||
+    key === '/meetings/llms-full.txt' ||
+    (key.startsWith('/meetings/') && key.endsWith('/index.md'))
+  ) {
+    return false;
+  }
+
+  return true;
+};
+
 export const buildSitemapMetadataIndex = (
   data: SitemapMetadataSourceData,
 ): SitemapMetadataIndex => {
@@ -220,6 +261,7 @@ export const buildSitemapMetadataIndex = (
   addNewsMetadata(index, data.newsArticles);
   addStatusMetadata(index, data.statusIncidents);
   addCompareMetadata(index, data.settlements);
+  addMeetingsMetadata(index, data.meetings);
 
   return new Map([...index.entries()].sort(([a], [b]) => compareRuText(a, b)));
 };

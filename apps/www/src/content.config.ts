@@ -8,6 +8,8 @@ import {
   RawNewsAuthorSchema,
   createRawNewsArticleSchema,
 } from './lib/news/raw-schema';
+import { RawMeetingFrontmatterSchema } from './lib/meetings/raw-schema';
+import { createMeetingSourceId } from './lib/meetings/source';
 import { RawPersonProfileSchema } from './lib/people/raw-schema';
 import { RawStatusIncidentSchema } from './lib/status/raw-schema';
 import { parseStatusTimestampInput } from './lib/status/schema';
@@ -216,6 +218,15 @@ const peopleProfiles = defineCollection({
   schema: RawPersonProfileSchema,
 });
 
+const meetings = defineCollection({
+  loader: glob({
+    pattern: ['**/index.md', '!AGENTS.md'],
+    base: './src/data/meetings',
+    generateId: ({ entry, data }) => createMeetingSourceId(entry, data),
+  }),
+  schema: RawMeetingFrontmatterSchema,
+});
+
 const settlements = defineCollection({
   loader: glob({
     pattern: '[!_]*.yaml',
@@ -230,4 +241,5 @@ export const collections = {
   settlements,
   statusIncidents,
   peopleProfiles,
+  meetings,
 };
