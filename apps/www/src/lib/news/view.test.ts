@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildNewsEventMapEmbedUrl,
   buildNewsEventMapUrl,
+  formatNewsEventMonth,
   formatNewsEventRange,
 } from './view';
 
@@ -36,6 +37,13 @@ describe('formatNewsEventRange', () => {
         startsTime: '19:00',
       }),
     ).toBe('31 мая 2026, 19:00');
+  });
+});
+
+describe('formatNewsEventMonth', () => {
+  it('formats event badge months as full Russian genitive labels', () => {
+    expect(formatNewsEventMonth('2026-06-13T16:00:00+03:00')).toBe('июня');
+    expect(formatNewsEventMonth('2026-01-13T16:00:00+03:00')).toBe('января');
   });
 });
 

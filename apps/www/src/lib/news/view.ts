@@ -90,6 +90,9 @@ export const formatNewsAuthor = (
 export const formatNewsDateTime = (iso: string, time?: string): string =>
   `${formatNewsCalendarDate(iso)}, ${time ?? formatNewsTime(iso)}`;
 
+export const formatNewsEventMonth = (iso: string): string =>
+  dateTimeFromISO(iso).toFormat('MMMM');
+
 export const formatNewsEventRange = (
   event: Pick<NewsEvent, 'startsIso' | 'startsTime' | 'endsIso' | 'endsTime'>,
 ): string => {

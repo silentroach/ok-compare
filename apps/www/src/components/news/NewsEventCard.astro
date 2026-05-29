@@ -5,6 +5,7 @@ import type { NewsEvent } from '@/lib/news/types';
 import {
   buildNewsEventMapEmbedUrl,
   buildNewsEventMapUrl,
+  formatNewsEventMonth,
   formatNewsEventRange,
 } from '@/lib/news/view';
 
@@ -22,22 +23,8 @@ const mapEmbedUrl = isCompact
   : undefined;
 const hasCoordinates = event.coordinates !== undefined;
 const eventDateParts = event.startsIso.slice(0, 10).split('-');
-const eventMonthLabels = [
-  'янв',
-  'фев',
-  'мар',
-  'апр',
-  'мая',
-  'июн',
-  'июл',
-  'авг',
-  'сен',
-  'окт',
-  'ноя',
-  'дек',
-] as const;
 const eventDay = String(Number(eventDateParts[2] ?? ''));
-const eventMonth = eventMonthLabels[Number(eventDateParts[1]) - 1] ?? '';
+const eventMonth = formatNewsEventMonth(event.startsIso);
 const eventTime = event.endsTime
   ? `${event.startsTime}-${event.endsTime}`
   : event.startsTime;
