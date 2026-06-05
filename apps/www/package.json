@@ -22,16 +22,16 @@
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.18",
-    "@astrojs/sitemap": "^3.7.2",
-    "@astrojs/svelte": "^8.1.1",
+    "@astrojs/sitemap": "^3.7.3",
+    "@astrojs/svelte": "^8.1.2",
     "@shelkovo/format": "workspace:*",
     "@shelkovo/geo": "workspace:*",
     "@shelkovo/markdown": "workspace:*",
     "@shelkovo/seo": "workspace:*",
     "@shelkovo/ui": "workspace:*",
     "@shelkovo/url": "workspace:*",
-    "astro": "^6.3.7",
-    "svelte": "^5.55.9",
+    "astro": "^6.4.2",
+    "svelte": "^5.56.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {
