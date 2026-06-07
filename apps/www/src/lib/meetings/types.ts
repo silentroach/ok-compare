@@ -44,7 +44,7 @@ export interface Meeting {
   readonly date: MeetingMoment;
   readonly updatedAt?: MeetingMoment;
   readonly context: string;
-  readonly sourceUrl?: string;
+  readonly sourceUrls: readonly string[];
   readonly url: string;
   readonly canonical: string;
   readonly transcript: MeetingTranscript;

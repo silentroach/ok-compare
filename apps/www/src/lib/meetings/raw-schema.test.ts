@@ -48,7 +48,7 @@ describe('RawMeetingSchema', () => {
           },
         },
         updated_at: new Date('2026-06-14T00:00:00.000Z'),
-        source_url: ' https://example.com/source ',
+        source_urls: [' https://example.com/source '],
       }),
     ).toMatchObject({
       title: 'Встреча',
@@ -65,7 +65,7 @@ describe('RawMeetingSchema', () => {
         },
       },
       updated_at: '2026-06-14',
-      source_url: 'https://example.com/source',
+      source_urls: ['https://example.com/source'],
     });
   });
 
@@ -81,7 +81,7 @@ describe('RawMeetingSchema', () => {
 
   it('rejects invalid URL', () => {
     expect(() =>
-      RawMeetingSchema.parse({ ...validMeeting, source_url: '/source' }),
+      RawMeetingSchema.parse({ ...validMeeting, source_urls: ['/source'] }),
     ).toThrow();
   });
 

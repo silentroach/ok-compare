@@ -73,7 +73,7 @@ describe('mapRawMeeting', () => {
   it('maps a minimal meeting with a local speaker', () => {
     const result = map({
       meeting: {
-        source_url: 'https://example.com/source',
+        source_urls: ['https://example.com/source'],
       },
     });
 
@@ -86,7 +86,7 @@ describe('mapRawMeeting', () => {
         hasTime: true,
       },
       context: 'Встреча управляющей компании с жителями.',
-      sourceUrl: 'https://example.com/source',
+      sourceUrls: ['https://example.com/source'],
       url: '/meetings/2026-06-13-ok-comfort/',
       canonical: 'https://example.com/meetings/2026-06-13-ok-comfort/',
       transcript: {
@@ -253,6 +253,11 @@ describe('mapRawMeeting', () => {
         transcript: {
           segments: [
             {
+              start: '00:00:00',
+              speaker: 'moderator',
+              text: 'Начало.',
+            },
+            {
               start: '00:00:10',
               speaker: 'moderator',
               text: 'Первая реплика.',
@@ -273,6 +278,11 @@ describe('mapRawMeeting', () => {
       transcript: {
         segments: [
           {
+            start: '00:00:00',
+            speaker: 'moderator',
+            text: 'Начало.',
+          },
+          {
             start: '00:12:34',
             speaker: 'moderator',
             text: 'Первая реплика.',
@@ -292,8 +302,44 @@ describe('mapRawMeeting', () => {
     });
 
     expect(result.transcript.segments.map((segment) => segment.anchor)).toEqual(
-      ['t-00-12-34', 't-00-12-34-2', 't-00-12-34-3'],
+      ['t-00-00-00', 't-00-12-34', 't-00-12-34-2', 't-00-12-34-3'],
     );
+  });
+
+  it('rejects transcript parts that do not start from zero', () => {
+    expect(() =>
+      map({
+        transcript: {
+          segments: [
+            {
+              start: '00:00:01',
+              speaker: 'moderator',
+              text: 'Запись начинается не с нуля.',
+            },
+          ],
+        },
+      }),
+    ).toThrow('meeting transcript must start at 00:00:00');
+
+    expect(() =>
+      map({
+        transcriptParts: [
+          transcript(undefined, 1),
+          transcript(
+            {
+              segments: [
+                {
+                  start: '00:00:01',
+                  speaker: 'moderator',
+                  text: 'Вторая запись начинается не с нуля.',
+                },
+              ],
+            },
+            2,
+          ),
+        ],
+      }),
+    ).toThrow('meeting transcript part 2 must start at 00:00:00');
   });
 
   it('maps explicit transcript parts and resets time ordering per part', () => {

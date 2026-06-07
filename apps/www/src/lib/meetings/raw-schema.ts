@@ -105,7 +105,7 @@ export const RawMeetingSchema = z
     context: text('context'),
     speakers: RawMeetingSpeakersSchema,
     updated_at: meetingDate('updated_at').optional(),
-    source_url: absoluteUrl('source_url').optional(),
+    source_urls: z.array(absoluteUrl('source_urls[]')).min(1).optional(),
   })
   .strict();
 

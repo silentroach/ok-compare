@@ -5,6 +5,7 @@ import {
   describeMeeting,
   formatMeetingDate,
   formatMeetingMetaDate,
+  formatMeetingSourceLabel,
   formatMeetingSpeakerAnchor,
   formatTranscriptPartLabel,
   formatTranscriptTextHtml,
@@ -27,7 +28,7 @@ const transcriptTime = (value: string): MeetingTranscriptTime => ({
 
 const meeting = (input?: {
   readonly context?: string;
-  readonly sourceUrl?: string;
+  readonly sourceUrls?: readonly string[];
   readonly date?: MeetingMoment;
 }): Meeting => ({
   id: '2026-06-13-ok-comfort',
@@ -42,7 +43,7 @@ const meeting = (input?: {
   context:
     input?.context ??
     'Встреча управляющей компании с жителями о сезонных работах, тарифе и финансовых вопросах.',
-  sourceUrl: input?.sourceUrl,
+  sourceUrls: input?.sourceUrls ?? [],
   url: '/meetings/2026-06-13-ok-comfort/',
   canonical: 'https://example.com/meetings/2026-06-13-ok-comfort/',
   transcript: {
@@ -111,12 +112,18 @@ describe('meeting view helpers', () => {
       describeMeeting(
         meeting({
           context: 'Встреча с жителями.',
-          sourceUrl: 'https://example.com/source',
+          sourceUrls: ['https://example.com/source'],
         }),
       ),
     ).toBe(
-      'Встреча с жителями. Полная транскрипция встречи с временными отметками и ссылкой на источник.',
+      'Встреча с жителями. Полная транскрипция встречи с временными отметками и ссылкой на источник записи.',
     );
+  });
+
+  it('formats source labels for one or multiple recordings', () => {
+    expect(formatMeetingSourceLabel(1, 0)).toBe('Источник записи');
+    expect(formatMeetingSourceLabel(2, 0)).toBe('Источник записи 1');
+    expect(formatMeetingSourceLabel(2, 1)).toBe('Источник записи 2');
   });
 
   it('formats transcript time and speaker anchors consistently', () => {

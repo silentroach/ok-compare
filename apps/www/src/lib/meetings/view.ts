@@ -37,10 +37,15 @@ const trimMetaDescription = (value: string): string => {
   return `${cut.replace(/[,.!?;:]$/u, '')}...`;
 };
 
-const transcriptSourcePhrase = (meeting: Meeting): string =>
-  meeting.sourceUrl
-    ? 'Полная транскрипция встречи с временными отметками и ссылкой на источник.'
-    : 'Полная транскрипция встречи с временными отметками в архиве.';
+const transcriptSourcePhrase = (meeting: Meeting): string => {
+  if (meeting.sourceUrls.length === 0) {
+    return 'Полная транскрипция встречи с временными отметками в архиве.';
+  }
+
+  return meeting.sourceUrls.length === 1
+    ? 'Полная транскрипция встречи с временными отметками и ссылкой на источник записи.'
+    : 'Полная транскрипция встречи с временными отметками и ссылками на источники записи.';
+};
 
 export const formatMeetingDate = (date: MeetingMoment): string => {
   const value = dateTimeFromISO(date.iso);
@@ -70,6 +75,12 @@ export const formatTranscriptTime = (time: MeetingTranscriptTime): string =>
 export const formatTranscriptPartLabel = (
   part: Pick<MeetingTranscriptPart, 'index'>,
 ): string => `Часть ${part.index}`;
+
+export const formatMeetingSourceLabel = (
+  sourceCount: number,
+  index: number,
+): string =>
+  sourceCount === 1 ? 'Источник записи' : `Источник записи ${index + 1}`;
 
 export const formatMeetingSpeakerAnchor = (
   speaker: Pick<MeetingSpeaker, 'id'>,

@@ -56,7 +56,10 @@ const meeting = (): Meeting => {
     date: moment({ iso: '2026-06-13T16:00:00+03:00', hasTime: true }),
     context:
       'Встреча управляющей компании с жителями о сезонных работах, тарифе и финансовых вопросах.',
-    sourceUrl: 'https://example.com/source',
+    sourceUrls: [
+      'https://example.com/source-1',
+      'https://example.com/source-2',
+    ],
     url: '/meetings/2026-06-13-ok-comfort/',
     canonical: 'https://example.com/meetings/2026-06-13-ok-comfort/',
     transcript: {
@@ -111,6 +114,10 @@ describe('meetings markdown', () => {
       'https://example.com/meetings/2026-06-13-ok-comfort/transcript/1.md',
     );
     expect(markdown).toContain('Часть 1');
+    expect(markdown).toContain('Источник записи 1');
+    expect(markdown).toContain('https://example.com/source-1');
+    expect(markdown).toContain('Источник записи 2');
+    expect(markdown).toContain('https://example.com/source-2');
     expect(markdown).not.toContain('Полный текст второй реплики');
     expect(markdown).not.toMatch(/manifest/iu);
   });

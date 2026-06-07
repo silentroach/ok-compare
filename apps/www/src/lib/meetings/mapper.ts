@@ -156,6 +156,21 @@ const mapPart = (
   speakers: ReadonlyMap<string, MeetingSpeaker>,
   anchorCounts: Map<string, number>,
 ): MeetingTranscriptPart => {
+  const firstStart = parseMeetingTranscriptTime(
+    rawSegments[0]?.start ?? '',
+    hasMultipleParts
+      ? `meeting transcript part ${index} first segment start`
+      : 'meeting transcript first segment start',
+  );
+
+  if (firstStart.totalSeconds !== 0) {
+    throw new Error(
+      hasMultipleParts
+        ? `meeting transcript part ${index} must start at 00:00:00`
+        : 'meeting transcript must start at 00:00:00',
+    );
+  }
+
   let previousStart: MeetingTranscriptTime | undefined;
   const segments = rawSegments.map((raw, segmentIndex) => {
     const context = hasMultipleParts
@@ -262,7 +277,7 @@ export const mapRawMeeting = (
     date,
     updatedAt,
     context: entry.data.context,
-    sourceUrl: entry.data.source_url,
+    sourceUrls: entry.data.source_urls ?? [],
     url: meetingUrl(entry.id),
     canonical: meetingCanonical(entry.id),
     transcript: {

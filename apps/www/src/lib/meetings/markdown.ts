@@ -21,6 +21,7 @@ import type {
 } from './types';
 import {
   formatMeetingDate,
+  formatMeetingSourceLabel,
   formatTranscriptPartLabel,
   formatTranscriptTime,
 } from './view';
@@ -210,9 +211,12 @@ export const buildMeetingMarkdown = (meeting: Meeting): string =>
     md.list([
       linkedItem('HTML-страница встречи', abs(meeting.url)),
       linkedItem('Индекс архива встреч', abs(meetingsMarkdownPath())),
-      ...(meeting.sourceUrl
-        ? [linkedItem('Источник записи', meeting.sourceUrl)]
-        : []),
+      ...meeting.sourceUrls.map((sourceUrl, index) =>
+        linkedItem(
+          formatMeetingSourceLabel(meeting.sourceUrls.length, index),
+          sourceUrl,
+        ),
+      ),
     ]),
     md.heading(2, 'Метаданные'),
     md.list([
