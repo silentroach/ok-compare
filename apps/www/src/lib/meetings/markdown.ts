@@ -91,6 +91,11 @@ const speakerLine = (speaker: MeetingSpeaker): MarkdownListItem => {
   ]);
 };
 
+const transcriptPartUrl = (
+  meeting: Meeting,
+  part: MeetingTranscriptPart,
+): string => abs(meetingTranscriptPartMarkdownPath(meeting.slug, part.index));
+
 const transcriptPartLine = (
   meeting: Meeting,
   part: MeetingTranscriptPart,
@@ -98,7 +103,7 @@ const transcriptPartLine = (
   md.listItem([
     md.paragraph([
       md.link(
-        abs(meetingTranscriptPartMarkdownPath(meeting.slug, part.index)),
+        transcriptPartUrl(meeting, part),
         formatTranscriptPartLabel(part),
       ),
       md.text(` — ${partSegmentCount(part)}; ${partRange(part)}.`),
@@ -131,49 +136,22 @@ const navigationItems = (
   );
 
   return [
-    md.listItem([
-      md.paragraph([
-        md.link(abs(meeting.url), 'HTML-страница встречи'),
-        md.text('.'),
-      ]),
-    ]),
-    md.listItem([
-      md.paragraph([
-        md.link(abs(meetingMarkdownPath(meeting.slug)), 'Описание встречи'),
-        md.text('.'),
-      ]),
-    ]),
+    linkedItem('HTML-страница встречи', abs(meeting.url)),
+    linkedItem('Описание встречи', abs(meetingMarkdownPath(meeting.slug))),
     ...(previous
       ? [
-          md.listItem([
-            md.paragraph([
-              md.link(
-                abs(
-                  meetingTranscriptPartMarkdownPath(
-                    meeting.slug,
-                    previous.index,
-                  ),
-                ),
-                `Предыдущая часть: ${formatTranscriptPartLabel(previous)}`,
-              ),
-              md.text('.'),
-            ]),
-          ]),
+          linkedItem(
+            `Предыдущая часть: ${formatTranscriptPartLabel(previous)}`,
+            transcriptPartUrl(meeting, previous),
+          ),
         ]
       : []),
     ...(next
       ? [
-          md.listItem([
-            md.paragraph([
-              md.link(
-                abs(
-                  meetingTranscriptPartMarkdownPath(meeting.slug, next.index),
-                ),
-                `Следующая часть: ${formatTranscriptPartLabel(next)}`,
-              ),
-              md.text('.'),
-            ]),
-          ]),
+          linkedItem(
+            `Следующая часть: ${formatTranscriptPartLabel(next)}`,
+            transcriptPartUrl(meeting, next),
+          ),
         ]
       : []),
   ];
