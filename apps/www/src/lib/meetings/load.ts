@@ -6,6 +6,7 @@ import type { SiteMentionRegistry } from '@/lib/mentions';
 import { loadPeopleMentionRegistry } from '@/lib/people/registry';
 
 import { mapRawMeeting } from './mapper';
+import type { RawMeetingTranscriptEntryInput } from './mapper';
 import type { Meeting, MeetingsDataset } from './types';
 
 export type MeetingEntry = Pick<
@@ -19,6 +20,9 @@ export type MeetingTranscriptEntry = Pick<
 
 let cache: Promise<MeetingsDataset> | undefined;
 
+const TRANSCRIPT_ENTRY_ID =
+  /^(?<id>[a-z0-9]+(?:-[a-z0-9]+)*)\/(?<part>[1-9]\d*)$/;
+
 const compareMeetingsDesc = (a: Meeting, b: Meeting): number => {
   const date = b.date.at.valueOf() - a.date.at.valueOf();
 
@@ -29,14 +33,40 @@ const compareMeetingsDesc = (a: Meeting, b: Meeting): number => {
   return compareRuText(a.title, b.title) || compareRuText(a.slug, b.slug);
 };
 
+const parseTranscriptEntry = (
+  entry: MeetingTranscriptEntry,
+): RawMeetingTranscriptEntryInput => {
+  const match = entry.id.match(TRANSCRIPT_ENTRY_ID);
+
+  if (!match?.groups) {
+    throw new Error(
+      `meeting transcript id "${entry.id}" must use [slug]/[part]`,
+    );
+  }
+
+  return {
+    id: match.groups.id,
+    part: Number(match.groups.part),
+    data: entry.data,
+  };
+};
+
 const transcriptMap = (
   transcripts: readonly MeetingTranscriptEntry[],
-): ReadonlyMap<string, MeetingTranscriptEntry> => {
-  const byId = new Map(transcripts.map((entry) => [entry.id, entry]));
+): ReadonlyMap<string, readonly RawMeetingTranscriptEntryInput[]> => {
+  const byId = new Map<string, RawMeetingTranscriptEntryInput[]>();
 
-  if (byId.size !== transcripts.length) {
-    throw new Error('duplicate meeting transcript id');
-  }
+  transcripts.map(parseTranscriptEntry).forEach((transcript) => {
+    const parts = byId.get(transcript.id) ?? [];
+
+    if (parts.some((part) => part.part === transcript.part)) {
+      throw new Error(
+        `duplicate meeting transcript ${transcript.id}/${transcript.part}`,
+      );
+    }
+
+    byId.set(transcript.id, [...parts, transcript]);
+  });
 
   return byId;
 };
@@ -52,23 +82,21 @@ export const buildMeetingsDataset = (
   const transcriptsById = transcriptMap(transcripts);
   const entryIds = new Set(entries.map((entry) => entry.id));
 
-  for (const transcript of transcripts) {
-    if (!entryIds.has(transcript.id)) {
-      throw new Error(
-        `meeting transcript "${transcript.id}" has no matching entry`,
-      );
+  for (const id of transcriptsById.keys()) {
+    if (!entryIds.has(id)) {
+      throw new Error(`meeting transcript "${id}" has no matching entry`);
     }
   }
 
   const meetings = entries
     .map((entry) => {
-      const transcript = transcriptsById.get(entry.id);
+      const transcriptParts = transcriptsById.get(entry.id);
 
-      if (!transcript) {
+      if (!transcriptParts) {
         throw new Error(`meeting "${entry.id}" has no matching transcript`);
       }
 
-      return mapRawMeeting(entry, transcript, { mentionRegistry });
+      return mapRawMeeting(entry, transcriptParts, { mentionRegistry });
     })
     .sort(compareMeetingsDesc);
 

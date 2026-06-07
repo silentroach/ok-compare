@@ -21,6 +21,8 @@ const YEAR = /^\d{4}$/;
 const MONTH = /^(0[1-9]|1[0-2])$/;
 const DAY_KEY = /^(?:0?[1-9]|[12]\d|3[01])$/;
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const MEETING_TRANSCRIPT_FILE =
+  /^transcript(?:-(?<part>[2-9]|[1-9]\d+))?\.yaml$/;
 const MARKDOWN_FRONTMATTER = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n)*/u;
 const STATUS_INCIDENTS_DIR = fileURLToPath(
   new URL('./data/status/incidents/', import.meta.url),
@@ -97,6 +99,36 @@ function meetingYamlId(
   }
 
   return slug;
+}
+
+function meetingTranscriptYamlId(entry: string): string {
+  const parts = entry.split('/');
+
+  if (parts.length !== 2) {
+    failMeeting(
+      entry,
+      'must be exactly [slug]/transcript.yaml or [slug]/transcript-N.yaml',
+    );
+  }
+
+  const [slug, fileName] = parts;
+  const match = fileName?.match(MEETING_TRANSCRIPT_FILE);
+
+  if (!slug || !SLUG.test(slug)) {
+    failMeeting(
+      entry,
+      'slug must use lower-case Latin letters, digits, and hyphen',
+    );
+  }
+
+  if (!match) {
+    failMeeting(
+      entry,
+      'must use transcript.yaml or transcript-N.yaml with N starting from 2',
+    );
+  }
+
+  return `${slug}/${match.groups?.part ?? '1'}`;
 }
 
 function validateArticleEntry(entry: string, data: unknown): void {
@@ -257,9 +289,9 @@ const meetingEntries = defineCollection({
 
 const meetingTranscripts = defineCollection({
   loader: glob({
-    pattern: '*/transcript.yaml',
+    pattern: '*/transcript*.yaml',
     base: './src/data/meetings',
-    generateId: ({ entry }) => meetingYamlId(entry, 'transcript.yaml'),
+    generateId: ({ entry }) => meetingTranscriptYamlId(entry),
   }),
   schema: RawMeetingTranscriptSchema,
 });

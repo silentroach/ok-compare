@@ -1,14 +1,3 @@
-speakers:
-  moderator:
-    name: Модератор
-  ykizilov:
-    person: ykizilov
-  resident:
-    name: Житель
-  engineer:
-    name: Главный инженер ОК
-  finance:
-    name: Представитель финансового блока ОК
 segments:
   - start: '00:00:00'
     speaker: moderator

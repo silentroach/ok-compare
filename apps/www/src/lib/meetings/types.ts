@@ -26,8 +26,14 @@ export interface MeetingTranscriptSegment {
   readonly text: string;
 }
 
+export interface MeetingTranscriptPart {
+  readonly index: number;
+  readonly segments: readonly MeetingTranscriptSegment[];
+}
+
 export interface MeetingTranscript {
   readonly speakers: readonly MeetingSpeaker[];
+  readonly parts: readonly MeetingTranscriptPart[];
   readonly segments: readonly MeetingTranscriptSegment[];
 }
 

@@ -3,7 +3,10 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import type { SiteMentionRegistry } from '@/lib/mentions';
 import type { createPersonMentionTarget as createPersonMentionTargetType } from '@/lib/people/mentions';
 
-import type { mapRawMeeting as mapRawMeetingType } from './mapper';
+import type {
+  RawMeetingTranscriptEntryInput,
+  mapRawMeeting as mapRawMeetingType,
+} from './mapper';
 import type { RawMeeting, RawMeetingTranscript } from './raw-schema';
 
 let mapRawMeeting: typeof mapRawMeetingType;
@@ -25,18 +28,22 @@ const meeting = (data?: Partial<RawMeeting>) => ({
     title: 'Встреча ОК Комфорт с жителями КП Шелково',
     date: '13.06.2026 16:00',
     context: 'Встреча управляющей компании с жителями.',
-    ...data,
-  },
-});
-
-const transcript = (data?: Partial<RawMeetingTranscript>) => ({
-  id: '2026-06-13-ok-comfort',
-  data: {
     speakers: {
       moderator: {
         name: 'Модератор',
       },
     },
+    ...data,
+  },
+});
+
+const transcript = (
+  data?: Partial<RawMeetingTranscript>,
+  part = 1,
+): RawMeetingTranscriptEntryInput => ({
+  id: '2026-06-13-ok-comfort',
+  part,
+  data: {
     segments: [
       {
         start: '00:00:00',
@@ -51,11 +58,16 @@ const transcript = (data?: Partial<RawMeetingTranscript>) => ({
 const map = (input?: {
   readonly meeting?: Partial<RawMeeting>;
   readonly transcript?: Partial<RawMeetingTranscript>;
+  readonly transcriptParts?: readonly RawMeetingTranscriptEntryInput[];
   readonly mentionRegistry?: SiteMentionRegistry;
 }) =>
-  mapRawMeeting(meeting(input?.meeting), transcript(input?.transcript), {
-    mentionRegistry: input?.mentionRegistry ?? new Map(),
-  });
+  mapRawMeeting(
+    meeting(input?.meeting),
+    input?.transcriptParts ?? [transcript(input?.transcript)],
+    {
+      mentionRegistry: input?.mentionRegistry ?? new Map(),
+    },
+  );
 
 describe('mapRawMeeting', () => {
   it('maps a minimal meeting with a local speaker', () => {
@@ -85,6 +97,11 @@ describe('mapRawMeeting', () => {
             label: 'Модератор',
           },
         ],
+        parts: [
+          {
+            index: 1,
+          },
+        ],
         segments: [
           {
             anchor: 't-00-00-00',
@@ -102,12 +119,14 @@ describe('mapRawMeeting', () => {
 
   it('resolves a person speaker through the mention registry', () => {
     const result = map({
-      transcript: {
+      meeting: {
         speakers: {
           ykizilov: {
             person: 'ykizilov',
           },
         },
+      },
+      transcript: {
         segments: [
           {
             start: '00:00:00',
@@ -143,7 +162,7 @@ describe('mapRawMeeting', () => {
   it('rejects an unknown person speaker', () => {
     expect(() =>
       map({
-        transcript: {
+        meeting: {
           speakers: {
             ykizilov: {
               person: 'ykizilov',
@@ -216,6 +235,50 @@ describe('mapRawMeeting', () => {
 
     expect(result.transcript.segments.map((segment) => segment.anchor)).toEqual(
       ['t-00-12-34', 't-00-12-34-2', 't-00-12-34-3'],
+    );
+  });
+
+  it('maps explicit transcript parts and resets time ordering per part', () => {
+    const result = map({
+      transcriptParts: [
+        transcript(
+          {
+            segments: [
+              {
+                start: '00:00:00',
+                speaker: 'moderator',
+                text: 'Первая часть начинается.',
+              },
+              {
+                start: '00:05:00',
+                speaker: 'moderator',
+                text: 'Первая часть продолжается.',
+              },
+            ],
+          },
+          1,
+        ),
+        transcript(
+          {
+            segments: [
+              {
+                start: '00:00:00',
+                speaker: 'moderator',
+                text: 'Вторая часть начинается.',
+              },
+            ],
+          },
+          2,
+        ),
+      ],
+    });
+
+    expect(result.transcript.parts).toHaveLength(2);
+    expect(result.transcript.parts[1]?.segments[0]?.start.value).toBe(
+      '00:00:00',
+    );
+    expect(result.transcript.segments.map((segment) => segment.anchor)).toEqual(
+      ['t-00-00-00', 't-00-05-00', 't-00-00-00-2'],
     );
   });
 

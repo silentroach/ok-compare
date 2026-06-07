@@ -6,9 +6,6 @@ const validMeeting = {
   title: 'Встреча ОК Комфорт с жителями КП Шелково',
   date: '13.06.2026 16:00',
   context: 'Встреча управляющей компании с жителями.',
-};
-
-const validTranscript = {
   speakers: {
     moderator: {
       name: 'Модератор',
@@ -17,6 +14,9 @@ const validTranscript = {
       person: 'ykizilov',
     },
   },
+};
+
+const validTranscript = {
   segments: [
     {
       start: '00:00:00',
@@ -27,7 +27,7 @@ const validTranscript = {
 };
 
 describe('RawMeetingSchema', () => {
-  it('accepts a minimal valid meeting', () => {
+  it('accepts a valid meeting with one local speaker and one person speaker', () => {
     expect(RawMeetingSchema.parse(validMeeting)).toEqual(validMeeting);
   });
 
@@ -37,6 +37,7 @@ describe('RawMeetingSchema', () => {
         title: ' Встреча ',
         date: '2026-06-13',
         context: ' Контекст ',
+        speakers: validMeeting.speakers,
         updated_at: new Date('2026-06-14T00:00:00.000Z'),
         source_url: ' https://example.com/source ',
       }),
@@ -74,10 +75,52 @@ describe('RawMeetingSchema', () => {
       RawMeetingSchema.parse({ ...validMeeting, protocol: 'Итоги встречи' }),
     ).toThrow();
   });
+
+  it('rejects a speaker object that has both person and name', () => {
+    expect(() =>
+      RawMeetingSchema.parse({
+        ...validMeeting,
+        speakers: {
+          speaker: {
+            person: 'ykizilov',
+            name: 'Юрий Кизилов',
+          },
+        },
+      }),
+    ).toThrow();
+  });
+
+  it('rejects a speaker object that has neither person nor name', () => {
+    expect(() =>
+      RawMeetingSchema.parse({
+        ...validMeeting,
+        speakers: {
+          speaker: {},
+        },
+      }),
+    ).toThrow();
+  });
+
+  it('rejects invalid speaker ids and empty speakers', () => {
+    expect(() =>
+      RawMeetingSchema.parse({
+        ...validMeeting,
+        speakers: {
+          Moderator: {
+            name: 'Модератор',
+          },
+        },
+      }),
+    ).toThrow();
+
+    expect(() =>
+      RawMeetingSchema.parse({ ...validMeeting, speakers: {} }),
+    ).toThrow();
+  });
 });
 
 describe('RawMeetingTranscriptSchema', () => {
-  it('accepts a transcript with one local speaker and one person speaker', () => {
+  it('accepts a segment-only transcript file', () => {
     expect(RawMeetingTranscriptSchema.parse(validTranscript)).toEqual(
       validTranscript,
     );
@@ -132,45 +175,12 @@ describe('RawMeetingTranscriptSchema', () => {
     ).toThrow();
   });
 
-  it('rejects a speaker object that has both person and name', () => {
+  it('rejects unsupported transcript root fields', () => {
     expect(() =>
       RawMeetingTranscriptSchema.parse({
         ...validTranscript,
-        speakers: {
-          speaker: {
-            person: 'ykizilov',
-            name: 'Юрий Кизилов',
-          },
-        },
+        speakers: validMeeting.speakers,
       }),
-    ).toThrow();
-  });
-
-  it('rejects a speaker object that has neither person nor name', () => {
-    expect(() =>
-      RawMeetingTranscriptSchema.parse({
-        ...validTranscript,
-        speakers: {
-          speaker: {},
-        },
-      }),
-    ).toThrow();
-  });
-
-  it('rejects invalid speaker ids and empty transcript roots', () => {
-    expect(() =>
-      RawMeetingTranscriptSchema.parse({
-        ...validTranscript,
-        speakers: {
-          Moderator: {
-            name: 'Модератор',
-          },
-        },
-      }),
-    ).toThrow();
-
-    expect(() =>
-      RawMeetingTranscriptSchema.parse({ ...validTranscript, speakers: {} }),
     ).toThrow();
 
     expect(() =>

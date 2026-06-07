@@ -44,20 +44,21 @@ const entry = (input: {
     title: input.title ?? `Встреча ${input.id}`,
     date: input.date ?? '13.06.2026 16:00',
     context: 'Контекст встречи.',
-  },
-});
-
-const transcript = (input: {
-  readonly id: string;
-  readonly text?: string;
-}): MeetingTranscriptEntry => ({
-  id: input.id,
-  data: {
     speakers: {
       moderator: {
         name: 'Модератор',
       },
     },
+  },
+});
+
+const transcript = (input: {
+  readonly id: string;
+  readonly part?: number;
+  readonly text?: string;
+}): MeetingTranscriptEntry => ({
+  id: `${input.id}/${input.part ?? 1}`,
+  data: {
     segments: [
       {
         start: '00:00:00',
@@ -92,6 +93,25 @@ describe('buildMeetingsDataset', () => {
         ],
       },
     });
+  });
+
+  it('joins multiple transcript files as parts', () => {
+    const data = build(
+      [entry({ id: '2026-06-13-ok-comfort' })],
+      [
+        transcript({ id: '2026-06-13-ok-comfort', text: 'Первая часть.' }),
+        transcript({
+          id: '2026-06-13-ok-comfort',
+          part: 2,
+          text: 'Вторая часть.',
+        }),
+      ],
+    );
+
+    expect(data.meetings[0]?.transcript.parts).toHaveLength(2);
+    expect(
+      data.meetings[0]?.transcript.segments.map((segment) => segment.anchor),
+    ).toEqual(['t-00-00-00', 't-00-00-00-2']);
   });
 
   it('rejects a meeting entry without a matching transcript', () => {

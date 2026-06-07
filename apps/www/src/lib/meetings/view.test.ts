@@ -6,6 +6,7 @@ import {
   formatMeetingDate,
   formatMeetingMetaDate,
   formatMeetingSpeakerAnchor,
+  formatTranscriptPartLabel,
   formatTranscriptTextHtml,
   formatTranscriptTime,
 } from './view';
@@ -46,6 +47,7 @@ const meeting = (input?: {
   canonical: 'https://example.com/meetings/2026-06-13-ok-comfort/',
   transcript: {
     speakers: [],
+    parts: [],
     segments: [],
   },
 });
@@ -119,6 +121,7 @@ describe('meeting view helpers', () => {
 
   it('formats transcript time and speaker anchors consistently', () => {
     expect(formatTranscriptTime(transcriptTime('00:12:34'))).toBe('00:12:34');
+    expect(formatTranscriptPartLabel({ index: 2 })).toBe('Часть 2');
     expect(formatMeetingSpeakerAnchor({ id: 'ykizilov' })).toBe(
       'speaker-ykizilov',
     );

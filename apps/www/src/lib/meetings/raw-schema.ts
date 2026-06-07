@@ -59,6 +59,18 @@ const RawMeetingSpeakerSchema = z.union([
     .strict(),
 ]);
 
+const RawMeetingTranscriptSegmentSchema = z
+  .object({
+    start: time('segments[].start'),
+    speaker: speakerId('segments[].speaker'),
+    text: text('segments[].text'),
+  })
+  .strict();
+
+const RawMeetingTranscriptSegmentsSchema = z
+  .array(RawMeetingTranscriptSegmentSchema)
+  .min(1, 'segments must have at least one segment');
+
 const RawMeetingSpeakersSchema = z
   .record(z.string(), RawMeetingSpeakerSchema)
   .superRefine((speakers, ctx) => {
@@ -89,6 +101,7 @@ export const RawMeetingSchema = z
     title: text('title'),
     date: meetingDate('date'),
     context: text('context'),
+    speakers: RawMeetingSpeakersSchema,
     updated_at: meetingDate('updated_at').optional(),
     source_url: absoluteUrl('source_url').optional(),
   })
@@ -98,19 +111,11 @@ export type RawMeeting = z.output<typeof RawMeetingSchema>;
 
 export const RawMeetingTranscriptSchema = z
   .object({
-    speakers: RawMeetingSpeakersSchema,
-    segments: z
-      .array(
-        z
-          .object({
-            start: time('segments[].start'),
-            speaker: speakerId('segments[].speaker'),
-            text: text('segments[].text'),
-          })
-          .strict(),
-      )
-      .min(1, 'segments must have at least one segment'),
+    segments: RawMeetingTranscriptSegmentsSchema,
   })
   .strict();
 
 export type RawMeetingTranscript = z.output<typeof RawMeetingTranscriptSchema>;
+export type RawMeetingTranscriptSegment = z.output<
+  typeof RawMeetingTranscriptSegmentSchema
+>;

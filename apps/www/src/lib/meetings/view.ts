@@ -5,6 +5,7 @@ import type {
   Meeting,
   MeetingMoment,
   MeetingSpeaker,
+  MeetingTranscriptPart,
   MeetingTranscriptTime,
 } from './types';
 
@@ -65,6 +66,10 @@ export const describeMeeting = (meeting: Meeting): string => {
 
 export const formatTranscriptTime = (time: MeetingTranscriptTime): string =>
   time.value;
+
+export const formatTranscriptPartLabel = (
+  part: Pick<MeetingTranscriptPart, 'index'>,
+): string => `Часть ${part.index}`;
 
 export const formatMeetingSpeakerAnchor = (
   speaker: Pick<MeetingSpeaker, 'id'>,

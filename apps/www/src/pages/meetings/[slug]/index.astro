@@ -14,6 +14,7 @@ import {
   formatMeetingDate,
   formatMeetingMetaDate,
   formatMeetingSpeakerAnchor,
+  formatTranscriptPartLabel,
   formatTranscriptTextHtml,
   formatTranscriptTime,
 } from '@/lib/meetings/view';
@@ -43,6 +44,7 @@ if (!meeting) {
 
 const title = `${meeting.title} — Архив встреч — Шелково Онлайн`;
 const description = describeMeeting(meeting);
+const hasTranscriptParts = meeting.transcript.parts.length > 1;
 const breadcrumbs = withHomeBreadcrumbs([
   { label: 'Архив встреч' },
   { label: meeting.title },
@@ -160,39 +162,51 @@ const schema = techArticleSchema({
 
           <ol class="divide-y divide-border border-t border-border">
             {
-              meeting.transcript.segments.map((segment) => {
-                const timestamp = formatTranscriptTime(segment.start);
-                const textHtml = formatTranscriptTextHtml(segment.text);
+              meeting.transcript.parts.map((part) => (
+                <>
+                  {hasTranscriptParts && part.index > 1 && (
+                    <li class="py-3 md:py-4">
+                      <h3 class="font-heading text-base font-bold leading-tight tracking-[-0.02em] text-foreground md:text-lg">
+                        {formatTranscriptPartLabel(part)}
+                      </h3>
+                    </li>
+                  )}
 
-                return (
-                  <li
-                    id={segment.anchor}
-                    class="scroll-mt-24 py-2.5 md:grid md:grid-cols-[11rem_minmax(0,1fr)] md:gap-x-4 md:py-3"
-                  >
-                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 md:block md:space-y-0.5 md:pt-0.5">
-                      <a
-                        href={`#${segment.anchor}`}
-                        aria-label={`Ссылка на фрагмент ${timestamp}`}
-                        class="ui-link ui-num inline-block text-sm leading-6 text-muted-foreground md:block"
+                  {part.segments.map((segment) => {
+                    const timestamp = formatTranscriptTime(segment.start);
+                    const textHtml = formatTranscriptTextHtml(segment.text);
+
+                    return (
+                      <li
+                        id={segment.anchor}
+                        class="scroll-mt-24 py-2.5 md:grid md:grid-cols-[11rem_minmax(0,1fr)] md:gap-x-4 md:py-3"
                       >
-                        {timestamp}
-                      </a>
+                        <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 md:block md:space-y-0.5 md:pt-0.5">
+                          <a
+                            href={`#${segment.anchor}`}
+                            aria-label={`Ссылка на фрагмент ${timestamp}`}
+                            class="ui-link ui-num inline-block text-sm leading-6 text-muted-foreground md:block"
+                          >
+                            {timestamp}
+                          </a>
 
-                      <a
-                        href={`#${formatMeetingSpeakerAnchor(segment.speaker)}`}
-                        class="ui-link text-[0.8125rem] font-semibold leading-5 text-foreground hover:text-primary md:block md:text-sm"
-                      >
-                        {segment.speaker.label}
-                      </a>
-                    </div>
+                          <a
+                            href={`#${formatMeetingSpeakerAnchor(segment.speaker)}`}
+                            class="ui-link text-[0.8125rem] font-semibold leading-5 text-foreground hover:text-primary md:block md:text-sm"
+                          >
+                            {segment.speaker.label}
+                          </a>
+                        </div>
 
-                    <p
-                      class="mt-1 min-w-0 text-[0.9375rem] leading-6 text-foreground md:mt-0 md:text-base md:leading-7"
-                      set:html={textHtml}
-                    />
-                  </li>
-                );
-              })
+                        <p
+                          class="mt-1 min-w-0 text-[0.9375rem] leading-6 text-foreground md:mt-0 md:text-base md:leading-7"
+                          set:html={textHtml}
+                        />
+                      </li>
+                    );
+                  })}
+                </>
+              ))
             }
           </ol>
         </section>

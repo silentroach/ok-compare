@@ -1,12 +1,17 @@
 import type { SiteMentionRegistry } from '@/lib/mentions';
 
 import { parseMeetingTimestamp } from './date';
-import type { RawMeeting, RawMeetingTranscript } from './raw-schema';
+import type {
+  RawMeeting,
+  RawMeetingTranscript,
+  RawMeetingTranscriptSegment,
+} from './raw-schema';
 import { meetingCanonical, meetingUrl } from './routes';
 import type {
   Meeting,
   MeetingMoment,
   MeetingSpeaker,
+  MeetingTranscriptPart,
   MeetingTranscriptSegment,
   MeetingTranscriptTime,
 } from './types';
@@ -18,6 +23,7 @@ export interface RawMeetingEntryInput {
 
 export interface RawMeetingTranscriptEntryInput {
   readonly id: string;
+  readonly part: number;
   readonly data: RawMeetingTranscript;
 }
 
@@ -66,7 +72,7 @@ export const parseMeetingTranscriptTime = (
 
 const mapSpeaker = (
   id: string,
-  raw: RawMeetingTranscript['speakers'][string],
+  raw: RawMeeting['speakers'][string],
   context: string,
   mentionRegistry: SiteMentionRegistry,
 ): MeetingSpeaker => {
@@ -113,13 +119,12 @@ const segmentAnchor = (
 };
 
 const mapSegment = (
-  raw: RawMeetingTranscript['segments'][number],
-  index: number,
+  raw: RawMeetingTranscriptSegment,
+  context: string,
   speakers: ReadonlyMap<string, MeetingSpeaker>,
   anchorCounts: Map<string, number>,
   previousStart?: MeetingTranscriptTime,
 ): MeetingTranscriptSegment => {
-  const context = `meeting transcript segment ${index}`;
   const speaker = speakers.get(raw.speaker);
 
   if (!speaker) {
@@ -141,15 +146,77 @@ const mapSegment = (
   };
 };
 
+const mapPart = (
+  rawSegments: readonly RawMeetingTranscriptSegment[],
+  index: number,
+  hasMultipleParts: boolean,
+  speakers: ReadonlyMap<string, MeetingSpeaker>,
+  anchorCounts: Map<string, number>,
+): MeetingTranscriptPart => {
+  let previousStart: MeetingTranscriptTime | undefined;
+  const segments = rawSegments.map((raw, segmentIndex) => {
+    const context = hasMultipleParts
+      ? `meeting transcript part ${index} segment ${segmentIndex}`
+      : `meeting transcript segment ${segmentIndex}`;
+    const segment = mapSegment(
+      raw,
+      context,
+      speakers,
+      anchorCounts,
+      previousStart,
+    );
+
+    previousStart = segment.start;
+    return segment;
+  });
+
+  return {
+    index,
+    segments,
+  };
+};
+
+const sortTranscriptParts = (
+  entry: RawMeetingEntryInput,
+  transcriptEntries: readonly RawMeetingTranscriptEntryInput[],
+): readonly RawMeetingTranscriptEntryInput[] => {
+  const sorted = [...transcriptEntries].sort((a, b) => a.part - b.part);
+  const seen = new Set<number>();
+
+  sorted.forEach((transcript, index) => {
+    if (entry.id !== transcript.id) {
+      throw new Error(
+        `meeting "${entry.id}" transcript id must match entry id "${transcript.id}"`,
+      );
+    }
+
+    if (seen.has(transcript.part)) {
+      throw new Error(
+        `meeting "${entry.id}" has duplicate transcript part ${transcript.part}`,
+      );
+    }
+
+    seen.add(transcript.part);
+
+    if (transcript.part !== index + 1) {
+      throw new Error(
+        `meeting "${entry.id}" transcript files must be consecutive from transcript.yaml`,
+      );
+    }
+  });
+
+  return sorted;
+};
+
 export const mapRawMeeting = (
   entry: RawMeetingEntryInput,
-  transcriptEntry: RawMeetingTranscriptEntryInput,
+  transcriptEntries: readonly RawMeetingTranscriptEntryInput[],
   opts: MapRawMeetingOptions,
 ): Meeting => {
-  if (entry.id !== transcriptEntry.id) {
-    throw new Error(
-      `meeting "${entry.id}" transcript id must match entry id "${transcriptEntry.id}"`,
-    );
+  const transcriptParts = sortTranscriptParts(entry, transcriptEntries);
+
+  if (transcriptParts.length === 0) {
+    throw new Error(`meeting "${entry.id}" has no matching transcript`);
   }
 
   const date = parseMoment(entry.data.date, `meeting "${entry.id}" date`);
@@ -163,30 +230,27 @@ export const mapRawMeeting = (
     );
   }
 
-  const speakerList = Object.entries(transcriptEntry.data.speakers).map(
-    ([id, raw]) =>
-      mapSpeaker(
-        id,
-        raw,
-        `meeting "${entry.id}" speaker "${id}"`,
-        opts.mentionRegistry,
-      ),
+  const speakerList = Object.entries(entry.data.speakers).map(([id, raw]) =>
+    mapSpeaker(
+      id,
+      raw,
+      `meeting "${entry.id}" speaker "${id}"`,
+      opts.mentionRegistry,
+    ),
   );
   const speakers = new Map(speakerList.map((speaker) => [speaker.id, speaker]));
   const anchorCounts = new Map<string, number>();
-  let previousStart: MeetingTranscriptTime | undefined;
-  const segments = transcriptEntry.data.segments.map((raw, index) => {
-    const segment = mapSegment(
-      raw,
-      index,
+  const hasMultipleParts = transcriptParts.length > 1;
+  const parts = transcriptParts.map((transcript) =>
+    mapPart(
+      transcript.data.segments,
+      transcript.part,
+      hasMultipleParts,
       speakers,
       anchorCounts,
-      previousStart,
-    );
-
-    previousStart = segment.start;
-    return segment;
-  });
+    ),
+  );
+  const segments = parts.flatMap((part) => part.segments);
 
   return {
     id: entry.id,
@@ -200,6 +264,7 @@ export const mapRawMeeting = (
     canonical: meetingCanonical(entry.id),
     transcript: {
       speakers: speakerList,
+      parts,
       segments,
     },
   } satisfies Meeting;
