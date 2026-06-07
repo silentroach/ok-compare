@@ -25,6 +25,7 @@ describe('buildSitemapMetadataIndex', () => {
       ],
       statusIncidents: [],
       settlements: [],
+      meetings: [],
     });
 
     expect({
@@ -90,6 +91,7 @@ describe('buildSitemapMetadataIndex', () => {
           sources: [{ dateChecked: '2026-03-10' }],
         },
       ],
+      meetings: [],
     });
 
     expect({
@@ -127,6 +129,45 @@ describe('buildSitemapMetadataIndex', () => {
       }
     `);
     expect(index.has('/status/incidents/2026/05/water/')).toBe(false);
+  });
+
+  it('uses meeting dates for detail pages without adding a section index', () => {
+    const index = buildSitemapMetadataIndex({
+      newsArticles: [],
+      statusIncidents: [],
+      settlements: [],
+      meetings: [
+        {
+          url: '/meetings/updated/',
+          dateIso: '2026-06-13T16:00:00+03:00',
+          updatedIso: '2026-06-14T10:30:00+03:00',
+        },
+        {
+          url: '/meetings/original/',
+          dateIso: '2026-05-20',
+        },
+      ],
+    });
+
+    expect({
+      updated: index.get('/meetings/updated/'),
+      original: index.get('/meetings/original/'),
+      section: index.get('/meetings/'),
+      home: index.get('/'),
+    }).toMatchInlineSnapshot(`
+      {
+        "home": undefined,
+        "original": {
+          "changefreq": "yearly",
+          "lastmod": "2026-05-20",
+        },
+        "section": undefined,
+        "updated": {
+          "changefreq": "yearly",
+          "lastmod": "2026-06-14T10:30:00+03:00",
+        },
+      }
+    `);
   });
 });
 

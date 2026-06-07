@@ -8,6 +8,10 @@ import {
   RawNewsAuthorSchema,
   createRawNewsArticleSchema,
 } from './lib/news/raw-schema';
+import {
+  RawMeetingSchema,
+  RawMeetingTranscriptSchema,
+} from './lib/meetings/raw-schema';
 import { RawPersonProfileSchema } from './lib/people/raw-schema';
 import { RawStatusIncidentSchema } from './lib/status/raw-schema';
 import { parseStatusTimestampInput } from './lib/status/schema';
@@ -17,6 +21,8 @@ const YEAR = /^\d{4}$/;
 const MONTH = /^(0[1-9]|1[0-2])$/;
 const DAY_KEY = /^(?:0?[1-9]|[12]\d|3[01])$/;
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const MEETING_TRANSCRIPT_FILE =
+  /^transcript(?:-(?<part>[2-9]|[1-9]\d+))?\.yaml$/;
 const MARKDOWN_FRONTMATTER = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n)*/u;
 const STATUS_INCIDENTS_DIR = fileURLToPath(
   new URL('./data/status/incidents/', import.meta.url),
@@ -67,6 +73,62 @@ function failStatus(entry: string, reason: string): never {
 
 function failPerson(entry: string, reason: string): never {
   throw new Error(`person profile path \"${entry}\" ${reason}`);
+}
+
+function failMeeting(entry: string, reason: string): never {
+  throw new Error(`meeting data path \"${entry}\" ${reason}`);
+}
+
+function meetingYamlId(
+  entry: string,
+  fileName: 'index.yaml' | 'transcript.yaml',
+): string {
+  const parts = entry.split('/');
+
+  if (parts.length !== 2 || parts[1] !== fileName) {
+    failMeeting(entry, `must be exactly [slug]/${fileName}`);
+  }
+
+  const [slug] = parts;
+
+  if (!SLUG.test(slug)) {
+    failMeeting(
+      entry,
+      'slug must use lower-case Latin letters, digits, and hyphen',
+    );
+  }
+
+  return slug;
+}
+
+function meetingTranscriptYamlId(entry: string): string {
+  const parts = entry.split('/');
+
+  if (parts.length !== 2) {
+    failMeeting(
+      entry,
+      'must be exactly [slug]/transcript.yaml or [slug]/transcript-N.yaml',
+    );
+  }
+
+  const [slug, fileName] = parts;
+  const match = fileName?.match(MEETING_TRANSCRIPT_FILE);
+
+  if (!slug || !SLUG.test(slug)) {
+    failMeeting(
+      entry,
+      'slug must use lower-case Latin letters, digits, and hyphen',
+    );
+  }
+
+  if (!match) {
+    failMeeting(
+      entry,
+      'must use transcript.yaml or transcript-N.yaml with N starting from 2',
+    );
+  }
+
+  return `${slug}/${match.groups?.part ?? '1'}`;
 }
 
 function validateArticleEntry(entry: string, data: unknown): void {
@@ -216,6 +278,24 @@ const peopleProfiles = defineCollection({
   schema: RawPersonProfileSchema,
 });
 
+const meetingEntries = defineCollection({
+  loader: glob({
+    pattern: '*/index.yaml',
+    base: './src/data/meetings',
+    generateId: ({ entry }) => meetingYamlId(entry, 'index.yaml'),
+  }),
+  schema: RawMeetingSchema,
+});
+
+const meetingTranscripts = defineCollection({
+  loader: glob({
+    pattern: '*/transcript*.yaml',
+    base: './src/data/meetings',
+    generateId: ({ entry }) => meetingTranscriptYamlId(entry),
+  }),
+  schema: RawMeetingTranscriptSchema,
+});
+
 const settlements = defineCollection({
   loader: glob({
     pattern: '[!_]*.yaml',
@@ -230,4 +310,6 @@ export const collections = {
   settlements,
   statusIncidents,
   peopleProfiles,
+  meetingEntries,
+  meetingTranscripts,
 };

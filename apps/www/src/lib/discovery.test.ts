@@ -37,7 +37,10 @@ describe('root api catalog', () => {
       }[];
     };
 
-    const expected = publicSurfaceRegistry.slices.map((slice) => {
+    const catalogSlices = publicSurfaceRegistry.slices.filter((slice) =>
+      slice.surfaces.some((surface) => surface.catalogRole),
+    );
+    const expected = catalogSlices.map((slice) => {
       const anchor = slice.surfaces.find(
         (surface) => surface.catalogRole === 'anchor',
       );
@@ -61,8 +64,15 @@ describe('root api catalog', () => {
       });
     });
 
-    expect(payload.linkset).toEqual(expect.arrayContaining(expected));
-    for (const slice of publicSurfaceRegistry.slices) {
+    expect(payload.linkset).toEqual(expected);
+    for (const entry of payload.linkset) {
+      expect(
+        Boolean(
+          entry.anchor || entry.item?.length || entry['service-desc']?.length,
+        ),
+      ).toBe(true);
+    }
+    for (const slice of catalogSlices) {
       const anchor = slice.surfaces.find(
         (surface) => surface.catalogRole === 'anchor',
       );
@@ -87,6 +97,7 @@ describe('root api catalog', () => {
         ),
       ),
     ).toBe(true);
+    expect(JSON.stringify(payload)).not.toContain('/meetings/:slug/');
   });
 
   it('keeps base-prefixed site links valid in non-root deployments', () => {
@@ -133,6 +144,13 @@ describe('root api catalog', () => {
       expect.arrayContaining([
         expect.objectContaining({
           href: 'https://example.com/sub/people/index.md',
+        }),
+      ]),
+    );
+    expect(payload.linkset).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          anchor: 'https://example.com/sub/meetings/index.md',
         }),
       ]),
     );

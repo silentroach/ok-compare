@@ -1,0 +1,221 @@
+---
+import type { GetStaticPaths } from 'astro';
+
+import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+import LinkWithIcon from '@shelkovo/ui/LinkWithIcon.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import {
+  withHomeBreadcrumbs,
+  withHomeSchemaBreadcrumbs,
+} from '@/lib/breadcrumbs';
+import { loadMeeting, loadMeetings } from '@/lib/meetings/load';
+import {
+  describeMeeting,
+  formatMeetingDate,
+  formatMeetingMetaDate,
+  formatMeetingSourceLabel,
+  formatMeetingSpeakerAnchor,
+  formatTranscriptPartLabel,
+  formatTranscriptTextHtml,
+  formatTranscriptTime,
+} from '@/lib/meetings/view';
+import { techArticleSchema } from '@/lib/news/seo';
+
+export const getStaticPaths = (async () => {
+  const meetings = await loadMeetings();
+
+  return meetings.map((meeting) => ({
+    params: {
+      slug: meeting.slug,
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+const slug = Astro.params.slug;
+
+if (!slug) {
+  throw new Error('meeting slug is required');
+}
+
+const meeting = await loadMeeting(slug);
+
+if (!meeting) {
+  throw new Error(`meeting "${slug}" not found`);
+}
+
+const title = `${meeting.title} — Архив встреч — Шелково Онлайн`;
+const description = describeMeeting(meeting);
+const hasTranscriptParts = meeting.transcript.parts.length > 1;
+const sourceLinks = meeting.sourceUrls.map((href, index) => ({
+  href,
+  label: formatMeetingSourceLabel(meeting.sourceUrls.length, index),
+}));
+const breadcrumbs = withHomeBreadcrumbs([
+  { label: 'Архив встреч' },
+  { label: meeting.title },
+]);
+const schema = techArticleSchema({
+  name: meeting.title,
+  description,
+  url: meeting.url,
+  breadcrumbs: withHomeSchemaBreadcrumbs([
+    { name: meeting.title, url: meeting.url },
+  ]),
+  datePublished: meeting.date.iso,
+  dateModified: meeting.updatedAt?.iso,
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={meeting.canonical}
+  type="article"
+  schema={schema}
+>
+  <main class="ui-page pb-8 md:pb-12 lg:pb-14">
+    <header class="ui-page-header">
+      <div class="ui-page-header-stack max-w-4xl">
+        <Breadcrumbs items={breadcrumbs} />
+
+        <div class="space-y-4">
+          <div class="space-y-3">
+            <h1 class="ui-page-title">
+              {meeting.title}
+            </h1>
+
+            <div
+              class="flex flex-wrap items-center gap-2.5 text-sm leading-6 text-muted-foreground"
+            >
+              <time
+                datetime={formatMeetingMetaDate(meeting.date)}
+                class="font-medium text-foreground"
+              >
+                {formatMeetingDate(meeting.date)}
+              </time>
+
+              {
+                sourceLinks.map((source) => (
+                  <LinkWithIcon
+                    href={source.href}
+                    label={source.label}
+                    ariaLabelPrefix={source.label}
+                  />
+                ))
+              }
+            </div>
+          </div>
+
+          <p class="max-w-3xl text-base leading-7 text-foreground">
+            {meeting.context}
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <div class="px-5 md:px-6">
+      <div class="max-w-[75ch] space-y-7 md:space-y-8">
+        <section class="space-y-3" aria-labelledby="meeting-speakers">
+          <h2
+            id="meeting-speakers"
+            class="font-heading text-2xl font-bold leading-tight tracking-[-0.02em] text-foreground md:text-3xl"
+          >
+            Участники
+          </h2>
+
+          <ul
+            class="list-disc space-y-1.5 pl-5 text-sm leading-6 text-foreground md:text-base"
+          >
+            {
+              meeting.transcript.speakers.map((speaker) => (
+                <li
+                  id={formatMeetingSpeakerAnchor(speaker)}
+                  class="scroll-mt-24 pl-0.5 marker:text-muted-foreground"
+                >
+                  <span class="font-semibold text-foreground">
+                    {speaker.url ? (
+                      <a
+                        href={speaker.url}
+                        class="ui-link text-foreground hover:text-primary"
+                      >
+                        {speaker.label}
+                      </a>
+                    ) : (
+                      <span>{speaker.label}</span>
+                    )}
+                  </span>
+
+                  {speaker.description && (
+                    <span class="text-muted-foreground">
+                      {' '}
+                      — {speaker.description}
+                    </span>
+                  )}
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <section class="space-y-3" aria-labelledby="meeting-transcript">
+          <h2
+            id="meeting-transcript"
+            class="font-heading text-2xl font-bold leading-tight tracking-[-0.02em] text-foreground md:text-3xl"
+          >
+            Транскрипция
+          </h2>
+
+          <ol class="divide-y divide-border border-t border-border">
+            {
+              meeting.transcript.parts.map((part) => (
+                <>
+                  {hasTranscriptParts && (
+                    <li class="pb-4 pt-10 md:pb-5 md:pt-12">
+                      <h3 class="font-heading text-xl font-bold leading-tight tracking-[-0.02em] text-foreground md:text-2xl">
+                        {formatTranscriptPartLabel(part)}
+                      </h3>
+                    </li>
+                  )}
+
+                  {part.segments.map((segment) => {
+                    const timestamp = formatTranscriptTime(segment.start);
+                    const textHtml = formatTranscriptTextHtml(segment.text);
+
+                    return (
+                      <li
+                        id={segment.anchor}
+                        class="scroll-mt-24 py-2.5 md:grid md:grid-cols-[11rem_minmax(0,1fr)] md:gap-x-4 md:py-3"
+                      >
+                        <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 md:block md:space-y-0.5 md:pt-0.5">
+                          <a
+                            href={`#${segment.anchor}`}
+                            aria-label={`Ссылка на фрагмент ${timestamp}`}
+                            class="ui-link ui-num inline-block text-sm leading-6 text-muted-foreground md:block"
+                          >
+                            {timestamp}
+                          </a>
+
+                          <a
+                            href={`#${formatMeetingSpeakerAnchor(segment.speaker)}`}
+                            class="ui-link text-[0.8125rem] font-semibold leading-5 text-foreground hover:text-primary md:block md:text-sm"
+                          >
+                            {segment.speaker.label}
+                          </a>
+                        </div>
+
+                        <p
+                          class="mt-1 min-w-0 text-[0.9375rem] leading-6 text-foreground md:mt-0 md:text-base md:leading-7"
+                          set:html={textHtml}
+                        />
+                      </li>
+                    );
+                  })}
+                </>
+              ))
+            }
+          </ol>
+        </section>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
