@@ -36,6 +36,7 @@ import {
   newsMarkdownPath,
   newsPath,
 } from '@/lib/news/routes';
+import { meetingPattern } from '@/lib/meetings/routes';
 import {
   peopleApiCatalogPath,
   peopleDataPath,
@@ -258,6 +259,41 @@ describe('public surface registry', () => {
     expect(byId.get('status:llms-full')).toMatchObject({
       path: statusLlmsFullPath(),
     });
+  });
+
+  it('registers meetings as a detail-only HTML surface', () => {
+    const surfaces = publicSurfaceRegistry.surfacesByOwner('meetings');
+    const byId = new Map(surfaces.map((surface) => [surface.id, surface]));
+    const owner = publicSurfaceRegistry.surfaceOwner('meetings:detail');
+    const detail = byId.get('meetings:detail');
+
+    expect(surfaces).toHaveLength(1);
+    expect(owner).toEqual({
+      id: 'meetings',
+      label: 'Архив встреч',
+    });
+    expect(owner?.entryPath).toBe(undefined);
+    expect(
+      surfaces.some(
+        (surface) => 'path' in surface && surface.path === '/meetings/',
+      ),
+    ).toBe(false);
+    expect(detail).toMatchObject({
+      id: 'meetings:detail',
+      label: 'Страница транскрипции встречи',
+      routePattern: meetingPattern(),
+      mediaType: 'text/html',
+      cacheClass: 'html',
+      discoveryRoles: ['detail-page'],
+    });
+    expect(detail).not.toHaveProperty('catalogRole');
+    expect(detail).not.toHaveProperty('linkRelations');
+    expect(detail).not.toHaveProperty('acceptsNegotiation');
+    expect(
+      publicSurfaceRegistry.surfaces.some(
+        (surface) => 'path' in surface && surface.path === '/meetings/',
+      ),
+    ).toBe(false);
   });
 
   it('registers people Markdown index without a public HTML index', () => {

@@ -32,25 +32,34 @@ const item = (
   'title*': star(surface.label),
 });
 
+const hasCatalogLinks = (entry: {
+  readonly anchor?: string;
+  readonly item?: readonly unknown[];
+  readonly 'service-desc'?: readonly unknown[];
+}): boolean =>
+  Boolean(entry.anchor || entry.item?.length || entry['service-desc']?.length);
+
 export function catalog(root: string): Record<string, unknown> {
   return {
-    linkset: publicSurfaceRegistry.slices.map((slice) => {
-      const anchor = slice.surfaces.find(
-        (surface) => surface.catalogRole === 'anchor',
-      );
-      const items = slice.surfaces
-        .filter((surface) => surface.catalogRole === 'item')
-        .map((surface) => item(root, surface));
-      const serviceDesc = slice.surfaces
-        .filter((surface) => surface.catalogRole === 'service-desc')
-        .map((surface) => item(root, surface));
+    linkset: publicSurfaceRegistry.slices
+      .map((slice) => {
+        const anchor = slice.surfaces.find(
+          (surface) => surface.catalogRole === 'anchor',
+        );
+        const items = slice.surfaces
+          .filter((surface) => surface.catalogRole === 'item')
+          .map((surface) => item(root, surface));
+        const serviceDesc = slice.surfaces
+          .filter((surface) => surface.catalogRole === 'service-desc')
+          .map((surface) => item(root, surface));
 
-      return {
-        ...(anchor ? { anchor: surfaceHref(root, anchor) } : {}),
-        ...(items.length ? { item: items } : {}),
-        ...(serviceDesc.length ? { 'service-desc': serviceDesc } : {}),
-      };
-    }),
+        return {
+          ...(anchor ? { anchor: surfaceHref(root, anchor) } : {}),
+          ...(items.length ? { item: items } : {}),
+          ...(serviceDesc.length ? { 'service-desc': serviceDesc } : {}),
+        };
+      })
+      .filter(hasCatalogLinks),
   };
 }
 

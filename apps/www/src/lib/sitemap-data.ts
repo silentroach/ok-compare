@@ -9,6 +9,7 @@ import { normalizeTagKey } from './news/schema';
 import {
   buildSitemapMetadataIndex,
   type SitemapMetadataIndex,
+  type SitemapMeetingInput,
   type SitemapNewsArticleInput,
   type SitemapSettlementInput,
   type SitemapStatusIncidentInput,
@@ -35,6 +36,9 @@ const statusIncidentsDir = fileURLToPath(
 );
 const settlementsDir = fileURLToPath(
   new URL('../data/compare/settlements/', import.meta.url),
+);
+const meetingsDir = fileURLToPath(
+  new URL('../data/meetings/', import.meta.url),
 );
 
 const scalarField = (source: string, name: string): string | undefined => {
@@ -211,10 +215,34 @@ const loadSettlementsForSitemap = (): readonly SitemapSettlementInput[] =>
       };
     });
 
+const loadMeetingsForSitemap = (): readonly SitemapMeetingInput[] =>
+  listFiles(meetingsDir, '.yaml')
+    .filter((path) => path.endsWith('/index.yaml'))
+    .map((path) => {
+      const slug = relativeEntryId(meetingsDir, path, '.yaml');
+      const source = readFileSync(path, 'utf8');
+      const context = `meeting ${slug}`;
+      const date = scalarField(source, 'date');
+      const updatedAt = scalarField(source, 'updated_at');
+
+      if (!date) {
+        throw new Error(`${context} must include date`);
+      }
+
+      return {
+        url: `/meetings/${slug}/`,
+        dateIso: parseTimestamp(date, `${context} date`),
+        ...(updatedAt
+          ? { updatedIso: parseTimestamp(updatedAt, `${context} updated_at`) }
+          : {}),
+      };
+    });
+
 export const loadSitemapMetadataIndex =
   async (): Promise<SitemapMetadataIndex> =>
     buildSitemapMetadataIndex({
       newsArticles: loadNewsArticlesForSitemap(),
       statusIncidents: loadStatusIncidentsForSitemap(),
       settlements: loadSettlementsForSitemap(),
+      meetings: loadMeetingsForSitemap(),
     });

@@ -34,10 +34,17 @@ export interface SitemapSettlementInput {
   }[];
 }
 
+export interface SitemapMeetingInput {
+  readonly url: string;
+  readonly dateIso: string;
+  readonly updatedIso?: string;
+}
+
 export interface SitemapMetadataSourceData {
   readonly newsArticles: readonly SitemapNewsArticleInput[];
   readonly statusIncidents: readonly SitemapStatusIncidentInput[];
   readonly settlements: readonly SitemapSettlementInput[];
+  readonly meetings: readonly SitemapMeetingInput[];
 }
 
 const EXTENSION = /\.[^/]+$/u;
@@ -212,6 +219,21 @@ const addCompareMetadata = (
   }
 };
 
+const meetingLastmod = (meeting: SitemapMeetingInput): string =>
+  meeting.updatedIso ?? meeting.dateIso;
+
+const addMeetingsMetadata = (
+  index: Map<string, SitemapMetadata>,
+  meetings: readonly SitemapMeetingInput[],
+): void => {
+  for (const meeting of meetings) {
+    setMetadata(index, meeting.url, {
+      lastmod: meetingLastmod(meeting),
+      changefreq: CHANGEFREQ.yearly,
+    });
+  }
+};
+
 export const buildSitemapMetadataIndex = (
   data: SitemapMetadataSourceData,
 ): SitemapMetadataIndex => {
@@ -220,6 +242,7 @@ export const buildSitemapMetadataIndex = (
   addNewsMetadata(index, data.newsArticles);
   addStatusMetadata(index, data.statusIncidents);
   addCompareMetadata(index, data.settlements);
+  addMeetingsMetadata(index, data.meetings);
 
   return new Map([...index.entries()].sort(([a], [b]) => compareRuText(a, b)));
 };

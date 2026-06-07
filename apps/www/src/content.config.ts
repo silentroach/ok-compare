@@ -8,6 +8,10 @@ import {
   RawNewsAuthorSchema,
   createRawNewsArticleSchema,
 } from './lib/news/raw-schema';
+import {
+  RawMeetingSchema,
+  RawMeetingTranscriptSchema,
+} from './lib/meetings/raw-schema';
 import { RawPersonProfileSchema } from './lib/people/raw-schema';
 import { RawStatusIncidentSchema } from './lib/status/raw-schema';
 import { parseStatusTimestampInput } from './lib/status/schema';
@@ -67,6 +71,32 @@ function failStatus(entry: string, reason: string): never {
 
 function failPerson(entry: string, reason: string): never {
   throw new Error(`person profile path \"${entry}\" ${reason}`);
+}
+
+function failMeeting(entry: string, reason: string): never {
+  throw new Error(`meeting data path \"${entry}\" ${reason}`);
+}
+
+function meetingYamlId(
+  entry: string,
+  fileName: 'index.yaml' | 'transcript.yaml',
+): string {
+  const parts = entry.split('/');
+
+  if (parts.length !== 2 || parts[1] !== fileName) {
+    failMeeting(entry, `must be exactly [slug]/${fileName}`);
+  }
+
+  const [slug] = parts;
+
+  if (!SLUG.test(slug)) {
+    failMeeting(
+      entry,
+      'slug must use lower-case Latin letters, digits, and hyphen',
+    );
+  }
+
+  return slug;
 }
 
 function validateArticleEntry(entry: string, data: unknown): void {
@@ -216,6 +246,24 @@ const peopleProfiles = defineCollection({
   schema: RawPersonProfileSchema,
 });
 
+const meetingEntries = defineCollection({
+  loader: glob({
+    pattern: '*/index.yaml',
+    base: './src/data/meetings',
+    generateId: ({ entry }) => meetingYamlId(entry, 'index.yaml'),
+  }),
+  schema: RawMeetingSchema,
+});
+
+const meetingTranscripts = defineCollection({
+  loader: glob({
+    pattern: '*/transcript.yaml',
+    base: './src/data/meetings',
+    generateId: ({ entry }) => meetingYamlId(entry, 'transcript.yaml'),
+  }),
+  schema: RawMeetingTranscriptSchema,
+});
+
 const settlements = defineCollection({
   loader: glob({
     pattern: '[!_]*.yaml',
@@ -230,4 +278,6 @@ export const collections = {
   settlements,
   statusIncidents,
   peopleProfiles,
+  meetingEntries,
+  meetingTranscripts,
 };
