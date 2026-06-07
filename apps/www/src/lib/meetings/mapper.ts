@@ -127,13 +127,6 @@ const mapSegment = (
   }
 
   const start = parseMeetingTranscriptTime(raw.start, `${context} start`);
-  const end = raw.end
-    ? parseMeetingTranscriptTime(raw.end, `${context} end`)
-    : undefined;
-
-  if (end && end.totalSeconds < start.totalSeconds) {
-    throw new Error(`${context} end cannot be earlier than start`);
-  }
 
   if (previousStart && start.totalSeconds < previousStart.totalSeconds) {
     throw new Error(`${context} start cannot be earlier than previous segment`);
@@ -142,7 +135,6 @@ const mapSegment = (
   return {
     anchor: segmentAnchor(start, anchorCounts),
     start,
-    end,
     speakerId: raw.speaker,
     speaker,
     text: raw.text,

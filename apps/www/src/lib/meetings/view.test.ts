@@ -1,17 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import type {
-  Meeting,
-  MeetingMoment,
-  MeetingTranscriptSegment,
-  MeetingTranscriptTime,
-} from './types';
+import type { Meeting, MeetingMoment, MeetingTranscriptTime } from './types';
 import {
   describeMeeting,
   formatMeetingDate,
   formatMeetingMetaDate,
   formatMeetingSpeakerAnchor,
-  formatTranscriptRange,
   formatTranscriptTextHtml,
   formatTranscriptTime,
 } from './view';
@@ -28,14 +22,6 @@ const moment = (input: {
 const transcriptTime = (value: string): MeetingTranscriptTime => ({
   value,
   totalSeconds: 0,
-});
-
-const segment = (input: {
-  readonly start: string;
-  readonly end?: string;
-}): Pick<MeetingTranscriptSegment, 'start' | 'end'> => ({
-  start: transcriptTime(input.start),
-  end: input.end ? transcriptTime(input.end) : undefined,
 });
 
 const meeting = (input?: {
@@ -131,17 +117,11 @@ describe('meeting view helpers', () => {
     );
   });
 
-  it('formats transcript time and range consistently', () => {
+  it('formats transcript time and speaker anchors consistently', () => {
     expect(formatTranscriptTime(transcriptTime('00:12:34'))).toBe('00:12:34');
     expect(formatMeetingSpeakerAnchor({ id: 'ykizilov' })).toBe(
       'speaker-ykizilov',
     );
-    expect(formatTranscriptRange(segment({ start: '00:12:34' }))).toBe(
-      '00:12:34',
-    );
-    expect(
-      formatTranscriptRange(segment({ start: '00:12:34', end: '00:13:01' })),
-    ).toBe('00:12:34-00:13:01');
   });
 
   it('escapes script and HTML-looking transcript text', () => {

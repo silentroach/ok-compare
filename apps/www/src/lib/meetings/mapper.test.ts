@@ -170,23 +170,6 @@ describe('mapRawMeeting', () => {
     ).toThrow('unknown speaker "missing"');
   });
 
-  it('rejects an end time earlier than start', () => {
-    expect(() =>
-      map({
-        transcript: {
-          segments: [
-            {
-              start: '00:00:10',
-              end: '00:00:09',
-              speaker: 'moderator',
-              text: 'Реплика.',
-            },
-          ],
-        },
-      }),
-    ).toThrow('end cannot be earlier than start');
-  });
-
   it('rejects decreasing segment starts', () => {
     expect(() =>
       map({

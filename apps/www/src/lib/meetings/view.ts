@@ -5,7 +5,6 @@ import type {
   Meeting,
   MeetingMoment,
   MeetingSpeaker,
-  MeetingTranscriptSegment,
   MeetingTranscriptTime,
 } from './types';
 
@@ -70,13 +69,6 @@ export const formatTranscriptTime = (time: MeetingTranscriptTime): string =>
 export const formatMeetingSpeakerAnchor = (
   speaker: Pick<MeetingSpeaker, 'id'>,
 ): string => `speaker-${speaker.id}`;
-
-export const formatTranscriptRange = (
-  segment: Pick<MeetingTranscriptSegment, 'start' | 'end'>,
-): string =>
-  segment.end
-    ? `${formatTranscriptTime(segment.start)}-${formatTranscriptTime(segment.end)}`
-    : formatTranscriptTime(segment.start);
 
 export const formatTranscriptTextHtml = (text: string): string =>
   formatDynamicHtml(escapeHtml(text)).replace(LINE_BREAK, '<br>');

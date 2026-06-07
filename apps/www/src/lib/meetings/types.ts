@@ -21,7 +21,6 @@ export interface MeetingSpeaker {
 export interface MeetingTranscriptSegment {
   readonly anchor: string;
   readonly start: MeetingTranscriptTime;
-  readonly end?: MeetingTranscriptTime;
   readonly speakerId: string;
   readonly speaker: MeetingSpeaker;
   readonly text: string;

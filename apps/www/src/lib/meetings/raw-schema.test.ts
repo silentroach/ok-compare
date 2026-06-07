@@ -20,7 +20,6 @@ const validTranscript = {
   segments: [
     {
       start: '00:00:00',
-      end: '00:00:12',
       speaker: 'moderator',
       text: 'Добрый день.\nНачинаем встречу.',
     },
@@ -115,14 +114,16 @@ describe('RawMeetingTranscriptSchema', () => {
         segments: [{ start: '00:60:00', speaker: 'moderator', text: 'Текст' }],
       }),
     ).toThrow();
+  });
 
+  it('rejects unsupported segment fields', () => {
     expect(() =>
       RawMeetingTranscriptSchema.parse({
         ...validTranscript,
         segments: [
           {
             start: '00:00:00',
-            end: '00:00:60',
+            end: '00:00:12',
             speaker: 'moderator',
             text: 'Текст',
           },

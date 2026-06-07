@@ -104,7 +104,6 @@ export const RawMeetingTranscriptSchema = z
         z
           .object({
             start: time('segments[].start'),
-            end: time('segments[].end').optional(),
             speaker: speakerId('segments[].speaker'),
             text: text('segments[].text'),
           })
