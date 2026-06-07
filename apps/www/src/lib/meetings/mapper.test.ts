@@ -159,6 +159,64 @@ describe('mapRawMeeting', () => {
     });
   });
 
+  it('maps local speaker descriptions and person description overrides', () => {
+    const result = map({
+      meeting: {
+        speakers: {
+          moderator: {
+            name: 'Модератор',
+            description: 'Участник инициативной группы',
+          },
+          ykizilov: {
+            person: 'ykizilov',
+            description: 'Директор ОК Комфорт',
+          },
+        },
+      },
+      transcript: {
+        segments: [
+          {
+            start: '00:00:00',
+            speaker: 'moderator',
+            text: 'Добрый день.',
+          },
+          {
+            start: '00:00:10',
+            speaker: 'ykizilov',
+            text: 'Спасибо, что пришли.',
+          },
+        ],
+      },
+      mentionRegistry: new Map([
+        [
+          'ykizilov',
+          createPersonMentionTarget(
+            'ykizilov',
+            'Юрий Кизилов',
+            undefined,
+            'ОК "Комфорт"',
+            'Руководитель',
+          ),
+        ],
+      ]),
+    });
+
+    expect(result.transcript.speakers).toMatchObject([
+      {
+        id: 'moderator',
+        kind: 'local',
+        label: 'Модератор',
+        description: 'Участник инициативной группы',
+      },
+      {
+        id: 'ykizilov',
+        kind: 'person',
+        label: 'Юрий Кизилов',
+        description: 'Директор ОК Комфорт',
+      },
+    ]);
+  });
+
   it('rejects an unknown person speaker', () => {
     expect(() =>
       map({

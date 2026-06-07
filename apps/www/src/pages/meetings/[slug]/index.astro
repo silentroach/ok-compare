@@ -165,8 +165,8 @@ const schema = techArticleSchema({
               meeting.transcript.parts.map((part) => (
                 <>
                   {hasTranscriptParts && part.index > 1 && (
-                    <li class="py-3 md:py-4">
-                      <h3 class="font-heading text-base font-bold leading-tight tracking-[-0.02em] text-foreground md:text-lg">
+                    <li class="pb-4 pt-10 md:pb-5 md:pt-12">
+                      <h3 class="font-heading text-xl font-bold leading-tight tracking-[-0.02em] text-foreground md:text-2xl">
                         {formatTranscriptPartLabel(part)}
                       </h3>
                     </li>

@@ -37,7 +37,16 @@ describe('RawMeetingSchema', () => {
         title: ' Встреча ',
         date: '2026-06-13',
         context: ' Контекст ',
-        speakers: validMeeting.speakers,
+        speakers: {
+          moderator: {
+            name: ' Модератор ',
+            description: ' Участник встречи ',
+          },
+          ykizilov: {
+            person: 'ykizilov',
+            description: ' Директор ОК Комфорт ',
+          },
+        },
         updated_at: new Date('2026-06-14T00:00:00.000Z'),
         source_url: ' https://example.com/source ',
       }),
@@ -45,6 +54,16 @@ describe('RawMeetingSchema', () => {
       title: 'Встреча',
       date: '2026-06-13',
       context: 'Контекст',
+      speakers: {
+        moderator: {
+          name: 'Модератор',
+          description: 'Участник встречи',
+        },
+        ykizilov: {
+          person: 'ykizilov',
+          description: 'Директор ОК Комфорт',
+        },
+      },
       updated_at: '2026-06-14',
       source_url: 'https://example.com/source',
     });
@@ -96,6 +115,20 @@ describe('RawMeetingSchema', () => {
         ...validMeeting,
         speakers: {
           speaker: {},
+        },
+      }),
+    ).toThrow();
+  });
+
+  it('rejects blank speaker descriptions', () => {
+    expect(() =>
+      RawMeetingSchema.parse({
+        ...validMeeting,
+        speakers: {
+          speaker: {
+            name: 'Участник',
+            description: ' ',
+          },
         },
       }),
     ).toThrow();

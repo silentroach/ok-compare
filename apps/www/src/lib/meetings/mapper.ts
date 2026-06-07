@@ -70,6 +70,11 @@ export const parseMeetingTranscriptTime = (
   };
 };
 
+const withSpeakerDescription = (
+  speaker: MeetingSpeaker,
+  description?: string,
+): MeetingSpeaker => (description ? { ...speaker, description } : speaker);
+
 const mapSpeaker = (
   id: string,
   raw: RawMeeting['speakers'][string],
@@ -90,20 +95,18 @@ const mapSpeaker = (
       personSlug: target.slug,
       url: target.htmlUrl,
     };
+    const description = raw.description ?? target.linkTitle;
 
-    return target.linkTitle
-      ? {
-          ...speaker,
-          description: target.linkTitle,
-        }
-      : speaker;
+    return withSpeakerDescription(speaker, description);
   }
 
-  return {
+  const speaker: MeetingSpeaker = {
     id,
     kind: 'local',
     label: raw.name,
   };
+
+  return withSpeakerDescription(speaker, raw.description);
 };
 
 const segmentAnchor = (

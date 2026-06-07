@@ -50,11 +50,13 @@ const RawMeetingSpeakerSchema = z.union([
   z
     .object({
       person: speakerId('speakers[].person'),
+      description: text('speakers[].description').optional(),
     })
     .strict(),
   z
     .object({
       name: text('speakers[].name'),
+      description: text('speakers[].description').optional(),
     })
     .strict(),
 ]);
