@@ -36,7 +36,12 @@ import {
   newsMarkdownPath,
   newsPath,
 } from '@/lib/news/routes';
-import { meetingPattern } from '@/lib/meetings/routes';
+import {
+  meetingMarkdownPattern,
+  meetingPattern,
+  meetingsMarkdownPath,
+  meetingTranscriptPartMarkdownPattern,
+} from '@/lib/meetings/routes';
 import {
   peopleApiCatalogPath,
   peopleDataPath,
@@ -261,23 +266,32 @@ describe('public surface registry', () => {
     });
   });
 
-  it('registers meetings as a detail-only HTML surface', () => {
+  it('registers meetings Markdown entry without a public HTML index', () => {
     const surfaces = publicSurfaceRegistry.surfacesByOwner('meetings');
     const byId = new Map(surfaces.map((surface) => [surface.id, surface]));
     const owner = publicSurfaceRegistry.surfaceOwner('meetings:detail');
+    const index = byId.get('meetings:index-markdown');
     const detail = byId.get('meetings:detail');
 
-    expect(surfaces).toHaveLength(1);
+    expect(surfaces).toHaveLength(4);
     expect(owner).toEqual({
       id: 'meetings',
       label: 'Архив встреч',
+      entryPath: meetingsMarkdownPath(),
     });
-    expect(owner?.entryPath).toBe(undefined);
     expect(
       surfaces.some(
         (surface) => 'path' in surface && surface.path === '/meetings/',
       ),
     ).toBe(false);
+    expect(index).toMatchObject({
+      id: 'meetings:index-markdown',
+      path: meetingsMarkdownPath(),
+      mediaType: 'text/markdown',
+      cacheClass: 'markdown',
+      discoveryRoles: ['section-entry', 'markdown-companion'],
+      catalogRole: 'anchor',
+    });
     expect(detail).toMatchObject({
       id: 'meetings:detail',
       label: 'Страница транскрипции встречи',
@@ -285,6 +299,14 @@ describe('public surface registry', () => {
       mediaType: 'text/html',
       cacheClass: 'html',
       discoveryRoles: ['detail-page'],
+    });
+    expect(byId.get('meetings:detail-markdown')).toMatchObject({
+      routePattern: meetingMarkdownPattern(),
+      discoveryRoles: ['markdown-companion'],
+    });
+    expect(byId.get('meetings:transcript-part-markdown')).toMatchObject({
+      routePattern: meetingTranscriptPartMarkdownPattern(),
+      discoveryRoles: ['markdown-companion'],
     });
     expect(detail).not.toHaveProperty('catalogRole');
     expect(detail).not.toHaveProperty('linkRelations');

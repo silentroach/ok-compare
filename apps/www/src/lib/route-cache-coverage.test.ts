@@ -292,6 +292,7 @@ describe('nginx route cache coverage', () => {
         "/815/compare/",
         "/815/compare/rating/",
         "/815/compare/settlements/[slug]/",
+        "/meetings/[slug]/",
         "/news/",
         "/news/[year]/",
         "/news/[year]/[month]/",

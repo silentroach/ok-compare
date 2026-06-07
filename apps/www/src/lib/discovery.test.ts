@@ -147,6 +147,13 @@ describe('root api catalog', () => {
         }),
       ]),
     );
+    expect(payload.linkset).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          anchor: 'https://example.com/sub/meetings/index.md',
+        }),
+      ]),
+    );
     expect(reglamentEntry?.item).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

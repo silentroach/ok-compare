@@ -6,6 +6,15 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 import type { PublicSurfaceId } from './public-surface';
 
 const fixtures = vi.hoisted(() => ({
+  meetings: [
+    {
+      slug: '2026-06-13-ok-comfort',
+      url: '/meetings/2026-06-13-ok-comfort/',
+      transcript: {
+        parts: [{ index: 1 }],
+      },
+    },
+  ],
   news: {
     articles: [{ id: 'news-1' }, { id: 'news-2' }, { id: 'news-3' }],
   },
@@ -21,6 +30,10 @@ const fixtures = vi.hoisted(() => ({
     incidents: [{ id: 'status-1' }, { id: 'status-2' }],
     active: [{ kind: 'incident' }, { kind: 'maintenance' }],
   },
+}));
+
+vi.mock('./meetings/load', () => ({
+  loadMeetings: async () => fixtures.meetings,
 }));
 
 vi.mock('./news/load', () => ({
@@ -104,6 +117,10 @@ describe('root llms', () => {
       'https://example.com/news/data/articles.json',
       'https://example.com/status/llms.txt',
       'https://example.com/status/data/status.json',
+      'https://example.com/meetings/index.md',
+      'https://example.com/meetings/2026-06-13-ok-comfort/',
+      'https://example.com/meetings/2026-06-13-ok-comfort/index.md',
+      'https://example.com/meetings/2026-06-13-ok-comfort/transcript/1.md',
       'https://example.com/815/regulation/llms.txt',
       'https://example.com/815/regulation/data/estimate-2026.json',
       'https://example.com/815/regulation/data/full-2026.json',
@@ -139,6 +156,7 @@ describe('root llms', () => {
       'status:index',
       'status:llms',
       'status:data',
+      'meetings:index-markdown',
       'reglament:index',
       'reglament:llms',
       'reglament:data-estimate-2026',
