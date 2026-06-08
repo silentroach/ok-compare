@@ -1,7 +1,7 @@
 /// <reference types="astro/client" />
 
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // @ts-expect-error Astro component modules are resolved by Astro/Vitest at test time.
 import StatusServiceCard from './StatusServiceCard.astro';
@@ -45,6 +45,16 @@ const summary = (): StatusServiceSummary => ({
   activeIncidents: [],
   activeMaintenance: [],
   daysWithoutIncidents: { mode: 'count', days: 1 },
+});
+
+beforeEach(() => {
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2026-05-10T00:00:00Z'));
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+  vi.restoreAllMocks();
 });
 
 describe('StatusServiceCard', () => {
