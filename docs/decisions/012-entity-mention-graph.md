@@ -205,9 +205,13 @@ Graph module может иметь защитную проверку на self-l
 
 - Новый раздел с редакционным Markdown body должен подключать общий `SiteMentionRegistry`, а не отдельный people-only preprocessor.
 - Данные mention registry должны собираться из identity/frontmatter слоя до нормализации body, чтобы разные типы сущностей могли ссылаться друг на друга без циклов datasets.
-- `people/mentions.ts` должен стать адаптером людей или thin re-export поверх общего `lib/mentions`, а не владельцем всего синтаксиса упоминаний.
-- `news`, `status` и `people` должны отдавать source refs через свои адаптеры, потому что только источник знает собственные title, URL, excerpt, дату и `sort_key`.
-- Общий graph module должен тестироваться на группировку, дедупликацию source-level refs, сортировку и ошибки self-link, не используя реальные формы `NewsArticle` и `StatusIncident`.
-- Тесты источников должны проверять свои adapters: какие refs публикует новость, инцидент или профиль.
+- `people/mentions.ts` является адаптером людей поверх общего `lib/mentions`, а не владельцем всего синтаксиса упоминаний.
+- `news`, `status` и `people` отдают source refs через свои адаптеры, потому что только источник знает собственные title, URL, excerpt, дату и `sort_key`.
+- Общий graph module тестируется на группировку, дедупликацию source-level refs, сортировку и ошибки self-link, не используя реальные формы `NewsArticle` и `StatusIncident`.
+- Тесты источников проверяют свои adapters: какие refs публикует новость, инцидент или профиль.
 - Публичные people surfaces должны сохранить поведение `backlinks.news`, `backlinks.status` и `backlinks.people`, даже если внутренняя реализация переедет на общий graph.
 - При появлении мест нужно добавить registry adapter мест, source refs для их Markdown body и доменную публичную поверхность мест, а не менять синтаксис Markdown заново.
+
+## Заметка по реализации
+
+На 2026-06-08 общий слой `apps/www/src/lib/mentions` реализован. Он содержит registry, нормализацию `@slug`/`@slug:case`/`[текст](@slug)`, source-level refs, граф обратных ссылок, дедупликацию, сортировку и проверку self-link. `apps/www/src/lib/people/mentions.ts` стал адаптером профиля человека в generic mention target, а `news`, `status` и `people` публикуют source refs через свои соседние adapters. Публичный people-контракт остается доменным; `EntityMentionType` пока содержит только `person`, потому что второго реального типа сущности еще нет.

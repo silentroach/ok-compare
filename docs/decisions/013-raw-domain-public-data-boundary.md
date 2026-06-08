@@ -201,4 +201,8 @@ Mapper получает на вход тип, выведенный из Zod-сх
 - Public JSON и agent-facing feeds должны строиться через отдельные public adapters.
 - Existing public surfaces нельзя случайно менять во время внутренней миграции: если public shape меняется, это отдельный task с обновлением схем, discovery, llms и тестов.
 - Enum/string literal mappings должны быть явными и тестируемыми.
-- Финальная миграция должна оставить `snake_case` только в разрешенных внешних зонах.
+- Для текущих доменов финальная миграция оставила `snake_case` только в разрешенных внешних зонах.
+
+## Заметка по реализации
+
+На 2026-06-08 текущие домены `news`, `status`, `people`, `meetings` и Compare разведены по этой схеме: raw Zod-схемы и raw-типы живут на внешней границе, mapper-ы переводят данные в вручную описанные readonly domain interfaces, а публичные JSON/agent-facing payloads собираются через отдельные public DTO adapters. В UI-страницах и компонентах `apps/www` не используются legacy `snake_case` поля вроде `started_at`, `name_cases`, `source_urls` или compare enum values; они остаются в raw/public DTO, mapper-ах, fixtures и документации внешнего формата.
