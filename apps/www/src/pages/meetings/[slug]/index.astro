@@ -203,8 +203,8 @@ const schema = techArticleSchema({
                           </a>
                         </div>
 
-                        <p
-                          class="mt-1 min-w-0 text-[0.9375rem] leading-6 text-foreground md:mt-0 md:text-base md:leading-7"
+                        <div
+                          class="meeting-transcript-text mt-1 min-w-0 text-[0.9375rem] leading-6 text-foreground md:mt-0 md:text-base md:leading-7"
                           set:html={textHtml}
                         />
                       </li>
@@ -276,5 +276,52 @@ const schema = techArticleSchema({
     .meeting-transcript-segment::before {
       transition: none;
     }
+  }
+</style>
+
+<style is:global>
+  .meeting-transcript-text > * + * {
+    margin-block-start: 0.625rem;
+  }
+
+  .meeting-transcript-text p {
+    white-space: pre-line;
+  }
+
+  .meeting-transcript-text ol,
+  .meeting-transcript-text ul {
+    list-style: none;
+    padding-inline-start: 0;
+  }
+
+  .meeting-transcript-text li {
+    position: relative;
+    padding-inline-start: 1.25rem;
+  }
+
+  .meeting-transcript-text li + li {
+    margin-block-start: 0.25rem;
+  }
+
+  .meeting-transcript-text ul > li::before {
+    position: absolute;
+    inset-inline-start: 0.1rem;
+    color: var(--color-primary);
+    content: '•';
+  }
+
+  .meeting-transcript-text ol {
+    counter-reset: transcript-list;
+  }
+
+  .meeting-transcript-text ol > li {
+    counter-increment: transcript-list;
+  }
+
+  .meeting-transcript-text ol > li::before {
+    position: absolute;
+    inset-inline-start: 0;
+    color: var(--color-muted-foreground);
+    content: counter(transcript-list) '.';
   }
 </style>

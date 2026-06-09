@@ -1,5 +1,6 @@
 import { dateTimeFromISO } from '@shelkovo/format';
-import { formatDynamicHtml } from '@shelkovo/markdown';
+
+import { renderMarkdown } from '@/lib/markdown/render';
 
 import type {
   Meeting,
@@ -11,15 +12,6 @@ import type {
 
 const META_DESCRIPTION_LIMIT = 170;
 const SPACE = /\s+/gu;
-const LINE_BREAK = /\r\n|\r|\n/gu;
-
-const escapeHtml = (value: string): string =>
-  value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
 
 const normalizeMetaText = (value: string): string => value.replace(SPACE, ' ');
 
@@ -87,4 +79,4 @@ export const formatMeetingSpeakerAnchor = (
 ): string => `speaker-${speaker.id}`;
 
 export const formatTranscriptTextHtml = (text: string): string =>
-  formatDynamicHtml(escapeHtml(text)).replace(LINE_BREAK, '<br>');
+  renderMarkdown(text);

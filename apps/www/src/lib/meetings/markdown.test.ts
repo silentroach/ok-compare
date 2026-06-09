@@ -140,4 +140,22 @@ describe('meetings markdown', () => {
     expect(markdown).toContain('Полный текст второй реплики');
     expect(markdown).not.toMatch(/manifest/iu);
   });
+
+  it('preserves markdown blocks inside transcript segment text', () => {
+    const item = meeting();
+    const segment = item.transcript.parts[0]!.segments[1]!;
+    const part = {
+      ...item.transcript.parts[0]!,
+      segments: [
+        {
+          ...segment,
+          text: 'Категории:\n\n- Первая.\n- Вторая.\n- Третья.',
+        },
+      ],
+    };
+
+    expect(buildMeetingTranscriptPartMarkdown(item, part)).toMatch(
+      /Категории:\n\n\s+- Первая\.\n\s+- Вторая\.\n\s+- Третья\./u,
+    );
+  });
 });

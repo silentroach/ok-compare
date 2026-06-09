@@ -33,6 +33,12 @@ export const MEETINGS_MARKDOWN_HEADERS = {
 
 type MarkdownNode = ReturnType<typeof parseMarkdownFragment>[number];
 type MarkdownListItem = ReturnType<typeof md.listItem>;
+type MarkdownParagraph = ReturnType<typeof md.paragraph>;
+type MarkdownListItemChildren = Exclude<
+  Parameters<typeof md.listItem>[0],
+  string
+>;
+type MarkdownBlockContent = MarkdownListItemChildren[number];
 
 const serialize = (children: readonly MarkdownNode[]): string =>
   serializeMarkdownDocument(createMarkdownDocument({ children }));
@@ -40,6 +46,12 @@ const serialize = (children: readonly MarkdownNode[]): string =>
 const inline = (value: string): string => value.replace(/\s+/gu, ' ').trim();
 
 const abs = (path: string): string => absoluteUrl(path);
+
+const isBlockContent = (node: MarkdownNode): node is MarkdownBlockContent =>
+  node.type !== 'definition' && node.type !== 'footnoteDefinition';
+
+const segmentTextBlocks = (text: string): readonly MarkdownBlockContent[] =>
+  parseMarkdownFragment(text).filter(isBlockContent);
 
 const linkedItem = (label: string, url: string): MarkdownListItem =>
   md.listItem([md.paragraph([md.link(url, label), md.text('.')])]);
@@ -111,19 +123,41 @@ const transcriptPartLine = (
     ]),
   ]);
 
+const segmentLead = (
+  meeting: Meeting,
+  segment: MeetingTranscriptSegment,
+): MarkdownParagraph =>
+  md.paragraph([
+    md.link(
+      abs(`${meeting.url}#${segment.anchor}`),
+      formatTranscriptTime(segment.start),
+    ),
+    md.text(` — ${segment.speaker.label}: `),
+  ]);
+
 const segmentLine = (
   meeting: Meeting,
   segment: MeetingTranscriptSegment,
-): MarkdownListItem =>
-  md.listItem([
-    md.paragraph([
-      md.link(
-        abs(`${meeting.url}#${segment.anchor}`),
-        formatTranscriptTime(segment.start),
-      ),
-      md.text(` — ${segment.speaker.label}: ${inline(segment.text)}`),
-    ]),
-  ]);
+): MarkdownListItem => {
+  const lead = segmentLead(meeting, segment);
+  const blocks = segmentTextBlocks(segment.text);
+  const [first, ...rest] = blocks;
+
+  if (first?.type === 'paragraph') {
+    return md.listItem(
+      [
+        {
+          ...lead,
+          children: [...lead.children, ...first.children],
+        },
+        ...rest,
+      ],
+      { spread: blocks.length > 1 },
+    );
+  }
+
+  return md.listItem([lead, ...blocks], { spread: blocks.length > 0 });
+};
 
 const navigationItems = (
   meeting: Meeting,

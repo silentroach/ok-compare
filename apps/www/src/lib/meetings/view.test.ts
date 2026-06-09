@@ -134,30 +134,41 @@ describe('meeting view helpers', () => {
     );
   });
 
-  it('escapes script and HTML-looking transcript text', () => {
+  it('renders transcript text as safe Markdown', () => {
+    const html = formatTranscriptTextHtml(
+      'Категории:\n\n- Первая.\n- Вторая.\n- Третья.',
+    );
+
+    expect(html).toMatchInlineSnapshot(`
+      "<p>Категории:</p>
+      <ul>
+      <li>Первая.</li>
+      <li>Вторая.</li>
+      <li>Третья.</li>
+      </ul>"
+    `);
+  });
+
+  it('drops raw HTML from transcript markdown', () => {
     const html = formatTranscriptTextHtml(
       '<script>alert("x")</script> <a href="https://example.com?a=1&b=2">link</a>',
     );
 
-    expect(html).toContain('&lt;script&gt;alert');
-    expect(html).toContain('&lt;/script&gt;');
-    expect(html).toContain(
-      '&lt;a href=&quot;https://example.com?a=1&amp;b=2&quot;&gt;link&lt;/a&gt;',
-    );
     expect(html).not.toContain('<script>');
     expect(html).not.toContain('<a href=');
+    expect(html).toBe('');
   });
 
   it('keeps ampersands and quotes safe while applying typography', () => {
     const html = formatTranscriptTextHtml('Компания "ОК" & жители');
 
-    expect(html).toContain('«ОК»');
-    expect(html).toContain('&amp;');
+    expect(html).toContain('<p>Компания «ОК» &#x26; жители</p>');
+    expect(html).toContain('&#x26;');
   });
 
-  it('preserves internal line breaks as br tags', () => {
+  it('keeps internal line breaks in markdown paragraphs', () => {
     expect(formatTranscriptTextHtml('Первая строка\nВторая строка')).toBe(
-      'Первая строка<br>Вторая строка',
+      '<p>Первая строка\nВторая строка</p>',
     );
   });
 });
