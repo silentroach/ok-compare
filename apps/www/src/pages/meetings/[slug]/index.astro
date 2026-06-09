@@ -16,7 +16,6 @@ import {
   formatMeetingSourceLabel,
   formatMeetingSpeakerAnchor,
   formatTranscriptPartLabel,
-  formatTranscriptTextHtml,
   formatTranscriptTime,
 } from '@/lib/meetings/view';
 import { techArticleSchema } from '@/lib/news/seo';
@@ -179,7 +178,6 @@ const schema = techArticleSchema({
 
                   {part.segments.map((segment) => {
                     const timestamp = formatTranscriptTime(segment.start);
-                    const textHtml = formatTranscriptTextHtml(segment.text);
 
                     return (
                       <li
@@ -205,7 +203,7 @@ const schema = techArticleSchema({
 
                         <div
                           class="meeting-transcript-text mt-1 min-w-0 text-[0.9375rem] leading-6 text-foreground md:mt-0 md:text-base md:leading-7"
-                          set:html={textHtml}
+                          set:html={segment.textHtml}
                         />
                       </li>
                     );
@@ -286,6 +284,16 @@ const schema = techArticleSchema({
 
   .meeting-transcript-text p {
     white-space: pre-line;
+  }
+
+  .meeting-transcript-text a {
+    color: var(--color-primary);
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+
+  .meeting-transcript-text a:hover {
+    color: var(--color-primary-hover);
   }
 
   .meeting-transcript-text ol,

@@ -33,6 +33,7 @@ const meeting = (): Meeting => {
     speakerId: speaker.id,
     speaker,
     text: 'Добрый день. Начинаем встречу.',
+    textHtml: '<p>Добрый день. Начинаем встречу.</p>',
   };
   const second = {
     anchor: 't-00-00-15',
@@ -40,6 +41,8 @@ const meeting = (): Meeting => {
     speakerId: speaker.id,
     speaker,
     text: 'Полный текст второй реплики хранится только в файле части.',
+    textHtml:
+      '<p>Полный текст второй реплики хранится только в файле части.</p>',
   };
   const third = {
     anchor: 't-00-00-00-2',
@@ -47,6 +50,7 @@ const meeting = (): Meeting => {
     speakerId: speaker.id,
     speaker,
     text: 'Вторая часть начинается заново с нуля.',
+    textHtml: '<p>Вторая часть начинается заново с нуля.</p>',
   };
 
   return {

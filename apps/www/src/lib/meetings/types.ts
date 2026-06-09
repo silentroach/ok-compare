@@ -24,6 +24,7 @@ export interface MeetingTranscriptSegment {
   readonly speakerId: string;
   readonly speaker: MeetingSpeaker;
   readonly text: string;
+  readonly textHtml: string;
 }
 
 export interface MeetingTranscriptPart {

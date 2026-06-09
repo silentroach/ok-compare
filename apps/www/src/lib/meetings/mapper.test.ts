@@ -159,6 +159,36 @@ describe('mapRawMeeting', () => {
     });
   });
 
+  it('renders person mentions inside transcript text', () => {
+    const result = map({
+      transcript: {
+        segments: [
+          {
+            start: '00:00:00',
+            speaker: 'moderator',
+            text: 'Он датируется тем же @sminakov:ins.',
+          },
+        ],
+      },
+      mentionRegistry: new Map([
+        [
+          'sminakov',
+          createPersonMentionTarget(
+            'sminakov',
+            'Сергей Александрович Минаков',
+            { ins: 'Сергеем Александровичем Минаковым' },
+            'группа компаний «Земля МО»',
+            'Бывший руководитель',
+          ),
+        ],
+      ]),
+    });
+
+    expect(result.transcript.segments[0]?.textHtml).toContain(
+      '<a href="/people/sminakov/" title="Бывший руководитель, группа компаний «Земля МО»">Сергеем Александровичем Минаковым</a>',
+    );
+  });
+
   it('maps local speaker descriptions and person description overrides', () => {
     const result = map({
       meeting: {

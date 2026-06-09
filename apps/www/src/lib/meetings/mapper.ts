@@ -1,4 +1,5 @@
 import type { SiteMentionRegistry } from '@/lib/mentions';
+import { renderMarkdown } from '@/lib/markdown/render';
 
 import { parseMeetingTimestamp } from './date';
 import type {
@@ -124,6 +125,7 @@ const segmentAnchor = (
 const mapSegment = (
   raw: RawMeetingTranscriptSegment,
   context: string,
+  mentionRegistry: SiteMentionRegistry,
   speakers: ReadonlyMap<string, MeetingSpeaker>,
   anchorCounts: Map<string, number>,
   previousStart?: MeetingTranscriptTime,
@@ -146,6 +148,12 @@ const mapSegment = (
     speakerId: raw.speaker,
     speaker,
     text: raw.text,
+    textHtml: renderMarkdown(raw.text, {
+      mentions: {
+        context: `${context} text`,
+        registry: mentionRegistry,
+      },
+    }),
   };
 };
 
@@ -153,6 +161,7 @@ const mapPart = (
   rawSegments: readonly RawMeetingTranscriptSegment[],
   index: number,
   hasMultipleParts: boolean,
+  mentionRegistry: SiteMentionRegistry,
   speakers: ReadonlyMap<string, MeetingSpeaker>,
   anchorCounts: Map<string, number>,
 ): MeetingTranscriptPart => {
@@ -179,6 +188,7 @@ const mapPart = (
     const segment = mapSegment(
       raw,
       context,
+      mentionRegistry,
       speakers,
       anchorCounts,
       previousStart,
@@ -264,6 +274,7 @@ export const mapRawMeeting = (
       transcript.data.segments,
       transcript.part,
       hasMultipleParts,
+      opts.mentionRegistry,
       speakers,
       anchorCounts,
     ),
