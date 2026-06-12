@@ -1,6 +1,7 @@
+import { formatCurrency } from '@shelkovo/format';
 import { BRAND_KEYWORDS, collectKeywords } from '@shelkovo/seo';
 
-import { formatCurrency, formatTariffAuto } from './format';
+import { formatTariffAuto } from './format';
 import type { ComparisonResult, Settlement } from './settlement/types';
 
 export const COMPARE_PRODUCT_NAME = 'Сравни с Шелково';

@@ -7,19 +7,21 @@ import SourcesList from '@/compare/components/SourcesList.svelte';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
 import {
+  formatCurrency,
+  formatDistance,
+  formatPercentage,
+} from '@shelkovo/format';
+import { calculateDistance } from '@shelkovo/geo';
+import {
   compareBreadcrumbSchema,
   settlementBreadcrumbs,
 } from '@/compare/lib/breadcrumbs';
 import { loadAllData, findBaseline } from '@/compare/lib/data';
 import {
-  formatCurrency,
   getLotCalc,
   formatTariffAuto,
   formatTariffBase,
   getTariffCalc,
-  formatDistance,
-  formatPercentage,
-  calculateDistance,
 } from '@/compare/lib/format';
 import type { Settlement } from '@/compare/lib/settlement/types';
 import { settlementPageMeta } from '@/compare/lib/seo';

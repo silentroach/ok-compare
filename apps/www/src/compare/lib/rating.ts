@@ -1,4 +1,4 @@
-import { calculateDistance } from './format';
+import { calculateDistance } from '@shelkovo/geo';
 import type {
   AvailabilityStatus,
   DrainageType,

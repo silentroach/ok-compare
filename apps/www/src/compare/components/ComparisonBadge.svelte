@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { formatCurrency } from '../lib/format';
+  import { formatCurrency } from '@shelkovo/format';
 
   interface Props {
     delta: number;

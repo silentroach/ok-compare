@@ -1,6 +1,7 @@
 <script lang="ts">
+  import { formatDate } from '@shelkovo/format';
+
   import type { Source, SourceType } from '../lib/settlement/types';
-  import { formatDate } from '../lib/format';
 
   interface Props {
     sources: Source[];

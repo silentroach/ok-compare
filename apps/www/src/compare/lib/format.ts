@@ -1,11 +1,9 @@
 import {
   formatCurrency,
-  formatDate,
-  formatDistance,
-  formatPercentage,
+  formatNumberRu,
   formatTariff,
+  pluralize,
 } from '@shelkovo/format';
-import { calculateDistance } from '@shelkovo/geo';
 import { getLotBreakdown, getLotAverage } from './settlement/lots';
 import type {
   CommonSpaces,
@@ -15,15 +13,6 @@ import type {
   TariffPart,
 } from './settlement/types';
 
-export {
-  calculateDistance,
-  formatCurrency,
-  formatDate,
-  formatDistance,
-  formatPercentage,
-  formatTariff,
-};
-
 type TariffView = Pick<
   Tariff,
   'normalizedPerSotkaMonth' | 'normalizedIsEstimate'
@@ -31,6 +20,11 @@ type TariffView = Pick<
 type TariffLike = Tariff | TariffView;
 
 const LOT = 10;
+const NUMBER_OPTIONS = {
+  style: 'decimal',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
+} as const satisfies Intl.NumberFormatOptions;
 
 function months(period: Tariff['period']): number {
   if (period === 'month') return 1;
@@ -38,24 +32,7 @@ function months(period: Tariff['period']): number {
   return 12;
 }
 
-function num(value: number): string {
-  return value.toLocaleString('ru-RU', {
-    style: 'decimal',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  });
-}
-
-function word(value: number, one: string, few: string, many: string): string {
-  const n = Math.abs(Math.trunc(value));
-  const mod10 = n % 10;
-  const mod100 = n % 100;
-  if (mod10 === 1 && mod100 !== 11) return one;
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
-    return few;
-  }
-  return many;
-}
+const num = (value: number): string => formatNumberRu(value, NUMBER_OPTIONS);
 
 function area(value: number): string {
   const text = num(value);
@@ -210,7 +187,7 @@ export function getLotCalc(
     list.length === 0
       ? 'нет подтвержденных вычетов.'
       : more > 0
-        ? `${head} и еще ${more} ${word(more, 'фактор', 'фактора', 'факторов')}.`
+        ? `${head} и еще ${more} ${pluralize(more, ['фактор', 'фактора', 'факторов'])}.`
         : `${head}.`;
 
   return {
@@ -240,7 +217,7 @@ export function getTariffCalc(
 
   const rows = list.map((item, i) => {
     const m = months(item.period);
-    const mons = word(m, 'месяц', 'месяца', 'месяцев');
+    const mons = pluralize(m, ['месяц', 'месяца', 'месяцев']);
     const value = item.value;
     const monthly = value / m;
     const normalized =

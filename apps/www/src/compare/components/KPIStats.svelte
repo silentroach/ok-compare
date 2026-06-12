@@ -1,6 +1,7 @@
 <script lang="ts">
+  import { formatPercentage, formatTariff } from '@shelkovo/format';
+
   import type { Stats } from '../lib/settlement/types';
-  import { formatPercentage, formatTariff } from '../lib/format';
 
   interface Props {
     stats: Stats;

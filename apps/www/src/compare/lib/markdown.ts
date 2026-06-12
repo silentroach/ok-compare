@@ -7,16 +7,19 @@ import {
   type MarkdownPhrasingInput,
 } from '@shelkovo/markdown';
 
-import { compareRuText } from '@shelkovo/format';
-
-import { loadAllData } from './data';
 import {
-  calculateDistance,
+  compareRuText,
   formatCurrency,
   formatDate,
   formatDistance,
+  formatNumberRu,
   formatPercentage,
   formatTariff,
+} from '@shelkovo/format';
+import { calculateDistance } from '@shelkovo/geo';
+
+import { loadAllData } from './data';
+import {
   formatTariffAuto,
   formatTariffOriginal,
   hasNonSotkaUnit,
@@ -103,12 +106,11 @@ function part(
   ];
 }
 
-function num(value: number): string {
-  return value.toLocaleString('ru-RU', {
+const num = (value: number): string =>
+  formatNumberRu(value, {
     minimumFractionDigits: Number.isInteger(value) ? 0 : 1,
     maximumFractionDigits: 1,
   });
-}
 
 function lots(item: Settlement): readonly MarkdownListItem[] {
   if (!item.lots) return [];

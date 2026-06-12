@@ -1,5 +1,5 @@
 import { ChangeFreqEnum, type SitemapItem } from '@astrojs/sitemap';
-import { compareRuText } from '@shelkovo/format';
+import { compareRuText, padNumber } from '@shelkovo/format';
 
 export interface SitemapMetadata {
   readonly lastmod?: string;
@@ -54,9 +54,6 @@ const CHANGEFREQ = {
   monthly: ChangeFreqEnum.MONTHLY,
   yearly: ChangeFreqEnum.YEARLY,
 } as const;
-
-const pad = (value: number | string, size: number): string =>
-  String(value).padStart(size, '0');
 
 const decodePathname = (value: string): string => {
   try {
@@ -142,8 +139,8 @@ const addNewsMetadata = (
 ): void => {
   for (const article of articles) {
     const lastmod = articleLastmod(article);
-    const year = pad(article.year, 4);
-    const month = pad(article.month, 2);
+    const year = padNumber(article.year, 4);
+    const month = padNumber(article.month, 2);
     const daily = { lastmod, changefreq: CHANGEFREQ.daily };
 
     for (const path of [

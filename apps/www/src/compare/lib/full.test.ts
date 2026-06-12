@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { calculateDistance } from '@shelkovo/geo';
 
-import { calculateDistance } from './format';
 import { toFull, toFullPayload } from './full';
 import type { Rating } from './rating';
 import { mapRawSettlement } from './settlement/mapper';

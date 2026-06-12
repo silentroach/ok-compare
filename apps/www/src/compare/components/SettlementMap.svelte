@@ -160,6 +160,7 @@
 </script>
 
 <script lang="ts">
+  import { formatTariff } from '@shelkovo/format';
   import { onMount, onDestroy } from 'svelte';
   import { withBase } from '../lib/url';
 
@@ -638,7 +639,7 @@
           >
             <strong
               >{tip.item.tariffText ??
-                `${Math.round(tip.item.normalizedTariff).toLocaleString('ru-RU')} ₽/сотка`}</strong
+                formatTariff(tip.item.normalizedTariff)}</strong
             >
           </p>
         </div>

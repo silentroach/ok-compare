@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { compareRuText } from '@shelkovo/format';
+  import { compareRuText, formatTariff } from '@shelkovo/format';
+  import { calculateDistance } from '@shelkovo/geo';
   import Link from '@shelkovo/ui/Link.svelte';
   import { onMount } from 'svelte';
   import type { ExplorerPayload, ExplorerSettlement } from '../lib/explorer';
-  import { calculateDistance, formatTariff } from '../lib/format';
   import { getRing } from '../lib/rating';
   import { withBase } from '../lib/url';
   import SettlementMap from './SettlementMap.svelte';

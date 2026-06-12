@@ -1,9 +1,9 @@
 <script lang="ts">
+  import { formatCurrency, formatTariff } from '@shelkovo/format';
   import Link from '@shelkovo/ui/Link.svelte';
   import type { ExplorerSettlement } from '../lib/explorer';
   import type { ComparisonResult } from '../lib/settlement/types';
   import { withBase } from '../lib/url';
-  import { formatCurrency, formatTariff } from '../lib/format';
   import TariffRank from './TariffRank.svelte';
 
   interface Props {
