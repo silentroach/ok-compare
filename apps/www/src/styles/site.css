@@ -51,7 +51,6 @@ html[data-site-navigation-pending] .site-navigation-progress::before {
 }
 
 .ui-root-site .ui-link,
-.ui-root-site .ui-prose a,
 .ui-root-site .site-inline-link,
 .ui-root-site .news-tag-inline-link,
 .ui-root-site .news-tag-link {
@@ -66,12 +65,27 @@ html[data-site-navigation-pending] .site-navigation-progress::before {
 }
 
 .ui-root-site .ui-link:is(:hover, :focus-visible),
-.ui-root-site .ui-prose a:is(:hover, :focus-visible),
 .ui-root-site .site-inline-link:is(:hover, :focus-visible),
 .ui-root-site .news-tag-inline-link:is(:hover, :focus-visible),
 .ui-root-site .news-tag-link:is(:hover, :focus-visible),
 .ui-root-site .news-tag-row:is(:hover, :focus-visible) .news-tag-link {
   text-decoration-color: color-mix(in oklab, currentColor 30%, transparent);
+  text-underline-offset: 0.18em;
+}
+
+.ui-root-site .meeting-transcript-text a {
+  text-decoration-line: underline;
+  text-decoration-color: color-mix(in oklab, currentColor 38%, transparent);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.22em;
+  transition:
+    color 0.2s ease,
+    text-decoration-color 0.2s ease,
+    text-underline-offset 0.2s ease;
+}
+
+.ui-root-site .meeting-transcript-text a:is(:hover, :focus-visible) {
+  text-decoration-color: color-mix(in oklab, currentColor 72%, transparent);
   text-underline-offset: 0.18em;
 }
 

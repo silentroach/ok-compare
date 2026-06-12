@@ -580,12 +580,21 @@ a.ui-chip:hover {
 }
 
 .ui-prose a {
-  font-weight: 500;
   color: var(--color-primary);
+  text-decoration-line: underline;
+  text-decoration-color: color-mix(in oklab, currentColor 38%, transparent);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.22em;
+  transition:
+    color 0.2s ease,
+    text-decoration-color 0.2s ease,
+    text-underline-offset 0.2s ease;
 }
 
-.ui-prose a:hover {
+.ui-prose a:is(:hover, :focus-visible) {
   color: var(--color-primary-hover);
+  text-decoration-color: color-mix(in oklab, currentColor 72%, transparent);
+  text-underline-offset: 0.18em;
 }
 
 .ui-prose strong {
