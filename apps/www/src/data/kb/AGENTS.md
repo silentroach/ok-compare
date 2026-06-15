@@ -1,0 +1,10 @@
+# AGENTS.md
+
+Короткие правила для `apps/www/src/data/kb`. Подробное решение: `docs/decisions/015-markdown-first-knowledge-base.md`.
+
+- Markdown-файлы базы знаний лежат в этой папке; корень раздела — `index.md`.
+- В frontmatter разрешены только `title`, `description` и опциональный `tags`.
+- URL строится из пути: `index.md` дает `/kb/`, `services/internet.md` дает `/kb/services/internet/`, `services/index.md` дает `/kb/services/`.
+- Не создавай одновременно `foo.md` и `foo/index.md`: они конфликтуют за один публичный URL.
+- Дочерние страницы не выводятся автоматически. Если раздел должен ссылаться на вложенные материалы, добавь ссылки вручную в Markdown.
+- Новости и редакционные объявления идут в `/news`; перебои сервисов, аварии и окна работ — в `/status`, не в `/kb`.

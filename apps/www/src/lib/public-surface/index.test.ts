@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   createPublicSurfaceRegistry,
+  kbPublicSurfaceSlice,
   publicSurfaceRegistry,
   surfaceHref,
   surfaceToLinksetItem,
@@ -23,6 +24,8 @@ import {
   compareSettlementsDataPath,
   compareSkillsPath,
 } from '@/compare/lib/public-surface';
+import { catalog } from '@/lib/discovery';
+import { kbDetailPattern, kbPath } from '@/lib/kb/routes';
 import {
   apiCatalogPath as newsApiCatalogPath,
   articleMarkdownPattern,
@@ -190,6 +193,53 @@ describe('public surface registry', () => {
       siteApiCatalogPath(),
       siteSkillsPath(),
     ]);
+  });
+
+  it('registers kb MVP HTML surfaces from kb route helpers', () => {
+    const surfaces = publicSurfaceRegistry.surfacesByOwner('kb');
+    const byId = new Map(surfaces.map((surface) => [surface.id, surface]));
+    const surfaceIds = surfaces.map((surface) => surface.id);
+    const forbiddenIds = [
+      'kb:index-markdown',
+      'kb:data',
+      'kb:schema',
+      'kb:openapi',
+      'kb:llms',
+      'kb:llms-full',
+    ];
+    const rootCatalog = catalog('https://example.com/sub') as {
+      readonly linkset: readonly { readonly anchor?: string }[];
+    };
+
+    expect(kbPublicSurfaceSlice.owner).toEqual({
+      id: 'kb',
+      label: 'База знаний',
+      entryPath: kbPath(),
+    });
+    expect(publicSurfaceRegistry.surfaceOwner('kb:index')).toEqual(
+      kbPublicSurfaceSlice.owner,
+    );
+    expect(surfaceIds).toEqual(['kb:index', 'kb:page']);
+    expect(byId.get('kb:index')).toMatchObject({
+      path: kbPath(),
+      mediaType: 'text/html',
+      cacheClass: 'html',
+      discoveryRoles: ['section-entry'],
+      catalogRole: 'anchor',
+    });
+    expect(byId.get('kb:page')).toMatchObject({
+      routePattern: kbDetailPattern(),
+      mediaType: 'text/html',
+      cacheClass: 'html',
+      discoveryRoles: ['detail-page'],
+    });
+    expect(byId.get('kb:page')).not.toHaveProperty('catalogRole');
+    expect(surfaceIds).not.toEqual(expect.arrayContaining(forbiddenIds));
+    expect(rootCatalog.linkset).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ anchor: 'https://example.com/sub/kb/' }),
+      ]),
+    );
   });
 
   it('registers news surfaces from news route helpers', () => {
