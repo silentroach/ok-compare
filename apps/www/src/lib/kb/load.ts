@@ -70,8 +70,6 @@ const mapEntry = (
     id: entry.id,
     sourceId: entry.id,
     title: entry.data.title,
-    description: entry.data.description,
-    tags: [...(entry.data.tags ?? [])],
     url: routeSlug ? kbDetailUrl(routeSlug) : kbUrl(),
     canonical: routeSlug ? kbDetailCanonical(routeSlug) : kbCanonical(),
     routeSlug,

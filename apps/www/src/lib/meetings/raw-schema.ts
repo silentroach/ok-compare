@@ -9,17 +9,16 @@ import {
 const SPEAKER_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const TIME = /^\d{2}:[0-5]\d:[0-5]\d$/;
 
-const text = (name: string) =>
-  z.string().trim().min(1, `${name} must not be blank`);
+const text = z.string().trim();
 
 const absoluteUrl = (name: string) =>
-  text(name).refine(
+  text.refine(
     (value) => isAbsoluteUrl(value),
     `${name} must be an absolute URL`,
   );
 
 const meetingDate = (name: string) =>
-  z.union([text(name), z.date()]).transform((value, ctx) => {
+  z.union([text, z.date()]).transform((value, ctx) => {
     const normalized = normalizeNewsTimestampInput(value);
 
     if (normalized && parseNewsTimestampInput(value)) {
@@ -35,13 +34,13 @@ const meetingDate = (name: string) =>
   });
 
 const speakerId = (name: string) =>
-  text(name).refine(
+  text.refine(
     (value) => SPEAKER_ID.test(value),
     `${name} must use lower-case Latin letters, digits, and hyphen`,
   );
 
 const time = (name: string) =>
-  text(name).refine(
+  text.refine(
     (value) => TIME.test(value),
     `${name} must use HH:MM:SS with minutes and seconds from 00 to 59`,
   );
@@ -50,13 +49,13 @@ const RawMeetingSpeakerSchema = z.union([
   z
     .object({
       person: speakerId('speakers[].person'),
-      description: text('speakers[].description').optional(),
+      description: text.optional(),
     })
     .strict(),
   z
     .object({
-      name: text('speakers[].name'),
-      description: text('speakers[].description').optional(),
+      name: text,
+      description: text.optional(),
     })
     .strict(),
 ]);
@@ -65,7 +64,7 @@ const RawMeetingTranscriptSegmentSchema = z
   .object({
     start: time('segments[].start'),
     speaker: speakerId('segments[].speaker'),
-    text: text('segments[].text'),
+    text,
   })
   .strict();
 
@@ -100,9 +99,9 @@ const RawMeetingSpeakersSchema = z
 
 export const RawMeetingSchema = z
   .object({
-    title: text('title'),
+    title: text,
     date: meetingDate('date'),
-    context: text('context'),
+    context: text,
     speakers: RawMeetingSpeakersSchema,
     updated_at: meetingDate('updated_at').optional(),
     source_urls: z.array(absoluteUrl('source_urls[]')).min(1).optional(),

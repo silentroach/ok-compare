@@ -5,8 +5,6 @@ export interface KbPage {
   readonly id: string;
   readonly sourceId: string;
   readonly title: string;
-  readonly description: string;
-  readonly tags: readonly string[];
   readonly url: string;
   readonly canonical: string;
   readonly routeSlug?: string;

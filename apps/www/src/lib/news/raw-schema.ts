@@ -13,30 +13,22 @@ import { normalizeNewsTimestampInput, parseNewsTimestampInput } from './date';
 const TAG = /^[а-яё0-9 -]+$/u;
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-const text = (name: string) =>
-  z
-    .string()
-    .min(1, `${name} is required`)
-    .refine((value) => value.trim().length > 0, `${name} must not be blank`)
-    .refine(
-      (value) => value === value.trim(),
-      `${name} must not start or end with whitespace`,
-    );
+const text = z.string().trim();
 
 const absoluteUrl = (name: string) =>
-  text(name).refine(
+  text.refine(
     (value) => isAbsoluteUrl(value),
     `${name} must be an absolute URL`,
   );
 
 const attachmentUrl = (name: string) =>
-  text(name).refine(
+  text.refine(
     (value) => isAttachmentUrl(value),
     `${name} must be an absolute URL or a root-relative path`,
   );
 
 const newsDate = (name: string) =>
-  z.union([text(name), z.date()]).transform((value, ctx) => {
+  z.union([text, z.date()]).transform((value, ctx) => {
     const normalized = normalizeNewsTimestampInput(value);
 
     if (normalized && parseNewsTimestampInput(value)) {
@@ -52,7 +44,7 @@ const newsDate = (name: string) =>
   });
 
 const newsDateTime = (name: string) =>
-  z.union([text(name), z.date()]).transform((value, ctx) => {
+  z.union([text, z.date()]).transform((value, ctx) => {
     const normalized = normalizeNewsTimestampInput(value);
     const parsed = parseNewsTimestampInput(value);
 
@@ -69,13 +61,13 @@ const newsDateTime = (name: string) =>
   });
 
 const forbiddenTime = (name: string) =>
-  text(name).refine(
+  text.refine(
     () => false,
     `${name} is not supported; include time in date as dd.mm.yyyy hh:mm`,
   );
 
 const tag = () =>
-  text('tags[]')
+  text
     .refine(
       (value) => value === value.toLowerCase(),
       'tags[] must be lower-case',
@@ -87,17 +79,17 @@ const tag = () =>
 
 const attachment = () =>
   z.object({
-    title: text('attachments[].title'),
+    title: text,
     url: attachmentUrl('attachments[].url'),
-    type: text('attachments[].type').optional(),
-    size: text('attachments[].size').optional(),
+    type: text.optional(),
+    size: text.optional(),
   });
 
 const photo = (image: SchemaContext['image']) =>
   z.object({
     src: image(),
-    alt: text('photos[].alt'),
-    caption: text('photos[].caption').optional(),
+    alt: text,
+    caption: text.optional(),
   });
 
 const media = (image: SchemaContext['image']) => ({
@@ -107,18 +99,18 @@ const media = (image: SchemaContext['image']) => ({
 
 const eventOrganizer = () =>
   z.union([
-    text('events[].organizer'),
+    text,
     z.object({
-      name: text('events[].organizer.name'),
+      name: text,
       type: z.enum(['organization', 'person']).optional(),
     }),
   ]);
 
 const eventPerformer = () =>
   z.union([
-    text('events[].performer[]'),
+    text,
     z.object({
-      name: text('events[].performer[].name'),
+      name: text,
       type: z.enum(['organization', 'person']).optional(),
     }),
   ]);
@@ -126,14 +118,14 @@ const eventPerformer = () =>
 const event = () =>
   z
     .object({
-      slug: text('events[].slug')
+      slug: text
         .refine((value) => SLUG.test(value), 'events[].slug must be a slug')
         .optional(),
-      title: text('events[].title'),
-      description: text('events[].description').optional(),
+      title: text,
+      description: text.optional(),
       starts_at: newsDateTime('events[].starts_at'),
       ends_at: newsDateTime('events[].ends_at').optional(),
-      location: text('events[].location').optional(),
+      location: text.optional(),
       coordinates: z
         .object({
           lat: z.number().min(-90).max(90),
@@ -229,11 +221,11 @@ function validateTags(
 }
 
 export const RawNewsAuthorSchema = z.object({
-  name: text('name'),
+  name: text,
   kind: z.enum(NEWS_AUTHOR_KINDS),
-  short_name: text('short_name').optional(),
+  short_name: text.optional(),
   url: absoluteUrl('url').optional(),
-  role: text('role').optional(),
+  role: text.optional(),
 });
 
 export type RawNewsAuthor = z.output<typeof RawNewsAuthorSchema>;
@@ -241,8 +233,8 @@ export type RawNewsAuthor = z.output<typeof RawNewsAuthorSchema>;
 export const createRawNewsArticleSchema = (image: SchemaContext['image']) =>
   z
     .object({
-      title: text('title'),
-      summary: text('summary'),
+      title: text,
+      summary: text,
       date: newsDate('date'),
       time: forbiddenTime('time').optional(),
       author: reference('newsAuthors'),
@@ -252,13 +244,13 @@ export const createRawNewsArticleSchema = (image: SchemaContext['image']) =>
       tags: z.array(tag()).min(1).optional(),
       source_url: absoluteUrl('source_url').optional(),
       cover: image().optional(),
-      cover_alt: text('cover_alt').optional(),
+      cover_alt: text.optional(),
       events: z.array(event()).min(1).optional(),
       ...media(image),
       seo: z
         .object({
-          title: text('seo.title').optional(),
-          description: text('seo.description').optional(),
+          title: text.optional(),
+          description: text.optional(),
         })
         .optional(),
     })

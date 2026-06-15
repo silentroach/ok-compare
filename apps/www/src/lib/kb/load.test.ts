@@ -18,16 +18,12 @@ beforeAll(async () => {
 const page = (input: {
   readonly id: string;
   readonly title: string;
-  readonly description: string;
-  readonly tags?: readonly string[];
   readonly body?: string;
 }): KbPageEntry => ({
   id: input.id,
   body: input.body ?? '',
   data: {
     title: input.title,
-    description: input.description,
-    tags: input.tags ? [...input.tags] : undefined,
   },
 });
 
@@ -37,13 +33,10 @@ describe('buildKbDataset', () => {
       page({
         id: 'index',
         title: 'База знаний',
-        description: 'Справочные материалы поселка.',
       }),
       page({
         id: 'services/internet',
         title: 'Интернет в поселке',
-        description: 'Как подключить интернет и где смотреть статус.',
-        tags: ['интернет'],
       }),
     ]);
 
@@ -55,14 +48,17 @@ describe('buildKbDataset', () => {
       canonical: 'https://example.com/kb/',
       routeSlug: undefined,
     });
-    expect(data.byId.get('services/internet')).toMatchObject({
+    const internetPage = data.byId.get('services/internet');
+
+    expect(internetPage).toMatchObject({
       id: 'services/internet',
       sourceId: 'services/internet',
       url: '/kb/services/internet/',
       canonical: 'https://example.com/kb/services/internet/',
       routeSlug: 'services/internet',
-      tags: ['интернет'],
     });
+    expect(internetPage).not.toHaveProperty('description');
+    expect(internetPage).not.toHaveProperty('tags');
   });
 
   it('rejects entries that resolve to the same public URL', () => {
@@ -71,12 +67,10 @@ describe('buildKbDataset', () => {
         page({
           id: 'foo',
           title: 'Foo',
-          description: 'Первый источник.',
         }),
         page({
           id: 'foo/index',
           title: 'Foo index',
-          description: 'Второй источник.',
         }),
       ]),
     ).toThrow(
@@ -90,7 +84,6 @@ describe('buildKbDataset', () => {
         page({
           id: 'services/Internet',
           title: 'Интернет в поселке',
-          description: 'Как подключить интернет.',
         }),
       ]),
     ).toThrow(
@@ -103,7 +96,6 @@ describe('buildKbDataset', () => {
       page({
         id: 'services/internet',
         title: 'Интернет в поселке',
-        description: 'Как подключить интернет.',
         body: '# Подключение\n\nТекст с **жирным** Markdown.\n',
       }),
     ]);
@@ -120,7 +112,6 @@ describe('buildKbDataset', () => {
         page({
           id: 'services/internet',
           title: 'Интернет в поселке',
-          description: 'Как подключить интернет.',
           body: 'Статус подтвердил @kschemelinin.',
         }),
       ],
@@ -148,7 +139,6 @@ describe('buildKbDataset', () => {
         page({
           id: 'services/internet',
           title: 'Интернет в поселке',
-          description: 'Как подключить интернет.',
           body: 'Статус подтвердил @unknown.',
         }),
       ]),
