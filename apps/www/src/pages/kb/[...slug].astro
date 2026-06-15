@@ -3,13 +3,15 @@ import type { GetStaticPaths } from 'astro';
 
 import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { BreadcrumbItem } from '@/lib/breadcrumbs';
+import { kbBreadcrumbs } from '@/lib/kb/breadcrumbs';
 import { loadKbPages } from '@/lib/kb/load';
-import { kbPath } from '@/lib/kb/routes';
 import type { KbPage } from '@/lib/kb/types';
 import { renderMarkdown } from '@/lib/markdown/render';
 
 interface Props {
   readonly page: KbPage;
+  readonly breadcrumbs: readonly BreadcrumbItem[];
 }
 
 const KB_TITLE = 'База знаний';
@@ -31,17 +33,15 @@ export const getStaticPaths = (async () => {
     },
     props: {
       page,
+      breadcrumbs: kbBreadcrumbs(page, pages),
     },
   }));
 }) satisfies GetStaticPaths;
 
-const { page } = Astro.props;
+const { page, breadcrumbs } = Astro.props;
 const title = page.routeSlug
   ? `${page.title} — ${KB_TITLE} — Шелково Онлайн`
   : `${KB_TITLE} — Шелково Онлайн`;
-const breadcrumbs = page.routeSlug
-  ? [{ label: KB_TITLE, href: kbPath() }, { label: page.title }]
-  : [{ label: KB_TITLE }];
 const bodyHtml = page.body ? renderMarkdown(page.body) : undefined;
 ---
 
