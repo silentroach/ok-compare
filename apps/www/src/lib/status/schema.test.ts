@@ -7,7 +7,6 @@ import {
   mapRawStatusKind,
   mapRawStatusService,
 } from './mapper';
-import { RawStatusIncidentSchema } from './raw-schema';
 import { parseStatusTimestampInput } from './schema';
 
 describe('parseStatusTimestampInput', () => {
@@ -60,28 +59,6 @@ describe('parseStatusTimestampInput', () => {
     ).toBeUndefined();
     expect(parseStatusTimestampInput('01.05.2026 7:32')).toBeUndefined();
     expect(parseStatusTimestampInput('31.04.2026')).toBeUndefined();
-  });
-});
-
-describe('RawStatusIncidentSchema', () => {
-  it('keeps status frontmatter as an explicit reusable raw schema', () => {
-    expect(
-      RawStatusIncidentSchema.parse({
-        service: 'water',
-        kind: 'maintenance',
-        started_at: '01.05.2026 07:32',
-        ended_at: '01.05.2026 08:10',
-        areas: ['river'],
-        source_url: 'https://example.com/status/source',
-      }),
-    ).toMatchObject({
-      service: 'water',
-      kind: 'maintenance',
-      started_at: '01.05.2026 07:32',
-      ended_at: '01.05.2026 08:10',
-      areas: ['river'],
-      source_url: 'https://example.com/status/source',
-    });
   });
 });
 

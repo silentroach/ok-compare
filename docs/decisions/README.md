@@ -18,3 +18,4 @@
 - [ADR-012: Единый граф упоминаний сущностей в Markdown](012-entity-mention-graph.md) - принят, 2026-05-20.
 - [ADR-013: Граница между внешними DTO, доменной моделью и публичными DTO](013-raw-domain-public-data-boundary.md) - принят, 2026-05-20.
 - [ADR-014: Transcript-first архив встреч](014-meetings-transcript-first-archive.md) - принят, 2026-06-07.
+- [ADR-015: Markdown-first база знаний поселка](015-markdown-first-knowledge-base.md) - принят, 2026-06-16.

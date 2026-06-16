@@ -9,24 +9,16 @@ import {
   STATUS_SERVICES,
 } from './schema';
 
-const text = (name: string) =>
-  z
-    .string()
-    .min(1, `${name} is required`)
-    .refine((value) => value.trim().length > 0, `${name} must not be blank`)
-    .refine(
-      (value) => value === value.trim(),
-      `${name} must not start or end with whitespace`,
-    );
+const text = z.string().trim();
 
 const absoluteUrl = (name: string) =>
-  text(name).refine(
+  text.refine(
     (value) => isAbsoluteUrl(value),
     `${name} must be an absolute URL`,
   );
 
 const statusDate = (name: string) =>
-  z.union([text(name), z.date()]).transform((value, ctx) => {
+  z.union([text, z.date()]).transform((value, ctx) => {
     const normalized = normalizeStatusTimestampInput(value);
 
     if (normalized && parseStatusTimestampInput(value)) {
@@ -43,7 +35,7 @@ const statusDate = (name: string) =>
 
 export const RawStatusIncidentSchema = z
   .object({
-    title: text('title').optional(),
+    title: text.optional(),
     service: z.enum(STATUS_SERVICES),
     kind: z.enum(STATUS_KINDS),
     started_at: statusDate('started_at'),

@@ -6,16 +6,26 @@ interface Props {
   readonly articles: readonly NewsListArticle[];
   readonly featured?: boolean;
   readonly empty?: string;
+  readonly hideFirstBorder?: boolean;
 }
 
-const { articles, featured = false, empty } = Astro.props;
+const {
+  articles,
+  featured = false,
+  empty,
+  hideFirstBorder = false,
+} = Astro.props;
+const flushFirstBorder = !featured && hideFirstBorder;
 ---
 
 {
   articles.length > 0 ? (
     <ul
       role={featured ? 'list' : undefined}
-      class:list={[featured ? 'grid gap-4 lg:grid-cols-2' : 'space-y-4']}
+      class:list={[
+        featured ? 'grid gap-4 lg:grid-cols-2' : 'space-y-4',
+        flushFirstBorder && 'news-list--flush-first',
+      ]}
     >
       {articles.map((article) => (
         <li>

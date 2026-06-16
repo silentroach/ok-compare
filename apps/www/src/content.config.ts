@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { RawKbPageSchema } from '@/lib/kb/raw-schema';
 import { parseNewsTimestampInput } from './lib/news/date';
 import {
   RawNewsAuthorSchema,
@@ -77,6 +78,38 @@ function failPerson(entry: string, reason: string): never {
 
 function failMeeting(entry: string, reason: string): never {
   throw new Error(`meeting data path \"${entry}\" ${reason}`);
+}
+
+function failKbPage(entry: string, reason: string): never {
+  throw new Error(`kb page path \"${entry}\" ${reason}`);
+}
+
+function validateKbPageSource(entry: string, sourceId: string): void {
+  const parts = sourceId.split('/');
+
+  if (parts.some((part) => part.length === 0)) {
+    failKbPage(entry, 'must not contain empty path segments');
+  }
+
+  const routeSegments =
+    parts[parts.length - 1] === 'index' ? parts.slice(0, -1) : parts;
+
+  for (const segment of routeSegments) {
+    if (!SLUG.test(segment)) {
+      failKbPage(
+        entry,
+        `segment \"${segment}\" must use lower-case Latin letters, digits, and hyphen`,
+      );
+    }
+  }
+}
+
+function kbPageSourceId(entry: string): string {
+  const sourceId = trimMarkdown(entry);
+
+  validateKbPageSource(entry, sourceId);
+
+  return sourceId;
 }
 
 function meetingYamlId(
@@ -278,6 +311,15 @@ const peopleProfiles = defineCollection({
   schema: RawPersonProfileSchema,
 });
 
+const kbPages = defineCollection({
+  loader: glob({
+    pattern: ['**/*.md', '!**/AGENTS.md'],
+    base: './src/data/kb',
+    generateId: ({ entry }) => kbPageSourceId(entry),
+  }),
+  schema: RawKbPageSchema,
+});
+
 const meetingEntries = defineCollection({
   loader: glob({
     pattern: '*/index.yaml',
@@ -309,6 +351,7 @@ export const collections = {
   newsArticles,
   settlements,
   statusIncidents,
+  kbPages,
   peopleProfiles,
   meetingEntries,
   meetingTranscripts,
