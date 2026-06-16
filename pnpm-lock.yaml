@@ -102,6 +102,9 @@ importers:
 
   apps/www:
     dependencies:
+      '@astrojs/markdown-remark':
+        specifier: ^7.2.0
+        version: 7.2.0
       '@astrojs/rss':
         specifier: ^4.0.18
         version: 4.0.18
@@ -135,6 +138,9 @@ importers:
       svelte:
         specifier: ^5.56.3
         version: 5.56.3
+      yaml:
+        specifier: ^2.9.0
+        version: 2.9.0
       zod:
         specifier: ^4.4.3
         version: 4.4.3

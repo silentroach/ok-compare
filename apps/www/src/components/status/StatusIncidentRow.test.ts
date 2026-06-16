@@ -1,8 +1,8 @@
 /// <reference types="astro/client" />
 
-import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 
+import { createAstroContainer } from '@/test/astro-container';
 import type { StatusIncident } from '@/lib/status/types';
 
 // @ts-expect-error Astro component modules are resolved by Astro/Vitest at test time.
@@ -41,7 +41,7 @@ const incident = {
 
 describe('StatusIncidentRow', () => {
   it('renders incident title links without leading whitespace', async () => {
-    const container = await AstroContainer.create();
+    const container = await createAstroContainer();
     const html = await container.renderToString(StatusIncidentRow, {
       props: { incident },
     });

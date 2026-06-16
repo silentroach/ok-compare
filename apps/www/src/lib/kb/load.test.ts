@@ -19,12 +19,18 @@ const page = (input: {
   readonly id: string;
   readonly title: string;
   readonly body?: string;
+  readonly flags?: readonly ['noindex'];
 }): KbPageEntry => ({
   id: input.id,
   body: input.body ?? '',
-  data: {
-    title: input.title,
-  },
+  data: input.flags
+    ? {
+        title: input.title,
+        flags: input.flags,
+      }
+    : {
+        title: input.title,
+      },
 });
 
 describe('buildKbDataset', () => {
@@ -104,6 +110,31 @@ describe('buildKbDataset', () => {
       '# Подключение\n\nТекст с **жирным** Markdown.',
     );
     expect(data.pages[0]?.body).not.toContain('<strong>');
+  });
+
+  it('defaults omitted flags to an empty page flag list', () => {
+    const data = buildKbDataset([
+      page({
+        id: 'services/internet',
+        title: 'Интернет в поселке',
+      }),
+    ]);
+
+    expect(data.pages[0]?.flags).toEqual([]);
+    expect(data.pages[0]?.robots).toBeUndefined();
+  });
+
+  it('maps the noindex flag to page robots metadata', () => {
+    const data = buildKbDataset([
+      page({
+        id: 'court/01/documents',
+        title: 'Документы по делу',
+        flags: ['noindex'],
+      }),
+    ]);
+
+    expect(data.pages[0]?.flags).toEqual(['noindex']);
+    expect(data.pages[0]?.robots).toBe('noindex, follow');
   });
 
   it('normalizes body mentions through the shared registry', () => {

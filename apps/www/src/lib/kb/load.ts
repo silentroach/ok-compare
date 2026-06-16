@@ -4,16 +4,19 @@ import { preprocessSiteMarkdownContent } from '@/lib/markdown/render';
 import type { SiteMentionRegistry } from '@/lib/mentions';
 import { loadPeopleMentionRegistry } from '@/lib/people/registry';
 import { kbCanonical, kbDetailCanonical, kbDetailUrl, kbUrl } from './routes';
-import type { KbDataset, KbPage } from './types';
+import type { KbDataset, KbPage, KbPageFlag } from './types';
 
-export type KbPageEntry = Pick<
-  CollectionEntry<'kbPages'>,
-  'id' | 'data' | 'body'
->;
+export type KbPageEntry = Pick<CollectionEntry<'kbPages'>, 'id' | 'body'> & {
+  readonly data: {
+    readonly title: string;
+    readonly flags?: readonly KbPageFlag[];
+  };
+};
 
 let cache: Promise<KbDataset> | undefined;
 
 const KB_ROUTE_SEGMENT = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const KB_NOINDEX_ROBOTS = 'noindex, follow';
 
 const failSourceId = (sourceId: string, reason: string): never => {
   throw new Error(`kb page source id "${sourceId}" ${reason}`);
@@ -60,6 +63,7 @@ const mapEntry = (
   mentionRegistry: SiteMentionRegistry,
 ): KbPage => {
   const routeSlug = entryRouteSlug(entry.id);
+  const flags = entry.data.flags ?? [];
   const body = preprocessSiteMarkdownContent(
     entry.body ?? '',
     `kb page "${entry.id}" body`,
@@ -70,6 +74,8 @@ const mapEntry = (
     id: entry.id,
     sourceId: entry.id,
     title: entry.data.title,
+    flags,
+    robots: flags.includes('noindex') ? KB_NOINDEX_ROBOTS : undefined,
     url: routeSlug ? kbDetailUrl(routeSlug) : kbUrl(),
     canonical: routeSlug ? kbDetailCanonical(routeSlug) : kbCanonical(),
     routeSlug,

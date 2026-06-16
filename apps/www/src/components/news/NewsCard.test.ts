@@ -1,8 +1,8 @@
 /// <reference types="astro/client" />
 
-import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 
+import { createAstroContainer } from '@/test/astro-container';
 import type { NewsListArticle } from '../../lib/news/types';
 
 // @ts-expect-error Astro component modules are resolved by Astro/Vitest at test time.
@@ -43,7 +43,7 @@ const baseArticle: NewsListArticle = {
 
 describe('NewsCard', () => {
   it('announces pinned state without prohibited aria-label on a plain span', async () => {
-    const container = await AstroContainer.create();
+    const container = await createAstroContainer();
     const html = await container.renderToString(NewsCard, {
       props: { article: baseArticle },
     });

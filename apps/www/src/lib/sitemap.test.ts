@@ -26,6 +26,7 @@ describe('buildSitemapMetadataIndex', () => {
       statusIncidents: [],
       settlements: [],
       meetings: [],
+      kbPages: [],
     });
 
     expect({
@@ -92,6 +93,7 @@ describe('buildSitemapMetadataIndex', () => {
         },
       ],
       meetings: [],
+      kbPages: [],
     });
 
     expect({
@@ -147,6 +149,7 @@ describe('buildSitemapMetadataIndex', () => {
           dateIso: '2026-05-20',
         },
       ],
+      kbPages: [],
     });
 
     expect({
@@ -168,6 +171,38 @@ describe('buildSitemapMetadataIndex', () => {
         },
       }
     `);
+  });
+
+  it('marks flagged kb pages as excluded from the sitemap', () => {
+    const index = buildSitemapMetadataIndex({
+      newsArticles: [],
+      statusIncidents: [],
+      settlements: [],
+      meetings: [],
+      kbPages: [
+        {
+          url: '/kb/public/',
+          excludeFromSitemap: false,
+        },
+        {
+          url: '/kb/court/01/documents/',
+          excludeFromSitemap: true,
+        },
+      ],
+    });
+
+    expect(
+      applySitemapMetadata(
+        { url: 'https://kpshelkovo.online/kb/court/01/documents/' },
+        index,
+      ),
+    ).toBeUndefined();
+    expect(
+      applySitemapMetadata(
+        { url: 'https://kpshelkovo.online/kb/public/' },
+        index,
+      ),
+    ).toEqual({ url: 'https://kpshelkovo.online/kb/public/' });
   });
 });
 

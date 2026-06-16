@@ -1,8 +1,9 @@
 /// <reference types="astro/client" />
 
 import { dateTimeFromISO } from '@shelkovo/format';
-import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
+
+import { createAstroContainer } from '@/test/astro-container';
 
 // @ts-expect-error Astro component modules are resolved by Astro/Vitest at test time.
 import StatusIncidentPeriod from './StatusIncidentPeriod.astro';
@@ -12,7 +13,7 @@ const currentYear = dateTimeFromISO(new Date().toISOString()).year;
 
 describe('StatusIncidentPeriod', () => {
   it('renders same-day time ranges without extra whitespace before the end time', async () => {
-    const container = await AstroContainer.create();
+    const container = await createAstroContainer();
     const html = await container.renderToString(StatusIncidentPeriod, {
       props: {
         incident: {

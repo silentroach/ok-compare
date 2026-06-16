@@ -21,6 +21,7 @@ const page = (input: {
   id: input.id,
   sourceId: input.id,
   title: input.title,
+  flags: [],
   url: input.routeSlug ? `/kb/${input.routeSlug}/` : '/kb/',
   canonical: input.routeSlug
     ? `https://example.com/kb/${input.routeSlug}/`

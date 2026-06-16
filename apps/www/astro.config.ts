@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url';
 import { constants } from 'node:zlib';
 import type { SitemapItem } from '@astrojs/sitemap';
+import { unified } from '@astrojs/markdown-remark';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import svelte from '@astrojs/svelte';
@@ -24,7 +25,9 @@ const loadSitemapMetadata = (): Promise<SitemapMetadataIndex> => {
   return sitemapMetadataIndex;
 };
 
-const serializeSitemapItem = async (item: SitemapItem): Promise<SitemapItem> =>
+const serializeSitemapItem = async (
+  item: SitemapItem,
+): Promise<SitemapItem | undefined> =>
   applySitemapMetadata(item, await loadSitemapMetadata());
 
 export default defineConfig({
@@ -35,7 +38,11 @@ export default defineConfig({
   },
   cacheDir: '../../node_modules/.astro/www',
   markdown: {
-    rehypePlugins: [rehypeTypograf],
+    processor: unified({
+      gfm: true,
+      smartypants: true,
+      rehypePlugins: [rehypeTypograf],
+    }),
   },
   prefetch: {
     prefetchAll: true,

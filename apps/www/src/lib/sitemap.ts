@@ -4,6 +4,7 @@ import { compareRuText, padNumber } from '@shelkovo/format';
 export interface SitemapMetadata {
   readonly lastmod?: string;
   readonly changefreq?: SitemapItem['changefreq'];
+  readonly excludeFromSitemap?: true;
 }
 
 export type SitemapMetadataIndex = ReadonlyMap<string, SitemapMetadata>;
@@ -40,11 +41,17 @@ export interface SitemapMeetingInput {
   readonly updatedIso?: string;
 }
 
+export interface SitemapKbPageInput {
+  readonly url: string;
+  readonly excludeFromSitemap: boolean;
+}
+
 export interface SitemapMetadataSourceData {
   readonly newsArticles: readonly SitemapNewsArticleInput[];
   readonly statusIncidents: readonly SitemapStatusIncidentInput[];
   readonly settlements: readonly SitemapSettlementInput[];
   readonly meetings: readonly SitemapMeetingInput[];
+  readonly kbPages: readonly SitemapKbPageInput[];
 }
 
 const EXTENSION = /\.[^/]+$/u;
@@ -123,11 +130,26 @@ const setMetadata = (
   const next = {
     ...(lastmod ? { lastmod } : {}),
     ...(changefreq ? { changefreq } : {}),
+    ...(current?.excludeFromSitemap ? { excludeFromSitemap: true } : {}),
   } satisfies SitemapMetadata;
 
-  if (next.lastmod || next.changefreq) {
+  if (next.lastmod || next.changefreq || next.excludeFromSitemap) {
     index.set(key, next);
   }
+};
+
+const excludeFromSitemap = (
+  index: Map<string, SitemapMetadata>,
+  url: string,
+): void => {
+  const key = sitemapPathKey(url);
+  const current = index.get(key);
+
+  index.set(key, {
+    lastmod: current?.lastmod,
+    changefreq: current?.changefreq,
+    excludeFromSitemap: true,
+  });
 };
 
 const articleLastmod = (article: SitemapNewsArticleInput): string =>
@@ -231,6 +253,17 @@ const addMeetingsMetadata = (
   }
 };
 
+const addKbMetadata = (
+  index: Map<string, SitemapMetadata>,
+  pages: readonly SitemapKbPageInput[],
+): void => {
+  for (const page of pages) {
+    if (page.excludeFromSitemap) {
+      excludeFromSitemap(index, page.url);
+    }
+  }
+};
+
 export const buildSitemapMetadataIndex = (
   data: SitemapMetadataSourceData,
 ): SitemapMetadataIndex => {
@@ -240,6 +273,7 @@ export const buildSitemapMetadataIndex = (
   addStatusMetadata(index, data.statusIncidents);
   addCompareMetadata(index, data.settlements);
   addMeetingsMetadata(index, data.meetings);
+  addKbMetadata(index, data.kbPages);
 
   return new Map([...index.entries()].sort(([a], [b]) => compareRuText(a, b)));
 };
@@ -247,8 +281,12 @@ export const buildSitemapMetadataIndex = (
 export const applySitemapMetadata = (
   item: SitemapItem,
   index: SitemapMetadataIndex,
-): SitemapItem => {
+): SitemapItem | undefined => {
   const metadata = index.get(sitemapPathKey(item.url));
+
+  if (metadata?.excludeFromSitemap) {
+    return;
+  }
 
   return metadata ? { ...item, ...metadata } : item;
 };

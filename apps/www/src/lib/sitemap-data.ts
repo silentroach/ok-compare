@@ -3,30 +3,71 @@ import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { compareRuText } from '@shelkovo/format';
+import { parse as parseYaml } from 'yaml';
+import { z } from 'zod';
 
-import { parseNewsTimestamp } from './news/date';
+import { parseNewsTimestampInput } from './news/date';
 import { normalizeTagKey } from './news/schema';
 import {
   buildSitemapMetadataIndex,
   type SitemapMetadataIndex,
   type SitemapMeetingInput,
   type SitemapNewsArticleInput,
+  type SitemapKbPageInput,
   type SitemapSettlementInput,
   type SitemapStatusIncidentInput,
 } from './sitemap';
 
+type YamlRecord = Record<string, unknown>;
+type SitemapDateInput = z.output<typeof SitemapDateInputSchema>;
+type SitemapDataIssue = {
+  readonly path: readonly PropertyKey[];
+  readonly message: string;
+};
+
 interface MarkdownParts {
-  readonly frontmatter: string;
+  readonly frontmatter: YamlRecord;
   readonly body: string;
 }
 
-const MARKDOWN_FRONTMATTER =
-  /^---\r?\n(?<frontmatter>[\s\S]*?)\r?\n---(?:\r?\n(?<body>[\s\S]*))?$/u;
-const NEWS_DATE = /^\s*(?:-\s*)?date:\s*(?<value>.+?)\s*$/gmu;
-const TAGS = /^tags:\s*\n(?<items>(?:\s+-\s*.+\s*\n?)+)/mu;
-const TAG_ITEM = /^\s+-\s*(?<value>.+?)\s*$/gmu;
-const SOURCE_DATE_CHECKED =
-  /^\s*date_checked:\s*(?<value>\d{4}-\d{2}-\d{2})\s*$/gmu;
+const KB_NOINDEX_FLAG = 'noindex';
+
+const SitemapDateInputSchema = z.union([z.string(), z.date()]);
+const NewsArticleFrontmatterSchema = z
+  .object({
+    date: SitemapDateInputSchema,
+    tags: z.array(z.string()).default([]),
+  })
+  .passthrough();
+const StatusIncidentFrontmatterSchema = z
+  .object({
+    service: z.string(),
+    started_at: SitemapDateInputSchema,
+    ended_at: SitemapDateInputSchema.optional(),
+  })
+  .passthrough();
+const SettlementSourceSchema = z
+  .object({
+    date_checked: SitemapDateInputSchema,
+  })
+  .passthrough();
+const SettlementSitemapSchema = z
+  .object({
+    slug: z.string(),
+    sources: z.array(SettlementSourceSchema).default([]),
+  })
+  .passthrough();
+const MeetingSitemapSchema = z
+  .object({
+    date: SitemapDateInputSchema,
+    updated_at: SitemapDateInputSchema.optional(),
+  })
+  .passthrough();
+const KbPageFrontmatterSchema = z
+  .object({
+    flags: z.array(z.string()).default([]),
+  })
+  .passthrough();
 
 const newsArticlesDir = fileURLToPath(
   new URL('../data/news/articles/', import.meta.url),
@@ -40,26 +81,80 @@ const settlementsDir = fileURLToPath(
 const meetingsDir = fileURLToPath(
   new URL('../data/meetings/', import.meta.url),
 );
+const kbPagesDir = fileURLToPath(new URL('../data/kb/', import.meta.url));
 
-const scalarField = (source: string, name: string): string | undefined => {
-  const match = source.match(new RegExp(`^${name}:\\s*(.+?)\\s*$`, 'mu'));
-  return match?.[1]?.trim();
+const formatYamlIssue = (issue: SitemapDataIssue): string => {
+  const path = issue.path.map(String).join('.');
+
+  return `${path || 'value'}: ${issue.message}`;
 };
 
-const stripQuotes = (value: string): string =>
-  value.replace(/^['"]|['"]$/gu, '').trim();
+const parseYamlObject = (source: string, context: string): YamlRecord => {
+  let parsed: unknown;
+
+  try {
+    parsed = parseYaml(source);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+
+    throw new Error(`${context} has invalid YAML: ${message}`);
+  }
+
+  if (typeof parsed !== 'object' || !parsed || Array.isArray(parsed)) {
+    throw new Error(`${context} must be a YAML object`);
+  }
+
+  return parsed as YamlRecord;
+};
+
+const parseYamlFile = (path: string): YamlRecord =>
+  parseYamlObject(readFileSync(path, 'utf8'), path);
+
+const parseSitemapData = <T>(
+  schema: z.ZodType<T>,
+  data: unknown,
+  context: string,
+): T => {
+  const result = schema.safeParse(data);
+
+  if (!result.success) {
+    const details = result.error.issues.map(formatYamlIssue).join('; ');
+
+    throw new Error(`${context} has invalid sitemap data: ${details}`);
+  }
+
+  return result.data;
+};
+
+const parseFrontmatterInput = (
+  frontmatter: string | YamlRecord,
+  context: string,
+): YamlRecord =>
+  typeof frontmatter === 'string'
+    ? parseYamlObject(frontmatter, context)
+    : frontmatter;
 
 const markdownParts = (path: string): MarkdownParts => {
-  const raw = readFileSync(path, 'utf8');
-  const match = raw.match(MARKDOWN_FRONTMATTER);
+  const lines = readFileSync(path, 'utf8').replaceAll('\r\n', '\n').split('\n');
+  const start = lines[0];
 
-  if (!match?.groups) {
+  if (start !== '---') {
     throw new Error(`markdown frontmatter is required in ${path}`);
   }
 
+  const end = lines.findIndex((line, index) => index > 0 && line === '---');
+
+  if (end < 0) {
+    throw new Error(
+      `markdown frontmatter closing marker is required in ${path}`,
+    );
+  }
+
+  const frontmatter = lines.slice(1, end).join('\n');
+
   return {
-    frontmatter: match.groups.frontmatter,
-    body: match.groups.body ?? '',
+    frontmatter: parseYamlObject(frontmatter, `${path} frontmatter`),
+    body: lines.slice(end + 1).join('\n'),
   };
 };
 
@@ -92,30 +187,11 @@ const relativeEntryId = (
     ? entry.slice(0, -extension.length)
     : entry;
 
-  return stem.replace(/\/index$/u, '');
+  return stem.endsWith('/index') ? stem.slice(0, -'/index'.length) : stem;
 };
 
-const latestTimestamp = (
-  values: readonly string[],
-  context: string,
-): string => {
-  const latest = values.reduce<string | undefined>((result, value) => {
-    if (!result) {
-      return value;
-    }
-
-    return Date.parse(value) >= Date.parse(result) ? value : result;
-  }, undefined);
-
-  if (!latest) {
-    throw new Error(`${context} must include date`);
-  }
-
-  return latest;
-};
-
-const parseTimestamp = (value: string, context: string): string => {
-  const timestamp = parseNewsTimestamp(stripQuotes(value));
+const parseTimestamp = (value: SitemapDateInput, context: string): string => {
+  const timestamp = parseNewsTimestampInput(value);
 
   if (!timestamp) {
     throw new Error(`${context} must use a supported date format`);
@@ -126,22 +202,12 @@ const parseTimestamp = (value: string, context: string): string => {
     : `${timestamp.year}-${timestamp.month}-${timestamp.day}`;
 };
 
-const newsDates = (frontmatter: string, context: string): readonly string[] =>
-  [...frontmatter.matchAll(NEWS_DATE)].map((match) =>
-    parseTimestamp(match.groups?.value ?? '', context),
-  );
-
-const newsTags = (frontmatter: string): readonly { readonly url: string }[] => {
-  const items = frontmatter.match(TAGS)?.groups?.items;
-
-  if (!items) {
-    return [];
-  }
-
-  return [...items.matchAll(TAG_ITEM)].map((match) => ({
-    url: `/news/tags/${normalizeTagKey(stripQuotes(match.groups?.value ?? ''))}/`,
+const newsTags = (
+  tags: readonly string[],
+): readonly { readonly url: string }[] =>
+  tags.map((tag) => ({
+    url: `/news/tags/${normalizeTagKey(tag)}/`,
   }));
-};
 
 const loadNewsArticlesForSitemap = (): readonly SitemapNewsArticleInput[] =>
   listFiles(newsArticlesDir, '.md').map((path) => {
@@ -149,8 +215,12 @@ const loadNewsArticlesForSitemap = (): readonly SitemapNewsArticleInput[] =>
     const [year, month, entry] = id.split('/');
     const context = `news article ${id}`;
     const { frontmatter } = markdownParts(path);
-    const dates = newsDates(frontmatter, context);
-    const latest = latestTimestamp(dates, context);
+    const article = parseSitemapData(
+      NewsArticleFrontmatterSchema,
+      frontmatter,
+      `${context} frontmatter`,
+    );
+    const publishedIso = parseTimestamp(article.date, `${context} date`);
 
     if (!year || !month || !entry) {
       throw new Error(`${context} must resolve to YYYY/MM/[entry] with date`);
@@ -158,11 +228,10 @@ const loadNewsArticlesForSitemap = (): readonly SitemapNewsArticleInput[] =>
 
     return {
       url: `/news/${year}/${month}/${entry}/`,
-      publishedIso: dates[0] ?? latest,
-      ...(latest !== dates[0] ? { updatedIso: latest } : {}),
+      publishedIso,
       year: Number(year),
       month: Number(month),
-      tags: newsTags(frontmatter),
+      tags: newsTags(article.tags),
     };
   });
 
@@ -175,11 +244,13 @@ const loadStatusIncidentsForSitemap =
         const [year, month, slug] = id.split('/');
         const context = `status incident ${id}`;
         const { frontmatter, body } = markdownParts(path);
-        const service = scalarField(frontmatter, 'service');
-        const startedAt = scalarField(frontmatter, 'started_at');
-        const endedAt = scalarField(frontmatter, 'ended_at');
+        const incident = parseSitemapData(
+          StatusIncidentFrontmatterSchema,
+          frontmatter,
+          `${context} frontmatter`,
+        );
 
-        if (!year || !month || !slug || !service || !startedAt) {
+        if (!year || !month || !slug) {
           throw new Error(
             `${context} must resolve to YYYY/MM/[slug] with service and started_at`,
           );
@@ -187,10 +258,18 @@ const loadStatusIncidentsForSitemap =
 
         return {
           url: `/status/incidents/${year}/${month}/${slug}/`,
-          service,
-          startedIso: parseTimestamp(startedAt, `${context} started_at`),
-          ...(endedAt
-            ? { endedIso: parseTimestamp(endedAt, `${context} ended_at`) }
+          service: incident.service,
+          startedIso: parseTimestamp(
+            incident.started_at,
+            `${context} started_at`,
+          ),
+          ...(incident.ended_at
+            ? {
+                endedIso: parseTimestamp(
+                  incident.ended_at,
+                  `${context} ended_at`,
+                ),
+              }
             : {}),
           hasPage: body.trim().length > 0,
         };
@@ -200,18 +279,22 @@ const loadSettlementsForSitemap = (): readonly SitemapSettlementInput[] =>
   listFiles(settlementsDir, '.yaml')
     .filter((path) => !path.endsWith('/_template.yaml'))
     .map((path) => {
-      const source = readFileSync(path, 'utf8');
-      const slug = scalarField(source, 'slug');
+      const settlement = parseSitemapData(
+        SettlementSitemapSchema,
+        parseYamlFile(path),
+        `settlement ${path}`,
+      );
 
-      if (!slug) {
-        throw new Error(`settlement ${path} must include slug`);
-      }
+      const sources = settlement.sources.map((source) => ({
+        dateChecked: parseTimestamp(
+          source.date_checked,
+          `settlement ${settlement.slug} source date_checked`,
+        ),
+      }));
 
       return {
-        slug,
-        sources: [...source.matchAll(SOURCE_DATE_CHECKED)].map((match) => ({
-          dateChecked: match.groups?.value ?? '',
-        })),
+        slug: settlement.slug,
+        sources,
       };
     });
 
@@ -220,22 +303,54 @@ const loadMeetingsForSitemap = (): readonly SitemapMeetingInput[] =>
     .filter((path) => path.endsWith('/index.yaml'))
     .map((path) => {
       const slug = relativeEntryId(meetingsDir, path, '.yaml');
-      const source = readFileSync(path, 'utf8');
       const context = `meeting ${slug}`;
-      const date = scalarField(source, 'date');
-      const updatedAt = scalarField(source, 'updated_at');
-
-      if (!date) {
-        throw new Error(`${context} must include date`);
-      }
+      const meeting = parseSitemapData(
+        MeetingSitemapSchema,
+        parseYamlFile(path),
+        context,
+      );
 
       return {
         url: `/meetings/${slug}/`,
-        dateIso: parseTimestamp(date, `${context} date`),
-        ...(updatedAt
-          ? { updatedIso: parseTimestamp(updatedAt, `${context} updated_at`) }
+        dateIso: parseTimestamp(meeting.date, `${context} date`),
+        ...(meeting.updated_at
+          ? {
+              updatedIso: parseTimestamp(
+                meeting.updated_at,
+                `${context} updated_at`,
+              ),
+            }
           : {}),
       };
+    });
+
+const kbPageUrl = (id: string): string => (id ? `/kb/${id}/` : '/kb/');
+
+export const kbPageSitemapInput = (
+  id: string,
+  frontmatter: string | YamlRecord,
+): SitemapKbPageInput => {
+  const context = `kb page ${id || 'index'} frontmatter`;
+  const page = parseSitemapData(
+    KbPageFrontmatterSchema,
+    parseFrontmatterInput(frontmatter, context),
+    context,
+  );
+
+  return {
+    url: kbPageUrl(id),
+    excludeFromSitemap: page.flags.includes(KB_NOINDEX_FLAG),
+  };
+};
+
+const loadKbPagesForSitemap = (): readonly SitemapKbPageInput[] =>
+  listFiles(kbPagesDir, '.md')
+    .filter((path) => !path.endsWith('/AGENTS.md'))
+    .map((path) => {
+      const id = relativeEntryId(kbPagesDir, path, '.md');
+      const { frontmatter } = markdownParts(path);
+
+      return kbPageSitemapInput(id, frontmatter);
     });
 
 export const loadSitemapMetadataIndex =
@@ -245,4 +360,5 @@ export const loadSitemapMetadataIndex =
       statusIncidents: loadStatusIncidentsForSitemap(),
       settlements: loadSettlementsForSitemap(),
       meetings: loadMeetingsForSitemap(),
+      kbPages: loadKbPagesForSitemap(),
     });

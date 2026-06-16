@@ -1,10 +1,14 @@
 import type { PreprocessedSiteMarkdownBody } from '@/lib/markdown/render';
 import type { EntityMentionTarget } from '@/lib/mentions';
 
+export type KbPageFlag = 'noindex';
+
 export interface KbPage {
   readonly id: string;
   readonly sourceId: string;
   readonly title: string;
+  readonly flags: readonly KbPageFlag[];
+  readonly robots?: string;
   readonly url: string;
   readonly canonical: string;
   readonly routeSlug?: string;

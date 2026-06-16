@@ -3,7 +3,8 @@
 Короткие правила для `apps/www/src/data/kb`. Подробное решение: `docs/decisions/015-markdown-first-knowledge-base.md`.
 
 - Markdown-файлы базы знаний лежат в этой папке; корень раздела — `index.md`.
-- В frontmatter разрешен только `title`.
+- В frontmatter разрешены `title` и опциональный `flags`; сейчас поддержан только флаг `noindex`.
+- `flags: [noindex]` не добавляет страницу в sitemap и ставит на HTML-страницу `robots: noindex, follow`.
 - URL строится из пути: `index.md` дает `/kb/`, `services/internet.md` дает `/kb/services/internet/`, `services/index.md` дает `/kb/services/`.
 - Не создавай одновременно `foo.md` и `foo/index.md`: они конфликтуют за один публичный URL.
 - Дочерние страницы не выводятся автоматически. Если раздел должен ссылаться на вложенные материалы, добавь ссылки вручную в Markdown.

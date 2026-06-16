@@ -1,7 +1,8 @@
 /// <reference types="astro/client" />
 
-import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { createAstroContainer } from '@/test/astro-container';
 
 // @ts-expect-error Astro component modules are resolved by Astro/Vitest at test time.
 import StatusServiceTimeline from './StatusServiceTimeline.astro';
@@ -41,7 +42,7 @@ const renderTimeline = async (
   incidents: readonly StatusTimelineIncidentInput[],
   timelineDays = 10,
 ): Promise<string> => {
-  const container = await AstroContainer.create();
+  const container = await createAstroContainer();
 
   return container.renderToString(StatusServiceTimeline, {
     props: {

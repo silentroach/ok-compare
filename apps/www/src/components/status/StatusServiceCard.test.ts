@@ -1,7 +1,8 @@
 /// <reference types="astro/client" />
 
-import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { createAstroContainer } from '@/test/astro-container';
 
 // @ts-expect-error Astro component modules are resolved by Astro/Vitest at test time.
 import StatusServiceCard from './StatusServiceCard.astro';
@@ -59,7 +60,7 @@ afterEach(() => {
 
 describe('StatusServiceCard', () => {
   it('keeps overview timeline tooltips available', async () => {
-    const container = await AstroContainer.create();
+    const container = await createAstroContainer();
     const html = await container.renderToString(StatusServiceCard, {
       props: {
         summary: summary(),
@@ -73,7 +74,7 @@ describe('StatusServiceCard', () => {
   });
 
   it('renders separate mobile and desktop timeline ranges when requested', async () => {
-    const container = await AstroContainer.create();
+    const container = await createAstroContainer();
     const html = await container.renderToString(StatusServiceCard, {
       props: {
         summary: summary(),

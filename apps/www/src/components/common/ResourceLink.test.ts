@@ -1,14 +1,15 @@
 /// <reference types="astro/client" />
 
-import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
+
+import { createAstroContainer } from '@/test/astro-container';
 
 // @ts-expect-error Astro component modules are resolved by Astro/Vitest at test time.
 import ResourceLink from '@shelkovo/ui/ResourceLink.astro';
 
 describe('ResourceLink', () => {
   it('renders PDF links with prefetch opt-out and full reload', async () => {
-    const container = await AstroContainer.create();
+    const container = await createAstroContainer();
     const html = await container.renderToString(ResourceLink, {
       props: {
         href: '/815/regulation/full.pdf',
@@ -32,7 +33,7 @@ describe('ResourceLink', () => {
   });
 
   it('preserves download links without forcing a target or reload', async () => {
-    const container = await AstroContainer.create();
+    const container = await createAstroContainer();
     const html = await container.renderToString(ResourceLink, {
       props: {
         href: '/news/events/community-day.ics',
