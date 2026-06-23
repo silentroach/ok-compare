@@ -125,6 +125,15 @@ describe('@shelkovo/markdown', () => {
       `);
   });
 
+  it('adds stable heading ids for in-page links', () => {
+    expect(render('## Что сделать сразу\n\nТекст\n\n## Что сделать сразу'))
+      .toMatchInlineSnapshot(`
+        "<h2 id=\"что-сделать-сразу\">Что сделать сразу</h2>
+        <p>Текст</p>
+        <h2 id=\"что-сделать-сразу-2\">Что сделать сразу</h2>"
+      `);
+  });
+
   it('rejects tables when rendering Markdown strings', () => {
     expect(() =>
       render('| Ключ | Значение |\n| --- | --- |\n| A | B |'),
