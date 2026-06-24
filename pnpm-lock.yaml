@@ -10,43 +10,6 @@ overrides:
 importers:
 
   .:
-    dependencies:
-      '@astrojs/sitemap':
-        specifier: ^3.7.3
-        version: 3.7.3
-      '@astrojs/svelte':
-        specifier: ^8.1.2
-        version: 8.1.2(@types/node@25.9.2)(astro@6.4.4(@types/node@25.9.2)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.3)(yaml@2.9.0))(jiti@2.7.0)(lightningcss@1.32.0)(svelte@5.56.3)(typescript@6.0.3)(yaml@2.9.0)
-      '@fontsource/fira-sans':
-        specifier: ^5.2.7
-        version: 5.2.7
-      '@fontsource/pt-sans-caption':
-        specifier: ^5.2.8
-        version: 5.2.8
-      '@shelkovo/format':
-        specifier: workspace:*
-        version: link:packages/format
-      '@shelkovo/geo':
-        specifier: workspace:*
-        version: link:packages/geo
-      '@shelkovo/markdown':
-        specifier: workspace:*
-        version: link:packages/markdown
-      '@shelkovo/ui':
-        specifier: workspace:*
-        version: link:packages/ui
-      '@shelkovo/url':
-        specifier: workspace:*
-        version: link:packages/url
-      astro:
-        specifier: ^6.4.4
-        version: 6.4.4(@types/node@25.9.2)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.3)(yaml@2.9.0)
-      svelte:
-        specifier: ^5.56.3
-        version: 5.56.3
-      zod:
-        specifier: ^4.4.3
-        version: 4.4.3
     devDependencies:
       '@lhci/cli':
         specifier: ^0.15.1
@@ -285,6 +248,9 @@ importers:
       astro:
         specifier: ^6.4.4
         version: 6.4.4(@types/node@25.9.2)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.3)(yaml@2.9.0)
+      svelte:
+        specifier: ^5.56.3
+        version: 5.56.3
       tailwindcss:
         specifier: ^4.3.0
         version: 4.3.0

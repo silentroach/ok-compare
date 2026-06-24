@@ -20,20 +20,6 @@
   "lint-staged": {
     "*.{astro,svelte,js,jsx,ts,tsx,mjs,cjs,mts,cts,json,md,yaml,yml,css,html}": "prettier --write"
   },
-  "dependencies": {
-    "@astrojs/sitemap": "^3.7.3",
-    "@astrojs/svelte": "^8.1.2",
-    "@fontsource/fira-sans": "^5.2.7",
-    "@fontsource/pt-sans-caption": "^5.2.8",
-    "@shelkovo/format": "workspace:*",
-    "@shelkovo/geo": "workspace:*",
-    "@shelkovo/markdown": "workspace:*",
-    "@shelkovo/ui": "workspace:*",
-    "@shelkovo/url": "workspace:*",
-    "astro": "^6.4.4",
-    "svelte": "^5.56.3",
-    "zod": "^4.4.3"
-  },
   "devDependencies": {
     "@lhci/cli": "^0.15.1",
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
