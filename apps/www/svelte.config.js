@@ -1,11 +1,22 @@
 import { vitePreprocess } from '@astrojs/svelte';
 
+const isDependencyFile = (filename) =>
+  filename.includes('/node_modules/') || filename.includes('\\node_modules\\');
+
 export default {
   preprocess: vitePreprocess(),
   compilerOptions: {
-    runes: true,
     experimental: {
       async: true,
+    },
+  },
+  vitePlugin: {
+    dynamicCompileOptions: ({ filename }) => {
+      if (isDependencyFile(filename)) {
+        return;
+      }
+
+      return { runes: true };
     },
   },
 };
