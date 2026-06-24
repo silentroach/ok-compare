@@ -6,11 +6,13 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import type { BreadcrumbItem } from '@/lib/breadcrumbs';
 import { kbBreadcrumbs } from '@/lib/kb/breadcrumbs';
 import { loadKbPages } from '@/lib/kb/load';
+import { kbPageDescription, kbPageSchema } from '@/lib/kb/seo';
 import type { KbPage } from '@/lib/kb/types';
 import { renderMarkdown } from '@/lib/markdown/render';
 
 interface Props {
   readonly page: KbPage;
+  readonly pages: readonly KbPage[];
   readonly breadcrumbs: readonly BreadcrumbItem[];
 }
 
@@ -33,19 +35,34 @@ export const getStaticPaths = (async () => {
     },
     props: {
       page,
+      pages,
       breadcrumbs: kbBreadcrumbs(page, pages),
     },
   }));
 }) satisfies GetStaticPaths;
 
-const { page, breadcrumbs } = Astro.props;
+const { page, pages, breadcrumbs } = Astro.props;
 const title = page.routeSlug
   ? `${page.title} — ${KB_TITLE} — Шелково Онлайн`
   : `${KB_TITLE} — Шелково Онлайн`;
+const description = kbPageDescription(page);
+const schema = kbPageSchema({
+  page,
+  pages,
+  breadcrumbs,
+  description,
+});
 const bodyHtml = page.body ? renderMarkdown(page.body) : undefined;
 ---
 
-<BaseLayout title={title} canonical={page.canonical} robots={page.robots}>
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={page.canonical}
+  robots={page.robots}
+  type={page.routeSlug ? 'article' : 'website'}
+  schema={schema}
+>
   <main class="ui-page pb-8 md:pb-12 lg:pb-14">
     <header class="ui-page-header">
       <div class="ui-page-header-stack max-w-4xl">
