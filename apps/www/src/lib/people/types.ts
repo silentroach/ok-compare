@@ -12,8 +12,8 @@ export interface PersonContact {
   readonly href: string;
 }
 
-export type PersonMentionSection = 'news' | 'status' | 'people';
-export type PersonBacklinkKind = 'article' | 'incident' | 'person';
+export type PersonMentionSection = 'news' | 'status' | 'reviews' | 'people';
+export type PersonBacklinkKind = 'article' | 'incident' | 'review' | 'person';
 
 export interface PersonMentionRef {
   readonly section: PersonMentionSection;
@@ -30,6 +30,7 @@ export interface PersonMentionRef {
 export interface PersonBacklinks {
   readonly news: readonly PersonMentionRef[];
   readonly status: readonly PersonMentionRef[];
+  readonly reviews: readonly PersonMentionRef[];
   readonly people: readonly PersonMentionRef[];
 }
 
@@ -58,5 +59,6 @@ export interface PeopleDataset {
 export const EMPTY_PERSON_BACKLINKS: PersonBacklinks = {
   news: [],
   status: [],
+  reviews: [],
   people: [],
 };

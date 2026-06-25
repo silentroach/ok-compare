@@ -9,6 +9,7 @@ import {
 
 import { MARKDOWN_ROBOTS } from '../news/seo';
 import { formatNewsDate, NEWS_PROSE } from '../news/view';
+import { formatReviewDate } from '../reviews/view';
 import { absoluteUrl } from '../site';
 import { formatStatusDate } from '../status/view';
 import { PERSON_MENTION_SECTIONS } from './schema';
@@ -30,12 +31,14 @@ const CONTACT_LABELS: Record<PersonContactType, string> = {
 const BACKLINK_SECTION_LABELS: Record<PersonMentionSection, string> = {
   news: 'Новости',
   status: 'Статус',
+  reviews: 'Отзывы',
   people: 'Люди',
 };
 
 const BACKLINK_KIND_LABELS: Record<PersonBacklinkKind, string> = {
   article: 'Новость',
   incident: 'Инцидент',
+  review: 'Отзыв',
   person: 'Профиль',
 };
 
@@ -77,9 +80,15 @@ const backlinkDate = (backlink: PersonMentionRef): string | undefined => {
     return undefined;
   }
 
-  return backlink.section === 'status'
-    ? formatStatusDate(backlink.mentionedAt)
-    : formatNewsDate(backlink.mentionedAt);
+  if (backlink.section === 'status') {
+    return formatStatusDate(backlink.mentionedAt);
+  }
+
+  if (backlink.section === 'reviews') {
+    return formatReviewDate({ publishedIso: backlink.mentionedAt });
+  }
+
+  return formatNewsDate(backlink.mentionedAt);
 };
 
 const backlinkLine = (backlink: PersonMentionRef): MarkdownListItem => {

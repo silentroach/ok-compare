@@ -7,6 +7,7 @@ import type {
   PersonMentionRef,
   PersonProfile,
 } from './types';
+import { PERSON_MENTION_SECTIONS } from './schema';
 
 export interface PeoplePublicContactDto {
   readonly type: PersonContact['type'];
@@ -38,6 +39,7 @@ export interface PeoplePublicBacklinkDto {
 export interface PeoplePublicBacklinksDto {
   readonly news: readonly PeoplePublicBacklinkDto[];
   readonly status: readonly PeoplePublicBacklinkDto[];
+  readonly reviews: readonly PeoplePublicBacklinkDto[];
   readonly people: readonly PeoplePublicBacklinkDto[];
 }
 
@@ -70,7 +72,10 @@ export interface PeoplePublicPayloadDto {
 const fullUrl = (value: string): string => absoluteUrl(value);
 
 const backlinksCount = (backlinks: PersonBacklinks): number =>
-  backlinks.news.length + backlinks.status.length + backlinks.people.length;
+  PERSON_MENTION_SECTIONS.reduce(
+    (total, section) => total + backlinks[section].length,
+    0,
+  );
 
 const contactDto = (item: PersonContact): PeoplePublicContactDto => ({
   type: item.type,
@@ -107,6 +112,7 @@ const backlinkDto = (item: PersonMentionRef): PeoplePublicBacklinkDto => ({
 const backlinksDto = (value: PersonBacklinks): PeoplePublicBacklinksDto => ({
   news: value.news.map(backlinkDto),
   status: value.status.map(backlinkDto),
+  reviews: value.reviews.map(backlinkDto),
   people: value.people.map(backlinkDto),
 });
 

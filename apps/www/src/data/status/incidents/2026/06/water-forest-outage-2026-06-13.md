@@ -1,5 +1,5 @@
 ---
-title: Грязная вода с запахом в Шелково Forest
+title: Грязная вода с запахом в Шелково Форест
 service: water
 kind: incident
 started_at: 13.06.2026 20:30

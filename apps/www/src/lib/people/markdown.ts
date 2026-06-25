@@ -7,6 +7,7 @@ import {
 } from '@shelkovo/markdown';
 
 import { absoluteUrl } from '../site';
+import { PERSON_MENTION_SECTIONS } from './schema';
 import type { PersonBacklinks, PersonProfile } from './types';
 import {
   buildPersonMarkdown,
@@ -29,7 +30,10 @@ const serialize = (children: readonly MarkdownNode[]): string =>
 const inline = (value: string): string => value.replace(/\s+/gu, ' ').trim();
 
 const backlinksCount = (backlinks: PersonBacklinks): number =>
-  backlinks.news.length + backlinks.status.length + backlinks.people.length;
+  PERSON_MENTION_SECTIONS.reduce(
+    (total, section) => total + backlinks[section].length,
+    0,
+  );
 
 const profileLine = (profile: PersonProfile): MarkdownListItem => {
   const summary = profile.body

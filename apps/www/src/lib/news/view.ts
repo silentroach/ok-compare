@@ -1,13 +1,7 @@
 import { dateTimeFromISO, formatDate, formatMonth } from '@shelkovo/format';
+import { formatArea } from '../areas';
 import type { NewsArea } from './schema';
 import type { NewsAuthor, NewsEvent } from './types';
-
-const AREA_LABELS: Record<NewsArea, string> = {
-  river: 'Шелково Ривер',
-  forest: 'Шелково Форест',
-  park: 'Шелково Парк',
-  village: 'Шелково Вилладж',
-};
 
 const MAP_TILE_SIZE = 256;
 const MAP_WIDGET_ZOOM = 16;
@@ -77,7 +71,7 @@ export const formatNewsMonth = (
   return opts?.capitalize ? capitalize(label) : label;
 };
 
-export const formatNewsArea = (area: NewsArea): string => AREA_LABELS[area];
+export const formatNewsArea = (area: NewsArea): string => formatArea(area);
 
 export const formatNewsAuthor = (
   author: Pick<NewsAuthor, 'name' | 'shortName'>,

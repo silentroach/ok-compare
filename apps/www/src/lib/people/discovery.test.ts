@@ -70,6 +70,7 @@ const profile = (): PersonProfile => ({
         mentionedAt: '2026-04-22T11:30:00.000+03:00',
       },
     ],
+    reviews: [],
     people: [],
   },
 });
@@ -248,6 +249,12 @@ describe('people discovery payload', () => {
       ]),
     );
     expect(openapiDefs.contactType?.enum).toEqual(['phone', 'telegram']);
+    expect(openapiDefs.section?.enum).toEqual([
+      'news',
+      'status',
+      'reviews',
+      'people',
+    ]);
     expect(openapiDefs.profile?.required).toEqual(defs.profile?.required);
     expect(
       api.paths?.['/people/data/people.json']?.get?.responses?.[200]?.content?.[

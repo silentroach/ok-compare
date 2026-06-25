@@ -7,6 +7,7 @@ export {
   type PeoplePublicPayloadDto as PeopleDiscoveryPayload,
   type PeoplePublicProfileDto as PeopleDiscoveryProfile,
 } from './public-dto';
+import { PERSON_BACKLINK_KINDS, PERSON_MENTION_SECTIONS } from './schema';
 import {
   peopleApiCatalogPath,
   peopleDataPath,
@@ -119,10 +120,10 @@ export function schema(root: string): Record<string, unknown> {
         enum: ['phone', 'telegram'],
       },
       section: {
-        enum: ['news', 'status', 'people'],
+        enum: PERSON_MENTION_SECTIONS,
       },
       kind: {
-        enum: ['article', 'incident', 'person'],
+        enum: PERSON_BACKLINK_KINDS,
       },
       nameCases: obj(
         {
@@ -181,11 +182,14 @@ export function schema(root: string): Record<string, unknown> {
           status: list({
             $ref: '#/$defs/backlink',
           }),
+          reviews: list({
+            $ref: '#/$defs/backlink',
+          }),
           people: list({
             $ref: '#/$defs/backlink',
           }),
         },
-        ['news', 'status', 'people'],
+        PERSON_MENTION_SECTIONS,
       ),
       profile: obj(
         {

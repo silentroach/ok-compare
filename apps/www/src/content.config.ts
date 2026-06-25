@@ -14,6 +14,12 @@ import {
   RawMeetingTranscriptSchema,
 } from './lib/meetings/raw-schema';
 import { RawPersonProfileSchema } from './lib/people/raw-schema';
+import { RawReviewSchema } from './lib/reviews/raw-schema';
+import {
+  REVIEW_DATE,
+  REVIEW_SLUG,
+  reviewIdFromParts,
+} from './lib/reviews/schema';
 import { RawStatusIncidentSchema } from './lib/status/raw-schema';
 import { parseStatusTimestampInput } from './lib/status/schema';
 import { SettlementSchema } from './compare/lib/schema';
@@ -28,6 +34,7 @@ const MARKDOWN_FRONTMATTER = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n)*/u;
 const STATUS_INCIDENTS_DIR = fileURLToPath(
   new URL('./data/status/incidents/', import.meta.url),
 );
+const REVIEWS_DIR = fileURLToPath(new URL('./data/reviews/', import.meta.url));
 
 interface DateParts {
   readonly year: string;
@@ -82,6 +89,60 @@ function failMeeting(entry: string, reason: string): never {
 
 function failKbPage(entry: string, reason: string): never {
   throw new Error(`kb page path \"${entry}\" ${reason}`);
+}
+
+function failReview(entry: string, reason: string): never {
+  throw new Error(`review path \"${entry}\" ${reason}`);
+}
+
+const hasReviewIdentity = (
+  data: unknown,
+): data is { readonly published_at: unknown; readonly slug: unknown } => {
+  if (typeof data !== 'object' || !data) {
+    return false;
+  }
+
+  const input = data as {
+    readonly published_at?: unknown;
+    readonly slug?: unknown;
+  };
+
+  return input.published_at !== undefined && input.slug !== undefined;
+};
+
+function reviewSourceId(entry: string, data: unknown): string {
+  if (!entry.endsWith('.md')) {
+    failReview(entry, 'must be a Markdown file');
+  }
+
+  if (!hasReviewIdentity(data)) {
+    failReview(entry, 'must define published_at and slug');
+  }
+
+  const publishedIso =
+    data.published_at instanceof Date
+      ? data.published_at.toISOString().slice(0, 10)
+      : String(data.published_at);
+  const slug = String(data.slug);
+
+  if (!REVIEW_DATE.test(publishedIso)) {
+    failReview(entry, 'published_at must use YYYY-MM-DD');
+  }
+
+  if (!REVIEW_SLUG.test(slug)) {
+    failReview(
+      entry,
+      'slug must use lower-case Latin letters, digits, and hyphen',
+    );
+  }
+
+  const body = rawMarkdownBody(REVIEWS_DIR, entry);
+
+  if (!body.trim()) {
+    failReview(entry, 'body is required');
+  }
+
+  return reviewIdFromParts({ publishedIso, slug });
 }
 
 function validateKbPageSource(entry: string, sourceId: string): void {
@@ -338,6 +399,15 @@ const meetingTranscripts = defineCollection({
   schema: RawMeetingTranscriptSchema,
 });
 
+const reviews = defineCollection({
+  loader: glob({
+    pattern: ['**/*.md', '!**/AGENTS.md'],
+    base: './src/data/reviews',
+    generateId: ({ entry, data }) => reviewSourceId(entry, data),
+  }),
+  schema: RawReviewSchema,
+});
+
 const settlements = defineCollection({
   loader: glob({
     pattern: '[!_]*.yaml',
@@ -355,4 +425,5 @@ export const collections = {
   peopleProfiles,
   meetingEntries,
   meetingTranscripts,
+  reviews,
 };

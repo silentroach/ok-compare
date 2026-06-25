@@ -56,6 +56,14 @@ import {
   personMarkdownPattern,
   personPattern,
 } from '@/lib/people/routes';
+import {
+  reviewMarkdownPattern,
+  reviewPattern,
+  reviewsMarkdownPath,
+  reviewsPath,
+  reviewsRulesMarkdownPath,
+  reviewsRulesPath,
+} from '@/lib/reviews/routes';
 import { reglamentPublicSurfaceSlice } from '@/lib/reglament/public-surface';
 import { REGLAMENT_PUBLIC_PATHS } from '@/lib/reglament/routes';
 import {
@@ -401,6 +409,40 @@ describe('public surface registry', () => {
     expect(byId.get('people:llms-full')).toMatchObject({
       path: peopleLlmsFullPath(),
     });
+  });
+
+  it('registers reviews HTML and Markdown surfaces without feeds or schemas', () => {
+    const reviews = publicSurfaceRegistry.surfacesByOwner('reviews');
+
+    expect(reviews.map((surface) => surface.id)).toEqual([
+      'reviews:index',
+      'reviews:index-markdown',
+      'reviews:rules',
+      'reviews:rules-markdown',
+      'reviews:review',
+      'reviews:review-markdown',
+    ]);
+    expect(
+      reviews.map((surface) =>
+        'path' in surface ? surface.path : surface.routePattern,
+      ),
+    ).toEqual([
+      reviewsPath(),
+      reviewsMarkdownPath(),
+      reviewsRulesPath(),
+      reviewsRulesMarkdownPath(),
+      reviewPattern(),
+      reviewMarkdownPattern(),
+    ]);
+    expect(
+      reviews.some((surface) => surface.discoveryRoles.includes('data-feed')),
+    ).toBe(false);
+    expect(
+      reviews.some((surface) => surface.discoveryRoles.includes('schema')),
+    ).toBe(false);
+    expect(
+      reviews.some((surface) => surface.discoveryRoles.includes('llms')),
+    ).toBe(false);
   });
 
   it('registers every reglament public path from the reglament-owned slice', () => {

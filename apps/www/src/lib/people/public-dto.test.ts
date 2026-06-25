@@ -56,6 +56,7 @@ const profile = (): PersonProfile => ({
       },
     ],
     status: [],
+    reviews: [],
     people: [],
   },
 });
@@ -82,6 +83,7 @@ describe('people public DTO adapters', () => {
                 },
               ],
               "people": [],
+              "reviews": [],
               "status": [],
             },
             "body_markdown": "Публичный профиль.",

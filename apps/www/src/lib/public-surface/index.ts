@@ -13,6 +13,7 @@ import { meetingsPublicSurfaceSlice } from '@/lib/meetings/public-surface';
 import { newsPublicSurfaceSlice } from '@/lib/news/public-surface';
 import { peoplePublicSurfaceSlice } from '@/lib/people/public-surface';
 import { reglamentPublicSurfaceSlice } from '@/lib/reglament/public-surface';
+import { reviewsPublicSurfaceSlice } from '@/lib/reviews/public-surface';
 import { rootPublicSurfaceSlice } from '@/lib/root-public-surface';
 import { statusPublicSurfaceSlice } from '@/lib/status/public-surface';
 
@@ -67,6 +68,7 @@ export const publicSurfaceRegistry = createPublicSurfaceRegistry([
   statusPublicSurfaceSlice,
   meetingsPublicSurfaceSlice,
   peoplePublicSurfaceSlice,
+  reviewsPublicSurfaceSlice,
   reglamentPublicSurfaceSlice,
   comparePublicSurfaceSlice,
 ]);
@@ -77,6 +79,7 @@ export { meetingsPublicSurfaceSlice } from '@/lib/meetings/public-surface';
 export { newsPublicSurfaceSlice } from '@/lib/news/public-surface';
 export { peoplePublicSurfaceSlice } from '@/lib/people/public-surface';
 export { reglamentPublicSurfaceSlice } from '@/lib/reglament/public-surface';
+export { reviewsPublicSurfaceSlice } from '@/lib/reviews/public-surface';
 export { rootPublicSurfaceSlice } from '@/lib/root-public-surface';
 export { statusPublicSurfaceSlice } from '@/lib/status/public-surface';
 
