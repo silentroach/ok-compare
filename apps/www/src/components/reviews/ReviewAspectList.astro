@@ -1,0 +1,48 @@
+---
+import { renderMarkdown } from '@/lib/markdown/render';
+import type { ReviewAspect } from '@/lib/reviews/types';
+import { formatReviewAspectType, sortReviewAspects } from '@/lib/reviews/view';
+
+interface Props {
+  readonly aspects: readonly ReviewAspect[];
+}
+
+const { aspects } = Astro.props;
+const ordered = sortReviewAspects(aspects);
+---
+
+{
+  ordered.length > 0 && (
+    <section aria-labelledby="review-aspects" class="space-y-4">
+      <h2
+        id="review-aspects"
+        class="font-body text-xl font-bold tracking-tight text-foreground"
+      >
+        Аспекты
+      </h2>
+      <div class="grid gap-3 md:grid-cols-3">
+        {ordered.map((aspect) => (
+          <article class="ui-shell space-y-3 px-4 py-4">
+            <h3 class="font-body text-base font-semibold text-foreground">
+              {formatReviewAspectType(aspect.type)}
+            </h3>
+            {aspect.rating && (
+              <p
+                class="text-sm font-semibold text-primary"
+                aria-label={`Оценка ${aspect.rating} из 5`}
+              >
+                {aspect.rating} из 5
+              </p>
+            )}
+            {aspect.body && (
+              <div
+                class="ui-prose text-sm"
+                set:html={renderMarkdown(aspect.body)}
+              />
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+  )
+}

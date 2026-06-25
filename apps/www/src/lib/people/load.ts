@@ -3,6 +3,7 @@ import {
   type EntityMentionSourceRef,
 } from '../mentions';
 import { createNewsArticleMentionRefs } from '../news/mentions';
+import { createReviewMentionRefs } from '../reviews/mentions';
 import { createStatusIncidentMentionRefs } from '../status/mentions';
 import { createPeopleBacklinksFromGraph } from './backlinks';
 import { createPersonProfileMentionRefs } from './mention-refs';
@@ -37,15 +38,22 @@ export const buildPeopleGraphDataset = (
 };
 
 const buildPeopleDataWithBacklinks = async (): Promise<PeopleDataset> => {
-  const [{ loadNewsData }, { loadStatusData }, people] = await Promise.all([
-    import('../news/load'),
-    import('../status/load'),
-    loadPeopleData(),
+  const [{ loadNewsData }, { loadStatusData }, { loadReviewsData }, people] =
+    await Promise.all([
+      import('../news/load'),
+      import('../status/load'),
+      import('../reviews/load'),
+      loadPeopleData(),
+    ]);
+  const [news, status, reviews] = await Promise.all([
+    loadNewsData(),
+    loadStatusData(),
+    loadReviewsData(),
   ]);
-  const [news, status] = await Promise.all([loadNewsData(), loadStatusData()]);
   const refs = [
     ...news.articles.flatMap(createNewsArticleMentionRefs),
     ...status.incidents.flatMap(createStatusIncidentMentionRefs),
+    ...reviews.reviews.flatMap(createReviewMentionRefs),
     ...people.profiles.flatMap(createPersonProfileMentionRefs),
   ];
 

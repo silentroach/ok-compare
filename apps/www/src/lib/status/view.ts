@@ -4,7 +4,7 @@ import {
   formatDynamicHtml,
 } from '@shelkovo/markdown';
 
-import { formatNewsArea } from '../news/view';
+import { formatArea } from '../areas';
 import type {
   StatusArea,
   StatusKind,
@@ -487,8 +487,7 @@ export const getStatusIncidentPhase = (
   };
 };
 
-export const formatStatusArea = (area: StatusArea): string =>
-  formatNewsArea(area);
+export const formatStatusArea = (area: StatusArea): string => formatArea(area);
 
 export const deriveStatusIncidentTitle = (input: {
   readonly kind: StatusKind;

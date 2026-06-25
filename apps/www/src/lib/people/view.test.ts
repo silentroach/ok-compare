@@ -180,6 +180,7 @@ describe('buildPersonMarkdown', () => {
             sortKey: 2,
           },
         ],
+        reviews: [],
         people: [],
       },
     };
@@ -240,6 +241,7 @@ describe('buildPersonMarkdown', () => {
       backlinks: {
         news: [],
         status: [],
+        reviews: [],
         people: [],
       },
     };
@@ -291,6 +293,7 @@ describe('buildPersonMarkdown', () => {
       backlinks: {
         news: [],
         status: [],
+        reviews: [],
         people: [],
       },
     };

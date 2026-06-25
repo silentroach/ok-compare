@@ -1,0 +1,76 @@
+---
+import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+
+import ReviewCard from '@/components/reviews/ReviewCard.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import {
+  withHomeBreadcrumbs,
+  withHomeSchemaBreadcrumbs,
+} from '@/lib/breadcrumbs';
+import { loadReviewsData } from '@/lib/reviews/load';
+import { reviewsRulesUrl, reviewsUrl } from '@/lib/reviews/routes';
+import { reviewsCollectionPageSchema } from '@/lib/reviews/seo';
+import { formatReviewTitle } from '@/lib/reviews/view';
+
+const data = await loadReviewsData();
+const title = 'Отзывы собственников — Шелково Онлайн';
+const description =
+  'Независимые отзывы текущих собственников о жизни в Шелково: место, застройщик и обслуживание без общей оценки поселка.';
+const breadcrumbs = withHomeBreadcrumbs([{ label: 'Отзывы' }]);
+const schema = reviewsCollectionPageSchema({
+  name: title,
+  description,
+  url: reviewsUrl(),
+  breadcrumbs: withHomeSchemaBreadcrumbs([
+    { name: 'Отзывы', url: reviewsUrl() },
+  ]),
+  items: data.reviews.map((review) => ({
+    name: formatReviewTitle(review),
+    url: review.url,
+  })),
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={reviewsUrl()}
+  keywords={['отзывы Шелково', 'собственники Шелково']}
+  schema={schema}
+>
+  <main class="ui-page pb-6 md:pb-10 lg:pb-12">
+    <section class="ui-page-header">
+      <div class="ui-page-header-stack">
+        <Breadcrumbs items={breadcrumbs} />
+
+        <h1 class="ui-page-title">Отзывы собственников</h1>
+      </div>
+    </section>
+
+    <section class="mt-8">
+      <h2 class="sr-only">Список отзывов</h2>
+      {
+        data.reviews.length > 0 ? (
+          <ul class="grid gap-4 lg:grid-cols-2">
+            {data.reviews.map((review) => (
+              <li>
+                <ReviewCard review={review} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div class="ui-shell px-5 py-6 md:px-6 md:py-7">
+            <p class="ui-copy text-muted-foreground">
+              Первые отзывы еще не опубликованы. Если вы собственник участка или
+              дома в Шелково,{' '}
+              <a href={reviewsRulesUrl()} class="ui-link font-semibold">
+                посмотрите правила
+              </a>{' '}
+              и напишите владельцу сайта.
+            </p>
+          </div>
+        )
+      }
+    </section>
+  </main>
+</BaseLayout>

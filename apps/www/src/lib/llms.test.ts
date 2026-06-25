@@ -18,6 +18,9 @@ const fixtures = vi.hoisted(() => ({
   news: {
     articles: [{ id: 'news-1' }, { id: 'news-2' }, { id: 'news-3' }],
   },
+  reviews: {
+    reviews: [{ id: 'review-1' }, { id: 'review-2' }],
+  },
   people: {
     profiles: [
       {
@@ -38,6 +41,10 @@ vi.mock('./meetings/load', () => ({
 
 vi.mock('./news/load', () => ({
   loadNewsData: async () => fixtures.news,
+}));
+
+vi.mock('./reviews/load', () => ({
+  loadReviewsData: async () => fixtures.reviews,
 }));
 
 vi.mock('./people/load', () => ({
@@ -74,8 +81,8 @@ describe('root llms', () => {
       ## Описание
 
       - Это карта публичных данных и точек входа kpshelkovo.online.
-      - Основные разделы: новости, статус сервисов, архив встреч, регламент и смета тарифа 815, профили людей и сравнение тарифов поселков.
-      - Сейчас в новостях 3 статьи, в статусе 2 записи и 1 активный инцидент, в архиве встреч 1 встреча, в людях 1 профиль.
+      - Основные разделы: новости, статус сервисов, отзывы собственников, архив встреч, регламент и смета тарифа 815, профили людей и сравнение тарифов поселков.
+      - Сейчас в новостях 3 статьи, в статусе 2 записи и 1 активный инцидент, в отзывах 2 отзыва, в архиве встреч 1 встреча, в людях 1 профиль.
       - Для массового чтения используйте JSON-ленты там, где они есть; HTML и Markdown удобнее для ссылок и точечного чтения.
 
       ## Главные URL
@@ -86,6 +93,7 @@ describe('root llms', () => {
       - Инструкции для автоматического чтения сайта: <https://example.com/.well-known/agent-skills/index.json>
       - Новости: <https://example.com/news/>
       - Статус: <https://example.com/status/>
+      - Отзывы: <https://example.com/reviews/>
       - Архив встреч в Markdown: <https://example.com/meetings/index.md>
       - Регламент: <https://example.com/815/regulation/>
       - Люди в Markdown: <https://example.com/people/index.md>
@@ -97,6 +105,7 @@ describe('root llms', () => {
       - Если задача относится к одному разделу, сначала откройте его \`llms.txt\` или Markdown-индекс; если нужны данные массово, сразу берите JSON-ленту там, где она есть.
       - Новости: <https://example.com/news/llms.txt>; основная лента: <https://example.com/news/data/articles.json>; календарные события лежат в \`articles[].events[].ics_url\`.
       - Статус сервисов: <https://example.com/status/llms.txt>; основная лента: <https://example.com/status/data/status.json>.
+      - Отзывы собственников: <https://example.com/reviews/index.md>; правила публикации: <https://example.com/reviews/rules/index.md>; детальные страницы: \`/reviews/[id]/\` и \`/reviews/[id]/index.md\`.
       - Архив встреч: <https://example.com/meetings/index.md>; одна встреча: <https://example.com/meetings/2026-06-13-ok-comfort/> или <https://example.com/meetings/2026-06-13-ok-comfort/index.md>; полный текст транскрипта берите по частям, например <https://example.com/meetings/2026-06-13-ok-comfort/transcript/1.md>.
       - Регламент и смета: <https://example.com/815/regulation/llms.txt>; смета: <https://example.com/815/regulation/data/estimate-2026.json>; полный регламент: <https://example.com/815/regulation/full.md>; набор данных: <https://example.com/815/regulation/data/full-2026.json>.
       - Люди: <https://example.com/people/llms.txt>; основная лента: <https://example.com/people/data/people.json>; одна персона: <https://example.com/people/kschemelinin/> или <https://example.com/people/kschemelinin/index.md>.
@@ -119,6 +128,9 @@ describe('root llms', () => {
       'https://example.com/news/data/articles.json',
       'https://example.com/status/llms.txt',
       'https://example.com/status/data/status.json',
+      'https://example.com/reviews/',
+      'https://example.com/reviews/index.md',
+      'https://example.com/reviews/rules/index.md',
       'https://example.com/meetings/index.md',
       'https://example.com/meetings/2026-06-13-ok-comfort/',
       'https://example.com/meetings/2026-06-13-ok-comfort/index.md',
@@ -158,6 +170,9 @@ describe('root llms', () => {
       'status:index',
       'status:llms',
       'status:data',
+      'reviews:index',
+      'reviews:index-markdown',
+      'reviews:rules-markdown',
       'meetings:index-markdown',
       'reglament:index',
       'reglament:llms',

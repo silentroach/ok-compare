@@ -2,6 +2,7 @@ import { count } from '@shelkovo/format';
 
 import { absoluteUrl } from '../site';
 import { loadPeopleDataWithBacklinks } from './load';
+import { PERSON_MENTION_SECTIONS } from './schema';
 import type { PersonBacklinks } from './types';
 import {
   llmsSection,
@@ -19,7 +20,10 @@ import {
 } from './routes';
 
 const backlinksCount = (backlinks: PersonBacklinks): number =>
-  backlinks.news.length + backlinks.status.length + backlinks.people.length;
+  PERSON_MENTION_SECTIONS.reduce(
+    (total, section) => total + backlinks[section].length,
+    0,
+  );
 
 export async function build(kind: 'short' | 'full'): Promise<string> {
   const data = await loadPeopleDataWithBacklinks();
@@ -52,7 +56,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
         sections: [
           llmsSection('Описание', [
             markdownList([
-              'Раздел `/people/` публикует публичные профили людей, контакты и граф упоминаний между новостями, статусом и другими профилями.',
+              'Раздел `/people/` публикует публичные профили людей, контакты и граф упоминаний между новостями, статусом, отзывами и другими профилями.',
               `Сейчас в разделе ${count(data.profiles.length, ['профиль', 'профиля', 'профилей'])}, ${count(mentionCount, ['исходящее упоминание', 'исходящих упоминания', 'исходящих упоминаний'])} и ${count(backlinkCount, ['обратная ссылка', 'обратные ссылки', 'обратных ссылок'])}.`,
               'Публичного HTML-индекса `/people/` нет: для массового обхода используйте people.json и Markdown-обзор.',
               'У профиля могут быть `company`, `position` и `name_cases` для склонения канонических упоминаний; `body_markdown` может быть пустым, если базовый контекст уже есть во frontmatter.',
@@ -73,7 +77,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
               `Для массового обхода начинайте с ${feed}.`,
               `Для одной персоны переходите на ${detailHtml} или ${detailMarkdown}.`,
               'В `mentions` лежат исходящие упоминания из body профиля, если body заполнен; учитываются `@slug`, `@slug:case` и `[текст](@slug)`, а `[текст](@slug:case)` не поддерживается.',
-              'В `backlinks` лежат входящие ссылки из новостей, статуса и других профилей, собранные из тех же канонических и подписанных синтаксисов упоминаний.',
+              'В `backlinks` лежат входящие ссылки из новостей, статуса, отзывов и других профилей, собранные из тех же канонических и подписанных синтаксисов упоминаний.',
               'Контакты публикуются открыто и не маскируются в ленте или Markdown-версиях.',
             ]),
           ]),
@@ -111,7 +115,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
               '`profiles[]` включает `id`, `slug`, `name`, необязательные `name_cases`, `company` и `position`, `html_url`, `markdown_url`, `contacts`, `body_markdown`, `mentions`, `mention_count`, `backlinks` и `backlink_count`.',
               '`mentions[]` раскрывают `@slug` и `@slug:case` из body профиля в имя нужного падежа и ссылки на детальные страницы; `[текст](@slug)` сохраняет видимый текст автора, но учитывается в том же массиве mentions.',
               '`[текст](@slug:case)` не является поддерживаемым синтаксисом упоминания: для подписанного упоминания нужный падеж или грамматика пишутся в самом видимом тексте.',
-              '`backlinks` группируются по `news`, `status` и `people`, чтобы отвечать на вопрос, где человек уже фигурирует на сайте; граф учитывает канонические и подписанные упоминания.',
+              '`backlinks` группируются по `news`, `status`, `reviews` и `people`, чтобы отвечать на вопрос, где человек уже фигурирует на сайте; граф учитывает канонические и подписанные упоминания.',
             ]),
           ]),
           llmsSection('HTML и Markdown', [
