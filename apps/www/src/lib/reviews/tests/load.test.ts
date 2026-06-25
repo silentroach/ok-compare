@@ -1,8 +1,8 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import type { ReviewEntry } from './load';
+import type { ReviewEntry } from '../load';
 
-let buildReviewsDataset: typeof import('./load').buildReviewsDataset;
+let buildReviewsDataset: typeof import('../load').buildReviewsDataset;
 
 beforeAll(async () => {
   Object.assign(import.meta.env, {
@@ -10,7 +10,7 @@ beforeAll(async () => {
     BASE_URL: '/',
   });
 
-  ({ buildReviewsDataset } = await import('./load'));
+  ({ buildReviewsDataset } = await import('../load'));
 });
 
 const entry = (input: {

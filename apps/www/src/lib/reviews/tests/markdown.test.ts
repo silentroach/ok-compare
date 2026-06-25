@@ -1,10 +1,10 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import type { Review } from './types';
+import type { Review } from '../types';
 
-let buildReviewMarkdown: typeof import('./markdown').buildReviewMarkdown;
-let buildReviewsHomeMarkdown: typeof import('./markdown').buildReviewsHomeMarkdown;
-let buildReviewsRulesMarkdown: typeof import('./markdown').buildReviewsRulesMarkdown;
+let buildReviewMarkdown: typeof import('../markdown').buildReviewMarkdown;
+let buildReviewsHomeMarkdown: typeof import('../markdown').buildReviewsHomeMarkdown;
+let buildReviewsRulesMarkdown: typeof import('../markdown').buildReviewsRulesMarkdown;
 
 beforeAll(async () => {
   Object.assign(import.meta.env, {
@@ -16,7 +16,7 @@ beforeAll(async () => {
     buildReviewMarkdown,
     buildReviewsHomeMarkdown,
     buildReviewsRulesMarkdown,
-  } = await import('./markdown'));
+  } = await import('../markdown'));
 });
 
 const review = {

@@ -1,15 +1,19 @@
 import { describe, expect, it } from 'vitest';
 
-import { AREAS, formatArea } from './areas';
+import { formatArea } from './areas';
+
+const areaLabels = [
+  ['river', 'Шелково Ривер'],
+  ['forest', 'Шелково Форест'],
+  ['park', 'Шелково Парк'],
+  ['village', 'Шелково Вилладж'],
+] as const;
 
 describe('formatArea', () => {
-  it('formats stable public area labels from GLOSSARY.md', () => {
-    expect(AREAS).toEqual(['river', 'forest', 'park', 'village']);
-    expect(AREAS.map(formatArea)).toEqual([
-      'Шелково Ривер',
-      'Шелково Форест',
-      'Шелково Парк',
-      'Шелково Вилладж',
-    ]);
-  });
+  it.each(areaLabels)(
+    'formats %s as a stable public label from GLOSSARY.md',
+    (area, label) => {
+      expect(formatArea(area)).toBe(label);
+    },
+  );
 });

@@ -1,8 +1,8 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import type { Review } from './types';
+import type { Review } from '../types';
 
-let reviewPageSchema: typeof import('./seo').reviewPageSchema;
+let reviewPageSchema: typeof import('../seo').reviewPageSchema;
 
 beforeAll(async () => {
   Object.assign(import.meta.env, {
@@ -10,7 +10,7 @@ beforeAll(async () => {
     BASE_URL: '/',
   });
 
-  ({ reviewPageSchema } = await import('./seo'));
+  ({ reviewPageSchema } = await import('../seo'));
 });
 
 const review = {

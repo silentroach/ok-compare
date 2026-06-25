@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import { createPersonMentionTarget } from '@/lib/people/mentions';
 
-import { createReviewMentionRefs } from './mentions';
-import type { Review } from './types';
+import { createReviewMentionRefs } from '../mentions';
+import type { Review } from '../types';
 
 const target = createPersonMentionTarget('kschemelinin', 'Кирилл Щемелинин');
 

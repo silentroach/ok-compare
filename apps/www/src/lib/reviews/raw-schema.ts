@@ -6,12 +6,26 @@ import { REVIEW_ASPECT_TYPES, REVIEW_DATE, REVIEW_SLUG } from './schema';
 
 const text = z.string().trim();
 
+const isReviewCalendarDate = (value: string): boolean => {
+  if (!REVIEW_DATE.test(value)) {
+    return false;
+  }
+
+  const date = new Date(`${value}T00:00:00.000Z`);
+
+  if (Number.isNaN(date.valueOf())) {
+    return false;
+  }
+
+  return date.toISOString().slice(0, 10) === value;
+};
+
 const reviewDate = (name: string) =>
   z.union([text, z.date()]).transform((value, ctx) => {
     const normalized =
       value instanceof Date ? value.toISOString().slice(0, 10) : value;
 
-    if (REVIEW_DATE.test(normalized)) {
+    if (isReviewCalendarDate(normalized)) {
       return normalized;
     }
 
@@ -23,11 +37,13 @@ const reviewDate = (name: string) =>
     return z.NEVER;
   });
 
-const aspect = z.object({
-  type: z.enum(REVIEW_ASPECT_TYPES),
-  rating: z.number().int().min(1).max(5).optional(),
-  body: text.optional(),
-});
+const aspect = z
+  .object({
+    type: z.enum(REVIEW_ASPECT_TYPES),
+    rating: z.number().int().min(1).max(5).optional(),
+    body: text.optional(),
+  })
+  .strict();
 
 type RawReviewAspectInput = z.infer<typeof aspect>;
 

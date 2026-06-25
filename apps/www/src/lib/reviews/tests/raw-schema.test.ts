@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { RawReviewSchema } from './raw-schema';
+import { RawReviewSchema } from '../raw-schema';
 
 describe('RawReviewSchema', () => {
   it('accepts a minimal review frontmatter', () => {
@@ -42,6 +42,27 @@ describe('RawReviewSchema', () => {
       slug: 'bad-contract',
       area: 'forest',
       overall_rating: 5,
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects impossible calendar dates', () => {
+    const result = RawReviewSchema.safeParse({
+      published_at: '2026-13-40',
+      slug: 'bad-date',
+      area: 'forest',
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects unknown aspect fields', () => {
+    const result = RawReviewSchema.safeParse({
+      published_at: '2026-06-25',
+      slug: 'bad-aspect-field',
+      area: 'forest',
+      aspects: [{ type: 'place', rtaing: 5 }],
     });
 
     expect(result.success).toBe(false);

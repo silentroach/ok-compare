@@ -10,7 +10,7 @@ import {
   reviewsRulesMarkdownUrl,
   reviewsRulesUrl,
   reviewsUrl,
-} from './routes';
+} from '../routes';
 
 describe('review routes', () => {
   it('builds stable index, rules, and detail URLs', () => {

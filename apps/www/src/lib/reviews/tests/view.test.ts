@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { Review } from './types';
+import type { Review } from '../types';
 import {
   formatReviewArea,
   formatReviewAspectType,
@@ -8,7 +8,7 @@ import {
   formatReviewDate,
   formatReviewTitle,
   sortReviewAspects,
-} from './view';
+} from '../view';
 
 const review: Review = {
   id: '2026-06-25-life-in-shelkovo-forest',
