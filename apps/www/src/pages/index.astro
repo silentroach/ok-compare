@@ -47,7 +47,7 @@ const [news, status] = await Promise.all([
   loadStatusData(),
 ]);
 const buildNow = Date.now();
-const latestNews = news.slice(0, 2);
+const latestNews = news.slice(0, 3);
 const homeStatusState = getHomeStatusState(status.incidents, buildNow);
 const plannedMaintenanceWindows = getHomeStatusMaintenanceWindows(
   status.incidents,
