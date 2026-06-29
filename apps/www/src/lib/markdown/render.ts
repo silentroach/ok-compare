@@ -9,6 +9,10 @@ import type {
   PreprocessedSiteMarkdown,
   RenderSiteMarkdownOptions,
 } from './render.types';
+import {
+  normalizeContentDiffMarkdown,
+  renderContentDiffBlocks,
+} from './content-diff';
 
 export type {
   PreprocessedSiteMarkdown,
@@ -61,4 +65,10 @@ export const preprocessSiteMarkdownContent = (
 export const renderMarkdown = (
   markdown: string,
   options?: RenderSiteMarkdownOptions,
-): string => render(preprocessSiteMarkdown(markdown, options).markdown);
+): string => {
+  const preprocessed = preprocessSiteMarkdown(markdown, options).markdown;
+
+  return renderContentDiffBlocks(
+    render(normalizeContentDiffMarkdown(preprocessed)),
+  );
+};

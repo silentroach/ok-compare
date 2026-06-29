@@ -23,10 +23,11 @@ type HtmlTreeNode = {
   readonly tagName?: string;
   readonly value?: string;
   properties?: Record<string, unknown>;
-  readonly children?: readonly HtmlTreeNode[];
+  children?: HtmlTreeNode[];
 };
 
 const HEADING_TAGS = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
+const HEADING_ANCHOR_LABEL = 'Ссылка на этот раздел';
 
 const nodeText = (node: HtmlTreeNode): string => {
   if (typeof node.value === 'string') {
@@ -58,13 +59,42 @@ const uniqueHeadingSlug = (
   return count === 0 ? slug : `${slug}-${count + 1}`;
 };
 
+const headingAnchor = (slug: string): HtmlTreeNode => ({
+  type: 'element',
+  tagName: 'a',
+  properties: {
+    ariaLabel: HEADING_ANCHOR_LABEL,
+    className: ['ui-heading-anchor'],
+    href: `#${slug}`,
+    title: HEADING_ANCHOR_LABEL,
+  },
+  children: [
+    {
+      type: 'element',
+      tagName: 'span',
+      properties: {
+        ariaHidden: 'true',
+      },
+      children: [
+        {
+          type: 'text',
+          value: '#',
+        },
+      ],
+    },
+  ],
+});
+
 const addHeadingIds = (
   node: HtmlTreeNode,
   seenSlugs: Map<string, number>,
 ): void => {
   if (node.tagName && HEADING_TAGS.has(node.tagName)) {
+    const slug = uniqueHeadingSlug(nodeText(node), seenSlugs);
+
     node.properties = node.properties ?? {};
-    node.properties.id = uniqueHeadingSlug(nodeText(node), seenSlugs);
+    node.properties.id = slug;
+    node.children = [...(node.children ?? []), headingAnchor(slug)];
   }
 
   node.children?.forEach((child) => addHeadingIds(child, seenSlugs));

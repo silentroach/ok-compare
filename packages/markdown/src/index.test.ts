@@ -128,9 +128,9 @@ describe('@shelkovo/markdown', () => {
   it('adds stable heading ids for in-page links', () => {
     expect(render('## Что сделать сразу\n\nТекст\n\n## Что сделать сразу'))
       .toMatchInlineSnapshot(`
-        "<h2 id=\"что-сделать-сразу\">Что сделать сразу</h2>
+        "<h2 id=\"что-сделать-сразу\">Что сделать сразу<a aria-label=\"Ссылка на этот раздел\" class=\"ui-heading-anchor\" href=\"#что-сделать-сразу\" title=\"Ссылка на этот раздел\"><span aria-hidden=\"true\">#</span></a></h2>
         <p>Текст</p>
-        <h2 id=\"что-сделать-сразу-2\">Что сделать сразу</h2>"
+        <h2 id=\"что-сделать-сразу-2\">Что сделать сразу<a aria-label=\"Ссылка на этот раздел\" class=\"ui-heading-anchor\" href=\"#что-сделать-сразу-2\" title=\"Ссылка на этот раздел\"><span aria-hidden=\"true\">#</span></a></h2>"
       `);
   });
 

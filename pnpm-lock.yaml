@@ -98,6 +98,9 @@ importers:
       astro:
         specifier: ^6.4.4
         version: 6.4.4(@types/node@25.9.2)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.3)(yaml@2.9.0)
+      diff:
+        specifier: ^8.0.4
+        version: 8.0.4
       svelte:
         specifier: ^5.56.3
         version: 5.56.3

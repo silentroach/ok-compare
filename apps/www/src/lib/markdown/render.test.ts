@@ -120,4 +120,191 @@ describe('renderMarkdown', () => {
       '<p>По\u00A0словам <a href="/people/kschemelinin/">главного по\u00A0электричеству</a>.</p>',
     );
   });
+
+  it('renders change fences as readable word-level diffs', () => {
+    expect(
+      renderMarkdown(`\`\`\`change
+-Собственники могут передать документы до 30 июня.
++Собственники могут передать документы до 7 июля.
+\`\`\``).replaceAll('\u00A0', '·'),
+    ).toMatchInlineSnapshot(`
+      "<section class="ui-content-diff ui-content-diff--inline" aria-label="Изменение текста">
+        <div class="ui-content-diff__side ui-content-diff__side--removed">
+          <p class="ui-content-diff__label"><span aria-hidden="true">−</span> Было</p>
+          <p class="ui-content-diff__text">Собственники могут передать документы до·<del class="ui-content-diff__change ui-content-diff__change--removed">30·июня</del>.</p>
+        </div>
+        <div class="ui-content-diff__side ui-content-diff__side--added">
+          <p class="ui-content-diff__label"><span aria-hidden="true">+</span> Стало</p>
+          <p class="ui-content-diff__text">Собственники могут передать документы до·<ins class="ui-content-diff__change ui-content-diff__change--added">7·июля</ins>.</p>
+        </div>
+      </section>"
+    `);
+  });
+
+  it('renders heavily changed text as stacked full-text blocks', () => {
+    expect(
+      renderMarkdown(`\`\`\`change
+-Обслуживание станции глубокой биологической очистки — от 5 000 руб. Покраска и ремонт существующего ограждения — индивидуально. Топосъемка участка — от 15 000 руб. Регистрация построенных объектов — от 35 000 руб. Охранные услуги — индивидуально.
++Обслуживание автоматики ворот — от 5 000 руб. Ремонт/покраска ограждения — от 15 000 руб. Топосъемка — от 20 000 руб. Регистрация строений — от 35 000 руб. Страхование — индивидуальный расчет. Клининг — индивидуальный расчет.
+\`\`\``).replaceAll('\u00A0', '·'),
+    ).toMatchInlineSnapshot(`
+      "<section class="ui-content-diff ui-content-diff--block" aria-label="Изменение текста">
+        <div class="ui-content-diff__side ui-content-diff__side--removed">
+          <p class="ui-content-diff__label"><span aria-hidden="true">−</span> Было</p>
+          <p class="ui-content-diff__text">Обслуживание станции глубокой биологической очистки·— от·5 000·руб. Покраска и·ремонт существующего ограждения·— индивидуально. Топосъемка участка·— от·15 000·руб. Регистрация построенных объектов·— от·35 000·руб. Охранные услуги·— индивидуально.</p>
+        </div>
+        <div class="ui-content-diff__side ui-content-diff__side--added">
+          <p class="ui-content-diff__label"><span aria-hidden="true">+</span> Стало</p>
+          <p class="ui-content-diff__text">Обслуживание автоматики ворот·— от·5 000·руб. Ремонт/покраска ограждения·— от·15 000·руб. Топосъемка·— от·20 000·руб. Регистрация строений·— от·35 000·руб. Страхование·— индивидуальный расчет. Клининг·— индивидуальный расчет.</p>
+        </div>
+      </section>"
+    `);
+  });
+
+  it('keeps recognizable multi-line price lists side by side', () => {
+    expect(
+      renderMarkdown(`\`\`\`change
+-Подключение к системе электроснабжения — 186 000 руб
+-Подключение к системе водоснабжения — от 108 000 руб
+-Подключение к интернет — от 12 000 руб
++Подключение к системе электроснабжения — 197 000 руб.
++Подключение к системе водоснабжения — 121 000 руб.
++Подключение к системе газоснабжения — 490 000 руб.
++Прокол под дорогой (при необходимости) — 60 000 руб.
++Подключение к сети Интернет — 12 000 руб.
+\`\`\``),
+    ).toMatchInlineSnapshot(`
+      "<section class="ui-content-diff ui-content-diff--inline" aria-label="Изменение текста">
+        <div class="ui-content-diff__side ui-content-diff__side--removed">
+          <p class="ui-content-diff__label"><span aria-hidden="true">−</span> Было</p>
+          <p class="ui-content-diff__text">Подключение к системе электроснабжения — <del class="ui-content-diff__change ui-content-diff__change--removed">186 000 руб</del>
+      Подключение к системе водоснабжения —<del class="ui-content-diff__change ui-content-diff__change--removed"> от 108 000 руб</del>
+      Подключение к интернет —<del class="ui-content-diff__change ui-content-diff__change--removed"> от</del> 12 000 руб</p>
+        </div>
+        <div class="ui-content-diff__side ui-content-diff__side--added">
+          <p class="ui-content-diff__label"><span aria-hidden="true">+</span> Стало</p>
+          <p class="ui-content-diff__text">Подключение к системе электроснабжения — <ins class="ui-content-diff__change ui-content-diff__change--added">197 000 руб.
+      </ins>Подключение к системе водоснабжения — <ins class="ui-content-diff__change ui-content-diff__change--added">121 000 руб.
+      </ins>Подключение к <ins class="ui-content-diff__change ui-content-diff__change--added">системе газоснабжения — 490 000 руб.
+      Прокол под дорогой (при необходимости) — 60 000 руб.
+      Подключение к сети </ins>Интернет — 12 000 руб.</p>
+        </div>
+      </section>"
+    `);
+  });
+
+  it('highlights prices with currency as one changed segment', () => {
+    expect(
+      renderMarkdown(`\`\`\`change
+-Подключение к системе электроснабжения — 186 000 руб
++Подключение к системе электроснабжения — 197 000 руб.
+\`\`\``),
+    ).toMatchInlineSnapshot(`
+      "<section class="ui-content-diff ui-content-diff--inline" aria-label="Изменение текста">
+        <div class="ui-content-diff__side ui-content-diff__side--removed">
+          <p class="ui-content-diff__label"><span aria-hidden="true">−</span> Было</p>
+          <p class="ui-content-diff__text">Подключение к системе электроснабжения — <del class="ui-content-diff__change ui-content-diff__change--removed">186 000 руб</del></p>
+        </div>
+        <div class="ui-content-diff__side ui-content-diff__side--added">
+          <p class="ui-content-diff__label"><span aria-hidden="true">+</span> Стало</p>
+          <p class="ui-content-diff__text">Подключение к системе электроснабжения — <ins class="ui-content-diff__change ui-content-diff__change--added">197 000 руб.</ins></p>
+        </div>
+      </section>"
+    `);
+  });
+
+  it('renders short low-common replacements as full-text blocks', () => {
+    expect(
+      renderMarkdown(`\`\`\`change
+-В случае недостижения согласия сторонами, спор передается на рассмотрение в судебные инстанции по месту нахождения Обслуживающей компании.
++При невозможности урегулирования в процессе переговоров спорных вопросов, споры разрешаются в суде в порядке, установленным действующим законодательством РФ.
+\`\`\``),
+    ).toMatchInlineSnapshot(`
+      "<section class="ui-content-diff ui-content-diff--block" aria-label="Изменение текста">
+        <div class="ui-content-diff__side ui-content-diff__side--removed">
+          <p class="ui-content-diff__label"><span aria-hidden="true">−</span> Было</p>
+          <p class="ui-content-diff__text">В случае недостижения согласия сторонами, спор передается на рассмотрение в судебные инстанции по месту нахождения Обслуживающей компании.</p>
+        </div>
+        <div class="ui-content-diff__side ui-content-diff__side--added">
+          <p class="ui-content-diff__label"><span aria-hidden="true">+</span> Стало</p>
+          <p class="ui-content-diff__text">При невозможности урегулирования в процессе переговоров спорных вопросов, споры разрешаются в суде в порядке, установленным действующим законодательством РФ.</p>
+        </div>
+      </section>"
+    `);
+  });
+
+  it('does not highlight case-only or punctuation-only changes', () => {
+    expect(
+      renderMarkdown(`\`\`\`change
+-Интернет — 12 000 руб.
++интернет — 12 000 руб!
+\`\`\``),
+    ).toMatchInlineSnapshot(`
+      "<section class="ui-content-diff ui-content-diff--inline" aria-label="Изменение текста">
+        <div class="ui-content-diff__side ui-content-diff__side--removed">
+          <p class="ui-content-diff__label"><span aria-hidden="true">−</span> Было</p>
+          <p class="ui-content-diff__text">Интернет — 12 000 руб.</p>
+        </div>
+        <div class="ui-content-diff__side ui-content-diff__side--added">
+          <p class="ui-content-diff__label"><span aria-hidden="true">+</span> Стало</p>
+          <p class="ui-content-diff__text">интернет — 12 000 руб!</p>
+        </div>
+      </section>"
+    `);
+  });
+
+  it('renders short uneven multi-line replacements as full-text blocks', () => {
+    expect(
+      renderMarkdown(`\`\`\`change
+-Строительство въезда и парковки для строительной техники — 125 000 руб
++Строительство въездной группы — 192 000 руб.
++Проход под калитку — 50 000 руб.
+\`\`\``),
+    ).toMatchInlineSnapshot(`
+      "<section class="ui-content-diff ui-content-diff--block" aria-label="Изменение текста">
+        <div class="ui-content-diff__side ui-content-diff__side--removed">
+          <p class="ui-content-diff__label"><span aria-hidden="true">−</span> Было</p>
+          <p class="ui-content-diff__text">Строительство въезда и парковки для строительной техники — 125 000 руб</p>
+        </div>
+        <div class="ui-content-diff__side ui-content-diff__side--added">
+          <p class="ui-content-diff__label"><span aria-hidden="true">+</span> Стало</p>
+          <p class="ui-content-diff__text">Строительство въездной группы — 192 000 руб.
+      Проход под калитку — 50 000 руб.</p>
+        </div>
+      </section>"
+    `);
+  });
+
+  it('supports manual stacked mode for short change fences', () => {
+    expect(
+      renderMarkdown(`\`\`\`change block
+-Старый короткий текст.
++Новый короткий текст.
+\`\`\``),
+    ).toMatchInlineSnapshot(`
+      "<section class=\"ui-content-diff ui-content-diff--block\" aria-label=\"Изменение текста\">
+        <div class=\"ui-content-diff__side ui-content-diff__side--removed\">
+          <p class=\"ui-content-diff__label\"><span aria-hidden=\"true\">−</span> Было</p>
+          <p class=\"ui-content-diff__text\">Старый короткий текст.</p>
+        </div>
+        <div class=\"ui-content-diff__side ui-content-diff__side--added\">
+          <p class=\"ui-content-diff__label\"><span aria-hidden=\"true\">+</span> Стало</p>
+          <p class=\"ui-content-diff__text\">Новый короткий текст.</p>
+        </div>
+      </section>"
+    `);
+  });
+
+  it('keeps regular diff fences as code blocks', () => {
+    expect(
+      renderMarkdown(`\`\`\`diff
+-Старый текст
++Новый текст
+\`\`\``),
+    ).toMatchInlineSnapshot(`
+      "<pre><code class=\"language-diff\">-Старый текст
+      +Новый текст
+      </code></pre>"
+    `);
+  });
 });

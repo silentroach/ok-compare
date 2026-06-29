@@ -38,6 +38,10 @@ export default defineConfig({
   },
   cacheDir: '../../node_modules/.astro/www',
   markdown: {
+    syntaxHighlight: {
+      type: 'shiki',
+      excludeLangs: ['math', 'change', 'change-inline', 'change-block'],
+    },
     processor: unified({
       gfm: true,
       smartypants: true,
