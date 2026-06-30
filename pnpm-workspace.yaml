@@ -4,6 +4,7 @@ packages:
 ignoreScripts: true
 
 minimumReleaseAge: 4320
+autoInstallPeers: false
 
 overrides:
-  vite: ^7
+  vite: ^8

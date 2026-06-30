@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { markdownToHtml } from 'satteri';
 
 import {
   createMarkdownDocument,
@@ -7,8 +8,11 @@ import {
   md,
   parseMarkdownFragment,
   render,
+  satteriTypograf,
   serializeMarkdownDocument,
 } from './index';
+
+const showNbsp = (value: string): string => value.replaceAll('\u00A0', '·');
 
 describe('@shelkovo/markdown', () => {
   it('serializes YAML frontmatter without quoting every string', () => {
@@ -116,6 +120,17 @@ describe('@shelkovo/markdown', () => {
       '<p>Шелково\u00A0Парк</p>',
     );
     expect(formatDynamicHtml('Новости Шелково')).toBe('Новости Шелково');
+  });
+
+  it('formats Satteri HTML text with project typography rules', async () => {
+    const result = await markdownToHtml('Шелково Ривер и `Шелково Парк`', {
+      hastPlugins: [satteriTypograf()],
+    });
+
+    expect(showNbsp(result.html)).toMatchInlineSnapshot(`
+      "<p>Шелково·Ривер и <code>Шелково Парк</code></p>
+      "
+    `);
   });
 
   it('renders markdown and drops raw HTML', () => {

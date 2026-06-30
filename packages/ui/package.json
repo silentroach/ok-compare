@@ -45,10 +45,10 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
-    "@tailwindcss/vite": "^4.3.0",
-    "astro": "^6.4.4",
+    "@tailwindcss/vite": "^4.3.1",
+    "astro": "^7.0.3",
     "svelte": "^5.56.3",
-    "tailwindcss": "^4.3.0",
+    "tailwindcss": "^4.3.1",
     "typescript": "^6.0.3"
   }
 }

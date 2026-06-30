@@ -1,18 +1,17 @@
 import { fileURLToPath } from 'node:url';
 import { constants } from 'node:zlib';
 import type { SitemapItem } from '@astrojs/sitemap';
-import { unified } from '@astrojs/markdown-remark';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import svelte from '@astrojs/svelte';
 import compressor from 'astro-compressor';
 import tailwindcss from '@tailwindcss/vite';
-import { rehypeTypograf } from '@shelkovo/markdown';
 import {
   applySitemapMetadata,
   type SitemapMetadataIndex,
 } from './src/lib/sitemap';
 import { loadSitemapMetadataIndex } from './src/lib/sitemap-data';
+import { createAstroMarkdownProcessor } from './src/lib/markdown/astro-processor';
 
 const plugins = [tailwindcss()];
 const devServerPort = 4321;
@@ -42,11 +41,7 @@ export default defineConfig({
       type: 'shiki',
       excludeLangs: ['math', 'change', 'change-inline', 'change-block'],
     },
-    processor: unified({
-      gfm: true,
-      smartypants: true,
-      rehypePlugins: [rehypeTypograf],
-    }),
+    processor: createAstroMarkdownProcessor(),
   },
   prefetch: {
     prefetchAll: true,

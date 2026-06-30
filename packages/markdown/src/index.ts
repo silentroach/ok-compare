@@ -18,4 +18,8 @@ export {
   type MarkdownPreprocessor,
   type RenderOptions,
 } from './render';
-export { formatDynamicHtml, rehypeTypograf } from './typography';
+export {
+  formatDynamicHtml,
+  rehypeTypograf,
+  satteriTypograf,
+} from './typography';

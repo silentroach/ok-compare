@@ -18,7 +18,7 @@ pnpm typecheck
 
 ## Стек
 
-- Astro 6 (static output)
+- Astro 7 (static output)
 - Svelte 5 с runes для интерактивных compare-компонентов
 - Tailwind CSS v4
 - Shared styles from `@shelkovo/ui/styles.css`

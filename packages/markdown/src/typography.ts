@@ -1,4 +1,5 @@
 import Typograf from 'typograf';
+import type { HastPluginDefinition } from 'satteri';
 
 interface HastNode {
   readonly type: string;
@@ -92,6 +93,35 @@ export function rehypeTypograf() {
     visitText(tree, []);
   };
 }
+
+export const satteriTypograf = (): HastPluginDefinition => ({
+  name: 'shelkovo-typograf',
+  text(node, ctx) {
+    if (!hasText(node.value)) {
+      return;
+    }
+
+    let parent = ctx.parent(node);
+    while (parent) {
+      if (
+        'tagName' in parent &&
+        typeof parent.tagName === 'string' &&
+        TYPOGRAPHY_SKIP_TAGS.has(parent.tagName.toLowerCase())
+      ) {
+        return;
+      }
+
+      const nextParent = ctx.parent(parent);
+      if (!nextParent) {
+        break;
+      }
+
+      parent = nextParent;
+    }
+
+    ctx.setProperty(node, 'value', formatTextNode(node.value));
+  },
+});
 
 export const formatDynamicHtml = (html: string): string =>
   typograf.execute(html);
