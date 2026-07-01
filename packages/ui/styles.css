@@ -610,6 +610,10 @@ a.ui-chip:hover {
   padding-left: 1.5rem;
 }
 
+.ui-prose :is(ul, ol) :is(ul, ol) {
+  margin-block: 0.35rem 0;
+}
+
 .ui-prose ul {
   list-style: disc;
 }
@@ -619,7 +623,20 @@ a.ui-chip:hover {
 }
 
 .ui-prose li {
-  margin-block: 0.5rem;
+  margin-block: 0.35rem;
+  padding-left: 0.1rem;
+}
+
+.ui-prose li > p {
+  margin-block: 0.35rem;
+}
+
+.ui-prose li > :is(ul, ol):first-child {
+  margin-block-start: 0.35rem;
+}
+
+.ui-prose li > :is(ul, ol):last-child {
+  margin-block-end: 0;
 }
 
 .ui-prose blockquote {
@@ -627,6 +644,29 @@ a.ui-chip:hover {
   border-left: 2px solid var(--color-border);
   padding-left: 1rem;
   color: var(--color-muted-foreground);
+}
+
+.ui-prose ul.ui-markdown-toc__list a {
+  font-weight: 400;
+  text-decoration-line: none;
+}
+
+.ui-prose ul.ui-markdown-toc__list a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+}
+
+.ui-prose ul.ui-markdown-toc__list,
+.ui-prose ul.ui-markdown-toc__list ul {
+  margin-block: 0.5rem;
+  line-height: 1.45;
+}
+
+.ui-prose ul.ui-markdown-toc__list p {
+  margin-block: 0;
+}
+
+.ui-prose ul.ui-markdown-toc__list li {
+  margin-block: 0.2rem;
 }
 
 .ui-prose hr {
@@ -743,6 +783,15 @@ a.ui-chip:hover {
     border-top: 0;
     border-left: 1px solid var(--color-border);
   }
+}
+
+.ui-prose h1 {
+  margin-top: 2.5rem;
+  color: var(--color-foreground);
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
 }
 
 .ui-prose h2 {

@@ -26,6 +26,7 @@ import type {
 import { stringify } from 'yaml';
 
 import { assertNoMarkdownTables } from './no-tables';
+import { expandTableOfContents } from './toc';
 import type {
   MarkdownDocumentInput,
   MarkdownFrontmatter,
@@ -73,9 +74,10 @@ export const createMarkdownDocument = ({
 });
 
 export const serializeMarkdownDocument = (document: Root): string => {
-  assertNoMarkdownTables(document);
+  const expandedDocument = expandTableOfContents(document);
+  assertNoMarkdownTables(expandedDocument);
 
-  const markdown = toMarkdown(document, {
+  const markdown = toMarkdown(expandedDocument, {
     bullet: '-',
     bulletOrdered: '.',
     closeAtx: false,

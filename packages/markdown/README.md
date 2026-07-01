@@ -11,7 +11,7 @@
   Создает mdast-документ. Если передан `frontmatter`, добавляет YAML-узел первым child и сериализует объект через `yaml` без принудительных кавычек у всех строк.
 
 - `serializeMarkdownDocument(document)`
-  Сериализует mdast `Root` в Markdown с единым стилем пакета: ATX-заголовки, `-` для unordered lists, `1.` для ordered lists, fenced code blocks, GFM и финальный перевод строки.
+  Сериализует mdast `Root` в Markdown с единым стилем пакета: ATX-заголовки, `-` для unordered lists, `1.` для ordered lists, fenced code blocks, GFM и финальный перевод строки. Если в документе есть отдельный абзац `[TOC]`, заменяет его на содержание по заголовкам `h2`–`h6`.
 
 - `parseMarkdownFragment(markdown)`
   Парсит Markdown-фрагмент в `readonly RootContent[]`, чтобы вставлять редакционный Markdown в сгенерированный документ как mdast-узлы, а не как экранированный plain text. Frontmatter из фрагмента не переносится в результат.
@@ -41,7 +41,7 @@
 ### Рендер vs генерация
 
 - Рендер Markdown в HTML: исходный body markdown проходит через app-wrapper `@/lib/markdown/render`, затем пакетный `render` и preprocessors приложения.
-- Генерация Markdown: структурные данные собираются в mdast через `createMarkdownDocument`, `md` и `parseMarkdownFragment`, затем сериализуются через `serializeMarkdownDocument`.
+- Генерация Markdown: структурные данные собираются в mdast через `createMarkdownDocument`, `md` и `parseMarkdownFragment`, затем сериализуются через `serializeMarkdownDocument`. Для содержания добавляй отдельный абзац `[TOC]`; пайплайн сам заменит его на список ссылок по заголовкам.
 - `parseMarkdownFragment` нужен только для уже написанных Markdown-фрагментов или секционных блоков, где нужно сохранить inline Markdown, списки и autolinks; он не заменяет ручной сериализатор целого документа.
 
 - Body markdown в pages/components должен идти через `@/lib/markdown/render`.

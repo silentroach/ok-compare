@@ -121,6 +121,57 @@ describe('renderMarkdown', () => {
     );
   });
 
+  it('renders hyphen-prefixed ordered Markdown items as one ordered list', () => {
+    expect(
+      renderMarkdown(`\`\`\`txt
+- 1. Не список
+\`\`\`
+
+Лето:
+
+- 1. Первый пункт
+- 2. Второй пункт`),
+    ).toMatchInlineSnapshot(`
+      "<pre><code class=\"language-txt\">- 1. Не список
+      </code></pre>
+      <p>Лето:</p>
+      <ol>
+      <li>Первый пункт</li>
+      <li>Второй пункт</li>
+      </ol>"
+    `);
+  });
+
+  it('renders legal outline markers as paragraphs when decimal subclauses follow', () => {
+    expect(
+      renderMarkdown(`1. Parent clause:
+
+1.1. First subclause.
+
+1.2. Second subclause.
+
+2. Next clause:
+
+2.1. Nested subclause.
+
+Regular list:
+
+1. First item
+2. Second item`),
+    ).toMatchInlineSnapshot(`
+      "<p>1. Parent clause:</p>
+      <p>1.1. First subclause.</p>
+      <p>1.2. Second subclause.</p>
+      <p>2. Next clause:</p>
+      <p>2.1. Nested subclause.</p>
+      <p>Regular list:</p>
+      <ol>
+      <li>First item</li>
+      <li>Second item</li>
+      </ol>"
+    `);
+  });
+
   it('renders change fences as readable word-level diffs', () => {
     expect(
       renderMarkdown(`\`\`\`change

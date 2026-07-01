@@ -5,7 +5,9 @@ import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified, type Plugin } from 'unified';
 
+import { uniqueHeadingSlug } from './heading-slugs';
 import { assertNoMarkdownTables } from './no-tables';
+import { expandTableOfContents } from './toc';
 import { rehypeTypograf } from './typography';
 
 export type MarkdownPreprocessor = (markdown: string) => string;
@@ -35,28 +37,6 @@ const nodeText = (node: HtmlTreeNode): string => {
   }
 
   return node.children?.map(nodeText).join('') ?? '';
-};
-
-const headingSlug = (text: string): string => {
-  const slug = text
-    .trim()
-    .toLowerCase()
-    .replace(/['"«»“”„]/gu, '')
-    .replace(/[^\p{Letter}\p{Number}]+/gu, '-')
-    .replace(/^-+|-+$/gu, '');
-
-  return slug || 'section';
-};
-
-const uniqueHeadingSlug = (
-  text: string,
-  seenSlugs: Map<string, number>,
-): string => {
-  const slug = headingSlug(text);
-  const count = seenSlugs.get(slug) ?? 0;
-  seenSlugs.set(slug, count + 1);
-
-  return count === 0 ? slug : `${slug}-${count + 1}`;
 };
 
 const headingAnchor = (slug: string): HtmlTreeNode => ({
@@ -104,9 +84,13 @@ const rehypeHeadingIds: Plugin<[], HtmlTreeNode> = () => (tree) => {
   addHeadingIds(tree, new Map());
 };
 
+const remarkTableOfContents: Plugin<[], Root> = () => (tree) =>
+  expandTableOfContents(tree);
+
 const processor = unified()
   .use(remarkParse)
   .use(remarkGfm)
+  .use(remarkTableOfContents)
   .use(remarkNoMarkdownTables)
   // Raw HTML is not passed through, so markdown content cannot inject markup.
   .use(remarkRehype)
