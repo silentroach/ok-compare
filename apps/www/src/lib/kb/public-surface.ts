@@ -1,6 +1,11 @@
 import type { PublicSurfaceSlice } from '@/lib/public-surface/types';
 
-import { kbDetailPattern, kbPath } from './routes';
+import {
+  kbDetailMarkdownPattern,
+  kbDetailPattern,
+  kbMarkdownPath,
+  kbPath,
+} from './routes';
 
 export const kbPublicSurfaceSlice = {
   owner: {
@@ -19,12 +24,29 @@ export const kbPublicSurfaceSlice = {
       catalogRole: 'anchor',
     },
     {
+      id: 'kb:index-markdown',
+      label: 'Markdown-версия базы знаний',
+      path: kbMarkdownPath(),
+      mediaType: 'text/markdown',
+      cacheClass: 'markdown',
+      discoveryRoles: ['markdown-companion'],
+      catalogRole: 'item',
+    },
+    {
       id: 'kb:page',
       label: 'Страница базы знаний',
       routePattern: kbDetailPattern(),
       mediaType: 'text/html',
       cacheClass: 'html',
       discoveryRoles: ['detail-page'],
+    },
+    {
+      id: 'kb:page-markdown',
+      label: 'Markdown-версия страницы базы знаний',
+      routePattern: kbDetailMarkdownPattern(),
+      mediaType: 'text/markdown',
+      cacheClass: 'markdown',
+      discoveryRoles: ['markdown-companion'],
     },
   ],
 } satisfies PublicSurfaceSlice;

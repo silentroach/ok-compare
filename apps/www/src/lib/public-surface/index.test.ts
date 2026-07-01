@@ -25,7 +25,12 @@ import {
   compareSkillsPath,
 } from '@/compare/lib/public-surface';
 import { catalog } from '@/lib/discovery';
-import { kbDetailPattern, kbPath } from '@/lib/kb/routes';
+import {
+  kbDetailMarkdownPattern,
+  kbDetailPattern,
+  kbMarkdownPath,
+  kbPath,
+} from '@/lib/kb/routes';
 import {
   apiCatalogPath as newsApiCatalogPath,
   articleMarkdownPattern,
@@ -203,12 +208,11 @@ describe('public surface registry', () => {
     ]);
   });
 
-  it('registers kb MVP HTML surfaces from kb route helpers', () => {
+  it('registers kb HTML and markdown surfaces from kb route helpers', () => {
     const surfaces = publicSurfaceRegistry.surfacesByOwner('kb');
     const byId = new Map(surfaces.map((surface) => [surface.id, surface]));
     const surfaceIds = surfaces.map((surface) => surface.id);
     const forbiddenIds = [
-      'kb:index-markdown',
       'kb:data',
       'kb:schema',
       'kb:openapi',
@@ -227,13 +231,25 @@ describe('public surface registry', () => {
     expect(publicSurfaceRegistry.surfaceOwner('kb:index')).toEqual(
       kbPublicSurfaceSlice.owner,
     );
-    expect(surfaceIds).toEqual(['kb:index', 'kb:page']);
+    expect(surfaceIds).toEqual([
+      'kb:index',
+      'kb:index-markdown',
+      'kb:page',
+      'kb:page-markdown',
+    ]);
     expect(byId.get('kb:index')).toMatchObject({
       path: kbPath(),
       mediaType: 'text/html',
       cacheClass: 'html',
       discoveryRoles: ['section-entry'],
       catalogRole: 'anchor',
+    });
+    expect(byId.get('kb:index-markdown')).toMatchObject({
+      path: kbMarkdownPath(),
+      mediaType: 'text/markdown',
+      cacheClass: 'markdown',
+      discoveryRoles: ['markdown-companion'],
+      catalogRole: 'item',
     });
     expect(byId.get('kb:page')).toMatchObject({
       routePattern: kbDetailPattern(),
@@ -242,6 +258,13 @@ describe('public surface registry', () => {
       discoveryRoles: ['detail-page'],
     });
     expect(byId.get('kb:page')).not.toHaveProperty('catalogRole');
+    expect(byId.get('kb:page-markdown')).toMatchObject({
+      routePattern: kbDetailMarkdownPattern(),
+      mediaType: 'text/markdown',
+      cacheClass: 'markdown',
+      discoveryRoles: ['markdown-companion'],
+    });
+    expect(byId.get('kb:page-markdown')).not.toHaveProperty('catalogRole');
     expect(surfaceIds).not.toEqual(expect.arrayContaining(forbiddenIds));
     expect(rootCatalog.linkset).toEqual(
       expect.arrayContaining([
