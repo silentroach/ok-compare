@@ -139,3 +139,5 @@
 ## Заметка по реализации
 
 На 2026-06-08 реестр реализован как `apps/www/src/lib/public-surface` и агрегируется из фрагментов разделов: root, news, status, meetings, people, reglament и compare. Корневой API catalog строится из `publicSurfaceRegistry.slices`, а корневые `llms.txt`/`llms-full.txt` берут стабильные пути через registered surface ids. Compare экспортирует собственный фрагмент реестра, а встречи зарегистрированы без HTML-индекса `/meetings/`. `nginx` остается ручной реализацией; генерация nginx-фрагментов из реестра не добавлялась.
+
+На 2026-07-01 реестр также включает фрагменты `kb` и `reviews`. База знаний зарегистрирована с HTML и Markdown companion-поверхностями без JSON/OpenAPI/llms, а отзывы - с HTML и Markdown companion-поверхностями без JSON feed, схем и llms-файлов. Генерация nginx-фрагментов из реестра по-прежнему не добавлялась.

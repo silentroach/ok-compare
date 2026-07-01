@@ -8,7 +8,7 @@
 - [ADR-002: Client transitions, hover prefetch и кеширование HTML](002-client-transitions-prefetch-cache.md) - принят, 2026-05-14.
 - [ADR-003: Слоистый Markdown-рендер](003-markdown-pipeline-layering.md) - принят, 2026-05-14.
 - [ADR-004: Lighthouse-профиль без аналитики](004-lighthouse-analytics-profile.md) - принят, 2026-05-15.
-- [ADR-005: CSP без `unsafe-inline` для исполняемых скриптов](005-csp-inline-script-policy.md) - принят, 2026-05-15.
+- [ADR-005: CSP без `unsafe-inline` для исполняемых скриптов](005-csp-inline-script-policy.md) - заменен ADR-017, 2026-05-15.
 - [ADR-006: HSTS без `includeSubDomains` и `preload`](006-hsts-policy.md) - принят, 2026-05-15.
 - [ADR-007: COOP без COEP для изоляции `opener`-связей](007-coop-origin-isolation.md) - принят, 2026-05-15.
 - [ADR-008: Генерация Markdown через AST](008-markdown-ast-generation.md) - принят, 2026-05-14.
@@ -20,3 +20,4 @@
 - [ADR-014: Transcript-first архив встреч](014-meetings-transcript-first-archive.md) - принят, 2026-06-07.
 - [ADR-015: Markdown-first база знаний поселка](015-markdown-first-knowledge-base.md) - принят, 2026-06-16.
 - [ADR-016: Markdown-first отзывы собственников](016-markdown-first-owner-reviews.md) - принят, 2026-06-25.
+- [ADR-017: CSP с inline-исключениями для Astro и Яндекс Карт](017-csp-inline-exceptions-for-astro-yandex-maps.md) - принят, 2026-07-01.
