@@ -34,7 +34,7 @@ jobs:
 
       - name: Restore Turbo cache
         id: restore-turbo-cache
-        uses: actions/cache/restore@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .turbo/cache
           key: ${{ runner.os }}-turbo-test-v2-${{ github.head_ref || github.ref_name }}-${{ github.sha }}
@@ -63,7 +63,7 @@ jobs:
 
       - name: Save Turbo cache
         if: ${{ steps.restore-turbo-cache.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .turbo/cache
           key: ${{ steps.restore-turbo-cache.outputs.cache-primary-key }}
