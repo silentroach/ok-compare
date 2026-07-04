@@ -298,9 +298,21 @@ describe('buildPersonMarkdown', () => {
       },
     };
 
-    expect(buildPersonMarkdown(profile)).toContain(
-      'Исполняющий обязанности директора по эксплуатации, ОК "Комфорт"',
-    );
-    expect(buildPersonMarkdown(profile)).not.toContain('## Профиль');
+    const markdown = buildPersonMarkdown(profile);
+
+    expect(markdown).toMatchInlineSnapshot(`
+      "# Кирилл Щемелинин
+
+      Исполняющий обязанности директора по эксплуатации, ОК "Комфорт"
+
+      ## Контакты
+
+      - Телефон: [+7 (967) 246-37-49](tel:+79672463749)
+
+      ## Где упоминается
+
+      - Пока публичных упоминаний не найдено.
+      "
+    `);
   });
 });

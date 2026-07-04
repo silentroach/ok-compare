@@ -162,8 +162,7 @@ describe('meeting view helpers', () => {
   it('keeps ampersands and quotes safe while applying typography', () => {
     const html = formatTranscriptTextHtml('Компания "ОК" & жители');
 
-    expect(html).toContain('<p>Компания «ОК» &#x26; жители</p>');
-    expect(html).toContain('&#x26;');
+    expect(html).toMatchInlineSnapshot(`"<p>Компания «ОК» &#x26; жители</p>"`);
   });
 
   it('keeps internal line breaks in markdown paragraphs', () => {

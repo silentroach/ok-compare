@@ -88,7 +88,14 @@ export const buildReviewsHomeMarkdown = (data: ReviewsDataset): string =>
     md.heading(2, 'Отзывы'),
     data.reviews.length > 0
       ? md.list(data.reviews.map(reviewLine))
-      : md.paragraph('Первые отзывы еще не опубликованы.'),
+      : md.paragraph([
+          md.text('Если вы собственник участка или дома в Шелково, '),
+          md.link(
+            abs(reviewsRulesMarkdownPath()),
+            'посмотрите, как оставить свой отзыв',
+          ),
+          md.text('.'),
+        ]),
   ]);
 
 export const buildReviewsRulesMarkdown = (): string =>

@@ -6,6 +6,8 @@ let articleEventIcsUrl: typeof import('./routes').articleEventIcsUrl;
 let buildArticleEventIcs: typeof import('./calendar').buildArticleEventIcs;
 let hasArticleEvents: typeof import('./calendar').hasArticleEvents;
 
+const normalizeIcs = (ics: string): string => ics.replaceAll('\r\n', '\n');
+
 beforeAll(async () => {
   Object.assign(import.meta.env, {
     SITE: 'https://example.com',
@@ -79,9 +81,24 @@ describe('buildArticleEventIcs', () => {
     const item = event();
     const ics = buildArticleEventIcs(article({ events: [item] }), item);
 
-    expect(ics).toContain('BEGIN:VCALENDAR\r\n');
-    expect(ics).toContain('BEGIN:VEVENT\r\n');
-    expect(ics).toContain('END:VEVENT\r\n');
+    expect(normalizeIcs(ics)).toMatchInlineSnapshot(`
+      "BEGIN:VCALENDAR
+      VERSION:2.0
+      PRODID:-//example.com//News Events//RU
+      CALSCALE:GREGORIAN
+      METHOD:PUBLISH
+      BEGIN:VEVENT
+      UID:news-event-2026-04-ok-meeting-regulation-event@example.com
+      DTSTAMP:20260428T210000Z
+      DTSTART:20260531T160000Z
+      DTEND:20260531T180000Z
+      SUMMARY:Встреча по регламенту
+      DESCRIPTION:Коротко о встрече
+      URL:https://example.com/news/2026/04/ok-meeting-regulation/
+      END:VEVENT
+      END:VCALENDAR
+      "
+    `);
     expect(ics.endsWith('END:VCALENDAR\r\n')).toBe(true);
     expect(ics.replaceAll('\r\n', '')).not.toContain('\n');
   });
@@ -90,17 +107,48 @@ describe('buildArticleEventIcs', () => {
     const item = event();
     const ics = buildArticleEventIcs(article({ events: [item] }), item);
 
-    expect(ics).toContain('DTSTART:20260531T160000Z\r\n');
-    expect(ics).toContain('DTEND:20260531T180000Z\r\n');
-    expect(ics).toContain('DTSTAMP:20260428T210000Z\r\n');
+    expect(normalizeIcs(ics)).toMatchInlineSnapshot(`
+      "BEGIN:VCALENDAR
+      VERSION:2.0
+      PRODID:-//example.com//News Events//RU
+      CALSCALE:GREGORIAN
+      METHOD:PUBLISH
+      BEGIN:VEVENT
+      UID:news-event-2026-04-ok-meeting-regulation-event@example.com
+      DTSTAMP:20260428T210000Z
+      DTSTART:20260531T160000Z
+      DTEND:20260531T180000Z
+      SUMMARY:Встреча по регламенту
+      DESCRIPTION:Коротко о встрече
+      URL:https://example.com/news/2026/04/ok-meeting-regulation/
+      END:VEVENT
+      END:VCALENDAR
+      "
+    `);
   });
 
   it('defaults omitted event end to two hours in ICS only', () => {
     const item = event({ ends: false });
     const ics = buildArticleEventIcs(article({ events: [item] }), item);
 
-    expect(ics).toContain('DTSTART:20260531T160000Z\r\n');
-    expect(ics).toContain('DTEND:20260531T180000Z\r\n');
+    expect(normalizeIcs(ics)).toMatchInlineSnapshot(`
+      "BEGIN:VCALENDAR
+      VERSION:2.0
+      PRODID:-//example.com//News Events//RU
+      CALSCALE:GREGORIAN
+      METHOD:PUBLISH
+      BEGIN:VEVENT
+      UID:news-event-2026-04-ok-meeting-regulation-event@example.com
+      DTSTAMP:20260428T210000Z
+      DTSTART:20260531T160000Z
+      DTEND:20260531T180000Z
+      SUMMARY:Встреча по регламенту
+      DESCRIPTION:Коротко о встрече
+      URL:https://example.com/news/2026/04/ok-meeting-regulation/
+      END:VEVENT
+      END:VCALENDAR
+      "
+    `);
   });
 
   it('escapes text values', () => {
@@ -115,12 +163,24 @@ describe('buildArticleEventIcs', () => {
       item,
     );
 
-    expect(ics).toContain(
-      'SUMMARY:Comma\\, semi\\; slash \\\\ and\\nbreak\r\n',
-    );
-    expect(ics).toContain(
-      'DESCRIPTION:Comma\\, semi\\; slash \\\\ and\\nbreak\r\n',
-    );
+    expect(normalizeIcs(ics)).toMatchInlineSnapshot(`
+      "BEGIN:VCALENDAR
+      VERSION:2.0
+      PRODID:-//example.com//News Events//RU
+      CALSCALE:GREGORIAN
+      METHOD:PUBLISH
+      BEGIN:VEVENT
+      UID:news-event-2026-04-ok-meeting-regulation-event@example.com
+      DTSTAMP:20260428T210000Z
+      DTSTART:20260531T160000Z
+      DTEND:20260531T180000Z
+      SUMMARY:Comma\\, semi\\; slash \\\\ and\\nbreak
+      DESCRIPTION:Comma\\, semi\\; slash \\\\ and\\nbreak
+      URL:https://example.com/news/2026/04/ok-meeting-regulation/
+      END:VEVENT
+      END:VCALENDAR
+      "
+    `);
   });
 
   it('uses event description when it is provided', () => {
@@ -165,18 +225,27 @@ describe('buildArticleEventIcs', () => {
     );
     const unfolded = ics.replaceAll('\r\n ', '');
 
-    expect(ics).toContain(
-      'UID:news-event-2026-04-ok-meeting-regulation-event@example.com\r\n',
-    );
-    expect(ics).toContain(
-      'URL:https://example.com/news/2026/04/ok-meeting-regulation/\r\n',
-    );
-    expect(ics).toContain('LOCATION:КП Шелково\\, эко-клуб\r\n');
-    expect(ics).toContain('GEO:55;38\r\n');
-    expect(unfolded).toContain(
-      'X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-APPLE-RADIUS=100;',
-    );
-    expect(unfolded).toContain('X-TITLE="КП Шелково, эко-клуб":geo:55,38\r\n');
+    expect(normalizeIcs(unfolded)).toMatchInlineSnapshot(`
+      "BEGIN:VCALENDAR
+      VERSION:2.0
+      PRODID:-//example.com//News Events//RU
+      CALSCALE:GREGORIAN
+      METHOD:PUBLISH
+      BEGIN:VEVENT
+      UID:news-event-2026-04-ok-meeting-regulation-event@example.com
+      DTSTAMP:20260428T210000Z
+      DTSTART:20260531T160000Z
+      DTEND:20260531T180000Z
+      SUMMARY:Встреча по регламенту
+      DESCRIPTION:Коротко о встрече
+      URL:https://example.com/news/2026/04/ok-meeting-regulation/
+      LOCATION:КП Шелково\\, эко-клуб
+      GEO:55;38
+      X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-APPLE-RADIUS=100;X-TITLE="КП Шелково, эко-клуб":geo:55,38
+      END:VEVENT
+      END:VCALENDAR
+      "
+    `);
   });
 });
 

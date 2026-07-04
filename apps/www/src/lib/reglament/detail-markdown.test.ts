@@ -335,18 +335,7 @@ describe('estimate detail markdown companions', () => {
     const machines = buildEstimateDetailMachinesMarkdown(fixtureDataset);
     const labor = buildEstimateDetailLaborMarkdown(fixtureDataset);
 
-    expect(materials).toContain('## Быстрый индекс по строкам сметы');
-    expect(materials).toContain('- `material-sand` — Песок');
-    expect(materials).toContain('  - Работа: `work-verified`');
-    expect(materials).not.toContain('machine-loader: Погрузчик');
-    expect(machines).toContain('- `machine-loader` — Погрузчик');
-    expect(machines).not.toContain('material-sand: Песок');
-    expect(labor).toContain('- `labor-worker` — Рабочий зеленого хозяйства');
-    expect(labor).toContain('  - Вид: труд');
-    expect(labor).toContain('- `machinist-loader` — Машинист погрузчика');
-    expect(labor).toContain('  - Вид: труд машинистов');
-    expect(labor).toContain('  - Ставка: 2 000 ₽');
-    expect(labor).toContain('  - Итог: 16 000 ₽');
+    expect({ labor, machines, materials }).toMatchSnapshot();
   });
 
   it('renders structured source quote items in Russian when present', () => {
@@ -360,14 +349,7 @@ describe('estimate detail markdown companions', () => {
   it('lists control totals, deltas and needs_check items', () => {
     const checks = buildEstimateDetailChecksMarkdown(fixtureDataset);
 
-    expect(checks).toContain('`cleaning-materials-total`: `materials`');
-    expect(checks).toContain('источник контроля: секционный PDF');
-    expect(checks).toContain('дельта: -25 ₽');
-    expect(checks).toContain('Работа для сверки');
-    expect(checks).toContain(
-      '`resources:machinist-loader`: Машинист погрузчика',
-    );
-    expect(checks).toContain('Расхождение больше допуска.');
+    expect(checks).toMatchSnapshot();
   });
 
   it('mentions the improvement road/fence mismatch in real checks markdown', () => {

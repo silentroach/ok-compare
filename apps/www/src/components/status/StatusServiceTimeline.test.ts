@@ -186,10 +186,10 @@ describe('StatusServiceTimeline', () => {
       }),
     ]);
 
-    expect(html.match(/data-status-problem/g)?.length ?? 0).toBe(1);
-    expect(html).toContain('data-tooltip-group-title="3');
-    expect(html).toContain('data-tooltip-items="[');
-    expect(html).not.toContain('data-tooltip-kind-label="Инцидент"');
+    expect({
+      problemCount: html.match(/data-status-problem/g)?.length ?? 0,
+      segment: incidentSegmentTag(html, 'same-day-a'),
+    }).toMatchSnapshot();
   });
 
   it('renders typographic non-breaking spaces in tooltip date labels', async () => {
@@ -273,12 +273,7 @@ describe('StatusServiceTimeline', () => {
     expect([
       incidentSegmentTag(html, 'no-page'),
       incidentSegmentTag(html, 'with-page'),
-    ]).toMatchInlineSnapshot(`
-      [
-        "<button type="button" title="Вода. Инцидент. Запись no-page. Статус: восстановлено. 8·мая, 03:00·—·04:00" aria-label="Вода. Инцидент. Запись no-page. Статус: восстановлено. 8·мая, 03:00·—·04:00" data-incident-id="no-page" data-status-problem="true" data-status-kind="incident" data-status-service="water" data-start="2026-05-08T00:00:00Z" data-end="2026-05-08T01:00:00Z" data-geometry-start="2026-05-07T21:00:00.000Z" data-geometry-end="2026-05-08T21:00:00.000Z" data-tooltip-service-label="Вода" data-tooltip-kind-label="Инцидент" data-tooltip-title="Запись no-page" data-tooltip-phase-label="восстановлено" data-tooltip-phase-icon="check" data-tooltip-period-label="8·мая, 03:00·—·04:00" style="--segment-left: 78.75; --segment-width: 10;" class="status-service-timeline__segment status-service-timeline__segment--problem status-service-timeline__segment--compact-marker status-service-timeline__segment--red">",
-        "<a href="/status/incidents/with-page" title="Вода. Инцидент. Запись with-page. Статус: восстановлено. 9·мая, 03:00·—·04:00" aria-label="Вода. Инцидент. Запись with-page. Статус: восстановлено. 9·мая, 03:00·—·04:00" data-incident-id="with-page" data-status-problem="true" data-status-kind="incident" data-status-service="water" data-start="2026-05-09T00:00:00Z" data-end="2026-05-09T01:00:00Z" data-geometry-start="2026-05-08T21:00:00.000Z" data-geometry-end="2026-05-09T21:00:00.000Z" data-tooltip-service-label="Вода" data-tooltip-kind-label="Инцидент" data-tooltip-title="Запись with-page" data-tooltip-phase-label="восстановлено" data-tooltip-phase-icon="check" data-tooltip-period-label="9·мая, 03:00·—·04:00" style="--segment-left: 88.75; --segment-width: 10;" class="status-service-timeline__segment status-service-timeline__segment--problem status-service-timeline__segment--compact-marker status-service-timeline__segment--red">",
-      ]
-    `);
+    ]).toMatchSnapshot();
   });
 
   it('marks any affected single day with the full visible day slot', async () => {
@@ -302,21 +297,11 @@ describe('StatusServiceTimeline', () => {
       }),
     ]);
 
-    expect(incidentSegmentTag(html, 'short-single-day')).toContain(
-      '--segment-width: 10;',
-    );
-    expect(incidentSegmentTag(html, 'long-single-day')).toContain(
-      '--segment-width: 10;',
-    );
-    expect(incidentSegmentTag(html, 'active-single-day')).toContain(
-      '--segment-width: 10;',
-    );
-    expect(incidentSegmentTag(html, 'long-single-day')).toContain(
-      'status-service-timeline__segment--compact-marker',
-    );
-    expect(incidentSegmentTag(html, 'active-single-day')).toContain(
-      'status-service-timeline__segment--compact-marker',
-    );
+    expect([
+      incidentSegmentTag(html, 'short-single-day'),
+      incidentSegmentTag(html, 'long-single-day'),
+      incidentSegmentTag(html, 'active-single-day'),
+    ]).toMatchSnapshot();
 
     const shorterRangeHtml = await renderTimeline(
       [
@@ -332,7 +317,7 @@ describe('StatusServiceTimeline', () => {
 
     expect(
       incidentSegmentTag(shorterRangeHtml, 'shorter-range-single-day'),
-    ).toContain('--segment-width: 20;');
+    ).toMatchSnapshot();
   });
 
   it('marks every affected day for cross-day incidents', async () => {
@@ -366,9 +351,7 @@ describe('StatusServiceTimeline', () => {
       }),
     ]);
 
-    expect(incidentSegmentTag(html, 'same-day-a')).toMatchInlineSnapshot(
-      `"<button type="button" title="Вода. 2·события за·9·мая. Запись same-day-a. 9·мая, 06:00·—·06:40. Запись same-day-b. 9·мая, 11:10·—·11:45" aria-label="Вода. 2·события за·9·мая. Запись same-day-a. 9·мая, 06:00·—·06:40. Запись same-day-b. 9·мая, 11:10·—·11:45" data-incident-id="same-day-a" data-status-problem="true" data-status-kind="incident" data-status-service="water" data-start="2026-05-09T03:00:00Z" data-end="2026-05-09T08:45:00Z" data-geometry-start="2026-05-08T21:00:00.000Z" data-geometry-end="2026-05-09T21:00:00.000Z" data-tooltip-service-label="Вода" data-tooltip-group-title="2·события за·9·мая" data-tooltip-items="[{&#34;kind&#34;:&#34;incident&#34;,&#34;title&#34;:&#34;Запись same-day-a&#34;,&#34;isActive&#34;:false,&#34;startedIso&#34;:&#34;2026-05-09T03:00:00Z&#34;,&#34;startedHasTime&#34;:true,&#34;endedIso&#34;:&#34;2026-05-09T03:40:00Z&#34;,&#34;endedHasTime&#34;:true},{&#34;kind&#34;:&#34;incident&#34;,&#34;title&#34;:&#34;Запись same-day-b&#34;,&#34;isActive&#34;:false,&#34;startedIso&#34;:&#34;2026-05-09T08:10:00Z&#34;,&#34;startedHasTime&#34;:true,&#34;endedIso&#34;:&#34;2026-05-09T08:45:00Z&#34;,&#34;endedHasTime&#34;:true}]" style="--segment-left: 88.75; --segment-width: 10;" class="status-service-timeline__segment status-service-timeline__segment--problem status-service-timeline__segment--compact-marker status-service-timeline__segment--red">"`,
-    );
+    expect(incidentSegmentTag(html, 'same-day-a')).toMatchSnapshot();
   });
 
   it('groups short active same-day incidents with dense compact markers', async () => {
@@ -386,14 +369,10 @@ describe('StatusServiceTimeline', () => {
       }),
     ]);
 
-    expect(html.match(/data-status-problem/g)?.length ?? 0).toBe(1);
-    expect(incidentSegmentTag(html, 'dense-ended')).toContain('<button');
-    expect(incidentSegmentTag(html, 'dense-ended')).toContain(
-      'data-tooltip-group-title="2·события за·10·мая"',
-    );
-    expect(incidentSegmentTag(html, 'dense-ended')).toContain(
-      '&#34;title&#34;:&#34;Запись dense-active&#34;',
-    );
+    expect({
+      problemCount: html.match(/data-status-problem/g)?.length ?? 0,
+      segment: incidentSegmentTag(html, 'dense-ended'),
+    }).toMatchSnapshot();
   });
 
   it('renders a shared tooltip shell in SSR HTML', async () => {

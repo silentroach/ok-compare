@@ -156,14 +156,20 @@ describe('Format Module', () => {
         normalizedIsEstimate: true,
       });
 
-      expect(calc?.intro).toContain('приведен');
-      expect(calc?.assumption).toContain('1 участок = 10 соток');
-      expect(calc?.assumption).toContain(
-        'Среднюю площадь участка по подтвержденным данным не нашли',
-      );
-      expect(calc?.rows).toHaveLength(1);
-      expect(calc?.rows[0]?.formula).toContain('10 соток');
-      expect(calc?.total).toContain('300');
+      expect(calc).toMatchInlineSnapshot(`
+        {
+          "assumption": "Допущение: 1 участок = 10 соток. Среднюю площадь участка по подтвержденным данным не нашли.",
+          "intro": "Тариф приведен к ₽/сотка в месяц для корректного сравнения.",
+          "rows": [
+            {
+              "formula": "(9 000 ₽ / 3 месяца) / 10 соток = 300 ₽/сотка в месяц",
+              "source": "Указан за участок.",
+              "title": "Тариф",
+            },
+          ],
+          "total": "300 ₽/сотка в месяц",
+        }
+      `);
     });
 
     it('should use known average lot size in tariff breakdown', () => {
@@ -182,10 +188,20 @@ describe('Format Module', () => {
         },
       );
 
-      expect(calc?.assumption).toContain('17,8 сот.');
-      expect(calc?.assumption).toContain('опубликованным площадям лотов');
-      expect(calc?.rows[0]?.formula).toContain('17,8 сот.');
-      expect(calc?.total).toContain('100');
+      expect(calc).toMatchInlineSnapshot(`
+        {
+          "assumption": "Допущение: 1 участок = 17,8 сот. Средняя площадь рассчитана по опубликованным площадям лотов.",
+          "intro": "Тариф приведен к ₽/сотка в месяц для корректного сравнения.",
+          "rows": [
+            {
+              "formula": "(1 780 ₽ / 1 месяц) / 17,8 сот. = 100 ₽/сотка в месяц",
+              "source": "Указан за участок.",
+              "title": "Тариф",
+            },
+          ],
+          "total": "100 ₽/сотка в месяц",
+        }
+      `);
     });
 
     it('should use short lot-area note in tariff breakdown', () => {
@@ -237,10 +253,25 @@ describe('Format Module', () => {
         ],
       });
 
-      expect(calc?.intro).toContain('нескольких частей');
-      expect(calc?.rows).toHaveLength(2);
-      expect(calc?.rows[0]?.title).toBe('Часть 1');
-      expect(calc?.total).toContain('681');
+      expect(calc).toMatchInlineSnapshot(`
+        {
+          "assumption": "Допущение: 1 участок = 10 соток. Среднюю площадь участка по подтвержденным данным не нашли.",
+          "intro": "Тариф состоит из нескольких частей. Для сравнения каждая часть приведена к ₽/сотка в месяц, затем значения суммированы.",
+          "rows": [
+            {
+              "formula": "(5 813 ₽ / 1 месяц) / 10 соток = 581,3 ₽/сотка в месяц",
+              "source": "Указан за участок.",
+              "title": "Часть 1",
+            },
+            {
+              "formula": "100 ₽ / 1 месяц = 100 ₽/сотка в месяц",
+              "source": "Указан за сотку.",
+              "title": "Часть 2",
+            },
+          ],
+          "total": "681,3 ₽/сотка в месяц",
+        }
+      `);
     });
   });
 
@@ -263,9 +294,13 @@ describe('Format Module', () => {
         },
       );
 
-      expect(calc?.known).toContain('100 га и 298 участков');
-      expect(calc?.factors).toContain('дороги, тротуары, ливневки');
-      expect(calc?.total).toContain('33,56 − 1,55 = 32,01');
+      expect(calc).toMatchInlineSnapshot(`
+        {
+          "factors": "дороги, тротуары, ливневки и еще 3 фактора.",
+          "known": "100 га и 298 участков.",
+          "total": "33,56 − 1,55 = 32,01 сот.",
+        }
+      `);
     });
 
     it('should build lot breakdown for explicit average', () => {
@@ -277,9 +312,13 @@ describe('Format Module', () => {
           'Средняя площадь рассчитана по опубликованным площадям лотов.',
       });
 
-      expect(calc?.known).toContain('32 га и 150 участков');
-      expect(calc?.factors).toContain('опубликованным площадям лотов');
-      expect(calc?.total).toBe('20,4 сот.');
+      expect(calc).toMatchInlineSnapshot(`
+        {
+          "factors": "Средняя площадь рассчитана по опубликованным площадям лотов.",
+          "known": "32 га и 150 участков.",
+          "total": "20,4 сот.",
+        }
+      `);
     });
   });
 });

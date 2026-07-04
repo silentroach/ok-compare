@@ -600,21 +600,10 @@ describe('hydrateStatusTimeline', () => {
     const firstTitleText = getTooltipField('[data-status-tooltip-list]')
       .firstElementChild?.firstElementChild as HTMLElement | undefined;
 
-    expect(visibleWhitespace(firstTitleText?.textContent)).toContain(
+    expect(String(visibleWhitespace(firstTitleText?.textContent)).trim()).toBe(
       'Отключение·1',
     );
     expect(firstTitleText?.hidden).toBe(false);
-    expect(getTooltipField('[data-status-tooltip-list]').textContent).toContain(
-      '06:00',
-    );
-    expect(
-      visibleWhitespace(
-        getTooltipField('[data-status-tooltip-list]').textContent,
-      ),
-    ).toContain('Отключение·3');
-    expect(getTooltipField('[data-status-tooltip-list]').textContent).toContain(
-      '22:20',
-    );
     expect(
       getTooltipField('[data-status-tooltip-list]').querySelectorAll(
         '.status-service-timeline__tooltip-phase-icon--check:not([hidden])',

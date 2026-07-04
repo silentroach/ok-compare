@@ -1,0 +1,183 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`estimate detail markdown companions > filters resource topical files from the dataset 1`] = `
+{
+  "labor": "# Детальная смета 2026: труд
+
+- Индекс: <https://kpshelkovo.online/815/regulation/details.md>
+- JSON-набор данных: <https://kpshelkovo.online/815/regulation/data/estimate-details-2026.json>
+
+## Как читать
+
+- Данные сгруппированы по \`estimate_row_id\`: сначала короткий индекс, ниже списки ресурсов по каждой строке сметы.
+- В ресурсах поле \`Источники\` содержит короткие метки \`S1\`, \`S2\`; полные PDF-ссылки, цитаты и \`quote_items\` вынесены под список группы.
+- Для машинной обработки используйте JSON: в markdown оставлены те же id, суммы и ссылки на источники.
+
+## Сводка
+
+- Трудовых ресурсов: 2
+- Строк сметы: 1
+- Итог по ресурсам: 19 000 ₽
+
+## Быстрый индекс по строкам сметы
+
+- \`cleaning-row\`: ресурсов: 2; итог: 19 000 ₽
+
+## Труд и ставки по строкам сметы
+
+### \`cleaning-row\`
+
+- Ресурсов: 2
+- Итог по ресурсам: 19 000 ₽
+- Работы: \`work-verified\`: Проверенная работа
+
+#### Ресурсы
+
+- \`labor-worker\` — Рабочий зеленого хозяйства
+  - Вид: труд
+  - Работа: \`work-verified\`
+  - Строка сметы: \`cleaning-row\`
+  - Статья затрат: \`primary_salary\`
+  - Кол-во: 8 чел.-ч
+  - Ставка: 2 000 ₽
+  - Итог: 16 000 ₽
+  - Источники: S1
+- \`machinist-loader\` — Машинист погрузчика
+  - Вид: труд машинистов
+  - Работа: \`work-verified\`
+  - Строка сметы: \`cleaning-row\`
+  - Статья затрат: \`machinist_salary\`
+  - Кол-во: -
+  - Ставка: -
+  - Итог: 3 000 ₽
+  - Источники: S2
+
+#### Источники группы
+
+- \`S1\`: [cleaning.pdf стр. 4, Ведомость ресурсов / труд / строка 3](https://kpshelkovo.online/815/regulation/original/cleaning.pdf)
+- \`S2\`: [cleaning.pdf стр. 4, Ведомость ресурсов / труд машинистов / строка 4](https://kpshelkovo.online/815/regulation/original/cleaning.pdf)
+",
+  "machines": "# Детальная смета 2026: машины
+
+- Индекс: <https://kpshelkovo.online/815/regulation/details.md>
+- JSON-набор данных: <https://kpshelkovo.online/815/regulation/data/estimate-details-2026.json>
+
+## Как читать
+
+- Данные сгруппированы по \`estimate_row_id\`: сначала короткий индекс, ниже списки ресурсов по каждой строке сметы.
+- В ресурсах поле \`Источники\` содержит короткие метки \`S1\`, \`S2\`; полные PDF-ссылки, цитаты и \`quote_items\` вынесены под список группы.
+- Для машинной обработки используйте JSON: в markdown оставлены те же id, суммы и ссылки на источники.
+
+## Сводка
+
+- Машинных ресурсов: 1
+- Строк сметы: 1
+- Итог по ресурсам: 5 000 ₽
+
+## Быстрый индекс по строкам сметы
+
+- \`cleaning-row\`: ресурсов: 1; итог: 5 000 ₽
+
+## Машины по строкам сметы
+
+### \`cleaning-row\`
+
+- Ресурсов: 1
+- Итог по ресурсам: 5 000 ₽
+- Работы: \`work-verified\`: Проверенная работа
+
+#### Ресурсы
+
+- \`machine-loader\` — Погрузчик
+  - Работа: \`work-verified\`
+  - Строка сметы: \`cleaning-row\`
+  - Статья затрат: \`machines\`
+  - Кол-во: -
+  - Цена: -
+  - Итог: 5 000 ₽
+  - Источники: S1
+
+#### Источники группы
+
+- \`S1\`: [cleaning.pdf стр. 4, Ведомость ресурсов / машины / строка 2](https://kpshelkovo.online/815/regulation/original/cleaning.pdf)
+",
+  "materials": "# Детальная смета 2026: материалы
+
+- Индекс: <https://kpshelkovo.online/815/regulation/details.md>
+- JSON-набор данных: <https://kpshelkovo.online/815/regulation/data/estimate-details-2026.json>
+
+## Как читать
+
+- Данные сгруппированы по \`estimate_row_id\`: сначала короткий индекс, ниже списки ресурсов по каждой строке сметы.
+- В ресурсах поле \`Источники\` содержит короткие метки \`S1\`, \`S2\`; полные PDF-ссылки, цитаты и \`quote_items\` вынесены под список группы.
+- Для машинной обработки используйте JSON: в markdown оставлены те же id, суммы и ссылки на источники.
+
+## Сводка
+
+- Материальных ресурсов: 1
+- Строк сметы: 1
+- Итог по ресурсам: 12 500 ₽
+
+## Быстрый индекс по строкам сметы
+
+- \`cleaning-row\`: ресурсов: 1; итог: 12 500 ₽
+
+## Материалы по строкам сметы
+
+### \`cleaning-row\`
+
+- Ресурсов: 1
+- Итог по ресурсам: 12 500 ₽
+- Работы: \`work-verified\`: Проверенная работа
+
+#### Ресурсы
+
+- \`material-sand\` — Песок
+  - Работа: \`work-verified\`
+  - Строка сметы: \`cleaning-row\`
+  - Статья затрат: \`materials\`
+  - Кол-во: 12,5 т
+  - Цена: 1 000 ₽
+  - Итог: 12 500 ₽
+  - Источники: S1
+
+#### Источники группы
+
+- \`S1\`: [cleaning.pdf стр. 4, Ведомость ресурсов / материалы / строка 1](https://kpshelkovo.online/815/regulation/original/cleaning.pdf); цитата: «Песок 12,5 т 1 000,00 12 500,00»; позиции цитаты: 1) Песок; ресурсы: \`material-sand\`; кол-во: 12,5 т; цена: 1 000 ₽; итог: 12 500 ₽
+",
+}
+`;
+
+exports[`estimate detail markdown companions > lists control totals, deltas and needs_check items 1`] = `
+"# Детальная смета 2026: проверки
+
+- Индекс: <https://kpshelkovo.online/815/regulation/details.md>
+- JSON-набор данных: <https://kpshelkovo.online/815/regulation/data/estimate-details-2026.json>
+
+## Сводка
+
+- Контрольные итоги: 1
+- Всего со статусом \`needs_check\`: 3
+- Работы со статусом \`needs_check\`: 1
+- Ресурсы со статусом \`needs_check\`: 1
+- Контрольные итоги со статусом \`needs_check\`: 1
+
+## Контрольные итоги
+
+- \`cleaning-materials-total\`: \`materials\`; строка сметы: \`cleaning-row\`; источник контроля: секционный PDF; сумма в источнике: 12 500 ₽; детальная сумма: 12 500 ₽; агрегированная сумма: 12 525 ₽; дельта: -25 ₽; допуск: 1 ₽; ресурсы: \`material-sand\`; статус: требует проверки; источник: [cleaning.pdf стр. 4, Итого материалы](https://kpshelkovo.online/815/regulation/original/cleaning.pdf)
+
+## Позиции со статусом \`needs_check\`
+
+### Работы
+
+- \`work_items:work-needs-check\`: Работа для сверки; строка сметы: \`cleaning-row-check\`; причина: Неоднозначная строка PDF.; источник: [cleaning.pdf стр. 3, Локальная смета / строка 2](https://kpshelkovo.online/815/regulation/original/cleaning.pdf)
+
+### Ресурсы
+
+- \`resources:machinist-loader\`: Машинист погрузчика; работа: \`work-verified\`; статья затрат: \`machinist_salary\`; причина: Ставка не выделена отдельной строкой.; источник: [cleaning.pdf стр. 4, Ведомость ресурсов / труд машинистов / строка 4](https://kpshelkovo.online/815/regulation/original/cleaning.pdf)
+
+### Контрольные итоги
+
+- \`control_totals:cleaning-materials-total\`: \`materials\`; строка сметы: \`cleaning-row\`; причина: Расхождение больше допуска.; источник: [cleaning.pdf стр. 4, Итого материалы](https://kpshelkovo.online/815/regulation/original/cleaning.pdf)
+"
+`;

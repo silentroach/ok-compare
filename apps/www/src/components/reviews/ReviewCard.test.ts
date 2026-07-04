@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import { createAstroContainer } from '@/test/astro-container';
 import type { Review } from '@/lib/reviews/types';
+import { visibleWhitespace } from '@/lib/test/visible-whitespace';
 
 // @ts-expect-error Astro component modules are resolved by Astro/Vitest at test time.
 import ReviewCard from './ReviewCard.astro';
@@ -22,6 +23,13 @@ const review = {
   mentions: [],
 } satisfies Review;
 
+const visibleText = (html: string): string =>
+  html
+    .replace(/<[^>]*>/gu, ' ')
+    .replace(/&nbsp;|&#160;|&#xA0;/giu, '\u00A0')
+    .replace(/[\t\n\r ]+/gu, ' ')
+    .trim();
+
 describe('ReviewCard', () => {
   it('renders generated title, anonymous author, area, and aspect rating', async () => {
     const container = await createAstroContainer();
@@ -29,11 +37,8 @@ describe('ReviewCard', () => {
       props: { review },
     });
 
-    expect(html).toContain('Отзыв собственника от 25 июня 2026');
-    expect(html).toContain('Анонимный собственник');
-    expect(html).toContain('Шелково Форест');
-    expect(html).toContain('Место и среда');
-    expect(html).toContain('5 из 5');
-    expect(html).not.toContain('проверенный собственник');
+    expect(visibleWhitespace(visibleText(html))).toMatchInlineSnapshot(
+      `"Отзыв собственника от 25 июня 2026 25 июня 2026 • Анонимный собственник • Шелково Форест Место и среда: 5 из 5"`,
+    );
   });
 });
