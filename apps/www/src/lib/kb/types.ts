@@ -7,6 +7,9 @@ export interface KbPage {
   readonly id: string;
   readonly sourceId: string;
   readonly title: string;
+  readonly seo?: {
+    readonly description?: string;
+  };
   readonly flags: readonly KbPageFlag[];
   readonly robots?: string;
   readonly url: string;

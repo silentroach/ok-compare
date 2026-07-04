@@ -10,6 +10,9 @@ export type KbPageEntry = Pick<CollectionEntry<'kbPages'>, 'id' | 'body'> & {
   readonly data: {
     readonly title: string;
     readonly flags?: readonly KbPageFlag[];
+    readonly seo?: {
+      readonly description?: string;
+    };
   };
 };
 
@@ -74,6 +77,7 @@ const mapEntry = (
     id: entry.id,
     sourceId: entry.id,
     title: entry.data.title,
+    seo: entry.data.seo,
     flags,
     robots: flags.includes('noindex') ? KB_NOINDEX_ROBOTS : undefined,
     url: routeSlug ? kbDetailUrl(routeSlug) : kbUrl(),

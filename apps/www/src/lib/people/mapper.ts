@@ -116,6 +116,7 @@ export const mapRawPersonProfile = (
     id: entry.id,
     slug: entry.id,
     name: entry.data.name,
+    seo: entry.data.seo,
     nameCases: entry.data.name_cases,
     company: entry.data.company,
     position: entry.data.position,

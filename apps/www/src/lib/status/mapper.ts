@@ -172,6 +172,7 @@ export const mapRawStatusIncident = (
   return {
     id: entry.id,
     title: entry.data.title ?? deriveStatusIncidentTitle({ kind, service }),
+    seo: entry.data.seo,
     service,
     kind,
     year: Number(parts.year),

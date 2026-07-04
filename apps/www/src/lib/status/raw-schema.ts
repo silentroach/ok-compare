@@ -33,9 +33,17 @@ const statusDate = (name: string) =>
     return z.NEVER;
   });
 
+const statusSeo = () =>
+  z
+    .object({
+      description: text.optional(),
+    })
+    .strict();
+
 export const RawStatusIncidentSchema = z
   .object({
     title: text.optional(),
+    seo: statusSeo().optional(),
     service: z.enum(STATUS_SERVICES),
     kind: z.enum(STATUS_KINDS),
     started_at: statusDate('started_at'),

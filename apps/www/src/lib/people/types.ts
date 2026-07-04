@@ -38,6 +38,9 @@ export interface PersonProfile {
   readonly id: string;
   readonly slug: string;
   readonly name: string;
+  readonly seo?: {
+    readonly description?: string;
+  };
   readonly nameCases?: PersonNameCaseForms;
   readonly company?: string;
   readonly position?: string;

@@ -10,10 +10,17 @@ const RawKbPageFlagsSchema = z
     message: 'flags must not contain duplicates',
   });
 
+const RawKbPageSeoSchema = z
+  .object({
+    description: z.string().trim().optional(),
+  })
+  .strict();
+
 export const RawKbPageSchema = z
   .object({
     title: z.string().trim(),
     flags: RawKbPageFlagsSchema,
+    seo: RawKbPageSeoSchema.optional(),
   })
   .strict();
 

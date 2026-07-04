@@ -20,6 +20,9 @@ export interface StatusIncidentMoment {
 export interface StatusIncident {
   readonly id: string;
   readonly title: string;
+  readonly seo?: {
+    readonly description?: string;
+  };
   readonly service: StatusService;
   readonly kind: StatusKind;
   readonly year: number;

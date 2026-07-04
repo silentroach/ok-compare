@@ -100,6 +100,7 @@ export const mapRawReview = (
     id: entry.id,
     slug: entry.data.slug,
     title: normalizeOptionalText(entry.data.title),
+    seo: entry.data.seo,
     author: normalizeOptionalText(entry.data.author),
     area: entry.data.area,
     publishedAt: new Date(`${entry.data.published_at}T00:00:00.000Z`),

@@ -47,11 +47,12 @@ if (!incident || !incident.hasPage) {
 const bodyHtml = incident.body ? renderMarkdown(incident.body) : undefined;
 const title = `${incident.title} — Шелково Онлайн`;
 const excerptSentence = incident.excerpt?.match(/^[^.!?]+[.!?]/u)?.[0];
-const description =
+const fallbackDescription =
   (incident.excerpt && incident.excerpt.length <= 170
     ? incident.excerpt
     : excerptSentence) ??
   'Подробная запись о статусе сервиса в КП Шелково: что произошло, когда началось и чем закончилось.';
+const description = incident.seo?.description ?? fallbackDescription;
 const breadcrumbs = withHomeBreadcrumbs([
   { label: 'Статус', href: statusUrl() },
   { label: incident.title },

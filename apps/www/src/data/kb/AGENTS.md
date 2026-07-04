@@ -3,7 +3,8 @@
 Короткие правила для `apps/www/src/data/kb`. Подробное решение: `docs/decisions/015-markdown-first-knowledge-base.md`.
 
 - Markdown-файлы базы знаний лежат в этой папке; корень раздела — `index.md`.
-- В frontmatter разрешены `title` и опциональный `flags`; сейчас поддержан только флаг `noindex`.
+- В frontmatter разрешены `title`, опциональный `flags` и опциональный `seo.description`; сейчас поддержан только флаг `noindex`.
+- `seo.description` использовать только для HTML meta description, когда автоматическая выдержка из Markdown слишком общая, короткая или повторяется на похожих страницах.
 - `flags: [noindex]` не добавляет страницу в sitemap и ставит на HTML-страницу `robots: noindex, follow`.
 - URL строится из пути: `index.md` дает `/kb/`, `services/internet.md` дает `/kb/services/internet/`, `services/index.md` дает `/kb/services/`.
 - У каждой HTML-страницы есть Markdown companion: `/kb/index.md` для корня и `/kb/<slug>/index.md` для вложенных страниц.

@@ -21,8 +21,16 @@ const personContact = () =>
     value: text,
   });
 
+const personSeo = () =>
+  z
+    .object({
+      description: text.optional(),
+    })
+    .strict();
+
 export const RawPersonProfileSchema = z.object({
   name: text,
+  seo: personSeo().optional(),
   name_cases: personNameCases().optional(),
   company: text.optional(),
   position: text.optional(),

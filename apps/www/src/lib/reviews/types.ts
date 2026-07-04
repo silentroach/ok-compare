@@ -14,6 +14,9 @@ export interface Review {
   readonly id: string;
   readonly slug: string;
   readonly title?: string;
+  readonly seo?: {
+    readonly description?: string;
+  };
   readonly author?: string;
   readonly area: Area;
   readonly publishedAt: Date;

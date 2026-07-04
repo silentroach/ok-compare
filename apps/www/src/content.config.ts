@@ -350,7 +350,7 @@ const newsArticles = defineCollection({
 
 const statusIncidents = defineCollection({
   loader: glob({
-    pattern: ['**/*.md', '!**/AGENTS.md'],
+    pattern: ['**/*.md', '!AGENTS.md', '!**/AGENTS.md'],
     base: './src/data/status/incidents',
     generateId: ({ entry, data }) => {
       validateStatusEntry(entry, data);
@@ -374,7 +374,7 @@ const peopleProfiles = defineCollection({
 
 const kbPages = defineCollection({
   loader: glob({
-    pattern: ['**/*.md', '!**/AGENTS.md'],
+    pattern: ['**/*.md', '!AGENTS.md', '!**/AGENTS.md'],
     base: './src/data/kb',
     generateId: ({ entry }) => kbPageSourceId(entry),
   }),
@@ -401,7 +401,7 @@ const meetingTranscripts = defineCollection({
 
 const reviews = defineCollection({
   loader: glob({
-    pattern: ['**/*.md', '!**/AGENTS.md'],
+    pattern: ['**/*.md', '!AGENTS.md', '!**/AGENTS.md'],
     base: './src/data/reviews',
     generateId: ({ entry, data }) => reviewSourceId(entry, data),
   }),

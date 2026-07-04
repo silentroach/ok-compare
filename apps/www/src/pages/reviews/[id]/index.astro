@@ -41,7 +41,9 @@ if (!review) {
 
 const reviewTitle = formatReviewTitle(review);
 const title = `${reviewTitle} — Отзывы — Шелково Онлайн`;
-const description = `Отзыв собственника ${formatReviewAuthor(review)} о жизни в Шелково.`;
+const description =
+  review.seo?.description ??
+  `Отзыв собственника ${formatReviewAuthor(review)} о жизни в Шелково.`;
 const bodyHtml = renderMarkdown(review.body);
 const breadcrumbs = withHomeBreadcrumbs([
   { label: 'Отзывы', href: reviewsUrl() },

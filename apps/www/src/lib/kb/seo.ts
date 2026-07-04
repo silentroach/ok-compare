@@ -37,6 +37,10 @@ const normalizeDescription = (value: string): string => {
 };
 
 export const kbPageDescription = (page: KbPage): string => {
+  if (page.seo?.description) {
+    return page.seo.description;
+  }
+
   if (!page.routeSlug) {
     return KB_DESCRIPTION;
   }
