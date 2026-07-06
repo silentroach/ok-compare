@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { RawKbPageSchema } from '@/lib/kb/raw-schema';
+import { RawContactSchema } from './lib/contacts/raw-schema';
+import { CONTACT_SLUG } from './lib/contacts/schema';
 import { parseNewsTimestampInput } from './lib/news/date';
 import {
   RawNewsAuthorSchema,
@@ -95,6 +97,10 @@ function failReview(entry: string, reason: string): never {
   throw new Error(`review path \"${entry}\" ${reason}`);
 }
 
+function failContact(entry: string, reason: string): never {
+  throw new Error(`contact path \"${entry}\" ${reason}`);
+}
+
 const hasReviewIdentity = (
   data: unknown,
 ): data is { readonly published_at: unknown; readonly slug: unknown } => {
@@ -109,6 +115,37 @@ const hasReviewIdentity = (
 
   return input.published_at !== undefined && input.slug !== undefined;
 };
+
+const readContactSlug = (data: unknown): string | undefined => {
+  if (typeof data !== 'object' || !data || Array.isArray(data)) {
+    return;
+  }
+
+  const slug = (data as { readonly slug?: unknown }).slug;
+
+  return slug === undefined ? undefined : String(slug);
+};
+
+function contactSourceId(entry: string, data: unknown): string {
+  if (!entry.endsWith('.md')) {
+    failContact(entry, 'must be a Markdown file');
+  }
+
+  const slug = readContactSlug(data);
+
+  if (!slug) {
+    failContact(entry, 'must define slug');
+  }
+
+  if (!CONTACT_SLUG.test(slug)) {
+    failContact(
+      entry,
+      'slug must use lower-case Latin letters, digits, and hyphen',
+    );
+  }
+
+  return slug;
+}
 
 function reviewSourceId(entry: string, data: unknown): string {
   if (!entry.endsWith('.md')) {
@@ -408,6 +445,15 @@ const reviews = defineCollection({
   schema: RawReviewSchema,
 });
 
+const contacts = defineCollection({
+  loader: glob({
+    pattern: ['**/*.md', '!AGENTS.md', '!**/AGENTS.md'],
+    base: './src/data/contacts',
+    generateId: ({ entry, data }) => contactSourceId(entry, data),
+  }),
+  schema: RawContactSchema,
+});
+
 const settlements = defineCollection({
   loader: glob({
     pattern: '[!_]*.yaml',
@@ -426,4 +472,5 @@ export const collections = {
   meetingEntries,
   meetingTranscripts,
   reviews,
+  contacts,
 };

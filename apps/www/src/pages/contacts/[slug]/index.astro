@@ -1,0 +1,107 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+
+import ContactMethods from '@/components/contacts/ContactMethods.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import {
+  withHomeBreadcrumbs,
+  withHomeSchemaBreadcrumbs,
+} from '@/lib/breadcrumbs';
+import { loadContact, loadContacts } from '@/lib/contacts/load';
+import { contactsUrl } from '@/lib/contacts/routes';
+import { contactPageSchema } from '@/lib/contacts/seo';
+import {
+  CONTACTS_DISCLAIMER,
+  CONTACTS_PROSE,
+  formatContactCategory,
+  formatContactUpdatedDate,
+} from '@/lib/contacts/view';
+import { renderMarkdown } from '@/lib/markdown/render';
+
+export const getStaticPaths = (async () => {
+  const contacts = await loadContacts();
+
+  return contacts.map((contact) => ({ params: { slug: contact.slug } }));
+}) satisfies GetStaticPaths;
+
+const slug = Astro.params.slug;
+
+if (!slug) {
+  throw new Error('contact slug is required');
+}
+
+const contact = await loadContact(slug);
+
+if (!contact) {
+  throw new Error(`contact "${slug}" not found`);
+}
+
+const category = formatContactCategory(contact.category);
+const title = `${contact.title} — Полезные контакты — Шелково Онлайн`;
+const description =
+  contact.seo?.description ??
+  `Контакт из раздела «Полезные контакты»: ${category}. Перед обращением уточняйте цену, сроки и состав работ.`;
+const bodyHtml = renderMarkdown(contact.body);
+const breadcrumbs = withHomeBreadcrumbs([
+  { label: 'Полезные контакты', href: contactsUrl() },
+  { label: contact.title },
+]);
+const schema = contactPageSchema({
+  contact,
+  description,
+  breadcrumbs: withHomeSchemaBreadcrumbs([
+    { name: 'Полезные контакты', url: contactsUrl() },
+    { name: contact.title, url: contact.url },
+  ]),
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={contact.url}
+  keywords={['полезные контакты Шелково', contact.title, category]}
+  schema={schema}
+>
+  <main class="ui-page pb-8 md:pb-12 lg:pb-14">
+    <header class="ui-page-header">
+      <div class="ui-page-header-stack max-w-4xl">
+        <Breadcrumbs items={breadcrumbs} linkLast />
+
+        <div class="space-y-4">
+          <p
+            class="text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground"
+          >
+            {category}
+          </p>
+          <h1 class="ui-page-title">{contact.title}</h1>
+          <p class="text-sm leading-6 text-muted-foreground">
+            Обновлено <time datetime={contact.updatedIso}
+              >{formatContactUpdatedDate(contact)}</time
+            >
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <article class="space-y-8 px-5 md:px-6">
+      <ContactMethods contacts={contact.contacts} />
+      <div class={CONTACTS_PROSE} set:html={bodyHtml} />
+      <section
+        aria-labelledby="contact-disclaimer"
+        class="ui-shell max-w-[65ch] px-4 py-4 md:px-5"
+      >
+        <h2
+          id="contact-disclaimer"
+          class="font-body text-base font-semibold text-foreground"
+        >
+          Отказ от ответственности
+        </h2>
+        <p class="mt-2 text-sm leading-6 text-muted-foreground">
+          {CONTACTS_DISCLAIMER}
+        </p>
+      </section>
+    </article>
+  </main>
+</BaseLayout>

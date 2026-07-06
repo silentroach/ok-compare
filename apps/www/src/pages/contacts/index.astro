@@ -1,0 +1,79 @@
+---
+import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+
+import ContactCard from '@/components/contacts/ContactCard.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import {
+  withHomeBreadcrumbs,
+  withHomeSchemaBreadcrumbs,
+} from '@/lib/breadcrumbs';
+import { loadContactsData } from '@/lib/contacts/load';
+import { contactsUrl } from '@/lib/contacts/routes';
+import { contactsCollectionPageSchema } from '@/lib/contacts/seo';
+
+const data = await loadContactsData();
+const title = 'Полезные контакты — Шелково Онлайн';
+const description =
+  'Редакционный каталог контактов, которые могут быть полезны жителям Шелково. Способы связи открываются на странице конкретного контакта.';
+const breadcrumbs = withHomeBreadcrumbs([{ label: 'Полезные контакты' }]);
+const schema = contactsCollectionPageSchema({
+  name: title,
+  description,
+  url: contactsUrl(),
+  breadcrumbs: withHomeSchemaBreadcrumbs([
+    { name: 'Полезные контакты', url: contactsUrl() },
+  ]),
+  items: data.contacts.map((contact) => ({
+    name: contact.title,
+    url: contact.url,
+  })),
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={contactsUrl()}
+  keywords={['полезные контакты Шелково', 'контакты Шелково']}
+  schema={schema}
+>
+  <main class="ui-page pb-8 md:pb-12 lg:pb-14">
+    <section class="ui-page-header">
+      <div class="ui-page-header-stack max-w-4xl">
+        <Breadcrumbs items={breadcrumbs} />
+
+        <div class="space-y-3">
+          <h1 class="ui-page-title">Полезные контакты</h1>
+          <p class="ui-copy max-w-3xl text-muted-foreground">
+            Собираем контакты, которые могут пригодиться жителям Шелково. На
+            этой странице виден контекст, а телефоны и другие способы связи
+            открываются внутри конкретной карточки.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-8">
+      <h2 class="sr-only">Список полезных контактов</h2>
+      {
+        data.contacts.length > 0 ? (
+          <ul class="grid gap-4 lg:grid-cols-2">
+            {data.contacts.map((contact) => (
+              <li>
+                <ContactCard contact={contact} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div class="ui-shell px-5 py-6 md:px-6 md:py-7">
+            <p class="ui-copy max-w-3xl text-muted-foreground">
+              Пока контакты не опубликованы. Когда появятся первые карточки,
+              здесь будет список без телефонов и мессенджеров: способы связи
+              останутся на страницах отдельных контактов.
+            </p>
+          </div>
+        )
+      }
+    </section>
+  </main>
+</BaseLayout>

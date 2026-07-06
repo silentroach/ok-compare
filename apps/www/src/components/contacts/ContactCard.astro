@@ -1,0 +1,40 @@
+---
+import type { Contact } from '@/lib/contacts/types';
+import {
+  contactExcerpt,
+  formatContactCategory,
+  formatContactUpdatedDate,
+} from '@/lib/contacts/view';
+
+interface Props {
+  readonly contact: Contact;
+}
+
+const { contact } = Astro.props;
+---
+
+<article class="ui-shell h-full px-5 py-5 md:px-6 md:py-6">
+  <div class="space-y-4">
+    <div class="space-y-2">
+      <p
+        class="text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground"
+      >
+        {formatContactCategory(contact.category)}
+      </p>
+      <h3 class="text-2xl font-bold tracking-tight text-foreground">
+        <a href={contact.url} class="ui-link">{contact.title}</a>
+      </h3>
+    </div>
+
+    <p class="text-base leading-7 text-muted-foreground">
+      {contactExcerpt(contact)}
+    </p>
+
+    <div
+      class="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4 text-sm text-muted-foreground"
+    >
+      <p>Обновлено {formatContactUpdatedDate(contact)}</p>
+      <a href={contact.url} class="ui-link font-semibold">Открыть контакт</a>
+    </div>
+  </div>
+</article>

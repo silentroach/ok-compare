@@ -46,12 +46,18 @@ export interface SitemapKbPageInput {
   readonly excludeFromSitemap: boolean;
 }
 
+export interface SitemapContactInput {
+  readonly url: string;
+  readonly updatedIso: string;
+}
+
 export interface SitemapMetadataSourceData {
   readonly newsArticles: readonly SitemapNewsArticleInput[];
   readonly statusIncidents: readonly SitemapStatusIncidentInput[];
   readonly settlements: readonly SitemapSettlementInput[];
   readonly meetings: readonly SitemapMeetingInput[];
   readonly kbPages: readonly SitemapKbPageInput[];
+  readonly contacts: readonly SitemapContactInput[];
 }
 
 const EXTENSION = /\.[^/]+$/u;
@@ -264,6 +270,27 @@ const addKbMetadata = (
   }
 };
 
+const addContactsMetadata = (
+  index: Map<string, SitemapMetadata>,
+  contacts: readonly SitemapContactInput[],
+): void => {
+  const latest = maxLastmod(contacts.map((contact) => contact.updatedIso));
+
+  if (latest) {
+    setMetadata(index, '/contacts/', {
+      lastmod: latest,
+      changefreq: CHANGEFREQ.monthly,
+    });
+  }
+
+  for (const contact of contacts) {
+    setMetadata(index, contact.url, {
+      lastmod: contact.updatedIso,
+      changefreq: CHANGEFREQ.monthly,
+    });
+  }
+};
+
 export const buildSitemapMetadataIndex = (
   data: SitemapMetadataSourceData,
 ): SitemapMetadataIndex => {
@@ -274,6 +301,7 @@ export const buildSitemapMetadataIndex = (
   addCompareMetadata(index, data.settlements);
   addMeetingsMetadata(index, data.meetings);
   addKbMetadata(index, data.kbPages);
+  addContactsMetadata(index, data.contacts);
 
   return new Map([...index.entries()].sort(([a], [b]) => compareRuText(a, b)));
 };

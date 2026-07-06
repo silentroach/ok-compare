@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { kbPageSitemapInput } from './sitemap-data';
+import { contactSitemapInput, kbPageSitemapInput } from './sitemap-data';
 
 describe('kbPageSitemapInput', () => {
   it('turns inline noindex flags into sitemap exclusion', () => {
@@ -43,6 +43,19 @@ describe('kbPageSitemapInput', () => {
     expect(kbPageSitemapInput('', 'title: База знаний')).toEqual({
       url: '/kb/',
       excludeFromSitemap: false,
+    });
+  });
+});
+
+describe('contactSitemapInput', () => {
+  it('uses contact slug and updated_at for sitemap metadata', () => {
+    expect(
+      contactSitemapInput(
+        'title: Иван Петров\nslug: ivan-petrov-fence\nupdated_at: 2026-07-06',
+      ),
+    ).toEqual({
+      url: '/contacts/ivan-petrov-fence/',
+      updatedIso: '2026-07-06',
     });
   });
 });

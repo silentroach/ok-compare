@@ -27,6 +27,7 @@ describe('buildSitemapMetadataIndex', () => {
       settlements: [],
       meetings: [],
       kbPages: [],
+      contacts: [],
     });
 
     expect({
@@ -94,6 +95,7 @@ describe('buildSitemapMetadataIndex', () => {
       ],
       meetings: [],
       kbPages: [],
+      contacts: [],
     });
 
     expect({
@@ -150,6 +152,7 @@ describe('buildSitemapMetadataIndex', () => {
         },
       ],
       kbPages: [],
+      contacts: [],
     });
 
     expect({
@@ -189,6 +192,7 @@ describe('buildSitemapMetadataIndex', () => {
           excludeFromSitemap: true,
         },
       ],
+      contacts: [],
     });
 
     expect(
@@ -203,6 +207,42 @@ describe('buildSitemapMetadataIndex', () => {
         index,
       ),
     ).toEqual({ url: 'https://kpshelkovo.online/kb/public/' });
+  });
+
+  it('uses contact updated_at dates for contacts pages', () => {
+    const index = buildSitemapMetadataIndex({
+      newsArticles: [],
+      statusIncidents: [],
+      settlements: [],
+      meetings: [],
+      kbPages: [],
+      contacts: [
+        {
+          url: '/contacts/ivan-petrov-fence/',
+          updatedIso: '2026-07-06',
+        },
+        {
+          url: '/contacts/older-fence/',
+          updatedIso: '2026-07-01',
+        },
+      ],
+    });
+
+    expect({
+      section: index.get('/contacts/'),
+      contact: index.get('/contacts/ivan-petrov-fence/'),
+    }).toMatchInlineSnapshot(`
+      {
+        "contact": {
+          "changefreq": "monthly",
+          "lastmod": "2026-07-06",
+        },
+        "section": {
+          "changefreq": "monthly",
+          "lastmod": "2026-07-06",
+        },
+      }
+    `);
   });
 });
 
