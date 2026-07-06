@@ -182,6 +182,7 @@ describe('buildPersonMarkdown', () => {
         ],
         reviews: [],
         people: [],
+        contacts: [],
       },
     };
 
@@ -243,6 +244,7 @@ describe('buildPersonMarkdown', () => {
         status: [],
         reviews: [],
         people: [],
+        contacts: [],
       },
     };
 
@@ -295,6 +297,7 @@ describe('buildPersonMarkdown', () => {
         status: [],
         reviews: [],
         people: [],
+        contacts: [],
       },
     };
 

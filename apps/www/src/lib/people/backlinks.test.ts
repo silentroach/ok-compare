@@ -25,6 +25,15 @@ const refs: readonly EntityMentionSourceRef[] = [
     mentionedAt: '2026-06-25T00:00:00.000Z',
     sortKey: 1782345600000,
   },
+  {
+    target: { type: 'person', slug: 'kschemelinin' },
+    source: { section: 'contacts', kind: 'contact', id: 'fence/ivan' },
+    title: 'Иван Петров',
+    htmlUrl: '/sarafan/fence/ivan/',
+    markdownUrl: '/sarafan/fence/ivan/index.md',
+    mentionedAt: '2026-07-06T00:00:00.000Z',
+    sortKey: 1783296000000,
+  },
 ];
 
 describe('createPeopleBacklinksFromGraph', () => {
@@ -35,6 +44,19 @@ describe('createPeopleBacklinksFromGraph', () => {
       }),
     ).toMatchInlineSnapshot(`
       {
+        "contacts": [
+          {
+            "excerpt": undefined,
+            "htmlUrl": "/sarafan/fence/ivan/",
+            "kind": "contact",
+            "markdownUrl": "/sarafan/fence/ivan/index.md",
+            "mentionedAt": "2026-07-06T00:00:00.000Z",
+            "section": "contacts",
+            "sortKey": 1783296000000,
+            "sourceId": "fence/ivan",
+            "title": "Иван Петров",
+          },
+        ],
         "news": [
           {
             "excerpt": undefined,

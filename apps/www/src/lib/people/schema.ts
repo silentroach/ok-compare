@@ -4,10 +4,12 @@ export const PERSON_MENTION_SECTIONS = [
   'status',
   'reviews',
   'people',
+  'contacts',
 ] as const;
 export const PERSON_BACKLINK_KINDS = [
   'article',
   'incident',
   'review',
   'person',
+  'contact',
 ] as const;

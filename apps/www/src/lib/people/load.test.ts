@@ -5,12 +5,15 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import type { NewsArticleEntry, NewsAuthorEntry } from '../news/load';
 import type { StatusIncidentEntry } from '../status/load';
 import type { StatusArea, StatusKind, StatusService } from '../status/schema';
+import type { ContactEntry } from '../contacts/load';
 import type { PersonProfileEntry } from './load';
 
 let buildPeopleDataset: typeof import('./load').buildPeopleDataset;
 let buildPeopleGraphDataset: typeof import('./load').buildPeopleGraphDataset;
+let buildContactsDataset: typeof import('../contacts/load').buildContactsDataset;
 let buildNewsDataset: typeof import('../news/load').buildNewsDataset;
 let buildStatusDataset: typeof import('../status/load').buildStatusDataset;
+let createContactMentionRefs: typeof import('../contacts/mentions').createContactMentionRefs;
 let createNewsArticleMentionRefs: typeof import('../news/mentions').createNewsArticleMentionRefs;
 let createStatusIncidentMentionRefs: typeof import('../status/mentions').createStatusIncidentMentionRefs;
 let createPersonProfileMentionRefs: typeof import('./mention-refs').createPersonProfileMentionRefs;
@@ -22,8 +25,10 @@ beforeAll(async () => {
   });
 
   ({ buildPeopleDataset, buildPeopleGraphDataset } = await import('./load'));
+  ({ buildContactsDataset } = await import('../contacts/load'));
   ({ buildNewsDataset } = await import('../news/load'));
   ({ buildStatusDataset } = await import('../status/load'));
+  ({ createContactMentionRefs } = await import('../contacts/mentions'));
   ({ createNewsArticleMentionRefs } = await import('../news/mentions'));
   ({ createStatusIncidentMentionRefs } = await import('../status/mentions'));
   ({ createPersonProfileMentionRefs } = await import('./mention-refs'));
@@ -31,9 +36,13 @@ beforeAll(async () => {
 
 const sourceRefs = (input: {
   readonly people: ReturnType<typeof buildPeopleDataset>;
+  readonly contacts?: ReturnType<typeof buildContactsDataset>;
   readonly news: ReturnType<typeof buildNewsDataset>;
   readonly status: ReturnType<typeof buildStatusDataset>;
 }) => [
+  ...(input.contacts?.contacts.flatMap((contact) =>
+    contact.hasDetailPage ? createContactMentionRefs(contact) : [],
+  ) ?? []),
   ...input.news.articles.flatMap(createNewsArticleMentionRefs),
   ...input.status.incidents.flatMap(createStatusIncidentMentionRefs),
   ...input.people.profiles.flatMap(createPersonProfileMentionRefs),
@@ -117,6 +126,24 @@ const incident = (input: {
     ended_at: input.ended_at,
     areas: input.areas ? [...input.areas] : undefined,
     source_url: `https://example.com/${input.id}`,
+  },
+});
+
+const contact = (input: {
+  readonly id: string;
+  readonly title: string;
+  readonly body?: string;
+}): ContactEntry => ({
+  id: input.id,
+  body: input.body ?? '',
+  data: {
+    title: input.title,
+    slug: input.id.split('/').pop() ?? input.id,
+    category: 'fence',
+    updated_at: '2026-07-06',
+    contacts: {
+      phone: '+7 900 000-00-00',
+    },
   },
 });
 
@@ -251,7 +278,7 @@ describe('buildPeopleDataset', () => {
     ).toThrow('duplicate person profile slug in mention registry');
   });
 
-  it('builds grouped backlinks from news, status, and people mentions', () => {
+  it('builds grouped backlinks from news, status, people, and contact mentions', () => {
     const people = buildPeopleDataset([
       entry({
         id: 'kschemelinin',
@@ -296,9 +323,21 @@ describe('buildPeopleDataset', () => {
         mentionRegistry: people.mentionRegistry,
       },
     );
+    const contacts = buildContactsDataset(
+      [
+        contact({
+          id: 'fence/ivan-petrov-fence',
+          title: 'Иван Петров',
+          body: 'Перед началом работ стоит согласовать сроки с @kschemelinin.',
+        }),
+      ],
+      {
+        mentionRegistry: people.mentionRegistry,
+      },
+    );
     const graph = buildPeopleGraphDataset(
       people,
-      sourceRefs({ people, news, status }),
+      sourceRefs({ people, contacts, news, status }),
     );
 
     expect(graph.bySlug.get('kschemelinin')?.backlinks).toMatchObject({
@@ -324,6 +363,15 @@ describe('buildPeopleDataset', () => {
           kind: 'person',
           sourceId: 'apetrov',
           title: 'Андрей Петров',
+        },
+      ],
+      contacts: [
+        {
+          kind: 'contact',
+          sourceId: 'fence/ivan-petrov-fence',
+          title: 'Иван Петров',
+          excerpt:
+            'Перед началом работ стоит согласовать сроки с Кирилл Щемелинин.',
         },
       ],
     });

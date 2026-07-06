@@ -15,7 +15,14 @@ import type {
   ContactWithDetail,
 } from './types';
 import {
-  CONTACTS_DISCLAIMER,
+  CONTACTS_CHAT_LABEL,
+  CONTACTS_CHAT_URL,
+  CONTACTS_EMPTY_LINK_LABEL,
+  CONTACTS_EMPTY_LINK_URL,
+  CONTACTS_EMPTY_PREFIX,
+  CONTACTS_EMPTY_SUFFIX,
+  CONTACTS_INTRO_PREFIX,
+  CONTACTS_INTRO_SUFFIX,
   type ContactMethod,
   contactExcerpt,
   contactMethods,
@@ -34,6 +41,22 @@ const serialize = (children: readonly MarkdownNode[]): string =>
   serializeMarkdownDocument(createMarkdownDocument({ children }));
 
 const abs = (path: string): string => absoluteUrl(path);
+
+const chatLink = () => md.link(CONTACTS_CHAT_URL, CONTACTS_CHAT_LABEL);
+
+const contactsIntro = (): MarkdownNode =>
+  md.paragraph([
+    md.text(CONTACTS_INTRO_PREFIX),
+    chatLink(),
+    md.text(CONTACTS_INTRO_SUFFIX),
+  ]);
+
+const contactsEmpty = (): MarkdownNode =>
+  md.paragraph([
+    md.text(CONTACTS_EMPTY_PREFIX),
+    md.link(CONTACTS_EMPTY_LINK_URL, CONTACTS_EMPTY_LINK_LABEL),
+    md.text(CONTACTS_EMPTY_SUFFIX),
+  ]);
 
 const methodLine = (method: ContactMethod): MarkdownListItem =>
   md.listItem([
@@ -88,13 +111,11 @@ const contactFrontmatter = (
 export const buildContactsHomeMarkdown = (data: ContactsDataset): string =>
   serialize([
     md.heading(1, 'Сарафан'),
-    md.paragraph(CONTACTS_DISCLAIMER),
+    contactsIntro(),
     md.heading(2, 'Категории'),
     data.categories.length > 0
       ? md.list(data.categories.map(categoryLine))
-      : md.paragraph(
-          'Пока контакты не опубликованы. Когда появятся первые записи, здесь будет список со способами связи.',
-        ),
+      : contactsEmpty(),
     ...data.categories.flatMap((category) => [
       md.heading(2, formatContactCategory(category.category)),
       md.list(category.contacts.map(contactLine)),

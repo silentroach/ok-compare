@@ -11,6 +11,14 @@ import { loadContactsData } from '@/lib/contacts/load';
 import { contactsUrl } from '@/lib/contacts/routes';
 import { contactsCollectionPageSchema } from '@/lib/contacts/seo';
 import {
+  CONTACTS_CHAT_LABEL,
+  CONTACTS_CHAT_URL,
+  CONTACTS_EMPTY_LINK_LABEL,
+  CONTACTS_EMPTY_LINK_URL,
+  CONTACTS_EMPTY_PREFIX,
+  CONTACTS_EMPTY_SUFFIX,
+  CONTACTS_INTRO_PREFIX,
+  CONTACTS_INTRO_SUFFIX,
   formatContactCategory,
   formatContactCategoryEmoji,
 } from '@/lib/contacts/view';
@@ -48,7 +56,15 @@ const sectionId = (category: string): string => category;
       <div class="ui-page-header-stack max-w-4xl">
         <Breadcrumbs items={breadcrumbs} />
 
-        <h1 class="ui-page-title">Сарафан</h1>
+        <div>
+          <h1 class="ui-page-title">Сарафан</h1>
+          <p class="ui-copy mt-3 max-w-3xl text-muted-foreground">
+            {CONTACTS_INTRO_PREFIX}<a
+              href={CONTACTS_CHAT_URL}
+              class="site-text-link">{CONTACTS_CHAT_LABEL}</a
+            >{CONTACTS_INTRO_SUFFIX}
+          </p>
+        </div>
       </div>
     </section>
 
@@ -105,8 +121,11 @@ const sectionId = (category: string): string => category;
         ) : (
           <div class="ui-shell px-5 py-6 md:px-6 md:py-7">
             <p class="ui-copy max-w-3xl text-muted-foreground">
-              Пока контакты не опубликованы. Когда появятся первые записи, здесь
-              будет список со способами связи.
+              {CONTACTS_EMPTY_PREFIX}
+              <a href={CONTACTS_EMPTY_LINK_URL} class="site-text-link">
+                {CONTACTS_EMPTY_LINK_LABEL}
+              </a>
+              {CONTACTS_EMPTY_SUFFIX}
             </p>
           </div>
         )

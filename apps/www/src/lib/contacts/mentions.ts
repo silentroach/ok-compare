@@ -1,0 +1,45 @@
+import { extractFirstMarkdownText } from '@shelkovo/markdown';
+
+import { createEntityMentionSourceRefs } from '@/lib/mentions';
+import type { EntityMentionSourceRef } from '@/lib/mentions';
+
+import { contactRouteKey } from './routes';
+import type { ContactWithDetail } from './types';
+
+type ContactMentionRefSource = Pick<
+  ContactWithDetail,
+  | 'body'
+  | 'category'
+  | 'markdownUrl'
+  | 'mentions'
+  | 'slug'
+  | 'title'
+  | 'updatedAt'
+  | 'updatedIso'
+  | 'url'
+>;
+
+const SPACE = /\s+/gu;
+
+const excerpt = (markdown: string): string | undefined => {
+  const first = extractFirstMarkdownText(markdown);
+
+  return first ? first.replace(SPACE, ' ').trim() : undefined;
+};
+
+export const createContactMentionRefs = (
+  contact: ContactMentionRefSource,
+): readonly EntityMentionSourceRef[] =>
+  createEntityMentionSourceRefs(contact.mentions, {
+    source: {
+      section: 'contacts',
+      kind: 'contact',
+      id: contactRouteKey(contact),
+    },
+    title: contact.title,
+    htmlUrl: contact.url,
+    markdownUrl: contact.markdownUrl,
+    excerpt: excerpt(contact.body),
+    mentionedAt: `${contact.updatedIso}T00:00:00.000Z`,
+    sortKey: contact.updatedAt.valueOf(),
+  });
