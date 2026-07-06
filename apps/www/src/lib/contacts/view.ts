@@ -1,4 +1,3 @@
-import { formatDate } from '@shelkovo/format';
 import { extractFirstMarkdownText } from '@shelkovo/markdown';
 
 import type { ContactCategory } from './schema';
@@ -15,10 +14,14 @@ const CONTACT_CATEGORY_LABELS: Record<ContactCategory, string> = {
   fence: 'Забор',
 };
 
+const CONTACT_CATEGORY_EMOJI: Record<ContactCategory, string> = {
+  fence: '🚧',
+};
+
 export const CONTACTS_PROSE = 'ui-prose max-w-[65ch]';
 
 export const CONTACTS_DISCLAIMER =
-  'Сайт публикует контакт и доступный редакционный контекст, но не гарантирует качество услуги и не подтверждает квалификацию исполнителя. Перед оплатой уточняйте цену, сроки и состав работ.';
+  'Сайт публикует контакты и доступный редакционный контекст, но не гарантирует качество услуги и не подтверждает квалификацию исполнителя. Перед оплатой уточняйте цену, сроки и состав работ.';
 
 const phoneHref = (phone: string): string =>
   `tel:${phone.replace(/[^+\d]/gu, '')}`;
@@ -41,16 +44,25 @@ const method = (
 export const formatContactCategory = (category: ContactCategory): string =>
   CONTACT_CATEGORY_LABELS[category];
 
-export const formatContactUpdatedDate = (
-  contact: Pick<Contact, 'updatedIso'>,
-): string => formatDate(contact.updatedIso);
+export const formatContactCategoryEmoji = (category: ContactCategory): string =>
+  CONTACT_CATEGORY_EMOJI[category];
 
-export const contactExcerpt = (contact: Pick<Contact, 'body'>): string => {
+export const contactExcerpt = (
+  contact: Pick<Contact, 'body' | 'summary'>,
+): string => {
+  if (contact.summary) {
+    return contact.summary;
+  }
+
+  if (!contact.body.trim()) {
+    return '';
+  }
+
   const text = (extractFirstMarkdownText(contact.body) ?? '')
     .replace(/\s+/gu, ' ')
     .trim();
 
-  return text || 'Подробности есть на странице контакта.';
+  return text;
 };
 
 export const contactMethods = (
@@ -72,5 +84,4 @@ export const contactMethods = (
       contacts.email ? `mailto:${contacts.email}` : undefined,
     ),
     method('website', 'Сайт', contacts.website, contacts.website),
-    method('address', 'Адрес', contacts.address),
   ].filter((item): item is ContactMethod => Boolean(item));

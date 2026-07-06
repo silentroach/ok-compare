@@ -5,7 +5,7 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { RawKbPageSchema } from '@/lib/kb/raw-schema';
 import { RawContactSchema } from './lib/contacts/raw-schema';
-import { CONTACT_SLUG } from './lib/contacts/schema';
+import { CONTACT_CATEGORIES, CONTACT_SLUG } from './lib/contacts/schema';
 import { parseNewsTimestampInput } from './lib/news/date';
 import {
   RawNewsAuthorSchema,
@@ -116,14 +116,24 @@ const hasReviewIdentity = (
   return input.published_at !== undefined && input.slug !== undefined;
 };
 
-const readContactSlug = (data: unknown): string | undefined => {
+const CONTACT_CATEGORY_VALUES = new Set<string>(CONTACT_CATEGORIES);
+
+const readContactIdentity = (
+  data: unknown,
+): { readonly category?: string; readonly slug?: string } => {
   if (typeof data !== 'object' || !data || Array.isArray(data)) {
-    return;
+    return {};
   }
 
-  const slug = (data as { readonly slug?: unknown }).slug;
+  const input = data as {
+    readonly category?: unknown;
+    readonly slug?: unknown;
+  };
 
-  return slug === undefined ? undefined : String(slug);
+  return {
+    category: input.category === undefined ? undefined : String(input.category),
+    slug: input.slug === undefined ? undefined : String(input.slug),
+  };
 };
 
 function contactSourceId(entry: string, data: unknown): string {
@@ -131,10 +141,14 @@ function contactSourceId(entry: string, data: unknown): string {
     failContact(entry, 'must be a Markdown file');
   }
 
-  const slug = readContactSlug(data);
+  const { category, slug } = readContactIdentity(data);
 
   if (!slug) {
     failContact(entry, 'must define slug');
+  }
+
+  if (!category) {
+    failContact(entry, 'must define category');
   }
 
   if (!CONTACT_SLUG.test(slug)) {
@@ -144,7 +158,11 @@ function contactSourceId(entry: string, data: unknown): string {
     );
   }
 
-  return slug;
+  if (!CONTACT_CATEGORY_VALUES.has(category)) {
+    failContact(entry, `category "${category}" is unknown`);
+  }
+
+  return `${category}/${slug}`;
 }
 
 function reviewSourceId(entry: string, data: unknown): string {

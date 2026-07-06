@@ -88,8 +88,8 @@ describe('root llms', () => {
       ## Описание
 
       - Это карта публичных данных и точек входа kpshelkovo.online.
-      - Основные разделы: новости, статус сервисов, отзывы собственников, полезные контакты, архив встреч, регламент и смета тарифа 815, профили людей и сравнение тарифов поселков.
-      - Сейчас в новостях 3 статьи, в статусе 2 записи и 1 активный инцидент, в отзывах 2 отзыва, в полезных контактах 1 контакт, в архиве встреч 1 встреча, в людях 1 профиль.
+      - Основные разделы: новости, статус сервисов, отзывы собственников, сарафан, архив встреч, регламент и смета тарифа 815, профили людей и сравнение тарифов поселков.
+      - Сейчас в новостях 3 статьи, в статусе 2 записи и 1 активный инцидент, в сарафане 1 контакт, в отзывах 2 отзыва, в архиве встреч 1 встреча, в людях 1 профиль.
       - Для массового чтения используйте JSON-ленты там, где они есть; HTML и Markdown удобнее для ссылок и точечного чтения.
 
       ## Главные URL
@@ -101,7 +101,7 @@ describe('root llms', () => {
       - Новости: <https://example.com/news/>
       - Статус: <https://example.com/status/>
       - Отзывы: <https://example.com/reviews/>
-      - Полезные контакты: <https://example.com/contacts/>
+      - Сарафан: <https://example.com/sarafan/>
       - Архив встреч в Markdown: <https://example.com/meetings/index.md>
       - Регламент: <https://example.com/815/regulation/>
       - Люди в Markdown: <https://example.com/people/index.md>
@@ -114,7 +114,7 @@ describe('root llms', () => {
       - Новости: <https://example.com/news/llms.txt>; основная лента: <https://example.com/news/data/articles.json>; календарные события лежат в \`articles[].events[].ics_url\`.
       - Статус сервисов: <https://example.com/status/llms.txt>; основная лента: <https://example.com/status/data/status.json>.
       - Отзывы собственников: <https://example.com/reviews/index.md>; правила публикации: <https://example.com/reviews/rules/index.md>; детальные страницы: \`/reviews/[id]/\` и \`/reviews/[id]/index.md\`.
-      - Полезные контакты: <https://example.com/contacts/index.md>; детальные страницы: \`/contacts/[slug]/\` и \`/contacts/[slug]/index.md\`.
+      - Сарафан: <https://example.com/sarafan/index.md>; разделы: \`/sarafan/[category]/\` и \`/sarafan/[category]/index.md\`; детальные страницы есть только у контактов с body и используют \`/sarafan/[category]/[slug]/\` и \`/sarafan/[category]/[slug]/index.md\`.
       - Архив встреч: <https://example.com/meetings/index.md>; одна встреча: <https://example.com/meetings/2026-06-13-ok-comfort/> или <https://example.com/meetings/2026-06-13-ok-comfort/index.md>; полный текст транскрипта берите по частям, например <https://example.com/meetings/2026-06-13-ok-comfort/transcript/1.md>.
       - Регламент и смета: <https://example.com/815/regulation/llms.txt>; смета: <https://example.com/815/regulation/data/estimate-2026.json>; полный регламент: <https://example.com/815/regulation/full.md>; набор данных: <https://example.com/815/regulation/data/full-2026.json>.
       - Люди: <https://example.com/people/llms.txt>; основная лента: <https://example.com/people/data/people.json>; одна персона: <https://example.com/people/kschemelinin/> или <https://example.com/people/kschemelinin/index.md>.
@@ -140,8 +140,8 @@ describe('root llms', () => {
       'https://example.com/reviews/',
       'https://example.com/reviews/index.md',
       'https://example.com/reviews/rules/index.md',
-      'https://example.com/contacts/',
-      'https://example.com/contacts/index.md',
+      'https://example.com/sarafan/',
+      'https://example.com/sarafan/index.md',
       'https://example.com/meetings/index.md',
       'https://example.com/meetings/2026-06-13-ok-comfort/',
       'https://example.com/meetings/2026-06-13-ok-comfort/index.md',
@@ -160,8 +160,8 @@ describe('root llms', () => {
     }
 
     expect(combined).not.toMatch(/apps\/www|src\/|repo:/u);
-    expect(combined).not.toContain('/contacts/llms.txt');
-    expect(combined).not.toContain('/contacts/llms-full.txt');
+    expect(combined).not.toContain('/sarafan/llms.txt');
+    expect(combined).not.toContain('/sarafan/llms-full.txt');
   });
 
   it('uses registered public surfaces for the root URL map', async () => {

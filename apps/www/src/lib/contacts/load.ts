@@ -6,7 +6,13 @@ import { loadPeopleMentionRegistry } from '@/lib/people/registry';
 
 import { mapRawContact } from './mapper';
 import type { RawContact } from './raw-schema';
-import type { Contact, ContactsDataset } from './types';
+import { CONTACT_CATEGORIES, isContactCategory, isContactSlug } from './schema';
+import type { Contact, ContactsDataset, ContactWithDetail } from './types';
+import {
+  contactCategoryMarkdownUrl,
+  contactCategoryUrl,
+  contactRouteKey,
+} from './routes';
 import { formatContactCategory } from './view';
 
 export type ContactEntry = Pick<CollectionEntry<'contacts'>, 'id' | 'body'> & {
@@ -23,17 +29,27 @@ const compareContacts = (a: Contact, b: Contact): number =>
   compareRuText(a.title, b.title) ||
   compareRuText(a.slug, b.slug);
 
-const validateUniqueSlugs = (contacts: readonly Contact[]): void => {
+const validateUniqueRoutes = (contacts: readonly Contact[]): void => {
   const seen = new Set<string>();
 
   for (const contact of contacts) {
-    if (seen.has(contact.slug)) {
-      throw new Error(`duplicate contact slug "${contact.slug}"`);
+    const key = contactRouteKey(contact);
+
+    if (seen.has(key)) {
+      throw new Error(`duplicate contact route "${key}"`);
     }
 
-    seen.add(contact.slug);
+    seen.add(key);
   }
 };
+
+const buildCategoryPages = (contacts: readonly Contact[]) =>
+  CONTACT_CATEGORIES.map((category) => ({
+    category,
+    contacts: contacts.filter((contact) => contact.category === category),
+    url: contactCategoryUrl({ category }),
+    markdownUrl: contactCategoryMarkdownUrl({ category }),
+  })).filter((category) => category.contacts.length > 0);
 
 export const buildContactsDataset = (
   entries: readonly ContactEntry[],
@@ -46,12 +62,18 @@ export const buildContactsDataset = (
     .map((entry) => mapRawContact(entry, mentionRegistry))
     .sort(compareContacts);
 
-  validateUniqueSlugs(contacts);
+  validateUniqueRoutes(contacts);
+
+  const categories = buildCategoryPages(contacts);
 
   return {
     contacts,
-    bySlug: new Map(
-      contacts.map((contact) => [contact.slug, contact] as const),
+    categories,
+    byRoute: new Map(
+      contacts.map((contact) => [contactRouteKey(contact), contact] as const),
+    ),
+    byCategory: new Map(
+      categories.map((category) => [category.category, category] as const),
     ),
   };
 };
@@ -70,10 +92,47 @@ export const loadContactsData = (): Promise<ContactsDataset> => {
 export const loadContacts = async (): Promise<readonly Contact[]> =>
   (await loadContactsData()).contacts;
 
+export const hasContactDetail = (
+  contact: Contact,
+): contact is ContactWithDetail => contact.hasDetailPage;
+
+export const loadContactDetails = async (): Promise<
+  readonly ContactWithDetail[]
+> => (await loadContacts()).filter(hasContactDetail);
+
+export const loadContactCategories = async (): Promise<
+  ContactsDataset['categories']
+> => (await loadContactsData()).categories;
+
+export const loadContactCategory = async (category: string) => {
+  const key = category.trim();
+
+  return isContactCategory(key)
+    ? (await loadContactsData()).byCategory.get(key)
+    : undefined;
+};
+
 export const loadContact = async (
+  category: string,
   slug: string,
 ): Promise<Contact | undefined> => {
-  const key = slug.trim();
+  const categoryKey = category.trim();
+  const slugKey = slug.trim();
 
-  return key ? (await loadContactsData()).bySlug.get(key) : undefined;
+  if (!isContactCategory(categoryKey) || !isContactSlug(slugKey)) {
+    return;
+  }
+
+  return (await loadContactsData()).byRoute.get(
+    contactRouteKey({ category: categoryKey, slug: slugKey }),
+  );
+};
+
+export const loadContactDetail = async (
+  category: string,
+  slug: string,
+): Promise<ContactWithDetail | undefined> => {
+  const contact = await loadContact(category, slug);
+
+  return contact?.hasDetailPage ? contact : undefined;
 };

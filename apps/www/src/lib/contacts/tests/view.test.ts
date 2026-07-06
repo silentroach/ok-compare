@@ -1,17 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  contactMethods,
-  formatContactCategory,
-  formatContactUpdatedDate,
-} from '../view';
+import { contactMethods, formatContactCategory } from '../view';
 
 describe('contact view helpers', () => {
-  it('formats category and updated date', () => {
+  it('formats category labels', () => {
     expect(formatContactCategory('fence')).toBe('Забор');
-    expect(formatContactUpdatedDate({ updatedIso: '2026-07-06' })).toBe(
-      '6 июля 2026',
-    );
   });
 
   it('builds display methods in stable order with safe hrefs', () => {
@@ -22,7 +15,6 @@ describe('contact view helpers', () => {
         whatsapp: 'https://wa.me/79000000000',
         email: 'team@example.com',
         website: 'https://example.com',
-        address: 'Ступино',
       }),
     ).toMatchInlineSnapshot(`
       [
@@ -55,12 +47,6 @@ describe('contact view helpers', () => {
           "label": "Сайт",
           "type": "website",
           "value": "https://example.com",
-        },
-        {
-          "href": undefined,
-          "label": "Адрес",
-          "type": "address",
-          "value": "Ступино",
         },
       ]
     `);

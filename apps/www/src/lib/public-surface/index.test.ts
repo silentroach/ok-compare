@@ -25,6 +25,8 @@ import {
   compareSkillsPath,
 } from '@/compare/lib/public-surface';
 import {
+  contactCategoryMarkdownPattern,
+  contactCategoryPattern,
   contactMarkdownPattern,
   contactPattern,
   contactsMarkdownPath,
@@ -483,12 +485,14 @@ describe('public surface registry', () => {
       }[];
     };
     const contactsEntry = rootCatalog.linkset.find(
-      (entry) => entry.anchor === 'https://example.com/sub/contacts/',
+      (entry) => entry.anchor === 'https://example.com/sub/sarafan/',
     );
 
     expect(contacts.map((surface) => surface.id)).toEqual([
       'contacts:index',
       'contacts:index-markdown',
+      'contacts:category',
+      'contacts:category-markdown',
       'contacts:contact',
       'contacts:contact-markdown',
     ]);
@@ -499,12 +503,14 @@ describe('public surface registry', () => {
     ).toEqual([
       contactsPath(),
       contactsMarkdownPath(),
+      contactCategoryPattern(),
+      contactCategoryMarkdownPattern(),
       contactPattern(),
       contactMarkdownPattern(),
     ]);
     expect(contactsEntry?.item).toEqual([
       expect.objectContaining({
-        href: 'https://example.com/sub/contacts/index.md',
+        href: 'https://example.com/sub/sarafan/index.md',
       }),
     ]);
     expect(

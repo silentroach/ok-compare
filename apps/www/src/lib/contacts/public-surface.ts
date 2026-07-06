@@ -1,6 +1,8 @@
 import type { PublicSurfaceSlice } from '@/lib/public-surface/types';
 
 import {
+  contactCategoryMarkdownPattern,
+  contactCategoryPattern,
   contactMarkdownPattern,
   contactPattern,
   contactsMarkdownPath,
@@ -10,13 +12,13 @@ import {
 export const contactsPublicSurfaceSlice = {
   owner: {
     id: 'contacts',
-    label: 'Полезные контакты',
+    label: 'Сарафан',
     entryPath: contactsPath(),
   },
   surfaces: [
     {
       id: 'contacts:index',
-      label: 'Полезные контакты',
+      label: 'Сарафан',
       path: contactsPath(),
       mediaType: 'text/html',
       cacheClass: 'html',
@@ -25,7 +27,7 @@ export const contactsPublicSurfaceSlice = {
     },
     {
       id: 'contacts:index-markdown',
-      label: 'Markdown-версия полезных контактов',
+      label: 'Markdown-версия сарафана',
       path: contactsMarkdownPath(),
       mediaType: 'text/markdown',
       cacheClass: 'markdown',
@@ -33,8 +35,24 @@ export const contactsPublicSurfaceSlice = {
       catalogRole: 'item',
     },
     {
+      id: 'contacts:category',
+      label: 'Раздел сарафана',
+      routePattern: contactCategoryPattern(),
+      mediaType: 'text/html',
+      cacheClass: 'html',
+      discoveryRoles: ['detail-page'],
+    },
+    {
+      id: 'contacts:category-markdown',
+      label: 'Markdown-версия раздела сарафана',
+      routePattern: contactCategoryMarkdownPattern(),
+      mediaType: 'text/markdown',
+      cacheClass: 'markdown',
+      discoveryRoles: ['markdown-companion'],
+    },
+    {
       id: 'contacts:contact',
-      label: 'Страница полезного контакта',
+      label: 'Страница контакта сарафана',
       routePattern: contactPattern(),
       mediaType: 'text/html',
       cacheClass: 'html',
@@ -42,7 +60,7 @@ export const contactsPublicSurfaceSlice = {
     },
     {
       id: 'contacts:contact-markdown',
-      label: 'Markdown-версия полезного контакта',
+      label: 'Markdown-версия контакта сарафана',
       routePattern: contactMarkdownPattern(),
       mediaType: 'text/markdown',
       cacheClass: 'markdown',

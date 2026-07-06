@@ -47,8 +47,10 @@ export interface SitemapKbPageInput {
 }
 
 export interface SitemapContactInput {
+  readonly category: string;
   readonly url: string;
   readonly updatedIso: string;
+  readonly hasPage: boolean;
 }
 
 export interface SitemapMetadataSourceData {
@@ -277,13 +279,22 @@ const addContactsMetadata = (
   const latest = maxLastmod(contacts.map((contact) => contact.updatedIso));
 
   if (latest) {
-    setMetadata(index, '/contacts/', {
+    setMetadata(index, '/sarafan/', {
       lastmod: latest,
       changefreq: CHANGEFREQ.monthly,
     });
   }
 
   for (const contact of contacts) {
+    setMetadata(index, `/sarafan/${contact.category}/`, {
+      lastmod: contact.updatedIso,
+      changefreq: CHANGEFREQ.monthly,
+    });
+
+    if (!contact.hasPage) {
+      continue;
+    }
+
     setMetadata(index, contact.url, {
       lastmod: contact.updatedIso,
       changefreq: CHANGEFREQ.monthly,

@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import type { Contact } from '../types';
+import type { Contact, ContactCategoryPage, ContactWithDetail } from '../types';
 
 let buildContactMarkdown: typeof import('../markdown').buildContactMarkdown;
 let buildContactsHomeMarkdown: typeof import('../markdown').buildContactsHomeMarkdown;
@@ -25,32 +25,53 @@ const contact = {
     phone: '+7 900 000-00-00',
     telegram: 'https://t.me/example',
     email: 'team@example.com',
-    address: 'Ступино',
   },
-  url: '/contacts/ivan-petrov-fence/',
-  markdownUrl: '/contacts/ivan-petrov-fence/index.md',
-  canonical: 'https://example.com/contacts/ivan-petrov-fence/',
+  hasDetailPage: true,
+  url: '/sarafan/fence/ivan-petrov-fence/',
+  markdownUrl: '/sarafan/fence/ivan-petrov-fence/index.md',
+  canonical: 'https://example.com/sarafan/fence/ivan-petrov-fence/',
   body: 'Работает с заборами и воротами. Перед началом работ стоит отдельно согласовать сроки, материалы и гарантию.\n\n## Что уточнить\n\nПеред оплатой уточняйте цену.',
   mentions: [],
+} satisfies ContactWithDetail;
+
+const listOnlyContact = {
+  slug: 'sergey',
+  title: 'Сергей',
+  category: 'fence',
+  updatedAt: new Date('2026-07-06T00:00:00.000Z'),
+  updatedIso: '2026-07-06',
+  contacts: {
+    phone: '+7 985 774-75-04',
+  },
+  hasDetailPage: false,
+  body: '',
+  mentions: [],
 } satisfies Contact;
+
+const category = {
+  category: 'fence',
+  contacts: [contact, listOnlyContact],
+  url: '/sarafan/fence/',
+  markdownUrl: '/sarafan/fence/index.md',
+} satisfies ContactCategoryPage;
 
 describe('contacts markdown companions', () => {
   it('renders empty launch index without internal paths', () => {
     const markdown = buildContactsHomeMarkdown({
       contacts: [],
-      bySlug: new Map(),
+      categories: [],
+      byRoute: new Map(),
+      byCategory: new Map(),
     });
 
     expect(markdown).toMatchInlineSnapshot(`
-      "# Полезные контакты
+      "# Сарафан
 
-      Редакционный каталог контактов, которые могут быть полезны жителям Шелково.
+      Сайт публикует контакты и доступный редакционный контекст, но не гарантирует качество услуги и не подтверждает квалификацию исполнителя. Перед оплатой уточняйте цену, сроки и состав работ.
 
-      Сайт публикует контакт и доступный редакционный контекст, но не гарантирует качество услуги и не подтверждает квалификацию исполнителя. Перед оплатой уточняйте цену, сроки и состав работ.
+      ## Категории
 
-      ## Контакты
-
-      Пока контакты не опубликованы. Когда появятся первые карточки, здесь будет список контактов и ссылки на подробные страницы.
+      Пока контакты не опубликованы. Когда появятся первые записи, здесь будет список со способами связи.
       "
     `);
     expect(markdown).not.toMatch(/apps\/www|src\/|repo:/u);
@@ -58,18 +79,28 @@ describe('contacts markdown companions', () => {
 
   it('renders populated index with contact markdown links', () => {
     const markdown = buildContactsHomeMarkdown({
-      contacts: [contact],
-      bySlug: new Map([[contact.slug, contact]]),
+      contacts: [contact, listOnlyContact],
+      categories: [category],
+      byRoute: new Map<string, Contact>([
+        ['fence/ivan-petrov-fence', contact],
+        ['fence/sergey', listOnlyContact],
+      ]),
+      byCategory: new Map([['fence', category]]),
     });
 
     expect(markdown).toContain(
-      '[Иван Петров](https://example.com/contacts/ivan-petrov-fence/index.md)',
+      '[Иван Петров](https://example.com/sarafan/fence/ivan-petrov-fence/index.md)',
     );
-    expect(markdown).toContain('Забор; обновлено 6 июля 2026');
-    expect(markdown).not.toContain('+7 900 000-00-00');
+    expect(markdown).toContain(
+      '[Забор](https://example.com/sarafan/fence/index.md)',
+    );
+    expect(markdown).toContain('Телефон: [+7 900 000-00-00](tel:+79000000000)');
+    expect(markdown).toContain(
+      '- Сергей\n  - Телефон: [+7 985 774-75-04](tel:+79857747504)',
+    );
   });
 
-  it('renders detail with frontmatter, contact methods, body and disclaimer', () => {
+  it('renders detail with frontmatter, contact methods and body', () => {
     expect(buildContactMarkdown(contact)).toMatchInlineSnapshot(`
       "---
       title: Иван Петров
@@ -80,24 +111,17 @@ describe('contacts markdown companions', () => {
 
       # Иван Петров
 
-      Забор; обновлено 6 июля 2026.
-
       ## Способы связи
 
       - Телефон: [+7 900 000-00-00](tel:+79000000000)
       - Telegram: <https://t.me/example>
       - Email: <team@example.com>
-      - Адрес: Ступино
 
       Работает с заборами и воротами. Перед началом работ стоит отдельно согласовать сроки, материалы и гарантию.
 
       ## Что уточнить
 
       Перед оплатой уточняйте цену.
-
-      ## Отказ от ответственности
-
-      Сайт публикует контакт и доступный редакционный контекст, но не гарантирует качество услуги и не подтверждает квалификацию исполнителя. Перед оплатой уточняйте цену, сроки и состав работ.
       "
     `);
   });

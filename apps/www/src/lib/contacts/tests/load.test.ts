@@ -25,7 +25,7 @@ const entry = (input: {
   body: input.body ?? 'Работает с заборами и воротами.',
   data: {
     title: 'Иван Петров',
-    slug: input.id,
+    slug: input.id.split('/').pop() ?? input.id,
     category: 'fence',
     updated_at: '2026-07-06',
     contacts: {
@@ -40,14 +40,15 @@ describe('buildContactsDataset', () => {
     const data = buildContactsDataset([]);
 
     expect(data.contacts).toEqual([]);
-    expect(data.bySlug.size).toBe(0);
+    expect(data.byRoute.size).toBe(0);
+    expect(data.categories).toEqual([]);
   });
 
   it('maps raw contacts to readonly camelCase domain contacts sorted by title', () => {
     const data = buildContactsDataset([
-      entry({ id: 'second-fence', data: { title: 'Яков' } }),
+      entry({ id: 'fence/second-fence', data: { title: 'Яков' } }),
       entry({
-        id: 'first-fence',
+        id: 'fence/first-fence',
         body: 'Перед началом работ стоит согласовать сроки с @kschemelinin.',
         data: {
           title: 'Анна',
@@ -62,31 +63,36 @@ describe('buildContactsDataset', () => {
       'first-fence',
       'second-fence',
     ]);
-    expect(data.bySlug.get('first-fence')).toMatchInlineSnapshot(`
+    expect(data.byRoute.get('fence/first-fence')).toMatchObject({
+      hasDetailPage: true,
+      canonical: 'https://kpshelkovo.online/sarafan/fence/first-fence/',
+      markdownUrl: '/sarafan/fence/first-fence/index.md',
+      url: '/sarafan/fence/first-fence/',
+      title: 'Анна',
+    });
+    expect(data.categories).toMatchObject([
       {
-        "body": "Перед началом работ стоит согласовать сроки с @kschemelinin.",
-        "canonical": "https://kpshelkovo.online/contacts/first-fence/",
-        "category": "fence",
-        "contacts": {
-          "address": undefined,
-          "email": undefined,
-          "phone": "+7 900 000-00-00",
-          "telegram": undefined,
-          "website": undefined,
-          "whatsapp": undefined,
-        },
-        "markdownUrl": "/contacts/first-fence/index.md",
-        "mentions": [],
-        "seo": {
-          "description": "Контакт по заборам для жителей Шелково.",
-        },
-        "slug": "first-fence",
-        "title": "Анна",
-        "updatedAt": 2026-07-06T00:00:00.000Z,
-        "updatedIso": "2026-07-06",
-        "url": "/contacts/first-fence/",
-      }
-    `);
+        category: 'fence',
+        markdownUrl: '/sarafan/fence/index.md',
+        url: '/sarafan/fence/',
+      },
+    ]);
+  });
+
+  it('keeps blank-body contacts in lists without detail URLs', () => {
+    const data = buildContactsDataset([
+      entry({ id: 'fence/list-only', body: '' }),
+    ]);
+
+    expect(data.byRoute.get('fence/list-only')).toMatchObject({
+      hasDetailPage: false,
+      body: '',
+    });
+    expect(data.byRoute.get('fence/list-only')).not.toHaveProperty('url');
+    expect(data.byRoute.get('fence/list-only')).not.toHaveProperty(
+      'markdownUrl',
+    );
+    expect(data.byRoute.get('fence/list-only')).not.toHaveProperty('canonical');
   });
 
   it('preprocesses body mentions with the app-level registry when provided', () => {
@@ -96,7 +102,7 @@ describe('buildContactsDataset', () => {
     const data = buildContactsDataset(
       [
         entry({
-          id: 'with-mention',
+          id: 'fence/with-mention',
           body: 'Работал у @kschemelinin на участке.',
         }),
       ],
@@ -112,21 +118,19 @@ describe('buildContactsDataset', () => {
   it('fails when entry id does not match frontmatter slug', () => {
     expect(() =>
       buildContactsDataset([
-        entry({ id: 'wrong-id', data: { slug: 'real-slug' } }),
+        entry({ id: 'fence/wrong-id', data: { slug: 'real-slug' } }),
       ]),
-    ).toThrow('contact "wrong-id" id must equal slug "real-slug"');
+    ).toThrow(
+      'contact "fence/wrong-id" id must equal category and slug "fence/real-slug"',
+    );
   });
 
-  it('fails on duplicate slugs and blank markdown body', () => {
+  it('fails on duplicate routes', () => {
     expect(() =>
       buildContactsDataset([
-        entry({ id: 'same-slug' }),
-        entry({ id: 'same-slug', data: { title: 'Другой контакт' } }),
+        entry({ id: 'fence/same-slug' }),
+        entry({ id: 'fence/same-slug', data: { title: 'Другой контакт' } }),
       ]),
-    ).toThrow('duplicate contact slug "same-slug"');
-
-    expect(() =>
-      buildContactsDataset([entry({ id: 'blank-body', body: '   ' })]),
-    ).toThrow('contact "blank-body" body is required');
+    ).toThrow('duplicate contact route "fence/same-slug"');
   });
 });

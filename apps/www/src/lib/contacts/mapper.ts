@@ -8,16 +8,6 @@ import type { ContactEntry } from './load';
 import { contactCanonical, contactMarkdownUrl, contactUrl } from './routes';
 import type { Contact, ContactContacts } from './types';
 
-const requireBody = (entry: ContactEntry): string => {
-  const body = entry.body?.trim() ?? '';
-
-  if (!body) {
-    throw new Error(`contact "${entry.id}" body is required`);
-  }
-
-  return body;
-};
-
 const preprocessContactContent = (
   markdown: string,
   context: string,
@@ -43,38 +33,52 @@ const mapContacts = (
   whatsapp: contacts.whatsapp,
   email: contacts.email,
   website: contacts.website,
-  address: contacts.address,
 });
 
 export const mapRawContact = (
   entry: ContactEntry,
   mentionRegistry?: SiteMentionRegistry,
 ): Contact => {
-  if (entry.id !== entry.data.slug) {
+  const slug = entry.data.slug;
+  const category = entry.data.category;
+  const expectedId = `${category}/${slug}`;
+
+  if (entry.id !== expectedId) {
     throw new Error(
-      `contact "${entry.id}" id must equal slug "${entry.data.slug}"`,
+      `contact "${entry.id}" id must equal category and slug "${expectedId}"`,
     );
   }
 
   const body = preprocessContactContent(
-    requireBody(entry),
+    entry.body?.trim() ?? '',
     `contact "${entry.id}" body`,
     mentionRegistry,
   );
-  const slug = entry.data.slug;
-
-  return {
+  const contact = {
     slug,
     title: entry.data.title,
-    category: entry.data.category,
+    category,
     updatedAt: new Date(`${entry.data.updated_at}T00:00:00.000Z`),
     updatedIso: entry.data.updated_at,
+    summary: entry.data.summary,
     contacts: mapContacts(entry.data.contacts),
     seo: entry.data.seo,
-    url: contactUrl({ slug }),
-    markdownUrl: contactMarkdownUrl({ slug }),
-    canonical: contactCanonical({ slug }),
     body: body.markdown,
     mentions: body.mentions,
+  };
+
+  if (!body.markdown.trim()) {
+    return {
+      ...contact,
+      hasDetailPage: false,
+    };
+  }
+
+  return {
+    ...contact,
+    hasDetailPage: true,
+    url: contactUrl({ category, slug }),
+    markdownUrl: contactMarkdownUrl({ category, slug }),
+    canonical: contactCanonical({ category, slug }),
   };
 };

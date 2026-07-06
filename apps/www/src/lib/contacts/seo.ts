@@ -2,7 +2,7 @@ import type { SchemaDoc } from '@shelkovo/seo';
 
 import { absoluteUrl } from '@/lib/site';
 
-import type { Contact } from './types';
+import type { ContactWithDetail } from './types';
 import { contactExcerpt, formatContactCategory } from './view';
 
 const CONTEXT = 'https://schema.org';
@@ -27,7 +27,7 @@ interface ContactsCollectionPageInput {
 }
 
 interface ContactPageInput {
-  readonly contact: Contact;
+  readonly contact: ContactWithDetail;
   readonly description: string;
   readonly breadcrumbs?: readonly BreadcrumbLink[];
 }

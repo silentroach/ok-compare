@@ -39,7 +39,6 @@ describe('RawContactSchema', () => {
           whatsapp: 'https://wa.me/79000000000',
           email: 'team@example.com',
           website: 'https://example.com',
-          address: 'Ступино',
         },
         seo: {
           description:
@@ -48,7 +47,6 @@ describe('RawContactSchema', () => {
       }).contacts,
     ).toMatchInlineSnapshot(`
       {
-        "address": "Ступино",
         "email": "team@example.com",
         "telegram": "https://t.me/example",
         "website": "https://example.com",

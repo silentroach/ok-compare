@@ -71,6 +71,7 @@ const KbPageFrontmatterSchema = z
   .passthrough();
 const ContactFrontmatterSchema = z
   .object({
+    category: z.string(),
     slug: z.string(),
     updated_at: SitemapDateInputSchema,
   })
@@ -355,6 +356,7 @@ export const kbPageSitemapInput = (
 
 export const contactSitemapInput = (
   frontmatter: string | YamlRecord,
+  body: string,
 ): SitemapContactInput => {
   const context = 'contact frontmatter';
   const contact = parseSitemapData(
@@ -364,8 +366,10 @@ export const contactSitemapInput = (
   );
 
   return {
-    url: `/contacts/${contact.slug}/`,
+    category: contact.category,
+    url: `/sarafan/${contact.category}/${contact.slug}/`,
     updatedIso: parseTimestamp(contact.updated_at, `${context} updated_at`),
+    hasPage: Boolean(body.trim()),
   };
 };
 
@@ -383,9 +387,9 @@ const loadContactsForSitemap = (): readonly SitemapContactInput[] =>
   listFiles(contactsDir, '.md')
     .filter((path) => !path.endsWith('/AGENTS.md'))
     .map((path) => {
-      const { frontmatter } = markdownParts(path);
+      const { body, frontmatter } = markdownParts(path);
 
-      return contactSitemapInput(frontmatter);
+      return contactSitemapInput(frontmatter, body);
     });
 
 export const loadSitemapMetadataIndex =

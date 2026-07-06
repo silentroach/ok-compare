@@ -218,28 +218,39 @@ describe('buildSitemapMetadataIndex', () => {
       kbPages: [],
       contacts: [
         {
-          url: '/contacts/ivan-petrov-fence/',
+          category: 'fence',
+          url: '/sarafan/fence/ivan-petrov-fence/',
           updatedIso: '2026-07-06',
+          hasPage: true,
         },
         {
-          url: '/contacts/older-fence/',
-          updatedIso: '2026-07-01',
+          category: 'fence',
+          url: '/sarafan/fence/sergey/',
+          updatedIso: '2026-07-07',
+          hasPage: false,
         },
       ],
     });
 
     expect({
-      section: index.get('/contacts/'),
-      contact: index.get('/contacts/ivan-petrov-fence/'),
+      section: index.get('/sarafan/'),
+      category: index.get('/sarafan/fence/'),
+      contact: index.get('/sarafan/fence/ivan-petrov-fence/'),
+      listOnlyContact: index.get('/sarafan/fence/sergey/'),
     }).toMatchInlineSnapshot(`
       {
+        "category": {
+          "changefreq": "monthly",
+          "lastmod": "2026-07-07",
+        },
         "contact": {
           "changefreq": "monthly",
           "lastmod": "2026-07-06",
         },
+        "listOnlyContact": undefined,
         "section": {
           "changefreq": "monthly",
-          "lastmod": "2026-07-06",
+          "lastmod": "2026-07-07",
         },
       }
     `);

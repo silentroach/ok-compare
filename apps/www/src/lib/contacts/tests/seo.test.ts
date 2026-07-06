@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import type { Contact } from '../types';
+import type { ContactWithDetail } from '../types';
 
 let contactPageSchema: typeof import('../seo').contactPageSchema;
 
@@ -22,18 +22,19 @@ const contact = {
   contacts: {
     phone: '+7 900 000-00-00',
   },
-  url: '/contacts/ivan-petrov-fence/',
-  markdownUrl: '/contacts/ivan-petrov-fence/index.md',
-  canonical: 'https://example.com/contacts/ivan-petrov-fence/',
+  hasDetailPage: true,
+  url: '/sarafan/fence/ivan-petrov-fence/',
+  markdownUrl: '/sarafan/fence/ivan-petrov-fence/index.md',
+  canonical: 'https://example.com/sarafan/fence/ivan-petrov-fence/',
   body: 'Работает с заборами и воротами.',
   mentions: [],
-} satisfies Contact;
+} satisfies ContactWithDetail;
 
 describe('contactPageSchema', () => {
   it('publishes a generic WebPage without ratings or review claims', () => {
     const schema = contactPageSchema({
       contact,
-      description: 'Контакт из раздела «Полезные контакты»: Забор.',
+      description: 'Контакт из раздела «Сарафан»: Забор.',
       breadcrumbs: [],
     });
 
@@ -48,10 +49,10 @@ describe('contactPageSchema', () => {
             "name": "Забор",
           },
           "dateModified": "2026-07-06",
-          "description": "Контакт из раздела «Полезные контакты»: Забор.",
+          "description": "Контакт из раздела «Сарафан»: Забор.",
           "inLanguage": "ru-RU",
           "name": "Иван Петров",
-          "url": "https://example.com/contacts/ivan-petrov-fence/",
+          "url": "https://example.com/sarafan/fence/ivan-petrov-fence/",
         },
       ]
     `);

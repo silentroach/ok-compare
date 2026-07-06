@@ -1,0 +1,81 @@
+---
+import EmailIcon from '@shelkovo/ui/icons/system/Email.astro';
+import GlobeIcon from '@shelkovo/ui/icons/system/Globe.astro';
+import PhoneIcon from '@shelkovo/ui/icons/system/Phone.astro';
+import TelegramIcon from '@shelkovo/ui/icons/system/Telegram.astro';
+import WhatsAppIcon from '@shelkovo/ui/icons/system/WhatsApp.astro';
+
+import type { Contact, ContactContacts } from '@/lib/contacts/types';
+import { contactExcerpt, contactMethods } from '@/lib/contacts/view';
+
+type ContactMethodType = keyof ContactContacts;
+
+interface Props {
+  readonly contact: Contact;
+}
+
+const { contact } = Astro.props;
+const methods = contactMethods(contact.contacts);
+const excerpt = contactExcerpt(contact);
+const methodIcons = {
+  phone: PhoneIcon,
+  telegram: TelegramIcon,
+  whatsapp: WhatsAppIcon,
+  email: EmailIcon,
+  website: GlobeIcon,
+} as const satisfies Record<ContactMethodType, typeof PhoneIcon>;
+---
+
+<article class="py-5 md:py-6">
+  <div class="space-y-3">
+    <h3 class="text-lg font-bold tracking-tight text-foreground md:text-xl">
+      {
+        contact.hasDetailPage ? (
+          <a href={contact.url} class="ui-link">
+            {contact.title}
+          </a>
+        ) : (
+          contact.title
+        )
+      }
+    </h3>
+
+    <ul
+      class="flex flex-wrap gap-x-4 gap-y-2 text-sm leading-6 text-foreground md:text-base md:leading-7"
+    >
+      {
+        methods.map((method) => {
+          const Icon = methodIcons[method.type];
+
+          return (
+            <li>
+              <span class="sr-only">{method.label}: </span>
+              {method.href ? (
+                <a
+                  href={method.href}
+                  class="inline-flex items-center gap-1.5 ui-link font-semibold"
+                >
+                  <Icon class="size-4 shrink-0" />
+                  {method.value}
+                </a>
+              ) : (
+                <span class="inline-flex items-center gap-1.5">
+                  <Icon class="size-4 shrink-0 text-primary" />
+                  {method.value}
+                </span>
+              )}
+            </li>
+          );
+        })
+      }
+    </ul>
+
+    {
+      excerpt ? (
+        <p class="max-w-3xl text-base leading-7 text-muted-foreground">
+          {excerpt}
+        </p>
+      ) : null
+    }
+  </div>
+</article>

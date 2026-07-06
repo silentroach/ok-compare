@@ -114,9 +114,6 @@ const heroImage = heroMode === 'day' ? dayHeroImage : nightHeroImage;
               class="home-hero-nav flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-sm font-medium md:flex-nowrap md:gap-10 md:text-base"
             >
               <a href="/news/">Новости</a>
-              <a href="/kb/">База знаний</a>
-              <a href="/reviews/">Отзывы</a>
-              <a href="/contacts/">Контакты</a>
               <div
                 class="home-hero-nav-dropdown group relative"
                 data-home-nav-dropdown
@@ -159,14 +156,17 @@ const heroImage = heroMode === 'day' ? dayHeroImage : nightHeroImage;
                   </div>
                 </div>
               </div>
+              <a href="/kb/">База знаний</a>
+              <a href="/sarafan/">Сарафан</a>
+              <a href="/reviews/">Отзывы</a>
               <a
                 href="/status/"
                 aria-label={getHomeStatusAriaLabel(homeStatusState)}
-                class="home-hero-status-link flex items-center gap-3"
+                class="home-hero-status-link flex min-h-6 min-w-6 items-center justify-center gap-3 md:min-h-0 md:min-w-0 md:justify-start"
                 data-home-status-link
                 data-home-status-state={homeStatusState}
               >
-                <span>Статус</span>
+                <span class="hidden md:inline">Статус</span>
                 <span
                   aria-hidden="true"
                   data-home-status-dot

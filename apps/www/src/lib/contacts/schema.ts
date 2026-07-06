@@ -7,6 +7,9 @@ export const CONTACT_DATE = /^\d{4}-\d{2}-\d{2}$/;
 export const isContactSlug = (value: string): boolean =>
   CONTACT_SLUG.test(value);
 
+export const isContactCategory = (value: string): value is ContactCategory =>
+  CONTACT_CATEGORIES.includes(value as ContactCategory);
+
 export const isContactCalendarDate = (value: string): boolean => {
   if (!CONTACT_DATE.test(value)) {
     return false;

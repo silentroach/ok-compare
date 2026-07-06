@@ -2,6 +2,10 @@ import { describe, expect, it } from 'vitest';
 
 import {
   contactCanonical,
+  contactCategoryMarkdownPattern,
+  contactCategoryMarkdownUrl,
+  contactCategoryPattern,
+  contactCategoryUrl,
   contactMarkdownPattern,
   contactMarkdownUrl,
   contactPattern,
@@ -11,26 +15,37 @@ import {
 } from '../routes';
 
 describe('contact routes', () => {
-  it('builds stable index and detail URLs', () => {
-    const contact = { slug: 'ivan-petrov-fence' };
+  it('builds stable index, category and detail URLs', () => {
+    const contact = { category: 'fence', slug: 'ivan-petrov-fence' };
 
-    expect(contactsUrl()).toBe('/contacts/');
-    expect(contactsMarkdownUrl()).toBe('/contacts/index.md');
-    expect(contactUrl(contact)).toBe('/contacts/ivan-petrov-fence/');
+    expect(contactsUrl()).toBe('/sarafan/');
+    expect(contactsMarkdownUrl()).toBe('/sarafan/index.md');
+    expect(contactCategoryUrl(contact)).toBe('/sarafan/fence/');
+    expect(contactCategoryMarkdownUrl(contact)).toBe('/sarafan/fence/index.md');
+    expect(contactUrl(contact)).toBe('/sarafan/fence/ivan-petrov-fence/');
     expect(contactMarkdownUrl(contact)).toBe(
-      '/contacts/ivan-petrov-fence/index.md',
+      '/sarafan/fence/ivan-petrov-fence/index.md',
     );
     expect(contactCanonical(contact)).toBe(
-      'https://kpshelkovo.online/contacts/ivan-petrov-fence/',
+      'https://kpshelkovo.online/sarafan/fence/ivan-petrov-fence/',
     );
   });
 
   it('rejects malformed slugs before building public URLs', () => {
-    expect(() => contactUrl({ slug: 'Bad Slug' })).toThrow(/contact slug/u);
+    expect(() => contactUrl({ category: 'fence', slug: 'Bad Slug' })).toThrow(
+      /contact slug/u,
+    );
+    expect(() => contactCategoryUrl({ category: 'unknown' })).toThrow(
+      /contact category/u,
+    );
   });
 
   it('exposes route patterns for public surface registration', () => {
-    expect(contactPattern()).toBe('/contacts/:slug/');
-    expect(contactMarkdownPattern()).toBe('/contacts/:slug/index.md');
+    expect(contactCategoryPattern()).toBe('/sarafan/:category/');
+    expect(contactCategoryMarkdownPattern()).toBe(
+      '/sarafan/:category/index.md',
+    );
+    expect(contactPattern()).toBe('/sarafan/:category/:slug/');
+    expect(contactMarkdownPattern()).toBe('/sarafan/:category/:slug/index.md');
   });
 });

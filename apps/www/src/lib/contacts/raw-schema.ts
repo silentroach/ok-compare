@@ -44,7 +44,6 @@ const contacts = z
     whatsapp: contactUrl.optional(),
     email: nonBlankText.email().optional(),
     website: contactUrl.optional(),
-    address: nonBlankText.optional(),
   })
   .strict()
   .superRefine((value, ctx) => {
@@ -53,8 +52,7 @@ const contacts = z
       value.telegram ||
       value.whatsapp ||
       value.email ||
-      value.website ||
-      value.address
+      value.website
     ) {
       return;
     }
@@ -79,6 +77,7 @@ export const RawContactSchema = z
     }),
     category: z.enum(CONTACT_CATEGORIES),
     updated_at: contactDate('updated_at'),
+    summary: nonBlankText.optional(),
     contacts,
     seo: seo.optional(),
   })
