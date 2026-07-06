@@ -1,9 +1,11 @@
 import dist from '@turf/distance';
-import SunCalc from 'suncalc';
+import * as SunCalc from 'suncalc';
 
 import type { CivilTwilight, Coordinates } from './types';
 
 export type { CivilTwilight, Coordinates } from './types';
+
+const CIVIL_TWILIGHT_ALTITUDE_DEGREES = -6;
 
 /**
  * Calculates distance between two coordinates in kilometers.
@@ -21,11 +23,17 @@ export const getCivilTwilight = (
   date: Date,
   coordinates: Coordinates,
 ): CivilTwilight => {
-  const times = SunCalc.getTimes(date, coordinates.lat, coordinates.lng);
+  const { lat, lng } = coordinates;
+  const { dawn, dusk } = SunCalc.getTimes(date, lat, lng);
+  if (!dawn || !dusk) {
+    throw new Error(
+      'Civil twilight is unavailable for this date and coordinates.',
+    );
+  }
 
   return {
-    dawn: times.dawn,
-    dusk: times.dusk,
+    dawn,
+    dusk,
   };
 };
 
@@ -33,7 +41,15 @@ export const isCivilDaylight = (
   date: Date,
   coordinates: Coordinates,
 ): boolean => {
-  const { dawn, dusk } = getCivilTwilight(date, coordinates);
+  const { lat, lng } = coordinates;
+  const { dawn, dusk } = SunCalc.getTimes(date, lat, lng);
+  if (!dawn || !dusk) {
+    return (
+      SunCalc.getPosition(date, lat, lng).altitude >=
+      CIVIL_TWILIGHT_ALTITUDE_DEGREES
+    );
+  }
+
   const time = date.getTime();
 
   return time >= dawn.getTime() && time <= dusk.getTime();

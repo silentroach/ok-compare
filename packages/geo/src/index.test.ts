@@ -7,6 +7,11 @@ const shelkovo = {
   lng: 37.733096,
 } as const;
 
+const longyearbyen = {
+  lat: 78.2232,
+  lng: 15.6469,
+} as const;
+
 describe('geo package', () => {
   it('returns zero for identical points', () => {
     expect(calculateDistance(55.7, 37, 55.7, 37)).toBe(0);
@@ -34,14 +39,14 @@ describe('geo package', () => {
       dusk: twilight.dusk.toISOString(),
     }).toMatchInlineSnapshot(`
       {
-        "dawn": "2026-05-11T00:44:05.189Z",
-        "dusk": "2026-05-11T18:09:29.055Z",
+        "dawn": "2026-05-11T00:42:34.126Z",
+        "dusk": "2026-05-11T18:09:59.254Z",
       }
     `);
   });
 
   it('treats the civil twilight interval as daylight', () => {
-    expect(isCivilDaylight(new Date('2026-05-11T00:43:00Z'), shelkovo)).toBe(
+    expect(isCivilDaylight(new Date('2026-05-11T00:42:00Z'), shelkovo)).toBe(
       false,
     );
     expect(isCivilDaylight(new Date('2026-05-11T00:45:00Z'), shelkovo)).toBe(
@@ -56,7 +61,7 @@ describe('geo package', () => {
   });
 
   it('follows seasonal civil twilight instead of fixed clock hours', () => {
-    expect(isCivilDaylight(new Date('2026-01-11T05:06:00Z'), shelkovo)).toBe(
+    expect(isCivilDaylight(new Date('2026-01-11T05:05:00Z'), shelkovo)).toBe(
       false,
     );
     expect(isCivilDaylight(new Date('2026-01-11T05:07:00Z'), shelkovo)).toBe(
@@ -68,5 +73,20 @@ describe('geo package', () => {
     expect(isCivilDaylight(new Date('2026-01-11T14:10:00Z'), shelkovo)).toBe(
       false,
     );
+  });
+
+  it('handles dates without civil dawn or dusk', () => {
+    expect({
+      polarDay: isCivilDaylight(new Date('2026-06-21T12:00:00Z'), longyearbyen),
+      polarNight: isCivilDaylight(
+        new Date('2026-12-21T12:00:00Z'),
+        longyearbyen,
+      ),
+    }).toMatchInlineSnapshot(`
+      {
+        "polarDay": true,
+        "polarNight": false,
+      }
+    `);
   });
 });
