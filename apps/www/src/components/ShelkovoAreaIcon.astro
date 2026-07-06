@@ -1,8 +1,10 @@
 ---
-import Forest from '@shelkovo/ui/icons/areas/Forest.astro';
-import Park from '@shelkovo/ui/icons/areas/Park.astro';
-import River from '@shelkovo/ui/icons/areas/River.astro';
-import Village from '@shelkovo/ui/icons/areas/Village.astro';
+import {
+  ForestIcon,
+  ParkIcon,
+  RiverIcon,
+  VillageIcon,
+} from '@shelkovo/ui/icons';
 
 import type { NewsArea } from '../lib/news/schema';
 import { formatNewsArea } from '../lib/news/view';
@@ -14,10 +16,10 @@ interface Props {
 const { area }: Props = Astro.props;
 
 const AREA_ICONS = {
-  river: River,
-  forest: Forest,
-  park: Park,
-  village: Village,
+  river: RiverIcon,
+  forest: ForestIcon,
+  park: ParkIcon,
+  village: VillageIcon,
 } as const;
 
 const label = formatNewsArea(area);
