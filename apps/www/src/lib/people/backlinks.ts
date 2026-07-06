@@ -69,4 +69,7 @@ export const createPeopleBacklinksFromGraph = (
   people: toPeopleBacklinks(
     getEntityMentionGraphRefs(graph, 'person', profile.slug, 'people'),
   ),
+  contacts: toPeopleBacklinks(
+    getEntityMentionGraphRefs(graph, 'person', profile.slug, 'contacts'),
+  ),
 });

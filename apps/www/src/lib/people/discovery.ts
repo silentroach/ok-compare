@@ -188,6 +188,9 @@ export function schema(root: string): Record<string, unknown> {
           people: list({
             $ref: '#/$defs/backlink',
           }),
+          contacts: list({
+            $ref: '#/$defs/backlink',
+          }),
         },
         PERSON_MENTION_SECTIONS,
       ),

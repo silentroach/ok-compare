@@ -16,6 +16,7 @@ import {
   type SitemapKbPageInput,
   type SitemapSettlementInput,
   type SitemapStatusIncidentInput,
+  type SitemapContactInput,
 } from './sitemap';
 
 type YamlRecord = Record<string, unknown>;
@@ -68,6 +69,13 @@ const KbPageFrontmatterSchema = z
     flags: z.array(z.string()).default([]),
   })
   .passthrough();
+const ContactFrontmatterSchema = z
+  .object({
+    category: z.string(),
+    slug: z.string(),
+    updated_at: SitemapDateInputSchema,
+  })
+  .passthrough();
 
 const newsArticlesDir = fileURLToPath(
   new URL('../data/news/articles/', import.meta.url),
@@ -82,6 +90,9 @@ const meetingsDir = fileURLToPath(
   new URL('../data/meetings/', import.meta.url),
 );
 const kbPagesDir = fileURLToPath(new URL('../data/kb/', import.meta.url));
+const contactsDir = fileURLToPath(
+  new URL('../data/contacts/', import.meta.url),
+);
 
 const formatYamlIssue = (issue: SitemapDataIssue): string => {
   const path = issue.path.map(String).join('.');
@@ -343,6 +354,25 @@ export const kbPageSitemapInput = (
   };
 };
 
+export const contactSitemapInput = (
+  frontmatter: string | YamlRecord,
+  body: string,
+): SitemapContactInput => {
+  const context = 'contact frontmatter';
+  const contact = parseSitemapData(
+    ContactFrontmatterSchema,
+    parseFrontmatterInput(frontmatter, context),
+    context,
+  );
+
+  return {
+    category: contact.category,
+    url: `/sarafan/${contact.category}/${contact.slug}/`,
+    updatedIso: parseTimestamp(contact.updated_at, `${context} updated_at`),
+    hasPage: Boolean(body.trim()),
+  };
+};
+
 const loadKbPagesForSitemap = (): readonly SitemapKbPageInput[] =>
   listFiles(kbPagesDir, '.md')
     .filter((path) => !path.endsWith('/AGENTS.md'))
@@ -353,6 +383,15 @@ const loadKbPagesForSitemap = (): readonly SitemapKbPageInput[] =>
       return kbPageSitemapInput(id, frontmatter);
     });
 
+const loadContactsForSitemap = (): readonly SitemapContactInput[] =>
+  listFiles(contactsDir, '.md')
+    .filter((path) => !path.endsWith('/AGENTS.md'))
+    .map((path) => {
+      const { body, frontmatter } = markdownParts(path);
+
+      return contactSitemapInput(frontmatter, body);
+    });
+
 export const loadSitemapMetadataIndex =
   async (): Promise<SitemapMetadataIndex> =>
     buildSitemapMetadataIndex({
@@ -361,4 +400,5 @@ export const loadSitemapMetadataIndex =
       settlements: loadSettlementsForSitemap(),
       meetings: loadMeetingsForSitemap(),
       kbPages: loadKbPagesForSitemap(),
+      contacts: loadContactsForSitemap(),
     });

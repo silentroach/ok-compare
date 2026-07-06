@@ -1,0 +1,43 @@
+---
+import type { ContactContacts } from '@/lib/contacts/types';
+import { contactMethods } from '@/lib/contacts/view';
+
+interface Props {
+  readonly contacts: ContactContacts;
+}
+
+const { contacts } = Astro.props;
+const methods = contactMethods(contacts);
+---
+
+<section
+  aria-labelledby="contact-methods"
+  class="ui-shell max-w-[65ch] px-5 py-5 md:px-6 md:py-6"
+>
+  <h2
+    id="contact-methods"
+    class="font-body text-xl font-bold tracking-tight text-foreground"
+  >
+    Способы связи
+  </h2>
+  <dl class="mt-4 divide-y divide-border">
+    {
+      methods.map((method) => (
+        <div class="grid gap-1 py-3 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-4">
+          <dt class="text-sm font-semibold text-muted-foreground">
+            {method.label}
+          </dt>
+          <dd class="text-base leading-7 text-foreground">
+            {method.href ? (
+              <a href={method.href} class="ui-link font-semibold">
+                {method.value}
+              </a>
+            ) : (
+              method.value
+            )}
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>

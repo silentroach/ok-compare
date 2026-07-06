@@ -24,6 +24,14 @@ import {
   compareSettlementsDataPath,
   compareSkillsPath,
 } from '@/compare/lib/public-surface';
+import {
+  contactCategoryMarkdownPattern,
+  contactCategoryPattern,
+  contactMarkdownPattern,
+  contactPattern,
+  contactsMarkdownPath,
+  contactsPath,
+} from '@/lib/contacts/routes';
 import { catalog } from '@/lib/discovery';
 import {
   kbDetailMarkdownPattern,
@@ -465,6 +473,57 @@ describe('public surface registry', () => {
     ).toBe(false);
     expect(
       reviews.some((surface) => surface.discoveryRoles.includes('llms')),
+    ).toBe(false);
+  });
+
+  it('registers contacts HTML and Markdown surfaces without feeds or APIs', () => {
+    const contacts = publicSurfaceRegistry.surfacesByOwner('contacts');
+    const rootCatalog = catalog('https://example.com/sub') as {
+      readonly linkset: readonly {
+        readonly anchor?: string;
+        readonly item?: readonly { readonly href: string }[];
+      }[];
+    };
+    const contactsEntry = rootCatalog.linkset.find(
+      (entry) => entry.anchor === 'https://example.com/sub/sarafan/',
+    );
+
+    expect(contacts.map((surface) => surface.id)).toEqual([
+      'contacts:index',
+      'contacts:index-markdown',
+      'contacts:category',
+      'contacts:category-markdown',
+      'contacts:contact',
+      'contacts:contact-markdown',
+    ]);
+    expect(
+      contacts.map((surface) =>
+        'path' in surface ? surface.path : surface.routePattern,
+      ),
+    ).toEqual([
+      contactsPath(),
+      contactsMarkdownPath(),
+      contactCategoryPattern(),
+      contactCategoryMarkdownPattern(),
+      contactPattern(),
+      contactMarkdownPattern(),
+    ]);
+    expect(contactsEntry?.item).toEqual([
+      expect.objectContaining({
+        href: 'https://example.com/sub/sarafan/index.md',
+      }),
+    ]);
+    expect(
+      contacts.some((surface) => surface.discoveryRoles.includes('data-feed')),
+    ).toBe(false);
+    expect(
+      contacts.some((surface) => surface.discoveryRoles.includes('schema')),
+    ).toBe(false);
+    expect(contacts.map((surface) => surface.id)).not.toEqual(
+      expect.arrayContaining(['contacts:openapi', 'contacts:rss']),
+    );
+    expect(
+      contacts.some((surface) => surface.discoveryRoles.includes('llms')),
     ).toBe(false);
   });
 

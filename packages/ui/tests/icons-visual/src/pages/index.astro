@@ -1,19 +1,24 @@
 ---
 import '@shelkovo/ui/styles.css';
-import ForestIcon from '@shelkovo/ui/icons/areas/Forest.astro';
-import ParkIcon from '@shelkovo/ui/icons/areas/Park.astro';
-import RiverIcon from '@shelkovo/ui/icons/areas/River.astro';
-import VillageIcon from '@shelkovo/ui/icons/areas/Village.astro';
-import DamIcon from '@shelkovo/ui/icons/services/Dam.astro';
-import LightningIcon from '@shelkovo/ui/icons/services/Lightning.astro';
-import WaterDropIcon from '@shelkovo/ui/icons/services/WaterDrop.astro';
-import AlertCircleIcon from '@shelkovo/ui/icons/system/AlertCircle.astro';
-import CalendarPlusIcon from '@shelkovo/ui/icons/system/CalendarPlus.astro';
-import CheckCircleIcon from '@shelkovo/ui/icons/system/CheckCircle.astro';
-import DomylandIcon from '@shelkovo/ui/icons/system/Domyland.astro';
-import PhoneIcon from '@shelkovo/ui/icons/system/Phone.astro';
-import StarIcon from '@shelkovo/ui/icons/system/Star.astro';
-import TelegramIcon from '@shelkovo/ui/icons/system/Telegram.astro';
+import {
+  AlertCircleIcon,
+  CalendarPlusIcon,
+  CheckCircleIcon,
+  DamIcon,
+  DomylandIcon,
+  EmailIcon,
+  ForestIcon,
+  GlobeIcon,
+  LightningIcon,
+  ParkIcon,
+  PhoneIcon,
+  RiverIcon,
+  StarIcon,
+  TelegramIcon,
+  VillageIcon,
+  WaterDropIcon,
+  WhatsAppIcon,
+} from '@shelkovo/ui/icons';
 
 const groups = [
   {
@@ -40,9 +45,12 @@ const groups = [
       { name: 'CalendarPlus', Icon: CalendarPlusIcon },
       { name: 'CheckCircle', Icon: CheckCircleIcon },
       { name: 'Domyland', Icon: DomylandIcon, variant: 'brand' },
+      { name: 'Email', Icon: EmailIcon },
+      { name: 'Globe', Icon: GlobeIcon },
       { name: 'Phone', Icon: PhoneIcon },
       { name: 'Star', Icon: StarIcon },
       { name: 'Telegram', Icon: TelegramIcon },
+      { name: 'WhatsApp', Icon: WhatsAppIcon },
     ],
   },
 ] as const;

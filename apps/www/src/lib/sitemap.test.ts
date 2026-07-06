@@ -27,6 +27,7 @@ describe('buildSitemapMetadataIndex', () => {
       settlements: [],
       meetings: [],
       kbPages: [],
+      contacts: [],
     });
 
     expect({
@@ -94,6 +95,7 @@ describe('buildSitemapMetadataIndex', () => {
       ],
       meetings: [],
       kbPages: [],
+      contacts: [],
     });
 
     expect({
@@ -150,6 +152,7 @@ describe('buildSitemapMetadataIndex', () => {
         },
       ],
       kbPages: [],
+      contacts: [],
     });
 
     expect({
@@ -189,6 +192,7 @@ describe('buildSitemapMetadataIndex', () => {
           excludeFromSitemap: true,
         },
       ],
+      contacts: [],
     });
 
     expect(
@@ -203,6 +207,53 @@ describe('buildSitemapMetadataIndex', () => {
         index,
       ),
     ).toEqual({ url: 'https://kpshelkovo.online/kb/public/' });
+  });
+
+  it('uses contact updated_at dates for contacts pages', () => {
+    const index = buildSitemapMetadataIndex({
+      newsArticles: [],
+      statusIncidents: [],
+      settlements: [],
+      meetings: [],
+      kbPages: [],
+      contacts: [
+        {
+          category: 'fence',
+          url: '/sarafan/fence/ivan-petrov-fence/',
+          updatedIso: '2026-07-06',
+          hasPage: true,
+        },
+        {
+          category: 'fence',
+          url: '/sarafan/fence/sergey/',
+          updatedIso: '2026-07-07',
+          hasPage: false,
+        },
+      ],
+    });
+
+    expect({
+      section: index.get('/sarafan/'),
+      category: index.get('/sarafan/fence/'),
+      contact: index.get('/sarafan/fence/ivan-petrov-fence/'),
+      listOnlyContact: index.get('/sarafan/fence/sergey/'),
+    }).toMatchInlineSnapshot(`
+      {
+        "category": {
+          "changefreq": "monthly",
+          "lastmod": "2026-07-07",
+        },
+        "contact": {
+          "changefreq": "monthly",
+          "lastmod": "2026-07-06",
+        },
+        "listOnlyContact": undefined,
+        "section": {
+          "changefreq": "monthly",
+          "lastmod": "2026-07-07",
+        },
+      }
+    `);
   });
 });
 

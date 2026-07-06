@@ -72,6 +72,7 @@ const profile = (): PersonProfile => ({
     ],
     reviews: [],
     people: [],
+    contacts: [],
   },
 });
 
@@ -254,6 +255,7 @@ describe('people discovery payload', () => {
       'status',
       'reviews',
       'people',
+      'contacts',
     ]);
     expect(openapiDefs.profile?.required).toEqual(defs.profile?.required);
     expect(

@@ -1,0 +1,92 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+
+import ContactListItem from '@/components/contacts/ContactListItem.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import {
+  withHomeBreadcrumbs,
+  withHomeSchemaBreadcrumbs,
+} from '@/lib/breadcrumbs';
+import {
+  loadContactCategories,
+  loadContactCategory,
+} from '@/lib/contacts/load';
+import { contactsUrl } from '@/lib/contacts/routes';
+import { contactsCollectionPageSchema } from '@/lib/contacts/seo';
+import { formatContactCategory } from '@/lib/contacts/view';
+
+export const getStaticPaths = (async () => {
+  const categories = await loadContactCategories();
+
+  return categories.map((category) => ({
+    params: { category: category.category },
+  }));
+}) satisfies GetStaticPaths;
+
+const categoryKey = Astro.params.category;
+
+if (!categoryKey) {
+  throw new Error('contact category is required');
+}
+
+const category = await loadContactCategory(categoryKey);
+
+if (!category) {
+  throw new Error(`contact category "${categoryKey}" not found`);
+}
+
+const label = formatContactCategory(category.category);
+const title = `${label} — Сарафан — Шелково Онлайн`;
+const description = `Контакты в категории «${label}» из сарафана жителей Шелково.`;
+const breadcrumbs = withHomeBreadcrumbs([
+  { label: 'Сарафан', href: contactsUrl() },
+  { label },
+]);
+const schema = contactsCollectionPageSchema({
+  name: title,
+  description,
+  url: category.url,
+  breadcrumbs: withHomeSchemaBreadcrumbs([
+    { name: 'Сарафан', url: contactsUrl() },
+    { name: label, url: category.url },
+  ]),
+  items: category.contacts
+    .filter((contact) => contact.hasDetailPage)
+    .map((contact) => ({
+      name: contact.title,
+      url: contact.url,
+    })),
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={category.url}
+  keywords={['сарафан Шелково', label]}
+  schema={schema}
+>
+  <main class="ui-page pb-8 md:pb-12 lg:pb-14">
+    <section class="ui-page-header">
+      <div class="ui-page-header-stack max-w-4xl">
+        <Breadcrumbs items={breadcrumbs} />
+
+        <h1 class="ui-page-title">{label}</h1>
+      </div>
+    </section>
+
+    <section class="mt-8">
+      <h2 class="sr-only">Контакты в категории {label}</h2>
+      <div class="border-t border-border px-5 md:px-6">
+        <div class="grid gap-x-8 md:grid-cols-2">
+          {
+            category.contacts.map((contact) => (
+              <ContactListItem contact={contact} />
+            ))
+          }
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

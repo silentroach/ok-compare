@@ -58,6 +58,7 @@ const profile = (): PersonProfile => ({
     status: [],
     reviews: [],
     people: [],
+    contacts: [],
   },
 });
 
@@ -71,6 +72,7 @@ describe('people public DTO adapters', () => {
           {
             "backlink_count": 1,
             "backlinks": {
+              "contacts": [],
               "news": [
                 {
                   "html_url": "https://example.com/news/2026/05/power-outage/",

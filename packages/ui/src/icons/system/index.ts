@@ -1,0 +1,10 @@
+export { default as AlertCircleIcon } from './AlertCircle.astro';
+export { default as CalendarPlusIcon } from './CalendarPlus.astro';
+export { default as CheckCircleIcon } from './CheckCircle.astro';
+export { default as DomylandIcon } from './Domyland.astro';
+export { default as EmailIcon } from './Email.astro';
+export { default as GlobeIcon } from './Globe.astro';
+export { default as PhoneIcon } from './Phone.astro';
+export { default as StarIcon } from './Star.astro';
+export { default as TelegramIcon } from './Telegram.astro';
+export { default as WhatsAppIcon } from './WhatsApp.astro';
