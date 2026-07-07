@@ -58,6 +58,14 @@ const maintenanceWindows = getHomeStatusMaintenanceWindows(
 <style>
   .site-header {
     border-color: color-mix(in oklab, var(--color-border) 68%, transparent);
+    background: transparent;
+  }
+
+  .site-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
     background: color-mix(
       in oklab,
       var(--color-surface-raised) 74%,
@@ -69,6 +77,13 @@ const maintenanceWindows = getHomeStatusMaintenanceWindows(
       0 1px 0 color-mix(in oklab, var(--color-surface-raised) 54%, transparent);
     -webkit-backdrop-filter: saturate(145%) blur(4px);
     backdrop-filter: saturate(145%) blur(4px);
+    pointer-events: none;
+  }
+
+  @media (max-width: 47.999rem) {
+    .site-header {
+      position: relative;
+    }
   }
 
   .site-header-brand {
@@ -149,7 +164,7 @@ const maintenanceWindows = getHomeStatusMaintenanceWindows(
     border-radius: 1rem;
     background: color-mix(
       in oklab,
-      var(--color-surface-raised) 88%,
+      var(--color-surface-raised) 68%,
       transparent
     );
     padding: 0.5rem;
@@ -157,8 +172,8 @@ const maintenanceWindows = getHomeStatusMaintenanceWindows(
       inset 0 1px 0
         color-mix(in oklab, var(--color-surface-raised) 90%, transparent),
       0 1rem 2rem oklch(24% 0.04 145 / 0.12);
-    -webkit-backdrop-filter: saturate(150%) blur(16px);
-    backdrop-filter: saturate(150%) blur(16px);
+    -webkit-backdrop-filter: saturate(165%) blur(16px);
+    backdrop-filter: saturate(165%) blur(16px);
   }
 
   @media (min-width: 48rem) {

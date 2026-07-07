@@ -33,13 +33,13 @@ const dropdownButtonClass = isHero
   ? 'flex items-center gap-1.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-transparent'
   : 'site-nav-link flex items-center gap-1.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2';
 const dropdownMenuClass = isHero
-  ? 'home-hero-nav-submenu invisible pointer-events-none absolute right-0 top-full z-20 min-w-[11.75rem] -translate-y-1 pt-2 opacity-0 transition-[opacity,transform,visibility] duration-150 ease-out group-hover:visible group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100'
-  : 'site-nav-submenu invisible pointer-events-none absolute right-0 top-full z-20 min-w-[12rem] -translate-y-1 pt-2 opacity-0 transition-[opacity,transform,visibility] duration-150 ease-out group-hover:visible group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100';
+  ? 'home-hero-nav-submenu invisible pointer-events-none absolute left-0 top-full z-20 min-w-[11.75rem] -translate-y-1 pt-2 opacity-0 transition-[opacity,transform,visibility] duration-150 ease-out group-hover:visible group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100'
+  : 'site-nav-submenu invisible pointer-events-none absolute left-0 top-full z-20 min-w-[12rem] -translate-y-1 pt-2 opacity-0 transition-[opacity,transform,visibility] duration-150 ease-out group-hover:visible group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100';
 const submenuPanelClass = isHero
   ? 'rounded-xl border border-border bg-card px-1.5 py-1.5 shadow-[0_0.625rem_1.5rem_oklch(24%_0.04_145_/_0.08)]'
   : 'site-nav-glass-panel rounded-xl border px-1.5 py-1.5 shadow-[0_0.75rem_1.75rem_oklch(24%_0.04_145_/_0.1)]';
 const submenuLinkClass =
-  'block rounded-lg px-3 py-2 text-sm leading-5 text-foreground transition-colors hover:bg-primary-soft-2 focus-visible:bg-primary-soft-2 focus-visible:outline-none';
+  'block rounded-lg px-3 py-2 text-sm leading-5 text-foreground transition-colors focus-visible:outline-none';
 const statusLinkClass = isHero
   ? 'home-hero-status-link flex min-h-6 min-w-6 items-center justify-center gap-3 md:min-h-0 md:min-w-0 md:justify-start'
   : 'site-nav-link flex items-center gap-2 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2';
@@ -172,7 +172,9 @@ const statusLinkClass = isHero
     color: var(--color-primary-hover);
   }
 
-  .site-nav-submenu a:is(:hover, :focus-visible) {
+  .site-nav-submenu a:is(:hover, :focus-visible),
+  .home-hero-nav-submenu a:is(:hover, :focus-visible) {
+    background: color-mix(in oklab, var(--color-primary-soft) 82%, transparent);
     color: var(--color-foreground);
   }
 
@@ -180,15 +182,15 @@ const statusLinkClass = isHero
     border-color: color-mix(in oklab, var(--color-border) 72%, transparent);
     background: color-mix(
       in oklab,
-      var(--color-surface-raised) 86%,
+      var(--color-surface-raised) 68%,
       transparent
     );
     box-shadow:
       inset 0 1px 0
         color-mix(in oklab, var(--color-surface-raised) 90%, transparent),
       0 0.75rem 1.75rem oklch(24% 0.04 145 / 0.1);
-    -webkit-backdrop-filter: saturate(150%) blur(16px);
-    backdrop-filter: saturate(150%) blur(16px);
+    -webkit-backdrop-filter: saturate(165%) blur(16px);
+    backdrop-filter: saturate(165%) blur(16px);
   }
 
   .site-nav-dropdown[data-open] .site-nav-submenu,
@@ -230,7 +232,7 @@ const statusLinkClass = isHero
   }
 
   .site-nav-mobile-link:is(:hover, :focus-visible) {
-    background: var(--color-primary-soft-2);
+    background: color-mix(in oklab, var(--color-primary-soft) 82%, transparent);
     color: var(--color-primary-hover);
     outline: none;
   }
