@@ -77,7 +77,7 @@ const schema = contactPageSchema({
     </header>
 
     <article class="space-y-8 px-5 md:px-6">
-      <ContactMethods contacts={contact.contacts} />
+      <ContactMethods contacts={contact.contacts} location={contact.location} />
       <div class={CONTACTS_PROSE} set:html={bodyHtml} />
     </article>
   </main>

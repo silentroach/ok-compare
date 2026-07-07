@@ -1,30 +1,47 @@
 ---
-import type { ContactContacts } from '@/lib/contacts/types';
-import { contactMethods } from '@/lib/contacts/view';
+import type { ContactContacts, ContactLocation } from '@/lib/contacts/types';
+import { contactMethods, contactPlace } from '@/lib/contacts/view';
 
 interface Props {
   readonly contacts: ContactContacts;
+  readonly location?: ContactLocation;
 }
 
-const { contacts } = Astro.props;
+const { contacts, location } = Astro.props;
 const methods = contactMethods(contacts);
+const place = contactPlace(location);
+const heading = place ? 'Контакты и адрес' : 'Способы связи';
 ---
 
-<section
-  aria-labelledby="contact-methods"
-  class="ui-shell max-w-[65ch] px-5 py-5 md:px-6 md:py-6"
->
-  <h2
-    id="contact-methods"
-    class="font-body text-xl font-bold tracking-tight text-foreground"
-  >
-    Способы связи
+<section aria-labelledby="contact-methods" class="max-w-[65ch]">
+  <h2 id="contact-methods" class="sr-only">
+    {heading}
   </h2>
-  <dl class="mt-4 divide-y divide-border">
+  <dl class="divide-y divide-border">
+    {
+      place ? (
+        <div class="grid gap-1 py-3 sm:grid-cols-[8rem_minmax(0,1fr)] sm:items-start sm:gap-4">
+          <dt class="text-sm font-semibold leading-7 text-muted-foreground">
+            {place.label}
+          </dt>
+          <dd class="text-base leading-7 text-foreground">
+            <a href={place.href} class="ui-link font-semibold">
+              {place.title}
+            </a>
+            {place.address ? (
+              <p class="mt-1 text-sm leading-6 text-muted-foreground">
+                {place.address}
+              </p>
+            ) : null}
+          </dd>
+        </div>
+      ) : null
+    }
+
     {
       methods.map((method) => (
-        <div class="grid gap-1 py-3 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-4">
-          <dt class="text-sm font-semibold text-muted-foreground">
+        <div class="grid gap-1 py-3 sm:grid-cols-[8rem_minmax(0,1fr)] sm:items-start sm:gap-4">
+          <dt class="text-sm font-semibold leading-7 text-muted-foreground">
             {method.label}
           </dt>
           <dd class="text-base leading-7 text-foreground">

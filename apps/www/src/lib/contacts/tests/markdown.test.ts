@@ -26,6 +26,11 @@ const contact = {
     telegram: 'https://t.me/example',
     email: 'team@example.com',
   },
+  location: {
+    title: 'Золото Сибири',
+    url: 'https://yandex.ru/maps/-/CTq-BEOk',
+    address: 'Пионерская ул., 21, пгт Малино',
+  },
   hasDetailPage: true,
   url: '/sarafan/fence/ivan-petrov-fence/',
   markdownUrl: '/sarafan/fence/ivan-petrov-fence/index.md',
@@ -96,6 +101,9 @@ describe('contacts markdown companions', () => {
     );
     expect(markdown).toContain('Телефон: [+7 900 000-00-00](tel:+79000000000)');
     expect(markdown).toContain(
+      'Адрес: [Золото Сибири](https://yandex.ru/maps/-/CTq-BEOk) — Пионерская ул., 21, пгт Малино',
+    );
+    expect(markdown).toContain(
       '- Сергей\n  - Телефон: [+7 985 774-75-04](tel:+79857747504)',
     );
   });
@@ -111,8 +119,9 @@ describe('contacts markdown companions', () => {
 
       # Иван Петров
 
-      ## Способы связи
+      ## Контакты и адрес
 
+      - Адрес: [Золото Сибири](https://yandex.ru/maps/-/CTq-BEOk) — Пионерская ул., 21, пгт Малино
       - Телефон: [+7 900 000-00-00](tel:+79000000000)
       - Telegram: <https://t.me/example>
       - Email: <team@example.com>

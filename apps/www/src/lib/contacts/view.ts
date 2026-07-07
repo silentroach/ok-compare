@@ -1,7 +1,7 @@
 import { extractFirstMarkdownText } from '@shelkovo/markdown';
 
 import type { ContactCategory } from './schema';
-import type { Contact, ContactContacts } from './types';
+import type { Contact, ContactContacts, ContactLocation } from './types';
 
 export interface ContactMethod {
   readonly type: keyof ContactContacts;
@@ -10,12 +10,21 @@ export interface ContactMethod {
   readonly href?: string;
 }
 
+export interface ContactPlace {
+  readonly label: string;
+  readonly title: string;
+  readonly href: string;
+  readonly address?: string;
+}
+
 const CONTACT_CATEGORY_LABELS: Record<ContactCategory, string> = {
   fence: 'Забор',
+  garden: 'Сад и участок',
 };
 
 const CONTACT_CATEGORY_EMOJI: Record<ContactCategory, string> = {
   fence: '🚧',
+  garden: '🌿',
 };
 
 export const CONTACTS_PROSE = 'ui-prose max-w-[65ch]';
@@ -97,3 +106,15 @@ export const contactMethods = (
     ),
     method('website', 'Сайт', contacts.website, contacts.website),
   ].filter((item): item is ContactMethod => Boolean(item));
+
+export const contactPlace = (
+  location?: ContactLocation,
+): ContactPlace | undefined =>
+  location
+    ? {
+        label: 'Адрес',
+        title: location.title,
+        href: location.url,
+        address: location.address,
+      }
+    : undefined;

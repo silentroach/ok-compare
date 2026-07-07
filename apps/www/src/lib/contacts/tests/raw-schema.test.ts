@@ -55,6 +55,31 @@ describe('RawContactSchema', () => {
     `);
   });
 
+  it('accepts an optional location link', () => {
+    expect(
+      RawContactSchema.parse({
+        title: 'Кора и земля',
+        slug: 'bark-and-soil',
+        category: 'garden',
+        updated_at: '2026-07-07',
+        contacts: {
+          phone: '+7 900 000-00-00',
+        },
+        location: {
+          title: 'Золото Сибири',
+          url: 'https://yandex.ru/maps/-/CTq-BEOk',
+          address: 'Пионерская ул., 21, пгт Малино',
+        },
+      }).location,
+    ).toMatchInlineSnapshot(`
+      {
+        "address": "Пионерская ул., 21, пгт Малино",
+        "title": "Золото Сибири",
+        "url": "https://yandex.ru/maps/-/CTq-BEOk",
+      }
+    `);
+  });
+
   it('rejects invalid slugs, impossible dates and unknown categories', () => {
     const base = {
       title: 'Иван Петров',
@@ -110,6 +135,13 @@ describe('RawContactSchema', () => {
       RawContactSchema.safeParse({
         ...base,
         contacts: { telegram: 'javascript:alert(1)' },
+      }).success,
+    ).toBe(false);
+    expect(
+      RawContactSchema.safeParse({
+        ...base,
+        contacts: { phone: '+7 900 000-00-00' },
+        location: { title: 'Карта', url: 'http://example.com' },
       }).success,
     ).toBe(false);
   });

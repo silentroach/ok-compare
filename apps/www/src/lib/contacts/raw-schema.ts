@@ -63,6 +63,14 @@ const contacts = z
     });
   });
 
+const location = z
+  .object({
+    title: nonBlankText,
+    url: contactUrl,
+    address: nonBlankText.optional(),
+  })
+  .strict();
+
 const seo = z
   .object({
     description: nonBlankText.optional(),
@@ -79,6 +87,7 @@ export const RawContactSchema = z
     updated_at: contactDate('updated_at'),
     summary: nonBlankText.optional(),
     contacts,
+    location: location.optional(),
     seo: seo.optional(),
   })
   .strict();

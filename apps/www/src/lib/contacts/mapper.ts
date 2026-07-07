@@ -6,7 +6,7 @@ import type { SiteMentionRegistry } from '@/lib/mentions';
 
 import type { ContactEntry } from './load';
 import { contactCanonical, contactMarkdownUrl, contactUrl } from './routes';
-import type { Contact, ContactContacts } from './types';
+import type { Contact, ContactContacts, ContactLocation } from './types';
 
 const preprocessContactContent = (
   markdown: string,
@@ -35,6 +35,17 @@ const mapContacts = (
   website: contacts.website,
 });
 
+const mapLocation = (
+  location: ContactEntry['data']['location'],
+): ContactLocation | undefined =>
+  location
+    ? {
+        title: location.title,
+        url: location.url,
+        address: location.address,
+      }
+    : undefined;
+
 export const mapRawContact = (
   entry: ContactEntry,
   mentionRegistry?: SiteMentionRegistry,
@@ -62,6 +73,7 @@ export const mapRawContact = (
     updatedIso: entry.data.updated_at,
     summary: entry.data.summary,
     contacts: mapContacts(entry.data.contacts),
+    location: mapLocation(entry.data.location),
     seo: entry.data.seo,
     body: body.markdown,
     mentions: body.mentions,

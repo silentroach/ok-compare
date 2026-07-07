@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { contactMethods, formatContactCategory } from '../view';
+import { contactMethods, contactPlace, formatContactCategory } from '../view';
 
 describe('contact view helpers', () => {
   it('formats category labels', () => {
     expect(formatContactCategory('fence')).toBe('Забор');
+    expect(formatContactCategory('garden')).toBe('Сад и участок');
   });
 
   it('builds display methods in stable order with safe hrefs', () => {
@@ -49,6 +50,23 @@ describe('contact view helpers', () => {
           "value": "https://example.com",
         },
       ]
+    `);
+  });
+
+  it('builds a display place from location data', () => {
+    expect(
+      contactPlace({
+        title: 'Золото Сибири',
+        url: 'https://yandex.ru/maps/-/CTq-BEOk',
+        address: 'Пионерская ул., 21, пгт Малино',
+      }),
+    ).toMatchInlineSnapshot(`
+      {
+        "address": "Пионерская ул., 21, пгт Малино",
+        "href": "https://yandex.ru/maps/-/CTq-BEOk",
+        "label": "Адрес",
+        "title": "Золото Сибири",
+      }
     `);
   });
 });

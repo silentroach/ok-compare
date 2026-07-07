@@ -24,8 +24,10 @@ import {
   CONTACTS_INTRO_PREFIX,
   CONTACTS_INTRO_SUFFIX,
   type ContactMethod,
+  type ContactPlace,
   contactExcerpt,
   contactMethods,
+  contactPlace,
   formatContactCategory,
 } from './view';
 
@@ -67,6 +69,24 @@ const methodLine = (method: ContactMethod): MarkdownListItem =>
     ),
   ]);
 
+const placeLine = (place: ContactPlace): MarkdownListItem =>
+  md.listItem([
+    md.paragraph([
+      md.text(`${place.label}: `),
+      md.link(place.href, place.title),
+      ...(place.address ? [md.text(` — ${place.address}`)] : []),
+    ]),
+  ]);
+
+const contactInfoLines = (contact: Contact): readonly MarkdownListItem[] => {
+  const place = contactPlace(contact.location);
+
+  return [
+    ...(place ? [placeLine(place)] : []),
+    ...contactMethods(contact.contacts).map(methodLine),
+  ];
+};
+
 const contactTitle = (contact: Contact) =>
   contact.hasDetailPage
     ? [md.link(abs(contact.markdownUrl), contact.title)]
@@ -79,7 +99,7 @@ const contactLine = (contact: Contact): MarkdownListItem => {
       ...contactTitle(contact),
       ...(excerpt ? [md.text(` — ${excerpt}`)] : []),
     ]),
-    md.list(contactMethods(contact.contacts).map(methodLine)),
+    md.list(contactInfoLines(contact)),
   ];
 
   return md.listItem(children);
@@ -137,8 +157,8 @@ export const buildContactMarkdown = (contact: ContactWithDetail): string =>
       frontmatter: contactFrontmatter(contact),
       children: [
         md.heading(1, contact.title),
-        md.heading(2, 'Способы связи'),
-        md.list(contactMethods(contact.contacts).map(methodLine)),
+        md.heading(2, contact.location ? 'Контакты и адрес' : 'Способы связи'),
+        md.list(contactInfoLines(contact)),
         ...parseMarkdownFragment(contact.body.trim()),
       ],
     }),

@@ -15,6 +15,12 @@ export interface ContactSeo {
   readonly description?: string;
 }
 
+export interface ContactLocation {
+  readonly title: string;
+  readonly url: string;
+  readonly address?: string;
+}
+
 interface ContactBase {
   readonly slug: string;
   readonly title: string;
@@ -23,6 +29,7 @@ interface ContactBase {
   readonly updatedIso: string;
   readonly summary?: string;
   readonly contacts: ContactContacts;
+  readonly location?: ContactLocation;
   readonly seo?: ContactSeo;
   readonly body: PreprocessedSiteMarkdownBody;
   readonly mentions: readonly EntityMentionTarget[];

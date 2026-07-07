@@ -1,4 +1,4 @@
-export const CONTACT_CATEGORIES = ['fence'] as const;
+export const CONTACT_CATEGORIES = ['fence', 'garden'] as const;
 export type ContactCategory = (typeof CONTACT_CATEGORIES)[number];
 
 export const CONTACT_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
