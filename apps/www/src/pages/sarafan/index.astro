@@ -13,12 +13,13 @@ import { contactsCollectionPageSchema } from '@/lib/contacts/seo';
 import {
   CONTACTS_CHAT_LABEL,
   CONTACTS_CHAT_URL,
-  CONTACTS_EMPTY_LINK_LABEL,
-  CONTACTS_EMPTY_LINK_URL,
-  CONTACTS_EMPTY_PREFIX,
-  CONTACTS_EMPTY_SUFFIX,
+  CONTACTS_EMPTY_MESSAGE,
   CONTACTS_INTRO_PREFIX,
   CONTACTS_INTRO_SUFFIX,
+  CONTACTS_NEIGHBOR_TABLE_LABEL,
+  CONTACTS_NEIGHBOR_TABLE_PREFIX,
+  CONTACTS_NEIGHBOR_TABLE_SUFFIX,
+  CONTACTS_NEIGHBOR_TABLE_URL,
   formatContactCategory,
   formatContactCategoryEmoji,
 } from '@/lib/contacts/view';
@@ -62,7 +63,10 @@ const sectionId = (category: string): string => category;
             {CONTACTS_INTRO_PREFIX}<a
               href={CONTACTS_CHAT_URL}
               class="site-text-link">{CONTACTS_CHAT_LABEL}</a
-            >{CONTACTS_INTRO_SUFFIX}
+            >{CONTACTS_INTRO_SUFFIX}{CONTACTS_NEIGHBOR_TABLE_PREFIX}<a
+              href={CONTACTS_NEIGHBOR_TABLE_URL}
+              class="site-text-link">{CONTACTS_NEIGHBOR_TABLE_LABEL}</a
+            >{CONTACTS_NEIGHBOR_TABLE_SUFFIX}
           </p>
         </div>
       </div>
@@ -121,11 +125,7 @@ const sectionId = (category: string): string => category;
         ) : (
           <div class="ui-shell px-5 py-6 md:px-6 md:py-7">
             <p class="ui-copy max-w-3xl text-muted-foreground">
-              {CONTACTS_EMPTY_PREFIX}
-              <a href={CONTACTS_EMPTY_LINK_URL} class="site-text-link">
-                {CONTACTS_EMPTY_LINK_LABEL}
-              </a>
-              {CONTACTS_EMPTY_SUFFIX}
+              {CONTACTS_EMPTY_MESSAGE}
             </p>
           </div>
         )

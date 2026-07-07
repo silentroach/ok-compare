@@ -2,6 +2,22 @@
   background: var(--color-bg);
 }
 
+.ui-root-site.site-has-header .ui-page-header {
+  padding-top: 1rem;
+}
+
+@media (min-width: 48rem) {
+  .ui-root-site.site-has-header .ui-page-header {
+    padding-top: 1rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .ui-root-site.site-has-header .ui-page-header {
+    padding-top: 1.25rem;
+  }
+}
+
 .site-navigation-progress {
   position: fixed;
   inset: 0 0 auto;

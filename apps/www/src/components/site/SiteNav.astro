@@ -1,0 +1,314 @@
+---
+import type { HomeStatusState } from '@/lib/home/status.types';
+
+type SiteNavVariant = 'header' | 'hero' | 'mobile';
+
+interface Props {
+  readonly variant?: SiteNavVariant;
+  readonly statusState: HomeStatusState;
+  readonly statusAriaLabel: string;
+  readonly tariffMenuId?: string;
+  readonly ariaLabel?: string;
+}
+
+const {
+  variant = 'header',
+  statusState,
+  statusAriaLabel,
+  tariffMenuId = variant === 'hero'
+    ? 'home-hero-tariff-menu'
+    : 'site-header-tariff-menu',
+  ariaLabel = 'Главное меню',
+} = Astro.props;
+
+const isHero = variant === 'hero';
+const isMobile = variant === 'mobile';
+const navClass = isHero
+  ? 'home-hero-nav flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-sm font-medium md:flex-nowrap md:gap-10 md:text-base'
+  : 'site-nav site-nav-header flex items-center justify-end gap-5 text-sm font-semibold lg:gap-7';
+const dropdownClass = isHero
+  ? 'home-hero-nav-dropdown site-nav-dropdown group relative'
+  : 'site-nav-dropdown group relative';
+const dropdownButtonClass = isHero
+  ? 'flex items-center gap-1.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-transparent'
+  : 'site-nav-link flex items-center gap-1.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2';
+const dropdownMenuClass = isHero
+  ? 'home-hero-nav-submenu invisible pointer-events-none absolute right-0 top-full z-20 min-w-[11.75rem] -translate-y-1 pt-2 opacity-0 transition-[opacity,transform,visibility] duration-150 ease-out group-hover:visible group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100'
+  : 'site-nav-submenu invisible pointer-events-none absolute right-0 top-full z-20 min-w-[12rem] -translate-y-1 pt-2 opacity-0 transition-[opacity,transform,visibility] duration-150 ease-out group-hover:visible group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100';
+const submenuPanelClass = isHero
+  ? 'rounded-xl border border-border bg-card px-1.5 py-1.5 shadow-[0_0.625rem_1.5rem_oklch(24%_0.04_145_/_0.08)]'
+  : 'site-nav-glass-panel rounded-xl border px-1.5 py-1.5 shadow-[0_0.75rem_1.75rem_oklch(24%_0.04_145_/_0.1)]';
+const submenuLinkClass =
+  'block rounded-lg px-3 py-2 text-sm leading-5 text-foreground transition-colors hover:bg-primary-soft-2 focus-visible:bg-primary-soft-2 focus-visible:outline-none';
+const statusLinkClass = isHero
+  ? 'home-hero-status-link flex min-h-6 min-w-6 items-center justify-center gap-3 md:min-h-0 md:min-w-0 md:justify-start'
+  : 'site-nav-link flex items-center gap-2 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2';
+---
+
+{
+  isMobile ? (
+    <nav aria-label={ariaLabel} class="site-nav site-nav-mobile">
+      <a href="/news/" class="site-nav-mobile-link">
+        Новости
+      </a>
+
+      <div class="site-nav-mobile-group">
+        <p class="site-nav-mobile-label">Тариф 815</p>
+        <a
+          href="/815/compare/"
+          class="site-nav-mobile-link site-nav-mobile-nested"
+        >
+          Сравнение тарифов
+        </a>
+        <a
+          href="/815/regulation/"
+          class="site-nav-mobile-link site-nav-mobile-nested"
+        >
+          Регламент
+        </a>
+      </div>
+
+      <a href="/kb/" class="site-nav-mobile-link">
+        База знаний
+      </a>
+      <a href="/sarafan/" class="site-nav-mobile-link">
+        Сарафан
+      </a>
+      <a href="/reviews/" class="site-nav-mobile-link">
+        Отзывы
+      </a>
+      <a
+        href="/status/"
+        aria-label={statusAriaLabel}
+        class="site-nav-mobile-link site-nav-mobile-status-link"
+        data-home-status-link
+        data-home-status-state={statusState}
+      >
+        <span>Статус</span>
+        <span
+          aria-hidden="true"
+          data-home-status-dot
+          class="site-nav-status-dot inline-block h-2.5 w-2.5 rounded-full"
+        />
+      </a>
+    </nav>
+  ) : (
+    <nav aria-label={ariaLabel} class={navClass}>
+      <a href="/news/" class={isHero ? undefined : 'site-nav-link'}>
+        Новости
+      </a>
+
+      <div class={dropdownClass} data-site-nav-dropdown>
+        <button
+          type="button"
+          aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls={tariffMenuId}
+          data-site-nav-dropdown-button
+          class={dropdownButtonClass}
+        >
+          <span>Тариф 815</span>
+          <span
+            aria-hidden="true"
+            data-site-nav-dropdown-icon
+            class="size-0 border-x-[0.25rem] border-t-[0.3125rem] border-x-transparent border-t-current opacity-70 transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180"
+          />
+        </button>
+        <div
+          id={tariffMenuId}
+          data-site-nav-dropdown-menu
+          class={dropdownMenuClass}
+        >
+          <div class={submenuPanelClass}>
+            <a href="/815/compare/" class={submenuLinkClass}>
+              Сравнение тарифов
+            </a>
+            <a href="/815/regulation/" class={submenuLinkClass}>
+              Регламент
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <a href="/kb/" class={isHero ? undefined : 'site-nav-link'}>
+        База знаний
+      </a>
+      <a href="/sarafan/" class={isHero ? undefined : 'site-nav-link'}>
+        Сарафан
+      </a>
+      <a href="/reviews/" class={isHero ? undefined : 'site-nav-link'}>
+        Отзывы
+      </a>
+      <a
+        href="/status/"
+        aria-label={statusAriaLabel}
+        class={statusLinkClass}
+        data-home-status-link
+        data-home-status-state={statusState}
+      >
+        <span class={isHero ? 'hidden md:inline' : undefined}>Статус</span>
+        <span
+          aria-hidden="true"
+          data-home-status-dot
+          class="site-nav-status-dot home-hero-status-dot inline-block h-3 w-3 rounded-full"
+        />
+      </a>
+    </nav>
+  )
+}
+
+<style>
+  .site-nav-header {
+    color: var(--color-foreground);
+  }
+
+  .site-nav-link {
+    transition:
+      color 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  .site-nav-link:is(:hover, :focus-visible) {
+    color: var(--color-primary-hover);
+  }
+
+  .site-nav-submenu a:is(:hover, :focus-visible) {
+    color: var(--color-foreground);
+  }
+
+  .site-nav-glass-panel {
+    border-color: color-mix(in oklab, var(--color-border) 72%, transparent);
+    background: color-mix(
+      in oklab,
+      var(--color-surface-raised) 86%,
+      transparent
+    );
+    box-shadow:
+      inset 0 1px 0
+        color-mix(in oklab, var(--color-surface-raised) 90%, transparent),
+      0 0.75rem 1.75rem oklch(24% 0.04 145 / 0.1);
+    -webkit-backdrop-filter: saturate(150%) blur(16px);
+    backdrop-filter: saturate(150%) blur(16px);
+  }
+
+  .site-nav-dropdown[data-open] .site-nav-submenu,
+  .home-hero-nav-dropdown[data-open] .home-hero-nav-submenu {
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .site-nav-dropdown[data-open] [data-site-nav-dropdown-icon] {
+    transform: rotate(180deg);
+  }
+
+  .site-nav-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .site-nav-mobile-link,
+  .site-nav-mobile-label {
+    display: flex;
+    min-height: 2.5rem;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    color: var(--color-foreground);
+  }
+
+  .site-nav-mobile-link {
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .site-nav-mobile-link:is(:hover, :focus-visible) {
+    background: var(--color-primary-soft-2);
+    color: var(--color-primary-hover);
+    outline: none;
+  }
+
+  .site-nav-mobile-label {
+    min-height: 2rem;
+    padding-bottom: 0.25rem;
+    color: var(--color-muted-foreground);
+    font-size: 0.8125rem;
+    letter-spacing: 0.02em;
+  }
+
+  .site-nav-mobile-group {
+    border-block: 1px solid
+      color-mix(in oklab, var(--color-border) 72%, transparent);
+    padding-block: 0.375rem;
+  }
+
+  .site-nav-mobile-nested {
+    margin-left: 0.5rem;
+    padding-left: 1rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+  }
+
+  .site-nav-mobile-status-link {
+    justify-content: space-between;
+  }
+
+  [data-home-status-state='green'] .site-nav-status-dot {
+    background: var(--color-success);
+  }
+
+  [data-home-status-state='amber'] .site-nav-status-dot {
+    background: var(--color-warning);
+  }
+
+  [data-home-status-state='red'] .site-nav-status-dot {
+    background: var(--color-danger);
+  }
+
+  .home-hero-nav {
+    color: var(--color-text);
+    text-shadow: 0 0.0625rem 1rem
+      color-mix(in oklab, var(--color-bg) 72%, transparent);
+  }
+
+  .home-hero-nav a,
+  .home-hero-nav button {
+    transition:
+      color 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  .home-hero-nav a:is(:hover, :focus-visible),
+  .home-hero-nav button:is(:hover, :focus-visible) {
+    opacity: 0.78;
+  }
+
+  .home-hero-nav-submenu {
+    color: var(--color-foreground);
+    text-shadow: none;
+  }
+
+  .home-hero-nav-submenu a:is(:hover, :focus-visible) {
+    opacity: 1;
+  }
+
+  .home-hero-status-dot {
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-bg) 72%, transparent);
+  }
+
+  :global(.home-hero[data-home-hero-mode='night']) .home-hero-nav {
+    color: oklch(97% 0.004 125);
+    text-shadow: 0 0.0625rem 1rem oklch(0% 0 0 / 0.76);
+  }
+
+  :global(.home-hero[data-home-hero-mode='night']) .home-hero-status-dot {
+    box-shadow: 0 0 0 1px oklch(97% 0.004 125 / 0.62);
+  }
+</style>

@@ -11,11 +11,17 @@ interface Props {
 
 const { items, linkLast = false } = Astro.props;
 const lastIndex = items.length - 1;
+const mobileItems = items.slice(0, lastIndex);
+const mobileShowsOnlyHome =
+  mobileItems.length === 1 && mobileItems[0]?.href === '/';
 ---
 
 {
   items.length > 0 && (
-    <nav aria-label="Хлебные крошки">
+    <nav
+      aria-label="Хлебные крошки"
+      class={mobileShowsOnlyHome ? 'hidden sm:block' : undefined}
+    >
       <ol class="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-muted-foreground md:gap-x-2">
         {items.map((item, index) => (
           <li

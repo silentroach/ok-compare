@@ -12,6 +12,7 @@ import FontPreloads from '@shelkovo/ui/FontPreloads.astro';
 import type { SchemaDoc } from '@shelkovo/seo';
 import SiteFooter from '@shelkovo/ui/SiteFooter.astro';
 import { browserColor, themeColor } from '@shelkovo/ui/theme';
+import SiteHeader from '@/components/site/SiteHeader.astro';
 import { absoluteUrl, canon } from '../lib/site';
 
 interface Props {
@@ -26,7 +27,11 @@ interface Props {
   schema?: SchemaDoc | readonly SchemaDoc[];
   preconnectYandexMaps?: boolean;
   bodyClass?: string;
+  showSiteHeader?: boolean;
 }
+
+const defaultShowSiteHeader =
+  Astro.url.pathname !== '/' && !Astro.url.pathname.startsWith('/815/');
 
 const {
   title = 'Шелково Онлайн',
@@ -40,6 +45,7 @@ const {
   schema,
   preconnectYandexMaps = false,
   bodyClass,
+  showSiteHeader = defaultShowSiteHeader,
 } = Astro.props;
 
 const canonical = canon(href ?? Astro.url.pathname);
@@ -56,6 +62,7 @@ const ymId = 108975391;
 const contentTransition = fade({ duration: '60ms' });
 const bodyClasses = [
   'ui-root-site',
+  showSiteHeader && 'site-has-header',
   bodyClass,
   'flex min-h-screen flex-col text-foreground',
 ]
@@ -149,6 +156,7 @@ const bodyClasses = [
         </noscript>
       )
     }
+    {showSiteHeader && <SiteHeader />}
     <div
       class="flex-1"
       transition:name="site-content"

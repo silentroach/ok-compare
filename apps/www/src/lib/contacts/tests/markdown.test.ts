@@ -72,11 +72,11 @@ describe('contacts markdown companions', () => {
     expect(markdown).toMatchInlineSnapshot(`
       "# Сарафан
 
-      Сарафан собирается из опыта соседей в [чате жителей Шелково](https://t.me/shelkovoecoclub): кого позвали, как прошла работа, к кому готовы обратиться снова. Лучше меньше контактов, зато с понятным живым контекстом.
+      Сарафан собирается из опыта соседей в [чате жителей Шелково](https://t.me/shelkovoecoclub): кого позвали, как прошла работа, к кому готовы обратиться снова. Лучше меньше контактов, зато с понятным живым контекстом. Также есть [табличка из соседнего чата Гринвуда](https://docs.google.com/spreadsheets/d/1ckmDY1B54Mx9UB1chbybwdbPTF87R--uv2li7VhCfg8/edit?usp=drivesdk).
 
       ## Категории
 
-      Пока здесь ничего нет. Если ищете подрядчика сейчас, можно посмотреть [таблицу контактов из соседнего чата Гринвуда](https://docs.google.com/spreadsheets/d/1ckmDY1B54Mx9UB1chbybwdbPTF87R--uv2li7VhCfg8/edit?usp=drivesdk).
+      Пока здесь ничего нет. Добавим контакты, когда появится живой опыт соседей.
       "
     `);
     expect(markdown).not.toMatch(/apps\/www|src\/|repo:/u);

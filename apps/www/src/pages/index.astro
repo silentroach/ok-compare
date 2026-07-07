@@ -4,6 +4,7 @@ import type { ImageMetadata } from 'astro';
 import type { SchemaDoc } from '@shelkovo/seo';
 import dayHero from '@/assets/home/home-hero-day.png';
 import nightHero from '@/assets/home/home-hero-night.png';
+import SiteNav from '@/components/site/SiteNav.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getHomeHeroMode } from '@/lib/home/hero';
 import {
@@ -110,70 +111,12 @@ const heroImage = heroMode === 'day' ? dayHeroImage : nightHeroImage;
           <div
             class="flex w-full justify-end pr-4 pt-4 md:pr-6 md:pt-5 lg:pr-8 lg:pt-6"
           >
-            <nav
-              class="home-hero-nav flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-sm font-medium md:flex-nowrap md:gap-10 md:text-base"
-            >
-              <a href="/news/">Новости</a>
-              <div
-                class="home-hero-nav-dropdown group relative"
-                data-home-nav-dropdown
-              >
-                <button
-                  type="button"
-                  aria-haspopup="true"
-                  aria-expanded="false"
-                  aria-controls="home-hero-tariff-menu"
-                  data-home-nav-dropdown-button
-                  class="flex items-center gap-1.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-transparent"
-                >
-                  <span>Тариф 815</span>
-                  <span
-                    aria-hidden="true"
-                    data-home-nav-dropdown-icon
-                    class="size-0 border-x-[0.25rem] border-t-[0.3125rem] border-x-transparent border-t-current opacity-70 transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180"
-                  ></span>
-                </button>
-                <div
-                  id="home-hero-tariff-menu"
-                  data-home-nav-dropdown-menu
-                  class="home-hero-nav-submenu invisible pointer-events-none absolute right-0 top-full z-20 min-w-[11.75rem] -translate-y-1 pt-2 opacity-0 transition-[opacity,transform,visibility] duration-150 ease-out group-hover:visible group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100"
-                >
-                  <div
-                    class="rounded-xl border border-border bg-card px-1.5 py-1.5 shadow-[0_0.625rem_1.5rem_oklch(24%_0.04_145_/_0.08)]"
-                  >
-                    <a
-                      href="/815/compare/"
-                      class="block rounded-lg px-3 py-2 text-sm leading-5 text-foreground transition-colors hover:bg-primary-soft-2 focus-visible:bg-primary-soft-2 focus-visible:outline-none"
-                    >
-                      Сравнение тарифов
-                    </a>
-                    <a
-                      href="/815/regulation/"
-                      class="block rounded-lg px-3 py-2 text-sm leading-5 text-foreground transition-colors hover:bg-primary-soft-2 focus-visible:bg-primary-soft-2 focus-visible:outline-none"
-                    >
-                      Регламент
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <a href="/kb/">База знаний</a>
-              <a href="/sarafan/">Сарафан</a>
-              <a href="/reviews/">Отзывы</a>
-              <a
-                href="/status/"
-                aria-label={getHomeStatusAriaLabel(homeStatusState)}
-                class="home-hero-status-link flex min-h-6 min-w-6 items-center justify-center gap-3 md:min-h-0 md:min-w-0 md:justify-start"
-                data-home-status-link
-                data-home-status-state={homeStatusState}
-              >
-                <span class="hidden md:inline">Статус</span>
-                <span
-                  aria-hidden="true"
-                  data-home-status-dot
-                  class="home-hero-status-dot inline-block h-3 w-3 rounded-full"
-                ></span>
-              </a>
-            </nav>
+            <SiteNav
+              variant="hero"
+              statusState={homeStatusState}
+              statusAriaLabel={getHomeStatusAriaLabel(homeStatusState)}
+              tariffMenuId="home-hero-tariff-menu"
+            />
             <script
               type="application/json"
               data-home-status-maintenance-windows
@@ -183,93 +126,8 @@ const heroImage = heroMode === 'day' ? dayHeroImage : nightHeroImage;
         </div>
         <script>
           import { installHomeHeroHydration } from '@/lib/home/hero';
-          import { installHomeStatusHydration } from '@/lib/home/status';
-
-          const hydrateHomeNavDropdown = () => {
-            const dropdown = document.querySelector('[data-home-nav-dropdown]');
-            if (!(dropdown instanceof HTMLElement)) return;
-            if (dropdown.dataset.homeNavDropdownHydrated) return;
-            dropdown.dataset.homeNavDropdownHydrated = 'true';
-
-            const button = dropdown.querySelector(
-              '[data-home-nav-dropdown-button]',
-            );
-            if (!(button instanceof HTMLButtonElement)) return;
-            const controller = new AbortController();
-            const { signal } = controller;
-
-            const setOpen = (isOpen) => {
-              dropdown.toggleAttribute('data-open', isOpen);
-              button.setAttribute('aria-expanded', String(isOpen));
-            };
-
-            button.addEventListener(
-              'click',
-              () => {
-                setOpen(!dropdown.hasAttribute('data-open'));
-              },
-              { signal },
-            );
-
-            dropdown.addEventListener(
-              'focusout',
-              (event) => {
-                if (
-                  event.relatedTarget instanceof Node &&
-                  dropdown.contains(event.relatedTarget)
-                ) {
-                  return;
-                }
-
-                setOpen(false);
-              },
-              { signal },
-            );
-
-            document.addEventListener(
-              'pointerdown',
-              (event) => {
-                if (!dropdown.hasAttribute('data-open')) return;
-                if (
-                  event.target instanceof Node &&
-                  dropdown.contains(event.target)
-                ) {
-                  return;
-                }
-
-                setOpen(false);
-              },
-              { signal },
-            );
-
-            document.addEventListener(
-              'keydown',
-              (event) => {
-                if (
-                  event.key !== 'Escape' ||
-                  !dropdown.hasAttribute('data-open')
-                ) {
-                  return;
-                }
-
-                setOpen(false);
-                button.focus();
-              },
-              { signal },
-            );
-
-            document.addEventListener(
-              'astro:before-swap',
-              () => controller.abort(),
-              { once: true, signal },
-            );
-          };
 
           installHomeHeroHydration();
-          installHomeStatusHydration();
-          hydrateHomeNavDropdown();
-          document.addEventListener('astro:after-swap', hydrateHomeNavDropdown);
-          document.addEventListener('astro:page-load', hydrateHomeNavDropdown);
         </script>
       </div>
     </section>
@@ -321,60 +179,6 @@ const heroImage = heroMode === 'day' ? dayHeroImage : nightHeroImage;
     );
   }
 
-  .home-hero-nav {
-    color: var(--color-text);
-    text-shadow: 0 0.0625rem 1rem
-      color-mix(in oklab, var(--color-bg) 72%, transparent);
-  }
-
-  .home-hero-nav a,
-  .home-hero-nav button {
-    transition:
-      color 0.2s ease,
-      opacity 0.2s ease;
-  }
-
-  .home-hero-nav a:is(:hover, :focus-visible),
-  .home-hero-nav button:is(:hover, :focus-visible) {
-    opacity: 0.78;
-  }
-
-  .home-hero-nav-submenu {
-    color: var(--color-foreground);
-    text-shadow: none;
-  }
-
-  .home-hero-nav-dropdown[data-open] .home-hero-nav-submenu {
-    visibility: visible;
-    pointer-events: auto;
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  .home-hero-nav-dropdown[data-open] [data-home-nav-dropdown-icon] {
-    transform: rotate(180deg);
-  }
-
-  .home-hero-nav-submenu a:is(:hover, :focus-visible) {
-    opacity: 1;
-  }
-
-  .home-hero-status-dot {
-    box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-bg) 72%, transparent);
-  }
-
-  .home-hero-status-link[data-home-status-state='green'] .home-hero-status-dot {
-    background: var(--color-success);
-  }
-
-  .home-hero-status-link[data-home-status-state='amber'] .home-hero-status-dot {
-    background: var(--color-warning);
-  }
-
-  .home-hero-status-link[data-home-status-state='red'] .home-hero-status-dot {
-    background: var(--color-danger);
-  }
-
   .home-hero[data-home-hero-mode='night'] .home-hero-overlay {
     background: linear-gradient(
       to bottom,
@@ -382,14 +186,5 @@ const heroImage = heroMode === 'day' ? dayHeroImage : nightHeroImage;
       oklch(5% 0.01 250 / 0.22) 58%,
       transparent
     );
-  }
-
-  .home-hero[data-home-hero-mode='night'] .home-hero-nav {
-    color: oklch(97% 0.004 125);
-    text-shadow: 0 0.0625rem 1rem oklch(0% 0 0 / 0.76);
-  }
-
-  .home-hero[data-home-hero-mode='night'] .home-hero-status-dot {
-    box-shadow: 0 0 0 1px oklch(97% 0.004 125 / 0.62);
   }
 </style>

@@ -35,14 +35,15 @@ export const CONTACTS_CHAT_URL = 'https://t.me/shelkovoecoclub';
 export const CONTACTS_INTRO_PREFIX = 'Сарафан собирается из опыта соседей в ';
 export const CONTACTS_INTRO_SUFFIX =
   ': кого позвали, как прошла работа, к кому готовы обратиться снова. Лучше меньше контактов, зато с понятным живым контекстом.';
-
-export const CONTACTS_EMPTY_PREFIX =
-  'Пока здесь ничего нет. Если ищете подрядчика сейчас, можно посмотреть ';
-export const CONTACTS_EMPTY_LINK_LABEL =
-  'таблицу контактов из соседнего чата Гринвуда';
-export const CONTACTS_EMPTY_LINK_URL =
+export const CONTACTS_NEIGHBOR_TABLE_PREFIX = ' Также есть ';
+export const CONTACTS_NEIGHBOR_TABLE_LABEL =
+  'табличка из соседнего чата Гринвуда';
+export const CONTACTS_NEIGHBOR_TABLE_URL =
   'https://docs.google.com/spreadsheets/d/1ckmDY1B54Mx9UB1chbybwdbPTF87R--uv2li7VhCfg8/edit?usp=drivesdk';
-export const CONTACTS_EMPTY_SUFFIX = '.';
+export const CONTACTS_NEIGHBOR_TABLE_SUFFIX = '.';
+
+export const CONTACTS_EMPTY_MESSAGE =
+  'Пока здесь ничего нет. Добавим контакты, когда появится живой опыт соседей.';
 
 const phoneHref = (phone: string): string =>
   `tel:${phone.replace(/[^+\d]/gu, '')}`;

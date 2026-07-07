@@ -17,12 +17,13 @@ import type {
 import {
   CONTACTS_CHAT_LABEL,
   CONTACTS_CHAT_URL,
-  CONTACTS_EMPTY_LINK_LABEL,
-  CONTACTS_EMPTY_LINK_URL,
-  CONTACTS_EMPTY_PREFIX,
-  CONTACTS_EMPTY_SUFFIX,
+  CONTACTS_EMPTY_MESSAGE,
   CONTACTS_INTRO_PREFIX,
   CONTACTS_INTRO_SUFFIX,
+  CONTACTS_NEIGHBOR_TABLE_LABEL,
+  CONTACTS_NEIGHBOR_TABLE_PREFIX,
+  CONTACTS_NEIGHBOR_TABLE_SUFFIX,
+  CONTACTS_NEIGHBOR_TABLE_URL,
   type ContactMethod,
   type ContactPlace,
   contactExcerpt,
@@ -46,19 +47,20 @@ const abs = (path: string): string => absoluteUrl(path);
 
 const chatLink = () => md.link(CONTACTS_CHAT_URL, CONTACTS_CHAT_LABEL);
 
+const neighborTableLink = () =>
+  md.link(CONTACTS_NEIGHBOR_TABLE_URL, CONTACTS_NEIGHBOR_TABLE_LABEL);
+
 const contactsIntro = (): MarkdownNode =>
   md.paragraph([
     md.text(CONTACTS_INTRO_PREFIX),
     chatLink(),
     md.text(CONTACTS_INTRO_SUFFIX),
+    md.text(CONTACTS_NEIGHBOR_TABLE_PREFIX),
+    neighborTableLink(),
+    md.text(CONTACTS_NEIGHBOR_TABLE_SUFFIX),
   ]);
 
-const contactsEmpty = (): MarkdownNode =>
-  md.paragraph([
-    md.text(CONTACTS_EMPTY_PREFIX),
-    md.link(CONTACTS_EMPTY_LINK_URL, CONTACTS_EMPTY_LINK_LABEL),
-    md.text(CONTACTS_EMPTY_SUFFIX),
-  ]);
+const contactsEmpty = (): MarkdownNode => md.paragraph(CONTACTS_EMPTY_MESSAGE);
 
 const methodLine = (method: ContactMethod): MarkdownListItem =>
   md.listItem([

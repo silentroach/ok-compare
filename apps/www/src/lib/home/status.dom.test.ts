@@ -64,6 +64,11 @@ const renderHomeStatus = ({
 const getStatusLink = (): HTMLElement =>
   document.querySelector('[data-home-status-link]') as HTMLElement;
 
+const getStatusLinks = (): readonly HTMLElement[] =>
+  Array.from(document.querySelectorAll('[data-home-status-link]')).filter(
+    (link): link is HTMLElement => link instanceof HTMLElement,
+  );
+
 afterEach(() => {
   document.body.innerHTML = '';
   delete window.__shelkovoHomeStatusHydration;
@@ -135,6 +140,34 @@ describe('hydrateHomeStatus', () => {
     hydrateHomeStatus(document, WINDOW_START + 1);
 
     expect(getStatusLink().getAttribute('aria-label')).toBe(AMBER_ARIA_LABEL);
+  });
+
+  it('updates every rendered status link', () => {
+    renderHomeStatus();
+    getStatusLink().insertAdjacentHTML(
+      'afterend',
+      `<a href="/status/" aria-label="${GREEN_ARIA_LABEL}" data-home-status-link data-home-status-state="green">Статус</a>`,
+    );
+
+    hydrateHomeStatus(document, WINDOW_START + 1);
+
+    expect(
+      getStatusLinks().map((link) => ({
+        state: link.dataset.homeStatusState,
+        label: link.getAttribute('aria-label'),
+      })),
+    ).toMatchInlineSnapshot(`
+      [
+        {
+          "label": "Статус: идут плановые работы",
+          "state": "amber",
+        },
+        {
+          "label": "Статус: идут плановые работы",
+          "state": "amber",
+        },
+      ]
+    `);
   });
 
   it('does not throw and does not change state when embedded JSON is missing', () => {

@@ -1,3 +1,5 @@
+import { installHomeStatusHydration } from '@/lib/home/status';
+
 interface AstroBeforePreparationEvent extends Event {
   loader: () => Promise<void>;
 }
@@ -10,6 +12,7 @@ type YandexMetrika = ((...args: readonly unknown[]) => void) & {
 declare global {
   interface Window {
     __shelkovoNavigationProgress?: boolean;
+    __shelkovoSiteNavDropdowns?: boolean;
     __shelkovoSettlementsFallback?: boolean;
     __shelkovoYmDeferred?: boolean;
     __shelkovoYmLoaded?: boolean;
@@ -21,6 +24,17 @@ declare global {
 const METRIKA_SCRIPT_SRC = 'https://mc.yandex.ru/metrika/tag.js';
 const NAVIGATION_PENDING_ATTR = 'data-site-navigation-pending';
 const NAVIGATION_DELAY_MS = 50;
+const SITE_NAV_DROPDOWN_SELECTOR = '[data-site-nav-dropdown]';
+const SITE_NAV_DROPDOWN_BUTTON_SELECTOR = '[data-site-nav-dropdown-button]';
+
+const runWhenDocumentReady = (callback: () => void): void => {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', callback, { once: true });
+    return;
+  }
+
+  callback();
+};
 
 const isAstroBeforePreparationEvent = (
   event: Event,
@@ -161,6 +175,103 @@ const bindNavigationProgress = (): void => {
   window.addEventListener('pageshow', hide);
 };
 
+const bindSiteNavDropdown = (dropdown: HTMLElement): void => {
+  if (dropdown.dataset.siteNavDropdownHydrated) {
+    return;
+  }
+
+  const button = dropdown.querySelector(SITE_NAV_DROPDOWN_BUTTON_SELECTOR);
+  if (!(button instanceof HTMLButtonElement)) {
+    return;
+  }
+
+  dropdown.dataset.siteNavDropdownHydrated = 'true';
+  const controller = new AbortController();
+  const { signal } = controller;
+
+  const setOpen = (isOpen: boolean): void => {
+    dropdown.toggleAttribute('data-open', isOpen);
+    button.setAttribute('aria-expanded', String(isOpen));
+  };
+
+  button.addEventListener(
+    'click',
+    () => setOpen(!dropdown.hasAttribute('data-open')),
+    { signal },
+  );
+
+  dropdown.addEventListener(
+    'focusout',
+    (event) => {
+      if (
+        event.relatedTarget instanceof Node &&
+        dropdown.contains(event.relatedTarget)
+      ) {
+        return;
+      }
+
+      setOpen(false);
+    },
+    { signal },
+  );
+
+  document.addEventListener(
+    'pointerdown',
+    (event) => {
+      if (!dropdown.hasAttribute('data-open')) {
+        return;
+      }
+
+      if (event.target instanceof Node && dropdown.contains(event.target)) {
+        return;
+      }
+
+      setOpen(false);
+    },
+    { signal },
+  );
+
+  document.addEventListener(
+    'keydown',
+    (event) => {
+      if (event.key !== 'Escape' || !dropdown.hasAttribute('data-open')) {
+        return;
+      }
+
+      setOpen(false);
+      button.focus();
+    },
+    { signal },
+  );
+
+  document.addEventListener('astro:before-swap', () => controller.abort(), {
+    once: true,
+    signal,
+  });
+};
+
+const bindSiteNavDropdowns = (): void => {
+  document.querySelectorAll(SITE_NAV_DROPDOWN_SELECTOR).forEach((dropdown) => {
+    if (dropdown instanceof HTMLElement) {
+      bindSiteNavDropdown(dropdown);
+    }
+  });
+};
+
+const installSiteNavDropdowns = (): void => {
+  const bind = (): void => bindSiteNavDropdowns();
+
+  if (window.__shelkovoSiteNavDropdowns) {
+    bind();
+    return;
+  }
+
+  window.__shelkovoSiteNavDropdowns = true;
+  runWhenDocumentReady(bind);
+  document.addEventListener('astro:after-swap', bind);
+  document.addEventListener('astro:page-load', bind);
+};
+
 const bindSettlementsFallback = (): void => {
   if (window.__shelkovoSettlementsFallback) {
     return;
@@ -175,6 +286,8 @@ const bindSettlementsFallback = (): void => {
 };
 
 bindNavigationProgress();
+installSiteNavDropdowns();
+runWhenDocumentReady(() => installHomeStatusHydration());
 bindMetrikaLoader();
 bindMetrikaTransitions();
 bindSettlementsFallback();

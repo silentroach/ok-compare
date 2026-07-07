@@ -125,16 +125,19 @@ const setHomeStatusState = (
   link.setAttribute('aria-label', getHomeStatusAriaLabel(state));
 };
 
+const homeStatusLinks = (root: ParentNode): readonly HTMLElement[] =>
+  Array.from(root.querySelectorAll(HOME_STATUS_LINK_SELECTOR)).filter(
+    (link): link is HTMLElement => link instanceof HTMLElement,
+  );
+
 export const hydrateHomeStatus = (
   root: ParentNode = document,
   now: number = Date.now(),
 ): void => {
-  const link = root.querySelector(HOME_STATUS_LINK_SELECTOR);
-
-  if (
-    !(link instanceof HTMLElement) ||
-    link.dataset.homeStatusState === 'red'
-  ) {
+  const links = homeStatusLinks(root).filter(
+    (link) => link.dataset.homeStatusState !== 'red',
+  );
+  if (links.length === 0) {
     return;
   }
 
@@ -147,12 +150,14 @@ export const hydrateHomeStatus = (
     payload.textContent ?? undefined,
   );
   if (hasActiveMaintenanceWindow(windows, now)) {
-    setHomeStatusState(link, 'amber');
+    links.forEach((link) => setHomeStatusState(link, 'amber'));
     return;
   }
 
-  if (link.dataset.homeStatusState === 'amber' && windows.length > 0) {
-    setHomeStatusState(link, 'green');
+  if (windows.length > 0) {
+    links
+      .filter((link) => link.dataset.homeStatusState === 'amber')
+      .forEach((link) => setHomeStatusState(link, 'green'));
   }
 };
 
