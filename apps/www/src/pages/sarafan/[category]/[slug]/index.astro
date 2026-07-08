@@ -3,6 +3,7 @@ import type { GetStaticPaths } from 'astro';
 import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
 
 import ContactMethods from '@/components/contacts/ContactMethods.astro';
+import ContactReviews from '@/components/contacts/ContactReviews.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import {
   withHomeBreadcrumbs,
@@ -42,6 +43,7 @@ const description =
   `Контакт из раздела «Сарафан»: ${category}. Перед обращением уточняйте цену, сроки и состав работ.`;
 const bodyHtml = renderMarkdown(contact.body);
 const categoryUrl = contactCategoryUrl({ category: contact.category });
+const reviewsHeadingId = 'contact-reviews';
 const breadcrumbs = withHomeBreadcrumbs([
   { label: 'Сарафан', href: contactsUrl() },
   { label: category, href: categoryUrl },
@@ -79,6 +81,22 @@ const schema = contactPageSchema({
     <article class="space-y-8 px-5 md:px-6">
       <ContactMethods contacts={contact.contacts} location={contact.location} />
       <div class={CONTACTS_PROSE} set:html={bodyHtml} />
+      {
+        contact.reviews.length > 0 ? (
+          <section class="max-w-[65ch] space-y-3">
+            <h2
+              id={reviewsHeadingId}
+              class="font-body text-xl font-bold tracking-tight text-foreground"
+            >
+              Отзывы
+            </h2>
+            <ContactReviews
+              reviews={contact.reviews}
+              labelledBy={reviewsHeadingId}
+            />
+          </section>
+        ) : null
+      }
     </article>
   </main>
 </BaseLayout>

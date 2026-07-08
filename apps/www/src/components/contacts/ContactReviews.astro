@@ -1,0 +1,75 @@
+---
+import { TelegramIcon } from '@shelkovo/ui/icons';
+
+import type { ContactReview } from '@/lib/contacts/types';
+import {
+  formatContactReviewDate,
+  formatContactReviewSentiment,
+} from '@/lib/contacts/view';
+
+interface Props {
+  readonly reviews: readonly ContactReview[];
+  readonly labelledBy?: string;
+}
+
+const { reviews, labelledBy } = Astro.props;
+const reviewClasses = {
+  positive:
+    'group relative -mx-2 flex items-start gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-primary-soft-2',
+  negative:
+    'group relative -mx-2 flex items-start gap-3 rounded-xl bg-[color:var(--color-danger-soft)] px-2 py-2 transition-colors hover:bg-[color:var(--color-danger-soft)]',
+} as const satisfies Record<ContactReview['sentiment'], string>;
+const sentimentEmoji = {
+  positive: '👍',
+  negative: '👎',
+} as const satisfies Record<ContactReview['sentiment'], string>;
+
+const isTelegramUrl = (url: string): boolean => {
+  try {
+    const host = new URL(url).hostname.toLowerCase();
+
+    return host === 't.me' || host === 'telegram.me';
+  } catch {
+    return false;
+  }
+};
+---
+
+{
+  reviews.length > 0 ? (
+    <ul aria-labelledby={labelledBy} class="space-y-2">
+      {reviews.map((review) => (
+        <li>
+          <div class={reviewClasses[review.sentiment]}>
+            <a
+              href={review.url}
+              class="absolute inset-0 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              aria-label={`Открыть отзыв от ${formatContactReviewDate(review)}`}
+            />
+            <span
+              class="pointer-events-none relative z-10 mt-0.5 w-6 shrink-0 text-center text-base leading-5"
+              aria-hidden="true"
+            >
+              {sentimentEmoji[review.sentiment]}
+            </span>
+            <span class="sr-only">
+              {formatContactReviewSentiment(review.sentiment)}:{' '}
+            </span>
+            <div class="pointer-events-none relative z-10 mt-0.5 min-w-0">
+              <div
+                class="text-sm leading-5 text-muted-foreground transition-colors group-hover:text-foreground [&_a]:pointer-events-auto [&_a]:relative [&_a]:font-semibold [&_a]:text-foreground [&_a]:underline [&_a]:decoration-foreground/30 [&_a]:underline-offset-3 [&_p]:m-0 [&_strong]:font-semibold [&_strong]:text-foreground"
+                set:html={review.summaryHtml}
+              />
+              <span class="mt-0.5 inline-flex items-center gap-1.5 text-xs font-medium leading-5 text-muted-foreground transition-colors group-hover:text-foreground">
+                {isTelegramUrl(review.url) ? (
+                  <TelegramIcon class="size-3 shrink-0 text-primary" />
+                ) : null}
+                <span>{formatContactReviewDate(review)}</span>
+              </span>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+  ) : null
+}

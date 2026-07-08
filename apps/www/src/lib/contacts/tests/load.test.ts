@@ -115,6 +115,37 @@ describe('buildContactsDataset', () => {
     });
   });
 
+  it('renders review summary markdown to html', () => {
+    const data = buildContactsDataset([
+      entry({
+        id: 'fence/with-review',
+        data: {
+          reviews: [
+            {
+              sentiment: 'positive',
+              summary: 'Помог с **электричеством**.',
+              published_at: '2026-04-07',
+              url: 'https://t.me/example/1',
+            },
+          ],
+        },
+      }),
+    ]);
+
+    expect(data.contacts[0]?.reviews).toMatchInlineSnapshot(`
+      [
+        {
+          "publishedAt": 2026-04-07T00:00:00.000Z,
+          "publishedIso": "2026-04-07",
+          "sentiment": "positive",
+          "summary": "Помог с **электричеством**.",
+          "summaryHtml": "<p>Помог с <strong>электричеством</strong>.</p>",
+          "url": "https://t.me/example/1",
+        },
+      ]
+    `);
+  });
+
   it('fails when entry id does not match frontmatter slug', () => {
     expect(() =>
       buildContactsDataset([

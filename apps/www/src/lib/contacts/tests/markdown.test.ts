@@ -26,6 +26,16 @@ const contact = {
     telegram: 'https://t.me/example',
     email: 'team@example.com',
   },
+  reviews: [
+    {
+      sentiment: 'positive',
+      summary: 'Помог с **электричеством**.',
+      summaryHtml: '<p>Помог с <strong>электричеством</strong>.</p>',
+      publishedAt: new Date('2026-04-07T00:00:00.000Z'),
+      publishedIso: '2026-04-07',
+      url: 'https://t.me/example/1',
+    },
+  ],
   location: {
     title: 'Золото Сибири',
     url: 'https://yandex.ru/maps/-/CTq-BEOk',
@@ -48,6 +58,7 @@ const listOnlyContact = {
   contacts: {
     phone: '+7 985 774-75-04',
   },
+  reviews: [],
   hasDetailPage: false,
   body: '',
   mentions: [],
@@ -100,6 +111,8 @@ describe('contacts markdown companions', () => {
       '[Забор](https://example.com/sarafan/fence/index.md)',
     );
     expect(markdown).toContain('Телефон: [+7 900 000-00-00](tel:+79000000000)');
+    expect(markdown).toContain('Telegram: [@example](https://t.me/example)');
+    expect(markdown).not.toContain('Отзывы:');
     expect(markdown).toContain(
       'Адрес: [Золото Сибири](https://yandex.ru/maps/-/CTq-BEOk) — Пионерская ул., 21, пгт Малино',
     );
@@ -108,23 +121,29 @@ describe('contacts markdown companions', () => {
     );
   });
 
-  it('renders detail with frontmatter, contact methods and body', () => {
+  it('renders detail with structured frontmatter and body', () => {
     expect(buildContactMarkdown(contact)).toMatchInlineSnapshot(`
       "---
       title: Иван Петров
       slug: ivan-petrov-fence
       category: Забор
       updated_at: 2026-07-06
+      contacts:
+        phone: +7 900 000-00-00
+        telegram: https://t.me/example
+        email: team@example.com
+      location:
+        title: Золото Сибири
+        url: https://yandex.ru/maps/-/CTq-BEOk
+        address: Пионерская ул., 21, пгт Малино
+      reviews:
+        - sentiment: positive
+          summary: Помог с **электричеством**.
+          published_at: 2026-04-07
+          url: https://t.me/example/1
       ---
 
       # Иван Петров
-
-      ## Контакты и адрес
-
-      - Адрес: [Золото Сибири](https://yandex.ru/maps/-/CTq-BEOk) — Пионерская ул., 21, пгт Малино
-      - Телефон: [+7 900 000-00-00](tel:+79000000000)
-      - Telegram: <https://t.me/example>
-      - Email: <team@example.com>
 
       Работает с заборами и воротами. Перед началом работ стоит отдельно согласовать сроки, материалы и гарантию.
 

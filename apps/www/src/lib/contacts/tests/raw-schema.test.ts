@@ -80,6 +80,37 @@ describe('RawContactSchema', () => {
     `);
   });
 
+  it('accepts dated review links', () => {
+    expect(
+      RawContactSchema.parse({
+        title: 'Электрик',
+        slug: 'electrician',
+        category: 'electricity',
+        updated_at: '2026-07-08',
+        contacts: {
+          phone: '+7 900 000-00-00',
+        },
+        reviews: [
+          {
+            sentiment: 'positive',
+            summary: 'Помог с электричеством.',
+            published_at: '2026-04-07',
+            url: 'https://t.me/example/1',
+          },
+        ],
+      }).reviews,
+    ).toMatchInlineSnapshot(`
+      [
+        {
+          "published_at": "2026-04-07",
+          "sentiment": "positive",
+          "summary": "Помог с электричеством.",
+          "url": "https://t.me/example/1",
+        },
+      ]
+    `);
+  });
+
   it('rejects invalid slugs, impossible dates and unknown categories', () => {
     const base = {
       title: 'Иван Петров',
@@ -144,9 +175,23 @@ describe('RawContactSchema', () => {
         location: { title: 'Карта', url: 'http://example.com' },
       }).success,
     ).toBe(false);
+    expect(
+      RawContactSchema.safeParse({
+        ...base,
+        contacts: { phone: '+7 900 000-00-00' },
+        reviews: [
+          {
+            sentiment: 'positive',
+            summary: 'Отзыв.',
+            published_at: '2026-04-07',
+            url: 'http://example.com',
+          },
+        ],
+      }).success,
+    ).toBe(false);
   });
 
-  it('rejects fields excluded from the MVP contract', () => {
+  it('rejects fields excluded from the contract', () => {
     const result = RawContactSchema.safeParse({
       title: 'Иван Петров',
       slug: 'ivan-petrov-fence',

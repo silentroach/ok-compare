@@ -40,6 +40,55 @@ export const CONTACTS_MARKDOWN_HEADERS = {
 type MarkdownNode = ReturnType<typeof parseMarkdownFragment>[number];
 type MarkdownListItem = ReturnType<typeof md.listItem>;
 
+type ContactFrontmatterLocation = Exclude<Contact['location'], undefined>;
+
+interface ContactFrontmatterReview {
+  readonly sentiment: Contact['reviews'][number]['sentiment'];
+  readonly summary: string;
+  readonly published_at: string;
+  readonly url: string;
+}
+
+interface ContactFrontmatter extends Readonly<Record<string, unknown>> {
+  readonly title: string;
+  readonly slug: string;
+  readonly category: string;
+  readonly updated_at: string;
+  readonly summary?: string;
+  readonly contacts: Contact['contacts'];
+  readonly location?: ContactFrontmatterLocation;
+  readonly reviews?: readonly ContactFrontmatterReview[];
+}
+
+type MutableContactFrontmatterContacts = {
+  -readonly [Key in keyof Contact['contacts']]?: string;
+};
+
+type MutableContactFrontmatterLocation = {
+  title: string;
+  url: string;
+  address?: string;
+};
+
+type MutableContactFrontmatter = Record<string, unknown> & {
+  title: string;
+  slug: string;
+  category: string;
+  updated_at: string;
+  summary?: string;
+  contacts: Contact['contacts'];
+  location?: ContactFrontmatterLocation;
+  reviews?: readonly ContactFrontmatterReview[];
+};
+
+const CONTACT_FRONTMATTER_CONTACT_KEYS = [
+  'phone',
+  'telegram',
+  'whatsapp',
+  'email',
+  'website',
+] as const satisfies readonly (keyof Contact['contacts'])[];
+
 const serialize = (children: readonly MarkdownNode[]): string =>
   serializeMarkdownDocument(createMarkdownDocument({ children }));
 
@@ -120,14 +169,74 @@ const categoryLine = (category: ContactCategoryPage): MarkdownListItem =>
     ]),
   ]);
 
-const contactFrontmatter = (
-  contact: ContactWithDetail,
-): Readonly<Record<string, unknown>> => ({
-  title: contact.title,
-  slug: contact.slug,
-  category: formatContactCategory(contact.category),
-  updated_at: contact.updatedIso,
-  summary: contact.summary,
+const contactFrontmatter = (contact: ContactWithDetail): ContactFrontmatter => {
+  const frontmatter: MutableContactFrontmatter = {
+    title: contact.title,
+    slug: contact.slug,
+    category: formatContactCategory(contact.category),
+    updated_at: contact.updatedIso,
+    contacts: contactContactsFrontmatter(contact.contacts),
+  };
+
+  if (contact.summary) {
+    frontmatter.summary = contact.summary;
+  }
+
+  const location = contactLocationFrontmatter(contact.location);
+
+  if (location) {
+    frontmatter.location = location;
+  }
+
+  if (contact.reviews.length > 0) {
+    frontmatter.reviews = contact.reviews.map(contactReviewFrontmatter);
+  }
+
+  return frontmatter;
+};
+
+const contactContactsFrontmatter = (
+  contacts: Contact['contacts'],
+): Contact['contacts'] => {
+  const frontmatter: MutableContactFrontmatterContacts = {};
+
+  for (const key of CONTACT_FRONTMATTER_CONTACT_KEYS) {
+    const value = contacts[key];
+
+    if (value) {
+      frontmatter[key] = value;
+    }
+  }
+
+  return frontmatter;
+};
+
+const contactLocationFrontmatter = (
+  location: Contact['location'],
+): ContactFrontmatterLocation | undefined => {
+  if (!location) {
+    return;
+  }
+
+  const frontmatter: MutableContactFrontmatterLocation = {
+    title: location.title,
+    url: location.url,
+  };
+
+  if (location.address) {
+    frontmatter.address = location.address;
+  }
+
+  return frontmatter;
+};
+
+const contactReviewFrontmatter = (
+  review: Contact['reviews'][number],
+): ContactFrontmatterReview => ({
+  sentiment: review.sentiment,
+  summary: review.summary,
+  published_at: review.publishedIso,
+  url: review.url,
 });
 
 export const buildContactsHomeMarkdown = (data: ContactsDataset): string =>
@@ -159,8 +268,6 @@ export const buildContactMarkdown = (contact: ContactWithDetail): string =>
       frontmatter: contactFrontmatter(contact),
       children: [
         md.heading(1, contact.title),
-        md.heading(2, contact.location ? 'Контакты и адрес' : 'Способы связи'),
-        md.list(contactInfoLines(contact)),
         ...parseMarkdownFragment(contact.body.trim()),
       ],
     }),

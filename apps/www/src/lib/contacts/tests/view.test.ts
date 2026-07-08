@@ -1,11 +1,30 @@
 import { describe, expect, it } from 'vitest';
 
-import { contactMethods, contactPlace, formatContactCategory } from '../view';
+import {
+  contactMethods,
+  contactPlace,
+  formatContactCategory,
+  formatContactReviewDate,
+} from '../view';
 
 describe('contact view helpers', () => {
   it('formats category labels', () => {
     expect(formatContactCategory('fence')).toBe('Забор');
     expect(formatContactCategory('garden')).toBe('Сад и участок');
+    expect(formatContactCategory('electricity')).toBe('Электричество');
+  });
+
+  it('formats review dates', () => {
+    expect(
+      formatContactReviewDate({
+        sentiment: 'positive',
+        summary: 'Помогли с электричеством.',
+        summaryHtml: '<p>Помогли с электричеством.</p>',
+        publishedAt: new Date('2026-04-07T00:00:00.000Z'),
+        publishedIso: '2026-04-07',
+        url: 'https://t.me/example/1',
+      }),
+    ).toBe('7 апреля 2026');
   });
 
   it('builds display methods in stable order with safe hrefs', () => {
@@ -29,7 +48,7 @@ describe('contact view helpers', () => {
           "href": "https://t.me/example",
           "label": "Telegram",
           "type": "telegram",
-          "value": "https://t.me/example",
+          "value": "@example",
         },
         {
           "href": "https://wa.me/79000000000",

@@ -1,5 +1,8 @@
-export const CONTACT_CATEGORIES = ['fence', 'garden'] as const;
+export const CONTACT_CATEGORIES = ['fence', 'garden', 'electricity'] as const;
 export type ContactCategory = (typeof CONTACT_CATEGORIES)[number];
+
+export const CONTACT_REVIEW_SENTIMENTS = ['positive', 'negative'] as const;
+export type ContactReviewSentiment = (typeof CONTACT_REVIEW_SENTIMENTS)[number];
 
 export const CONTACT_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export const CONTACT_DATE = /^\d{4}-\d{2}-\d{2}$/;

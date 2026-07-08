@@ -1,12 +1,18 @@
 import {
   preprocessSiteMarkdownContent,
+  renderMarkdown,
   type PreprocessedSiteMarkdown,
 } from '@/lib/markdown/render';
 import type { SiteMentionRegistry } from '@/lib/mentions';
 
 import type { ContactEntry } from './load';
 import { contactCanonical, contactMarkdownUrl, contactUrl } from './routes';
-import type { Contact, ContactContacts, ContactLocation } from './types';
+import type {
+  Contact,
+  ContactContacts,
+  ContactLocation,
+  ContactReview,
+} from './types';
 
 const preprocessContactContent = (
   markdown: string,
@@ -46,6 +52,18 @@ const mapLocation = (
       }
     : undefined;
 
+const mapReviews = (
+  reviews: ContactEntry['data']['reviews'],
+): readonly ContactReview[] =>
+  reviews?.map((review) => ({
+    sentiment: review.sentiment,
+    summary: review.summary,
+    summaryHtml: renderMarkdown(review.summary),
+    publishedAt: new Date(`${review.published_at}T00:00:00.000Z`),
+    publishedIso: review.published_at,
+    url: review.url,
+  })) ?? [];
+
 export const mapRawContact = (
   entry: ContactEntry,
   mentionRegistry?: SiteMentionRegistry,
@@ -74,6 +92,7 @@ export const mapRawContact = (
     summary: entry.data.summary,
     contacts: mapContacts(entry.data.contacts),
     location: mapLocation(entry.data.location),
+    reviews: mapReviews(entry.data.reviews),
     seo: entry.data.seo,
     body: body.markdown,
     mentions: body.mentions,

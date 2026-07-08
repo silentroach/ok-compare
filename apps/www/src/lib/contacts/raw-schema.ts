@@ -2,6 +2,7 @@ import { z } from 'astro/zod';
 
 import {
   CONTACT_CATEGORIES,
+  CONTACT_REVIEW_SENTIMENTS,
   CONTACT_SLUG,
   isContactCalendarDate,
 } from './schema';
@@ -77,6 +78,15 @@ const seo = z
   })
   .strict();
 
+const review = z
+  .object({
+    sentiment: z.enum(CONTACT_REVIEW_SENTIMENTS),
+    summary: nonBlankText,
+    published_at: contactDate('reviews.published_at'),
+    url: contactUrl,
+  })
+  .strict();
+
 export const RawContactSchema = z
   .object({
     title: nonBlankText,
@@ -88,6 +98,7 @@ export const RawContactSchema = z
     summary: nonBlankText.optional(),
     contacts,
     location: location.optional(),
+    reviews: z.array(review).optional(),
     seo: seo.optional(),
   })
   .strict();

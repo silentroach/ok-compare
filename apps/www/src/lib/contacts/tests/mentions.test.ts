@@ -12,6 +12,7 @@ const contact = {
   contacts: {
     phone: '+7 900 000-00-00',
   },
+  reviews: [],
   hasDetailPage: true,
   url: '/sarafan/fence/ivan-petrov-fence/',
   markdownUrl: '/sarafan/fence/ivan-petrov-fence/index.md',

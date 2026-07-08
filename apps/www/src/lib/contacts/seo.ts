@@ -60,6 +60,49 @@ const itemListSchema = (
   })),
 });
 
+const externalContactUrls = (contact: ContactWithDetail): readonly string[] =>
+  [
+    contact.contacts.telegram,
+    contact.contacts.whatsapp,
+    contact.contacts.website,
+  ].filter((url): url is string => Boolean(url));
+
+const contactPointSchema = (
+  contact: ContactWithDetail,
+  url: string,
+): SchemaDoc => {
+  const sameAs = externalContactUrls(contact);
+
+  const schema: SchemaDoc = {
+    '@context': CONTEXT,
+    '@type': 'ContactPoint',
+    '@id': `${url}#contact`,
+    name: contact.title,
+    description: contactExcerpt(contact),
+    contactType: formatContactCategory(contact.category),
+    areaServed: {
+      '@type': 'Place',
+      name: 'Шелково',
+    },
+    availableLanguage: LANG,
+    url,
+  };
+
+  if (contact.contacts.phone) {
+    schema.telephone = contact.contacts.phone;
+  }
+
+  if (contact.contacts.email) {
+    schema.email = contact.contacts.email;
+  }
+
+  if (sameAs.length > 0) {
+    schema.sameAs = sameAs;
+  }
+
+  return schema;
+};
+
 export const contactsCollectionPageSchema = (
   input: ContactsCollectionPageInput,
 ): readonly SchemaDoc[] => {
@@ -89,21 +132,25 @@ export const contactPageSchema = (
   input: ContactPageInput,
 ): readonly SchemaDoc[] => {
   const { contact } = input;
+  const url = absoluteUrl(contact.url);
+  const contactPoint = contactPointSchema(contact, url);
   const docs: SchemaDoc[] = [
     {
       '@context': CONTEXT,
-      '@type': 'WebPage',
+      '@type': 'ContactPage',
       name: contact.title,
       description: input.description,
-      url: absoluteUrl(contact.url),
+      url,
       inLanguage: LANG,
+      mainEntity: {
+        '@id': contactPoint['@id'],
+      },
       about: {
-        '@type': 'Thing',
-        name: formatContactCategory(contact.category),
-        description: contactExcerpt(contact),
+        '@id': contactPoint['@id'],
       },
       dateModified: contact.updatedIso,
     },
+    contactPoint,
   ];
 
   if (input.breadcrumbs?.length) docs.push(breadcrumbSchema(input.breadcrumbs));

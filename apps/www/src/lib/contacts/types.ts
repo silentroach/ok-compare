@@ -1,7 +1,7 @@
 import type { PreprocessedSiteMarkdownBody } from '@/lib/markdown/render';
 import type { EntityMentionTarget } from '@/lib/mentions';
 
-import type { ContactCategory } from './schema';
+import type { ContactCategory, ContactReviewSentiment } from './schema';
 
 export interface ContactContacts {
   readonly phone?: string;
@@ -21,6 +21,15 @@ export interface ContactLocation {
   readonly address?: string;
 }
 
+export interface ContactReview {
+  readonly sentiment: ContactReviewSentiment;
+  readonly summary: string;
+  readonly summaryHtml: string;
+  readonly publishedAt: Date;
+  readonly publishedIso: string;
+  readonly url: string;
+}
+
 interface ContactBase {
   readonly slug: string;
   readonly title: string;
@@ -30,6 +39,7 @@ interface ContactBase {
   readonly summary?: string;
   readonly contacts: ContactContacts;
   readonly location?: ContactLocation;
+  readonly reviews: readonly ContactReview[];
   readonly seo?: ContactSeo;
   readonly body: PreprocessedSiteMarkdownBody;
   readonly mentions: readonly EntityMentionTarget[];

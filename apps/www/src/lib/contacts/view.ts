@@ -1,7 +1,13 @@
 import { extractFirstMarkdownText } from '@shelkovo/markdown';
+import { formatDate } from '@shelkovo/format';
 
 import type { ContactCategory } from './schema';
-import type { Contact, ContactContacts, ContactLocation } from './types';
+import type {
+  Contact,
+  ContactContacts,
+  ContactLocation,
+  ContactReview,
+} from './types';
 
 export interface ContactMethod {
   readonly type: keyof ContactContacts;
@@ -20,11 +26,21 @@ export interface ContactPlace {
 const CONTACT_CATEGORY_LABELS: Record<ContactCategory, string> = {
   fence: 'Забор',
   garden: 'Сад и участок',
+  electricity: 'Электричество',
 };
 
 const CONTACT_CATEGORY_EMOJI: Record<ContactCategory, string> = {
   fence: '🚧',
   garden: '🌿',
+  electricity: '⚡',
+};
+
+const CONTACT_REVIEW_SENTIMENT_LABELS: Record<
+  ContactReview['sentiment'],
+  string
+> = {
+  positive: 'Плюс',
+  negative: 'Минус',
 };
 
 export const CONTACTS_PROSE = 'ui-prose max-w-[65ch]';
@@ -63,11 +79,32 @@ const method = (
       }
     : undefined;
 
+const telegramValue = (url: string | undefined): string | undefined => {
+  if (!url) {
+    return;
+  }
+
+  try {
+    const username = new URL(url).pathname.split('/').find(Boolean);
+
+    return username ? `@${username}` : url;
+  } catch {
+    return url;
+  }
+};
+
 export const formatContactCategory = (category: ContactCategory): string =>
   CONTACT_CATEGORY_LABELS[category];
 
 export const formatContactCategoryEmoji = (category: ContactCategory): string =>
   CONTACT_CATEGORY_EMOJI[category];
+
+export const formatContactReviewSentiment = (
+  sentiment: ContactReview['sentiment'],
+): string => CONTACT_REVIEW_SENTIMENT_LABELS[sentiment];
+
+export const formatContactReviewDate = (review: ContactReview): string =>
+  formatDate(review.publishedIso);
 
 export const contactExcerpt = (
   contact: Pick<Contact, 'body' | 'summary'>,
@@ -97,7 +134,12 @@ export const contactMethods = (
       contacts.phone,
       contacts.phone ? phoneHref(contacts.phone) : undefined,
     ),
-    method('telegram', 'Telegram', contacts.telegram, contacts.telegram),
+    method(
+      'telegram',
+      'Telegram',
+      telegramValue(contacts.telegram),
+      contacts.telegram,
+    ),
     method('whatsapp', 'WhatsApp', contacts.whatsapp, contacts.whatsapp),
     method(
       'email',

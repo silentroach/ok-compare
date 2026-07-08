@@ -21,7 +21,9 @@ const contact = {
   updatedIso: '2026-07-06',
   contacts: {
     phone: '+7 900 000-00-00',
+    telegram: 'https://t.me/example',
   },
+  reviews: [],
   hasDetailPage: true,
   url: '/sarafan/fence/ivan-petrov-fence/',
   markdownUrl: '/sarafan/fence/ivan-petrov-fence/index.md',
@@ -31,7 +33,7 @@ const contact = {
 } satisfies ContactWithDetail;
 
 describe('contactPageSchema', () => {
-  it('publishes a generic WebPage without ratings or review claims', () => {
+  it('publishes a ContactPage with a ContactPoint without ratings or review claims', () => {
     const schema = contactPageSchema({
       contact,
       description: 'Контакт из раздела «Сарафан»: Забор.',
@@ -42,16 +44,35 @@ describe('contactPageSchema', () => {
       [
         {
           "@context": "https://schema.org",
-          "@type": "WebPage",
+          "@type": "ContactPage",
           "about": {
-            "@type": "Thing",
-            "description": "Работает с заборами и воротами.",
-            "name": "Забор",
+            "@id": "https://example.com/sarafan/fence/ivan-petrov-fence/#contact",
           },
           "dateModified": "2026-07-06",
           "description": "Контакт из раздела «Сарафан»: Забор.",
           "inLanguage": "ru-RU",
+          "mainEntity": {
+            "@id": "https://example.com/sarafan/fence/ivan-petrov-fence/#contact",
+          },
           "name": "Иван Петров",
+          "url": "https://example.com/sarafan/fence/ivan-petrov-fence/",
+        },
+        {
+          "@context": "https://schema.org",
+          "@id": "https://example.com/sarafan/fence/ivan-petrov-fence/#contact",
+          "@type": "ContactPoint",
+          "areaServed": {
+            "@type": "Place",
+            "name": "Шелково",
+          },
+          "availableLanguage": "ru-RU",
+          "contactType": "Забор",
+          "description": "Работает с заборами и воротами.",
+          "name": "Иван Петров",
+          "sameAs": [
+            "https://t.me/example",
+          ],
+          "telephone": "+7 900 000-00-00",
           "url": "https://example.com/sarafan/fence/ivan-petrov-fence/",
         },
       ]
