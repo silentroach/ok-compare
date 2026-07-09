@@ -8,13 +8,30 @@ export const COMPARE_PRODUCT_NAME = 'Сравни с Шелково';
 
 const SHORT_COMPANY_LENGTH = 18;
 
-export const COMPARE_KEYWORDS = [
-  ...BRAND_KEYWORDS,
+const COMPARE_NAME_KEYWORDS = [
+  'КП Шелково',
+  'коттеджный поселок Шелково',
+  'Шелково Эко Клаб',
+  'Shelkovo Eco Club',
+];
+
+const COMPARISON_KEYWORDS = [
+  'сравнение коттеджных поселков',
+  'рейтинг коттеджных поселков Подмосковья',
+  'коттеджные поселки Ступинский район',
+  'коттеджные поселки Симферопольское шоссе',
+  'тарифы обслуживания коттеджных поселков',
+];
+
+export const COMPARE_KEYWORDS = collectKeywords(
+  BRAND_KEYWORDS,
+  COMPARE_NAME_KEYWORDS,
+  COMPARISON_KEYWORDS,
   COMPARE_PRODUCT_NAME,
   'сравнение тарифов поселков',
   'тарифы на обслуживание поселков',
   'коттеджные поселки Московская область',
-];
+);
 
 const compareTitle = (title: string): string =>
   `${title} — ${COMPARE_PRODUCT_NAME}`;

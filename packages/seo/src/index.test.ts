@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { collectKeywords, imageMimeType, serializeSchema } from './index';
+import {
+  collectKeywords,
+  imageMimeType,
+  SHELKOVO_SITE_ALTERNATE_NAMES,
+  serializeSchema,
+} from './index';
 
 describe('seo package', () => {
   it('collects unique non-empty keywords while preserving order', () => {
@@ -11,6 +16,17 @@ describe('seo package', () => {
         "alpha",
         "beta",
         "gamma",
+      ]
+    `);
+  });
+
+  it('keeps structured-data alternate names canonical', () => {
+    expect(SHELKOVO_SITE_ALTERNATE_NAMES).toMatchInlineSnapshot(`
+      [
+        "Шелково Онлайн",
+        "КП Шелково",
+        "Шелково Эко Клаб",
+        "Shelkovo Eco Club",
       ]
     `);
   });

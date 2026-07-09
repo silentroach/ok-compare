@@ -24,6 +24,13 @@ const plannedWorks = data.incidents.filter(
 const title = 'Статус поселка — Шелково Онлайн';
 const description =
   'Текущее состояние сервисов КП Шелково: отключения, ограничения интернета, плановые работы и история изменений.';
+const keywords = [
+  'статус Шелково',
+  'статус КП Шелково',
+  'сервисы Шелково',
+  'плановые работы Шелково',
+  'история инцидентов Шелково',
+];
 const breadcrumbs = withHomeBreadcrumbs([{ label: 'Статус' }]);
 const schemaItems = data.incidents
   .filter((item) => item.hasPage)
@@ -43,12 +50,7 @@ const schema = collectionPageSchema({
   title={title}
   description={description}
   canonical={statusUrl()}
-  keywords={[
-    'статус Шелково',
-    'инциденты Шелково',
-    'отключения Шелково',
-    'интернет Шелково',
-  ]}
+  keywords={keywords}
   schema={schema}
 >
   <main class="ui-page pb-6 md:pb-10 lg:pb-12">

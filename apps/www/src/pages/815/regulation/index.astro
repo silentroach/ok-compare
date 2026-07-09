@@ -36,6 +36,17 @@ const htmlSections = reglamentSectionsByOfficialTariff(payload.sections);
 const title = 'Смета 2026: калькулятор тарифа — Шелково Онлайн';
 const description =
   'Интерактивная смета регламента 2026: тариф за сотку в месяц, строки расходов, источники из PDF и быстрый пересчет итогов.';
+const keywords = [
+  'смета 2026 Шелково',
+  'калькулятор тарифа Шелково',
+  'регламент Шелково',
+  'тариф 815 Шелково',
+  'КП Шелково тариф',
+  'ОК Комфорт Шелково тариф',
+  'регламент Шелково 2026',
+  'публичный договор ОК Шелково',
+  'спор по тарифу Шелково',
+];
 const breadcrumbs = withHomeBreadcrumbs([{ label: 'Регламент' }]);
 const schema = collectionPageSchema({
   name: title,
@@ -337,11 +348,7 @@ const formatInputUnit = (unit: string): string =>
   title={title}
   description={description}
   canonical={reglamentUrl()}
-  keywords={[
-    'смета 2026 Шелково',
-    'калькулятор тарифа Шелково',
-    'регламент Шелково',
-  ]}
+  keywords={keywords}
   schema={schema}
 >
   <main class="ui-page pb-8 md:pb-12 lg:pb-16" data-reglament-calculator>

@@ -16,6 +16,17 @@ const data = await loadReviewsData();
 const title = 'Отзывы собственников — Шелково Онлайн';
 const description =
   'Независимые отзывы текущих собственников о жизни в Шелково: место, застройщик и обслуживание без общей оценки поселка.';
+const keywords = [
+  'отзывы Шелково',
+  'собственники Шелково',
+  'КП Шелково отзывы',
+  'Шелково Эко Клаб отзывы',
+  'Шелково Форест отзывы',
+  'Шелково Вилладж отзывы',
+  'Шелково Парк отзывы',
+  'Шелково Ривер отзывы',
+  'ОК Комфорт отзывы',
+];
 const breadcrumbs = withHomeBreadcrumbs([{ label: 'Отзывы' }]);
 const schema = reviewsCollectionPageSchema({
   name: title,
@@ -35,7 +46,7 @@ const schema = reviewsCollectionPageSchema({
   title={title}
   description={description}
   canonical={reviewsUrl()}
-  keywords={['отзывы Шелково', 'собственники Шелково']}
+  keywords={keywords}
   schema={schema}
 >
   <main class="ui-page pb-6 md:pb-10 lg:pb-12">
