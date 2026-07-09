@@ -6,6 +6,7 @@ import type { CivilTwilight, Coordinates } from './types';
 export type { CivilTwilight, Coordinates } from './types';
 
 const CIVIL_TWILIGHT_ALTITUDE_DEGREES = -6;
+const SUNRISE_SUNSET_ALTITUDE_DEGREES = -0.833;
 
 /**
  * Calculates distance between two coordinates in kilometers.
@@ -53,4 +54,19 @@ export const isCivilDaylight = (
   const time = date.getTime();
 
   return time >= dawn.getTime() && time <= dusk.getTime();
+};
+
+export const isSunlight = (date: Date, coordinates: Coordinates): boolean => {
+  const { lat, lng } = coordinates;
+  const { sunrise, sunset } = SunCalc.getTimes(date, lat, lng);
+  if (!sunrise || !sunset) {
+    return (
+      SunCalc.getPosition(date, lat, lng).altitude >=
+      SUNRISE_SUNSET_ALTITUDE_DEGREES
+    );
+  }
+
+  const time = date.getTime();
+
+  return time >= sunrise.getTime() && time <= sunset.getTime();
 };

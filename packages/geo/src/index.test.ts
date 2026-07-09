@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { calculateDistance, getCivilTwilight, isCivilDaylight } from './index';
+import {
+  calculateDistance,
+  getCivilTwilight,
+  isCivilDaylight,
+  isSunlight,
+} from './index';
 
 const shelkovo = {
   lat: 55.065422,
@@ -58,6 +63,22 @@ describe('geo package', () => {
     expect(isCivilDaylight(new Date('2026-05-11T18:10:00Z'), shelkovo)).toBe(
       false,
     );
+  });
+
+  it('treats the sunrise-to-sunset interval as sunlight', () => {
+    expect({
+      beforeSunrise: isSunlight(new Date('2026-05-11T01:28:00Z'), shelkovo),
+      afterSunrise: isSunlight(new Date('2026-05-11T01:29:00Z'), shelkovo),
+      beforeSunset: isSunlight(new Date('2026-05-11T17:23:00Z'), shelkovo),
+      afterSunset: isSunlight(new Date('2026-05-11T17:24:00Z'), shelkovo),
+    }).toMatchInlineSnapshot(`
+      {
+        "afterSunrise": true,
+        "afterSunset": false,
+        "beforeSunrise": false,
+        "beforeSunset": true,
+      }
+    `);
   });
 
   it('follows seasonal civil twilight instead of fixed clock hours', () => {

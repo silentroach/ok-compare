@@ -1,4 +1,4 @@
-import { isCivilDaylight, type Coordinates } from '@shelkovo/geo';
+import { isSunlight, type Coordinates } from '@shelkovo/geo';
 
 declare global {
   interface Window {
@@ -12,7 +12,7 @@ const SHELKOVO_COORDINATES = {
 } satisfies Coordinates;
 
 export const getHomeHeroMode = (date = new Date()): 'day' | 'night' =>
-  isCivilDaylight(date, SHELKOVO_COORDINATES) ? 'day' : 'night';
+  isSunlight(date, SHELKOVO_COORDINATES) ? 'day' : 'night';
 
 export const hydrateHomeHero = (
   root: ParentNode = document,

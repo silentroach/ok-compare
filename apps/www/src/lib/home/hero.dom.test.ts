@@ -34,9 +34,9 @@ afterEach(() => {
 });
 
 describe('getHomeHeroMode', () => {
-  it('maps Shelkovo civil daylight to hero modes', () => {
+  it('maps Shelkovo sunrise and sunset to hero modes', () => {
     expect(getHomeHeroMode(new Date('2026-05-11T12:00:00Z'))).toBe('day');
-    expect(getHomeHeroMode(new Date('2026-05-11T21:00:00Z'))).toBe('night');
+    expect(getHomeHeroMode(new Date('2026-05-11T17:30:00Z'))).toBe('night');
   });
 });
 
@@ -44,7 +44,7 @@ describe('hydrateHomeHero', () => {
   it('switches the server-rendered image to the client time mode', () => {
     renderHomeHero();
 
-    hydrateHomeHero(document, new Date('2026-05-11T19:00:00Z'));
+    hydrateHomeHero(document, new Date('2026-05-11T17:30:00Z'));
 
     expect(getShell().dataset.homeHeroMode).toBe('night');
     expect(getImage().getAttribute('src')).toBe('/night.webp');
@@ -56,7 +56,7 @@ describe('hydrateHomeHero', () => {
 
 describe('installHomeHeroHydration', () => {
   it('rehydrates the home hero after Astro client navigation', () => {
-    const now = () => new Date('2026-05-11T19:00:00Z');
+    const now = () => new Date('2026-05-11T17:30:00Z');
 
     renderHomeHero();
     installHomeHeroHydration({ now });
