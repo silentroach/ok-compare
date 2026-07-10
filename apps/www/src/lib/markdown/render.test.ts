@@ -127,7 +127,7 @@ describe('renderMarkdown', () => {
         '[Оригинальный документ (PDF)](https://media.example.com/plan.PDF?download=1) и [страница документа](https://example.com/plan/).',
       ),
     ).toMatchInlineSnapshot(`
-      "<p><a href="https://media.example.com/plan.PDF?download=1" class="ui-file-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 24" class="ui-file-link__icon" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.25 2.75h8l5.5 5.5v13H7.25z"></path><path d="M15.25 2.75v5.5h5.5"></path><path d="M9.25 17.75v-5h1.5a1.5 1.5 0 0 1 0 3h-1.5"></path><path d="M13.75 12.75v5h1a2.5 2.5 0 0 0 0-5h-1"></path><path d="M18.25 17.75v-5h2.5M18.25 15.25h2"></path></svg>Оригинальный документ (PDF)</a> и <a href="https://example.com/plan/">страница документа</a>.</p>"
+      "<p><a href="https://media.example.com/plan.PDF?download=1" class="ui-file-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 24" class="ui-file-link__icon" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="ui-file-pdf-icon__page" d="M7.25 2.75h8l5.5 5.5v13H7.25z"></path><path class="ui-file-pdf-icon__label" d="M15.25 2.75v5.5h5.5"></path><path class="ui-file-pdf-icon__label" d="M9.25 17.75v-5h1.5a1.5 1.5 0 0 1 0 3h-1.5"></path><path class="ui-file-pdf-icon__label" d="M13.75 12.75v5h1a2.5 2.5 0 0 0 0-5h-1"></path><path class="ui-file-pdf-icon__label" d="M18.25 17.75v-5h2.5M18.25 15.25h2"></path></svg>Оригинальный документ (PDF)</a> и <a href="https://example.com/plan/">страница документа</a>.</p>"
     `);
   });
 

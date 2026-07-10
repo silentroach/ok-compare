@@ -609,6 +609,15 @@ a.ui-chip:hover {
   vertical-align: -0.25em;
 }
 
+.ui-file-pdf-icon__page {
+  fill: var(--color-danger);
+  stroke: var(--color-danger);
+}
+
+.ui-file-pdf-icon__label {
+  stroke: var(--color-danger-foreground);
+}
+
 .ui-prose strong {
   font-weight: 600;
 }
