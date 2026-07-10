@@ -1,4 +1,9 @@
-export const CONTACT_CATEGORIES = ['fence', 'garden', 'electricity'] as const;
+export const CONTACT_CATEGORIES = [
+  'fence',
+  'construction',
+  'garden',
+  'electricity',
+] as const;
 export type ContactCategory = (typeof CONTACT_CATEGORIES)[number];
 
 export const CONTACT_REVIEW_SENTIMENTS = ['positive', 'negative'] as const;

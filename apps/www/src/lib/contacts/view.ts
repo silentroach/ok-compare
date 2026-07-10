@@ -25,12 +25,14 @@ export interface ContactPlace {
 
 const CONTACT_CATEGORY_LABELS: Record<ContactCategory, string> = {
   fence: 'Забор',
+  construction: 'Строительство и ремонт',
   garden: 'Сад и участок',
   electricity: 'Электричество',
 };
 
 const CONTACT_CATEGORY_EMOJI: Record<ContactCategory, string> = {
   fence: '🚧',
+  construction: '🛠️',
   garden: '🌿',
   electricity: '⚡',
 };

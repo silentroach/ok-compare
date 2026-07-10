@@ -10,6 +10,9 @@ import {
 describe('contact view helpers', () => {
   it('formats category labels', () => {
     expect(formatContactCategory('fence')).toBe('Забор');
+    expect(formatContactCategory('construction')).toBe(
+      'Строительство и ремонт',
+    );
     expect(formatContactCategory('garden')).toBe('Сад и участок');
     expect(formatContactCategory('electricity')).toBe('Электричество');
   });
