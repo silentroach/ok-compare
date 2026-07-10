@@ -33,6 +33,7 @@
     "./icons/system/CheckCircle.astro": "./src/icons/system/CheckCircle.astro",
     "./icons/system/Phone.astro": "./src/icons/system/Phone.astro",
     "./icons/system/Email.astro": "./src/icons/system/Email.astro",
+    "./icons/system/FilePdf.astro": "./src/icons/system/FilePdf.astro",
     "./icons/system/Globe.astro": "./src/icons/system/Globe.astro",
     "./icons/system/Star.astro": "./src/icons/system/Star.astro",
     "./icons/system/Telegram.astro": "./src/icons/system/Telegram.astro",
@@ -43,7 +44,8 @@
     "./styles.css": "./styles.css",
     "./icons/system/Domyland.astro": "./src/icons/system/Domyland.astro",
     "./LinkWithIcon.astro": "./src/LinkWithIcon.astro",
-    "./ResourceLink.astro": "./src/ResourceLink.astro"
+    "./ResourceLink.astro": "./src/ResourceLink.astro",
+    "./file-icons": "./src/icons/system/file-icons.ts"
   },
   "dependencies": {
     "@fontsource/fira-sans": "^5.2.7",

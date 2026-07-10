@@ -11,6 +11,7 @@ export {
   CheckCircleIcon,
   DomylandIcon,
   EmailIcon,
+  FilePdfIcon,
   GlobeIcon,
   PhoneIcon,
   StarIcon,

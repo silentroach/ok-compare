@@ -597,6 +597,18 @@ a.ui-chip:hover {
   text-underline-offset: 0.18em;
 }
 
+.ui-prose a.ui-file-link {
+  font-weight: 600;
+}
+
+.ui-prose .ui-file-link__icon {
+  display: inline-block;
+  width: 1.45em;
+  height: 1.25em;
+  margin-inline-end: 0.3em;
+  vertical-align: -0.25em;
+}
+
 .ui-prose strong {
   font-weight: 600;
 }

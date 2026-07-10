@@ -13,6 +13,7 @@ import {
   normalizeContentDiffMarkdown,
   renderContentDiffBlocks,
 } from './content-diff';
+import { renderFileLinks } from './file-links';
 
 const FENCED_CODE_BLOCK_LINE = /^[ \t]{0,3}(`{3,}|~{3,})/;
 const HYPHENATED_ORDERED_LIST_ITEM_LINE = /^([ \t]*)-\s+(\d+)([.)])(\s+)/;
@@ -180,7 +181,7 @@ export const renderMarkdown = (
 ): string => {
   const preprocessed = preprocessSiteMarkdown(markdown, options).markdown;
 
-  return renderContentDiffBlocks(
-    render(normalizeContentDiffMarkdown(preprocessed)),
+  return renderFileLinks(
+    renderContentDiffBlocks(render(normalizeContentDiffMarkdown(preprocessed))),
   );
 };

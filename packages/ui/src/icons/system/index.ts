@@ -3,6 +3,7 @@ export { default as CalendarPlusIcon } from './CalendarPlus.astro';
 export { default as CheckCircleIcon } from './CheckCircle.astro';
 export { default as DomylandIcon } from './Domyland.astro';
 export { default as EmailIcon } from './Email.astro';
+export { default as FilePdfIcon } from './FilePdf.astro';
 export { default as GlobeIcon } from './Globe.astro';
 export { default as PhoneIcon } from './Phone.astro';
 export { default as StarIcon } from './Star.astro';
