@@ -81,6 +81,10 @@ const methodIcons = {
       {
         methods.map((method) => {
           const Icon = methodIcons[method.type];
+          const value =
+            method.type === 'telegram'
+              ? method.value.replace(/^@/u, '')
+              : method.value;
 
           return (
             <li>
@@ -91,12 +95,12 @@ const methodIcons = {
                   class="inline-flex items-center gap-1.5 ui-link font-semibold"
                 >
                   <Icon class="size-4 shrink-0" />
-                  {method.value}
+                  {value}
                 </a>
               ) : (
                 <span class="inline-flex items-center gap-1.5">
                   <Icon class="size-4 shrink-0 text-primary" />
-                  {method.value}
+                  {value}
                 </span>
               )}
             </li>

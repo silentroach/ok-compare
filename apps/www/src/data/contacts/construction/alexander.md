@@ -1,11 +1,12 @@
 ---
 title: Александр
-slug: alexander-construction
+slug: alexander
 category: construction
 updated_at: 2026-07-10
 summary: 'Строительство и инженерные работы под ключ, контроль подрядчика со стороны заказчика'
 contacts:
   phone: '+7 905 048-48-84'
+  telegram: https://t.me/SancesStroy
 reviews:
   - sentiment: positive
     summary: 'К Александру обращались для работ с трубами, участком, колодцем и ремонтом дома; отдельно отметили помощь с исправлением вздувшегося пола после строителей.'
