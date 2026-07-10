@@ -38,8 +38,12 @@ trap clean EXIT
 test -f "$src"
 
 if [ "$name" = media-kpshelkovo-online ]; then
+  owner=${SUDO_USER:-root}
+  group=$(id -gn "$owner")
+
   install -d -o root -g root -m 0755 /var/cache/nginx
   install -d -o www-data -g www-data -m 0750 /var/cache/nginx/media-kpshelkovo-online
+  install -d -o "$owner" -g "$group" -m 0755 /var/www/media-kpshelkovo-online
 fi
 
 if [ -f "$dst" ]; then

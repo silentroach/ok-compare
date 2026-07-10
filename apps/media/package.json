@@ -1,0 +1,20 @@
+{
+  "name": "@shelkovo/media",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && rm -rf ../../dist/media && mkdir -p ../../dist && cp -R dist/site ../../dist/media",
+    "preview": "astro preview",
+    "typecheck": "astro sync && tsc --noEmit"
+  },
+  "dependencies": {
+    "@shelkovo/ui": "workspace:*",
+    "astro": "^7.0.6"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.3",
+    "typescript": "^6.0.3"
+  }
+}

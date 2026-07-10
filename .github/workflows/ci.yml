@@ -113,6 +113,7 @@ jobs:
       DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
       DEPLOY_USER: ${{ secrets.DEPLOY_USER || 'deploy' }}
       DEPLOY_WWW_PATH: ${{ secrets.DEPLOY_WWW_PATH }}
+      DEPLOY_MEDIA_PATH: /var/www/media-kpshelkovo-online
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -189,19 +190,6 @@ jobs:
           fi
           chmod 600 ~/.ssh/known_hosts
 
-      - name: Sync build to server
-        run: |
-          ssh_opts="ssh -p $DEPLOY_PORT -o ControlMaster=auto -o ControlPersist=600 -o ControlPath=$HOME/.ssh/cm-%C"
-
-          # --no-t: не обновлять mtime у файлов, контент которых не изменился
-          # (-c сравнивает по checksum, без -t mtime на сервере остается прежним
-          # для уже существующих файлов; новые файлы получат mtime деплоя)
-          rsync_opts="-azc --no-t --delete --mkpath --chmod=D755,F644"
-
-          rsync $rsync_opts \
-            -e "$ssh_opts" \
-            dist/www/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_WWW_PATH/"
-
       - name: Deploy nginx config
         run: |
           ssh_opts="-p $DEPLOY_PORT -o ControlMaster=auto -o ControlPersist=600 -o ControlPath=$HOME/.ssh/cm-%C"
@@ -222,6 +210,24 @@ jobs:
             sudo -n /usr/local/sbin/deploy-nginx-site /tmp/media-kpshelkovo-online.conf.new media-kpshelkovo-online
             sudo -n /usr/local/sbin/deploy-nginx-site /tmp/sravni-shelkovo.conf.new sravni-shelkovo
           '
+
+      - name: Sync build to server
+        run: |
+          ssh_opts="-p $DEPLOY_PORT -o ControlMaster=auto -o ControlPersist=600 -o ControlPath=$HOME/.ssh/cm-%C"
+
+          # --no-t: не обновлять mtime у файлов, контент которых не изменился
+          # (-c сравнивает по checksum, без -t mtime на сервере остается прежним
+          # для уже существующих файлов; новые файлы получат mtime деплоя)
+          rsync_opts="-azc --no-t --delete --mkpath --chmod=D755,F644"
+
+          rsync $rsync_opts \
+            -e "ssh $ssh_opts" \
+            dist/www/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_WWW_PATH/"
+
+          ssh $ssh_opts "$DEPLOY_USER@$DEPLOY_HOST" "test -d '$DEPLOY_MEDIA_PATH' && test -w '$DEPLOY_MEDIA_PATH'"
+          rsync $rsync_opts \
+            -e "ssh $ssh_opts" \
+            dist/media/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_MEDIA_PATH/"
 
       - name: Publish deployed URLs
         run: |

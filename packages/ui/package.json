@@ -16,6 +16,7 @@
   "exports": {
     "./Breadcrumbs.astro": "./src/Breadcrumbs.astro",
     "./FontPreloads.astro": "./src/FontPreloads.astro",
+    "./NotFoundView.astro": "./src/NotFoundView.astro",
     "./icons": "./src/icons/index.ts",
     "./icons/areas": "./src/icons/areas/index.ts",
     "./icons/areas/Forest.astro": "./src/icons/areas/Forest.astro",
@@ -42,6 +43,7 @@
     "./Link.svelte": "./src/Link.svelte",
     "./SiteFooter.astro": "./src/SiteFooter.astro",
     "./styles.css": "./styles.css",
+    "./standalone-error.css": "./standalone-error.css",
     "./icons/system/Domyland.astro": "./src/icons/system/Domyland.astro",
     "./LinkWithIcon.astro": "./src/LinkWithIcon.astro",
     "./ResourceLink.astro": "./src/ResourceLink.astro",

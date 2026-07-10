@@ -6,7 +6,8 @@
 
 ```text
 apps/
-  www/       # единое Astro-приложение kpshelkovo.online, включая /815/compare
+  www/       # основное Astro-приложение kpshelkovo.online, включая /815/compare
+  media/     # статическая 404 для media.kpshelkovo.online
 packages/
   ui/        # shared styles / UI primitives
   url/
@@ -19,7 +20,7 @@ ops/         # nginx и deploy-конфиги
 ## Команды
 
 ```bash
-# локальный сайт на :4321, включая /815/compare
+# основной сайт на :4321 и media app на :4322
 pnpm dev
 
 # проверки
@@ -33,10 +34,12 @@ pnpm build
 ## Выходы сборки
 
 - `dist/www` — основной сайт `kpshelkovo.online`
+- `dist/media` — статическая 404 для `media.kpshelkovo.online`
 
 ## Деплой
 
 - `kpshelkovo.online` получает содержимое `dist/www`
+- `media.kpshelkovo.online` получает error app из `dist/media`, а остальные запросы проксирует в S3
 - старый compare-домен обслуживается nginx-редиректами
 - nginx-конфиги лежат в `ops/nginx/`
 

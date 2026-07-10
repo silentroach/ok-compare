@@ -1,21 +1,10 @@
 ---
-import { getImage } from 'astro:assets';
-import logo from '../../../../docs/design/logo.png';
+import NotFoundView from '@shelkovo/ui/NotFoundView.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 
 const title = 'Страница не найдена — Шелково Онлайн';
 const description =
   'Такой страницы нет или ее адрес изменился. Вернитесь на главную страницу Шелково Онлайн.';
-const logoWidths = [448, 672, 896] as const;
-const logoImages = await Promise.all(
-  logoWidths.map((width) =>
-    getImage({ src: logo, width, format: 'webp', quality: 90 }),
-  ),
-);
-const logoSrc = logoImages[logoImages.length - 1]?.src ?? logo.src;
-const logoSrcset = logoImages
-  .map((image, index) => `${image.src} ${logoWidths[index]}w`)
-  .join(', ');
 ---
 
 <BaseLayout
@@ -23,58 +12,11 @@ const logoSrcset = logoImages
   description={description}
   robots="noindex, nofollow"
   canonical="/404.html"
-  bodyClass="site-404-page"
 >
-  <main
-    class="site-404 flex min-h-[calc(100dvh-4rem)] w-full items-center justify-center px-5 py-16 text-center md:px-8"
-  >
-    <section class="flex w-full max-w-5xl flex-col items-center">
-      <img
-        src={logoSrc}
-        srcset={logoSrcset}
-        sizes="(max-width: 40rem) 92vw, 28rem"
-        alt="Логотип Шелково"
-        width={logo.width}
-        height={logo.height}
-        class="site-404-logo h-auto w-[min(28rem,86vw)]"
-        loading="eager"
-        decoding="async"
-        fetchpriority="high"
-      />
-      <h1 class="ui-page-title mt-7 max-w-2xl">Страница не найдена</h1>
-      <p class="ui-copy mt-4 max-w-xl text-muted-foreground">
-        Адрес мог измениться, а ссылка устареть. Начните с главной страницы или
-        откройте новости и статус сервисов.
-      </p>
-      <a href="/" class="ui-link mt-7 font-medium"> Вернуться на главную </a>
-    </section>
-  </main>
+  <NotFoundView
+    title="Страница не найдена"
+    description="Адрес мог измениться, а ссылка устареть. Начните с главной страницы или откройте новости и статус сервисов."
+    homeHref="/"
+    homeLabel="Вернуться на главную"
+  />
 </BaseLayout>
-
-<style>
-  :global(.site-404-page),
-  .site-404 {
-    background:
-      radial-gradient(
-        circle at 50% 28%,
-        color-mix(in oklab, var(--color-accent-soft) 72%, transparent),
-        transparent 24rem
-      ),
-      radial-gradient(
-        circle at 50% 68%,
-        color-mix(in oklab, var(--color-primary-soft) 74%, transparent),
-        transparent 19rem
-      ),
-      rgb(252 250 246);
-  }
-
-  .site-404-logo {
-    mix-blend-mode: darken;
-  }
-
-  @media (max-width: 40rem) {
-    .site-404-logo {
-      width: min(22rem, 92vw);
-    }
-  }
-</style>

@@ -1,0 +1,25 @@
+---
+import '@shelkovo/ui/standalone-error.css';
+import NotFoundView from '@shelkovo/ui/NotFoundView.astro';
+
+const title = 'Файл не найден — Шелково Онлайн';
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#fcfaf6" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <NotFoundView
+      title="Файл не найден"
+      homeHref="https://kpshelkovo.online/"
+      homeLabel="Вернуться на сайт"
+      fullHeight
+    />
+  </body>
+</html>

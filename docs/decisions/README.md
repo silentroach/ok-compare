@@ -23,3 +23,4 @@
 - [ADR-017: CSP с inline-исключениями для Astro и Яндекс Карт](017-csp-inline-exceptions-for-astro-yandex-maps.md) - принят, 2026-07-01.
 - [ADR-018: Markdown-first сарафан](018-markdown-first-useful-contacts.md) - принят, 2026-07-06.
 - [ADR-019: Публичный media-origin через nginx перед S3](019-public-media-origin.md) - принят, 2026-07-10.
+- [ADR-020: Отдельное Astro-приложение для media error pages](020-separate-media-error-app.md) - принят, 2026-07-11.

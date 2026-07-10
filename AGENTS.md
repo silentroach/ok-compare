@@ -7,6 +7,7 @@
 ```text
 apps/
   www/       # единое Astro-приложение kpshelkovo.online
+  media/     # статическая 404 для media.kpshelkovo.online
 packages/    # shared утилиты и UI
 docs/        # документация, дизайн-гайды и ADR
 ops/         # nginx и deploy-инфраструктура
@@ -84,10 +85,12 @@ pnpm build          # dist/www
 ## Артефакты сборки
 
 - `dist/www` — корневой сайт `kpshelkovo.online`.
+- `dist/media` — статическая 404 для `media.kpshelkovo.online`.
 
 ## Local dev ports
 
 - `pnpm dev` поднимает интегрированный dev-стек на `http://localhost:4321`.
+- Media app доступен отдельно на `http://localhost:4322`.
 
 ## Правила Typescript
 
