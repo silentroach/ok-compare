@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@fontsource/fira-sans": "^5.2.7",
-    "@fontsource/pt-sans-caption": "^5.2.8",
+    "@fontsource/pt-serif": "^5.2.8",
     "@shelkovo/url": "workspace:*"
   },
   "devDependencies": {

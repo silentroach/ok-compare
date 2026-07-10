@@ -5,21 +5,21 @@
 
 /* Keep only subsets used by the site; broad fontsource weight imports emit every script and WOFF fallback. */
 @font-face {
-  font-family: 'PT Sans Caption';
+  font-family: 'PT Serif';
   font-style: normal;
   font-display: swap;
   font-weight: 700;
-  src: url('@fontsource/pt-sans-caption/files/pt-sans-caption-cyrillic-700-normal.woff2')
+  src: url('@fontsource/pt-serif/files/pt-serif-cyrillic-700-normal.woff2')
     format('woff2');
   unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 
 @font-face {
-  font-family: 'PT Sans Caption';
+  font-family: 'PT Serif';
   font-style: normal;
   font-display: swap;
   font-weight: 700;
-  src: url('@fontsource/pt-sans-caption/files/pt-sans-caption-latin-ext-700-normal.woff2')
+  src: url('@fontsource/pt-serif/files/pt-serif-latin-ext-700-normal.woff2')
     format('woff2');
   unicode-range:
     U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
@@ -28,11 +28,11 @@
 }
 
 @font-face {
-  font-family: 'PT Sans Caption';
+  font-family: 'PT Serif';
   font-style: normal;
   font-display: swap;
   font-weight: 700;
-  src: url('@fontsource/pt-sans-caption/files/pt-sans-caption-latin-700-normal.woff2')
+  src: url('@fontsource/pt-serif/files/pt-serif-latin-700-normal.woff2')
     format('woff2');
   unicode-range:
     U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
@@ -275,7 +275,7 @@
   --color-muted-soft: var(--color-unknown-soft);
   --color-muted-border-soft: var(--color-unknown-border);
 
-  --font-heading: 'PT Sans Caption', 'PT Sans', system-ui, sans-serif;
+  --font-heading: 'PT Serif', Georgia, serif;
   --font-body: 'Fira Sans', system-ui, sans-serif;
 }
 
@@ -478,7 +478,7 @@
   h6 {
     font-family: var(--font-heading);
     font-weight: 700;
-    letter-spacing: 0.01em;
+    letter-spacing: -0.012em;
     line-height: 1.25;
     text-wrap: balance;
   }
@@ -1075,7 +1075,7 @@ a.ui-chip:hover {
   font-size: 2.25rem;
   font-weight: 700;
   line-height: 1.1111111111;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.018em;
   color: var(--color-foreground);
   text-wrap: balance;
 }
