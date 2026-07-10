@@ -22,3 +22,4 @@
 - [ADR-016: Markdown-first отзывы собственников](016-markdown-first-owner-reviews.md) - принят, 2026-06-25.
 - [ADR-017: CSP с inline-исключениями для Astro и Яндекс Карт](017-csp-inline-exceptions-for-astro-yandex-maps.md) - принят, 2026-07-01.
 - [ADR-018: Markdown-first сарафан](018-markdown-first-useful-contacts.md) - принят, 2026-07-06.
+- [ADR-019: Публичный media-origin через nginx перед S3](019-public-media-origin.md) - принят, 2026-07-10.

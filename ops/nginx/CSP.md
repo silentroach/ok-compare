@@ -68,12 +68,20 @@
 
 ## Изображения и тайлы карт
 
-`img-src 'self' data: blob: https://mc.yandex.ru https://mc.yandex.com https://api-maps.yandex.ru https://*.api-maps.yandex.ru https://*.maps.yandex.net https://*.yandex.ru https://yastatic.net`
+`img-src 'self' data: blob: https://media.kpshelkovo.online https://mc.yandex.ru https://mc.yandex.com https://api-maps.yandex.ru https://*.api-maps.yandex.ru https://*.maps.yandex.net https://*.yandex.ru https://yastatic.net`
 
 - `'self'` покрывает локальные изображения и собранные ассеты.
 - `data:` и `blob:` разрешают встроенные и сгенерированные изображения, которые могут использоваться кодом сайта или сторонними виджетами.
+- `https://media.kpshelkovo.online` отдает изображения из публичного S3-бакета через контролируемый nginx-прокси.
 - Яндекс Метрика использует image-beacon запросы.
 - Яндекс Карты могут загружать растровые ресурсы и ассеты карты с доменов API, map tiles и `yastatic.net`.
+
+## Аудио и видео
+
+`media-src 'self' https://media.kpshelkovo.online`
+
+- `'self'` сохраняет загрузку локальных аудио- и видеофайлов.
+- `https://media.kpshelkovo.online` разрешает воспроизводить файлы из публичного S3-бакета через nginx-прокси.
 
 ## Стили и шрифты
 

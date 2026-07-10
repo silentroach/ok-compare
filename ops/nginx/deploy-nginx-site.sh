@@ -37,6 +37,11 @@ trap clean EXIT
 
 test -f "$src"
 
+if [ "$name" = media-kpshelkovo-online ]; then
+  install -d -o root -g root -m 0755 /var/cache/nginx
+  install -d -o www-data -g www-data -m 0750 /var/cache/nginx/media-kpshelkovo-online
+fi
+
 if [ -f "$dst" ]; then
   cp "$dst" "$bak"
   had_dst=true
