@@ -7,9 +7,12 @@ import {
   DamIcon,
   DomylandIcon,
   EmailIcon,
+  FiberIcon,
+  FilePdfIcon,
   ForestIcon,
   GlobeIcon,
   LightningIcon,
+  MapPinIcon,
   ParkIcon,
   PhoneIcon,
   RiverIcon,
@@ -20,38 +23,84 @@ import {
   WhatsAppIcon,
 } from '@shelkovo/ui/icons';
 
-const groups = [
+const standaloneGroups = [
   {
-    label: 'Areas',
+    label: 'Территории',
     icons: [
-      { name: 'Forest', Icon: ForestIcon, variant: 'wide' },
-      { name: 'Park', Icon: ParkIcon, variant: 'wide' },
-      { name: 'River', Icon: RiverIcon, variant: 'wide' },
-      { name: 'Village', Icon: VillageIcon, variant: 'wide' },
+      { name: 'ForestIcon', Icon: ForestIcon, wide: true },
+      { name: 'ParkIcon', Icon: ParkIcon, wide: true },
+      { name: 'RiverIcon', Icon: RiverIcon, wide: true },
+      { name: 'VillageIcon', Icon: VillageIcon, wide: true },
     ],
   },
   {
-    label: 'Services',
+    label: 'Сервисы',
     icons: [
-      { name: 'Dam', Icon: DamIcon },
-      { name: 'Lightning', Icon: LightningIcon },
-      { name: 'WaterDrop', Icon: WaterDropIcon },
+      { name: 'DamIcon', Icon: DamIcon, wide: false },
+      { name: 'FiberIcon', Icon: FiberIcon, wide: false },
+      { name: 'LightningIcon', Icon: LightningIcon, wide: false },
+      { name: 'WaterDropIcon', Icon: WaterDropIcon, wide: false },
     ],
   },
   {
-    label: 'System',
+    label: 'Состояния и действия',
     icons: [
-      { name: 'AlertCircle', Icon: AlertCircleIcon },
-      { name: 'CalendarPlus', Icon: CalendarPlusIcon },
-      { name: 'CheckCircle', Icon: CheckCircleIcon },
-      { name: 'Domyland', Icon: DomylandIcon, variant: 'brand' },
-      { name: 'Email', Icon: EmailIcon },
-      { name: 'Globe', Icon: GlobeIcon },
-      { name: 'Phone', Icon: PhoneIcon },
-      { name: 'Star', Icon: StarIcon },
-      { name: 'Telegram', Icon: TelegramIcon },
-      { name: 'WhatsApp', Icon: WhatsAppIcon },
+      { name: 'AlertCircleIcon', Icon: AlertCircleIcon, wide: false },
+      { name: 'CalendarPlusIcon', Icon: CalendarPlusIcon, wide: false },
+      { name: 'CheckCircleIcon', Icon: CheckCircleIcon, wide: false },
+      { name: 'StarIcon', Icon: StarIcon, wide: false },
     ],
+  },
+] as const;
+
+const linkIcons = [
+  {
+    name: 'DomylandIcon',
+    label: 'Домиленд',
+    href: '#domyland',
+    Icon: DomylandIcon,
+  },
+  {
+    name: 'EmailIcon',
+    label: 'Электронная почта',
+    href: '#email',
+    Icon: EmailIcon,
+  },
+  {
+    name: 'FilePdfIcon',
+    label: 'PDF-документ',
+    href: '#pdf',
+    Icon: FilePdfIcon,
+  },
+  {
+    name: 'GlobeIcon',
+    label: 'Сайт',
+    href: '#website',
+    Icon: GlobeIcon,
+  },
+  {
+    name: 'MapPinIcon',
+    label: 'Яндекс Карты',
+    href: '#map',
+    Icon: MapPinIcon,
+  },
+  {
+    name: 'PhoneIcon',
+    label: '+7 999 123-45-67',
+    href: '#phone',
+    Icon: PhoneIcon,
+  },
+  {
+    name: 'TelegramIcon',
+    label: 'Telegram',
+    href: '#telegram',
+    Icon: TelegramIcon,
+  },
+  {
+    name: 'WhatsAppIcon',
+    label: 'WhatsApp',
+    href: '#whatsapp',
+    Icon: WhatsAppIcon,
   },
 ] as const;
 ---
@@ -61,41 +110,72 @@ const groups = [
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Icons visual fixture</title>
+    <title>Каталог иконок</title>
   </head>
   <body class="ui-root-site icons-visual-page">
     <main class="icons-visual-shell" data-testid="icons-catalog">
       <header class="icons-visual-header">
-        <p class="icons-visual-kicker">UI package</p>
-        <h1>Shared icons</h1>
-        <p>Один снимок для всех Astro-иконок shared UI.</p>
+        <h1>Каталог иконок</h1>
+        <p>Самостоятельные иконки и примеры ссылок в рабочем размере.</p>
       </header>
 
-      {
-        groups.map((group) => (
-          <section
-            class="icons-visual-group"
-            aria-labelledby={`icons-${group.label}`}
-          >
-            <h2 id={`icons-${group.label}`}>{group.label}</h2>
-            <div class="icons-visual-grid">
-              {group.icons.map(({ name, Icon, variant }) => (
-                <article
-                  class={`icons-visual-card icons-visual-card--${group.label.toLowerCase()}`}
-                  data-icon-card
-                >
-                  <div class="icons-visual-stage" aria-hidden="true">
-                    <Icon
-                      class={`icons-visual-icon${variant === 'wide' ? ' icons-visual-icon--wide' : ''}${variant === 'brand' ? ' icons-visual-icon--brand' : ''}`}
-                    />
-                  </div>
-                  <p>{name}</p>
-                </article>
-              ))}
-            </div>
-          </section>
-        ))
-      }
+      <section class="icons-visual-section" aria-labelledby="standalone-icons">
+        <div class="icons-visual-section-heading">
+          <h2 id="standalone-icons">Самостоятельные иконки</h2>
+          <p>Иконка и имя компонента</p>
+        </div>
+
+        <div class="icons-visual-groups">
+          {
+            standaloneGroups.map((group) => (
+              <section
+                class="icons-visual-group"
+                aria-labelledby={`icons-${group.label}`}
+              >
+                <h3 id={`icons-${group.label}`}>{group.label}</h3>
+                <ul class="icons-visual-list">
+                  {group.icons.map(({ name, Icon, wide }) => (
+                    <li
+                      class="icons-visual-item"
+                      data-icon-item
+                      data-icon-name={name}
+                    >
+                      <Icon
+                        class:list={[
+                          'icons-visual-icon',
+                          wide && 'icons-visual-icon--wide',
+                        ]}
+                      />
+                      <span>{name}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))
+          }
+        </div>
+      </section>
+
+      <section class="icons-visual-section" aria-labelledby="link-icons">
+        <div class="icons-visual-section-heading">
+          <h2 id="link-icons">Иконки в ссылках</h2>
+          <p>Ссылка с привычной подписью и имя компонента</p>
+        </div>
+
+        <ul class="icons-visual-links">
+          {
+            linkIcons.map(({ name, label, href, Icon }) => (
+              <li data-icon-item data-icon-name={name}>
+                <a href={href} class="icons-visual-link">
+                  <Icon class="icons-visual-icon" />
+                  <span>{label}</span>
+                  <small>{name}</small>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
     </main>
   </body>
 </html>
@@ -104,142 +184,174 @@ const groups = [
   .icons-visual-page {
     min-height: 100vh;
     margin: 0;
-    background:
-      radial-gradient(
-        circle at 14% 8%,
-        oklch(95% 0.05 146) 0,
-        transparent 28rem
-      ),
-      radial-gradient(
-        circle at 88% 12%,
-        oklch(93% 0.055 208) 0,
-        transparent 24rem
-      ),
-      linear-gradient(180deg, oklch(98% 0.008 140), oklch(95% 0.012 140));
+    background: var(--color-bg);
     color: var(--color-text);
   }
 
   .icons-visual-shell {
     display: grid;
-    gap: 2rem;
-    width: min(100%, 76rem);
+    gap: 2.5rem;
+    width: min(calc(100% - 2rem), 64rem);
     margin: 0 auto;
-    padding: 3rem;
+    padding-block: 3rem;
+  }
+
+  .icons-visual-header,
+  .icons-visual-section,
+  .icons-visual-section-heading,
+  .icons-visual-group {
+    display: grid;
   }
 
   .icons-visual-header {
-    display: grid;
-    gap: 0.45rem;
-    max-width: 44rem;
+    gap: 0.5rem;
   }
 
-  .icons-visual-kicker,
+  .icons-visual-header h1,
   .icons-visual-header p,
-  .icons-visual-card p {
+  .icons-visual-section-heading h2,
+  .icons-visual-section-heading p,
+  .icons-visual-group h3 {
     margin: 0;
-  }
-
-  .icons-visual-kicker {
-    color: var(--color-accent-strong);
-    font-size: 0.8125rem;
-    font-weight: 700;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
   }
 
   .icons-visual-header h1 {
-    margin: 0;
-    color: var(--color-text-strong);
     font-family: var(--font-heading);
-    font-size: clamp(2rem, 4vw, 3.2rem);
-    line-height: 1;
+    font-size: 2.25rem;
+    line-height: 1.1;
   }
 
-  .icons-visual-header p {
+  .icons-visual-header p,
+  .icons-visual-section-heading p {
     color: var(--color-text-muted);
-    font-size: 1rem;
     line-height: 1.6;
   }
 
-  .icons-visual-header code {
-    color: var(--color-text-strong);
-    font-size: 0.95em;
+  .icons-visual-section {
+    gap: 1.25rem;
+  }
+
+  .icons-visual-section-heading {
+    gap: 0.25rem;
+  }
+
+  .icons-visual-section-heading h2 {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .icons-visual-section-heading p {
+    font-size: 0.875rem;
+  }
+
+  .icons-visual-groups {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem 2rem;
   }
 
   .icons-visual-group {
-    display: grid;
-    gap: 0.85rem;
+    gap: 0.625rem;
   }
 
-  .icons-visual-group h2 {
-    margin: 0;
+  .icons-visual-group h3 {
     color: var(--color-text-muted);
-    font-size: 0.82rem;
+    font-size: 0.75rem;
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
   }
 
-  .icons-visual-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  .icons-visual-list,
+  .icons-visual-links {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .icons-visual-list,
+  .icons-visual-links {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .icons-visual-item,
+  .icons-visual-links li {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .icons-visual-item {
+    display: flex;
+    min-height: 3.5rem;
+    align-items: center;
     gap: 1rem;
   }
 
-  .icons-visual-card {
+  .icons-visual-links {
     display: grid;
-    gap: 0.8rem;
-    min-height: 9rem;
-    padding: 1rem;
-    border: 1px solid color-mix(in oklab, var(--color-border) 84%, white 16%);
-    border-radius: 1.35rem;
-    background: color-mix(in oklab, white 84%, var(--color-bg) 16%);
-    box-shadow: 0 1rem 2.4rem oklch(22% 0.035 145 / 0.08);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2rem;
   }
 
-  .icons-visual-stage {
+  .icons-visual-link {
     display: grid;
-    min-height: 4.75rem;
-    place-items: center;
-    border-radius: 1rem;
-    background:
-      linear-gradient(
-        135deg,
-        oklch(100% 0 0 / 0.78),
-        oklch(98% 0.012 145 / 0.7)
-      ),
-      color-mix(in oklab, var(--color-bg) 88%, white 12%);
-    color: var(--color-accent-strong);
+    min-height: 4rem;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration-color: color-mix(in oklab, currentColor 35%, transparent);
+    text-underline-offset: 0.2em;
   }
 
-  .icons-visual-card--services .icons-visual-stage {
-    color: oklch(57% 0.16 226);
+  .icons-visual-link:hover {
+    color: var(--color-primary-hover);
+    text-decoration-color: currentColor;
   }
 
-  .icons-visual-card--system .icons-visual-stage {
-    color: oklch(42% 0.04 150);
+  .icons-visual-link small {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-weight: 400;
   }
 
-  .icons-visual-icon {
-    display: block;
-    width: 2.5rem;
-    height: 2.5rem;
+  :global(.icons-visual-icon) {
+    width: 1.5rem;
+    height: 1.5rem;
+    flex: none;
+    color: var(--color-primary);
   }
 
-  .icons-visual-icon--wide {
-    width: 4.9rem;
-    height: 3rem;
+  :global(.icons-visual-icon--wide) {
+    width: 2.75rem;
   }
 
-  .icons-visual-icon--brand {
-    width: 2.7rem;
-    height: 2.7rem;
+  .icons-visual-links
+    li[data-icon-name='TelegramIcon']
+    :global(.icons-visual-icon) {
+    color: var(--color-telegram);
   }
 
-  .icons-visual-card p {
-    color: var(--color-text-strong);
-    font-size: 0.92rem;
-    font-weight: 700;
-    text-align: center;
+  .icons-visual-links
+    li[data-icon-name='WhatsAppIcon']
+    :global(.icons-visual-icon) {
+    color: var(--color-whatsapp);
+  }
+
+  .icons-visual-item[data-icon-name='StarIcon'] :global(.icons-visual-icon) {
+    color: var(--color-star);
+  }
+
+  .icons-visual-item[data-icon-name='WaterDropIcon']
+    :global(.icons-visual-icon) {
+    color: var(--color-water);
+  }
+
+  @media (max-width: 44rem) {
+    .icons-visual-groups,
+    .icons-visual-links {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

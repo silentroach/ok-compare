@@ -268,6 +268,14 @@
   --color-water-soft: oklch(95.6% 0.022 230);
   --color-water-border: oklch(84% 0.05 228);
 
+  --color-domyland-start: #7047eb;
+  --color-domyland-end: #aa62f2;
+  --color-star: oklch(69% 0.12 84);
+  --color-telegram: #229ed9;
+  --color-whatsapp: #25d366;
+  --color-yandex-maps: #df574e;
+  --color-yandex-maps-light: #ff8277;
+
   --color-unknown: oklch(48% 0.04 125);
   --color-unknown-soft: oklch(96.8% 0.004 125);
   --color-unknown-border: oklch(88.5% 0.008 130);
@@ -1072,7 +1080,14 @@ a.ui-chip:hover {
   height: var(--ui-map-marker-size, 18px);
   border: var(--ui-map-marker-border, 2px solid var(--color-surface-raised));
   border-radius: 999px;
-  background: var(--ui-map-marker-color, var(--color-primary));
+  background: var(
+    --ui-map-marker-color,
+    linear-gradient(
+      145deg,
+      var(--color-yandex-maps-light),
+      var(--color-yandex-maps)
+    )
+  );
   box-shadow: var(--ui-map-marker-shadow, 0 2px 6px oklch(24% 0.04 145 / 0.35));
 }
 

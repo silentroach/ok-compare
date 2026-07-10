@@ -6,6 +6,7 @@ import SettlementMap from '@/compare/components/SettlementMap.svelte';
 import SourcesList from '@/compare/components/SourcesList.svelte';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
+import { GlobeIcon, MapPinIcon, TelegramIcon } from '@shelkovo/ui/icons';
 import {
   formatCurrency,
   formatDistance,
@@ -251,20 +252,7 @@ const heroMap = hasPoint
                       class="ui-icon-btn"
                       title="Перейти на сайт поселка"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-                        />
-                      </svg>
+                      <GlobeIcon class="h-5 w-5" />
                     </a>
                   )
                 }
@@ -278,26 +266,7 @@ const heroMap = hasPoint
                       class="ui-icon-btn"
                       title="Перейти в Telegram-канал"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M3 11.5L21 3 13 21l-2.5-7.5L3 11.5z"
-                        />
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M10.5 13.5L21 3"
-                        />
-                      </svg>
+                      <TelegramIcon class="h-5 w-5 text-telegram" />
                     </a>
                   )
                 }
@@ -310,25 +279,7 @@ const heroMap = hasPoint
                   class="ui-icon-btn"
                   title="Открыть на Яндекс.Картах"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    ></path>
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                  </svg>
+                  <MapPinIcon class="h-5 w-5" />
                 </a>
               </div>
             </div>
@@ -525,20 +476,7 @@ const heroMap = hasPoint
                     class="ui-btn ui-btn-sm ui-btn-outline min-h-9"
                     title="Перейти на сайт поселка"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-                      />
-                    </svg>
+                    <GlobeIcon class="h-4 w-4" />
                     <span>Сайт</span>
                   </a>
                 )
@@ -553,26 +491,7 @@ const heroMap = hasPoint
                     class="ui-btn ui-btn-sm ui-btn-outline min-h-9"
                     title="Перейти в Telegram-канал"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M3 11.5L21 3 13 21l-2.5-7.5L3 11.5z"
-                      />
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M10.5 13.5L21 3"
-                      />
-                    </svg>
+                    <TelegramIcon class="h-4 w-4 text-telegram" />
                     <span>Telegram</span>
                   </a>
                 )
@@ -586,25 +505,7 @@ const heroMap = hasPoint
                 class="ui-btn ui-btn-sm ui-btn-outline min-h-9"
                 title="Открыть на Яндекс.Картах"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                  ></path>
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                </svg>
+                <MapPinIcon class="h-4 w-4" />
                 <span>Карта</span>
               </a>
             </div>

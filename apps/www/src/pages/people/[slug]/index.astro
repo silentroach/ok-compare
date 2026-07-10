@@ -117,7 +117,7 @@ const schema = personProfilePageSchema({
                   {profile.contacts.map((contact) => (
                     <li class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
                       {contact.type === 'telegram' ? (
-                        <TelegramIcon class="size-4 shrink-0 text-primary" />
+                        <TelegramIcon class="size-4 shrink-0 text-telegram" />
                       ) : contact.type === 'phone' ? (
                         <PhoneIcon class="size-4 shrink-0 text-primary" />
                       ) : (

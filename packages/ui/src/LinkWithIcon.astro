@@ -19,12 +19,15 @@ const {
   ariaLabel,
   ariaLabelPrefix,
   class: className,
-  iconClass = 'size-3.5 shrink-0 text-primary',
+  iconClass,
   textClass,
 }: Props = Astro.props;
 
 const isTelegramLink = isTelegramUrl(href);
 const isDomylandLink = isDomylandUrl(href);
+const resolvedIconClass =
+  iconClass ??
+  (isTelegramLink ? 'size-3.5 shrink-0 text-telegram' : 'size-3.5 shrink-0');
 const targetUrl =
   !isTelegramLink && !isDomylandLink
     ? new URL(href.startsWith('//') ? `https:${href}` : href)
@@ -53,7 +56,7 @@ const resolvedAriaLabel =
     className,
   ]}
 >
-  {isTelegramLink && <TelegramIcon class={iconClass} />}
-  {isDomylandLink && <DomylandIcon class={iconClass} />}
+  {isTelegramLink && <TelegramIcon class={resolvedIconClass} />}
+  {isDomylandLink && <DomylandIcon class={resolvedIconClass} />}
   <span class={textClass}>{resolvedLabel}</span>
 </a>

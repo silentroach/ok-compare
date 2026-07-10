@@ -13,6 +13,7 @@ export {
   EmailIcon,
   FilePdfIcon,
   GlobeIcon,
+  MapPinIcon,
   PhoneIcon,
   StarIcon,
   TelegramIcon,

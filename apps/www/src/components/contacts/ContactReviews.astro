@@ -62,7 +62,7 @@ const isTelegramUrl = (url: string): boolean => {
               />
               <span class="mt-0.5 inline-flex items-center gap-1.5 text-xs font-medium leading-5 text-muted-foreground transition-colors group-hover:text-foreground">
                 {isTelegramUrl(review.url) ? (
-                  <TelegramIcon class="size-3 shrink-0 text-primary" />
+                  <TelegramIcon class="size-3 shrink-0 text-telegram" />
                 ) : null}
                 <span>{formatContactReviewDate(review)}</span>
               </span>

@@ -1,0 +1,26 @@
+---
+interface Props {
+  readonly class?: string;
+}
+
+const { class: className }: Props = Astro.props;
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 24 24"
+  class={className}
+  aria-hidden="true"
+>
+  <defs>
+    <linearGradient id="map-pin-icon-gradient" x1="7" y1="4" x2="18" y2="20">
+      <stop stop-color="var(--color-yandex-maps-light, #ff8277)"></stop>
+      <stop offset="1" stop-color="var(--color-yandex-maps, #df574e)"></stop>
+    </linearGradient>
+  </defs>
+  <path
+    d="M19 10.1c0 5.2-7 10.1-7 10.1s-7-4.9-7-10.1a7 7 0 1 1 14 0Z"
+    fill="url(#map-pin-icon-gradient)"></path>
+  <circle cx="12" cy="10.1" r="1.9" fill="var(--color-surface-raised, white)"
+  ></circle>
+</svg>

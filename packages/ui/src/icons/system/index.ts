@@ -5,6 +5,7 @@ export { default as DomylandIcon } from './Domyland.astro';
 export { default as EmailIcon } from './Email.astro';
 export { default as FilePdfIcon } from './FilePdf.astro';
 export { default as GlobeIcon } from './Globe.astro';
+export { default as MapPinIcon } from './MapPin.astro';
 export { default as PhoneIcon } from './Phone.astro';
 export { default as StarIcon } from './Star.astro';
 export { default as TelegramIcon } from './Telegram.astro';

@@ -19,4 +19,4 @@ pnpm --dir packages/ui exec playwright install chromium
 
 - fixture живет вне production `src`
 - тесты поднимают отдельный local-only Astro preview на `127.0.0.1:4328`
-- Playwright снимает один locator со всей сеткой иконок
+- Playwright снимает один locator со всем списком иконок

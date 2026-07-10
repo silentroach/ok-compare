@@ -2,6 +2,7 @@
 import {
   EmailIcon,
   GlobeIcon,
+  MapPinIcon,
   PhoneIcon,
   TelegramIcon,
   WhatsAppIcon,
@@ -31,6 +32,13 @@ const methodIcons = {
   email: EmailIcon,
   website: GlobeIcon,
 } as const satisfies Record<ContactMethodType, typeof PhoneIcon>;
+const methodIconColors = {
+  phone: undefined,
+  telegram: 'text-telegram',
+  whatsapp: 'text-whatsapp',
+  email: undefined,
+  website: undefined,
+} as const satisfies Record<ContactMethodType, string | undefined>;
 ---
 
 <article class="py-5 md:py-6">
@@ -58,20 +66,7 @@ const methodIcons = {
               href={place.href}
               class="inline-flex items-center gap-1.5 ui-link font-semibold"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                class="size-4 shrink-0"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.9"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M19 10.1c0 5.2-7 10.1-7 10.1s-7-4.9-7-10.1a7 7 0 1 1 14 0Z" />
-                <circle cx="12" cy="10.1" r="2.4" />
-              </svg>
+              <MapPinIcon class="size-4 shrink-0" />
               {place.title}
             </a>
           </li>
@@ -81,6 +76,9 @@ const methodIcons = {
       {
         methods.map((method) => {
           const Icon = methodIcons[method.type];
+          const iconColor =
+            methodIconColors[method.type] ??
+            (!method.href ? 'text-primary' : undefined);
           const value =
             method.type === 'telegram'
               ? method.value.replace(/^@/u, '')
@@ -94,12 +92,12 @@ const methodIcons = {
                   href={method.href}
                   class="inline-flex items-center gap-1.5 ui-link font-semibold"
                 >
-                  <Icon class="size-4 shrink-0" />
+                  <Icon class:list={['size-4 shrink-0', iconColor]} />
                   {value}
                 </a>
               ) : (
                 <span class="inline-flex items-center gap-1.5">
-                  <Icon class="size-4 shrink-0 text-primary" />
+                  <Icon class:list={['size-4 shrink-0', iconColor]} />
                   {value}
                 </span>
               )}

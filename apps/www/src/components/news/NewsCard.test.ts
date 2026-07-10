@@ -57,7 +57,7 @@ describe('NewsCard', () => {
         "<h3 class=\"flex items-start gap-2 text-2xl font-bold tracking-tight text-foreground\">",
         "<a href=\"/news/2026/05/pinned/\" class=\"ui-link\">Важная новость",
         "</a>",
-        "<span class=\"mt-1 inline-flex shrink-0 text-muted-foreground opacity-50\" title=\"закреплено сверху\" aria-hidden=\"true\">",
+        "<span class=\"mt-1 inline-flex shrink-0 text-star\" title=\"закреплено сверху\" aria-hidden=\"true\">",
         "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" class=\"size-4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">",
         "<path />",
         "</svg>",

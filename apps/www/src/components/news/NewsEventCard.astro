@@ -1,5 +1,5 @@
 ---
-import { CalendarPlusIcon } from '@shelkovo/ui/icons';
+import { CalendarPlusIcon, MapPinIcon } from '@shelkovo/ui/icons';
 import ResourceLink from '@shelkovo/ui/ResourceLink.astro';
 import type { NewsEvent } from '@/lib/news/types';
 import {
@@ -87,20 +87,7 @@ const titleId = `news-event-title-${event.slug}`;
 
           {event.location && (
             <li>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                class="news-event-compact-icon"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M19 10.2c0 5.1-7 10.05-7 10.05s-7-4.95-7-10.05a7 7 0 1 1 14 0Z" />
-                <circle cx="12" cy="10.2" r="2.35" />
-              </svg>
+              <MapPinIcon class="news-event-compact-icon" />
               <span>{event.location}</span>
             </li>
           )}
@@ -667,7 +654,6 @@ const titleId = `news-event-title-${event.slug}`;
 
   .news-event-compact-map-pin {
     --ui-map-marker-size: 18px;
-    --ui-map-marker-color: var(--color-primary);
     position: absolute;
     top: 50%;
     left: 50%;
