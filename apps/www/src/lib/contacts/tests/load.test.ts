@@ -79,6 +79,33 @@ describe('buildContactsDataset', () => {
     ]);
   });
 
+  it('orders categories by their usefulness to residents', () => {
+    const data = buildContactsDataset([
+      entry({ id: 'fence/fence', data: { category: 'fence' } }),
+      entry({
+        id: 'education/education',
+        data: { category: 'education' },
+      }),
+      entry({ id: 'garden/garden', data: { category: 'garden' } }),
+      entry({
+        id: 'construction/construction',
+        data: { category: 'construction' },
+      }),
+      entry({
+        id: 'electricity/electricity',
+        data: { category: 'electricity' },
+      }),
+    ]);
+
+    expect(data.categories.map((item) => item.category)).toEqual([
+      'electricity',
+      'construction',
+      'education',
+      'garden',
+      'fence',
+    ]);
+  });
+
   it('keeps blank-body contacts in lists without detail URLs', () => {
     const data = buildContactsDataset([
       entry({ id: 'fence/list-only', body: '' }),
