@@ -15,6 +15,7 @@ describe('contact view helpers', () => {
     );
     expect(formatContactCategory('garden')).toBe('Сад и участок');
     expect(formatContactCategory('electricity')).toBe('Электричество');
+    expect(formatContactCategory('education')).toBe('Дети и обучение');
   });
 
   it('formats review dates', () => {

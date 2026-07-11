@@ -28,6 +28,7 @@ const CONTACT_CATEGORY_LABELS: Record<ContactCategory, string> = {
   construction: 'Строительство и ремонт',
   garden: 'Сад и участок',
   electricity: 'Электричество',
+  education: 'Дети и обучение',
 };
 
 const CONTACT_CATEGORY_EMOJI: Record<ContactCategory, string> = {
@@ -35,6 +36,7 @@ const CONTACT_CATEGORY_EMOJI: Record<ContactCategory, string> = {
   construction: '🛠️',
   garden: '🌿',
   electricity: '⚡',
+  education: '📚',
 };
 
 const CONTACT_REVIEW_SENTIMENT_LABELS: Record<
