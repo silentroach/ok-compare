@@ -29,6 +29,22 @@ if (!Typograf.getRule(BRAND_PART_RULE)) {
   });
 }
 
+const BEFORE_NUMBER_SIGN_RULE = 'ru/nbsp/beforeNumberSign';
+
+if (!Typograf.getRule(BEFORE_NUMBER_SIGN_RULE)) {
+  Typograf.addRule({
+    name: BEFORE_NUMBER_SIGN_RULE,
+    // Run before Typograf's own ru/nbsp/afterNumberSign so the narrow
+    // non-breaking space it inserts between "№" and the digit does not block
+    // this rule.
+    index: 505,
+    // Keep a word before a number sign and its number on the same line,
+    // e.g. "Приложение №1" or "п. № 1".
+    handler: (text) =>
+      text.replace(/(?<=[\p{L}.,;:!?)])\s+(?=№\s*\d)/gu, '\u00A0'),
+  });
+}
+
 const typograf = new Typograf({
   locale: ['ru', 'en-US'],
   processingSeparateParts: true,
