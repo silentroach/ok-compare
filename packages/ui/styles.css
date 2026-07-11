@@ -887,6 +887,9 @@ a.ui-chip:hover {
   font-size: 0.88rem;
   font-weight: 700;
   line-height: 1;
+  /* The # glyph sits visually high in the chosen font; nudge it down so the
+     anchor looks centered against the heading text on both desktop and mobile. */
+  transform: translateY(0.15em);
 }
 
 .ui-prose .ui-heading-anchor:is(:hover, :focus-visible) {

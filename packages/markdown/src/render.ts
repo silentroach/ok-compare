@@ -70,10 +70,16 @@ const addHeadingIds = (
   seenSlugs: Map<string, number>,
 ): void => {
   if (node.tagName && HEADING_TAGS.has(node.tagName)) {
-    const slug = uniqueHeadingSlug(nodeText(node), seenSlugs);
+    const headingText = nodeText(node);
+    const slug = uniqueHeadingSlug(headingText, seenSlugs);
 
     node.properties = node.properties ?? {};
     node.properties.id = slug;
+    // The anchor is kept inside the heading for visual positioning and keyboard
+    // access. Without an explicit name, the anchor's aria-label would be
+    // concatenated into the heading's accessible name. Pin the heading name to
+    // its text content so screen-reader heading navigation stays clean.
+    node.properties.ariaLabel = headingText;
     node.children = [...(node.children ?? []), headingAnchor(slug)];
   }
 
