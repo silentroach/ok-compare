@@ -104,12 +104,7 @@ const schema = personProfilePageSchema({
           </div>
 
           <section aria-labelledby="person-contacts" class="space-y-3">
-            <h2
-              id="person-contacts"
-              class="font-body text-sm font-semibold text-foreground"
-            >
-              Контакты
-            </h2>
+            <h2 id="person-contacts" class="ui-section-label">Контакты</h2>
 
             {
               profile.contacts.length > 0 ? (
@@ -159,9 +154,7 @@ const schema = personProfilePageSchema({
         <section class="px-5 pt-8 md:px-6 md:pt-10">
           <div class="max-w-4xl space-y-5">
             <div class="space-y-1.5">
-              <h2 class="font-body text-sm font-semibold text-foreground">
-                Где упоминается
-              </h2>
+              <h2 class="ui-section-label">Где упоминается</h2>
               <p class="text-sm leading-6 text-muted-foreground">
                 Упоминания в новостях, статусе поселка, отзывах и других
                 публичных профилях.

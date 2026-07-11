@@ -96,7 +96,7 @@ const schema = collectionPageSchema({
         archive.months.map((item) => (
           <section id={`month-${item.month}`} class="space-y-4">
             <div class="px-5 md:px-6">
-              <h2 class="text-2xl font-bold tracking-tight text-foreground md:text-[2rem]">
+              <h2 class="ui-section-title">
                 {formatNewsMonth(item.year, item.month, { capitalize: true })}
               </h2>
             </div>

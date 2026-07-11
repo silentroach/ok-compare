@@ -54,7 +54,7 @@ describe('NewsCard', () => {
 
     expect(heading).toMatchInlineSnapshot(`
       [
-        "<h3 class=\"flex items-start gap-2 text-2xl font-bold tracking-tight text-foreground\">",
+        "<h3 class=\"ui-card-title flex items-start gap-2\">",
         "<a href=\"/news/2026/05/pinned/\" class=\"ui-link\">Важная новость",
         "</a>",
         "<span class=\"mt-1 inline-flex shrink-0 text-star\" title=\"закреплено сверху\" aria-hidden=\"true\">",

@@ -115,12 +115,7 @@ const schema = techArticleSchema({
     <div class="px-5 md:px-6">
       <div class="max-w-[75ch] space-y-7 md:space-y-8">
         <section class="space-y-3" aria-labelledby="meeting-speakers">
-          <h2
-            id="meeting-speakers"
-            class="font-heading text-2xl font-bold leading-tight tracking-[-0.02em] text-foreground md:text-3xl"
-          >
-            Участники
-          </h2>
+          <h2 id="meeting-speakers" class="ui-section-title">Участники</h2>
 
           <ul
             class="list-disc space-y-1.5 pl-5 text-sm leading-6 text-foreground md:text-base"
@@ -157,12 +152,7 @@ const schema = techArticleSchema({
         </section>
 
         <section class="space-y-3" aria-labelledby="meeting-transcript">
-          <h2
-            id="meeting-transcript"
-            class="font-heading text-2xl font-bold leading-tight tracking-[-0.02em] text-foreground md:text-3xl"
-          >
-            Транскрипция
-          </h2>
+          <h2 id="meeting-transcript" class="ui-section-title">Транскрипция</h2>
 
           <ol class="divide-y divide-border border-t border-border">
             {
@@ -170,7 +160,7 @@ const schema = techArticleSchema({
                 <>
                   {hasTranscriptParts && (
                     <li class="pb-4 pt-10 md:pb-5 md:pt-12">
-                      <h3 class="font-heading text-xl font-bold leading-tight tracking-[-0.02em] text-foreground md:text-2xl">
+                      <h3 class="ui-card-title">
                         {formatTranscriptPartLabel(part)}
                       </h3>
                     </li>

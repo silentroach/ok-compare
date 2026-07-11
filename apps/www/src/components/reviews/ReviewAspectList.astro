@@ -14,16 +14,13 @@ const ordered = sortReviewAspects(aspects);
 {
   ordered.length > 0 && (
     <section aria-labelledby="review-aspects" class="space-y-4">
-      <h2
-        id="review-aspects"
-        class="font-body text-xl font-bold tracking-tight text-foreground"
-      >
+      <h2 id="review-aspects" class="ui-prose-title">
         Аспекты
       </h2>
       <div class="grid gap-3 md:grid-cols-3">
         {ordered.map((aspect) => (
           <article class="ui-shell space-y-3 px-4 py-4">
-            <h3 class="font-body text-base font-semibold text-foreground">
+            <h3 class="ui-section-label">
               {formatReviewAspectType(aspect.type)}
             </h3>
             {aspect.rating && (

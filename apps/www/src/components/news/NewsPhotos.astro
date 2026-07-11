@@ -17,9 +17,7 @@ const Heading = heading;
   photos.length > 0 && (
     <section class:list={framed && ['ui-shell px-5 py-6 md:px-6 md:py-7']}>
       <div class="space-y-4">
-        <Heading class="text-2xl font-bold tracking-tight text-foreground">
-          {title}
-        </Heading>
+        <Heading class="ui-prose-title">{title}</Heading>
 
         <div class="grid gap-4 md:grid-cols-2">
           {photos.map((photo) => (
