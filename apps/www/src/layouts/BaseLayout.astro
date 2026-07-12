@@ -30,8 +30,7 @@ interface Props {
   showSiteHeader?: boolean;
 }
 
-const defaultShowSiteHeader =
-  Astro.url.pathname !== '/' && !Astro.url.pathname.startsWith('/815/');
+const defaultShowSiteHeader = Astro.url.pathname !== '/';
 
 const {
   title = 'Шелково Онлайн',

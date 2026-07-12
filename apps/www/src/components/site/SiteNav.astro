@@ -23,6 +23,24 @@ const {
 
 const isHero = variant === 'hero';
 const isMobile = variant === 'mobile';
+const pathname = Astro.url.pathname;
+const currentPathname =
+  pathname === '/' ? pathname : `${pathname.replace(/\/+$/, '')}/`;
+const getCurrent = (href: string): 'page' | 'location' | undefined => {
+  if (currentPathname === href) {
+    return 'page';
+  }
+
+  return currentPathname.startsWith(href) ? 'location' : undefined;
+};
+const newsCurrent = getCurrent('/news/');
+const compareCurrent = getCurrent('/815/compare/');
+const regulationCurrent = getCurrent('/815/regulation/');
+const kbCurrent = getCurrent('/kb/');
+const sarafanCurrent = getCurrent('/sarafan/');
+const reviewsCurrent = getCurrent('/reviews/');
+const statusCurrent = getCurrent('/status/');
+const isTariffCurrent = Boolean(compareCurrent || regulationCurrent);
 const navClass = isHero
   ? 'home-hero-nav flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-sm font-medium md:flex-nowrap md:gap-10 md:text-base'
   : 'site-nav site-nav-header flex items-center justify-end gap-5 text-sm font-semibold lg:gap-7';
@@ -48,37 +66,54 @@ const statusLinkClass = isHero
 {
   isMobile ? (
     <nav aria-label={ariaLabel} class="site-nav site-nav-mobile">
-      <a href="/news/" class="site-nav-mobile-link">
+      <a href="/news/" aria-current={newsCurrent} class="site-nav-mobile-link">
         Новости
       </a>
 
-      <div class="site-nav-mobile-group">
-        <p class="site-nav-mobile-label">Тариф 815</p>
+      <div
+        class="site-nav-mobile-group"
+        data-current-section={isTariffCurrent ? '' : undefined}
+      >
+        <p class="site-nav-mobile-label">
+          Тариф 815
+          {isTariffCurrent && <span class="sr-only">, текущий раздел</span>}
+        </p>
         <a
           href="/815/compare/"
+          aria-current={compareCurrent}
           class="site-nav-mobile-link site-nav-mobile-nested"
         >
           Сравнение тарифов
         </a>
         <a
           href="/815/regulation/"
+          aria-current={regulationCurrent}
           class="site-nav-mobile-link site-nav-mobile-nested"
         >
           Регламент
         </a>
       </div>
 
-      <a href="/kb/" class="site-nav-mobile-link">
+      <a href="/kb/" aria-current={kbCurrent} class="site-nav-mobile-link">
         База знаний
       </a>
-      <a href="/sarafan/" class="site-nav-mobile-link">
+      <a
+        href="/sarafan/"
+        aria-current={sarafanCurrent}
+        class="site-nav-mobile-link"
+      >
         Сарафан
       </a>
-      <a href="/reviews/" class="site-nav-mobile-link">
+      <a
+        href="/reviews/"
+        aria-current={reviewsCurrent}
+        class="site-nav-mobile-link"
+      >
         Отзывы
       </a>
       <a
         href="/status/"
+        aria-current={statusCurrent}
         aria-label={statusAriaLabel}
         class="site-nav-mobile-link site-nav-mobile-status-link"
         data-home-status-link
@@ -94,11 +129,19 @@ const statusLinkClass = isHero
     </nav>
   ) : (
     <nav aria-label={ariaLabel} class={navClass}>
-      <a href="/news/" class={isHero ? undefined : 'site-nav-link'}>
+      <a
+        href="/news/"
+        aria-current={newsCurrent}
+        class={isHero ? undefined : 'site-nav-link'}
+      >
         Новости
       </a>
 
-      <div class={dropdownClass} data-site-nav-dropdown>
+      <div
+        class={dropdownClass}
+        data-site-nav-dropdown
+        data-current-section={isTariffCurrent ? '' : undefined}
+      >
         <button
           type="button"
           aria-haspopup="true"
@@ -108,6 +151,7 @@ const statusLinkClass = isHero
           class={dropdownButtonClass}
         >
           <span>Тариф 815</span>
+          {isTariffCurrent && <span class="sr-only">, текущий раздел</span>}
           <span
             aria-hidden="true"
             data-site-nav-dropdown-icon
@@ -120,27 +164,48 @@ const statusLinkClass = isHero
           class={dropdownMenuClass}
         >
           <div class={submenuPanelClass}>
-            <a href="/815/compare/" class={submenuLinkClass}>
+            <a
+              href="/815/compare/"
+              aria-current={compareCurrent}
+              class={submenuLinkClass}
+            >
               Сравнение тарифов
             </a>
-            <a href="/815/regulation/" class={submenuLinkClass}>
+            <a
+              href="/815/regulation/"
+              aria-current={regulationCurrent}
+              class={submenuLinkClass}
+            >
               Регламент
             </a>
           </div>
         </div>
       </div>
 
-      <a href="/kb/" class={isHero ? undefined : 'site-nav-link'}>
+      <a
+        href="/kb/"
+        aria-current={kbCurrent}
+        class={isHero ? undefined : 'site-nav-link'}
+      >
         База знаний
       </a>
-      <a href="/sarafan/" class={isHero ? undefined : 'site-nav-link'}>
+      <a
+        href="/sarafan/"
+        aria-current={sarafanCurrent}
+        class={isHero ? undefined : 'site-nav-link'}
+      >
         Сарафан
       </a>
-      <a href="/reviews/" class={isHero ? undefined : 'site-nav-link'}>
+      <a
+        href="/reviews/"
+        aria-current={reviewsCurrent}
+        class={isHero ? undefined : 'site-nav-link'}
+      >
         Отзывы
       </a>
       <a
         href="/status/"
+        aria-current={statusCurrent}
         aria-label={statusAriaLabel}
         class={statusLinkClass}
         data-home-status-link
@@ -163,9 +228,73 @@ const statusLinkClass = isHero
   }
 
   .site-nav-link {
+    position: relative;
+    isolation: isolate;
     transition:
       color 0.2s ease,
       opacity 0.2s ease;
+  }
+
+  .site-nav-link::before,
+  .site-nav-dropdown[data-current-section]
+    > [data-site-nav-dropdown-button]::before {
+    content: '';
+    position: absolute;
+    right: -0.625rem;
+    bottom: -1.125rem;
+    left: -0.625rem;
+    z-index: -1;
+    height: 0.1875rem;
+    border-radius: 999px;
+    pointer-events: none;
+  }
+
+  .site-nav-link[aria-current]::before,
+  .site-nav-dropdown[data-current-section]
+    > [data-site-nav-dropdown-button]::before {
+    background: linear-gradient(
+      0deg,
+      color-mix(
+        in oklab,
+        var(--color-accent-text) 58%,
+        var(--color-accent-soft)
+      ),
+      color-mix(in oklab, var(--color-accent) 70%, var(--color-accent-soft))
+    );
+    box-shadow: inset 0 1px 0
+      color-mix(in oklab, var(--color-surface-raised) 66%, transparent);
+    opacity: 0.78;
+  }
+
+  .site-nav-link[aria-current]::after,
+  .site-nav-dropdown[data-current-section]
+    > [data-site-nav-dropdown-button]::after {
+    content: '';
+    position: absolute;
+    right: -0.625rem;
+    bottom: -0.9375rem;
+    left: -0.625rem;
+    z-index: -1;
+    height: 0.75rem;
+    border-radius: 999px 999px 0 0;
+    background: linear-gradient(
+      to top,
+      color-mix(in oklab, var(--color-accent) 11%, transparent),
+      transparent
+    );
+    filter: blur(0.25rem);
+    pointer-events: none;
+  }
+
+  .site-nav-link[aria-current],
+  .site-nav-dropdown[data-current-section] > [data-site-nav-dropdown-button] {
+    color: var(--color-primary-hover);
+    font-weight: 700;
+  }
+
+  .site-nav-dropdown > [data-site-nav-dropdown-button] {
+    position: relative;
+    isolation: isolate;
   }
 
   .site-nav-link:is(:hover, :focus-visible) {
@@ -176,6 +305,15 @@ const statusLinkClass = isHero
   .home-hero-nav-submenu a:is(:hover, :focus-visible) {
     background: color-mix(in oklab, var(--color-primary-soft) 82%, transparent);
     color: var(--color-foreground);
+  }
+
+  .site-nav-submenu a[aria-current],
+  .home-hero-nav-submenu a[aria-current] {
+    background: color-mix(in oklab, var(--color-primary-soft) 90%, transparent);
+    color: var(--color-primary-hover);
+    box-shadow: inset 0 0 0 1px
+      color-mix(in oklab, var(--color-primary) 16%, transparent);
+    font-weight: 600;
   }
 
   .site-nav-glass-panel {
@@ -226,9 +364,30 @@ const statusLinkClass = isHero
   }
 
   .site-nav-mobile-link {
+    border: 1px solid transparent;
     transition:
       background-color 0.2s ease,
+      border-color 0.2s ease,
       color 0.2s ease;
+  }
+
+  .site-nav-mobile-link[aria-current] {
+    border-color: color-mix(
+      in oklab,
+      var(--color-surface-raised) 82%,
+      var(--color-border)
+    );
+    background: linear-gradient(
+      145deg,
+      color-mix(in oklab, var(--color-surface-raised) 82%, transparent),
+      color-mix(in oklab, var(--color-primary-soft) 62%, transparent)
+    );
+    box-shadow:
+      inset 0 1px 0
+        color-mix(in oklab, var(--color-surface-raised) 96%, transparent),
+      inset 0 -1px 0 color-mix(in oklab, var(--color-border) 44%, transparent),
+      0 0.25rem 0.75rem oklch(27% 0.05 142 / 0.07);
+    color: var(--color-primary-hover);
   }
 
   .site-nav-mobile-link:is(:hover, :focus-visible) {
@@ -243,6 +402,10 @@ const statusLinkClass = isHero
     color: var(--color-muted-foreground);
     font-size: 0.8125rem;
     letter-spacing: 0.02em;
+  }
+
+  .site-nav-mobile-group[data-current-section] .site-nav-mobile-label {
+    color: var(--color-primary-hover);
   }
 
   .site-nav-mobile-group {
@@ -285,6 +448,12 @@ const statusLinkClass = isHero
     transition:
       color 0.2s ease,
       opacity 0.2s ease;
+  }
+
+  .home-hero-nav > a[aria-current],
+  .home-hero-nav-dropdown[data-current-section]
+    > [data-site-nav-dropdown-button] {
+    color: currentColor;
   }
 
   .home-hero-nav a:is(:hover, :focus-visible),
