@@ -221,6 +221,26 @@ describe('@shelkovo/markdown', () => {
     ).toThrow('Markdown tables are not supported; use lists.');
   });
 
+  it('links task list checkboxes to their item text via aria-labelledby', () => {
+    const html = render('- [x] First task\n- [ ] Second task');
+    const checkboxPattern =
+      /<input[^>]*type="checkbox"[^>]*aria-labelledby="([^"]+)"[^>]*>/g;
+    const matches = Array.from(html.matchAll(checkboxPattern));
+
+    expect(matches).toHaveLength(2);
+
+    const firstId = matches[0]?.[1];
+    const secondId = matches[1]?.[1];
+
+    expect(firstId).toBeDefined();
+    expect(secondId).toBeDefined();
+    expect(firstId).not.toBe(secondId);
+    expect(html).toContain(`<span id="${firstId}">First task</span>`);
+    expect(html).toContain(`<span id="${secondId}">Second task</span>`);
+    expect(html).toContain('checked');
+    expect(html).toContain('disabled');
+  });
+
   it('preprocesses markdown before rendering', () => {
     expect(
       render('Привет, @person', {

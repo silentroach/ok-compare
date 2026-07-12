@@ -7,6 +7,7 @@ import { unified, type Plugin } from 'unified';
 
 import { uniqueHeadingSlug } from './heading-slugs';
 import { assertNoMarkdownTables } from './no-tables';
+import { rehypeTaskListItemLabels } from './task-list-labels';
 import { expandTableOfContents } from './toc';
 import { rehypeTypograf } from './typography';
 
@@ -101,6 +102,7 @@ const processor = unified()
   // Raw HTML is not passed through, so markdown content cannot inject markup.
   .use(remarkRehype)
   .use(rehypeHeadingIds)
+  .use(rehypeTaskListItemLabels)
   .use(rehypeTypograf)
   .use(rehypeStringify);
 
