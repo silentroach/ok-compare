@@ -69,6 +69,13 @@ const location = z
     title: nonBlankText,
     url: contactUrl,
     address: nonBlankText.optional(),
+    coordinates: z
+      .object({
+        lat: z.number().min(-90).max(90),
+        lng: z.number().min(-180).max(180),
+      })
+      .strict()
+      .optional(),
   })
   .strict();
 
@@ -87,6 +94,53 @@ const review = z
   })
   .strict();
 
+const vcfName = z
+  .object({
+    family: nonBlankText,
+    given: nonBlankText,
+    additional: nonBlankText.optional(),
+    prefix: nonBlankText.optional(),
+    suffix: nonBlankText.optional(),
+  })
+  .strict();
+
+const vcfContactFields = {
+  phone: nonBlankText.optional(),
+  telegram: contactUrl.optional(),
+  whatsapp: contactUrl.optional(),
+  email: nonBlankText.email().optional(),
+  website: contactUrl.optional(),
+  address: nonBlankText.optional(),
+  job_title: nonBlankText.optional(),
+  role: nonBlankText.optional(),
+  note: nonBlankText.optional(),
+} as const;
+
+const disabledVcf = z.object({ enable: z.literal(false) }).strict();
+
+const personVcf = z
+  .object({
+    enable: z.literal(true),
+    kind: z.literal('person'),
+    full_name: nonBlankText.optional(),
+    name: vcfName,
+    organization: nonBlankText.optional(),
+    ...vcfContactFields,
+  })
+  .strict();
+
+const organizationVcf = z
+  .object({
+    enable: z.literal(true),
+    kind: z.literal('organization'),
+    full_name: nonBlankText.optional(),
+    organization: nonBlankText,
+    ...vcfContactFields,
+  })
+  .strict();
+
+const vcf = z.union([disabledVcf, personVcf, organizationVcf]);
+
 export const RawContactSchema = z
   .object({
     title: nonBlankText,
@@ -100,6 +154,7 @@ export const RawContactSchema = z
     location: location.optional(),
     reviews: z.array(review).optional(),
     seo: seo.optional(),
+    vcf: vcf.optional(),
   })
   .strict();
 

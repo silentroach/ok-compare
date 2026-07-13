@@ -197,7 +197,7 @@ export async function build(kind: 'short' | 'full'): Promise<string> {
               `Новости: ${newsLlms}; основная лента: ${newsFeed}; календарные события лежат в \`articles[].events[].ics_url\`.`,
               `Статус сервисов: ${statusLlms}; основная лента: ${statusFeed}.`,
               `Отзывы собственников: ${reviewsMarkdown}; правила публикации: ${reviewsRulesMarkdown}; детальные страницы: \`/reviews/[id]/\` и \`/reviews/[id]/index.md\`.`,
-              `Сарафан: ${contactsMarkdown}; разделы: \`/sarafan/[category]/\` и \`/sarafan/[category]/index.md\`; детальные страницы есть только у контактов с body и используют \`/sarafan/[category]/[slug]/\` и \`/sarafan/[category]/[slug]/index.md\`.`,
+              `Сарафан: ${contactsMarkdown}; разделы: \`/sarafan/[category]/\` и \`/sarafan/[category]/index.md\`; детальные страницы есть только у контактов с body и используют \`/sarafan/[category]/[slug]/\` и \`/sarafan/[category]/[slug]/index.md\`; если для контакта доступна vCard, ее адрес указан в \`vcf_url\`.`,
               `Архив встреч: ${meetingsMarkdown}; одна встреча: ${meetingHtml} или ${meetingMarkdown}; полный текст транскрипта берите по частям, например ${meetingTranscript}.`,
               `Регламент и смета: ${reglamentLlms}; смета: ${reglamentFeed}; полный регламент: ${reglamentFullMarkdown}; набор данных: ${reglamentFullDataset}.`,
               `Люди: ${peopleShort}; основная лента: ${peopleFeed}; одна персона: ${personHtml} или ${personMarkdown}.`,

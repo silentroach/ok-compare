@@ -6,12 +6,18 @@ import {
 import type { SiteMentionRegistry } from '@/lib/mentions';
 
 import type { ContactEntry } from './load';
-import { contactCanonical, contactMarkdownUrl, contactUrl } from './routes';
+import {
+  contactCanonical,
+  contactMarkdownUrl,
+  contactUrl,
+  contactVcfUrl,
+} from './routes';
 import type {
   Contact,
   ContactContacts,
   ContactLocation,
   ContactReview,
+  ContactVcf,
 } from './types';
 
 const preprocessContactContent = (
@@ -49,6 +55,7 @@ const mapLocation = (
         title: location.title,
         url: location.url,
         address: location.address,
+        coordinates: location.coordinates,
       }
     : undefined;
 
@@ -63,6 +70,46 @@ const mapReviews = (
     publishedIso: review.published_at,
     url: review.url,
   })) ?? [];
+
+const mapVcf = (
+  vcf: ContactEntry['data']['vcf'],
+  category: string,
+  slug: string,
+): ContactVcf | undefined => {
+  if (!vcf?.enable) {
+    return;
+  }
+
+  const mapped = {
+    downloadUrl: contactVcfUrl({ category, slug }),
+    filename: `${slug}.vcf`,
+    fullName: vcf.full_name,
+    phone: vcf.phone,
+    telegram: vcf.telegram,
+    whatsapp: vcf.whatsapp,
+    email: vcf.email,
+    website: vcf.website,
+    address: vcf.address,
+    jobTitle: vcf.job_title,
+    role: vcf.role,
+    note: vcf.note,
+  };
+
+  if (vcf.kind === 'organization') {
+    return {
+      ...mapped,
+      kind: vcf.kind,
+      organization: vcf.organization,
+    };
+  }
+
+  return {
+    ...mapped,
+    kind: vcf.kind,
+    name: vcf.name,
+    organization: vcf.organization,
+  };
+};
 
 export const mapRawContact = (
   entry: ContactEntry,
@@ -94,6 +141,7 @@ export const mapRawContact = (
     location: mapLocation(entry.data.location),
     reviews: mapReviews(entry.data.reviews),
     seo: entry.data.seo,
+    vcf: mapVcf(entry.data.vcf, category, slug),
     body: body.markdown,
     mentions: body.mentions,
   };

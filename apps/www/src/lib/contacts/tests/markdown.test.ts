@@ -40,11 +40,18 @@ const contact = {
     title: 'Золото Сибири',
     url: 'https://yandex.ru/maps/-/CTq-BEOk',
     address: 'Пионерская ул., 21, пгт Малино',
+    coordinates: { lat: 55.116326, lng: 38.16951 },
   },
   hasDetailPage: true,
   url: '/sarafan/fence/ivan-petrov-fence/',
   markdownUrl: '/sarafan/fence/ivan-petrov-fence/index.md',
   canonical: 'https://example.com/sarafan/fence/ivan-petrov-fence/',
+  vcf: {
+    kind: 'person',
+    downloadUrl: '/sarafan/fence/ivan-petrov-fence/contact.vcf',
+    filename: 'ivan-petrov-fence.vcf',
+    name: { family: 'Петров', given: 'Иван' },
+  },
   body: 'Работает с заборами и воротами. Перед началом работ стоит отдельно согласовать сроки, материалы и гарантию.\n\n## Что уточнить\n\nПеред оплатой уточняйте цену.',
   mentions: [],
 } satisfies ContactWithDetail;
@@ -117,6 +124,9 @@ describe('contacts markdown companions', () => {
       'Адрес: [Золото Сибири](https://yandex.ru/maps/-/CTq-BEOk) — Пионерская ул., 21, пгт Малино',
     );
     expect(markdown).toContain(
+      'vCard: [Добавить в контакты](https://example.com/sarafan/fence/ivan-petrov-fence/contact.vcf)',
+    );
+    expect(markdown).toContain(
       '- Сергей\n  - Телефон: [+7 985 774-75-04](tel:+79857747504)',
     );
   });
@@ -136,11 +146,15 @@ describe('contacts markdown companions', () => {
         title: Золото Сибири
         url: https://yandex.ru/maps/-/CTq-BEOk
         address: Пионерская ул., 21, пгт Малино
+        coordinates:
+          lat: 55.116326
+          lng: 38.16951
       reviews:
         - sentiment: positive
           summary: Помог с **электричеством**.
           published_at: 2026-04-07
           url: https://t.me/example/1
+      vcf_url: https://example.com/sarafan/fence/ivan-petrov-fence/contact.vcf
       ---
 
       # Иван Петров

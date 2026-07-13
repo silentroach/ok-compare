@@ -120,6 +120,9 @@ importers:
       svelte:
         specifier: ^5.56.4
         version: 5.56.4
+      vcard-creator:
+        specifier: ^1.0.0
+        version: 1.0.0
       yaml:
         specifier: ^2.9.0
         version: 2.9.0
@@ -3403,6 +3406,10 @@ packages:
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
+
+  vcard-creator@1.0.0:
+    resolution: {integrity: sha512-LunDOSct5saY+XhaA/fal/GYphrQXuQB5wa0YDy0C9NUMMwOhOaSriY/LseAPQFlh8EpB6vRX7hVxPdNvTzMbw==}
+    engines: {node: '>=18'}
 
   vfile-message@4.0.3:
     resolution: {integrity: sha512-QTHzsGd1EhbZs4AsQ20JX1rC3cOlt/IWJruk893DfLRr57lcnOeMaWG4K0JrRta4mIJZKth2Au3mM3u03/JWKw==}
@@ -6975,6 +6982,8 @@ snapshots:
   uuid@8.3.2: {}
 
   vary@1.1.2: {}
+
+  vcard-creator@1.0.0: {}
 
   vfile-message@4.0.3:
     dependencies:

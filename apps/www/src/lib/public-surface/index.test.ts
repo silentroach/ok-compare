@@ -29,6 +29,7 @@ import {
   contactCategoryPattern,
   contactMarkdownPattern,
   contactPattern,
+  contactVcfPattern,
   contactsMarkdownPath,
   contactsPath,
 } from '@/lib/contacts/routes';
@@ -480,7 +481,7 @@ describe('public surface registry', () => {
     ).toBe(false);
   });
 
-  it('registers contacts HTML and Markdown surfaces without feeds or APIs', () => {
+  it('registers contacts HTML, Markdown and vCard surfaces without feeds or APIs', () => {
     const contacts = publicSurfaceRegistry.surfacesByOwner('contacts');
     const rootCatalog = catalog('https://example.com/sub') as {
       readonly linkset: readonly {
@@ -499,6 +500,7 @@ describe('public surface registry', () => {
       'contacts:category-markdown',
       'contacts:contact',
       'contacts:contact-markdown',
+      'contacts:contact-vcard',
     ]);
     expect(
       contacts.map((surface) =>
@@ -511,6 +513,7 @@ describe('public surface registry', () => {
       contactCategoryMarkdownPattern(),
       contactPattern(),
       contactMarkdownPattern(),
+      contactVcfPattern(),
     ]);
     expect(contactsEntry?.item).toEqual([
       expect.objectContaining({

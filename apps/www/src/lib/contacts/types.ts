@@ -19,6 +19,10 @@ export interface ContactLocation {
   readonly title: string;
   readonly url: string;
   readonly address?: string;
+  readonly coordinates?: {
+    readonly lat: number;
+    readonly lng: number;
+  };
 }
 
 export interface ContactReview {
@@ -29,6 +33,42 @@ export interface ContactReview {
   readonly publishedIso: string;
   readonly url: string;
 }
+
+export interface ContactVcfName {
+  readonly family: string;
+  readonly given: string;
+  readonly additional?: string;
+  readonly prefix?: string;
+  readonly suffix?: string;
+}
+
+interface ContactVcfBase {
+  readonly downloadUrl: string;
+  readonly filename: string;
+  readonly fullName?: string;
+  readonly phone?: string;
+  readonly telegram?: string;
+  readonly whatsapp?: string;
+  readonly email?: string;
+  readonly website?: string;
+  readonly address?: string;
+  readonly jobTitle?: string;
+  readonly role?: string;
+  readonly note?: string;
+}
+
+interface ContactPersonVcf extends ContactVcfBase {
+  readonly kind: 'person';
+  readonly name: ContactVcfName;
+  readonly organization?: string;
+}
+
+interface ContactOrganizationVcf extends ContactVcfBase {
+  readonly kind: 'organization';
+  readonly organization: string;
+}
+
+export type ContactVcf = ContactPersonVcf | ContactOrganizationVcf;
 
 interface ContactBase {
   readonly slug: string;
@@ -41,6 +81,7 @@ interface ContactBase {
   readonly location?: ContactLocation;
   readonly reviews: readonly ContactReview[];
   readonly seo?: ContactSeo;
+  readonly vcf?: ContactVcf;
   readonly body: PreprocessedSiteMarkdownBody;
   readonly mentions: readonly EntityMentionTarget[];
 }
@@ -60,6 +101,8 @@ export interface ContactListOnly extends ContactBase {
 }
 
 export type Contact = ContactWithDetail | ContactListOnly;
+
+export type ContactWithVcf = Contact & { readonly vcf: ContactVcf };
 
 export interface ContactCategoryPage {
   readonly category: ContactCategory;

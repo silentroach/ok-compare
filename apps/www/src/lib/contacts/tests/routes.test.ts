@@ -9,6 +9,8 @@ import {
   contactMarkdownPattern,
   contactMarkdownUrl,
   contactPattern,
+  contactVcfPattern,
+  contactVcfUrl,
   contactsMarkdownUrl,
   contactsUrl,
   contactUrl,
@@ -25,6 +27,9 @@ describe('contact routes', () => {
     expect(contactUrl(contact)).toBe('/sarafan/fence/ivan-petrov-fence/');
     expect(contactMarkdownUrl(contact)).toBe(
       '/sarafan/fence/ivan-petrov-fence/index.md',
+    );
+    expect(contactVcfUrl(contact)).toBe(
+      '/sarafan/fence/ivan-petrov-fence/contact.vcf',
     );
     expect(contactCanonical(contact)).toBe(
       'https://kpshelkovo.online/sarafan/fence/ivan-petrov-fence/',
@@ -47,5 +52,6 @@ describe('contact routes', () => {
     );
     expect(contactPattern()).toBe('/sarafan/:category/:slug/');
     expect(contactMarkdownPattern()).toBe('/sarafan/:category/:slug/index.md');
+    expect(contactVcfPattern()).toBe('/sarafan/:category/:slug/contact.vcf');
   });
 });

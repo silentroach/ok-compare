@@ -9,6 +9,7 @@ export {
   AlertCircleIcon,
   CalendarPlusIcon,
   CheckCircleIcon,
+  ContactPlusIcon,
   DomylandIcon,
   EmailIcon,
   FilePdfIcon,

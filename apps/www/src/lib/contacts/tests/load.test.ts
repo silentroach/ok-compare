@@ -173,6 +173,50 @@ describe('buildContactsDataset', () => {
     `);
   });
 
+  it('maps enabled vCard options and ignores disabled ones', () => {
+    const data = buildContactsDataset([
+      entry({
+        id: 'fence/with-vcard',
+        data: {
+          vcf: {
+            enable: true,
+            kind: 'person',
+            name: { family: 'Петров', given: 'Иван' },
+            note: 'Устанавливает заборы.',
+          },
+        },
+      }),
+      entry({
+        id: 'fence/without-vcard',
+        data: { vcf: { enable: false } },
+      }),
+    ]);
+
+    expect(data.byRoute.get('fence/with-vcard')?.vcf).toMatchInlineSnapshot(`
+      {
+        "address": undefined,
+        "downloadUrl": "/sarafan/fence/with-vcard/contact.vcf",
+        "email": undefined,
+        "filename": "with-vcard.vcf",
+        "fullName": undefined,
+        "jobTitle": undefined,
+        "kind": "person",
+        "name": {
+          "family": "Петров",
+          "given": "Иван",
+        },
+        "note": "Устанавливает заборы.",
+        "organization": undefined,
+        "phone": undefined,
+        "role": undefined,
+        "telegram": undefined,
+        "website": undefined,
+        "whatsapp": undefined,
+      }
+    `);
+    expect(data.byRoute.get('fence/without-vcard')?.vcf).toBeUndefined();
+  });
+
   it('fails when entry id does not match frontmatter slug', () => {
     expect(() =>
       buildContactsDataset([

@@ -7,7 +7,12 @@ import { loadPeopleMentionRegistry } from '@/lib/people/registry';
 import { mapRawContact } from './mapper';
 import type { RawContact } from './raw-schema';
 import { CONTACT_CATEGORIES, isContactCategory, isContactSlug } from './schema';
-import type { Contact, ContactsDataset, ContactWithDetail } from './types';
+import type {
+  Contact,
+  ContactsDataset,
+  ContactWithDetail,
+  ContactWithVcf,
+} from './types';
 import {
   contactCategoryMarkdownUrl,
   contactCategoryUrl,
@@ -96,9 +101,16 @@ export const hasContactDetail = (
   contact: Contact,
 ): contact is ContactWithDetail => contact.hasDetailPage;
 
+export const hasContactVcf = (contact: Contact): contact is ContactWithVcf =>
+  Boolean(contact.vcf);
+
 export const loadContactDetails = async (): Promise<
   readonly ContactWithDetail[]
 > => (await loadContacts()).filter(hasContactDetail);
+
+export const loadContactsWithVcf = async (): Promise<
+  readonly ContactWithVcf[]
+> => (await loadContacts()).filter(hasContactVcf);
 
 export const loadContactCategories = async (): Promise<
   ContactsDataset['categories']
@@ -135,4 +147,13 @@ export const loadContactDetail = async (
   const contact = await loadContact(category, slug);
 
   return contact?.hasDetailPage ? contact : undefined;
+};
+
+export const loadContactWithVcf = async (
+  category: string,
+  slug: string,
+): Promise<ContactWithVcf | undefined> => {
+  const contact = await loadContact(category, slug);
+
+  return contact && hasContactVcf(contact) ? contact : undefined;
 };

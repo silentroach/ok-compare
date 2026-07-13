@@ -58,6 +58,7 @@ interface ContactFrontmatter extends Readonly<Record<string, unknown>> {
   readonly contacts: Contact['contacts'];
   readonly location?: ContactFrontmatterLocation;
   readonly reviews?: readonly ContactFrontmatterReview[];
+  readonly vcf_url?: string;
 }
 
 type MutableContactFrontmatterContacts = {
@@ -68,6 +69,7 @@ type MutableContactFrontmatterLocation = {
   title: string;
   url: string;
   address?: string;
+  coordinates?: ContactFrontmatterLocation['coordinates'];
 };
 
 type MutableContactFrontmatter = Record<string, unknown> & {
@@ -79,6 +81,7 @@ type MutableContactFrontmatter = Record<string, unknown> & {
   contacts: Contact['contacts'];
   location?: ContactFrontmatterLocation;
   reviews?: readonly ContactFrontmatterReview[];
+  vcf_url?: string;
 };
 
 const CONTACT_FRONTMATTER_CONTACT_KEYS = [
@@ -135,6 +138,16 @@ const contactInfoLines = (contact: Contact): readonly MarkdownListItem[] => {
   return [
     ...(place ? [placeLine(place)] : []),
     ...contactMethods(contact.contacts).map(methodLine),
+    ...(contact.vcf
+      ? [
+          md.listItem([
+            md.paragraph([
+              md.text('vCard: '),
+              md.link(abs(contact.vcf.downloadUrl), 'Добавить в контакты'),
+            ]),
+          ]),
+        ]
+      : []),
   ];
 };
 
@@ -192,6 +205,10 @@ const contactFrontmatter = (contact: ContactWithDetail): ContactFrontmatter => {
     frontmatter.reviews = contact.reviews.map(contactReviewFrontmatter);
   }
 
+  if (contact.vcf) {
+    frontmatter.vcf_url = abs(contact.vcf.downloadUrl);
+  }
+
   return frontmatter;
 };
 
@@ -225,6 +242,10 @@ const contactLocationFrontmatter = (
 
   if (location.address) {
     frontmatter.address = location.address;
+  }
+
+  if (location.coordinates) {
+    frontmatter.coordinates = location.coordinates;
   }
 
   return frontmatter;

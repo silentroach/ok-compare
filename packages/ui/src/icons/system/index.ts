@@ -1,6 +1,7 @@
 export { default as AlertCircleIcon } from './AlertCircle.astro';
 export { default as CalendarPlusIcon } from './CalendarPlus.astro';
 export { default as CheckCircleIcon } from './CheckCircle.astro';
+export { default as ContactPlusIcon } from './ContactPlus.astro';
 export { default as DomylandIcon } from './Domyland.astro';
 export { default as EmailIcon } from './Email.astro';
 export { default as FilePdfIcon } from './FilePdf.astro';

@@ -4,6 +4,7 @@ import Breadcrumbs from '@shelkovo/ui/Breadcrumbs.astro';
 
 import ContactMethods from '@/components/contacts/ContactMethods.astro';
 import ContactReviews from '@/components/contacts/ContactReviews.astro';
+import ContactVcfLink from '@/components/contacts/ContactVcfLink.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import {
   withHomeBreadcrumbs,
@@ -72,8 +73,15 @@ const schema = contactPageSchema({
       <div class="ui-page-header-stack max-w-4xl">
         <Breadcrumbs items={breadcrumbs} linkLast />
 
-        <div>
+        <div class="flex items-center gap-5 md:gap-7">
           <h1 class="ui-page-title">{contact.title}</h1>
+          {
+            contact.vcf ? (
+              <span class="inline-flex translate-y-1 md:translate-y-1.5">
+                <ContactVcfLink vcf={contact.vcf} />
+              </span>
+            ) : null
+          }
         </div>
       </div>
     </header>

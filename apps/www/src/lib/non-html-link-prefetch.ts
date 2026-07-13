@@ -9,7 +9,14 @@ import type {
 
 const defaultSameOrigins = ['https://kpshelkovo.online'] as const;
 const sourceExtensions = new Set(['.astro', '.svelte', '.md', '.mdx']);
-const nonHtmlExtensions = ['.pdf', '.ics', '.json', '.xml', '.md'] as const;
+const nonHtmlExtensions = [
+  '.pdf',
+  '.ics',
+  '.vcf',
+  '.json',
+  '.xml',
+  '.md',
+] as const;
 const nonHtmlPathMarkers = [
   '/data/',
   '/.well-known/',

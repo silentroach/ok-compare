@@ -69,11 +69,16 @@ describe('RawContactSchema', () => {
           title: 'Золото Сибири',
           url: 'https://yandex.ru/maps/-/CTq-BEOk',
           address: 'Пионерская ул., 21, пгт Малино',
+          coordinates: { lat: 55.116326, lng: 38.16951 },
         },
       }).location,
     ).toMatchInlineSnapshot(`
       {
         "address": "Пионерская ул., 21, пгт Малино",
+        "coordinates": {
+          "lat": 55.116326,
+          "lng": 38.16951,
+        },
         "title": "Золото Сибири",
         "url": "https://yandex.ru/maps/-/CTq-BEOk",
       }
@@ -109,6 +114,66 @@ describe('RawContactSchema', () => {
         },
       ]
     `);
+  });
+
+  it('accepts opt-in vCard overrides', () => {
+    expect(
+      RawContactSchema.parse({
+        title: 'Александр Ерёмин',
+        slug: 'alexander-eremin',
+        category: 'electricity',
+        updated_at: '2026-07-13',
+        contacts: {
+          phone: '+7 985 414-57-87',
+        },
+        vcf: {
+          enable: true,
+          kind: 'person',
+          name: {
+            family: 'Ерёмин',
+            given: 'Александр',
+          },
+          note: 'Помогает по вопросам электричества.',
+        },
+      }).vcf,
+    ).toMatchInlineSnapshot(`
+      {
+        "enable": true,
+        "kind": "person",
+        "name": {
+          "family": "Ерёмин",
+          "given": "Александр",
+        },
+        "note": "Помогает по вопросам электричества.",
+      }
+    `);
+  });
+
+  it('requires complete identity data for enabled vCards', () => {
+    const base = {
+      title: 'Полезный контакт',
+      slug: 'useful-contact',
+      category: 'garden',
+      updated_at: '2026-07-13',
+      contacts: { phone: '+7 900 000-00-00' },
+    };
+
+    expect(
+      RawContactSchema.safeParse({
+        ...base,
+        vcf: {
+          enable: true,
+          kind: 'person',
+          name: { given: 'Иван' },
+        },
+      }).success,
+    ).toBe(false);
+    expect(
+      RawContactSchema.safeParse({
+        ...base,
+        vcf: { enable: true, kind: 'organization' },
+      }).success,
+    ).toBe(false);
   });
 
   it('rejects invalid slugs, impossible dates and unknown categories', () => {

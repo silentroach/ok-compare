@@ -64,6 +64,8 @@ export const contactCategoryMarkdownPattern = (): string =>
 export const contactPattern = (): string => '/sarafan/:category/:slug/';
 export const contactMarkdownPattern = (): string =>
   '/sarafan/:category/:slug/index.md';
+export const contactVcfPattern = (): string =>
+  '/sarafan/:category/:slug/contact.vcf';
 
 export const contactsUrl = (): string => withBase(contactsPath());
 export const contactsMarkdownUrl = (): string =>
@@ -81,6 +83,9 @@ export const contactUrl = (input: ContactRouteInput): string =>
 
 export const contactMarkdownUrl = (input: ContactRouteInput): string =>
   withBase(`${contactPath(input)}index.md`);
+
+export const contactVcfUrl = (input: ContactRouteInput): string =>
+  withBase(`${contactPath(input)}contact.vcf`);
 
 export const contactCanonical = (input: ContactRouteInput): string =>
   canon(contactPath(input));

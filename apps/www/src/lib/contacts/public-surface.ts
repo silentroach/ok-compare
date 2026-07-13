@@ -5,6 +5,7 @@ import {
   contactCategoryPattern,
   contactMarkdownPattern,
   contactPattern,
+  contactVcfPattern,
   contactsMarkdownPath,
   contactsPath,
 } from './routes';
@@ -65,6 +66,14 @@ export const contactsPublicSurfaceSlice = {
       mediaType: 'text/markdown',
       cacheClass: 'markdown',
       discoveryRoles: ['markdown-companion'],
+    },
+    {
+      id: 'contacts:contact-vcard',
+      label: 'vCard контакта сарафана',
+      routePattern: contactVcfPattern(),
+      mediaType: 'text/vcard',
+      cacheClass: 'static',
+      discoveryRoles: ['download'],
     },
   ],
 } satisfies PublicSurfaceSlice;
