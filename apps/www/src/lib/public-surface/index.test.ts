@@ -78,7 +78,11 @@ import {
   reviewsRulesPath,
 } from '@/lib/reviews/routes';
 import { reglamentPublicSurfaceSlice } from '@/lib/reglament/public-surface';
-import { REGLAMENT_PUBLIC_PATHS } from '@/lib/reglament/routes';
+import {
+  REGLAMENT_PUBLIC_PATHS,
+  REGLAMENT_SOURCE_PDF_URLS,
+  reglamentFullSourcePdfUrl,
+} from '@/lib/reglament/routes';
 import {
   statusApiCatalogPath,
   statusDataPath,
@@ -532,7 +536,11 @@ describe('public surface registry', () => {
 
     expect(
       surfaces.map((surface) => ('path' in surface ? surface.path : '')),
-    ).toEqual(REGLAMENT_PUBLIC_PATHS);
+    ).toEqual([
+      ...REGLAMENT_PUBLIC_PATHS,
+      reglamentFullSourcePdfUrl(),
+      ...REGLAMENT_SOURCE_PDF_URLS,
+    ]);
     expect(
       publicSurfaceRegistry.surfaceOwner('reglament:data-estimate-2026'),
     ).toEqual(reglamentPublicSurfaceSlice.owner);

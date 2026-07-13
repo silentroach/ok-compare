@@ -1,5 +1,3 @@
-import { readFile } from 'node:fs/promises';
-
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { estimate2026 } from '@/data/reglament/estimate-2026';
@@ -23,9 +21,9 @@ import {
   reglamentFullChecksMarkdownPath,
   reglamentFullServiceMapMarkdownPath,
   reglamentFullServicesMarkdownPath,
-  reglamentFullSourcePdfPath,
+  reglamentFullSourcePdfUrl,
   reglamentServicesPath,
-  reglamentSourcePdfPath,
+  reglamentSourcePdfUrl,
 } from './routes';
 
 let buildReglamentPayload: typeof import('./discovery').buildReglamentPayload;
@@ -41,8 +39,7 @@ type CatalogEntry = {
   readonly href?: string;
   readonly type?: string;
   readonly 'title*'?:
-    | string
-    | readonly { readonly language?: string; readonly value?: string }[];
+    string | readonly { readonly language?: string; readonly value?: string }[];
 };
 
 type CatalogLinkset = {
@@ -160,16 +157,16 @@ describe('reglament discovery payload', () => {
     ).toBe(true);
     expect(payload.sections[0]?.rows[0]?.source_refs[0]).toMatchObject({
       pdf: 'final',
-      pdf_path: 'apps/www/public/815/regulation/original/final.pdf',
-      pdf_url: reglamentSourcePdfPath('final'),
+      pdf_key: '815/regulation/final.pdf',
+      pdf_url: reglamentSourcePdfUrl('final'),
       page: 1,
     });
     expect(payload.sources).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           pdf: 'final',
-          pdf_path: 'apps/www/public/815/regulation/original/final.pdf',
-          pdf_url: reglamentSourcePdfPath('final'),
+          pdf_key: '815/regulation/final.pdf',
+          pdf_url: reglamentSourcePdfUrl('final'),
         }),
       ]),
     );
@@ -210,9 +207,7 @@ describe('reglament discovery payload', () => {
     expect(self(root)).toContain(
       `https://example.com${reglamentApiCatalogPath()}`,
     );
-    expect(apiCatalog).toContain(
-      `https://example.com${reglamentSourcePdfPath('final')}`,
-    );
+    expect(apiCatalog).toContain(reglamentSourcePdfUrl('final'));
     expect(jsonSchema.additionalProperties).toBe(false);
     expect(jsonSchema.$defs?.row?.additionalProperties).toBe(false);
     expect(api.paths).toHaveProperty(reglamentEstimate2026DataPath());
@@ -337,7 +332,7 @@ describe('reglament discovery route smoke', () => {
       reglamentFullChecksMarkdownPath(),
       reglamentAssetsPath(),
       reglamentServicesPath(),
-      reglamentFullSourcePdfPath(),
+      new URL(reglamentFullSourcePdfUrl()).pathname,
     ]);
 
     expect(
@@ -387,7 +382,7 @@ describe('reglament discovery route smoke', () => {
           "type": "text/html",
         },
         {
-          "href": "https://example.com/815/regulation/original/full.pdf",
+          "href": "https://media.kpshelkovo.online/815/regulation/full.pdf",
           "title": "Исходный PDF полного регламента",
           "type": "application/pdf",
         },
@@ -482,26 +477,19 @@ describe('reglament discovery route smoke', () => {
     `);
   });
 
-  it('maps public source PDF URLs to public asset files', async () => {
-    const pdfPaths = REGLAMENT_PUBLIC_PATHS.filter((path) =>
-      path.endsWith('.pdf'),
-    );
+  it('keeps source PDF URLs on the canonical media origin', () => {
+    const pdfUrls = [
+      reglamentFullSourcePdfUrl(),
+      reglamentSourcePdfUrl('final'),
+    ];
 
-    expect(pdfPaths).toEqual(
-      expect.arrayContaining([
-        reglamentFullSourcePdfPath(),
-        reglamentSourcePdfPath('final'),
-      ]),
-    );
-
-    for (const path of pdfPaths) {
-      const file = await readFile(
-        new URL(`../../../public${path}`, import.meta.url),
-      );
-      const marker = new TextDecoder().decode(file.subarray(0, 4));
-
-      expect(marker, path).toBe('%PDF');
-    }
+    expect(pdfUrls).toMatchInlineSnapshot(`
+      [
+        "https://media.kpshelkovo.online/815/regulation/full.pdf",
+        "https://media.kpshelkovo.online/815/regulation/final.pdf",
+      ]
+    `);
+    expect(REGLAMENT_PUBLIC_PATHS).not.toEqual(expect.arrayContaining(pdfUrls));
   });
 
   it('explains the short UI tariff unit without renaming machine fields', async () => {
@@ -525,7 +513,7 @@ describe('reglament discovery route smoke', () => {
     expect(json).toContain('tariff_per_sotka_month');
   });
 
-  it('keeps public PDF URLs and repo paths in public surfaces', async () => {
+  it('keeps public PDF URLs and S3 keys in public surfaces', async () => {
     const markdownRoute = await import('../../pages/815/regulation/index.md');
     const shortLlmsRoute = await import('../../pages/815/regulation/llms.txt');
     const fullLlmsRoute =
@@ -540,18 +528,18 @@ describe('reglament discovery route smoke', () => {
     ) as {
       readonly source_refs: readonly {
         readonly pdf: string;
-        readonly pdf_path: string;
+        readonly pdf_key: string;
         readonly pdf_url: string;
       }[];
     };
 
     expect(`${markdown}\n${shortLlms}\n${fullLlms}`).toContain(
-      '/815/regulation/original/final.pdf',
+      'https://media.kpshelkovo.online/815/regulation/final.pdf',
     );
     expect(json.source_refs[0]).toMatchObject({
       pdf: 'final',
-      pdf_path: 'apps/www/public/815/regulation/original/final.pdf',
-      pdf_url: '/815/regulation/original/final.pdf',
+      pdf_key: '815/regulation/final.pdf',
+      pdf_url: 'https://media.kpshelkovo.online/815/regulation/final.pdf',
     });
   });
 });

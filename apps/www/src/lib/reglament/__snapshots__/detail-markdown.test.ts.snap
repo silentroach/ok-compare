@@ -54,8 +54,8 @@ exports[`estimate detail markdown companions > filters resource topical files fr
 
 #### Источники группы
 
-- \`S1\`: [cleaning.pdf стр. 4, Ведомость ресурсов / труд / строка 3](https://kpshelkovo.online/815/regulation/original/cleaning.pdf)
-- \`S2\`: [cleaning.pdf стр. 4, Ведомость ресурсов / труд машинистов / строка 4](https://kpshelkovo.online/815/regulation/original/cleaning.pdf)
+- \`S1\`: [cleaning.pdf стр. 4, Ведомость ресурсов / труд / строка 3](https://media.kpshelkovo.online/815/regulation/cleaning.pdf)
+- \`S2\`: [cleaning.pdf стр. 4, Ведомость ресурсов / труд машинистов / строка 4](https://media.kpshelkovo.online/815/regulation/cleaning.pdf)
 ",
   "machines": "# Детальная смета 2026: машины
 
@@ -99,7 +99,7 @@ exports[`estimate detail markdown companions > filters resource topical files fr
 
 #### Источники группы
 
-- \`S1\`: [cleaning.pdf стр. 4, Ведомость ресурсов / машины / строка 2](https://kpshelkovo.online/815/regulation/original/cleaning.pdf)
+- \`S1\`: [cleaning.pdf стр. 4, Ведомость ресурсов / машины / строка 2](https://media.kpshelkovo.online/815/regulation/cleaning.pdf)
 ",
   "materials": "# Детальная смета 2026: материалы
 
@@ -143,7 +143,7 @@ exports[`estimate detail markdown companions > filters resource topical files fr
 
 #### Источники группы
 
-- \`S1\`: [cleaning.pdf стр. 4, Ведомость ресурсов / материалы / строка 1](https://kpshelkovo.online/815/regulation/original/cleaning.pdf); цитата: «Песок 12,5 т 1 000,00 12 500,00»; позиции цитаты: 1) Песок; ресурсы: \`material-sand\`; кол-во: 12,5 т; цена: 1 000 ₽; итог: 12 500 ₽
+- \`S1\`: [cleaning.pdf стр. 4, Ведомость ресурсов / материалы / строка 1](https://media.kpshelkovo.online/815/regulation/cleaning.pdf); цитата: «Песок 12,5 т 1 000,00 12 500,00»; позиции цитаты: 1) Песок; ресурсы: \`material-sand\`; кол-во: 12,5 т; цена: 1 000 ₽; итог: 12 500 ₽
 ",
 }
 `;
@@ -164,20 +164,20 @@ exports[`estimate detail markdown companions > lists control totals, deltas and 
 
 ## Контрольные итоги
 
-- \`cleaning-materials-total\`: \`materials\`; строка сметы: \`cleaning-row\`; источник контроля: секционный PDF; сумма в источнике: 12 500 ₽; детальная сумма: 12 500 ₽; агрегированная сумма: 12 525 ₽; дельта: -25 ₽; допуск: 1 ₽; ресурсы: \`material-sand\`; статус: требует проверки; источник: [cleaning.pdf стр. 4, Итого материалы](https://kpshelkovo.online/815/regulation/original/cleaning.pdf)
+- \`cleaning-materials-total\`: \`materials\`; строка сметы: \`cleaning-row\`; источник контроля: секционный PDF; сумма в источнике: 12 500 ₽; детальная сумма: 12 500 ₽; агрегированная сумма: 12 525 ₽; дельта: -25 ₽; допуск: 1 ₽; ресурсы: \`material-sand\`; статус: требует проверки; источник: [cleaning.pdf стр. 4, Итого материалы](https://media.kpshelkovo.online/815/regulation/cleaning.pdf)
 
 ## Позиции со статусом \`needs_check\`
 
 ### Работы
 
-- \`work_items:work-needs-check\`: Работа для сверки; строка сметы: \`cleaning-row-check\`; причина: Неоднозначная строка PDF.; источник: [cleaning.pdf стр. 3, Локальная смета / строка 2](https://kpshelkovo.online/815/regulation/original/cleaning.pdf)
+- \`work_items:work-needs-check\`: Работа для сверки; строка сметы: \`cleaning-row-check\`; причина: Неоднозначная строка PDF.; источник: [cleaning.pdf стр. 3, Локальная смета / строка 2](https://media.kpshelkovo.online/815/regulation/cleaning.pdf)
 
 ### Ресурсы
 
-- \`resources:machinist-loader\`: Машинист погрузчика; работа: \`work-verified\`; статья затрат: \`machinist_salary\`; причина: Ставка не выделена отдельной строкой.; источник: [cleaning.pdf стр. 4, Ведомость ресурсов / труд машинистов / строка 4](https://kpshelkovo.online/815/regulation/original/cleaning.pdf)
+- \`resources:machinist-loader\`: Машинист погрузчика; работа: \`work-verified\`; статья затрат: \`machinist_salary\`; причина: Ставка не выделена отдельной строкой.; источник: [cleaning.pdf стр. 4, Ведомость ресурсов / труд машинистов / строка 4](https://media.kpshelkovo.online/815/regulation/cleaning.pdf)
 
 ### Контрольные итоги
 
-- \`control_totals:cleaning-materials-total\`: \`materials\`; строка сметы: \`cleaning-row\`; причина: Расхождение больше допуска.; источник: [cleaning.pdf стр. 4, Итого материалы](https://kpshelkovo.online/815/regulation/original/cleaning.pdf)
+- \`control_totals:cleaning-materials-total\`: \`materials\`; строка сметы: \`cleaning-row\`; причина: Расхождение больше допуска.; источник: [cleaning.pdf стр. 4, Итого материалы](https://media.kpshelkovo.online/815/regulation/cleaning.pdf)
 "
 `;

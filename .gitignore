@@ -8,6 +8,8 @@ apps/*/.astro/
 .agents/skills/*
 !.agents/skills/news-maker/
 !.agents/skills/news-maker/**
+!.agents/skills/public-media-publisher/
+!.agents/skills/public-media-publisher/**
 logs/
 .env
 .opencode/package-lock.json

@@ -5,7 +5,7 @@ import type {
 
 import {
   REGLAMENT_ESTIMATE_DETAILS_MARKDOWN_PATHS,
-  REGLAMENT_SOURCE_PDF_PATHS,
+  REGLAMENT_SOURCE_PDF_URLS,
   reglamentApiCatalogPath,
   reglamentAssetsPath,
   reglamentEstimate2026DataPath,
@@ -17,7 +17,7 @@ import {
   reglamentFullMarkdownPath,
   reglamentFullServiceMapMarkdownPath,
   reglamentFullServicesMarkdownPath,
-  reglamentFullSourcePdfPath,
+  reglamentFullSourcePdfUrl,
   reglamentLlmsFullPath,
   reglamentLlmsPath,
   reglamentMarkdownPath,
@@ -203,13 +203,13 @@ export const reglamentPublicSurfaceSlice = {
     pdfSurface(
       'reglament:source-full-pdf',
       'Исходный PDF полного регламента',
-      reglamentFullSourcePdfPath(),
+      reglamentFullSourcePdfUrl(),
     ),
-    ...REGLAMENT_SOURCE_PDF_PATHS.map((path) =>
+    ...REGLAMENT_SOURCE_PDF_URLS.map((url) =>
       pdfSurface(
-        `reglament:source-pdf:${path.split('/').at(-1) ?? path}`,
+        `reglament:source-pdf:${url.split('/').at(-1) ?? url}`,
         'Исходный PDF сметы регламента',
-        path,
+        url,
       ),
     ),
   ],

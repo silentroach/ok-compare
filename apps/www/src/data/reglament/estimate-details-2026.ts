@@ -39,7 +39,7 @@ export const estimateDetails2026 = {
   year: 2026,
   source_pdfs: estimateDetailSourcePdfs,
   curation_notes: [
-    'Детальные факты извлекаются только из маленьких PDF в apps/www/public/815/regulation/original/; full.pdf для detail-данных не используется.',
+    'Детальные факты извлекаются только из секционных PDF по адресам https://media.kpshelkovo.online/815/regulation/*.pdf; full.pdf для detail-данных не используется.',
     'PDF не парсятся во время runtime или build страницы: этот файл является curated dataset для ручного пополнения.',
     'Каждый будущий work item, resource и control total должен иметь source_refs с PDF, страницей и фрагментом; неоднозначные строки помечаются needs_check.',
     'Итоги с control_source=final_pdf сверяют строки и разделы final.pdf с estimate-2026; control_source=section_pdf сверяет ресурсы и итоги секционных PDF.',

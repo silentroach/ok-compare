@@ -2,6 +2,8 @@
 
 `media.kpshelkovo.online` проксирует публичные объекты S3 и использует отдельный статический artifact только для локальной страницы 404.
 
+Параметры бакета, структура ключей и порядок публикации через `s5cmd` описаны в [storage runbook](../storage/public-media.md). Архитектурные границы хранения файлов зафиксированы в [ADR-021](../../docs/decisions/021-public-section-files-in-s3.md).
+
 ## Каталоги
 
 - `/var/www/media-kpshelkovo-online` - содержимое `dist/media`.

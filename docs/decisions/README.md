@@ -24,3 +24,4 @@
 - [ADR-018: Markdown-first сарафан](018-markdown-first-useful-contacts.md) - принят, 2026-07-06.
 - [ADR-019: Публичный media-origin через nginx перед S3](019-public-media-origin.md) - принят, 2026-07-10.
 - [ADR-020: Отдельное Astro-приложение для media error pages](020-separate-media-error-app.md) - принят, 2026-07-11.
+- [ADR-021: Публичные файлы разделов в S3](021-public-section-files-in-s3.md) - принят, 2026-07-13.

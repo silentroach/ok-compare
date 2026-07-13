@@ -17,13 +17,13 @@ import {
   reglamentFullMarkdownPath,
   reglamentFullServiceMapMarkdownPath,
   reglamentFullServicesMarkdownPath,
-  reglamentFullSourcePdfPath,
+  reglamentFullSourcePdfUrl,
   reglamentLlmsFullPath,
   reglamentLlmsPath,
   reglamentMarkdownPath,
   reglamentPath,
   reglamentServicesPath,
-  reglamentSourcePdfPath,
+  reglamentSourcePdfUrl,
 } from './routes';
 import type {
   CostBreakdown,
@@ -64,13 +64,13 @@ export const REGLAMENT_FORMULAS = {
 } as const;
 
 export const REGLAMENT_CAVEATS = [
-  'PDF-таблицы нормализованы вручную; исходные PDF лежат в apps/www/public/815/regulation/original и доступны под /815/regulation/original/*.pdf.',
+  'PDF-таблицы нормализованы вручную; исходные PDF опубликованы в публичном хранилище по адресам https://media.kpshelkovo.online/815/regulation/*.pdf.',
   'final.pdf сходится с полной строкой «Доходов всего» из калькуляции, умноженной на НДС 5%, а не только с локальной строкой «Сметная стоимость».',
   'Строки с тегом «требует проверки» стоит перепроверить по исходным PDF перед юридическими или финансовыми выводами.',
 ] as const;
 
 export interface ReglamentDiscoverySourceRef extends EstimateSourceRef {
-  readonly pdf_path: string;
+  readonly pdf_key: string;
   readonly pdf_url: string;
 }
 
@@ -121,7 +121,7 @@ export interface ReglamentDiscoveryPayload {
   readonly source_refs: readonly ReglamentDiscoverySourceRef[];
   readonly sources: readonly {
     readonly pdf: EstimateSourcePdf;
-    readonly pdf_path: string;
+    readonly pdf_key: string;
     readonly pdf_url: string;
   }[];
   readonly caveats: readonly string[];
@@ -199,20 +199,20 @@ function rewriteSchemaRefs(value: unknown, schemaRef: string): unknown {
   );
 }
 
-export const estimateSourcePdfPath = (pdf: EstimateSourcePdf): string =>
-  `apps/www/public/815/regulation/original/${pdf}.pdf`;
+export const estimateSourcePdfKey = (pdf: EstimateSourcePdf): string =>
+  `815/regulation/${pdf}.pdf`;
 
 const sourceRef = (ref: EstimateSourceRef): ReglamentDiscoverySourceRef => ({
   ...ref,
-  pdf_path: estimateSourcePdfPath(ref.pdf),
-  pdf_url: reglamentSourcePdfPath(ref.pdf),
+  pdf_key: estimateSourcePdfKey(ref.pdf),
+  pdf_url: reglamentSourcePdfUrl(ref.pdf),
 });
 
 const sources = (): ReglamentDiscoveryPayload['sources'] =>
   ESTIMATE_SOURCE_PDFS.map((pdf) => ({
     pdf,
-    pdf_path: estimateSourcePdfPath(pdf),
-    pdf_url: reglamentSourcePdfPath(pdf),
+    pdf_key: estimateSourcePdfKey(pdf),
+    pdf_url: reglamentSourcePdfUrl(pdf),
   }));
 
 const computedTotals = (
@@ -381,21 +381,21 @@ export function schema(root: string): Record<string, unknown> {
       sourcePdf: obj(
         {
           pdf: { $ref: '#/$defs/sourcePdfKey' },
-          pdf_path: text(1),
+          pdf_key: text(1),
           pdf_url: text(1),
         },
-        ['pdf', 'pdf_path', 'pdf_url'],
+        ['pdf', 'pdf_key', 'pdf_url'],
       ),
       sourceRef: obj(
         {
           pdf: { $ref: '#/$defs/sourcePdfKey' },
-          pdf_path: text(1),
+          pdf_key: text(1),
           pdf_url: text(1),
           page: integer(1),
           fragment: text(1),
           note: text(1),
         },
-        ['pdf', 'pdf_path', 'pdf_url', 'page'],
+        ['pdf', 'pdf_key', 'pdf_url', 'page'],
       ),
       displayValue: obj(
         {
@@ -719,7 +719,7 @@ export function catalog(root: string): Record<string, unknown> {
             'title*': star('Страница услуг и сопоставления со сметой'),
           },
           {
-            href: abs(root, reglamentFullSourcePdfPath()),
+            href: reglamentFullSourcePdfUrl(),
             type: 'application/pdf',
             'title*': star('Исходный PDF полного регламента'),
           },
@@ -734,7 +734,7 @@ export function catalog(root: string): Record<string, unknown> {
             'title*': star('Подробный обзор llms-full.txt'),
           },
           ...ESTIMATE_SOURCE_PDFS.map((pdf) => ({
-            href: abs(root, reglamentSourcePdfPath(pdf)),
+            href: reglamentSourcePdfUrl(pdf),
             type: 'application/pdf',
             'title*': star(`Исходный PDF сметы регламента: ${pdf}.pdf`),
           })),

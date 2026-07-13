@@ -20,6 +20,7 @@ scripts/     # build/deploy helper scripts
 - Для устойчивых названий, терминов, юрлиц и написаний сверяться с корневым `GLOSSARY.md`; новые подтвержденные термины добавлять туда.
 - Данные новостей лежат в `apps/www/src/data/news`: авторы в `authors/*.yaml`, статьи в `articles/**/*.md`; при добавлении или редактировании новостей обязательно использовать skill `news-maker`.
 - Данные статуса сервисов лежат в `apps/www/src/data/status/incidents/**/*.md`; перед добавлением или редактированием читать локальный `apps/www/src/data/status/incidents/AGENTS.md`.
+- Перед загрузкой, заменой, удалением или проверкой публичных файлов в `kps-public` обязательно использовать skill `public-media-publisher`.
 - Если меняются shared стили, примитивы ссылок или URL-утилиты, проверить все затронутые разделы в `apps/www`.
 - Архитектурные решения искать и фиксировать в `docs/decisions`; список ADR лежит в `docs/decisions/README.md`.
 - Публичные Markdown/llms-документы генерировать через `@shelkovo/markdown` AST API или app-helper поверх него; не собирать целый документ локальным `lines.join('\n')`.
@@ -39,6 +40,7 @@ scripts/     # build/deploy helper scripts
 - Правишь что-то на фронте - подключай `frontend-ui-engineering` и `tailwind-design-system`
 - При редактировании/создании любого видимого текста используй скилл `copy-editing` (ADR и техническая дока не в счет), а отображенную в вебе - еще и `web-typography`
 - Добавляешь или правишь новость сайта - подключай `news-maker`
+- Публикуешь или меняешь файлы в `kps-public` или ссылки `media.kpshelkovo.online` - подключай `public-media-publisher`
 - Меняешь/изучаешь конфиги nginx в папке ops - `nginx-expert`
 - После правок в коде обязательно используй скилл `code-simplification`
 

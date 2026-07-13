@@ -310,7 +310,7 @@ describe('estimate detail markdown companions', () => {
 
       ## PDF-источники
 
-      - cleaning.pdf: Детализация уборки; страниц: 4; ссылка: <https://kpshelkovo.online/815/regulation/original/cleaning.pdf>
+      - cleaning.pdf: Детализация уборки; страниц: 4; ссылка: <https://media.kpshelkovo.online/815/regulation/cleaning.pdf>
 
       ## Кураторские заметки
 

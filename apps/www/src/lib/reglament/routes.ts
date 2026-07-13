@@ -29,19 +29,21 @@ const REGLAMENT_LLMS_FULL = '/815/regulation/llms-full.txt';
 const REGLAMENT_API_CATALOG = '/815/regulation/.well-known/api-catalog';
 const REGLAMENT_SCHEMA = '/815/regulation/schemas/estimate-2026.schema.json';
 const REGLAMENT_OPENAPI = '/815/regulation/openapi/estimate-2026.openapi.json';
-const REGLAMENT_SOURCE_PDF_ROOT = '/815/regulation/original/';
-const REGLAMENT_FULL_SOURCE_PDF = '/815/regulation/original/full.pdf';
+const REGLAMENT_SOURCE_PDF_ROOT =
+  'https://media.kpshelkovo.online/815/regulation/';
+const REGLAMENT_FULL_SOURCE_PDF =
+  'https://media.kpshelkovo.online/815/regulation/full.pdf';
 
-export type ReglamentSourcePdfPath =
-  `/815/regulation/original/${EstimateSourcePdf}.pdf`;
-export type ReglamentFullSourcePdfPath = typeof REGLAMENT_FULL_SOURCE_PDF;
+export type ReglamentSourcePdfUrl =
+  `https://media.kpshelkovo.online/815/regulation/${EstimateSourcePdf}.pdf`;
+export type ReglamentFullSourcePdfUrl = typeof REGLAMENT_FULL_SOURCE_PDF;
 
-export const reglamentSourcePdfPath = (
+export const reglamentSourcePdfUrl = (
   pdf: EstimateSourcePdf,
-): ReglamentSourcePdfPath => `${REGLAMENT_SOURCE_PDF_ROOT}${pdf}.pdf`;
+): ReglamentSourcePdfUrl => `${REGLAMENT_SOURCE_PDF_ROOT}${pdf}.pdf`;
 
-export const REGLAMENT_SOURCE_PDF_PATHS = ESTIMATE_SOURCE_PDFS.map(
-  reglamentSourcePdfPath,
+export const REGLAMENT_SOURCE_PDF_URLS = ESTIMATE_SOURCE_PDFS.map(
+  reglamentSourcePdfUrl,
 );
 
 export const REGLAMENT_ESTIMATE_DETAILS_MARKDOWN_PATHS = [
@@ -55,7 +57,7 @@ export const REGLAMENT_ESTIMATE_DETAILS_MARKDOWN_PATHS = [
 export type ReglamentEstimateDetailsMarkdownPath =
   (typeof REGLAMENT_ESTIMATE_DETAILS_MARKDOWN_PATHS)[number];
 
-export const reglamentFullSourcePdfPath = (): ReglamentFullSourcePdfPath =>
+export const reglamentFullSourcePdfUrl = (): ReglamentFullSourcePdfUrl =>
   REGLAMENT_FULL_SOURCE_PDF;
 
 export const REGLAMENT_PUBLIC_PATHS = [
@@ -77,8 +79,6 @@ export const REGLAMENT_PUBLIC_PATHS = [
   REGLAMENT_SCHEMA,
   REGLAMENT_OPENAPI,
   REGLAMENT_API_CATALOG,
-  REGLAMENT_FULL_SOURCE_PDF,
-  ...REGLAMENT_SOURCE_PDF_PATHS,
 ] as const;
 
 export type ReglamentPublicPath = (typeof REGLAMENT_PUBLIC_PATHS)[number];
@@ -137,12 +137,6 @@ export const reglamentApiCatalogPath = (): string => REGLAMENT_API_CATALOG;
 export const reglamentEstimate2026SchemaPath = (): string => REGLAMENT_SCHEMA;
 
 export const reglamentEstimate2026OpenApiPath = (): string => REGLAMENT_OPENAPI;
-
-export const reglamentSourcePdfUrl = (pdf: EstimateSourcePdf): string =>
-  withBase(reglamentSourcePdfPath(pdf));
-
-export const reglamentFullSourcePdfUrl = (): string =>
-  withBase(REGLAMENT_FULL_SOURCE_PDF);
 
 export const reglamentUrl = (): string => withBase(REGLAMENT_ROOT);
 
