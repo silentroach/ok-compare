@@ -14,6 +14,7 @@ describe('contact view helpers', () => {
       'Строительство и ремонт',
     );
     expect(formatContactCategory('garden')).toBe('Сад и участок');
+    expect(formatContactCategory('food')).toBe('Еда и продукты');
     expect(formatContactCategory('electricity')).toBe('Электричество');
     expect(formatContactCategory('education')).toBe('Дети и обучение');
   });

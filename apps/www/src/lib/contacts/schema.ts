@@ -3,6 +3,7 @@ export const CONTACT_CATEGORIES = [
   'construction',
   'education',
   'garden',
+  'food',
   'fence',
 ] as const;
 export type ContactCategory = (typeof CONTACT_CATEGORIES)[number];
