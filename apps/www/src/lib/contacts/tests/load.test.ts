@@ -88,6 +88,10 @@ describe('buildContactsDataset', () => {
       }),
       entry({ id: 'garden/garden', data: { category: 'garden' } }),
       entry({
+        id: 'waste-removal/waste-removal',
+        data: { category: 'waste-removal' },
+      }),
+      entry({
         id: 'construction/construction',
         data: { category: 'construction' },
       }),
@@ -100,6 +104,7 @@ describe('buildContactsDataset', () => {
     expect(data.categories.map((item) => item.category)).toEqual([
       'electricity',
       'construction',
+      'waste-removal',
       'education',
       'garden',
       'fence',

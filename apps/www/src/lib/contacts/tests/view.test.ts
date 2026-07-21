@@ -13,6 +13,7 @@ describe('contact view helpers', () => {
     expect(formatContactCategory('construction')).toBe(
       'Строительство и ремонт',
     );
+    expect(formatContactCategory('waste-removal')).toBe('Вывоз мусора');
     expect(formatContactCategory('garden')).toBe('Сад и участок');
     expect(formatContactCategory('food')).toBe('Еда и продукты');
     expect(formatContactCategory('electricity')).toBe('Электричество');
