@@ -28,3 +28,23 @@ describe('BaseLayout site header', () => {
     expect(html).not.toContain('<header class="site-header');
   });
 });
+
+describe('BaseLayout markdown discovery', () => {
+  it('advertises the markdown companion in HTML', async () => {
+    const html = await renderLayout('/815/compare/');
+
+    expect(html).toContain(
+      '<link rel="alternate" type="text/markdown" href="https://kpshelkovo.online/815/compare/index.md">',
+    );
+  });
+
+  it('does not advertise a nonexistent companion for an error page', async () => {
+    const container = await createAstroContainer();
+    const html = await container.renderToString(BaseLayout, {
+      request: new Request('https://example.com/404.html'),
+      props: { robots: 'noindex, nofollow' },
+    });
+
+    expect(html).not.toContain('type="text/markdown"');
+  });
+});

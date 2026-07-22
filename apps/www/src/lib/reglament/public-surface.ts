@@ -7,6 +7,7 @@ import {
   REGLAMENT_ESTIMATE_DETAILS_MARKDOWN_PATHS,
   REGLAMENT_SOURCE_PDF_URLS,
   reglamentApiCatalogPath,
+  reglamentAssetsMarkdownPath,
   reglamentAssetsPath,
   reglamentEstimate2026DataPath,
   reglamentEstimate2026OpenApiPath,
@@ -22,6 +23,7 @@ import {
   reglamentLlmsPath,
   reglamentMarkdownPath,
   reglamentPath,
+  reglamentServicesMarkdownPath,
   reglamentServicesPath,
   reglamentEstimateDetails2026DataPath,
 } from './routes';
@@ -83,6 +85,14 @@ export const reglamentPublicSurfaceSlice = {
       cacheClass: 'html',
       discoveryRoles: ['section-entry'],
       catalogRole: 'anchor',
+      linkRelations: [
+        {
+          rel: 'alternate',
+          href: reglamentMarkdownPath(),
+          mediaType: 'text/markdown',
+        },
+      ],
+      acceptsNegotiation: 'required',
     },
     markdownSurface(
       'reglament:index-markdown',
@@ -144,7 +154,20 @@ export const reglamentPublicSurfaceSlice = {
       cacheClass: 'html',
       discoveryRoles: ['detail-page'],
       catalogRole: 'item',
+      linkRelations: [
+        {
+          rel: 'alternate',
+          href: reglamentAssetsMarkdownPath(),
+          mediaType: 'text/markdown',
+        },
+      ],
+      acceptsNegotiation: 'required',
     },
+    markdownSurface(
+      'reglament:assets-markdown',
+      'Markdown-версия общего имущества из полного регламента',
+      reglamentAssetsMarkdownPath(),
+    ),
     {
       id: 'reglament:services',
       label: 'Страница услуг и сопоставления со сметой',
@@ -153,7 +176,20 @@ export const reglamentPublicSurfaceSlice = {
       cacheClass: 'html',
       discoveryRoles: ['detail-page'],
       catalogRole: 'item',
+      linkRelations: [
+        {
+          rel: 'alternate',
+          href: reglamentServicesMarkdownPath(),
+          mediaType: 'text/markdown',
+        },
+      ],
+      acceptsNegotiation: 'required',
     },
+    markdownSurface(
+      'reglament:services-markdown',
+      'Markdown-версия услуг и сопоставления со сметой',
+      reglamentServicesMarkdownPath(),
+    ),
     {
       id: 'reglament:llms',
       label: 'Агентный обзор регламента',

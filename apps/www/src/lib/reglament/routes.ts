@@ -23,7 +23,9 @@ const REGLAMENT_DATA_ESTIMATE_DETAILS_2026 =
   '/815/regulation/data/estimate-details-2026.json';
 const REGLAMENT_DATA_FULL_2026 = '/815/regulation/data/full-2026.json';
 const REGLAMENT_ASSETS = '/815/regulation/assets/';
+const REGLAMENT_ASSETS_MARKDOWN = '/815/regulation/assets/index.md';
 const REGLAMENT_SERVICES = '/815/regulation/services/';
+const REGLAMENT_SERVICES_MARKDOWN = '/815/regulation/services/index.md';
 const REGLAMENT_LLMS = '/815/regulation/llms.txt';
 const REGLAMENT_LLMS_FULL = '/815/regulation/llms-full.txt';
 const REGLAMENT_API_CATALOG = '/815/regulation/.well-known/api-catalog';
@@ -73,7 +75,9 @@ export const REGLAMENT_PUBLIC_PATHS = [
   REGLAMENT_DATA_ESTIMATE_DETAILS_2026,
   REGLAMENT_DATA_FULL_2026,
   REGLAMENT_ASSETS,
+  REGLAMENT_ASSETS_MARKDOWN,
   REGLAMENT_SERVICES,
+  REGLAMENT_SERVICES_MARKDOWN,
   REGLAMENT_LLMS,
   REGLAMENT_LLMS_FULL,
   REGLAMENT_SCHEMA,
@@ -126,7 +130,13 @@ export const reglamentFull2026DataPath = (): string => REGLAMENT_DATA_FULL_2026;
 
 export const reglamentAssetsPath = (): string => REGLAMENT_ASSETS;
 
+export const reglamentAssetsMarkdownPath = (): string =>
+  REGLAMENT_ASSETS_MARKDOWN;
+
 export const reglamentServicesPath = (): string => REGLAMENT_SERVICES;
+
+export const reglamentServicesMarkdownPath = (): string =>
+  REGLAMENT_SERVICES_MARKDOWN;
 
 export const reglamentLlmsPath = (): string => REGLAMENT_LLMS;
 
@@ -183,7 +193,13 @@ export const reglamentFull2026DataUrl = (): string =>
 
 export const reglamentAssetsUrl = (): string => withBase(REGLAMENT_ASSETS);
 
+export const reglamentAssetsMarkdownUrl = (): string =>
+  withBase(REGLAMENT_ASSETS_MARKDOWN);
+
 export const reglamentServicesUrl = (): string => withBase(REGLAMENT_SERVICES);
+
+export const reglamentServicesMarkdownUrl = (): string =>
+  withBase(REGLAMENT_SERVICES_MARKDOWN);
 
 export const reglamentLlmsUrl = (): string => withBase(REGLAMENT_LLMS);
 

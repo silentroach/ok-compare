@@ -10,6 +10,7 @@ import {
   reglamentEstimate2026DataPath,
   reglamentEstimate2026OpenApiPath,
   reglamentEstimate2026SchemaPath,
+  reglamentAssetsMarkdownPath,
   reglamentAssetsPath,
   reglamentFull2026DataPath,
   reglamentFullAssetsMarkdownPath,
@@ -22,6 +23,7 @@ import {
   reglamentLlmsPath,
   reglamentMarkdownPath,
   reglamentPath,
+  reglamentServicesMarkdownPath,
   reglamentServicesPath,
   reglamentSourcePdfUrl,
 } from './routes';
@@ -714,9 +716,21 @@ export function catalog(root: string): Record<string, unknown> {
             'title*': star('Страница общего имущества из полного регламента'),
           },
           {
+            href: abs(root, reglamentAssetsMarkdownPath()),
+            type: 'text/markdown',
+            'title*': star(
+              'Markdown-версия общего имущества из полного регламента',
+            ),
+          },
+          {
             href: abs(root, reglamentServicesPath()),
             type: 'text/html',
             'title*': star('Страница услуг и сопоставления со сметой'),
+          },
+          {
+            href: abs(root, reglamentServicesMarkdownPath()),
+            type: 'text/markdown',
+            'title*': star('Markdown-версия услуг и сопоставления со сметой'),
           },
           {
             href: reglamentFullSourcePdfUrl(),

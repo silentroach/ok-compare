@@ -251,8 +251,20 @@ describe('reglament discovery route smoke', () => {
         marker: '# Полный регламент: общее имущество',
       },
       {
+        name: 'reglament assets page markdown companion',
+        load: () => import('../../pages/815/regulation/assets/index.md'),
+        contentType: 'text/markdown',
+        marker: '# Полный регламент: общее имущество',
+      },
+      {
         name: 'full reglament services markdown companion',
         load: () => import('../../pages/815/regulation/full/services.md'),
+        contentType: 'text/markdown',
+        marker: '# Полный регламент: услуги',
+      },
+      {
+        name: 'reglament services page markdown companion',
+        load: () => import('../../pages/815/regulation/services/index.md'),
         contentType: 'text/markdown',
         marker: '# Полный регламент: услуги',
       },

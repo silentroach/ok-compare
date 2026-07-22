@@ -8,6 +8,8 @@
 
 2026-05-17
 
+Обновлено 2026-07-22.
+
 ## Контекст
 
 Корневой сайт `kpshelkovo.online` собирается как статическое Astro-приложение и обслуживается nginx. Для ряда публичных HTML-страниц рядом генерируются Markdown companion-файлы: `index.md` у главной, разделов, архивов, статуса и Compare.
@@ -30,12 +32,16 @@
 - прямые `.md` companion URLs как стабильные, ссылочные, машинно-читаемые ресурсы;
 - negotiated HTML URLs, которые отдают Markdown при `Accept: text/markdown`.
 
+На production-слое nginx выбирает Markdown, когда клиент явно перечисляет `text/markdown` в `Accept`. Прямой URL `.md` или `.txt` выбирает ресурс самим путем и не участвует в negotiation.
+
 Любой route, который выбирает HTML или Markdown по request header `Accept`, обязан отдавать `Vary: Accept` на обеих ветках ответа:
 
 - HTML-вариант negotiated URL;
 - Markdown-вариант того же negotiated URL.
 
 Если nginx или другой слой сжатия также добавляет `Vary: Accept-Encoding`, оба значения должны сохраняться. Допустимы несколько полей `Vary` или один общий список значений, если итоговый HTTP-ответ эквивалентно сообщает обе оси вариации.
+
+HTML объявляет Markdown через HTTP `Link` с `rel="alternate"`. Negotiated Markdown-ответ публикует обратную HTTP-ссылку на HTML. HTML дополнительно содержит `<link rel="alternate" type="text/markdown">` и короткий скрытый указатель на companion URL, чтобы Markdown могли найти как HTTP-клиенты, так и инструменты, которые читают только HTML.
 
 Прямые `.md` URLs не являются content negotiation по пути: сам URL уже выбирает Markdown-ресурс. Для них обязательны корректный `Content-Type: text/markdown`, явная cache policy и стабильная генерация Markdown. `Vary: Accept` на прямых `.md` URLs не нужен для корректности, но может оставаться в nginx как совместимое операционное поведение.
 
@@ -113,6 +119,7 @@
 ## Последствия
 
 - Новые negotiated HTML routes должны добавлять `Vary: Accept` вместе с HTML cache policy.
+- Новый HTML route с Markdown companion должен публиковать alternate-ссылку в HTML и HTTP, а negotiated Markdown-ответ - обратную HTTP-ссылку на HTML.
 - Регрессионный тест nginx coverage должен падать, если route с `Accept: text/markdown` не сообщает `Vary: Accept`.
 - При подключении CDN нужно проверить, что он уважает `Vary: Accept` или явно нормализует cache key до нужных вариантов, например HTML и Markdown.
 - Если маршрут перестает поддерживать Markdown по `Accept`, нужно убрать и саму ветку negotiation, и связанные discovery-обещания.

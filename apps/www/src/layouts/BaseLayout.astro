@@ -48,6 +48,12 @@ const {
 } = Astro.props;
 
 const canonical = canon(href ?? Astro.url.pathname);
+const markdownPath =
+  Astro.url.pathname === '/'
+    ? '/index.md'
+    : `${Astro.url.pathname.replace(/\/$/u, '')}/index.md`;
+const markdownAlternate =
+  robots === 'noindex, nofollow' ? undefined : absoluteUrl(markdownPath);
 const keywordContent = collectKeywords(keywords, BRAND_KEYWORDS).join(', ');
 const social = image ? absoluteUrl(image) : undefined;
 const socialAlt = social ? (imageAlt ?? title) : undefined;
@@ -98,6 +104,11 @@ const bodyClasses = [
     <meta name="msapplication-TileColor" content={browserColor.tile} />
     <meta name="msapplication-TileImage" content="/mstile-150x150.png" />
     <link rel="canonical" href={canonical} />
+    {
+      markdownAlternate && (
+        <link rel="alternate" type="text/markdown" href={markdownAlternate} />
+      )
+    }
     {robots && <meta name="robots" content={robots} />}
 
     <meta property="og:title" content={title} />
@@ -141,6 +152,13 @@ const bodyClasses = [
     <script src="../scripts/site-runtime.ts"></script>
   </head>
   <body class={bodyClasses}>
+    {
+      markdownAlternate && (
+        <div class="sr-only" aria-hidden="true">
+          Markdown-версия этой страницы доступна по адресу {markdownAlternate}.
+        </div>
+      )
+    }
     <div class="site-navigation-progress" aria-hidden="true"></div>
     {
       enableMetrika && (
