@@ -68,10 +68,19 @@ jobs:
           path: .turbo/cache
           key: ${{ steps.restore-turbo-cache.outputs.cache-primary-key }}
 
-  build:
+  deploy:
     needs: test
     if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/master') || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: 'https://kpshelkovo.online'
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER || 'deploy' }}
+      DEPLOY_WWW_PATH: ${{ secrets.DEPLOY_WWW_PATH }}
+      DEPLOY_MEDIA_PATH: /var/www/media-kpshelkovo-online
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -92,37 +101,6 @@ jobs:
         env:
           PUBLIC_YANDEX_MAPS_API_KEY: ${{ secrets.YANDEX_MAPS_API_KEY }}
         run: pnpm build
-
-      - name: Upload VPS artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: vps-dist
-          path: dist
-          include-hidden-files: true
-          if-no-files-found: error
-          retention-days: 1
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: production
-      url: 'https://kpshelkovo.online'
-    env:
-      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
-      DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
-      DEPLOY_USER: ${{ secrets.DEPLOY_USER || 'deploy' }}
-      DEPLOY_WWW_PATH: ${{ secrets.DEPLOY_WWW_PATH }}
-      DEPLOY_MEDIA_PATH: /var/www/media-kpshelkovo-online
-    steps:
-      - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-
-      - name: Download VPS artifact
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-        with:
-          name: vps-dist
-          path: dist
 
       - name: Validate deploy settings
         run: |
