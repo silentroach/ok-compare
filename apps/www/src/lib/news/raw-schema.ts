@@ -85,15 +85,33 @@ const attachment = () =>
     size: text.optional(),
   });
 
-const photo = (image: SchemaContext['image']) =>
+const newsPhotoUrl = (name: string) =>
+  text.refine((value) => {
+    if (!isAbsoluteUrl(value)) {
+      return false;
+    }
+
+    const url = new URL(value);
+
+    return (
+      url.origin === 'https://media.kpshelkovo.online' &&
+      url.pathname.startsWith('/news/') &&
+      !url.search &&
+      !url.hash
+    );
+  }, `${name} must use an immutable https://media.kpshelkovo.online/news/ URL without query or hash`);
+
+const photo = () =>
   z.object({
-    src: image(),
+    url: newsPhotoUrl('photos[].url'),
+    width: z.number().int().positive(),
+    height: z.number().int().positive(),
     alt: text,
     caption: text.optional(),
   });
 
-const media = (image: SchemaContext['image']) => ({
-  photos: z.array(photo(image)).min(1).optional(),
+const media = () => ({
+  photos: z.array(photo()).min(1).optional(),
   attachments: z.array(attachment()).min(1).optional(),
 });
 
@@ -246,7 +264,7 @@ export const createRawNewsArticleSchema = (image: SchemaContext['image']) =>
       cover: image().optional(),
       cover_alt: text.optional(),
       events: z.array(event()).min(1).optional(),
-      ...media(image),
+      ...media(),
       seo: z
         .object({
           title: text.optional(),

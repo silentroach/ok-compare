@@ -1,6 +1,6 @@
 ---
 name: public-media-publisher
-description: Use whenever the user asks to upload, publish, archive, replace, delete, inspect, verify, or link a public document or downloadable attachment in the `kps-public` S3 bucket or on `media.kpshelkovo.online`. Trigger for PDF and document attachments for `/kb` and `/815/regulation`, S3 object keys, `s5cmd`, historical document versions, and media-origin links, even when the user only asks to add a file to a site article. Also trigger on proposed image uploads so the agent stops and notes that image rules are not defined. Enforces section-owned keys, dated immutable snapshots, conflict checks, credential safety, and end-to-end verification.
+description: Use whenever the user asks to upload, publish, archive, replace, delete, inspect, verify, or link a public document, downloadable attachment, or news photo in the `kps-public` S3 bucket or on `media.kpshelkovo.online`. Trigger for PDF and document attachments for `/kb` and `/815/regulation`, prepared JPEG photos for `/news`, S3 object keys, `s5cmd`, historical versions, and media-origin links. Enforces image sizing and metadata cleanup, section-owned keys, immutable objects, conflict checks, credential safety, and end-to-end verification; stops unsupported image workflows outside news.
 ---
 
 # Public Media Publisher
@@ -14,7 +14,7 @@ description: Use whenever the user asks to upload, publish, archive, replace, de
 - Прочитай `docs/decisions/021-public-section-files-in-s3.md` и `ops/storage/public-media.md`.
 - Если меняешь материал сайта, прочитай `AGENTS.md` его раздела.
 - Убедись, что локальный файл и целевой раздел-владелец известны.
-- Если передан файл изображения, остановись и запроси отдельное решение о пути, формате и способе публикации: этот workflow пока определен только для документов и скачиваемых вложений.
+- Для изображения продолжай только если это фотография новости, которую можно подготовить как JPEG по ADR-023. Для другого раздела или формата остановись и запроси отдельное решение.
 - Считай бакет полностью публичным. Если файл содержит секретные, персональные, внутренние или ограниченные данные, не загружай его.
 - Используй уже настроенные credentials. Не ищи, не печатай и не добавляй их в команды или файлы репозитория.
 
@@ -31,20 +31,22 @@ description: Use whenever the user asks to upload, publish, archive, replace, de
 - Недатированный изменяемый key допустим только по явному требованию пользователя.
 - Текущие PDF промо-раздела `/815/regulation` хранятся под недатированными ключами `815/regulation/<filename>.pdf` и не считаются историческим архивом. Не перезаписывай конфликтующий объект: сначала сравни SHA-256.
 - Для оферт сохраняй установленную схему `kb/ok/offer/<snapshot-date>/<slug>.pdf`.
+- Для фотографий новостей используй `news/YYYY/MM/<article-slug>/<semantic-name>.jpeg`. Ключ неизменяем, а статья хранит URL, фактические `width`/`height` подготовленного JPEG, `alt` и опциональную подпись.
 - Не используй `404.html` и `_media/*`, которые зарезервированы nginx.
 - Если подходящая storage-схема еще не определена, предложи короткий key и согласуй его до загрузки вместо создания новой таксономии молча.
 
 ## Publication Workflow
 
-1. Работай с переданным файлом как есть. Не изменяй его содержимое в рамках публикации.
-2. Определи MIME-тип по содержимому, размер и SHA-256.
-3. Проверь точный key командой `s5cmd head` через endpoint `https://s3.regru.cloud`.
-4. Если объект существует, скачай его во временный каталог и сравни SHA-256. Не считай ETag контрольной суммой SHA-256.
-5. Если SHA-256 совпадает, не загружай файл повторно и переходи к публичной проверке.
-6. Если SHA-256 различается, остановись: не перезаписывай и не удаляй объект.
-7. Если key свободен, убедись, что другой процесс не публикует тот же key, затем загрузи файл через `s5cmd cp --no-clobber` с явными `Content-Type` и `Cache-Control`, указанными в runbook. `--no-clobber` не дает атомарной гарантии create-only.
-8. После `cp` обязательно скачай файл через `https://media.kpshelkovo.online/<key>` и проверь статус, MIME-тип, размер и SHA-256. Это обязательная проверка и успешной загрузки, и возможного незаметного пропуска существующего объекта.
-9. Только после успешной проверки добавляй публичный URL в материал сайта, если это входит в задачу.
+1. Документы и скачиваемые вложения публикуй без изменения содержимого. Фотографию новости сначала подготовь точной командой из `ops/storage/public-media.md`: примени ориентацию, не увеличивай, ограничь длинную сторону 2560 пикселями, сохрани progressive JPEG в sRGB с quality 90 и удали метаданные.
+2. По умолчанию не переноси никакие EXIF/IPTC/XMP-данные. Верни только широту и долготу GPS, если место съемки само является публичным предметом новости и публикация координат осознанно одобрена; не сохраняй время съемки, устройство и остальные GPS-поля.
+3. Проверь итоговые размеры и метаданные подготовленного JPEG, затем определи MIME-тип по содержимому, размер и SHA-256 именно этого файла.
+4. Проверь точный key командой `s5cmd head` через endpoint `https://s3.regru.cloud`.
+5. Если объект существует, скачай его во временный каталог и сравни SHA-256. Не считай ETag контрольной суммой SHA-256.
+6. Если SHA-256 совпадает, не загружай файл повторно и переходи к публичной проверке.
+7. Если SHA-256 различается, остановись: не перезаписывай и не удаляй объект.
+8. Если key свободен, убедись, что другой процесс не публикует тот же key, затем загрузи файл через `s5cmd cp --no-clobber` с явными `Content-Type` и `Cache-Control`, указанными в runbook. `--no-clobber` не дает атомарной гарантии create-only.
+9. После `cp` обязательно скачай файл через `https://media.kpshelkovo.online/<key>` и проверь статус, MIME-тип, размер и SHA-256. Для фотографии также повторно проверь размеры и метаданные. Это обязательная проверка и успешной загрузки, и возможного незаметного пропуска существующего объекта.
+10. Только после успешной проверки добавляй публичный URL в материал сайта, если это входит в задачу.
 
 Для временных скачиваний используй `/private/tmp/opencode`, а не репозиторий. Удаляй временные копии после успешной проверки, если они больше не нужны.
 
@@ -74,6 +76,7 @@ description: Use whenever the user asks to upload, publish, archive, replace, de
 - размер, MIME-тип и SHA-256;
 - был объект загружен или уже существовал с тем же содержимым;
 - прошла ли проверка через media-origin;
+- для фотографии - итоговые размеры, примененный лимит/quality и результат проверки метаданных, включая решение по GPS;
 - какие материалы сайта обновлены.
 
 Никогда не показывай credentials.

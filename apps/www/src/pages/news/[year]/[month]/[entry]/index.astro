@@ -93,6 +93,12 @@ const author = {
   name: article.author.name,
   ...(article.author.url ? { url: article.author.url } : {}),
 };
+const images = [
+  ...new Set([
+    ...(article.cover ? [article.cover.url] : []),
+    ...article.photos.map((photo) => photo.url),
+  ]),
+];
 const schema = newsArticleSchema({
   name: article.title,
   description,
@@ -104,7 +110,7 @@ const schema = newsArticleSchema({
     { name: article.title, url: articleUrl(article) },
   ]),
   datePublished: article.publishedIso,
-  image: article.cover?.url,
+  image: images.length > 0 ? images : undefined,
   author,
   ...(hasEvents ? { events: article.events } : {}),
 });

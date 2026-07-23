@@ -153,7 +153,9 @@ const photos = (
   items: readonly PhotoInput[] | undefined,
 ): readonly NewsPhoto[] =>
   items?.map((item) => ({
-    url: withBase(item.src.src),
+    url: item.url,
+    width: item.width,
+    height: item.height,
     alt: item.alt,
     caption: item.caption,
   })) ?? [];

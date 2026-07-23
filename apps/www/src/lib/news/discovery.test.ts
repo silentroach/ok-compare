@@ -150,6 +150,33 @@ describe('news discovery payload', () => {
     expect(payload.articles[0]?.events).toBeUndefined();
   });
 
+  it('publishes intrinsic photo dimensions', () => {
+    const article = {
+      ...articleWithEvent(),
+      photos: [
+        {
+          url: 'https://media.kpshelkovo.online/news/2026/05/event/path.jpeg',
+          width: 1280,
+          height: 960,
+          alt: 'Дорожка через поле',
+        },
+      ],
+    };
+    const payload = buildNewsPayload(dataset([article]));
+
+    expect(payload.articles[0]?.photos).toMatchInlineSnapshot(`
+      [
+        {
+          "alt": "Дорожка через поле",
+          "caption": undefined,
+          "height": 960,
+          "url": "https://media.kpshelkovo.online/news/2026/05/event/path.jpeg",
+          "width": 1280,
+        },
+      ]
+    `);
+  });
+
   it('keeps schema, openapi, and catalog aligned around article-local events', () => {
     const root = 'https://example.com';
     const jsonSchema = schema(root) as {

@@ -28,6 +28,8 @@ export interface NewsPublicTag {
 
 export interface NewsPublicPhoto {
   readonly url: string;
+  readonly width: number;
+  readonly height: number;
   readonly alt: string;
   readonly caption?: string;
 }
@@ -149,6 +151,8 @@ const toPublicTag = (tag: NewsTag): NewsPublicTag => ({
 
 const toPublicPhoto = (item: NewsPhoto): NewsPublicPhoto => ({
   url: fullUrl(item.url),
+  width: item.width,
+  height: item.height,
   alt: item.alt,
   caption: item.caption,
 });

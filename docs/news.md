@@ -38,7 +38,7 @@
    Канонический признак официального источника - `kind: official`. Отдельный boolean `is_official` не используется: если нужен официальный источник, автор должен иметь `kind: official`.
 
 3. `cover`, `photos` и `attachments` имеют разные роли.
-   `cover` отвечает за карточку, detail hero и social preview. `photos` идут отдельным photo block. `attachments` должны вести на стабильные public URL.
+   `cover` отвечает за карточку, detail hero и social preview. `photos` идут отдельным photo block и ссылаются на неизменяемые подготовленные JPEG в `media.kpshelkovo.online/news/`; для каждого фото обязательны `width`, `height` и `alt`. Перед загрузкой длинную сторону ограничивают 2560 пикселями без апскейла, сохраняют JPEG с quality 90 и удаляют метаданные. GPS-координаты можно вернуть отдельно, только если место съемки является публичной частью материала. Обложка и все `photos` попадают в `NewsArticle.image` JSON-LD. `attachments` должны вести на стабильные public URL.
 
 4. `tags` остаются короткими и утилитарными.
    Теги не заменяют `areas`; spelling одного и того же тега должен быть единым по всему разделу.

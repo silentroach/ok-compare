@@ -36,6 +36,15 @@ export default defineConfig({
     port: devServerPort,
   },
   cacheDir: '../../node_modules/.astro/www',
+  image: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'media.kpshelkovo.online',
+        pathname: '/news/**',
+      },
+    ],
+  },
   markdown: {
     syntaxHighlight: {
       type: 'shiki',

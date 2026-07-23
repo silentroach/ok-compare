@@ -219,10 +219,12 @@ export function schema(root: string): Record<string, unknown> {
       photo: obj(
         {
           url: uri(),
+          width: integer(1),
+          height: integer(1),
           alt: text(1),
           caption: text(1),
         },
-        ['url', 'alt'],
+        ['url', 'width', 'height', 'alt'],
       ),
       attachment: obj(
         {

@@ -13,6 +13,9 @@ let buildNewsDataset: typeof import('./load').buildNewsDataset;
 type ArticleEventInput = NonNullable<
   NewsArticleEntry['data']['events']
 >[number];
+type ArticlePhotoInput = NonNullable<
+  NewsArticleEntry['data']['photos']
+>[number];
 
 beforeAll(async () => {
   Object.assign(import.meta.env, {
@@ -44,6 +47,7 @@ const article = (input: {
   readonly pinned?: boolean;
   readonly pinned_until?: string;
   readonly events?: readonly ArticleEventInput[];
+  readonly photos?: readonly ArticlePhotoInput[];
 }): NewsArticleEntry => ({
   id: input.id,
   body: input.body ?? '',
@@ -55,10 +59,46 @@ const article = (input: {
     pinned: input.pinned,
     pinned_until: input.pinned_until,
     events: input.events,
+    photos: input.photos,
   },
 });
 
 describe('buildNewsDataset', () => {
+  it('keeps public photo URLs and intrinsic dimensions', () => {
+    const data = buildNewsDataset(
+      [author({ id: 'ig', name: 'Редакция' })],
+      [
+        article({
+          id: '2026/05/photo-report',
+          title: 'Фоторепортаж',
+          summary: 'Фото с места.',
+          date: '05.05.2026',
+          photos: [
+            {
+              url: 'https://media.kpshelkovo.online/news/2026/05/photo-report/path.jpeg',
+              width: 1280,
+              height: 960,
+              alt: 'Дорожка через поле',
+              caption: 'Фото с места.',
+            },
+          ],
+        }),
+      ],
+    );
+
+    expect(data.articles[0]?.photos).toMatchInlineSnapshot(`
+      [
+        {
+          "alt": "Дорожка через поле",
+          "caption": "Фото с места.",
+          "height": 960,
+          "url": "https://media.kpshelkovo.online/news/2026/05/photo-report/path.jpeg",
+          "width": 1280,
+        },
+      ]
+    `);
+  });
+
   it('keeps pinned news only before pinned_until date', () => {
     const now = Date.now;
     Date.now = () => new Date('2026-05-06T12:00:00.000Z').valueOf();

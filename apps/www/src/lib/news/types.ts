@@ -19,6 +19,8 @@ export interface NewsTag {
 
 export interface NewsPhoto {
   readonly url: string;
+  readonly width: number;
+  readonly height: number;
   readonly alt: string;
   readonly caption?: string;
 }
